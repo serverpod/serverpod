@@ -9,8 +9,7 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('doubleDefault')
-          .withTypeDefinition('double', false)
-          .withDefaults(defaultPersistValue: '10.5')
+          .withTypeDouble(defaultPersistValue: 10.5)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -110,8 +109,7 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('doubleDefault')
-          .withTypeDefinition('double', true)
-          .withDefaults(defaultPersistValue: '10.5')
+          .withTypeDouble(defaultPersistValue: 10.5, nullable: true)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -229,8 +227,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('doubleDefault')
-          .withTypeDefinition('double', false)
-          .withDefaults(defaultModelValue: '10.5')
+          .withTypeDouble(defaultModelValue: 10.5)
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -280,8 +277,7 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('doubleDefault')
-          .withTypeDefinition('double', true)
-          .withDefaults(defaultModelValue: '10.5')
+          .withTypeDouble(defaultModelValue: 10.5, nullable: true)
           .build();
 
       var model = ModelClassDefinitionBuilder()

@@ -35,8 +35,8 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, '10.5');
-        expect(definition.fields.last.defaultPersistValue, '10.5');
+        expect(definition.fields.last.defaultModelValue, 10.5);
+        expect(definition.fields.last.defaultPersistValue, 10.5);
       },
     );
 
@@ -65,8 +65,8 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(definition.fields.last.defaultModelValue, '20.5');
-        expect(definition.fields.last.defaultPersistValue, '20.5');
+        expect(definition.fields.last.defaultModelValue, 20.5);
+        expect(definition.fields.last.defaultPersistValue, 20.5);
       },
     );
 
@@ -94,8 +94,8 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, '10');
-        expect(definition.fields.last.defaultPersistValue, '10');
+        expect(definition.fields.last.defaultModelValue, 10);
+        expect(definition.fields.last.defaultPersistValue, 10);
       },
     );
 

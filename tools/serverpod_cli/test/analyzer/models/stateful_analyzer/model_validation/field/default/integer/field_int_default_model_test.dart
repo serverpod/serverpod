@@ -35,7 +35,7 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultModelValue, '10');
+        expect(definition.fields.last.defaultModelValue, 10);
       },
     );
 
@@ -64,7 +64,7 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
 
-        expect(definition.fields.last.defaultModelValue, '20');
+        expect(definition.fields.last.defaultModelValue, 20);
       },
     );
 

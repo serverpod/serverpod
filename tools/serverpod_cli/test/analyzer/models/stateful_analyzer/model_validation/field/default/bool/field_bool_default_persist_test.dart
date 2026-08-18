@@ -35,7 +35,7 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultPersistValue, 'true');
+        expect(definition.fields.last.defaultPersistValue, true);
       },
     );
 
@@ -63,7 +63,7 @@ void main() {
         expect(collector.errors, isEmpty);
 
         var definition = definitions.first as ClassDefinition;
-        expect(definition.fields.last.defaultPersistValue, 'false');
+        expect(definition.fields.last.defaultPersistValue, false);
       },
     );
 

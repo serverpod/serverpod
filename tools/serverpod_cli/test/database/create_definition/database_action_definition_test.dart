@@ -268,8 +268,7 @@ void main() {
     () {
       var field = FieldDefinitionBuilder()
           .withName('syncVersion')
-          .withTypeDefinition('int', true)
-          .withDefaults(defaultPersistValue: defaultIntSerial)
+          .withTypeIntSerial(nullable: true)
           .build();
       var model = ModelClassDefinitionBuilder()
           .withTableName('example')

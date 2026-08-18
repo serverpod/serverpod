@@ -151,7 +151,7 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
   switch (defaultValueType) {
     case DefaultValueAllowedType.string:
     case DefaultValueAllowedType.uri:
-      return escapeSqlString(defaultPersistValue);
+      return escapeSqlString(_singleQuoted(defaultPersistValue));
     case DefaultValueAllowedType.uuidValue:
       // Special values like "random" and "random_v7" are SQL function names,
       // not string literals - return as-is without escaping.
@@ -159,7 +159,7 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
           defaultPersistValue == defaultUuidValueRandomV7) {
         return defaultPersistValue;
       }
-      return escapeSqlString(defaultPersistValue);
+      return escapeSqlString(_singleQuoted(defaultPersistValue));
     case DefaultValueAllowedType.int:
     case DefaultValueAllowedType.bool:
     case DefaultValueAllowedType.double:
@@ -168,7 +168,7 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
     case DefaultValueAllowedType.bigInt:
       // BigInt is stored in as text in the database, so keep the abstract
       // default as a quoted text literal to match database introspection.
-      return escapeSqlString("'${defaultPersistValue.toString()}'");
+      return escapeSqlString(_singleQuoted(defaultPersistValue.toString()));
     case DefaultValueAllowedType.duration:
       // Duration is stored as bigint milliseconds in the database.
       return parseDuration(defaultPersistValue).toJson().toString();
@@ -180,10 +180,23 @@ dynamic _parseColumnDefault(SerializableModelFieldDefinition column) {
         EnumSerialization.byIndex =>
           '${enumDefinition.values.indexWhere((e) => e.name == defaultPersistValue)}',
         // Matches the expected value format for a text column.
-        EnumSerialization.byName => escapeSqlString("'$defaultPersistValue'"),
+        EnumSerialization.byName => escapeSqlString(
+          _singleQuoted('$defaultPersistValue'),
+        ),
       };
   }
 }
+
+/// Encloses a parsed default value in single quotes so that it satisfies the
+/// quoting [escapeSqlString] expects.
+///
+/// Quotes that the model already escaped are left as they are, only quotes that
+/// the model parser stripped the enclosing quotes from are escaped.
+String _singleQuoted(String value) {
+  return "'${value.replaceAllMapped(_unescapedSingleQuote, (_) => "\\'")}'";
+}
+
+final _unescapedSingleQuote = RegExp(r"(?<!\\)'");
 
 void _sortTableDefinitions(List<TableDefinition> tables) {
   // Sort by name to make sure that we get consistent output

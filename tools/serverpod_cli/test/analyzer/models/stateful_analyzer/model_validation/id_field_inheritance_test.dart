@@ -460,7 +460,7 @@ void main() {
         expect(
           collector.errors.first.message,
           'The "table" property is not allowed due to invalid "id" field defined '
-          'on parent classes. The default value "\'550e8400-e29b-41d4-a716-446655440000\'" '
+          'on parent classes. The default value "550e8400-e29b-41d4-a716-446655440000" '
           'is not supported for the id type "UuidValue". Valid options are: '
           '"random", "random_v7".',
         );

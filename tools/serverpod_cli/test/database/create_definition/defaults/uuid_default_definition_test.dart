@@ -9,9 +9,8 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', false)
-          .withDefaults(
-            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+          .withTypeUuidValue(
+            defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
           )
           .build();
 
@@ -112,9 +111,9 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', true)
-          .withDefaults(
-            defaultPersistValue: '\'550e8400-e29b-41d4-a716-446655440000\'',
+          .withTypeUuidValue(
+            defaultPersistValue: '550e8400-e29b-41d4-a716-446655440000',
+            nullable: true,
           )
           .build();
 
@@ -233,8 +232,7 @@ void main() {
     group('when "defaultPersist" is set to "random"', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', false)
-          .withDefaults(defaultPersistValue: 'random')
+          .withTypeUuidValue(defaultPersistValue: 'random')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -284,8 +282,7 @@ void main() {
     group('when "defaultPersist" is set to "random_v7"', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', false)
-          .withDefaults(defaultPersistValue: 'random_v7')
+          .withTypeUuidValue(defaultPersistValue: 'random_v7')
           .build();
 
       var model = ModelClassDefinitionBuilder()
@@ -335,8 +332,7 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', false)
-          .withDefaults(
+          .withTypeUuidValue(
             defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
           )
           .build();
@@ -388,9 +384,9 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uuid')
-          .withTypeDefinition('UuidValue', true)
-          .withDefaults(
+          .withTypeUuidValue(
             defaultModelValue: '550e8400-e29b-41d4-a716-446655440000',
+            nullable: true,
           )
           .build();
 

@@ -9,9 +9,8 @@ void main() {
     group('when "defaultPersist" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', false)
-          .withDefaults(
-            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+          .withTypeUri(
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
           )
           .build();
 
@@ -89,9 +88,9 @@ void main() {
     group('when the field is nullable and has a "defaultPersist" value', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', true)
-          .withDefaults(
-            defaultPersistValue: "'https://serverpod.dev/defaultPersistValue'",
+          .withTypeUri(
+            defaultPersistValue: 'https://serverpod.dev/defaultPersistValue',
+            nullable: true,
           )
           .build();
 
@@ -164,9 +163,8 @@ void main() {
     group('when "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', false)
-          .withDefaults(
-            defaultModelValue: "'https://serverpod.dev/defaultModelValue'",
+          .withTypeUri(
+            defaultModelValue: 'https://serverpod.dev/defaultModelValue',
           )
           .build();
 
@@ -194,9 +192,9 @@ void main() {
     group('when the field is nullable and "defaultModelValue" is set', () {
       var field = FieldDefinitionBuilder()
           .withName('uri')
-          .withTypeDefinition('Uri', true)
-          .withDefaults(
+          .withTypeUri(
             defaultModelValue: 'https://serverpod.dev/defaultModelValue',
+            nullable: true,
           )
           .build();
 

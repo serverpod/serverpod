@@ -432,6 +432,14 @@ dynamic _extractNodeValue(
           ),
         );
       },
+      onUnescapedStringValue: (key, span) {
+        collector.addError(
+          SourceSpanSeverityException(
+            'Unescaped quotes in string value is not allowed.',
+            span,
+          ),
+        );
+      },
     );
   }
   return content;

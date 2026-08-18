@@ -885,7 +885,7 @@ void main() {
     var enumField = FieldDefinitionBuilder()
         .withName(enumFieldName)
         .withColumnNameOverride(enumColumnName)
-        .withEnumDefinition(byNameEnumDefinition, true)
+        .withTypeEnum(byNameEnumDefinition, nullable: true)
         .build();
 
     var models = [

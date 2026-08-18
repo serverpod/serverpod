@@ -1,7 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
-import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -242,9 +241,7 @@ class DefaultValueRestriction extends ValueRestriction {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (value is! String ||
-        value.isEmpty ||
-        (value != defaultBooleanTrue && value != defaultBooleanFalse)) {
+    if (value is! bool) {
       errors.add(
         SourceSpanSeverityException(
           'The "$key" value must be a valid boolean: "true" or "false"',
@@ -263,75 +260,39 @@ class DefaultValueRestriction extends ValueRestriction {
   ) {
     if (value is int) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
-    if (value is! String || value.isEmpty) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid integer (e.g., "$key"=10).',
-          span,
-        ),
-      );
-      return errors;
-    }
-
     if (value == defaultIntSerial) {
-      if (key == Keyword.defaultPersistKey) {
-        return errors;
-      }
+      if (key == Keyword.defaultPersistKey) return [];
 
-      errors.add(
+      return [
         SourceSpanSeverityException(
           'The default value "$defaultIntSerial" can not be set using the '
           '"$key" keyword. Use the "${Keyword.defaultPersistKey}" keyword '
           'instead.',
           span,
         ),
-      );
-      return errors;
+      ];
     }
 
-    int? parsedValue = int.tryParse(value);
-    if (parsedValue == null) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid integer (e.g., "$key"=10).',
-          span,
-        ),
-      );
-    }
-    return errors;
+    return [
+      SourceSpanSeverityException(
+        'The "$key" value must be a valid integer (e.g., "$key"=10).',
+        span,
+      ),
+    ];
   }
 
   List<SourceSpanSeverityException> _doubleValidation(
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is double) return [];
+    if (value is double || value is int) return [];
 
-    var errors = <SourceSpanSeverityException>[];
-
-    if (value is! String || value.isEmpty) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid double (e.g., "$key"=10.5).',
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    double? parsedValue = double.tryParse(value);
-    if (parsedValue == null) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid double (e.g., "$key"=10.5).',
-          span,
-        ),
-      );
-    }
-
-    return errors;
+    return [
+      SourceSpanSeverityException(
+        'The "$key" value must be a valid double (e.g., "$key"=10.5).',
+        span,
+      ),
+    ];
   }
 
   List<SourceSpanSeverityException> _stringValidation(
@@ -348,36 +309,6 @@ class DefaultValueRestriction extends ValueRestriction {
         ),
       );
       return errors;
-    }
-
-    bool validDoubleQuote = isValidDoubleQuote(value);
-    bool validSingleQuote = isValidSingleQuote(value);
-
-    if (validDoubleQuote || validSingleQuote) {
-      return errors;
-    }
-
-    if (value.startsWith('\'') && !validSingleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'For single quoted "$key" string values, single quotes must be escaped or use double quotes (e.g., "$key"=\'This "is" a string\' or "$key"=\'This \\\'is\\\' a string\').',
-          span,
-        ),
-      );
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'For double quoted "$key" string values, double quotes must be escaped or use single quotes (e.g., "$key"="This \'is\' a string" or "$key"="This \\"is\\" a string").',
-          span,
-        ),
-      );
-    } else {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'This is a string\' or "$key"="This is a string").',
-          span,
-        ),
-      );
     }
 
     return errors;
@@ -405,7 +336,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be "random", "random_v7" or valid UUID string (e.g., "$key"=random or "$key"=\'550e8400-e29b-41d4-a716-446655440000\').';
+        'The "$key" value must be "random", "random_v7" or valid UUID string (e.g., $key=random or $key="550e8400-e29b-41d4-a716-446655440000").';
 
     if (value is! String || value.isEmpty) {
       errors.add(
@@ -422,46 +353,13 @@ class DefaultValueRestriction extends ValueRestriction {
       return [];
     }
 
-    if (!value.startsWith("'") && !value.startsWith('"')) {
-      errors.add(
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    bool validSingleQuote = isValidSingleQuote(value);
-    bool validDoubleQuote = isValidDoubleQuote(value);
-
-    if (value.startsWith("'") && !validSingleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'550e8400-e29b-41d4-a716-446655440000\').',
-          span,
-        ),
-      );
-      return errors;
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      errors.add(
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"="550e8400-e29b-41d4-a716-446655440000").',
-          span,
-        ),
-      );
-      return errors;
-    }
-
-    /// Extract the actual UUID string by removing quotes
-    String uuidString = value.substring(1, value.length - 1);
-    UuidValue uuidValue = UuidValue.fromString(uuidString);
+    UuidValue uuidValue = UuidValue.fromString(value);
     try {
       uuidValue.validate();
     } catch (_) {
       errors.add(
         SourceSpanSeverityException(
-          'The "$key" value must be a valid UUID (e.g., \'550e8400-e29b-41d4-a716-446655440000\').',
+          invalidValueError,
           span,
         ),
       );
@@ -475,11 +373,14 @@ class DefaultValueRestriction extends ValueRestriction {
     SourceSpan? span,
   ) {
     if (value is BigInt) return [];
+    if (value is int) return [];
 
-    if (value is! String || value.isEmpty || BigInt.tryParse(value) == null) {
+    if ((value is! String ||
+        value.isEmpty ||
+        BigInt.tryParse(value.toString()) == null)) {
       return [
         SourceSpanSeverityException(
-          'The "$key" value must be a valid BigInt (e.g., "$key"=\'1234567890\').',
+          'The "$key" value must be a valid BigInt (e.g., $key="1234567890").',
           span,
         ),
       ];
@@ -513,12 +414,10 @@ class DefaultValueRestriction extends ValueRestriction {
     dynamic value,
     SourceSpan? span,
   ) {
-    if (value is Uri) {
-      return [];
-    }
+    if (value is Uri) return [];
 
     String invalidValueError =
-        'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
+        'The "$key" value must be a valid Uri string (e.g., $key="http://serverpod.dev").';
 
     if (value is! String || value.isEmpty) {
       return [
@@ -529,50 +428,10 @@ class DefaultValueRestriction extends ValueRestriction {
       ];
     }
 
-    bool invalidDefaultValue =
-        value != defaultUuidValueRandom &&
-        !value.startsWith("'") &&
-        !value.startsWith('"');
-
-    if (invalidDefaultValue) {
-      return [
-        SourceSpanSeverityException(
-          invalidValueError,
-          span,
-        ),
-      ];
-    }
-
-    if (value == defaultUuidValueRandom) return [];
-
-    bool validSingleQuote = isValidSingleQuote(value);
-    bool validDoubleQuote = isValidDoubleQuote(value);
-
-    if (value.startsWith("'") && !validSingleQuote) {
-      return [
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"=\'http://serverpod.dev\').',
-          span,
-        ),
-      ];
-    } else if (value.startsWith('"') && !validDoubleQuote) {
-      return [
-        SourceSpanSeverityException(
-          'The "$key" must be a quoted string (e.g., "$key"="http://serverpod.dev").',
-          span,
-        ),
-      ];
-    }
-
-    /// Extract the actual Uri string by removing quotes
-    String uriString = value.substring(1, value.length - 1);
-    var isValid = Uri.tryParse(uriString) != null;
+    var isValid = Uri.tryParse(value) != null;
     if (!isValid) {
       return [
-        SourceSpanSeverityException(
-          'The "$key" value must be a valid Uri (e.g., \'http://serverpod.dev\').',
-          span,
-        ),
+        SourceSpanSeverityException(invalidValueError, span),
       ];
     }
 

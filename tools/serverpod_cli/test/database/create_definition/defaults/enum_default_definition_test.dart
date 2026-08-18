@@ -33,7 +33,7 @@ void main() {
       group('and no "defaultPersist" is set', () {
         var field = FieldDefinitionBuilder()
             .withName('enumDefault')
-            .withEnumDefinition(byNameEnumDefinition, true)
+            .withTypeEnum(byNameEnumDefinition, nullable: true)
             .build();
 
         var model = ModelClassDefinitionBuilder()
@@ -86,8 +86,11 @@ void main() {
       group('and a "defaultPersist" value is set', () {
         var field = FieldDefinitionBuilder()
             .withName('enumDefault')
-            .withEnumDefinition(byNameEnumDefinition, true)
-            .withDefaults(defaultPersistValue: 'byName2')
+            .withTypeEnum(
+              byNameEnumDefinition,
+              defaultPersistValue: 'byName2',
+              nullable: true,
+            )
             .build();
 
         var model = ModelClassDefinitionBuilder()
@@ -152,8 +155,11 @@ void main() {
       group('and "defaultModelValue" is set', () {
         var field = FieldDefinitionBuilder()
             .withName('enumDefault')
-            .withEnumDefinition(byNameEnumDefinition, true)
-            .withDefaults(defaultModelValue: 'byName1')
+            .withTypeEnum(
+              byNameEnumDefinition,
+              defaultModelValue: 'byName1',
+              nullable: true,
+            )
             .build();
 
         var model = ModelClassDefinitionBuilder()
@@ -220,8 +226,11 @@ void main() {
       group('and a "defaultPersist" value is set', () {
         var field = FieldDefinitionBuilder()
             .withName('enumDefault')
-            .withEnumDefinition(byIndexEnumDefinition, true)
-            .withDefaults(defaultPersistValue: 'byIndex2')
+            .withTypeEnum(
+              byIndexEnumDefinition,
+              defaultPersistValue: 'byIndex2',
+              nullable: true,
+            )
             .build();
 
         var model = ModelClassDefinitionBuilder()
