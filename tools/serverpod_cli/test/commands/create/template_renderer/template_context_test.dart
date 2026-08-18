@@ -1,3 +1,4 @@
+import 'package:serverpod_cli/src/create/ide.dart';
 import 'package:serverpod_cli/src/create/template_context.dart';
 import 'package:test/test.dart';
 
@@ -116,8 +117,31 @@ void main() {
           'docker': true,
           'database': true,
           'flutterApp': true,
+          'skills': false,
         },
       );
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
+    'when an IDE is configured, '
+    'then skills value is true',
+    () {
+      final context = TemplateContext(ides: [TemplateIde.claude]);
+      expect(context.skills, isTrue);
+      expect(context.toMustacheMap(), containsPair('skills', true));
+    },
+  );
+
+  test(
+    'Given a TemplateContext, '
+    'when no IDE is configured, '
+    'then skills value is false',
+    () {
+      final context = TemplateContext(ides: []);
+      expect(context.skills, isFalse);
+      expect(context.toMustacheMap(), containsPair('skills', false));
     },
   );
 }

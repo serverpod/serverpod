@@ -50,6 +50,10 @@ class TemplateContext {
   /// True if webserver is enabled.
   bool get webserver => website || webapp;
 
+  /// True if agent skills are installed, which only happens when at least one
+  /// IDE is configured.
+  bool get skills => ides.isNotEmpty;
+
   Map<String, bool> toMustacheMap() {
     return {
       'auth': auth && postgres, // auth requires postgres
@@ -62,6 +66,7 @@ class TemplateContext {
       'webserver': webserver,
       'website': website,
       'flutterApp': flutterApp,
+      'skills': skills,
     };
   }
 }
