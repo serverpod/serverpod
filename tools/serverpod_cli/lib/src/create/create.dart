@@ -351,8 +351,7 @@ Future<void> _configureAgentSkillsAndMcp({
 
     await log.progress('Installing agent skills', () async {
       try {
-        if (context.template != ServerpodTemplateType.module &&
-            context.ides.contains(TemplateIde.claude)) {
+        if (context.ides.contains(TemplateIde.claude)) {
           await _createFileAndWrite(
             p.join(serverpodDirs.projectDir.path, 'CLAUDE.md'),
             '@AGENTS.md\n',

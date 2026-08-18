@@ -35,8 +35,8 @@ ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 <!-- {{^flutterApp}} -->
 - `hot_reload` / `hot_restart` to reload or restart the server. Use `hot_restart` for changes that hot reload cannot apply, such as changes to `main()`.
 <!-- {{/flutterApp}} -->
-
 <!-- {{#skills}} -->
+
 Serverpod agent skills are installed in this project. They cover models, migrations, the database ORM, endpoints, streams, authentication, testing, configuration and the web server — read the skill that matches the task before writing Serverpod code, starting with `serverpod-overview`.
 <!-- {{/skills}} -->
 
