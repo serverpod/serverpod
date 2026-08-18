@@ -17,11 +17,36 @@ The server starts in `lib/server.dart`, which creates the generated `Serverpod` 
 
 The server exposes endpoint classes that the client calls via generated RPC client. Add methods to the endpoints, the code generation will recreate them on the client side. Models are defined in YAML and generate Dart classes for both server and client.
 
-Serverpod projects use a Postgres database for persistence and include an ORM, caching, real-time streaming (using Dart streams), file uploads, scheduling (called future calls), logging, and a built-in web server (Relic). Each of these features have specific skills that you can use to get more details.
+Serverpod projects use a PostgreSQL database for persistence (SQLite is also supported) and include an ORM, caching, real-time streaming (using Dart streams), file uploads, scheduling (called future calls), logging, and a built-in web server (Relic).
+
+## Which skill to use
+
+| Task | Skill |
+| ---- | ----- |
+| Define or change models, database schema, `.spy.yaml` | [serverpod-models](../serverpod-models/SKILL.md) |
+| Create or update database migrations | [serverpod-migrations](../serverpod-migrations/SKILL.md) |
+| Query the database, relations, transactions | [serverpod-database](../serverpod-database/SKILL.md) |
+| Add RPC endpoints called from the client | [serverpod-endpoints](../serverpod-endpoints/SKILL.md) |
+| Real-time features over WebSockets | [serverpod-streams](../serverpod-streams/SKILL.md) |
+| Pub/sub between servers or streams | [serverpod-server-events](../serverpod-server-events/SKILL.md) |
+| Sign in users, scopes, user profiles | [serverpod-auth](../serverpod-auth/SKILL.md) |
+| Write server tests | [serverpod-testing](../serverpod-testing/SKILL.md) |
+| Config files, env vars, secrets, run modes | [serverpod-configuration](../serverpod-configuration/SKILL.md) |
+| Scheduled and recurring work (future calls) | [serverpod-scheduling](../serverpod-scheduling/SKILL.md) |
+| Cache data | [serverpod-caching](../serverpod-caching/SKILL.md) |
+| Upload and store files | [serverpod-file-uploads](../serverpod-file-uploads/SKILL.md) |
+| Logging and debugging server calls | [serverpod-logging](../serverpod-logging/SKILL.md) |
+| Session lifecycle, manual sessions | [serverpod-sessions](../serverpod-sessions/SKILL.md) |
+| HTTP routes, webhooks, web pages, Flutter web | [serverpod-webserver](../serverpod-webserver/SKILL.md) |
+| Add or create modules | [serverpod-modules](../serverpod-modules/SKILL.md) |
+| Kubernetes probes and health checks | [serverpod-health-checks](../serverpod-health-checks/SKILL.md) |
+| Upgrade Serverpod versions | [serverpod-upgrading](../serverpod-upgrading/SKILL.md) |
+
+Deployment, hosting and the Insights companion app are documented at https://docs.serverpod.dev.
 
 ## Running the server
 
-Most likely the server is already running with hot reload and `serverpod generate --watch`. NEVER attempt to start the server. The user is running the server with the `serverpod start` command (as an agent do NOT run this command, instead prompt the user to run `serverpod start`, if neccessary). Hot reload will update the generated code and quickly restart the server when files are changed.
+Most likely the server is already running with hot reload and `serverpod generate --watch`. NEVER attempt to start the server. The user is running the server with the `serverpod start` command (as an agent do NOT run this command, instead prompt the user to run `serverpod start`, if necessary). Hot reload will update the generated code and quickly restart the server when files are changed.
 
 ALWAYS use the MCP server instead of the command line. A running `serverpod start` exposes:
 
@@ -54,7 +79,7 @@ See the [Serverpod Migrations](../serverpod-migrations/SKILL.md) skill for more 
 
 Checklist after doing changes:
 
-1. `dart analyze` (`dart` MCP server)
-2. `dart format` (`dart` MCP server)
+1. `dart analyze` (CLI, or the `dart` MCP server)
+2. `dart format` (CLI, or the `dart` MCP server)
 3. Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically). Will also hot restart Flutter app
 4. Check `serverpod` MCP `tail_server_logs` (and `tail_flutter_logs` for a Flutter app) for any issues
