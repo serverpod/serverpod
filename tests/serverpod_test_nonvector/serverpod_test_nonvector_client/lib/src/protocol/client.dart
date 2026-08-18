@@ -17,6 +17,24 @@ import 'package:serverpod_test_nonvector_client/src/protocol/greeting.dart'
 import 'package:http/http.dart' as _i4;
 import 'protocol.dart' as _i5;
 
+/// Raw SQL access for the migration e2e suites. Test fixture only.
+/// {@category Endpoint}
+class EndpointMigrationDatabase extends _i1.EndpointRef {
+  EndpointMigrationDatabase(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'migrationDatabase';
+
+  /// Executes [queries] in order in a single transaction and returns the rows
+  /// of the last query encoded as JSON.
+  _i2.Future<String> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<String>(
+        'migrationDatabase',
+        'runQueries',
+        {'queries': queries},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointGreeting extends _i1.EndpointRef {
   EndpointGreeting(_i1.EndpointCaller caller) : super(caller);
@@ -59,13 +77,19 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
          httpClientOverride: httpClientOverride,
        ) {
+    migrationDatabase = EndpointMigrationDatabase(this);
     greeting = EndpointGreeting(this);
   }
+
+  late final EndpointMigrationDatabase migrationDatabase;
 
   late final EndpointGreeting greeting;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'greeting': greeting};
+  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'migrationDatabase': migrationDatabase,
+    'greeting': greeting,
+  };
 
   @override
   Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};

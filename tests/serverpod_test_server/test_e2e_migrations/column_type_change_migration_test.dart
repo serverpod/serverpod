@@ -1,6 +1,7 @@
 @Timeout(Duration(minutes: 5))
 import 'dart:convert';
 
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -30,7 +31,7 @@ void main() {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
           resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          serviceClient: serviceClient,
+          runQueries: runQueries,
         );
       });
 
@@ -115,7 +116,7 @@ void main() {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
           resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          serviceClient: serviceClient,
+          runQueries: runQueries,
         );
       });
 
@@ -176,7 +177,7 @@ void main() {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
           resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          serviceClient: serviceClient,
+          runQueries: runQueries,
         );
       });
 
@@ -190,7 +191,7 @@ void main() {
           );
 
           // Insert test data
-          await serviceClient.insights.runQueries([
+          await runQueries([
             "INSERT INTO migrated_table (data) VALUES "
                 "('[\"dart\",\"flutter\"]'), ('[]'), ('[\"special\"]')",
           ]);
@@ -204,11 +205,14 @@ void main() {
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
           // Verify data preserved after json → jsonb
-          var resultAfterJsonb = await serviceClient.insights.runQueries([
-            'SELECT data FROM migrated_table ORDER BY id;',
-          ]);
-          expect(resultAfterJsonb.numAffectedRows, 3);
-          var rowsAfterJsonb = jsonDecode(resultAfterJsonb.data) as List;
+          var rowsAfterJsonb =
+              jsonDecode(
+                    await runQueries([
+                      'SELECT data FROM migrated_table ORDER BY id;',
+                    ]),
+                  )
+                  as List;
+          expect(rowsAfterJsonb, hasLength(3));
           expect(rowsAfterJsonb[0][0], isA<List>());
           expect(rowsAfterJsonb[0][0], ['dart', 'flutter']);
           expect(rowsAfterJsonb[1][0], []);
@@ -223,11 +227,14 @@ void main() {
           expect(await MigrationTestUtils.runApplyMigrations(), 0);
 
           // Verify data preserved after jsonb → json
-          var resultAfterJson = await serviceClient.insights.runQueries([
-            'SELECT data FROM migrated_table ORDER BY id;',
-          ]);
-          expect(resultAfterJson.numAffectedRows, 3);
-          var rowsAfterJson = jsonDecode(resultAfterJson.data) as List;
+          var rowsAfterJson =
+              jsonDecode(
+                    await runQueries([
+                      'SELECT data FROM migrated_table ORDER BY id;',
+                    ]),
+                  )
+                  as List;
+          expect(rowsAfterJson, hasLength(3));
           expect(rowsAfterJson[0][0], isA<List>());
           expect(rowsAfterJson[0][0], ['dart', 'flutter']);
           expect(rowsAfterJson[1][0], []);

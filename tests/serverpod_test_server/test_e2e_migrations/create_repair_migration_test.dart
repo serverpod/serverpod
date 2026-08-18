@@ -1,6 +1,6 @@
 @Timeout(Duration(minutes: 5))
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -8,7 +8,7 @@ void main() {
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        serviceClient: serviceClient,
+        runQueries: runQueries,
       );
     });
 
@@ -80,7 +80,7 @@ fields:
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        serviceClient: serviceClient,
+        runQueries: runQueries,
       );
     });
 
@@ -171,7 +171,7 @@ fields:
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
           resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          serviceClient: serviceClient,
+          runQueries: runQueries,
         );
       });
 
@@ -240,7 +240,7 @@ indexes:
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
           resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          serviceClient: serviceClient,
+          runQueries: runQueries,
         );
       });
 
@@ -260,7 +260,7 @@ fields:
           ],
         );
 
-        await serviceClient.insights.runQueries([
+        await runQueries([
           'DELETE FROM serverpod_migrations WHERE module=\'serverpod_test\';',
         ]);
       });
@@ -291,7 +291,7 @@ fields:
     tearDownAll(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        serviceClient: serviceClient,
+        runQueries: runQueries,
       );
     });
 

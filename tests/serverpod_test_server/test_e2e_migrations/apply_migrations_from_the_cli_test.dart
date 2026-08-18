@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -57,7 +58,7 @@ void main() {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
         resetQueries: ['DROP TABLE IF EXISTS ${tables.join(', ')};'],
-        serviceClient: serviceClient,
+        runQueries: runQueries,
       );
     });
 
@@ -91,14 +92,14 @@ void main() {
 
     setUp(() async {
       // Rename a table to simulate a schema drift
-      await serviceClient.insights.runQueries([
+      await runQueries([
         'ALTER TABLE "$tableName" RENAME TO "$renamedTableName";',
       ]);
     });
 
     tearDown(() async {
       await MigrationTestUtils.migrationArtifactsCleanup();
-      await serviceClient.insights.runQueries([
+      await runQueries([
         'ALTER TABLE IF EXISTS "$renamedTableName" RENAME TO "$tableName";',
       ]);
     });

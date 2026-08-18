@@ -145,6 +145,8 @@ void withServerpod(
 }
 
 class TestEndpoints {
+  late final _MigrationDatabaseEndpoint migrationDatabase;
+
   late final _GreetingEndpoint greeting;
 }
 
@@ -155,10 +157,56 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
+    migrationDatabase = _MigrationDatabaseEndpoint(
+      endpoints,
+      serializationManager,
+    );
     greeting = _GreetingEndpoint(
       endpoints,
       serializationManager,
     );
+  }
+}
+
+class _MigrationDatabaseEndpoint {
+  _MigrationDatabaseEndpoint(
+    this._endpointDispatch,
+    this._serializationManager,
+  );
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i4.Future<String> runQueries(
+    _i1.TestSessionBuilder sessionBuilder,
+    List<String> queries,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'migrationDatabase',
+            method: 'runQueries',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'migrationDatabase',
+          methodName: 'runQueries',
+          parameters: _i1.testObjectToJson({'queries': queries}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
   }
 }
 

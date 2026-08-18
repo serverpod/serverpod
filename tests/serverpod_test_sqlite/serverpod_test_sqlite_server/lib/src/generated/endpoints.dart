@@ -11,28 +11,62 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/test_tools.dart' as _i2;
+import '../endpoints/migration_database.dart' as _i2;
+import '../endpoints/test_tools.dart' as _i3;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i4;
-import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
     as _i5;
-import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
     as _i6;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i7;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
   void initializeEndpoints(_i1.Server server) {
     var endpoints = <String, _i1.Endpoint>{
-      'testTools': _i2.TestToolsEndpoint()
+      'migrationDatabase': _i2.MigrationDatabaseEndpoint()
+        ..initialize(
+          server,
+          'migrationDatabase',
+          null,
+        ),
+      'testTools': _i3.TestToolsEndpoint()
         ..initialize(
           server,
           'testTools',
           null,
         ),
     };
+    connectors['migrationDatabase'] = _i1.EndpointConnector(
+      name: 'migrationDatabase',
+      endpoint: endpoints['migrationDatabase']!,
+      methodConnectors: {
+        'runQueries': _i1.MethodConnector(
+          name: 'runQueries',
+          params: {
+            'queries': _i1.ParameterDescription(
+              name: 'queries',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['migrationDatabase']
+                          as _i2.MigrationDatabaseEndpoint)
+                      .runQueries(
+                        session,
+                        params['queries'],
+                      ),
+        ),
+      },
+    );
     connectors['testTools'] = _i1.EndpointConnector(
       name: 'testTools',
       endpoint: endpoints['testTools']!,
@@ -50,7 +84,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _i3.TestToolsEndpoint)
                   .createSimpleData(
                     session,
                     params['data'],
@@ -63,7 +97,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _i3.TestToolsEndpoint)
                   .getAllSimpleData(session),
         ),
         'createSimpleDatasInsideTransactions': _i1.MethodConnector(
@@ -79,7 +113,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _i3.TestToolsEndpoint)
                   .createSimpleDatasInsideTransactions(
                     session,
                     params['data'],
@@ -98,7 +132,7 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _i3.TestToolsEndpoint)
                   .createSimpleDataAndThrowInsideTransaction(
                     session,
                     params['data'],
@@ -111,21 +145,21 @@ class Endpoints extends _i1.EndpointDispatch {
               (
                 _i1.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _i3.TestToolsEndpoint)
                   .createSimpleDatasInParallelTransactionCalls(session),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i3.Endpoints()
+    modules['serverpod_auth_core'] = _i4.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i4.Endpoints()
+    modules['serverpod_auth_idp'] = _i5.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_test_shared_module'] = _i5.Endpoints()
+    modules['serverpod_test_shared_module'] = _i6.Endpoints()
       ..initializeEndpoints(server);
   }
 
   @override
   _i1.FutureCallDispatch? get futureCalls {
-    return _i6.FutureCalls();
+    return _i7.FutureCalls();
   }
 }

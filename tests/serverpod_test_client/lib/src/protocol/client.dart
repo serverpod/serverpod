@@ -2572,6 +2572,24 @@ class EndpointAuthenticatedMethodStreaming extends _i1.EndpointRef {
       );
 }
 
+/// Raw SQL access for the migration e2e suites. Test fixture only.
+/// {@category Endpoint}
+class EndpointMigrationDatabase extends _i1.EndpointRef {
+  EndpointMigrationDatabase(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'migrationDatabase';
+
+  /// Executes [queries] in order in a single transaction and returns the rows
+  /// of the last query encoded as JSON.
+  _i2.Future<String> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<String>(
+        'migrationDatabase',
+        'runQueries',
+        {'queries': queries},
+      );
+}
+
 /// Plain extension of the existing endpoint
 /// {@category Endpoint}
 class EndpointModuleEndpointSubclass extends _i1.EndpointRef {
@@ -4469,6 +4487,7 @@ class Client extends _i1.ServerpodClientShared {
     methodSignaturePermutations = EndpointMethodSignaturePermutations(this);
     methodStreaming = EndpointMethodStreaming(this);
     authenticatedMethodStreaming = EndpointAuthenticatedMethodStreaming(this);
+    migrationDatabase = EndpointMigrationDatabase(this);
     moduleEndpointSubclass = EndpointModuleEndpointSubclass(this);
     moduleEndpointAdaptation = EndpointModuleEndpointAdaptation(this);
     moduleEndpointReduction = EndpointModuleEndpointReduction(this);
@@ -4574,6 +4593,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointAuthenticatedMethodStreaming authenticatedMethodStreaming;
 
+  late final EndpointMigrationDatabase migrationDatabase;
+
   late final EndpointModuleEndpointSubclass moduleEndpointSubclass;
 
   late final EndpointModuleEndpointAdaptation moduleEndpointAdaptation;
@@ -4669,6 +4690,7 @@ class Client extends _i1.ServerpodClientShared {
     'methodSignaturePermutations': methodSignaturePermutations,
     'methodStreaming': methodStreaming,
     'authenticatedMethodStreaming': authenticatedMethodStreaming,
+    'migrationDatabase': migrationDatabase,
     'moduleEndpointSubclass': moduleEndpointSubclass,
     'moduleEndpointAdaptation': moduleEndpointAdaptation,
     'moduleEndpointReduction': moduleEndpointReduction,

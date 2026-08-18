@@ -1,2 +1,4 @@
+migrationDatabase:
+  - runQueries:
 greeting:
   - hello:

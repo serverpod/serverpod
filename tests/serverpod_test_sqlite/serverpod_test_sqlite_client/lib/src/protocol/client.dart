@@ -25,6 +25,24 @@ import 'protocol.dart' as _i8;
 import 'package:serverpod_database/serverpod_database.dart' as _i9;
 import 'package:serverpod_test_sqlite_client/migrations/migration_registry.dart';
 
+/// Raw SQL access for the migration e2e suites. Test fixture only.
+/// {@category Endpoint}
+class EndpointMigrationDatabase extends _i1.EndpointRef {
+  EndpointMigrationDatabase(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'migrationDatabase';
+
+  /// Executes [queries] in order in a single transaction and returns the rows
+  /// of the last query encoded as JSON.
+  _i2.Future<String> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<String>(
+        'migrationDatabase',
+        'runQueries',
+        {'queries': queries},
+      );
+}
+
 /// {@category Endpoint}
 class EndpointTestTools extends _i1.EndpointRef {
   EndpointTestTools(_i1.EndpointCaller caller) : super(caller);
@@ -109,9 +127,12 @@ class Client extends _i1.ServerpodClientShared {
              disconnectStreamsOnLostInternetConnection,
          httpClientOverride: httpClientOverride,
        ) {
+    migrationDatabase = EndpointMigrationDatabase(this);
     testTools = EndpointTestTools(this);
     modules = Modules(this);
   }
+
+  late final EndpointMigrationDatabase migrationDatabase;
 
   late final EndpointTestTools testTools;
 
@@ -119,6 +140,7 @@ class Client extends _i1.ServerpodClientShared {
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
+    'migrationDatabase': migrationDatabase,
     'testTools': testTools,
   };
 

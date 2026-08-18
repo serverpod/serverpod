@@ -300,6 +300,8 @@ methodStreaming:
 authenticatedMethodStreaming:
   - simpleStream:
   - intEchoStream:
+migrationDatabase:
+  - runQueries:
 moduleEndpointSubclass:
   - echoString:
   - echoRecord:
