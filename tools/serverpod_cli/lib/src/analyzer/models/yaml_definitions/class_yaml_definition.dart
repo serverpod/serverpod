@@ -145,10 +145,7 @@ class ClassYamlDefinition {
                   ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
-                    valueRestriction: BooleanValueRestriction().validate,
-                    mutuallyExclusiveKeys: {
-                      Keyword.field,
-                    },
+                    valueRestriction: restrictions.validateOptionalValue,
                   ),
                   ValidateNode(
                     Keyword.name,
