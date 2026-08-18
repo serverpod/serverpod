@@ -13,6 +13,8 @@ Serverpod is an open-source backend framework for Flutter written in Dart. A Ser
 
 There can also be packages that share code, e.g., `my_project_shared`.
 
+The server starts in `lib/server.dart`, which creates the generated `Serverpod` class from `src/generated/serverpod.dart` (pre-wired with the project's protocol and endpoints) with `final pod = Serverpod(args);` and then `await pod.start();`.
+
 The server exposes endpoint classes that the client calls via generated RPC client. Add methods to the endpoints, the code generation will recreate them on the client side. Models are defined in YAML and generate Dart classes for both server and client.
 
 Serverpod projects use a Postgres database for persistence and include an ORM, caching, real-time streaming (using Dart streams), file uploads, scheduling (called future calls), logging, and a built-in web server (Relic). Each of these features have specific skills that you can use to get more details.
