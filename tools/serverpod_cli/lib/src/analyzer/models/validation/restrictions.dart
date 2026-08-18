@@ -596,7 +596,13 @@ class Restrictions {
     var field = definition.findField(parentNodeName);
     if (field == null) return [];
 
-    var foreignKeyFieldName = _relationForeignKeyFieldName(field.relation);
+    // Only the side holding the foreign key can be validated. On the other
+    // side the referenced field is the local primary key, which says nothing
+    // about the nullability of the relation.
+    var relation = field.relation;
+    if (relation == null || !relation.isForeignKeyOrigin) return [];
+
+    var foreignKeyFieldName = _relationForeignKeyFieldName(relation);
     if (foreignKeyFieldName == null) return [];
 
     var foreignKeyField = definition.findField(foreignKeyFieldName);

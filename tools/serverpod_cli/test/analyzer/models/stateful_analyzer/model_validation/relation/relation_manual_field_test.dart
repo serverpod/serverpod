@@ -664,6 +664,53 @@ fields:
   );
 
   group(
+    'Given an optional named one-to-one relation on the side that does not hold '
+    'the foreign key of a class with a non-nullable id, '
+    'when the models are analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withFileName('company').withYaml(
+            '''
+        class: Company
+        table: company
+        fields:
+          id: UuidValue, defaultModel=random
+          member: Member?, relation(name=company_member, optional)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('member').withYaml(
+            '''
+        class: Member
+        table: member
+        fields:
+          id: UuidValue, defaultModel=random
+          company: Company?, relation(name=company_member, field=companyId)
+        indexes:
+          member_company_idx:
+            fields: companyId
+            unique: true
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
+    },
+  );
+
+  group(
     'Given two classes with a named relation with a defined field name that holds the relation',
     () {
       var models = [
