@@ -153,15 +153,19 @@ withServerpod('Given shared stream', (sessionBuilder, endpoints) {
 | ------ | ------- | ----------- |
 | `applyMigrations` | `true` | Apply pending migrations on start |
 | `configOverride` | - | Override loaded server config for tests |
+| `databaseInterceptor` | `null` | Replace the default database for each session |
 | `enableSessionLogging` | `false` | Enable session logging |
 | `experimentalFeatures` | `null` | Experimental features to enable for the tests |
 | `rollbackDatabase` | `afterEach` | When to rollback (afterEach, afterAll, disabled) |
 | `runMode` | `ServerpodRunMode.test` | Run mode (test, development, etc.) |
 | `runtimeParametersBuilder` | `null` | Override global runtime parameters for the tests |
+| `serverDirectory` | `Directory.current` | Directory that `config/` and `migrations/` are resolved against |
 | `serverpodLoggingMode` | `normal` | Logging mode |
-| `serverpodStartTimeout` | `30s` | Timeout for Serverpod startup |
+| `serverpodStartTimeout` | `120s` | Timeout for Serverpod startup |
 | `testGroupTagsOverride` | `['integration']` | Tags for the test group |
 | `testServerOutputMode` | `normal` | Control stdout/stderr from the test server |
+
+Pass `serverDirectory` when the test isolate's working directory is not the server package root (for example when running tests from a workspace parent directory), so config and migrations are still found.
 
 ## Running tests
 
