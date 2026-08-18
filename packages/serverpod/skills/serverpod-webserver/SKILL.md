@@ -31,7 +31,7 @@ Routes matched in registration order. `Session` provides DB, logging, and auth a
 
 ## HTTP methods
 
-Restrict which methods a route accepts:
+Restrict which methods a route accepts (defaults to GET only) and branch on `request.method`:
 
 ```dart
 class UserRoute extends Route {
@@ -40,18 +40,11 @@ class UserRoute extends Route {
   @override
   Future<Result> handleCall(Session session, Request request) async {
     if (request.method == Method.post) {
-      final body = await request.readAsString();
-      final data = jsonDecode(body);
-      return Response.created(
-        body: Body.fromString(jsonEncode({'status': 'created', 'data': data}),
-          mimeType: MimeType.json),
-      );
+      final data = jsonDecode(await request.readAsString());
+      // ...
+      return Response(201);
     }
-    final users = await User.db.find(session);
-    return Response.ok(
-      body: Body.fromString(jsonEncode(users.map((u) => u.toJson()).toList()),
-        mimeType: MimeType.json),
-    );
+    // ...
   }
 }
 ```
@@ -72,16 +65,12 @@ class UserRoute extends Route {
   @override
   Future<Result> handleCall(Session session, Request request) async {
     int userId = request.pathParameters.get(_idParam);
-    final user = await User.db.findById(session, userId);
-    if (user == null) return Response.notFound();
-    return Response.ok(
-      body: Body.fromString(jsonEncode(user.toJson()), mimeType: MimeType.json),
-    );
+    // ...
   }
 }
 ```
 
-Raw access: `request.pathParameters.raw[#id]`.
+Raw access: `request.pathParameters.raw[#id]`. Typed query params work the same way with `IntQueryParam('page')` and `request.queryParameters.get(...)`, with raw access through `request.queryParameters.raw['query']`.
 
 ## Wildcards
 
@@ -91,21 +80,6 @@ pod.webServer.addRoute(route, '/item/**');  // Tail-match: /item/foo/bar/baz
 ```
 
 `**` only at end of path. Access matched path via `request.remainingPath`.
-
-## Query parameters
-
-```dart
-class SearchRoute extends Route {
-  static const _pageParam = IntQueryParam('page');
-
-  @override
-  Future<Result> handleCall(Session session, Request request) async {
-    int page = request.queryParameters.get(_pageParam);
-    String? query = request.queryParameters.raw['query'];
-    // ...
-  }
-}
-```
 
 ## Headers and body
 
@@ -123,18 +97,7 @@ Body can only be read once.
 
 ## Response types
 
-```dart
-Response.ok(body: Body.fromString('Success'));
-Response.created(body: Body.fromString('Created'));
-Response.noContent();
-Response.badRequest(body: Body.fromString('Invalid'));
-Response.unauthorized(body: Body.fromString('Not authenticated'));
-Response.forbidden(body: Body.fromString('Forbidden'));
-Response.notFound(body: Body.fromString('Not found'));
-Response.internalServerError(body: Body.fromString('Error'));
-```
-
-Use `Body.fromString(content, mimeType: MimeType.json)` for JSON responses.
+`Response` has named constructors for the common statuses: `ok`, `noContent`, `notModified`, `movedPermanently`, `found`, `seeOther`, `badRequest`, `unauthorized`, `forbidden`, `notFound`, `notImplemented`, `internalServerError`. Any other status uses the unnamed constructor, e.g. `Response(201)`. Bodies are built with `Body.fromString(content, mimeType: MimeType.json)`, `Body.fromData(...)` or `Body.fromDataStream(...)`.
 
 ## Fallback route
 
@@ -157,6 +120,8 @@ class UserCrudModule extends Route {
       ..get('/:id', _get);
   }
 
+  static const _idParam = IntPathParam(#id);
+
   Future<Result> _list(Request request) async {
     final session = await request.session;
     final users = await User.db.find(session);
@@ -166,11 +131,9 @@ class UserCrudModule extends Route {
     );
   }
 
-  static const _idParam = IntPathParam(#id);
   Future<Result> _get(Request request) async {
     final session = await request.session;
-    int userId = request.pathParameters.get(_idParam);
-    final user = await User.db.findById(session, userId);
+    final user = await User.db.findById(session, request.pathParameters.get(_idParam));
     if (user == null) return Response.notFound();
     return Response.ok(
       body: Body.fromString(jsonEncode(user.toJson()), mimeType: MimeType.json),
@@ -192,11 +155,8 @@ Middleware wraps handlers. Register with path prefix:
 Handler apiKeyMiddleware(Handler next) {
   return (Request request) async {
     final apiKey = request.headers['X-API-Key']?.firstOrNull;
-    if (apiKey == null) {
+    if (apiKey == null || !await isValidApiKey(apiKey)) {
       return Response.unauthorized(body: Body.fromString('API key required'));
-    }
-    if (!await isValidApiKey(apiKey)) {
-      return Response.forbidden(body: Body.fromString('Invalid API key'));
     }
     return await next(request);
   };
@@ -243,50 +203,6 @@ final tenant = request.tenant;
 
 Data cleaned up automatically when request completes. Host-specific middleware: `pod.webServer.addMiddleware(mw, '/api', host: 'api.example.com')`.
 
-## Static files
-
-```dart
-pod.webServer.addRoute(
-  StaticRoute.directory(Directory('web/static')),
-  '/static/',
-);
-```
-
-Serves all files under the prefix. Automatic content-type detection, ETag, and Last-Modified.
-
-### Cache control
-
-```dart
-pod.webServer.addRoute(
-  StaticRoute.directory(Directory('web/static'),
-    cacheControlFactory: StaticRoute.publicImmutable(maxAge: const Duration(minutes: 5))),
-  '/static/',
-);
-```
-
-Built-in factories: `StaticRoute.public(maxAge:)`, `StaticRoute.publicImmutable(maxAge:)`, `StaticRoute.privateNoCache()`, `StaticRoute.noStore()`.
-
-### Cache-busting
-
-```dart
-final cacheBustingConfig = CacheBustingConfig(
-  mountPrefix: '/static',
-  fileSystemRoot: Directory('web/static'),
-  separator: '@',
-);
-
-pod.webServer.addRoute(
-  StaticRoute.directory(Directory('web/static'),
-    cacheBustingConfig: cacheBustingConfig,
-    cacheControlFactory: StaticRoute.publicImmutable(maxAge: const Duration(minutes: 5))),
-  '/static/',
-);
-
-// Generate versioned URL:
-final url = await cacheBustingConfig.assetPath('/static/logo.png');
-// → /static/logo@<hash>.png
-```
-
 ## Virtual host routing
 
 Restrict routes/middleware to a specific `Host` header:
@@ -299,113 +215,10 @@ pod.webServer.addRoute(HealthRoute(), '/health');  // All hosts (default)
 
 All route types support `host`: `Route`, `StaticRoute`, `SpaRoute`, `FlutterRoute`.
 
-## Server-side HTML
+## Serving files and web apps
 
-Extend `WidgetRoute` and return a `WebWidget` from `build()`. Returning `null` responds with 404:
+These are covered in reference files in this skill directory. Read the one that matches the task:
 
-```dart
-class MyRoute extends WidgetRoute {
-  @override
-  Future<WebWidget?> build(Session session, Request request) async {
-    final users = await User.db.find(session);
-    if (users.isEmpty) return null; // 404
-    return UserListWidget(users: users);
-  }
-}
-
-class UserListWidget extends TemplateWidget {
-  UserListWidget({required List<User> users}) : super(name: 'user_list') {
-    values = {'users': users.map((u) => u.userName).join(', ')};
-  }
-}
-
-pod.webServer.addRoute(MyRoute(), '/users');
-```
-
-Place Mustache templates in `web/templates/` (e.g. `web/templates/user_list.html`):
-
-```html
-<html><body><h1>Users</h1><p>{{users}}</p></body></html>
-```
-
-Other widgets: `ListWidget(children: [...])` concatenates widgets; `JsonWidget({'key': 'value'})` renders JSON; `RedirectWidget('/new/location')` redirects. All of them extend `WebWidget`.
-
-Pass a `cacheBustingConfig` to the `WidgetRoute` to resolve `{{{@/path/to/asset}}}` patterns in the template to cache-busted paths:
-
-```dart
-class MyRoute extends WidgetRoute {
-  MyRoute() : super(cacheBustingConfig: cacheBustingConfig);
-  // ...
-}
-```
-
-```html
-<img src="{{{@/static/logo.png}}}">  <!-- → /static/logo@<hash>.png -->
-```
-
-## Single-page apps (SPA)
-
-`SpaRoute` serves a directory with fallback to `index.html` for client-side routing:
-
-```dart
-pod.webServer.addRoute(
-  SpaRoute(
-    Directory('web/app'),
-    fallback: File('web/app/index.html'),
-    cacheControlFactory: StaticRoute.publicImmutable(maxAge: const Duration(minutes: 5)),
-  ),
-  '/app',  // Or omit for root
-);
-```
-
-Serves static files when they exist; falls back to index.html for unmatched paths so client-side routing (React Router, Vue Router, etc.) works.
-
-For custom fallback logic, use `FallbackMiddleware` directly:
-
-```dart
-pod.webServer.addMiddleware(
-  FallbackMiddleware(
-    fallback: StaticRoute.file(File('web/app/index.html')),
-    on: (response) => response.statusCode == 404,
-  ),
-);
-pod.webServer.addRoute(StaticRoute.directory(Directory('web/app')), '/');
-```
-
-## Flutter web apps
-
-`FlutterRoute` serves Flutter web builds with SPA fallback and smart caching:
-
-```dart
-final appDir = Directory('web/app');
-if (appDir.existsSync()) {
-  pod.webServer.addRoute(
-    FlutterRoute(
-      appDir,
-      enableWasmHeaders: false,
-    ),
-  );
-}
-```
-
-Build: `cd my_project_flutter && flutter build web --base-href /app/ -o ../my_project_server/web/app`.
-
-Generated projects set `enableWasmHeaders: false` on the `FlutterRoute` because
-the default build is non-WASM. To opt into Flutter WASM, add `--wasm` to the
-build command and remove the `enableWasmHeaders: false` line.
-
-### Default caching
-
-- **All files**: served with `private, no-cache` by default, so browsers revalidate with ETags and avoid stale Flutter assets after rebuilds.
-
-Override with `cacheControlFactory` when using cache-busted assets.
-
-### WASM headers
-
-`FlutterRoute` automatically adds `Cross-Origin-Opener-Policy: same-origin` and `Cross-Origin-Embedder-Policy: require-corp` for `SharedArrayBuffer` support. If using `SpaRoute` instead, add `WasmHeadersMiddleware` manually:
-
-```dart
-pod.webServer.addMiddleware(const WasmHeadersMiddleware());
-```
-
-Both `SpaRoute` and `FlutterRoute` support `host`, cache-busting, and sub-path mounting.
+- [`references/static-files.md`](references/static-files.md) — `StaticRoute`, cache control, cache-busted asset URLs.
+- [`references/spa-and-flutter-web.md`](references/spa-and-flutter-web.md) — `SpaRoute`, `FlutterRoute`, SPA fallbacks, WASM headers.
+- [`references/server-rendered-html.md`](references/server-rendered-html.md) — `WidgetRoute`, Mustache templates, the widget types.
