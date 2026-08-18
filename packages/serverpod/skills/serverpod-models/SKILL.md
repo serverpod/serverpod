@@ -42,6 +42,44 @@ fields:
   foundedDate: DateTime?
 ```
 
+## Default values
+
+- `default=` sets the value on both the Dart model and the database column.
+- `defaultModel=` sets it only on the Dart model (used when the object is created in Dart).
+- `defaultPersist=` sets it only on the database column (requires the field to be nullable in Dart, unless it is the `id`).
+
+```yaml
+class: Post
+table: post
+fields:
+  title: String, default='Untitled'
+  createdAt: DateTime, default=now
+  publishedAt: DateTime?, defaultPersist=now
+  externalId: UuidValue, default=random_v7
+  views: int, default=0
+  isPublic: bool, default=false
+```
+
+`now` (DateTime), `random`/`random_v7` (UuidValue), and quoted literals are supported. A field with a default does not need to be passed to the constructor.
+
+## Custom id types
+
+The `id` field is `int` with a `serial` default unless declared explicitly. Declare it to opt into UUID primary keys:
+
+```yaml
+class: Company
+table: company
+fields:
+  id: UuidValue?, defaultPersist=random_v7  # database generates the id
+  name: String
+```
+
+- `defaultPersist=random_v7` — the database generates the id on insert (`random` for v4).
+- `defaultModel=random_v7` — Dart generates the id when the object is created, so it is known before insert.
+- `id: int?, defaultPersist=serial` — the explicit form of the default behavior.
+
+Relations to a model with a custom id type use the same type on the foreign key field.
+
 ## Scope
 
 - **Server-only class:** `serverOnly: true`
@@ -106,6 +144,7 @@ indexes:
   company_name_idx:
     fields: name
     unique: true
+    nulls_distinct: false  # PostgreSQL only, treats NULLs as equal
 ```
 
 Field-level `unique` auto-generates a btree unique index:
@@ -138,6 +177,8 @@ fields:
 - Bidirectional: `relation(name=company_employees)` on both sides
 
 **Many-to-many:** Use a join table model with two relation fields.
+
+**Referential actions:** `relation(onDelete=Cascade)` and `relation(onUpdate=...)` map to the SQL foreign key actions (`Cascade`, `SetNull`, `SetDefault`, `Restrict`, `NoAction`). `SetNull` requires a nullable foreign key (a nullable object relation field, or `relation(optional)`). Add `deferrable` (or `deferred` for initially deferred) to check the constraint at the end of the transaction instead of per statement.
 
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
 
