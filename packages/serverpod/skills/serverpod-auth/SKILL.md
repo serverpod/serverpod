@@ -5,11 +5,52 @@ description: Serverpod Authentication — Signing in users, verify if they are a
 
 # Serverpod Authentication
 
-Serverpod has authentication built in. Pre-configured with email. Most social sign-ins supported (Apple, Google, GitHub, Facebook, Microsoft, etc) but need configuration.
+Serverpod has authentication built in. Projects created with `serverpod create` have it enabled by default (unless `--no-auth`, or the project has no database), pre-configured with email. Most social sign-ins are supported (Apple, Google, GitHub, Facebook, Microsoft, etc) but need configuration.
+
+## Packages
+
+Projects created without auth need these dependencies added, pinned to the Serverpod version: `serverpod_auth_idp_server` (server), `serverpod_auth_idp_client` (client), `serverpod_auth_idp_flutter` (Flutter app). Then `dart pub get`, generate, and run the migration workflow — the module adds tables. See [Serverpod Modules](../serverpod-modules/SKILL.md).
+
+In server application code, import `package:serverpod_auth_idp_server/core.dart` and `package:serverpod_auth_idp_server/providers/<provider>.dart`. Do NOT import `package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart` — that library exists for the code generator.
+
+## Server setup
+
+Authentication services are initialized in `server.dart`, before `pod.start()`:
+
+```dart
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
+
+pod.initializeAuthServices(
+  tokenManagerBuilders: [
+    // Issues and validates the authentication keys. Reads its secrets from
+    // `config/passwords.yaml` (jwtHmacSha512PrivateKey, jwtRefreshTokenHashPepper).
+    JwtConfigFromPasswords(),
+  ],
+  identityProviderBuilders: [
+    // Email/password. Verification codes are logged to the console in
+    // development and sent through Serverpod Cloud in staging/production.
+    // Use `EmailIdpConfigFromPasswords` for a custom email provider.
+    ServerpodCloudEmailIdpConfig(appDisplayName: 'My project'),
+  ],
+);
+```
 
 ## Flutter app
 
-Use `SignInWidget`. It provides its own Material surface, so it also renders
+The client must be created with a `FlutterAuthSessionManager`, otherwise `client.auth` throws a `StateError`. Call `initialize()` once at startup to restore a previously signed-in user:
+
+```dart
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+
+client = Client(serverUrl)
+  ..connectivityMonitor = FlutterConnectivityMonitor()
+  ..authSessionManager = FlutterAuthSessionManager();
+
+client.auth.initialize();
+```
+
+Then use `SignInWidget`. It provides its own Material surface, so it also renders
 correctly when mixed with non-Material design systems. Simplified example:
 
 ```dart
@@ -85,7 +126,7 @@ class MyEndpoint extends Endpoint {
 ### User id and info
 
 ```dart
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
 
 // Get authenticated user's ID.
 final userIdUuidValue = session.authenticated?.authUserId;
