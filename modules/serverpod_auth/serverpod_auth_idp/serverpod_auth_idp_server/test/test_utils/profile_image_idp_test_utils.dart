@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:test/test.dart';
 
 class TestTokenIssuer implements TokenIssuer {
@@ -92,21 +93,80 @@ String createSignedIdToken({
   );
 }
 
-http.Client googleJwksClient() {
-  return MockClient((final request) async {
-    expect(request.method, 'GET');
-    expect(
-      request.url,
-      Uri.parse('https://www.googleapis.com/oauth2/v3/certs'),
-    );
+/// Serves Google's JWKS endpoint, so that ID tokens signed with
+/// [testRsaPrivateKey] verify.
+///
+/// When [userInfo] is given it is also served from `/oauth2/v3/userinfo`, as
+/// Google would for a valid access token. Leaving it null asserts that the
+/// endpoint is never consulted, which is what a login without an access token
+/// must do.
+///
+/// [tokenResponse] is the body returned by Google's token endpoint for the web
+/// PKCE code exchange; leaving it null asserts that the endpoint is never
+/// called. [onUserInfoRequested] is invoked with the bearer token userinfo was
+/// called with, if at all.
+http.Client googleApisClient({
+  final Map<String, dynamic>? userInfo,
+  final Map<String, dynamic>? tokenResponse,
+  final void Function(String? bearer)? onUserInfoRequested,
+}) {
+  final certsUrl = Uri.https('www.googleapis.com', '/oauth2/v3/certs');
+  final userInfoUrl = Uri.https('www.googleapis.com', '/oauth2/v3/userinfo');
+  final tokenUrl = Uri.https('oauth2.googleapis.com', '/token');
 
-    return http.Response(
-      jsonEncode({
-        'keys': [testRsaPublicJwk],
-      }),
-      200,
-    );
+  return MockClient((final request) async {
+    if (request.url == certsUrl) {
+      expect(request.method, 'GET');
+
+      return http.Response(
+        jsonEncode({
+          'keys': [testRsaPublicJwk],
+        }),
+        200,
+      );
+    }
+
+    if (request.url == tokenUrl) {
+      if (tokenResponse == null) {
+        fail('The token endpoint was called by a flow that does not use it.');
+      }
+
+      return http.Response(jsonEncode(tokenResponse), 200);
+    }
+
+    if (request.url == userInfoUrl) {
+      expect(request.method, 'GET');
+
+      onUserInfoRequested?.call(
+        request.headers['Authorization']?.replaceFirst('Bearer ', ''),
+      );
+
+      if (userInfo == null) {
+        fail('userinfo was requested even though no access token was sent.');
+      }
+
+      return http.Response(jsonEncode(userInfo), 200);
+    }
+
+    fail('Unexpected request to ${request.url}');
   });
+}
+
+/// The Google client ID this application is registered under in tests.
+///
+/// ID tokens are only accepted when their audience is pinned to it.
+const googleTestClientId = 'test-client-id';
+
+GoogleIdpConfig googleIdpConfig() {
+  return GoogleIdpConfig(
+    clientSecret: GoogleClientSecret.fromJson({
+      'web': {
+        'client_id': googleTestClientId,
+        'client_secret': 'secret',
+        'redirect_uris': ['uri'],
+      },
+    }),
+  );
 }
 
 http.Client firebaseCertificatesClient() {

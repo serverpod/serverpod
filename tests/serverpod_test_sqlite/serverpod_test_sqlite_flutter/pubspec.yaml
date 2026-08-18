@@ -21,7 +21,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_database: 4.0.0-beta.2
+  serverpod_database: 4.0.0-beta.3
 
 dependency_overrides:
   serverpod_auth_core_client:

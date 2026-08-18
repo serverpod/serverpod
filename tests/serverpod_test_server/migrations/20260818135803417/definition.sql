@@ -438,6 +438,30 @@ CREATE TABLE "datetime_default_persist" (
 );
 
 --
+-- Class DeferrableRelationInitiallyDeferred as table deferrable_relation_initially_deferred
+--
+CREATE TABLE "deferrable_relation_initially_deferred" (
+    "id" bigserial PRIMARY KEY,
+    "parentId" bigint NOT NULL
+);
+
+--
+-- Class DeferrableRelationInitiallyImmediate as table deferrable_relation_initially_immediate
+--
+CREATE TABLE "deferrable_relation_initially_immediate" (
+    "id" bigserial PRIMARY KEY,
+    "parentId" bigint NOT NULL
+);
+
+--
+-- Class DeferrableRelationParent as table deferrable_relation_parent
+--
+CREATE TABLE "deferrable_relation_parent" (
+    "id" bigserial PRIMARY KEY,
+    "name" text NOT NULL
+);
+
+--
 -- Class Department as table department
 --
 CREATE TABLE "department" (
@@ -2104,6 +2128,28 @@ ALTER TABLE ONLY "contractor"
     ON UPDATE NO ACTION;
 
 --
+-- Foreign relations for "deferrable_relation_initially_deferred" table
+--
+ALTER TABLE ONLY "deferrable_relation_initially_deferred"
+    ADD CONSTRAINT "deferrable_relation_initially_deferred_fk_0"
+    FOREIGN KEY("parentId")
+    REFERENCES "deferrable_relation_parent"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    DEFERRABLE INITIALLY DEFERRED;
+
+--
+-- Foreign relations for "deferrable_relation_initially_immediate" table
+--
+ALTER TABLE ONLY "deferrable_relation_initially_immediate"
+    ADD CONSTRAINT "deferrable_relation_initially_immediate_fk_0"
+    FOREIGN KEY("parentId")
+    REFERENCES "deferrable_relation_parent"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    DEFERRABLE INITIALLY IMMEDIATE;
+
+--
 -- Foreign relations for "employee" table
 --
 ALTER TABLE ONLY "employee"
@@ -2458,9 +2504,9 @@ ALTER TABLE ONLY "serverpod_query_log"
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260814133355261', now())
+    VALUES ('serverpod_test', '20260818135803417', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260814133355261', "timestamp" = now();
+    DO UPDATE SET "version" = '20260818135803417', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

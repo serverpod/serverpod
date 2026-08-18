@@ -130,6 +130,19 @@ class ClassYamlDefinition {
                     ).validate,
                   ),
                   ValidateNode(
+                    Keyword.deferrable,
+                    keyRestriction: restrictions.validateDatabaseActionKey,
+                    valueRestriction: BooleanValueRestriction().validate,
+                  ),
+                  ValidateNode(
+                    Keyword.deferred,
+                    keyRestriction: restrictions.validateDatabaseActionKey,
+                    valueRestriction: BooleanValueRestriction().validate,
+                    mutuallyExclusiveKeys: {
+                      Keyword.deferrable,
+                    },
+                  ),
+                  ValidateNode(
                     Keyword.optional,
                     keyRestriction: restrictions.validateOptionalKey,
                     valueRestriction: restrictions.validateOptionalValue,

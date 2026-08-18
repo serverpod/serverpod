@@ -254,7 +254,23 @@ extension SqliteForeignKeyDefinitionSqlGeneration on ForeignKeyDefinition {
       out += ' ON UPDATE ${onUpdate!.toSqlAction()}';
     }
 
+    var deferrableClause = deferrable?.toSqliteClause();
+    if (deferrableClause != null) {
+      out += ' $deferrableClause';
+    }
+
     return out;
+  }
+}
+
+extension on DeferrableConstraint {
+  String toSqliteClause() {
+    switch (this) {
+      case DeferrableConstraint.initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case DeferrableConstraint.initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
   }
 }
 

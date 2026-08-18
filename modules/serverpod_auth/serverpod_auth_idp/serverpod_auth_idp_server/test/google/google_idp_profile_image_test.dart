@@ -28,7 +28,7 @@ void main() {
           ),
         );
         googleIdp = GoogleIdp(
-          _googleIdpConfig(),
+          googleIdpConfig(),
           tokenIssuer: const TestTokenIssuer(),
           userProfiles: userProfiles,
         );
@@ -82,7 +82,7 @@ void main() {
               idToken: idToken,
               accessToken: null,
             ),
-            googleJwksClient,
+            googleApisClient,
           );
 
           final imagesAfterSignIn = await UserProfileImage.db.find(
@@ -96,18 +96,6 @@ void main() {
   );
 }
 
-GoogleIdpConfig _googleIdpConfig() {
-  return GoogleIdpConfig(
-    clientSecret: GoogleClientSecret.fromJson({
-      'web': {
-        'client_id': _googleClientId,
-        'client_secret': 'secret',
-        'redirect_uris': ['uri'],
-      },
-    }),
-  );
-}
-
 String _createGoogleIdToken({
   required final String googleUserIdentifier,
   required final String profileImageUrl,
@@ -115,7 +103,7 @@ String _createGoogleIdToken({
   return createSignedIdToken(
     subject: googleUserIdentifier,
     issuer: 'https://accounts.google.com',
-    audience: _googleClientId,
+    audience: googleTestClientId,
     claims: {
       'email': 'test@example.com',
       'given_name': 'Google',
@@ -125,5 +113,3 @@ String _createGoogleIdToken({
     },
   );
 }
-
-const _googleClientId = 'test-client-id';

@@ -25,6 +25,7 @@ abstract class ForeignKeyDefinition
     this.onUpdate,
     this.onDelete,
     this.matchType,
+    this.deferrable,
   });
 
   factory ForeignKeyDefinition({
@@ -36,6 +37,7 @@ abstract class ForeignKeyDefinition
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
     _i2.ForeignKeyMatchType? matchType,
+    _i2.DeferrableConstraint? deferrable,
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
@@ -66,6 +68,11 @@ abstract class ForeignKeyDefinition
           : _i2.ForeignKeyMatchType.fromJson(
               (jsonSerialization['matchType'] as int),
             ),
+      deferrable: jsonSerialization['deferrable'] == null
+          ? null
+          : _i2.DeferrableConstraint.fromJson(
+              (jsonSerialization['deferrable'] as String),
+            ),
     );
   }
 
@@ -93,6 +100,10 @@ abstract class ForeignKeyDefinition
   /// The match type of the foreign key
   _i2.ForeignKeyMatchType? matchType;
 
+  /// Whether the constraint is deferrable and when it is checked by default.
+  /// Null means the constraint is not deferrable.
+  _i2.DeferrableConstraint? deferrable;
+
   /// Returns a shallow copy of this [ForeignKeyDefinition]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -105,6 +116,7 @@ abstract class ForeignKeyDefinition
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
     _i2.ForeignKeyMatchType? matchType,
+    _i2.DeferrableConstraint? deferrable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -118,6 +130,7 @@ abstract class ForeignKeyDefinition
       if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
       if (onDelete != null) 'onDelete': onDelete?.toJson(),
       if (matchType != null) 'matchType': matchType?.toJson(),
+      if (deferrable != null) 'deferrable': deferrable?.toJson(),
     };
   }
 
@@ -133,6 +146,7 @@ abstract class ForeignKeyDefinition
       if (onUpdate != null) 'onUpdate': onUpdate?.toJson(),
       if (onDelete != null) 'onDelete': onDelete?.toJson(),
       if (matchType != null) 'matchType': matchType?.toJson(),
+      if (deferrable != null) 'deferrable': deferrable?.toJson(),
     };
   }
 
@@ -154,6 +168,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     _i2.ForeignKeyAction? onUpdate,
     _i2.ForeignKeyAction? onDelete,
     _i2.ForeignKeyMatchType? matchType,
+    _i2.DeferrableConstraint? deferrable,
   }) : super._(
          constraintName: constraintName,
          columns: columns,
@@ -163,6 +178,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
          onUpdate: onUpdate,
          onDelete: onDelete,
          matchType: matchType,
+         deferrable: deferrable,
        );
 
   /// Returns a shallow copy of this [ForeignKeyDefinition]
@@ -178,6 +194,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     Object? onUpdate = _Undefined,
     Object? onDelete = _Undefined,
     Object? matchType = _Undefined,
+    Object? deferrable = _Undefined,
   }) {
     return ForeignKeyDefinition(
       constraintName: constraintName ?? this.constraintName,
@@ -191,6 +208,9 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
       matchType: matchType is _i2.ForeignKeyMatchType?
           ? matchType
           : this.matchType,
+      deferrable: deferrable is _i2.DeferrableConstraint?
+          ? deferrable
+          : this.deferrable,
     );
   }
 }

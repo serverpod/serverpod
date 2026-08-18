@@ -3,67 +3,57 @@ BEGIN;
 --
 -- ACTION CREATE TABLE
 --
-CREATE TABLE "generated_relation_company" (
+CREATE TABLE "deferrable_relation_initially_deferred" (
+    "id" bigserial PRIMARY KEY,
+    "parentId" bigint NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "deferrable_relation_initially_immediate" (
+    "id" bigserial PRIMARY KEY,
+    "parentId" bigint NOT NULL
+);
+
+--
+-- ACTION CREATE TABLE
+--
+CREATE TABLE "deferrable_relation_parent" (
     "id" bigserial PRIMARY KEY,
     "name" text NOT NULL
 );
 
 --
--- ACTION CREATE TABLE
+-- ACTION CREATE FOREIGN KEY
 --
-CREATE TABLE "generated_relation_employee" (
-    "id" bigserial PRIMARY KEY,
-    "name" text NOT NULL,
-    "customCompanyId" bigint NOT NULL,
-    "customPreviousCompanyId" bigint
-);
-
---
--- ACTION CREATE TABLE
---
-CREATE TABLE "generated_relation_office" (
-    "id" bigserial PRIMARY KEY,
-    "address" text NOT NULL,
-    "customCompanyId" bigint NOT NULL
-);
-
--- Indexes
-CREATE UNIQUE INDEX "generated_relation_office_company_unique_idx" ON "generated_relation_office" USING btree ("customCompanyId");
+ALTER TABLE ONLY "deferrable_relation_initially_deferred"
+    ADD CONSTRAINT "deferrable_relation_initially_deferred_fk_0"
+    FOREIGN KEY("parentId")
+    REFERENCES "deferrable_relation_parent"("id")
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    DEFERRABLE INITIALLY DEFERRED;
 
 --
 -- ACTION CREATE FOREIGN KEY
 --
-ALTER TABLE ONLY "generated_relation_employee"
-    ADD CONSTRAINT "generated_relation_employee_fk_0"
-    FOREIGN KEY("customCompanyId")
-    REFERENCES "generated_relation_company"("id")
+ALTER TABLE ONLY "deferrable_relation_initially_immediate"
+    ADD CONSTRAINT "deferrable_relation_initially_immediate_fk_0"
+    FOREIGN KEY("parentId")
+    REFERENCES "deferrable_relation_parent"("id")
     ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-ALTER TABLE ONLY "generated_relation_employee"
-    ADD CONSTRAINT "generated_relation_employee_fk_1"
-    FOREIGN KEY("customPreviousCompanyId")
-    REFERENCES "generated_relation_company"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
-
---
--- ACTION CREATE FOREIGN KEY
---
-ALTER TABLE ONLY "generated_relation_office"
-    ADD CONSTRAINT "generated_relation_office_fk_0"
-    FOREIGN KEY("customCompanyId")
-    REFERENCES "generated_relation_company"("id")
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION;
+    ON UPDATE NO ACTION
+    DEFERRABLE INITIALLY IMMEDIATE;
 
 
 --
 -- MIGRATION VERSION FOR serverpod_test
 --
 INSERT INTO "serverpod_migrations" ("module", "version", "timestamp")
-    VALUES ('serverpod_test', '20260814133355261', now())
+    VALUES ('serverpod_test', '20260817165943249', now())
     ON CONFLICT ("module")
-    DO UPDATE SET "version" = '20260814133355261', "timestamp" = now();
+    DO UPDATE SET "version" = '20260817165943249', "timestamp" = now();
 
 --
 -- MIGRATION VERSION FOR serverpod

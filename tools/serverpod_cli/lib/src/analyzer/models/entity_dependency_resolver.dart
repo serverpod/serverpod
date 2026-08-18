@@ -325,6 +325,7 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     _injectForeignRelationField(
@@ -399,6 +400,7 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(

@@ -898,6 +898,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       final connection = await _sqliteConnection;
       return await connection.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
+        if (settings.deferConstraints) {
+          await transaction._execute('PRAGMA defer_foreign_keys = ON');
+        }
         final result = await transactionFunction(transaction);
         if (transaction._isCancelled) {
           throw _TransactionCancelledException(result);

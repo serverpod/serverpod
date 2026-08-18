@@ -1,3 +1,7 @@
+## 1.4.0
+
+- feat: Hooks into the device selection for VS Code debugger launch when no device is set on the config file.
+
 ## 1.3.0
 
 - feat: Adds support for Enum properties on models.
