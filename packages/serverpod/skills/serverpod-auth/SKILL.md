@@ -53,55 +53,19 @@ client.auth.initialize();
 ```
 
 Then use `SignInWidget`. It provides its own Material surface, so it also renders
-correctly when mixed with non-Material design systems. Simplified example:
+correctly when mixed with non-Material design systems:
 
 ```dart
-import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
-
-class _SignInScreenState extends State<SignInScreen> {
-  bool _isSignedIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    client.auth.authInfoListenable.addListener(_updateSignedInState);
-    _isSignedIn = client.auth.isAuthenticated;
-  }
-
-  @override
-  void dispose() {
-    client.auth.authInfoListenable.removeListener(_updateSignedInState);
-    super.dispose();
-  }
-
-  void _updateSignedInState() {
-    setState(() {
-      _isSignedIn = client.auth.isAuthenticated;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _isSignedIn
-        ? widget.child
-        : Center(
-            child: SignInWidget(
-              client: client,
-              onAuthenticated: () {
-                _showSnackBar(message: 'User authenticated.');
-              },
-              onError: (error) {
-                _showSnackBar(message: 'Authentication failed: $error');
-              },
-            ),
-          );
-  }
-}
+SignInWidget(
+  client: client,
+  onAuthenticated: () => _showSnackBar(message: 'User authenticated.'),
+  onError: (error) => _showSnackBar(message: 'Authentication failed: $error'),
+)
 ```
 
-**Check signed-in state**: `_isSignedIn = client.auth.isAuthenticated;`
-**Sign out**: `client.auth.signOutAllDevices()` or `client.auth.signOutDevice()`
-**Get user profile (email, full name, etc)**: `final userProfile = await client.modules.serverpod_auth_core.userProfileInfo.get()`
+- **Signed-in state**: `client.auth.isAuthenticated`. Rebuild on changes by listening to `client.auth.authInfoListenable` (a `ValueListenable<AuthSuccess?>`, so `ValueListenableBuilder` works too), and remove the listener in `dispose`.
+- **Sign out**: `client.auth.signOutAllDevices()` or `client.auth.signOutDevice()`.
+- **User profile (email, full name, etc)**: `await client.modules.serverpod_auth_core.userProfileInfo.get()`.
 
 ## Server-side
 
@@ -153,63 +117,9 @@ final authUser = await authUsers.get(
 );
 ```
 
-### Attaching additional info to a user
+### More
 
-Create a model:
-
-```yaml
-class: MyDomainData
-table: my_domain_data
-fields:
-  ### The [AuthUser] this profile belongs to
-  authUser: module:serverpod_auth_core:AuthUser?, relation(onDelete=Cascade)
-  additionalInfo: String
-
-indexes:
-  auth_user_id_unique_idx:
-    fields: authUserId
-    unique: true
-```
-
-Find the info:
-
-```dart
-final authUserId = session.authenticated?.authUserId;
-final additionalInfo = await MyDomainData.db.findFirstRow(
-    session,
-    where: (t) => t.authUserId.equals(authUserId!),
-);
-```
-
-### Managing scopes
-
-```dart
-import 'package:serverpod_auth_idp_server/core.dart';
-
-// Update a user's scope.
-await AuthServices.instance.authUsers.update(
-  session,
-  authUserId: authUserId,
-  scopes: {Scope.admin},
-);
-
-// Use custom scope.
-class CustomScope extends Scope {
-  const CustomScope(String name) : super(name);
-
-  static const userRead = CustomScope('userRead');
-  static const userWrite = CustomScope('userWrite');
-}
-```
-
-### Enable editing user profile (from the client)
-
-```dart
-import 'package:serverpod/serverpod.dart';
-import 'package:serverpod_auth_idp_server/core.dart';
-
-class UserProfileEditEndpoint extends UserProfileEditBaseEndpoint {}
-```
+- [`references/user-management.md`](references/user-management.md) — attaching your own data to a user, editing scopes, letting the client edit its profile.
 
 ### Social sign-ins
 
