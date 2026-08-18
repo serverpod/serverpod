@@ -13,9 +13,12 @@ environment:
 
 dependencies:
   serverpod_client: 4.0.0-beta.3
+  serverpod_service_client: 4.0.0-beta.3
 
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client

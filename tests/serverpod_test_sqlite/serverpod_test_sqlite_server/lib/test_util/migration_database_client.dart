@@ -2,15 +2,16 @@ import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_sqlite_client/serverpod_test_sqlite_client.dart';
 
-late final Client _client = _createClient();
+final _client = Client('http://localhost:8080/');
 
-Client _createClient() {
+/// Runs [queries] on the live test server through the opt-in
+/// [InsightsDatabaseTestEndpoint](../src/endpoints/insights_database.dart).
+///
+/// A getter so that merely referencing `runQueries` (e.g. passing it to
+/// [MigrationTestUtils.migrationTestCleanup]) configures the utils for the
+/// sqlite module before any dialect-specific SQL is built.
+Future<BulkQueryResult> Function(List<String> queries) get runQueries {
   MigrationTestUtils.setModuleName('serverpod_test_sqlite');
   MigrationTestUtils.setDatabaseDialect(DatabaseDialect.sqlite);
-  return Client('http://localhost:8080/');
+  return (queries) => _client.insightsDatabaseTest.runQueries(queries);
 }
-
-/// Runs [queries] on the live test server through the migration database
-/// endpoint; returns the rows of the last query encoded as JSON.
-Future<String> runQueries(List<String> queries) =>
-    _client.migrationDatabase.runQueries(queries);

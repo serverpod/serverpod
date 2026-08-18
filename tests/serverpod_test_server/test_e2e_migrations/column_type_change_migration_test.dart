@@ -207,9 +207,9 @@ void main() {
           // Verify data preserved after json → jsonb
           var rowsAfterJsonb =
               jsonDecode(
-                    await runQueries([
+                    (await runQueries([
                       'SELECT data FROM migrated_table ORDER BY id;',
-                    ]),
+                    ])).data,
                   )
                   as List;
           expect(rowsAfterJsonb, hasLength(3));
@@ -229,9 +229,9 @@ void main() {
           // Verify data preserved after jsonb → json
           var rowsAfterJson =
               jsonDecode(
-                    await runQueries([
+                    (await runQueries([
                       'SELECT data FROM migrated_table ORDER BY id;',
-                    ]),
+                    ])).data,
                   )
                   as List;
           expect(rowsAfterJson, hasLength(3));

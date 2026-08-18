@@ -15,10 +15,11 @@ import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import 'dart:io' as _i3;
 import 'dart:async' as _i4;
+import 'package:serverpod/protocol.dart' as _i5;
 import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
-    as _i5;
-import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
     as _i6;
+import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
+    as _i7;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -149,7 +150,7 @@ void withServerpod(
 class TestEndpoints {
   late final futureCalls = _FutureCalls();
 
-  late final _MigrationDatabaseEndpoint migrationDatabase;
+  late final _InsightsDatabaseTestEndpoint insightsDatabaseTest;
 
   late final _TestToolsEndpoint testTools;
 }
@@ -161,7 +162,7 @@ class _InternalTestEndpoints extends TestEndpoints
     _i2.SerializationManager serializationManager,
     _i2.EndpointDispatch endpoints,
   ) {
-    migrationDatabase = _MigrationDatabaseEndpoint(
+    insightsDatabaseTest = _InsightsDatabaseTestEndpoint(
       endpoints,
       serializationManager,
     );
@@ -176,8 +177,8 @@ class _FutureCalls {
   late final insertSimpleDataCall = _InsertSimpleDataCallFutureCall();
 }
 
-class _MigrationDatabaseEndpoint {
-  _MigrationDatabaseEndpoint(
+class _InsightsDatabaseTestEndpoint {
+  _InsightsDatabaseTestEndpoint(
     this._endpointDispatch,
     this._serializationManager,
   );
@@ -186,20 +187,90 @@ class _MigrationDatabaseEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<String> runQueries(
+  _i4.Future<int> executeSql(
+    _i1.TestSessionBuilder sessionBuilder,
+    String sql,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'insightsDatabaseTest',
+            method: 'executeSql',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'insightsDatabaseTest',
+          methodName: 'executeSql',
+          parameters: _i1.testObjectToJson({'sql': sql}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<int>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i5.BulkData> fetchDatabaseBulkData(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String table,
+    required int startingId,
+    required int limit,
+    _i5.Filter? filter,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'insightsDatabaseTest',
+            method: 'fetchDatabaseBulkData',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'insightsDatabaseTest',
+          methodName: 'fetchDatabaseBulkData',
+          parameters: _i1.testObjectToJson({
+            'table': table,
+            'startingId': startingId,
+            'limit': limit,
+            'filter': filter,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<_i5.BulkData>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i5.BulkQueryResult> runQueries(
     _i1.TestSessionBuilder sessionBuilder,
     List<String> queries,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
           (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
-            endpoint: 'migrationDatabase',
+            endpoint: 'insightsDatabaseTest',
             method: 'runQueries',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
-          endpointPath: 'migrationDatabase',
+          endpointPath: 'insightsDatabaseTest',
           methodName: 'runQueries',
           parameters: _i1.testObjectToJson({'queries': queries}),
           serializationManager: _serializationManager,
@@ -209,7 +280,38 @@ class _MigrationDatabaseEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<String>);
+                as _i4.Future<_i5.BulkQueryResult>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<int> getDatabaseRowCount(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String table,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'insightsDatabaseTest',
+            method: 'getDatabaseRowCount',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'insightsDatabaseTest',
+          methodName: 'getDatabaseRowCount',
+          parameters: _i1.testObjectToJson({'table': table}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _i4.Future<int>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -259,7 +361,7 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<_i5.SimpleData>> getAllSimpleData(
+  _i4.Future<List<_i6.SimpleData>> getAllSimpleData(
     _i1.TestSessionBuilder sessionBuilder,
   ) async {
     return _i1.callAwaitableFunctionAndHandleExceptions(() async {
@@ -281,7 +383,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i5.SimpleData>>);
+                as _i4.Future<List<_i6.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -385,12 +487,12 @@ class _TestToolsEndpoint {
 class _InsertSimpleDataCallFutureCall {
   Future<void> persistIncrementedSimpleData(
     _i1.TestSessionBuilder sessionBuilder,
-    _i5.SimpleData data,
+    _i6.SimpleData data,
   ) async {
     var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
         .internalBuild();
     try {
-      await _i6.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
+      await _i7.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
           .invoke(
             _localUniqueSession,
             data,

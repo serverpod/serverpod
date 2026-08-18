@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_client/serverpod_test_client.dart';
 
 import 'config.dart';
@@ -12,7 +13,7 @@ final _serverUrl =
 
 final _client = Client(_serverUrl);
 
-/// Runs [queries] on the live test server through the migration database
-/// endpoint; returns the rows of the last query encoded as JSON.
-Future<String> runQueries(List<String> queries) =>
-    _client.migrationDatabase.runQueries(queries);
+/// Runs [queries] on the live test server through the opt-in
+/// [InsightsDatabaseTestEndpoint](../src/endpoints/insights_database.dart).
+Future<BulkQueryResult> runQueries(List<String> queries) =>
+    _client.insightsDatabaseTest.runQueries(queries);

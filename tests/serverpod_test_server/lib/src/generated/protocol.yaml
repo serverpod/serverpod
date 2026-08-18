@@ -161,6 +161,11 @@ fieldScopes:
 testFutureCalls:
   - makeFutureCall:
   - makeFutureCallThatThrows:
+insightsDatabaseTest:
+  - executeSql:
+  - fetchDatabaseBulkData:
+  - runQueries:
+  - getDatabaseRowCount:
 listParameters:
   - returnIntList:
   - returnIntListList:
@@ -300,8 +305,6 @@ methodStreaming:
 authenticatedMethodStreaming:
   - simpleStream:
   - intEchoStream:
-migrationDatabase:
-  - runQueries:
 moduleEndpointSubclass:
   - echoString:
   - echoRecord:

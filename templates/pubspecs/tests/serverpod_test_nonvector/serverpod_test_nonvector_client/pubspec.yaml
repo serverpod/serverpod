@@ -12,9 +12,12 @@ environment:
 
 dependencies:
   serverpod_client: SERVERPOD_VERSION
+  serverpod_service_client: SERVERPOD_VERSION
 
 dependency_overrides:
   serverpod_client:
     path: ../../../packages/serverpod_client
   serverpod_serialization:
     path: ../../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../../packages/serverpod_service_client

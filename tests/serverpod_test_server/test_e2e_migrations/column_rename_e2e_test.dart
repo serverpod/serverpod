@@ -142,9 +142,9 @@ fields:
 
         var columnValues =
             jsonDecode(
-                  await runQueries([
+                  (await runQueries([
                     'SELECT "$newColumnName" FROM "$tableName" ORDER BY id;',
-                  ]),
+                  ])).data,
                 )
                 as List;
         expect(
