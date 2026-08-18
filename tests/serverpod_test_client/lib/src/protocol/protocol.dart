@@ -169,6 +169,11 @@ import 'models_with_relations/column_alias_collision/bleed_child.dart'
     as _iepu1h7u;
 import 'models_with_relations/column_alias_collision/bleed_root.dart'
     as _ipkncx5k;
+import 'models_with_relations/fk_relation/fk_relation_company.dart'
+    as _icno6wzp;
+import 'models_with_relations/fk_relation/fk_relation_employee.dart'
+    as _is64bt6d;
+import 'models_with_relations/fk_relation/fk_relation_office.dart' as _iu6o6gsh;
 import 'models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _ilvqc6dx;
 import 'models_with_relations/generated_relation_field/generated_relation_employee.dart'
@@ -395,6 +400,9 @@ export 'models_with_list_relations/organization.dart';
 export 'models_with_list_relations/person.dart';
 export 'models_with_relations/column_alias_collision/bleed_child.dart';
 export 'models_with_relations/column_alias_collision/bleed_root.dart';
+export 'models_with_relations/fk_relation/fk_relation_company.dart';
+export 'models_with_relations/fk_relation/fk_relation_employee.dart';
+export 'models_with_relations/fk_relation/fk_relation_office.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_company.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_employee.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_office.dart';
@@ -916,6 +924,15 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _ipkncx5k.BleedRoot) {
       return _ipkncx5k.BleedRoot.fromJson(data) as T;
+    }
+    if (t == _icno6wzp.FkRelationCompany) {
+      return _icno6wzp.FkRelationCompany.fromJson(data) as T;
+    }
+    if (t == _is64bt6d.FkRelationEmployee) {
+      return _is64bt6d.FkRelationEmployee.fromJson(data) as T;
+    }
+    if (t == _iu6o6gsh.FkRelationOffice) {
+      return _iu6o6gsh.FkRelationOffice.fromJson(data) as T;
     }
     if (t == _ilvqc6dx.GeneratedRelationCompany) {
       return _ilvqc6dx.GeneratedRelationCompany.fromJson(data) as T;
@@ -1780,6 +1797,18 @@ class Protocol extends _isc.SerializationManager {
     if (t == _isc.getType<_ipkncx5k.BleedRoot?>()) {
       return (data != null ? _ipkncx5k.BleedRoot.fromJson(data) : null) as T;
     }
+    if (t == _isc.getType<_icno6wzp.FkRelationCompany?>()) {
+      return (data != null ? _icno6wzp.FkRelationCompany.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_is64bt6d.FkRelationEmployee?>()) {
+      return (data != null ? _is64bt6d.FkRelationEmployee.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iu6o6gsh.FkRelationOffice?>()) {
+      return (data != null ? _iu6o6gsh.FkRelationOffice.fromJson(data) : null)
+          as T;
+    }
     if (t == _isc.getType<_ilvqc6dx.GeneratedRelationCompany?>()) {
       return (data != null
               ? _ilvqc6dx.GeneratedRelationCompany.fromJson(data)
@@ -2467,6 +2496,20 @@ class Protocol extends _isc.SerializationManager {
       return (data != null
               ? (data as List)
                     .map((e) => deserialize<_iffzpgud.Organization>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_is64bt6d.FkRelationEmployee>) {
+      return (data as List)
+              .map((e) => deserialize<_is64bt6d.FkRelationEmployee>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_is64bt6d.FkRelationEmployee>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_is64bt6d.FkRelationEmployee>(e))
                     .toList()
               : null)
           as T;
@@ -6477,6 +6520,9 @@ class Protocol extends _isc.SerializationManager {
       _i9x7ls0c.Person => 'Person',
       _iepu1h7u.BleedChild => 'BleedChild',
       _ipkncx5k.BleedRoot => 'BleedRoot',
+      _icno6wzp.FkRelationCompany => 'FkRelationCompany',
+      _is64bt6d.FkRelationEmployee => 'FkRelationEmployee',
+      _iu6o6gsh.FkRelationOffice => 'FkRelationOffice',
       _ilvqc6dx.GeneratedRelationCompany => 'GeneratedRelationCompany',
       _i3ralext.GeneratedRelationEmployee => 'GeneratedRelationEmployee',
       _isfv2yco.GeneratedRelationOffice => 'GeneratedRelationOffice',
@@ -6867,6 +6913,12 @@ class Protocol extends _isc.SerializationManager {
         return 'BleedChild';
       case _ipkncx5k.BleedRoot():
         return 'BleedRoot';
+      case _icno6wzp.FkRelationCompany():
+        return 'FkRelationCompany';
+      case _is64bt6d.FkRelationEmployee():
+        return 'FkRelationEmployee';
+      case _iu6o6gsh.FkRelationOffice():
+        return 'FkRelationOffice';
       case _ilvqc6dx.GeneratedRelationCompany():
         return 'GeneratedRelationCompany';
       case _i3ralext.GeneratedRelationEmployee():
@@ -7582,6 +7634,15 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'BleedRoot') {
       return deserialize<_ipkncx5k.BleedRoot>(data['data']);
+    }
+    if (dataClassName == 'FkRelationCompany') {
+      return deserialize<_icno6wzp.FkRelationCompany>(data['data']);
+    }
+    if (dataClassName == 'FkRelationEmployee') {
+      return deserialize<_is64bt6d.FkRelationEmployee>(data['data']);
+    }
+    if (dataClassName == 'FkRelationOffice') {
+      return deserialize<_iu6o6gsh.FkRelationOffice>(data['data']);
     }
     if (dataClassName == 'GeneratedRelationCompany') {
       return deserialize<_ilvqc6dx.GeneratedRelationCompany>(data['data']);
