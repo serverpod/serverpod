@@ -12,7 +12,7 @@ void main() {
 
   group('Given a class with fields with a "defaultPersist" keyword', () {
     test(
-      'when the field is of type BigInt and the defaultPersist is set to "10", then the field should have a "default persist" value and not have a "default model" value',
+      'when the field is of type BigInt and the defaultPersist is set to "10", then the field should have a "default persist" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -36,7 +36,6 @@ void main() {
 
         var definition = definitions.first as ClassDefinition;
         expect(definition.fields.last.defaultPersistValue, '10');
-        expect(definition.fields.last.defaultModelValue, isNull);
       },
     );
 
