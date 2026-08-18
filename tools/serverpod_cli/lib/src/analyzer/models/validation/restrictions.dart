@@ -1127,7 +1127,17 @@ class Restrictions {
     var relation = field.relation;
     if (relation is! ObjectRelationDefinition) return const [];
 
-    if (!AnalyzeChecker.isFieldDefined(content) &&
+    // A non-nullable foreign key that is hidden from the client can never be
+    // provided by a client-built object, which makes the model impossible to
+    // deserialize on the server. Declaring the foreign key field with a scope
+    // that reaches the client is what makes the non-optional relation usable,
+    // not the mere presence of the "field" property.
+    var foreignKeyField = classDefinition.findField(relation.fieldName);
+    var isForeignKeyVisibleToClient =
+        foreignKeyField != null &&
+        foreignKeyField.scope != ModelFieldScopeDefinition.serverOnly;
+
+    if (!isForeignKeyVisibleToClient &&
         !classDefinition.serverOnly &&
         field.scope == ModelFieldScopeDefinition.serverOnly &&
         !relation.nullableRelation) {
