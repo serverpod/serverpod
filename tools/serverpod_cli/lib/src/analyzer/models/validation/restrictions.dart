@@ -4,6 +4,7 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
@@ -575,6 +576,48 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateOptionalValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    if (!_isYamlTrue(content)) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    // Only the side holding the foreign key can be validated. On the other
+    // side the referenced field is the local primary key, which says nothing
+    // about the nullability of the relation.
+    var relation = field.relation;
+    if (relation == null || !relation.isForeignKeyOrigin) return [];
+
+    var foreignKeyFieldName = _relationForeignKeyFieldName(relation);
+    if (foreignKeyFieldName == null) return [];
+
+    var foreignKeyField = definition.findField(foreignKeyFieldName);
+    if (foreignKeyField != null && !foreignKeyField.type.nullable) {
+      return [
+        SourceSpanSeverityException(
+          'An optional relation requires the foreign key field "$foreignKeyFieldName" to be nullable.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateTableIndexName(
     String parentNodeName,
     String indexName,
@@ -1084,7 +1127,17 @@ class Restrictions {
     var relation = field.relation;
     if (relation is! ObjectRelationDefinition) return const [];
 
-    if (!AnalyzeChecker.isFieldDefined(content) &&
+    // A non-nullable foreign key that is hidden from the client can never be
+    // provided by a client-built object, which makes the model impossible to
+    // deserialize on the server. Declaring the foreign key field with a scope
+    // that reaches the client is what makes the non-optional relation usable,
+    // not the mere presence of the "field" property.
+    var foreignKeyField = classDefinition.findField(relation.fieldName);
+    var isForeignKeyVisibleToClient =
+        foreignKeyField != null &&
+        foreignKeyField.scope != ModelFieldScopeDefinition.serverOnly;
+
+    if (!isForeignKeyVisibleToClient &&
         !classDefinition.serverOnly &&
         field.scope == ModelFieldScopeDefinition.serverOnly &&
         !relation.nullableRelation) {
@@ -2927,5 +2980,22 @@ class Restrictions {
     return currentModel.fields
         .where((field) => field.jsonKey == jsonKey)
         .toList();
+  }
+
+  String? _relationForeignKeyFieldName(RelationDefinition? relation) {
+    return switch (relation) {
+      ObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvedObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvableObjectRelationDefinition(
+        :final objectRelationDefinition,
+      ) =>
+        objectRelationDefinition.fieldName,
+      _ => null,
+    };
+  }
+
+  bool _isYamlTrue(dynamic content) {
+    return content == true ||
+        (content is String && content.toLowerCase() == 'true');
   }
 }
