@@ -157,7 +157,7 @@ database: client
 | `client` | Generates tables only on the client, and a non-table model on the server package. |
 | `all` | Generates table models on both server and client. |
 
-For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database#client-side-database) skill.
+For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database) skill.
 
 ## Backward compatibility
 
