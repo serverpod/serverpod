@@ -412,6 +412,12 @@ class SerializableModelFieldDefinition {
   /// Whether this field should have a unique index auto-generated for it.
   bool get shouldCreateUniqueIndex => uniquePerFieldNames != null;
 
+  /// Whether this field is the primary key of the table it belongs to.
+  ///
+  /// This is resolved before validation runs, so it can be relied on when
+  /// validating relations.
+  final bool isPrimaryKey;
+
   /// Create a new [SerializableModelFieldDefinition].
   SerializableModelFieldDefinition({
     required this.name,
@@ -427,6 +433,7 @@ class SerializableModelFieldDefinition {
     String? columnNameOverride,
     String? jsonKeyOverride,
     this.uniquePerFieldNames,
+    this.isPrimaryKey = false,
   }) : _columnNameOverride = columnNameOverride,
        _jsonKeyOverride = jsonKeyOverride;
 
@@ -736,9 +743,13 @@ sealed class RelationDefinition {
 class UnresolvedListRelationDefinition extends RelationDefinition {
   final bool nullableRelation;
 
+  /// References the field in the current object that the foreign key points to.
+  final String referenceFieldName;
+
   UnresolvedListRelationDefinition({
     String? name,
     required this.nullableRelation,
+    this.referenceFieldName = defaultPrimaryKeyName,
   }) : super(name, false);
 }
 
@@ -851,6 +862,9 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// Only used for implicit relations, toggles if the relation id is nullable.
   final bool nullableRelation;
 
+  /// References the field in the parent table that the foreign key points to.
+  final String referenceFieldName;
+
   UnresolvedObjectRelationDefinition({
     String? name,
     required this.fieldName,
@@ -859,6 +873,7 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
     required bool isForeignKeyOrigin,
     this.deferrable,
     this.nullableRelation = false,
+    this.referenceFieldName = defaultPrimaryKeyName,
   }) : super(name, isForeignKeyOrigin);
 }
 

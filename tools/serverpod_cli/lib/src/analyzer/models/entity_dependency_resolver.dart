@@ -128,6 +128,7 @@ class ModelDependencyResolver {
         shouldPersist: true,
         documentation: maybeIdField?.documentation ?? defaultIdFieldDoc,
         isRequired: false, // ID fields are typically optional
+        isPrimaryKey: true,
       ),
     );
   }
@@ -258,6 +259,7 @@ class ModelDependencyResolver {
     SerializableModelFieldDefinition foreignField,
   ) {
     String? foreignFieldName;
+    String? referenceFieldName;
 
     SerializableModelFieldDefinition? foreignContainerField;
 
@@ -267,14 +269,16 @@ class ModelDependencyResolver {
     var foreignRelation = foreignField.relation;
     if (foreignRelation is UnresolvedObjectRelationDefinition) {
       foreignFieldName = foreignRelation.fieldName;
+      referenceFieldName = foreignRelation.referenceFieldName;
       foreignContainerField = foreignField;
     } else if (foreignRelation is ForeignRelationDefinition) {
       foreignFieldName = foreignField.name;
+      referenceFieldName = foreignRelation.foreignFieldName;
       foreignRelation.foreignContainerField = fieldDefinition;
       foreignContainerField = foreignRelation.containerField;
     }
 
-    if (foreignFieldName == null) return;
+    if (foreignFieldName == null || referenceFieldName == null) return;
 
     fieldDefinition.relation = ObjectRelationDefinition(
       name: relation.name,
@@ -282,7 +286,7 @@ class ModelDependencyResolver {
           ? classDefinition.idField.type
           : referenceClass.idField.type,
       parentTable: tableName,
-      fieldName: defaultPrimaryKeyName,
+      fieldName: referenceFieldName,
       foreignFieldName: foreignFieldName,
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: relation.isForeignKeyOrigin,
@@ -319,7 +323,7 @@ class ModelDependencyResolver {
       relation: ForeignRelationDefinition(
         name: relation.name,
         parentTable: tableName,
-        foreignFieldName: defaultPrimaryKeyName,
+        foreignFieldName: relation.referenceFieldName,
         containerField: fieldDefinition,
         foreignContainerField: foreignContainerField,
         onUpdate: relation.onUpdate,
@@ -342,7 +346,7 @@ class ModelDependencyResolver {
       parentTable: tableName,
       parentTableIdType: classDefinition.idField.type,
       fieldName: foreignRelationField.name,
-      foreignFieldName: defaultPrimaryKeyName,
+      foreignFieldName: relation.referenceFieldName,
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: true,
       nullableRelation: relation.nullableRelation,
@@ -382,7 +386,7 @@ class ModelDependencyResolver {
     field.relation = ForeignRelationDefinition(
       name: relation.name,
       parentTable: tableName,
-      foreignFieldName: defaultPrimaryKeyName,
+      foreignFieldName: relation.referenceFieldName,
       containerField: fieldDefinition,
       foreignContainerField: foreignContainerField,
       onUpdate: relation.onUpdate,
@@ -394,7 +398,7 @@ class ModelDependencyResolver {
       parentTable: tableName,
       parentTableIdType: classDefinition.idField.type,
       fieldName: relationFieldName,
-      foreignFieldName: defaultPrimaryKeyName,
+      foreignFieldName: relation.referenceFieldName,
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: true,
       nullableRelation: field.type.nullable,
@@ -485,7 +489,7 @@ class ModelDependencyResolver {
         relation: ForeignRelationDefinition(
           name: autoRelationName,
           parentTable: tableName,
-          foreignFieldName: defaultPrimaryKeyName,
+          foreignFieldName: relation.referenceFieldName,
           containerField: null, // Will never be set on implicit list relations.
           foreignContainerField: fieldDefinition,
         ),
@@ -499,7 +503,7 @@ class ModelDependencyResolver {
       fieldDefinition.relation = ListRelationDefinition(
         name: autoRelationName,
         foreignKeyOwnerIdType: classDefinition.idField.type,
-        fieldName: defaultPrimaryKeyName,
+        fieldName: relation.referenceFieldName,
         foreignFieldName: foreignFieldName,
         foreignContainerField:
             null, // Will never be set on implicit list relations.
@@ -521,14 +525,17 @@ class ModelDependencyResolver {
       var foreignField = foreignFields.first;
 
       String? foreignFieldName;
+      String? referenceFieldName;
 
       var foreignRelation = foreignField.relation;
       if (foreignRelation is ForeignRelationDefinition) {
         foreignFieldName = foreignField.name;
+        referenceFieldName = foreignRelation.foreignFieldName;
       } else if (foreignRelation is UnresolvedObjectRelationDefinition) {
         foreignFieldName =
             foreignRelation.fieldName ??
             _createImplicitForeignIdFieldName(foreignField.name);
+        referenceFieldName = foreignRelation.referenceFieldName;
       }
 
       SerializableModelFieldDefinition? foreignContainerField;
@@ -539,7 +546,7 @@ class ModelDependencyResolver {
         foreignContainerField = foreignField;
       }
 
-      if (foreignFieldName == null) return;
+      if (foreignFieldName == null || referenceFieldName == null) return;
 
       // The nullability of the relation is always determined by the foreign
       // key field, never by the object field. If the foreign class is not yet
@@ -559,7 +566,7 @@ class ModelDependencyResolver {
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
         foreignKeyOwnerIdType: referenceClass.idField.type,
-        fieldName: defaultPrimaryKeyName,
+        fieldName: referenceFieldName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
         nullableRelation: nullableRelation,

@@ -122,7 +122,9 @@ List<ForeignKeyDefinition> _createForeignKeys(
         columns: [field.columnName],
         referenceTable: relation.parentTable,
         referenceTableSchema: 'public',
-        referenceColumns: ['id'],
+        // TODO(#1147): Map the reference field to its column name. The two only
+        // coincide today because the primary key has no column name override.
+        referenceColumns: [relation.foreignFieldName],
         onDelete: relation.onDelete,
         onUpdate: relation.onUpdate,
         deferrable: relation.deferrable,
