@@ -1,6 +1,6 @@
 ---
 name: serverpod-webserver
-description: Serverpod web server (Relic) — REST APIs, webhooks, middleware, static files, server-rendered HTML, SPAs, Flutter web. Use when adding HTTP routes, serving web pages or web apps, intercepting requests, or working with the Relic web server.
+description: Serverpod web server (Relic) — REST APIs, webhooks, middleware, static files, server-rendered HTML, SPAs, Flutter web. Use when adding raw HTTP routes, serving web pages or web apps, or intercepting requests. Not for RPC endpoints called from the generated client — use serverpod-endpoints for those.
 ---
 
 # Serverpod Web Server (Relic)
