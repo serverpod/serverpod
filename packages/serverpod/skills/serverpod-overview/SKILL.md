@@ -21,12 +21,18 @@ Serverpod projects use a Postgres database for persistence and include an ORM, c
 
 Most likely the server is already running with hot reload and `serverpod generate --watch`. NEVER attempt to start the server. The user is running the server with the `serverpod start` command (as an agent do NOT run this command, instead prompt the user to run `serverpod start`, if neccessary). Hot reload will update the generated code and quickly restart the server when files are changed.
 
-ALWAYS use the MCP server instead of the command line. Use the MCP server to:
+ALWAYS use the MCP server instead of the command line. A running `serverpod start` exposes:
 
-- `create_migration` and `apply_migrations` for database (after you change data models).
+- `create_migration` and `apply_migrations` for the database (after you change data models).
+- `create_repair_migration` when the database has drifted out of sync with the migrations. It only writes the repair file; follow up with `apply_migrations`.
 - `tail_server_logs` to read logs from the server.
-- `tail_flutter_logs` to read raw stdout/stderr from the Flutter app.
-- `hot_restart` will reload the server and the Flutter app. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
+- `tail_flutter_logs` to read raw stdout/stderr from a Flutter app.
+- `hot_reload` to reload the server and the Flutter app while keeping in-memory state. Only needed with `--no-watch`, since `serverpod start` reloads on file changes.
+- `hot_restart` to restart the server and the Flutter app, dropping in-memory state. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
+- `spawn_flutter_app` to start a Flutter app declared under `serverpod: flutter_apps:` in the server `pubspec.yaml`.
+- `get_flutter_app_dtd` to get the Dart Tooling Daemon URI of a running Flutter app. Pass it to the `dart` MCP to drive the app.
+
+Tools that target a Flutter app take an optional `appId`, which is the map key under `serverpod: flutter_apps:`. It is required only when the project declares more than one app.
 
 ## Working on the project with no running instance
 
@@ -49,4 +55,4 @@ Checklist after doing changes:
 1. `dart analyze` (`dart` MCP server)
 2. `dart format` (`dart` MCP server)
 3. Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically). Will also hot restart Flutter app
-4. Check `serverpod` MCP `tails_logs` for any issues
+4. Check `serverpod` MCP `tail_server_logs` (and `tail_flutter_logs` for a Flutter app) for any issues
