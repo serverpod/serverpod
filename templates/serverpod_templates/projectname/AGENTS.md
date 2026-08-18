@@ -7,9 +7,11 @@ The user starts the server and Flutter app with `serverpod start`. NEVER start t
 ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 
 - `create_migration` and `apply_migrations` for database (after you change data models).
+- `create_repair_migration` if the database has drifted out of sync with the migrations.
 - `tail_server_logs` to read logs from the server.
 - `tail_flutter_logs` to read raw stdout/stderr from the Flutter app.
-- `hot_restart` will restart the server and the Flutter app. ALWAYS call it after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
+- `hot_reload` / `hot_restart` to reload or restart the server and the Flutter app. ALWAYS call `hot_restart` after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
+- `spawn_flutter_app` to start a Flutter app declared under `serverpod: flutter_apps:` in the server `pubspec.yaml`.
 - `get_flutter_app_dtd` (Dart tooling daemon) for connecting to the app through the `dart` MCP.
 
 Checklist after doing changes:
