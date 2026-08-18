@@ -182,28 +182,11 @@ fields:
 
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
 
-## Client-side database
-
-Models with the `table` keyword can also generate a client-side database with the `database` keyword:
-
-```yaml
-class: Company
-table: company
-database: client
-```
-
-| Value | Description |
-| ------- | ----------- |
-| `server` | Generates tables only on the server, and a non-table model on the client package (default). |
-| `client` | Generates tables only on the client, and a non-table model on the server package. |
-| `all` | Generates table models on both server and client. |
-
-For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database) skill.
-
 ## Backward compatibility
 
 To keep backward compatibility, do not change or remove fields in serialized classes used by clients. Add new fields only if nullable or with a default value, so older clients that don't send the field still work.
 
-## Custom serialization
+## Reference files
 
-To use serializable models not in YAML: implement `toJson()`, `fromJson`, `copyWith()`. Register in `config/generator.yaml` under `extraClasses` with full URI (e.g. `package:my_shared/my_shared.dart:ClassName`). Both server and client must depend on the package. Freezed classes with `fromJson` work the same way. Implement `ProtocolSerialization` with `toJsonForProtocol()` to omit fields when sending to client.
+- [`references/client-side-database.md`](references/client-side-database.md) — the `database:` keyword, generating tables on the client.
+- [`references/custom-serialization.md`](references/custom-serialization.md) — using hand-written or Freezed classes as model types via `extraClasses`.
