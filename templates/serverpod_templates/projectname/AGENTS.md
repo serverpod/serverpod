@@ -1,9 +1,9 @@
 <!-- {{#flutterApp}} -->
 # Flutter & Serverpod project
 
-This is a newly created Flutter (frontend) & Serverpod (backend) project. Always build a backend for the app using Serverpod.
+This project is a Flutter app (frontend) backed by a Serverpod server (backend). Always build the app's backend with Serverpod.
 <!-- {{#auth}} -->
-If it makes sense, add support for multiple users (using Serverpod's built in authentication, which is already set up in `lib/server.dart`).
+When the project needs users, use Serverpod's built in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
 The user starts the server and Flutter app with `serverpod start`. NEVER start the server yourself, instead STOP and ask the user to start it. When the server is running, interact with it through the `serverpod` MCP. `serverpod start` automatically handles hot reload for both the server and the app (as soon as files change).
@@ -11,9 +11,9 @@ The user starts the server and Flutter app with `serverpod start`. NEVER start t
 <!-- {{^flutterApp}} -->
 # Serverpod project
 
-This is a newly created Serverpod (backend) project.
+This project is a Serverpod server (backend).
 <!-- {{#auth}} -->
-If it makes sense, add support for multiple users (using Serverpod's built in authentication, which is already set up in `lib/server.dart`).
+When the project needs users, use Serverpod's built in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
 The user starts the server with `serverpod start`. NEVER start the server yourself, instead STOP and ask the user to start it. When the server is running, interact with it through the `serverpod` MCP. `serverpod start` automatically handles hot reload for the server (as soon as files change).
