@@ -30,16 +30,18 @@ Defaults: persistent logging is on when a database is configured, and it is only
 
 ## Configuration
 
-Under `sessionLogs:` in config YAML or env vars:
+Under `sessionLogs:` in the config YAML:
 
-| Setting | Env var | Default |
-| ------- | ------- | ------- |
-| persistentEnabled | `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` | true (with DB) |
-| consoleEnabled | `SERVERPOD_SESSION_CONSOLE_LOG_ENABLED` | true (no DB, or development) |
-| consoleLogFormat | `SERVERPOD_SESSION_CONSOLE_LOG_FORMAT` | text (development), json (other modes) |
-| cleanupInterval | `SERVERPOD_SESSION_LOG_CLEANUP_INTERVAL` | 24h |
-| retentionPeriod | `SERVERPOD_SESSION_LOG_RETENTION_PERIOD` | 90d |
-| retentionCount | `SERVERPOD_SESSION_LOG_RETENTION_COUNT` | 100000 |
+| Setting | Default |
+| ------- | ------- |
+| persistentEnabled | true (with DB) |
+| consoleEnabled | true (no DB, or development) |
+| consoleLogFormat | text (development), json (other modes) |
+| cleanupInterval | 24h |
+| retentionPeriod | 90d |
+| retentionCount | 100000 |
+
+Each setting also has a `SERVERPOD_SESSION_*` environment variable, listed in [Serverpod Configuration](../serverpod-configuration/SKILL.md).
 
 Set retention so log tables don't grow unbounded. Avoid logging sensitive data.
 
