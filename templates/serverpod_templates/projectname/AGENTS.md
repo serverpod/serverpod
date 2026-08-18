@@ -49,6 +49,14 @@ If the `serverpod` MCP cannot be reached, the server is not running: ask the use
 - `serverpod create-migration` after changing a model with a `table` (add `--force` for destructive changes). It only writes the migration; `serverpod start` applies pending migrations when it boots the server.
 <!-- {{/database}} -->
 
+<!-- {{#postgres}} -->
+Tests need no Docker. `config/test.yaml` sets `database.dataPath`, so Serverpod starts and manages the test database (an embedded PostgreSQL) itself, and the project's `docker-compose.yaml` is not used for it. Just run `dart test` in the server package.
+
+<!-- {{/postgres}} -->
+<!-- {{#sqlite}} -->
+Tests need no database server. `config/test.yaml` points at a SQLite file that Serverpod creates itself. Just run `dart test` in the server package.
+
+<!-- {{/sqlite}} -->
 Checklist after doing changes, in this order:
 
 - `dart analyze` (CLI)
@@ -58,7 +66,7 @@ Checklist after doing changes, in this order:
 <!-- {{/database}} -->
 <!-- {{#flutterApp}} -->
 - Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically). Will also hot restart Flutter app
-- Run tests, if applicable (`dart` CLI)
+- Run tests, if applicable (`dart test` in the server package)
 - Check `serverpod` MCP `tail_server_logs` and `tail_flutter_logs` for any issues.
 
 If the user asks you to test the app:
@@ -71,7 +79,7 @@ The app is launched from `projectname_flutter/lib/driver.dart`, which starts the
 <!-- {{/flutterApp}} -->
 <!-- {{^flutterApp}} -->
 - Do `serverpod` MCP `hot_restart` if required (hot reload is done automatically)
-- Run tests, if applicable (`dart` CLI)
+- Run tests, if applicable (`dart test` in the server package)
 - Check `serverpod` MCP `tail_server_logs` for any issues.
 <!-- {{/flutterApp}} -->
 

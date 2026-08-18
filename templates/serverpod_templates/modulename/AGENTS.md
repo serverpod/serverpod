@@ -14,7 +14,7 @@ Working loop, run from `modulename_server`:
 - `serverpod create-migration` after changing a model with a `table` (add `--force` for destructive changes). The migration ships with the module and is applied by the projects that depend on it.
 <!-- {{/database}} -->
 - `dart analyze` and `dart format`.
-- `dart test` to run the tests. They use `withServerpod` from the generated test tools together with `config/test.yaml`.
+- `dart test` to run the tests. They use `withServerpod` from the generated test tools together with `config/test.yaml`.<!-- {{#postgres}} --> No Docker is needed: `config/test.yaml` sets `database.dataPath`, so Serverpod starts and manages the test database (an embedded PostgreSQL) itself.<!-- {{/postgres}} --><!-- {{#sqlite}} --> No database server is needed: `config/test.yaml` points at a SQLite file.<!-- {{/sqlite}} -->
 
 <!-- {{#database}} -->
 Prefix table names with the module name (for example `modulename_orders`) so they cannot collide with the tables of the projects that use this module.
