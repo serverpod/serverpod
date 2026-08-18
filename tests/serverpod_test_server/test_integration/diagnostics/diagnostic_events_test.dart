@@ -67,7 +67,16 @@ void main() {
       final result = pod
           .start(runInGuardedZone: false)
           .timeout(const Duration(seconds: 5));
-      await expectLater(result, throwsA(isA<ExitException>()));
+      await expectLater(
+        result,
+        throwsA(
+          isA<ExitException>().having(
+            (e) => e.message,
+            'message',
+            'Failed to start the Serverpod servers. Aborting.',
+          ),
+        ),
+      );
       record = await exceptionHandler.events.first.timeout(timeout);
     });
 
@@ -89,6 +98,20 @@ void main() {
         contains('Failed to create server socket'),
       );
     });
+
+    test(
+      'then the diagnostic event message identifies the web server bind '
+      'failure without blaming another Serverpod',
+      () async {
+        expect(record.event.message, contains('web server'));
+        expect(record.event.message, contains('address already in use'));
+        expect(record.event.message, contains('config/production.yaml'));
+        expect(
+          record.event.message,
+          isNot(contains('another Serverpod already running')),
+        );
+      },
+    );
 
     test('then the diagnostic event space is framework', () async {
       expect(record.space, equals(OriginSpace.framework));
