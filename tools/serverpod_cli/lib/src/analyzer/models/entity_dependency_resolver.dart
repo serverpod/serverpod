@@ -297,10 +297,6 @@ class ModelDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
-    var relationFieldType = relation.nullableRelation
-        ? referenceDefinition.idField.type.asNullable
-        : referenceDefinition.idField.type.asNonNullable;
-
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
       referenceDefinition,
@@ -314,21 +310,21 @@ class ModelDependencyResolver {
       foreignContainerField = foreignFields.first;
     }
 
-    var foreignRelationField = SerializableModelFieldDefinition(
+    var foreignRelationField = _createForeignKeyField(
       name: _createImplicitForeignIdFieldName(fieldDefinition.name),
-      relation: ForeignRelationDefinition(
-        name: relation.name,
-        parentTable: tableName,
-        foreignFieldName: defaultPrimaryKeyName,
-        containerField: fieldDefinition,
-        foreignContainerField: foreignContainerField,
-        onUpdate: relation.onUpdate,
-        onDelete: relation.onDelete,
-      ),
-      shouldPersist: true,
-      scope: fieldDefinition.scope,
-      type: relationFieldType,
-      isRequired: false,
+      referenceDefinition: referenceDefinition,
+      containerField: fieldDefinition,
+      nullable: relation.nullableRelation,
+    );
+
+    foreignRelationField.relation = ForeignRelationDefinition(
+      name: relation.name,
+      parentTable: tableName,
+      foreignFieldName: defaultPrimaryKeyName,
+      containerField: fieldDefinition,
+      foreignContainerField: foreignContainerField,
+      onUpdate: relation.onUpdate,
+      onDelete: relation.onDelete,
     );
 
     _injectForeignRelationField(
@@ -358,16 +354,11 @@ class ModelDependencyResolver {
   ) {
     var field = classDefinition.findField(relationFieldName);
     if (field == null) {
-      var relationFieldType = relation.nullableRelation
-          ? referenceDefinition.idField.type.asNullable
-          : referenceDefinition.idField.type.asNonNullable;
-
-      field = SerializableModelFieldDefinition(
+      field = _createForeignKeyField(
         name: relationFieldName,
-        shouldPersist: true,
-        scope: fieldDefinition.scope,
-        type: relationFieldType,
-        isRequired: false,
+        referenceDefinition: referenceDefinition,
+        containerField: fieldDefinition,
+        nullable: relation.nullableRelation,
         documentation: [
           '/// The foreign key of the [${fieldDefinition.name}] relation.',
         ],
@@ -418,6 +409,29 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: true,
       nullableRelation: field.type.nullable,
+    );
+  }
+
+  /// Creates the field that holds the foreign key of an object relation, for
+  /// the cases where the field is not declared on the model. The field is
+  /// typed after the id of the referenced model and inherits the scope of the
+  /// object relation field it belongs to.
+  static SerializableModelFieldDefinition _createForeignKeyField({
+    required String name,
+    required ModelClassDefinition referenceDefinition,
+    required SerializableModelFieldDefinition containerField,
+    required bool nullable,
+    List<String>? documentation,
+  }) {
+    return SerializableModelFieldDefinition(
+      name: name,
+      type: nullable
+          ? referenceDefinition.idField.type.asNullable
+          : referenceDefinition.idField.type.asNonNullable,
+      scope: containerField.scope,
+      shouldPersist: true,
+      isRequired: false,
+      documentation: documentation,
     );
   }
 
