@@ -40,7 +40,16 @@ When the server is not running from `serverpod start` use the CLI commands to:
 
 ## Repair migrations
 
-If the database is in an inconsistent state, the repair migration can be used to bring it back to a consistent state.
+If the database is in an inconsistent state, a repair migration brings it back to a consistent state. It is created by reading the live schema and diffing it against a target migration version, so the database must be reachable.
+
+### With a running `serverpod start` and MCP server
+
+1. Create the repair migration using the `create_repair_migration` tool. Optional arguments: `version` (target migration version, defaults to the latest), `tag`, and `force` (required for destructive changes, or when no drift is detected).
+2. Apply it using the `apply_migrations` tool, which applies both pending and repair migrations without restarting the server.
+
+ALWAYS use the MCP server if it is available.
+
+### ONLY if MCP server fails to connect
 
 ```bash
 # Use the `--mode` flag to specify the run mode
@@ -50,4 +59,4 @@ If the database is in an inconsistent state, the repair migration can be used to
 serverpod create-repair-migration [--mode production] [--version <name>] [--force] [--tag <tag>]
 ```
 
-Apply the repair migration by restarting the server with `dart run bin/main.dart --apply-repair-migration`. This can only be done through the CLI. Ask the user to run this command.
+Apply the repair migration by restarting the server with `dart run bin/main.dart --apply-repair-migration`. Ask the user to run this command.
