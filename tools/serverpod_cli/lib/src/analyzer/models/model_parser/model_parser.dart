@@ -462,6 +462,7 @@ class ModelParser {
 
     var optionalRelation = _isOptionalRelation(node);
     var deferrable = _parseDeferrableRelation(node);
+    var isFkOrigin = _isFkRelation(node);
 
     if (typeResult.isListType) {
       return UnresolvedListRelationDefinition(
@@ -483,7 +484,7 @@ class ModelParser {
         fieldName: relationFieldName,
         onUpdate: onUpdate,
         onDelete: onDelete,
-        isForeignKeyOrigin: relationFieldName != null,
+        isForeignKeyOrigin: relationFieldName != null || isFkOrigin,
         deferrable: deferrable,
         nullableRelation: optionalRelation,
       );
@@ -644,6 +645,13 @@ class ModelParser {
     }
 
     return null;
+  }
+
+  static bool _isFkRelation(YamlMap node) {
+    var relation = node.nodes[Keyword.relation];
+    if (relation is! YamlMap) return false;
+
+    return _parseBooleanKey(relation, Keyword.fk);
   }
 
   static ModelFieldScopeDefinition _parseClassFieldScope(

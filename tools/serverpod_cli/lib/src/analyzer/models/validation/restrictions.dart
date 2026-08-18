@@ -824,6 +824,45 @@ class Restrictions {
     return [];
   }
 
+  List<SourceSpanSeverityException> validateRelationFkKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+
+    if (classDefinition is! ModelClassDefinition) return [];
+
+    var field = classDefinition.findField(parentNodeName);
+    if (field == null) return [];
+
+    if (field.type.isListType || field.type.isIdType) {
+      return [
+        SourceSpanSeverityException(
+          'The "fk" property can only be used on an object relation.',
+          span,
+        ),
+      ];
+    }
+
+    var foreignFields = parsedModels.findNamedForeignRelationFields(
+      classDefinition,
+      field,
+    );
+
+    if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
+      return [
+        SourceSpanSeverityException(
+          'Only one side of the relation is allowed to store the foreign key, '
+          'remove the "fk" property from one side.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
   bool _isForeignKeyDefinedOnAnySide(
     SerializableModelFieldDefinition field,
     List<SerializableModelFieldDefinition> foreignFields,
@@ -2324,7 +2363,9 @@ class Restrictions {
     if (!_isForeignKeyDefinedOnAnySide(field, foreignFields)) {
       return [
         SourceSpanSeverityException(
-          'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          'The relation is ambiguous, unable to resolve which side should hold '
+          'the relation. Use either the "fk" or "field=" properties to mark '
+          'the side that holds the foreign key. E.g. relation(name=$name, fk)',
           span,
         ),
       ];
