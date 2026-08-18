@@ -13,6 +13,8 @@ Projects created without auth need these dependencies added, pinned to the Serve
 
 In server application code, import `package:serverpod_auth_idp_server/core.dart` and `package:serverpod_auth_idp_server/providers/<provider>.dart`. Do NOT import `package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart` — that library exists for the code generator.
 
+Projects still on the legacy `serverpod_auth` module (the one with `UserInfo`) migrate through the experimental `serverpod_auth_bridge` module, which converts legacy sessions and imports legacy passwords. Do not mix the two modules in new code.
+
 ## Server setup
 
 Authentication services are initialized in `server.dart`, before `pod.start()`:
