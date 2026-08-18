@@ -100,7 +100,7 @@ extension SqliteTableDefinitionSqlGeneration on TableDefinition {
     var definitions = <String>[];
 
     for (var column in columns) {
-      definitions.add('    ${column.toSqlFragment()}');
+      definitions.add('    ${column.toSqlFragment(tableName: tableName)}');
     }
 
     // Inline Foreign Keys
@@ -141,7 +141,7 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
     return isPrimary || isUnique || columnDefault != null;
   }
 
-  String toSqlFragment() {
+  String toSqlFragment({String? tableName}) {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -174,6 +174,19 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
     var defaultSql = columnType.getSqliteColumnDefault(columnDefault);
 
     var defaultValue = defaultSql != null ? ' DEFAULT ($defaultSql)' : '';
+
+    if (columnDefault == defaultIntSerial && !isPrimary) {
+      final columnLocation = tableName == null
+          ? 'Column "$name"'
+          : 'Column "$name" on table "$tableName"';
+      throw MigrationUnsupportedByDialectException(
+        dialect: DatabaseDialect.sqlite.name,
+        reason:
+            '$columnLocation uses "$defaultIntSerial" as its default value, '
+            'but "${DatabaseDialect.sqlite.name}" only supports auto-increment '
+            'on the "$defaultPrimaryKeyName" column.',
+      );
+    }
 
     // The id column is special.
     if (isPrimary) {
@@ -241,7 +254,23 @@ extension SqliteForeignKeyDefinitionSqlGeneration on ForeignKeyDefinition {
       out += ' ON UPDATE ${onUpdate!.toSqlAction()}';
     }
 
+    var deferrableClause = deferrable?.toSqliteClause();
+    if (deferrableClause != null) {
+      out += ' $deferrableClause';
+    }
+
     return out;
+  }
+}
+
+extension on DeferrableConstraint {
+  String toSqliteClause() {
+    switch (this) {
+      case DeferrableConstraint.initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case DeferrableConstraint.initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
   }
 }
 
@@ -379,7 +408,9 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     for (var addColumn in addColumns) {
       // Note: SQLite ADD COLUMN cannot support PRIMARY KEY or UNIQUE constraints.
       // These will be handled by the table rebuild.
-      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toSqlFragment()};\n';
+      out +=
+          'ALTER TABLE "$name" '
+          'ADD COLUMN ${addColumn.toSqlFragment(tableName: name)};\n';
     }
 
     // Add indexes

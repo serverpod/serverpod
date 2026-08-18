@@ -423,7 +423,7 @@ jobs:
           fi
       - name: Save embedded PostgreSQL bundle cache
         if: steps.pgcache.outputs.cache-hit != 'true' && (matrix.os != 'windows-latest' || steps.build_win.outcome == 'success' || steps.download.outcome == 'success')
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: .pg-cache
           key: pg-bundle-${{ runner.os }}-${{ runner.arch }}-${{ steps.recipe.outputs.hash }}
@@ -573,7 +573,7 @@ jobs:
       # output in a deterministic log for the outer step to print.
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output
+        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:
@@ -621,7 +621,7 @@ jobs:
           working_directory: packages/serverpod_embedded_postgres
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output
+        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
       - name: Prep run script (Windows)
         # Postgres refuses to run with an Administrators-group token.
         if: matrix.os == 'windows-latest'
@@ -1056,7 +1056,7 @@ jobs:
           working_directory: tests/bootstrap_project
       - name: Install PsExec (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install pstools --no-progress -y --limit-output
+        run: choco install pstools --no-progress -y --limit-output --checksum "4F49964CC9CBAC2B5D87BDC8F9526012E9C4B243D8B7D0C0BB51F254A721CA2E"
       - name: Prep run script (Windows)
         if: matrix.os == 'windows-latest'
         env:

@@ -3,9 +3,37 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:super_string/super_string.dart';
 
 final Random _random = Random.secure();
+
+/// String utilities shared by Serverpod packages.
+extension StringManipulationExtension on String {
+  /// Returns the Unicode code points in this string as individual strings.
+  Iterable<String> get iterable => runes.map(String.fromCharCode);
+
+  /// Returns the first Unicode code point in this string.
+  String get first => String.fromCharCode(runes.first);
+
+  /// Uppercases the first character and lowercases the remaining characters.
+  String capitalize() =>
+      isNotEmpty ? '${first.toUpperCase()}${substring(1).toLowerCase()}' : this;
+
+  /// Counts non-overlapping occurrences of [value] in the selected substring.
+  int count(String value, [int start = 0, int? end]) =>
+      value.allMatches(substring(start, end)).length;
+
+  /// Converts space- or underscore-separated words to camel case.
+  String toCamelCase({bool isLowerCamelCase = false}) {
+    var parts = split(RegExp(r'[ _]'));
+    return [
+      isLowerCamelCase ? parts.first.toLowerCase() : parts.first.capitalize(),
+      ...parts.skip(1).map((part) => part.capitalize()),
+    ].join();
+  }
+
+  /// Whether this string contains at least one of the supplied [values].
+  bool containsAny(Iterable<String> values) => values.any(contains);
+}
 
 /// Generates a secure random string of the specified length.
 ///

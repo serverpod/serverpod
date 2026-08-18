@@ -26,7 +26,7 @@ dependencies:
   provider: ^6.1.5
   serverpod_auth_core_flutter: SERVERPOD_VERSION
   serverpod_auth_idp_client: SERVERPOD_VERSION
-  sign_in_with_apple: ^7.0.1
+  sign_in_with_apple: '>=7.0.1 <9.0.0'
 
 dev_dependencies:
   flutter_test:

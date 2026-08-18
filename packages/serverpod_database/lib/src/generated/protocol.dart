@@ -27,22 +27,23 @@ import 'database_migration_action_type.dart' as _i13;
 import 'database_migration_version.dart' as _i14;
 import 'database_migration_warning.dart' as _i15;
 import 'database_migration_warning_type.dart' as _i16;
-import 'enum_serialization.dart' as _i17;
-import 'filter/filter.dart' as _i18;
-import 'filter/filter_constraint.dart' as _i19;
-import 'filter/filter_constraint_type.dart' as _i20;
-import 'foreign_key_action.dart' as _i21;
-import 'foreign_key_definition.dart' as _i22;
-import 'foreign_key_match_type.dart' as _i23;
-import 'gin_operator_class.dart' as _i24;
-import 'index_definition.dart' as _i25;
-import 'index_element_definition.dart' as _i26;
-import 'index_element_definition_type.dart' as _i27;
-import 'migrations_apply_result.dart' as _i28;
-import 'table_definition.dart' as _i29;
-import 'table_migration.dart' as _i30;
-import 'vector_distance_function.dart' as _i31;
-import 'package:serverpod_database/serverpod_database.dart' as _i32;
+import 'deferrable_constraint.dart' as _i17;
+import 'enum_serialization.dart' as _i18;
+import 'filter/filter.dart' as _i19;
+import 'filter/filter_constraint.dart' as _i20;
+import 'filter/filter_constraint_type.dart' as _i21;
+import 'foreign_key_action.dart' as _i22;
+import 'foreign_key_definition.dart' as _i23;
+import 'foreign_key_match_type.dart' as _i24;
+import 'gin_operator_class.dart' as _i25;
+import 'index_definition.dart' as _i26;
+import 'index_element_definition.dart' as _i27;
+import 'index_element_definition_type.dart' as _i28;
+import 'migrations_apply_result.dart' as _i29;
+import 'table_definition.dart' as _i30;
+import 'table_migration.dart' as _i31;
+import 'vector_distance_function.dart' as _i32;
+import 'package:serverpod_database/serverpod_database.dart' as _i33;
 export 'bulk_data.dart';
 export 'bulk_data_exception.dart';
 export 'bulk_query_column_description.dart';
@@ -58,6 +59,7 @@ export 'database_migration_action_type.dart';
 export 'database_migration_version.dart';
 export 'database_migration_warning.dart';
 export 'database_migration_warning_type.dart';
+export 'deferrable_constraint.dart';
 export 'enum_serialization.dart';
 export 'filter/filter.dart';
 export 'filter/filter_constraint.dart';
@@ -164,50 +166,53 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i16.DatabaseMigrationWarningType) {
       return _i16.DatabaseMigrationWarningType.fromJson(data) as T;
     }
-    if (t == _i17.EnumSerialization) {
-      return _i17.EnumSerialization.fromJson(data) as T;
+    if (t == _i17.DeferrableConstraint) {
+      return _i17.DeferrableConstraint.fromJson(data) as T;
     }
-    if (t == _i18.Filter) {
-      return _i18.Filter.fromJson(data) as T;
+    if (t == _i18.EnumSerialization) {
+      return _i18.EnumSerialization.fromJson(data) as T;
     }
-    if (t == _i19.FilterConstraint) {
-      return _i19.FilterConstraint.fromJson(data) as T;
+    if (t == _i19.Filter) {
+      return _i19.Filter.fromJson(data) as T;
     }
-    if (t == _i20.FilterConstraintType) {
-      return _i20.FilterConstraintType.fromJson(data) as T;
+    if (t == _i20.FilterConstraint) {
+      return _i20.FilterConstraint.fromJson(data) as T;
     }
-    if (t == _i21.ForeignKeyAction) {
-      return _i21.ForeignKeyAction.fromJson(data) as T;
+    if (t == _i21.FilterConstraintType) {
+      return _i21.FilterConstraintType.fromJson(data) as T;
     }
-    if (t == _i22.ForeignKeyDefinition) {
-      return _i22.ForeignKeyDefinition.fromJson(data) as T;
+    if (t == _i22.ForeignKeyAction) {
+      return _i22.ForeignKeyAction.fromJson(data) as T;
     }
-    if (t == _i23.ForeignKeyMatchType) {
-      return _i23.ForeignKeyMatchType.fromJson(data) as T;
+    if (t == _i23.ForeignKeyDefinition) {
+      return _i23.ForeignKeyDefinition.fromJson(data) as T;
     }
-    if (t == _i24.GinOperatorClass) {
-      return _i24.GinOperatorClass.fromJson(data) as T;
+    if (t == _i24.ForeignKeyMatchType) {
+      return _i24.ForeignKeyMatchType.fromJson(data) as T;
     }
-    if (t == _i25.IndexDefinition) {
-      return _i25.IndexDefinition.fromJson(data) as T;
+    if (t == _i25.GinOperatorClass) {
+      return _i25.GinOperatorClass.fromJson(data) as T;
     }
-    if (t == _i26.IndexElementDefinition) {
-      return _i26.IndexElementDefinition.fromJson(data) as T;
+    if (t == _i26.IndexDefinition) {
+      return _i26.IndexDefinition.fromJson(data) as T;
     }
-    if (t == _i27.IndexElementDefinitionType) {
-      return _i27.IndexElementDefinitionType.fromJson(data) as T;
+    if (t == _i27.IndexElementDefinition) {
+      return _i27.IndexElementDefinition.fromJson(data) as T;
     }
-    if (t == _i28.MigrationsApplyResult) {
-      return _i28.MigrationsApplyResult.fromJson(data) as T;
+    if (t == _i28.IndexElementDefinitionType) {
+      return _i28.IndexElementDefinitionType.fromJson(data) as T;
     }
-    if (t == _i29.TableDefinition) {
-      return _i29.TableDefinition.fromJson(data) as T;
+    if (t == _i29.MigrationsApplyResult) {
+      return _i29.MigrationsApplyResult.fromJson(data) as T;
     }
-    if (t == _i30.TableMigration) {
-      return _i30.TableMigration.fromJson(data) as T;
+    if (t == _i30.TableDefinition) {
+      return _i30.TableDefinition.fromJson(data) as T;
     }
-    if (t == _i31.VectorDistanceFunction) {
-      return _i31.VectorDistanceFunction.fromJson(data) as T;
+    if (t == _i31.TableMigration) {
+      return _i31.TableMigration.fromJson(data) as T;
+    }
+    if (t == _i32.VectorDistanceFunction) {
+      return _i32.VectorDistanceFunction.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.BulkData?>()) {
       return (data != null ? _i2.BulkData.fromJson(data) : null) as T;
@@ -271,102 +276,106 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<_i17.EnumSerialization?>()) {
-      return (data != null ? _i17.EnumSerialization.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i18.Filter?>()) {
-      return (data != null ? _i18.Filter.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i19.FilterConstraint?>()) {
-      return (data != null ? _i19.FilterConstraint.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i20.FilterConstraintType?>()) {
-      return (data != null ? _i20.FilterConstraintType.fromJson(data) : null)
+    if (t == _i1.getType<_i17.DeferrableConstraint?>()) {
+      return (data != null ? _i17.DeferrableConstraint.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i21.ForeignKeyAction?>()) {
-      return (data != null ? _i21.ForeignKeyAction.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.EnumSerialization?>()) {
+      return (data != null ? _i18.EnumSerialization.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i22.ForeignKeyDefinition?>()) {
-      return (data != null ? _i22.ForeignKeyDefinition.fromJson(data) : null)
+    if (t == _i1.getType<_i19.Filter?>()) {
+      return (data != null ? _i19.Filter.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i20.FilterConstraint?>()) {
+      return (data != null ? _i20.FilterConstraint.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i21.FilterConstraintType?>()) {
+      return (data != null ? _i21.FilterConstraintType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.ForeignKeyMatchType?>()) {
-      return (data != null ? _i23.ForeignKeyMatchType.fromJson(data) : null)
+    if (t == _i1.getType<_i22.ForeignKeyAction?>()) {
+      return (data != null ? _i22.ForeignKeyAction.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i23.ForeignKeyDefinition?>()) {
+      return (data != null ? _i23.ForeignKeyDefinition.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i24.GinOperatorClass?>()) {
-      return (data != null ? _i24.GinOperatorClass.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i25.IndexDefinition?>()) {
-      return (data != null ? _i25.IndexDefinition.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.IndexElementDefinition?>()) {
-      return (data != null ? _i26.IndexElementDefinition.fromJson(data) : null)
+    if (t == _i1.getType<_i24.ForeignKeyMatchType?>()) {
+      return (data != null ? _i24.ForeignKeyMatchType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i27.IndexElementDefinitionType?>()) {
+    if (t == _i1.getType<_i25.GinOperatorClass?>()) {
+      return (data != null ? _i25.GinOperatorClass.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.IndexDefinition?>()) {
+      return (data != null ? _i26.IndexDefinition.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i27.IndexElementDefinition?>()) {
+      return (data != null ? _i27.IndexElementDefinition.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i28.IndexElementDefinitionType?>()) {
       return (data != null
-              ? _i27.IndexElementDefinitionType.fromJson(data)
+              ? _i28.IndexElementDefinitionType.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i28.MigrationsApplyResult?>()) {
-      return (data != null ? _i28.MigrationsApplyResult.fromJson(data) : null)
+    if (t == _i1.getType<_i29.MigrationsApplyResult?>()) {
+      return (data != null ? _i29.MigrationsApplyResult.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i29.TableDefinition?>()) {
-      return (data != null ? _i29.TableDefinition.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i30.TableDefinition?>()) {
+      return (data != null ? _i30.TableDefinition.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i30.TableMigration?>()) {
-      return (data != null ? _i30.TableMigration.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i31.TableMigration?>()) {
+      return (data != null ? _i31.TableMigration.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i31.VectorDistanceFunction?>()) {
-      return (data != null ? _i31.VectorDistanceFunction.fromJson(data) : null)
+    if (t == _i1.getType<_i32.VectorDistanceFunction?>()) {
+      return (data != null ? _i32.VectorDistanceFunction.fromJson(data) : null)
           as T;
     }
-    if (t == List<_i32.BulkQueryColumnDescription>) {
+    if (t == List<_i33.BulkQueryColumnDescription>) {
       return (data as List)
-              .map((e) => deserialize<_i32.BulkQueryColumnDescription>(e))
+              .map((e) => deserialize<_i33.BulkQueryColumnDescription>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.TableDefinition>) {
+    if (t == List<_i33.TableDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i32.TableDefinition>(e))
+              .map((e) => deserialize<_i33.TableDefinition>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.DatabaseMigrationVersionModel>) {
+    if (t == List<_i33.DatabaseMigrationVersionModel>) {
       return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationVersionModel>(e))
+              .map((e) => deserialize<_i33.DatabaseMigrationVersionModel>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.DatabaseMigrationAction>) {
+    if (t == List<_i33.DatabaseMigrationAction>) {
       return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationAction>(e))
+              .map((e) => deserialize<_i33.DatabaseMigrationAction>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.DatabaseMigrationWarning>) {
+    if (t == List<_i33.DatabaseMigrationWarning>) {
       return (data as List)
-              .map((e) => deserialize<_i32.DatabaseMigrationWarning>(e))
+              .map((e) => deserialize<_i33.DatabaseMigrationWarning>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i32.FilterConstraint>) {
+    if (t == List<_i33.FilterConstraint>) {
       return (data as List)
-              .map((e) => deserialize<_i32.FilterConstraint>(e))
+              .map((e) => deserialize<_i33.FilterConstraint>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.IndexElementDefinition>) {
+    if (t == List<_i33.IndexElementDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i32.IndexElementDefinition>(e))
+              .map((e) => deserialize<_i33.IndexElementDefinition>(e))
               .toList()
           as T;
     }
@@ -391,27 +400,27 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i32.ColumnDefinition>) {
+    if (t == List<_i33.ColumnDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i32.ColumnDefinition>(e))
+              .map((e) => deserialize<_i33.ColumnDefinition>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.ForeignKeyDefinition>) {
+    if (t == List<_i33.ForeignKeyDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i32.ForeignKeyDefinition>(e))
+              .map((e) => deserialize<_i33.ForeignKeyDefinition>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.IndexDefinition>) {
+    if (t == List<_i33.IndexDefinition>) {
       return (data as List)
-              .map((e) => deserialize<_i32.IndexDefinition>(e))
+              .map((e) => deserialize<_i33.IndexDefinition>(e))
               .toList()
           as T;
     }
-    if (t == List<_i32.ColumnMigration>) {
+    if (t == List<_i33.ColumnMigration>) {
       return (data as List)
-              .map((e) => deserialize<_i32.ColumnMigration>(e))
+              .map((e) => deserialize<_i33.ColumnMigration>(e))
               .toList()
           as T;
     }
@@ -435,21 +444,22 @@ class Protocol extends _i1.SerializationManager {
       _i14.DatabaseMigrationVersionModel => 'DatabaseMigrationVersionModel',
       _i15.DatabaseMigrationWarning => 'DatabaseMigrationWarning',
       _i16.DatabaseMigrationWarningType => 'DatabaseMigrationWarningType',
-      _i17.EnumSerialization => 'EnumSerialization',
-      _i18.Filter => 'Filter',
-      _i19.FilterConstraint => 'FilterConstraint',
-      _i20.FilterConstraintType => 'FilterConstraintType',
-      _i21.ForeignKeyAction => 'ForeignKeyAction',
-      _i22.ForeignKeyDefinition => 'ForeignKeyDefinition',
-      _i23.ForeignKeyMatchType => 'ForeignKeyMatchType',
-      _i24.GinOperatorClass => 'GinOperatorClass',
-      _i25.IndexDefinition => 'IndexDefinition',
-      _i26.IndexElementDefinition => 'IndexElementDefinition',
-      _i27.IndexElementDefinitionType => 'IndexElementDefinitionType',
-      _i28.MigrationsApplyResult => 'MigrationsApplyResult',
-      _i29.TableDefinition => 'TableDefinition',
-      _i30.TableMigration => 'TableMigration',
-      _i31.VectorDistanceFunction => 'VectorDistanceFunction',
+      _i17.DeferrableConstraint => 'DeferrableConstraint',
+      _i18.EnumSerialization => 'EnumSerialization',
+      _i19.Filter => 'Filter',
+      _i20.FilterConstraint => 'FilterConstraint',
+      _i21.FilterConstraintType => 'FilterConstraintType',
+      _i22.ForeignKeyAction => 'ForeignKeyAction',
+      _i23.ForeignKeyDefinition => 'ForeignKeyDefinition',
+      _i24.ForeignKeyMatchType => 'ForeignKeyMatchType',
+      _i25.GinOperatorClass => 'GinOperatorClass',
+      _i26.IndexDefinition => 'IndexDefinition',
+      _i27.IndexElementDefinition => 'IndexElementDefinition',
+      _i28.IndexElementDefinitionType => 'IndexElementDefinitionType',
+      _i29.MigrationsApplyResult => 'MigrationsApplyResult',
+      _i30.TableDefinition => 'TableDefinition',
+      _i31.TableMigration => 'TableMigration',
+      _i32.VectorDistanceFunction => 'VectorDistanceFunction',
       _ => null,
     };
   }
@@ -494,35 +504,37 @@ class Protocol extends _i1.SerializationManager {
         return 'DatabaseMigrationWarning';
       case _i16.DatabaseMigrationWarningType():
         return 'DatabaseMigrationWarningType';
-      case _i17.EnumSerialization():
+      case _i17.DeferrableConstraint():
+        return 'DeferrableConstraint';
+      case _i18.EnumSerialization():
         return 'EnumSerialization';
-      case _i18.Filter():
+      case _i19.Filter():
         return 'Filter';
-      case _i19.FilterConstraint():
+      case _i20.FilterConstraint():
         return 'FilterConstraint';
-      case _i20.FilterConstraintType():
+      case _i21.FilterConstraintType():
         return 'FilterConstraintType';
-      case _i21.ForeignKeyAction():
+      case _i22.ForeignKeyAction():
         return 'ForeignKeyAction';
-      case _i22.ForeignKeyDefinition():
+      case _i23.ForeignKeyDefinition():
         return 'ForeignKeyDefinition';
-      case _i23.ForeignKeyMatchType():
+      case _i24.ForeignKeyMatchType():
         return 'ForeignKeyMatchType';
-      case _i24.GinOperatorClass():
+      case _i25.GinOperatorClass():
         return 'GinOperatorClass';
-      case _i25.IndexDefinition():
+      case _i26.IndexDefinition():
         return 'IndexDefinition';
-      case _i26.IndexElementDefinition():
+      case _i27.IndexElementDefinition():
         return 'IndexElementDefinition';
-      case _i27.IndexElementDefinitionType():
+      case _i28.IndexElementDefinitionType():
         return 'IndexElementDefinitionType';
-      case _i28.MigrationsApplyResult():
+      case _i29.MigrationsApplyResult():
         return 'MigrationsApplyResult';
-      case _i29.TableDefinition():
+      case _i30.TableDefinition():
         return 'TableDefinition';
-      case _i30.TableMigration():
+      case _i31.TableMigration():
         return 'TableMigration';
-      case _i31.VectorDistanceFunction():
+      case _i32.VectorDistanceFunction():
         return 'VectorDistanceFunction';
     }
     return null;
@@ -579,50 +591,53 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'DatabaseMigrationWarningType') {
       return deserialize<_i16.DatabaseMigrationWarningType>(data['data']);
     }
+    if (dataClassName == 'DeferrableConstraint') {
+      return deserialize<_i17.DeferrableConstraint>(data['data']);
+    }
     if (dataClassName == 'EnumSerialization') {
-      return deserialize<_i17.EnumSerialization>(data['data']);
+      return deserialize<_i18.EnumSerialization>(data['data']);
     }
     if (dataClassName == 'Filter') {
-      return deserialize<_i18.Filter>(data['data']);
+      return deserialize<_i19.Filter>(data['data']);
     }
     if (dataClassName == 'FilterConstraint') {
-      return deserialize<_i19.FilterConstraint>(data['data']);
+      return deserialize<_i20.FilterConstraint>(data['data']);
     }
     if (dataClassName == 'FilterConstraintType') {
-      return deserialize<_i20.FilterConstraintType>(data['data']);
+      return deserialize<_i21.FilterConstraintType>(data['data']);
     }
     if (dataClassName == 'ForeignKeyAction') {
-      return deserialize<_i21.ForeignKeyAction>(data['data']);
+      return deserialize<_i22.ForeignKeyAction>(data['data']);
     }
     if (dataClassName == 'ForeignKeyDefinition') {
-      return deserialize<_i22.ForeignKeyDefinition>(data['data']);
+      return deserialize<_i23.ForeignKeyDefinition>(data['data']);
     }
     if (dataClassName == 'ForeignKeyMatchType') {
-      return deserialize<_i23.ForeignKeyMatchType>(data['data']);
+      return deserialize<_i24.ForeignKeyMatchType>(data['data']);
     }
     if (dataClassName == 'GinOperatorClass') {
-      return deserialize<_i24.GinOperatorClass>(data['data']);
+      return deserialize<_i25.GinOperatorClass>(data['data']);
     }
     if (dataClassName == 'IndexDefinition') {
-      return deserialize<_i25.IndexDefinition>(data['data']);
+      return deserialize<_i26.IndexDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinition') {
-      return deserialize<_i26.IndexElementDefinition>(data['data']);
+      return deserialize<_i27.IndexElementDefinition>(data['data']);
     }
     if (dataClassName == 'IndexElementDefinitionType') {
-      return deserialize<_i27.IndexElementDefinitionType>(data['data']);
+      return deserialize<_i28.IndexElementDefinitionType>(data['data']);
     }
     if (dataClassName == 'MigrationsApplyResult') {
-      return deserialize<_i28.MigrationsApplyResult>(data['data']);
+      return deserialize<_i29.MigrationsApplyResult>(data['data']);
     }
     if (dataClassName == 'TableDefinition') {
-      return deserialize<_i29.TableDefinition>(data['data']);
+      return deserialize<_i30.TableDefinition>(data['data']);
     }
     if (dataClassName == 'TableMigration') {
-      return deserialize<_i30.TableMigration>(data['data']);
+      return deserialize<_i31.TableMigration>(data['data']);
     }
     if (dataClassName == 'VectorDistanceFunction') {
-      return deserialize<_i31.VectorDistanceFunction>(data['data']);
+      return deserialize<_i32.VectorDistanceFunction>(data['data']);
     }
     return super.deserializeByClassName(data);
   }

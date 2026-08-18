@@ -2,7 +2,7 @@
 # Mode: development
 
 name: serverpod_cli
-version: 4.0.0-beta.1
+version: 4.0.0-beta.3
 description: Command line tools for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
@@ -14,7 +14,6 @@ dependencies:
   archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0
-  built_collection: ^5.1.1
   ci: ^0.1.0
   cli_tools: ^0.13.2
   code_assets: ^1.0.0
@@ -52,36 +51,38 @@ dependencies:
   logging: ^1.2.0
   lsp_server: ^0.4.0
   meta: ^1.15.0
-  nocterm: ^0.8.0
+  nocterm: ^0.9.0
   package_config: ^2.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
   pub_semver: ^2.1.4
   pubspec_parse: ^1.5.0
+  # Nocterm permits quiver 3.0.0, which cannot compile on Dart 3.
+  quiver: ^3.2.2
   recase: ^4.1.0
-  serverpod_database: 4.0.0-beta.1
-  serverpod_embedded_postgres: 4.0.0-beta.1
+  serverpod_database: 4.0.0-beta.3
+  serverpod_embedded_postgres: 4.0.0-beta.3
   serverpod_logging_cli: ^0.1.0
-  serverpod_serialization: 4.0.0-beta.1
-  serverpod_service_client: 4.0.0-beta.1
-  serverpod_shared: 4.0.0-beta.1
-  serverpod_tui: ^0.10.0
+  serverpod_serialization: 4.0.0-beta.3
+  serverpod_service_client: 4.0.0-beta.3
+  serverpod_shared: 4.0.0-beta.3
+  serverpod_tui: ^0.12.0
   skills: ^0.3.1
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   stream_transform: ^2.1.0
-  super_string: ^1.0.3
   uuid: ^4.5.3
   vm_service: '>=13.0.0 <16.0.0'
   watcher: ^1.0.2
   whiskers: ^0.1.1
-  win32: ^6.0.0
+  # win32 6.0.0 requires Dart 3.11, while Serverpod supports Dart 3.10.
+  win32: ^6.0.1
   yaml: ^3.1.2
   yaml_edit: ^2.2.2
 
 dev_dependencies:
   postgres: ^3.4.0
-  serverpod_lints: 4.0.0-beta.1
+  serverpod_lints: 4.0.0-beta.3
   term_glyph: ^1.2.2
   test: ^1.25.5
   test_descriptor: ^2.0.2

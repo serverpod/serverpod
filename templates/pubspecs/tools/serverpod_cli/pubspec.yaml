@@ -13,7 +13,6 @@ dependencies:
   archive: ^4.0.0
   args: ^2.7.0
   async: ^2.11.0
-  built_collection: ^5.1.1
   ci: ^0.1.0
   cli_tools: ^0.13.2
   code_assets: ^1.0.0
@@ -51,12 +50,14 @@ dependencies:
   logging: ^1.2.0
   lsp_server: ^0.4.0
   meta: ^1.15.0
-  nocterm: ^0.8.0
+  nocterm: ^0.9.0
   package_config: ^2.1.0
   path: ^1.8.3
   pub_api_client: '>=2.4.0 <4.0.0'
   pub_semver: ^2.1.4
   pubspec_parse: ^1.5.0
+  # Nocterm permits quiver 3.0.0, which cannot compile on Dart 3.
+  quiver: ^3.2.2
   recase: ^4.1.0
   serverpod_database: SERVERPOD_VERSION
   serverpod_embedded_postgres: SERVERPOD_VERSION
@@ -64,17 +65,17 @@ dependencies:
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_service_client: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION
-  serverpod_tui: ^0.10.0
+  serverpod_tui: ^0.12.0
   skills: ^0.3.1
   source_span: ^1.10.0
   stream_channel: ^2.1.1
   stream_transform: ^2.1.0
-  super_string: ^1.0.3
   uuid: ^4.5.3
   vm_service: '>=13.0.0 <16.0.0'
   watcher: ^1.0.2
   whiskers: ^0.1.1
-  win32: ^6.0.0
+  # win32 6.0.0 requires Dart 3.11, while Serverpod supports Dart 3.10.
+  win32: ^6.0.1
   yaml: ^3.1.2
   yaml_edit: ^2.2.2
 

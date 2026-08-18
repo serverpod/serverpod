@@ -1,5 +1,5 @@
+import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:source_span/source_span.dart';
-import 'package:super_string/super_string.dart';
 
 abstract class CodeAnalysisCollector {
   List<SourceSpanException> get errors;
@@ -51,7 +51,7 @@ class SourceSpanSeverityException extends SourceSpanException {
   @override
   String toString({Object? color}) {
     if (span == null) return message;
-    var severity = this.severity.name.toString().capitalize();
+    var severity = this.severity.name.capitalize();
 
     return '$severity on ${span!.message(message, color: color)}';
   }

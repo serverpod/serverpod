@@ -18,21 +18,13 @@ class LegacyEmailEndpoint extends Endpoint {
     final String email,
     final String password,
   ) async {
-    await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
-      session,
-      email: email,
-      password: password,
-    );
-
     final UuidValue authUserId;
     try {
-      authUserId = await AuthServices.instance.emailIdp.utils.authentication
-          .authenticate(
-            session,
-            email: email,
-            password: password,
-            transaction: null,
-          );
+      authUserId = await _authenticateWithLegacyFallback(
+        session,
+        email: email,
+        password: password,
+      );
     } on EmailAccountNotFoundException {
       return LegacyAuthenticationResponse(
         success: false,
@@ -112,7 +104,47 @@ class LegacyEmailEndpoint extends Endpoint {
     );
   }
 
-  /// Stub — registration is not supported via legacy endpoints.
+  /// Authenticates against the new email IdP, falling back to the password
+  /// held in the legacy system for an account migrated without one.
+  ///
+  /// The fallback runs only after [EmailIdpAuthenticationUtil.authenticate] has
+  /// rejected the credentials, which means the rate limiter has already
+  /// accepted and recorded the attempt. Consulting the legacy password first,
+  /// as this endpoint used to, verified it against the stored legacy hash on
+  /// every request - including for an account that was already locked out - so
+  /// the limit bounded how often the caller learned the outcome rather than
+  /// how many guesses they got to make.
+  Future<UuidValue> _authenticateWithLegacyFallback(
+    final Session session, {
+    required final String email,
+    required final String password,
+  }) async {
+    final authentication = AuthServices.instance.emailIdp.utils.authentication;
+
+    try {
+      return await authentication.authenticate(
+        session,
+        email: email,
+        password: password,
+        transaction: null,
+      );
+    } on EmailAuthenticationInvalidCredentialsException {
+      await AuthBackwardsCompatibility.importLegacyPasswordIfNeeded(
+        session,
+        email: email,
+        password: password,
+      );
+
+      return authentication.authenticate(
+        session,
+        email: email,
+        password: password,
+        transaction: null,
+      );
+    }
+  }
+
+  /// Stub - registration is not supported via legacy endpoints.
   Future<bool> createAccountRequest(
     final Session session,
     final String userName,
@@ -122,7 +154,7 @@ class LegacyEmailEndpoint extends Endpoint {
     return false;
   }
 
-  /// Stub — account creation is not supported via legacy endpoints.
+  /// Stub - account creation is not supported via legacy endpoints.
   Future<LegacyUserInfo?> createAccount(
     final Session session,
     final String email,
@@ -131,7 +163,7 @@ class LegacyEmailEndpoint extends Endpoint {
     return null;
   }
 
-  /// Stub — password change is not supported via legacy endpoints.
+  /// Stub - password change is not supported via legacy endpoints.
   Future<bool> changePassword(
     final Session session,
     final String oldPassword,
@@ -140,7 +172,7 @@ class LegacyEmailEndpoint extends Endpoint {
     return false;
   }
 
-  /// Stub — password reset initiation is not supported via legacy endpoints.
+  /// Stub - password reset initiation is not supported via legacy endpoints.
   Future<bool> initiatePasswordReset(
     final Session session,
     final String email,
@@ -148,7 +180,7 @@ class LegacyEmailEndpoint extends Endpoint {
     return false;
   }
 
-  /// Stub — password reset is not supported via legacy endpoints.
+  /// Stub - password reset is not supported via legacy endpoints.
   Future<bool> resetPassword(
     final Session session,
     final String verificationCode,

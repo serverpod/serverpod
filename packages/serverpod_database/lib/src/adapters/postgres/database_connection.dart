@@ -868,12 +868,15 @@ class PostgresDatabaseConnection
     final connection = await _postgresConnection;
     try {
       return await connection.runTx<R>(
-        (ctx) {
+        (ctx) async {
           var transaction = _PostgresTransaction(
             ctx,
             session,
             this,
           );
+          if (settings.deferConstraints) {
+            await transaction._query('SET CONSTRAINTS ALL DEFERRED;');
+          }
           return transactionFunction(transaction);
         },
         settings: pgTransactionSettings,
@@ -1026,7 +1029,8 @@ class PostgresDatabaseConnection
               .map((column) {
                 var unformattedValue = row[column.columnName];
 
-                var formattedValue = poolManager.encoder.convert(
+                var formattedValue = poolManager.encoder.encodeColumnValue(
+                  column,
                   unformattedValue,
                 );
 

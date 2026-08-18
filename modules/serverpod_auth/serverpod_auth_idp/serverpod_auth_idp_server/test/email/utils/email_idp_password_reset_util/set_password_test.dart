@@ -8,6 +8,7 @@ import '../../test_utils/email_idp_test_fixture.dart';
 void main() {
   withServerpod(
     'Given email account',
+    rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

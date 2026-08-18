@@ -107,7 +107,7 @@ const _databaseModelReservedFieldNames = [
 
 /// We reserve 7 characters to enable deterministic generation of the following
 /// suffixes:
-/// - "_id_seq" suffix for the default value for serial fields stored in the
+/// - "_id_seq" suffix for the default value for serial id fields stored in the
 /// server generated table definition.
 /// - "_fk_{index}" suffix for foreign key constraints.
 const _reservedTableSuffixChars = 7;

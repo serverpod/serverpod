@@ -2,7 +2,7 @@ services:
   # {{#postgres}}
   # Test services
   postgres_test:
-    image: pgvector/pgvector:pg16
+    image: ghcr.io/serverpod/postgres:16
     ports:
       - '9090:5432'
     environment:

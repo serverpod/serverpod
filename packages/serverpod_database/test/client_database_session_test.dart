@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_shared/log.dart' as shared;
+import 'package:serverpod_shared/log_io.dart' show TestLogWriter;
 import 'package:test/test.dart';
 
 void main() {
@@ -89,6 +91,47 @@ void main() {
         "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'example';",
       );
       expect(createdTables, hasLength(1));
+    },
+  );
+
+  test(
+    'Given a client migration that fails, '
+    'when applying the migration, '
+    'then its context is logged without duplicating the thrown error.',
+    () async {
+      session = await ClientDatabaseSession.open(
+        databasePath,
+        _TestSerializationManager(),
+        runMigrations: false,
+      );
+      final writer = TestLogWriter();
+      shared.logWriter.add(writer);
+      addTearDown(() => shared.logWriter.remove(writer));
+
+      final manager = MigrationManager.fromMigrations(
+        migrations: const [
+          MigrationVersionSql(
+            version: '20240101000000000',
+            moduleName: 'test',
+            migrationSql: 'INVALID SQL',
+            definitionSql: 'INVALID SQL',
+          ),
+        ],
+        moduleName: 'test',
+      );
+
+      await expectLater(
+        manager.migrateToLatest(session),
+        throwsA(isA<DatabaseQueryException>()),
+      );
+      await shared.log.flush();
+
+      expect(writer.entries, hasLength(1));
+      expect(
+        writer.entries.single.message,
+        'Failed to apply migration 20240101000000000.',
+      );
+      expect(writer.entries.single.error, isNull);
     },
   );
 }

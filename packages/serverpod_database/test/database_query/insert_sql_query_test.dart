@@ -744,8 +744,8 @@ SELECT * FROM insertWithIdNotNull
     );
 
     test(
-      'when building insert query with mixed id rows then the id-null insert '
-      'runs as a data-modifying CTE without RETURNING or a wrapping SELECT.',
+      'when building insert query with mixed id rows '
+      'then the id-null insert runs as a data-modifying CTE without RETURNING or a wrapping SELECT.',
       () {
         var query = InsertQueryBuilder(
           table: PersonTable(),

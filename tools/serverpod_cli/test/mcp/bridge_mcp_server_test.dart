@@ -43,6 +43,9 @@ void main() {
           onApplyMigration: () async {
             applyMigrationCalls++;
           },
+          getLogHistory: () => [],
+          getFlutterAppIds: () => [],
+          getFlutterLogHistory: (_) => [],
         );
 
         pair = await _makeBridgePair(runner.socketPath);
@@ -209,6 +212,9 @@ void main() {
             onApplyMigration: () async {
               calls++;
             },
+            getLogHistory: () => [],
+            getFlutterAppIds: () => [],
+            getFlutterLogHistory: (_) => [],
           );
 
           // Second call: bridge transparently reconnects.

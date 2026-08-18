@@ -10,11 +10,11 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod: 4.0.0-beta.1
+  serverpod: 4.0.0-beta.3
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-  serverpod_test: 4.0.0-beta.1
+  serverpod_test: 4.0.0-beta.3
   test: ^1.25.5
 
 dependency_overrides:

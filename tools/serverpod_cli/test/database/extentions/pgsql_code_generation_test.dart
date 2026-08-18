@@ -1,8 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/database/create_definition.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
 import '../../test_util/builders/database/column_definition_builder.dart';
@@ -777,6 +776,41 @@ END
       },
     );
   });
+
+  test(
+    'Given a column migration that sets a serial default, '
+    'when generating PostgreSQL SQL, '
+    'then a StateError is thrown instead of emitting SET DEFAULT serial.',
+    () {
+      var columnDefinition = ColumnDefinitionBuilder()
+          .withName('count')
+          .withColumnType(ColumnType.bigint)
+          .withDartType('int?')
+          .build();
+
+      var migration = ColumnMigration(
+        columnName: 'count',
+        addNullable: false,
+        removeNullable: true,
+        changeDefault: true,
+        newDefault: defaultIntSerial,
+      );
+
+      expect(
+        () => migration.toPgSql(
+          tableName: 'example_table',
+          columnDefinition: columnDefinition,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            contains('Cannot SET DEFAULT "$defaultIntSerial"'),
+          ),
+        ),
+      );
+    },
+  );
 
   group('Given a column migration with a type change', () {
     test(

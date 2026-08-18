@@ -348,8 +348,8 @@ void main() {
   // If a class was a subset of another with same types on all common fields,
   // it would deserialize as the other class.
   test('Given an object that has all fields of PolymorphicParent '
-      'when deserialized as PolymorphicParent then '
-      'it raises an exception.', () {
+      'when deserialized as PolymorphicParent '
+      'then it raises an exception.', () {
     final other = SimilarButNotParent(parent: 'This is not a parent');
 
     final json = other.toJson();

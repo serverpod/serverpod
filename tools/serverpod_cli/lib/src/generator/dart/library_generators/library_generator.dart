@@ -2544,6 +2544,11 @@ extension on DatabaseDefinition {
                         serverpodDatabaseUrl(serverCode),
                       )
                     : literalNull,
+                if (foreignKey.deferrable != null)
+                  'deferrable': refer(
+                    'DeferrableConstraint.${foreignKey.deferrable!.name}',
+                    serverpodDatabaseUrl(serverCode),
+                  ),
               }),
           ]),
           'indexes': literalList([

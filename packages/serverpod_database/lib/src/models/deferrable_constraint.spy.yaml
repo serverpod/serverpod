@@ -1,0 +1,12 @@
+### Defines whether a foreign key constraint is deferrable and, if so, when it
+### is checked by default.
+enum: DeferrableConstraint
+serialized: byName
+values:
+  ### The constraint is `DEFERRABLE INITIALLY IMMEDIATE`. It is checked after
+  ### each statement by default, but can be deferred until commit within a
+  ### transaction (for example with `SET CONSTRAINTS ALL DEFERRED`).
+  - initiallyImmediate
+  ### The constraint is `DEFERRABLE INITIALLY DEFERRED`. It is checked at
+  ### transaction commit time by default.
+  - initiallyDeferred

@@ -58,8 +58,14 @@ class McpSocketServer {
 
   /// Wire the MCP server to watch session callbacks. Can be called before or
   /// after a client connects.
+  ///
+  /// Log-history callbacks are required because they belong to the watch
+  /// session, not to an optional presentation layer such as the TUI.
   void connect({
     required Future<void> Function() onApplyMigration,
+    required List<Object> Function() getLogHistory,
+    required List<String> Function() getFlutterAppIds,
+    required List<String> Function(String appId) getFlutterLogHistory,
     Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
     onCreateMigration,
     Future<CreateMigrationMcpResult> Function({
@@ -70,9 +76,6 @@ class McpSocketServer {
     onCreateRepairMigration,
     Future<void> Function()? onHotReload,
     Future<void> Function()? onHotRestart,
-    List<Object> Function()? getLogHistory,
-    List<String> Function()? getFlutterAppIds,
-    List<String> Function(String appId)? getFlutterLogHistory,
     Future<bool> Function(String appId)? onSpawnFlutterApp,
     String? Function()? getVmServiceUri,
     Map<String, String?> Function()? getFlutterDtdUris,

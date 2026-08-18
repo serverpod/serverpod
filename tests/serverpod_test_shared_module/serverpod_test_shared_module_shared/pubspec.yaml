@@ -12,8 +12,8 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod_database: 4.0.0-beta.1
-  serverpod_serialization: 4.0.0-beta.1
+  serverpod_database: 4.0.0-beta.3
+  serverpod_serialization: 4.0.0-beta.3
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
