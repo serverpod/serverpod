@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 part 'future_calls_library_generator.dart';
+part 'serverpod_library_generator.dart';
 
 const mapRecordToJsonFuncName = 'mapRecordToJson';
 const mapContainerToJsonFunctionName = 'mapContainerToJson';

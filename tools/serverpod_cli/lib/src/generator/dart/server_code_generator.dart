@@ -75,6 +75,17 @@ class DartServerCodeGenerator extends CodeGenerator {
       ),
     };
 
+    // Modules are never booted on their own, so only server packages get the
+    // pre-wired Serverpod entry point.
+    if (config.type == PackageType.server) {
+      var serverpodPath = p.joinAll(
+        config.generatedServerServerpodFilePathParts,
+      );
+      codeMap[serverpodPath] = serverClassGenerator
+          .generateServerpodClass()
+          .generateCode(formatter: GeneratedDartFormatters.of(serverpodPath));
+    }
+
     var generatedServerTestToolsPathParts =
         config.generatedServerTestToolsPathParts;
     if (generatedServerTestToolsPathParts != null) {
