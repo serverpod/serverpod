@@ -35,9 +35,14 @@ database:
   port: 8090
   name: my_project
   user: postgres
+  dataPath: .serverpod/development/pgdata  # embedded database, see below
 ```
 
 Password in `passwords.yaml` under run mode or `SERVERPOD_PASSWORD_database`. Optional: `searchPaths`, `maxConnectionCount`, `requireSsl`, `isUnixSocket`.
+
+**Embedded PostgreSQL:** with `dataPath` set, Serverpod launches and manages a PostgreSQL instance in that directory, so nothing has to be installed or run separately. New projects use it for development and testing. `serverpod database start [--mode <mode>] [--port <port>]` boots the same database on its own, without the server.
+
+Without `dataPath` the database is external, and `serverpod start` starts Docker Compose services when the project has a compose file and PostgreSQL is on localhost (`--docker` / `--no-docker` override this).
 
 ### SQLite
 

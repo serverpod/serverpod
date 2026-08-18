@@ -170,7 +170,9 @@ Pass `serverDirectory` when the test isolate's working directory is not the serv
 ## Running tests
 
 ```bash
-docker compose up -d          # Start DB and Redis (not needed for embedded PostgreSQL/SQLite)
+# Only needed for an external database. Projects configured with an embedded
+# PostgreSQL (`database.dataPath`) or SQLite (`database.filePath`) need nothing.
+docker compose up -d          # Start DB and Redis
 dart test                     # All tests
 dart test -t integration      # Only integration tests
 dart test -x integration      # Only unit tests
