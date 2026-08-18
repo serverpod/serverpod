@@ -72,8 +72,11 @@ No password is needed for SQLite.
 | | `SERVERPOD_API_SERVER_PUBLIC_PORT` | apiServer.publicPort |
 | | `SERVERPOD_API_SERVER_PUBLIC_SCHEME` | apiServer.publicScheme |
 | Insights | `SERVERPOD_INSIGHTS_SERVER_PORT` | insightsServer.port |
+| | `SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST`, `_PORT`, `_SCHEME` | insightsServer.* |
 | Web | `SERVERPOD_WEB_SERVER_PORT` | webServer.port |
-| Database | `SERVERPOD_DATABASE_HOST` | database.host |
+| | `SERVERPOD_WEB_SERVER_PUBLIC_HOST`, `_PORT`, `_SCHEME` | webServer.* |
+| Database | `SERVERPOD_DATABASE_DIALECT` | database.dialect (postgres\|sqlite) |
+| | `SERVERPOD_DATABASE_HOST` | database.host |
 | | `SERVERPOD_DATABASE_PORT` | database.port |
 | | `SERVERPOD_DATABASE_NAME` | database.name |
 | | `SERVERPOD_DATABASE_USER` | database.user |
@@ -82,12 +85,16 @@ No password is needed for SQLite.
 | | `SERVERPOD_DATABASE_SEARCH_PATHS` | database.searchPaths |
 | | `SERVERPOD_DATABASE_MAX_CONNECTION_COUNT` | database.maxConnectionCount / 10 |
 | | `SERVERPOD_DATABASE_FILE_PATH` | database.filePath |
+| | `SERVERPOD_DATABASE_DATA_PATH` | database.dataPath (embedded PostgreSQL) |
 | Redis | `SERVERPOD_REDIS_HOST`, `_PORT`, `_USER`, `_ENABLED`, `_REQUIRE_SSL` | redis.* |
 | Other | `SERVERPOD_MAX_REQUEST_SIZE` | maxRequestSize / 524288 |
+| | `SERVERPOD_VALIDATE_HEADERS` | validateHeaders |
 | | `SERVERPOD_WEBSOCKET_PING_INTERVAL` | websocketPingInterval / 30s |
 | | `SERVERPOD_FUTURE_CALL_EXECUTION_ENABLED` | futureCallExecutionEnabled |
 | | `SERVERPOD_FUTURE_CALL_CONCURRENCY_LIMIT` | futureCall.concurrencyLimit |
 | | `SERVERPOD_FUTURE_CALL_SCAN_INTERVAL` | futureCall.scanInterval (ms) |
+| | `SERVERPOD_FUTURE_CALL_CHECK_BROKEN_CALLS` | futureCall.checkBrokenCalls |
+| | `SERVERPOD_FUTURE_CALL_DELETE_BROKEN_CALLS` | futureCall.deleteBrokenCalls |
 | Session logs | `SERVERPOD_SESSION_PERSISTENT_LOG_ENABLED` | sessionLogs.persistentEnabled |
 | | `SERVERPOD_SESSION_CONSOLE_LOG_ENABLED` | sessionLogs.consoleEnabled |
 | | `SERVERPOD_SESSION_CONSOLE_LOG_FORMAT` | sessionLogs.consoleLogFormat (text\|json) |
@@ -98,6 +105,8 @@ No password is needed for SQLite.
 ## Secrets (passwords.yaml)
 
 Structure: `shared:` (all modes) + per-mode (`development:`, `production:`, etc.). Built-in keys: `database`, `redis`, `serviceSecret`. Custom keys available via `session.passwords['key']` or `pod.getPassword('key')`.
+
+The built-in passwords also have dedicated environment variables: `SERVERPOD_DATABASE_PASSWORD`, `SERVERPOD_REDIS_PASSWORD` and `SERVERPOD_SERVICE_SECRET`. Any password, built-in or custom, can also be set with the `SERVERPOD_PASSWORD_` prefix.
 
 ```bash
 export SERVERPOD_PASSWORD_stripeApiKey=sk_live_...  # → session.passwords['stripeApiKey']
