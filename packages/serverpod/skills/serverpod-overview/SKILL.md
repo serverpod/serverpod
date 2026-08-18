@@ -19,30 +19,7 @@ The server exposes endpoint classes that the client calls via generated RPC clie
 
 Serverpod projects use a PostgreSQL database for persistence (SQLite is also supported) and include an ORM, caching, real-time streaming (using Dart streams), file uploads, scheduling (called future calls), logging, and a built-in web server (Relic).
 
-## Which skill to use
-
-| Task | Skill |
-| ---- | ----- |
-| Define or change models, database schema, `.spy.yaml` | [serverpod-models](../serverpod-models/SKILL.md) |
-| Create or update database migrations | [serverpod-migrations](../serverpod-migrations/SKILL.md) |
-| Query the database, relations, transactions | [serverpod-database](../serverpod-database/SKILL.md) |
-| Add RPC endpoints called from the client | [serverpod-endpoints](../serverpod-endpoints/SKILL.md) |
-| Real-time features over WebSockets | [serverpod-streams](../serverpod-streams/SKILL.md) |
-| Pub/sub between servers or streams | [serverpod-server-events](../serverpod-server-events/SKILL.md) |
-| Sign in users, scopes, user profiles | [serverpod-auth](../serverpod-auth/SKILL.md) |
-| Write server tests | [serverpod-testing](../serverpod-testing/SKILL.md) |
-| Config files, env vars, secrets, run modes | [serverpod-configuration](../serverpod-configuration/SKILL.md) |
-| Scheduled and recurring work (future calls) | [serverpod-scheduling](../serverpod-scheduling/SKILL.md) |
-| Cache data | [serverpod-caching](../serverpod-caching/SKILL.md) |
-| Upload and store files | [serverpod-file-uploads](../serverpod-file-uploads/SKILL.md) |
-| Logging and debugging server calls | [serverpod-logging](../serverpod-logging/SKILL.md) |
-| Session lifecycle, manual sessions | [serverpod-sessions](../serverpod-sessions/SKILL.md) |
-| HTTP routes, webhooks, web pages, Flutter web | [serverpod-webserver](../serverpod-webserver/SKILL.md) |
-| Add or create modules | [serverpod-modules](../serverpod-modules/SKILL.md) |
-| Kubernetes probes and health checks | [serverpod-health-checks](../serverpod-health-checks/SKILL.md) |
-| Upgrade Serverpod versions | [serverpod-upgrading](../serverpod-upgrading/SKILL.md) |
-
-Deployment, hosting and the Insights companion app are documented at https://docs.serverpod.dev.
+Each of these feature areas has its own `serverpod-*` skill; use the one that matches the task. Deployment, hosting and the Insights companion app are not covered by a skill and are documented at https://docs.serverpod.dev.
 
 ## Running the server
 
