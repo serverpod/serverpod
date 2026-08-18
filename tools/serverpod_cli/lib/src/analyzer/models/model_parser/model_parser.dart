@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_cli/src/util/extensions.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/yaml_docs.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:source_span/source_span.dart';
 import 'package:yaml/yaml.dart';
 
@@ -461,6 +461,7 @@ class ModelParser {
     var onUpdate = _parseOnUpdate(node);
 
     var optionalRelation = _isOptionalRelation(node);
+    var deferrable = _parseDeferrableRelation(node);
 
     if (typeResult.isListType) {
       return UnresolvedListRelationDefinition(
@@ -474,6 +475,7 @@ class ModelParser {
         foreignFieldName: defaultPrimaryKeyName,
         onUpdate: onUpdate,
         onDelete: onDelete,
+        deferrable: deferrable,
       );
     } else if (!typeResult.isIdType) {
       return UnresolvedObjectRelationDefinition(
@@ -482,6 +484,7 @@ class ModelParser {
         onUpdate: onUpdate,
         onDelete: onDelete,
         isForeignKeyOrigin: relationFieldName != null,
+        deferrable: deferrable,
         nullableRelation: optionalRelation,
       );
     } else {
@@ -626,6 +629,21 @@ class ModelParser {
     if (relation is! YamlMap) return false;
 
     return _parseBooleanKey(relation, Keyword.optional);
+  }
+
+  static DeferrableConstraint? _parseDeferrableRelation(YamlMap node) {
+    var relation = node.nodes[Keyword.relation];
+    if (relation is! YamlMap) return null;
+
+    if (_parseBooleanKey(relation, Keyword.deferred)) {
+      return DeferrableConstraint.initiallyDeferred;
+    }
+
+    if (_parseBooleanKey(relation, Keyword.deferrable)) {
+      return DeferrableConstraint.initiallyImmediate;
+    }
+
+    return null;
   }
 
   static ModelFieldScopeDefinition _parseClassFieldScope(

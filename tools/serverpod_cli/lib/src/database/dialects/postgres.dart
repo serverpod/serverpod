@@ -349,9 +349,25 @@ extension PostgresForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
       out += '    ON UPDATE $update';
     }
 
+    var deferrableClause = deferrable?.toPgSqlClause();
+    if (deferrableClause != null) {
+      out += '\n    $deferrableClause';
+    }
+
     out += ';\n';
 
     return out;
+  }
+}
+
+extension on DeferrableConstraint {
+  String toPgSqlClause() {
+    switch (this) {
+      case DeferrableConstraint.initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case DeferrableConstraint.initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
   }
 }
 

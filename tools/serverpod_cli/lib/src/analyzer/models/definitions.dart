@@ -844,7 +844,12 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
-  /// Only used for implicit relations, toggles if the relation id is nullable.
+  /// Whether the foreign key constraint is deferrable and when it is checked
+  /// by default. Null means the constraint is not deferrable.
+  final DeferrableConstraint? deferrable;
+
+  /// Whether the generated relation id is nullable. Used for implicit
+  /// relations and for `field=` relations when the foreign key is generated.
   final bool nullableRelation;
 
   UnresolvedObjectRelationDefinition({
@@ -853,6 +858,7 @@ class UnresolvedObjectRelationDefinition extends RelationDefinition {
     required this.onDelete,
     required this.onUpdate,
     required bool isForeignKeyOrigin,
+    this.deferrable,
     this.nullableRelation = false,
   }) : super(name, isForeignKeyOrigin);
 }
@@ -903,6 +909,10 @@ class ForeignRelationDefinition extends RelationDefinition {
   /// On update behavior in the database.
   final ForeignKeyAction onUpdate;
 
+  /// Whether the foreign key constraint is deferrable and when it is checked
+  /// by default. Null means the constraint is not deferrable.
+  final DeferrableConstraint? deferrable;
+
   ForeignRelationDefinition({
     String? name,
     required this.parentTable,
@@ -911,6 +921,7 @@ class ForeignRelationDefinition extends RelationDefinition {
     this.foreignContainerField,
     this.onDelete = onDeleteDefault,
     this.onUpdate = onUpdateDefault,
+    this.deferrable,
   }) : super(name, true);
 }
 

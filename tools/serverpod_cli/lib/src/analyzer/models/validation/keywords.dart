@@ -30,6 +30,8 @@ class Keyword {
   static const String field = 'field';
   static const String onUpdate = 'onUpdate';
   static const String onDelete = 'onDelete';
+  static const String deferrable = 'deferrable';
+  static const String deferred = 'deferred';
   static const String name = 'name';
   static const String api = 'api';
   static const String database = 'database';

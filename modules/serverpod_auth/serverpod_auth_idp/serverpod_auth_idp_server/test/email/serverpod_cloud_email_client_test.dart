@@ -76,8 +76,8 @@ void main() {
     });
 
     test(
-      'when the service responds with 400 then it throws a '
-      'ServerpodCloudEmailException with the parsed error message',
+      'when the service responds with 400 '
+      'then it throws a ServerpodCloudEmailException with the parsed error message',
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(
@@ -104,8 +104,8 @@ void main() {
     );
 
     test(
-      'when the service responds with 401 then it throws a '
-      'ServerpodCloudEmailException',
+      'when the service responds with 401 '
+      'then it throws a ServerpodCloudEmailException',
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(
@@ -134,8 +134,8 @@ void main() {
     );
 
     test(
-      'when the service responds with a non-JSON error body then the raw body '
-      'is used as the message',
+      'when the service responds with a non-JSON error body '
+      'then the raw body is used as the message',
       () async {
         final client = ServerpodCloudEmailClient(
           httpClient: MockClient(

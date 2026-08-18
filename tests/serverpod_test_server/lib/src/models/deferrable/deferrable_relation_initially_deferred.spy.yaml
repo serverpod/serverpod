@@ -1,0 +1,4 @@
+class: DeferrableRelationInitiallyDeferred
+table: deferrable_relation_initially_deferred
+fields:
+  parentId: int, relation(parent=deferrable_relation_parent, deferred)

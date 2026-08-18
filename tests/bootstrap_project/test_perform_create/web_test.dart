@@ -270,7 +270,7 @@ void main() {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
 
-          expect(content, contains('flutter build web'));
+          expect(content, contains('flutter build'));
           expect(content, isNot(contains('--wasm')));
         },
       );
@@ -379,11 +379,14 @@ void main() {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
 
-          expect(content, contains('flutter build web --base-href /'));
+          expect(
+            content,
+            matches(RegExp(r'set ARGS=web --base-href /(?!app)')),
+          );
           expect(
             content,
             contains(
-              'flutter build web --base-href / --output ../${project.name}_server/web/app',
+              'set -- web --base-href / --output ../${project.name}_server/web/app',
             ),
           );
         },
@@ -452,11 +455,11 @@ void main() {
           final pubspec = File(p.join(project.serverDir, 'pubspec.yaml'));
           final content = await pubspec.readAsString();
 
-          expect(content, contains('flutter build web --base-href /app'));
+          expect(content, contains('set ARGS=web --base-href /app/'));
           expect(
             content,
             contains(
-              'flutter build web --base-href /app/ --output ../${project.name}_server/web/app',
+              'set -- web --base-href /app/ --output ../${project.name}_server/web/app',
             ),
           );
         },

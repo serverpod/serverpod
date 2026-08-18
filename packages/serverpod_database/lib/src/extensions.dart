@@ -510,6 +510,16 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
       );
     }
 
+    if (deferrable != other.deferrable) {
+      mismatches.add(
+        ForeignKeyComparisonWarning(
+          name: 'deferrable',
+          expected: '$deferrable',
+          found: '${other.deferrable}',
+        ),
+      );
+    }
+
     return mismatches;
   }
 }

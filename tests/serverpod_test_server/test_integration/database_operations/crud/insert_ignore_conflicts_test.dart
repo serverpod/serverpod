@@ -314,8 +314,8 @@ void main() async {
       });
 
       test(
-        'when inserting a batch without a transaction where one row violates '
-        'the check constraint then no rows are inserted (atomic rollback).',
+        'when inserting a batch without a transaction where one row violates the check constraint '
+        'then no rows are inserted (atomic rollback).',
         () async {
           var data = <UniqueDataWithNonPersist>[
             UniqueDataWithNonPersist(

@@ -190,6 +190,33 @@ class JwtAdmin {
       );
     }
 
+    // Checked only once the caller has proven possession of the refresh token,
+    // so this does not become an oracle for the state of an account whose
+    // token the caller does not hold.
+    //
+    // A rotation re-establishes access for another full refresh token
+    // lifetime, so `blocked` has to be consulted here and not only in
+    // `createTokens` - otherwise blocking a user leaves any session they
+    // already hold running indefinitely. The token is deliberately left in
+    // place rather than deleted, so that lifting the block restores it.
+    //
+    // Read directly rather than through `AuthUsers.get`, which opens a
+    // transaction of its own. Rotations are not serialised, so nesting one
+    // here corrupts the savepoint stack when several run on the same session.
+    final authUser = await AuthUser.db.findById(
+      session,
+      refreshTokenRow.authUserId,
+      transaction: transaction,
+    );
+
+    if (authUser == null) {
+      throw AuthUserNotFoundException();
+    }
+
+    if (authUser.blocked) {
+      throw AuthUserBlockedException();
+    }
+
     final newSecret = _generateRefreshTokenRotatingSecret();
     final newHash = await _refreshTokenSecretHash.createHashFromBytes(
       secret: newSecret,
