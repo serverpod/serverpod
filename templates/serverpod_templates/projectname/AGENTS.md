@@ -36,6 +36,15 @@ ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 - `hot_reload` / `hot_restart` to reload or restart the server. Use `hot_restart` for changes that hot reload cannot apply, such as changes to `main()`.
 <!-- {{/flutterApp}} -->
 
+NEVER edit generated code. The server's `lib/src/generated/` directory, the whole `projectname_client` package<!-- {{#database}} -->, and the `migrations/` directory<!-- {{/database}} --> are rewritten by the code generator. Change the `.spy.yaml` models, the endpoints, or `lib/server.dart` instead.
+
+If the `serverpod` MCP cannot be reached, the server is not running: ask the user to start it with `serverpod start`. Only if that is not possible, fall back to the CLI in the server package:
+
+- `serverpod generate` to regenerate the client and the generated server code.
+<!-- {{#database}} -->
+- `serverpod create-migration` after changing a model with a `table` (add `--force` for destructive changes). It only writes the migration; `serverpod start` applies pending migrations when it boots the server.
+<!-- {{/database}} -->
+
 Checklist after doing changes, in this order:
 
 - `dart analyze` (CLI)
