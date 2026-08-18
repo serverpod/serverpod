@@ -19,7 +19,15 @@ A Session provides access to database, cache, storage, messages, passwords, and 
 
 ## Manual sessions (InternalSession)
 
-**Always close** in a `finally` block:
+Prefer `withSession`, which closes the session for you and attaches the error and stack trace to the logs if the callback throws:
+
+```dart
+await Serverpod.instance.withSession((session) async {
+  await doWork(session);
+});
+```
+
+When the lifetime cannot be expressed as a callback, create the session manually and **always close** it in a `finally` block:
 
 ```dart
 var session = await Serverpod.instance.createSession();
@@ -49,4 +57,4 @@ Sessions close when the endpoint returns. Do not capture for later use:
 Timer(Duration(seconds: 5), () => user.updateLastSeen(session));
 ```
 
-**Fix:** Use a future call (`session.serverpod.futureCalls.callWithDelay(...)`) or create a new InternalSession inside the callback and close it in `finally`.
+**Fix:** Use a future call (`session.serverpod.futureCalls.callWithDelay(...)`) or open a new session inside the callback with `Serverpod.instance.withSession(...)`.
