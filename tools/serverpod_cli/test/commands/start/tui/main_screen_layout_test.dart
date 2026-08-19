@@ -91,7 +91,12 @@ Future<NoctermTester> _pumpLaunchPanel({
 }
 
 /// Builds a single ready app tab with [device] and [url], then pumps it.
-Future<NoctermTester> _pumpReadyAppTab({String? device, String? url}) async {
+/// When [openUrl] is given, it replaces the holder's browser opener.
+Future<NoctermTester> _pumpReadyAppTab({
+  String? device,
+  String? url,
+  Future<bool> Function(Uri url)? openUrl,
+}) async {
   final state = ServerWatchState();
   state.showSplash = false;
   state.serverReady = true;
@@ -108,12 +113,18 @@ Future<NoctermTester> _pumpReadyAppTab({String? device, String? url}) async {
   tab.device = device;
   tab.url = url;
   state.tabs.focusTab(tab);
-  return _pump(state, const Size(200, 30));
+  return _pump(state, const Size(200, 30), openUrl: openUrl);
 }
 
 /// Pumps [state] at [size] and returns the tester, disposing it on teardown.
-Future<NoctermTester> _pump(ServerWatchState state, Size size) async {
+/// When [openUrl] is given, it replaces the holder's browser opener.
+Future<NoctermTester> _pump(
+  ServerWatchState state,
+  Size size, {
+  Future<bool> Function(Uri url)? openUrl,
+}) async {
   final holder = StartAppStateHolder(state);
+  if (openUrl != null) holder.openUrl = openUrl;
   final tester = await NoctermTester.create(size: size);
   addTearDown(() async {
     tester.dispose();
@@ -334,6 +345,20 @@ void main() {
       expect(ts.getTextAt(0, topBorderRow, length: 1), '╭');
       expect(ts.getTextAt(119, topBorderRow, length: 1), '╮');
     });
+
+    test('then the title divider matches the panel border color', () {
+      final ts = tester.terminalState;
+
+      const panelLeft = 88;
+      final headerRule = ts.findText('├').first;
+
+      // The rule's line cells share the border's color instead of falling
+      // back to the default (bright) divider color. The reference cell is
+      // the panel's own left border, one row below the rule's junction.
+      expect(ts.getTextAt(panelLeft + 1, headerRule.y, length: 1), '─');
+      final rule = ts.getCellAt(panelLeft + 1, headerRule.y)!.style.color;
+      expect(rule, ts.getCellAt(panelLeft, headerRule.y + 1)!.style.color);
+    });
   });
 
   group('Given the launch panel is open with a stopped app focused', () {
@@ -426,11 +451,17 @@ void main() {
 
   group('Given a ready Flutter app tab with a published URL', () {
     late NoctermTester tester;
+    late List<Uri> openedUrls;
 
     setUp(() async {
+      openedUrls = [];
       tester = await _pumpReadyAppTab(
         device: 'chrome',
         url: 'http://localhost:8080',
+        openUrl: (url) async {
+          openedUrls.add(url);
+          return true;
+        },
       );
     });
 
@@ -440,6 +471,22 @@ void main() {
         isTrue,
       );
       expect(tester.terminalState.containsText('Running on device'), isFalse);
+    });
+
+    test('then the URL renders underlined', () {
+      final urlText = tester.terminalState.getStyledText().firstWhere(
+        (s) => s.text.contains('http://localhost:8080'),
+      );
+      expect(urlText.style.decoration?.hasUnderline, isTrue);
+    });
+
+    test('when the URL is clicked then it opens in the browser', () async {
+      final url = tester.terminalState.findText('http://localhost:8080').first;
+
+      await tester.tap(url.x, url.y);
+      await tester.pump();
+
+      expect(openedUrls, [Uri.parse('http://localhost:8080')]);
     });
   });
 
