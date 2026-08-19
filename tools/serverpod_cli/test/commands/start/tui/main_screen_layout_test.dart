@@ -334,6 +334,20 @@ void main() {
       expect(ts.getTextAt(0, topBorderRow, length: 1), '╭');
       expect(ts.getTextAt(119, topBorderRow, length: 1), '╮');
     });
+
+    test('then the title divider matches the panel border color', () {
+      final ts = tester.terminalState;
+
+      const panelLeft = 88;
+      final headerRule = ts.findText('├').first;
+
+      // The rule's line cells share the border's color instead of falling
+      // back to the default (bright) divider color. The reference cell is
+      // the panel's own left border, one row below the rule's junction.
+      expect(ts.getTextAt(panelLeft + 1, headerRule.y, length: 1), '─');
+      final rule = ts.getCellAt(panelLeft + 1, headerRule.y)!.style.color;
+      expect(rule, ts.getCellAt(panelLeft, headerRule.y + 1)!.style.color);
+    });
   });
 
   group('Given the launch panel is open with a stopped app focused', () {

@@ -263,7 +263,7 @@ class MainScreen extends StatelessComponent {
                   ),
                 ),
               ),
-              const Divider(indent: -1, endIndent: -1),
+              Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
               Expanded(
                 child: Scrollbar(
                   controller: appPanelScrollController,
