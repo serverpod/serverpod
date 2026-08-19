@@ -40,7 +40,8 @@ integrations/
 ├── serverpod_cloud_storage_s3_compat/    # Shared base package (new)
 ├── serverpod_cloud_storage_s3/           # AWS-specific thin wrapper
 ├── serverpod_cloud_storage_gcp/          # GCP S3-compat + native implementation
-└── serverpod_cloud_storage_r2/           # Cloudflare R2 support (new)
+├── serverpod_cloud_storage_r2/           # Cloudflare R2 support (new)
+└── serverpod_cloud_storage_local/        # Local filesystem storage (new)
 ```
 
 ## Key Abstractions
