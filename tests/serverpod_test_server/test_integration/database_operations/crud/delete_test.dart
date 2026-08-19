@@ -21,7 +21,7 @@ void main() async {
             SimpleData(id: 1, num: 1),
           ),
           throwsA(
-            isA<DatabaseException>().having(
+            isA<DatabaseExecutionException>().having(
               (e) => e.message,
               'message',
               contains('no rows deleted'),

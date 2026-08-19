@@ -291,7 +291,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var result = await insert<T>(session, [row], transaction: transaction);
 
     if (result.length != 1) {
-      throw DatabaseException(
+      throw DatabaseExecutionException(
         'Failed to insert row, updated number of rows is ${result.length} != 1',
       );
     }
@@ -393,7 +393,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     // Defensive: upsertRow passes a single row, so the underlying upsert can
     // never return more than one row. Guards against future adapter bugs.
     if (result.length > 1) {
-      throw DatabaseException(
+      throw DatabaseExecutionException(
         'Failed to upsert row, affected number of rows is ${result.length} != 1',
       );
     }
@@ -493,7 +493,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
 
     if (updated.isEmpty) {
-      throw DatabaseException('Failed to update row, no rows updated');
+      throw DatabaseExecutionException('Failed to update row, no rows updated');
     }
 
     return updated.first;
@@ -527,7 +527,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     );
 
     if (result.isEmpty) {
-      throw DatabaseException('Failed to update row, no rows updated');
+      throw DatabaseExecutionException('Failed to update row, no rows updated');
     }
 
     return poolManager.serializationManager.deserialize<T>(result.first);
@@ -652,7 +652,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     var result = await delete<T>(session, [row], transaction: transaction);
 
     if (result.isEmpty) {
-      throw DatabaseException('Failed to delete row, no rows deleted.');
+      throw DatabaseExecutionException(
+        'Failed to delete row, no rows deleted.',
+      );
     }
 
     return result.first;
