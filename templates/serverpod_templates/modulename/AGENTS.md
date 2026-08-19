@@ -19,7 +19,7 @@ Prefix table names with the module name (for example `modulename_orders`) so the
 NEVER edit generated code. `modulename_server/lib/src/generated/` and the whole `modulename_client` package are rewritten by the code generator. Change the models, the endpoints or `lib/modulename_server.dart` instead.
 <!-- {{#database}} -->
 
-Migrations are the exception: the `migration.sql` of a generated migration MAY be edited by hand, for example to add a data transformation, or to reach a destructive change through non-destructive steps. Leave the other files in the migration directory alone, and keep the schema that the SQL ends up with identical to `definition.sql` — new databases are created from that file and never run `migration.sql`.
+Migrations are a narrow exception: the `migration.sql` of a generated migration MAY be edited by hand when the generated SQL would lose data — to add a data transformation, or to reach a destructive change through non-destructive steps. Never touch the other files in the migration directory, and keep the schema the SQL ends up with identical to `definition.sql` — new databases are created from that file and never run `migration.sql`.
 <!-- {{/database}} -->
 
 Projects that depend on this module reference its types as `module:modulename:MyType`, where `modulename` is the `nickname` in `config/generator.yaml`.
