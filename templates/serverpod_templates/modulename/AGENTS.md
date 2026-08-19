@@ -1,10 +1,6 @@
 # Serverpod module
 
 This project is a Serverpod module: a reusable package with server code (`modulename_server`) and client code (`modulename_client`) that other Serverpod projects add as a dependency. A module is not a runnable server, so there is no `serverpod start` and no `serverpod` MCP here.
-<!-- {{#skills}} -->
-
-Serverpod agent skills are installed in this project. They cover models, migrations, the database ORM, endpoints, streams, authentication, testing and modules — read the skill that matches the task before writing Serverpod code, starting with `serverpod-overview`.
-<!-- {{/skills}} -->
 
 Working loop, run from `modulename_server`:
 
