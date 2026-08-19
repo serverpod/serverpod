@@ -80,8 +80,8 @@ class ServerpodClientRequestDelegateImpl
     } on http.ClientException catch (e) {
       var message = 'Unknown server response code. ($e)';
       throw ServerpodClientNetworkException(message);
-    } on TimeoutException {
-      throw const ServerpodClientNetworkException('Request timed out');
+    } on TimeoutException catch (e) {
+      throw ServerpodClientNetworkException('Request timed out. ($e)');
     }
   }
 

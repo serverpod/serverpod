@@ -84,7 +84,7 @@ void main() {
             isA<ServerpodClientNetworkException>().having(
               (e) => e.message,
               'message',
-              'Request timed out',
+              contains('Request timed out'),
             ),
           ),
         );
