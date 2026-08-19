@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cli_tools/cli_tools.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class CommandLineTools {
@@ -71,16 +72,22 @@ class CommandLineTools {
     return true;
   }
 
+  /// Arguments for the `flutter create` invocation made by [flutterCreate].
+  /// [org] is forwarded as `--org`, which sets the bundle and package
+  /// identifier prefix of the generated Flutter app.
+  @visibleForTesting
+  static List<String> flutterCreateArguments({String? org}) => [
+    'create',
+    if (org != null) ...['--org', org],
+    '.',
+  ];
+
   static Future<bool> flutterCreate(Directory dir, {String? org}) async {
     log.debug('Running `flutter create .` in ${dir.path}', newParagraph: true);
 
     var exitCode = await _runProcessWithDefaultLogger(
       executable: 'flutter',
-      arguments: [
-        'create',
-        if (org != null) ...['--org', org],
-        '.',
-      ],
+      arguments: flutterCreateArguments(org: org),
       workingDirectory: dir.path,
     );
 
