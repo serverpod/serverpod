@@ -41,24 +41,7 @@ class DartSharedCodeGenerator extends CodeGenerator {
         resolveUrl: _sharedPackageUrl,
       );
 
-      // Prefixes are assigned from the complete set of imports, so every
-      // library is emitted once to collect them before any is generated.
-      var libraries = [
-        for (var entry in modelAllocatorContext.entries)
-          (entry: entry, library: generator.generateModelLibrary(entry.model)),
-      ];
-
-      for (var (:entry, :library) in libraries) {
-        library.collectImports(entry.allocator);
-      }
-
-      for (var (:entry, :library) in libraries) {
-        var path = entry.model.getFullFilePath(config, serverCode: false);
-        result[path] = library.generateCode(
-          allocator: entry.allocator,
-          formatter: GeneratedDartFormatters.of(path),
-        );
-      }
+      result.addAll(generator.generateCode(modelAllocatorContext));
     }
 
     return result;

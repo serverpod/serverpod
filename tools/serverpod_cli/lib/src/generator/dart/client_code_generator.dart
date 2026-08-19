@@ -34,30 +34,7 @@ class DartClientCodeGenerator extends CodeGenerator {
       config,
     );
 
-    // Prefixes are assigned from the complete set of imports, so every
-    // library is emitted once to collect them before any is generated.
-    var libraries = [
-      for (var entry in modelAllocatorContext.entries)
-        (
-          entry: entry,
-          library: clientSideGenerator.generateModelLibrary(entry.model),
-        ),
-    ];
-
-    for (var (:entry, :library) in libraries) {
-      library.collectImports(entry.allocator);
-    }
-
-    var codeMap = <String, String>{};
-    for (var (:entry, :library) in libraries) {
-      var path = entry.model.getFullFilePath(config, serverCode: false);
-      codeMap[path] = library.generateCode(
-        allocator: entry.allocator,
-        formatter: GeneratedDartFormatters.of(path),
-      );
-    }
-
-    return codeMap;
+    return clientSideGenerator.generateCode(modelAllocatorContext);
   }
 
   @override
