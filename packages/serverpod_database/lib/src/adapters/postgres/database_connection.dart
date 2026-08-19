@@ -13,8 +13,6 @@ import 'postgres_database_result.dart';
 import 'postgres_pool_manager.dart';
 import 'sql_query_builder.dart';
 
-part 'postgres_exceptions.dart';
-
 /// A connection to the database. In most cases the [Database] db object in
 /// the [DatabaseSession] object should be used when connecting with the database.
 @internal
@@ -683,7 +681,7 @@ class PostgresDatabaseConnection
         (_) => exception.message,
       };
 
-      var serverpodException = _PgDatabaseQueryException.fromServerException(
+      var serverpodException = _queryExceptionFromServerException(
         exception,
         messageOverride: message,
       );
@@ -697,7 +695,7 @@ class PostgresDatabaseConnection
       );
       Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException(exception.message);
+      var serverpodException = DatabaseQueryException(exception.message);
       _logQuery(
         session,
         query,
@@ -876,12 +874,10 @@ class PostgresDatabaseConnection
         settings: pgTransactionSettings,
       );
     } on pg.ServerException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException.fromServerException(
-        exception,
-      );
+      var serverpodException = _queryExceptionFromServerException(exception);
       Error.throwWithStackTrace(serverpodException, trace);
     } on pg.PgException catch (exception, trace) {
-      var serverpodException = _PgDatabaseQueryException(exception.message);
+      var serverpodException = DatabaseQueryException(exception.message);
       Error.throwWithStackTrace(serverpodException, trace);
     }
   }
@@ -1235,4 +1231,20 @@ Set<T> _extractPrimaryKeyForRelation<T>(
 
   var ids = resultSet.map((e) => e[idFieldName] as T?).whereType<T>().toSet();
   return ids;
+}
+
+DatabaseQueryException _queryExceptionFromServerException(
+  pg.ServerException e, {
+  String? messageOverride,
+}) {
+  return DatabaseQueryException(
+    messageOverride ?? e.message,
+    code: e.code,
+    detail: e.detail,
+    hint: e.hint,
+    tableName: e.tableName,
+    columnName: e.columnName,
+    constraintName: e.constraintName,
+    position: e.position,
+  );
 }

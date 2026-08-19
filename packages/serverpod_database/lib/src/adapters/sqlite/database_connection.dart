@@ -30,8 +30,6 @@ import 'sqlite_database_result.dart';
 import 'sqlite_pool_manager.dart';
 import 'sqlite_query_parameters.dart';
 
-part 'sqlite_exceptions.dart';
-
 /// A connection to the SQLite database.
 @internal
 class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
@@ -337,7 +335,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         // Rows filtered out by [updateWhere] return nothing and must not be
         // counted, so duplicates are detected among the returned ids only.
         if (results.map((r) => r.id).toSet().length != results.length) {
-          throw _SqliteDatabaseQueryException(
+          throw DatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,
             hint:
@@ -1018,9 +1016,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       _logQuery(session, statement, stopwatch, numRowsAffected: result.length);
       return result;
     } catch (exception, trace) {
-      final serverpodException = exception is _SqliteDatabaseQueryException
+      final serverpodException = exception is DatabaseQueryException
           ? exception
-          : _SqliteDatabaseQueryException.fromSqliteException(exception);
+          : _queryExceptionFromSqliteException(exception);
       _logQuery(
         session,
         statement,
@@ -1605,9 +1603,9 @@ class _SqliteTransaction implements Transaction {
     try {
       await _ctx.execute(sql, parameters);
     } catch (exception, trace) {
-      final serverpodException = exception is _SqliteDatabaseQueryException
+      final serverpodException = exception is DatabaseQueryException
           ? exception
-          : _SqliteDatabaseQueryException.fromSqliteException(exception);
+          : _queryExceptionFromSqliteException(exception);
       Error.throwWithStackTrace(serverpodException, trace);
     }
   }
@@ -1645,4 +1643,27 @@ class _TransactionCancelledException<R> implements Exception {
 
   /// The result of the transaction.
   final R result;
+}
+
+DatabaseQueryException _queryExceptionFromSqliteException(Object e) {
+  if (e is! SqliteException) {
+    int? code;
+    if ([
+      'recursive lock',
+      'LockError',
+    ].any((s) => e.toString().contains(s))) {
+      code = 6;
+    }
+    return DatabaseQueryException(e.toString(), code: code.toString());
+  }
+
+  var code = e.extendedResultCode;
+  if (e.resultCode == 19 && e.message.contains('FOREIGN KEY')) {
+    code = 787;
+  }
+  return DatabaseQueryException(
+    e.message,
+    code: code.toString(),
+    detail: e.explanation,
+  );
 }
