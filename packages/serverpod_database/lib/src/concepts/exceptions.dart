@@ -3,7 +3,7 @@ class DatabaseException implements Exception {
   /// Creates a new [DatabaseException] with the given [message].
   DatabaseException(this.message);
 
-  /// Error message from the database.
+  /// A message describing the error.
   final String message;
 
   @override
