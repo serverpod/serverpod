@@ -525,19 +525,19 @@ void main() {
     'on its own',
     () {
       late _ManagerFixture f;
-      late Directory exitDir;
-      late File exitFile;
+      late Directory pidDir;
+      late File pidFile;
       late Completer<String?> ready;
       late int stopCalls;
 
       setUp(() async {
         ready = Completer<String?>();
         stopCalls = 0;
-        exitDir = await Directory.systemTemp.createTemp('flutter_exit_');
-        exitFile = File(p.join(exitDir.path, 'exit'));
+        pidDir = await Directory.systemTemp.createTemp('flutter_exit_');
+        pidFile = File(p.join(pidDir.path, 'pid'));
         f = await _ManagerFixture.create(
           shim: 'emits_machine_events.dart',
-          shimArgs: ['--exit-file=${exitFile.path}'],
+          shimArgs: ['--pid-file=${pidFile.path}'],
           fakeVmService: true,
           onReady: (_, url) => ready.complete(url),
           onStop: (_) => stopCalls++,
@@ -548,16 +548,18 @@ void main() {
 
       tearDown(() async {
         await f.dispose();
-        await exitDir.deleteBestEffort(recursive: true);
+        await pidDir.deleteBestEffort(recursive: true);
       });
 
       test(
         'when the process exits without a stop call then onStop fires once '
         'and the app reports not running',
         () async {
-          // The shim exits once this file appears, simulating e.g. the
+          // Kill the shim out from under the manager, simulating e.g. the
           // heartbeat teardown after the app's browser window is closed.
-          exitFile.createSync();
+          // The shim wrote its pid on startup, before the ready event.
+          final shimPid = int.parse(pidFile.readAsStringSync());
+          Process.killPid(shimPid, ProcessSignal.sigkill);
 
           await _eventually(() => stopCalls > 0);
 

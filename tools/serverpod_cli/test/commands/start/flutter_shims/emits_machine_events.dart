@@ -1,12 +1,19 @@
 // Test shim: emits a fixed `--machine` event sequence, then waits for
 // SIGINT/SIGTERM. `--ws=<uri>` overrides the wsUri in app.debugPort.
-// `--exit-file=<path>` makes the shim exit on its own once that file
-// appears, simulating a spontaneous app exit (e.g. browser closed).
+// `--pid-file=<path>` writes the shim's pid there on startup, so a test
+// can kill the process directly to simulate a spontaneous app exit
+// (e.g. browser closed).
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
 Future<void> main(List<String> args) async {
+  final pidFile = args
+      .where((a) => a.startsWith('--pid-file='))
+      .map((a) => a.substring('--pid-file='.length))
+      .firstOrNull;
+  if (pidFile != null) File(pidFile).writeAsStringSync('$pid');
+
   final wsUri = args
       .firstWhere(
         (a) => a.startsWith('--ws='),
@@ -46,19 +53,6 @@ Future<void> main(List<String> args) async {
   });
 
   final stopper = Completer<void>();
-
-  final exitFile = args
-      .where((a) => a.startsWith('--exit-file='))
-      .map((a) => a.substring('--exit-file='.length))
-      .firstOrNull;
-  if (exitFile != null) {
-    Timer.periodic(const Duration(milliseconds: 25), (timer) {
-      if (File(exitFile).existsSync()) {
-        // The signal watchers below keep the isolate alive; exit outright.
-        exit(0);
-      }
-    });
-  }
 
   ProcessSignal.sigint.watch().listen((_) {
     if (!stopper.isCompleted) stopper.complete();
