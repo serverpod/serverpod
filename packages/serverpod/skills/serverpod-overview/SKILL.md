@@ -23,7 +23,9 @@ Each of these feature areas has its own `serverpod-*` skill; use the one that ma
 
 ## Running the server
 
-Most likely the server is already running with hot reload and `serverpod generate --watch`. NEVER attempt to start the server. The user is running the server with the `serverpod start` command (as an agent do NOT run this command, instead prompt the user to run `serverpod start`, if necessary). Hot reload will update the generated code and quickly restart the server when files are changed.
+The user runs the server with `serverpod start`, which watches for file changes to run incremental code generation and hot reload the server (and the Flutter app, when the project has one).
+
+Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Only then ask the user to start it, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working. Never start it without asking first.
 
 ALWAYS use the MCP server instead of the command line. A running `serverpod start` exposes:
 
