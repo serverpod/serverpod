@@ -6,7 +6,7 @@ This project is a Flutter app (frontend) backed by a Serverpod server (backend).
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start the server manually, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working. NEVER start the server without asking first. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
+The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start it. NEVER start the server yourself. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
 
 While running, `serverpod start` watches for file changes to run incremental code generation and hot reload both the server and the Flutter app.
 <!-- {{/flutterApp}} -->
@@ -18,7 +18,7 @@ This project is a Serverpod server (backend).
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start the server manually, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working. NEVER start the server without asking first.
+The user starts the server with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start it. NEVER start the server yourself.
 
 While running, `serverpod start` watches for file changes to run incremental code generation and hot reload the running server.
 <!-- {{/flutterApp}} -->

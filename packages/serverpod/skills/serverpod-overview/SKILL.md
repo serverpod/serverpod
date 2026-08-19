@@ -25,7 +25,7 @@ Each of these feature areas has its own `serverpod-*` skill; use the one that ma
 
 The user runs the server with `serverpod start`, which watches for file changes to run incremental code generation and hot reload the server (and the Flutter app, when the project has one).
 
-Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Only then ask the user to start it, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working. NEVER start the server without asking first.
+Do not check whether the server is running before acting: make the changes and call the `serverpod` MCP tools. When nothing is running, the MCP answers with an explicit "the server is not running" error. Only then, stop and ask the user to start it. NEVER start the server yourself.
 
 ALWAYS use the MCP server instead of the command line. A running `serverpod start` exposes:
 

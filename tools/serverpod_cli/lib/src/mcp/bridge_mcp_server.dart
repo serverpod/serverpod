@@ -43,8 +43,7 @@ base class BridgeMcpServer extends MCPServer
             "the server and Flutter app, and get the Flutter app's Dart "
             'Tooling Daemon (DTD) URI. If a tool reports the server is not '
             'running, ask the user to start it with `serverpod start` in the '
-            'project directory, or for permission to start it in the '
-            'background with `serverpod start --no-tui`.',
+            'project directory.',
       ) {
     for (final tool in runnerStaticTools) {
       registerTool(tool, _makeToolForwarder(tool.name));
@@ -61,9 +60,7 @@ base class BridgeMcpServer extends MCPServer
       TextContent(
         text:
             'The server is not running with `serverpod start` for this project. '
-            'Ask the user to run `serverpod start` in the project directory, or '
-            'for permission to start it in the background with '
-            '`serverpod start --no-tui`.',
+            'Ask the user to run `serverpod start` in the project directory.',
       ),
     ],
     isError: true,
