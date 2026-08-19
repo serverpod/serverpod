@@ -308,7 +308,7 @@ class Client extends ServerpodClientShared {
     Map<String, dynamic> args, {
     bool authenticated = true,
   }) async {
-    throw const ServerpodClientException('This is a mock client.', -1);
+    throw const ServerpodClientNetworkException('This is a mock client.');
   }
 }
 
