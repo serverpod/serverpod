@@ -375,16 +375,12 @@ void main() {
           );
         });
 
-        group('has Serverpod and Dart MCP servers configured', () {
-          final serverDirRelative = '${projectName}_server';
-          final genericConfig =
-              '''
+        // A module has no runnable server, so the Serverpod MCP server would
+        // have nothing to connect to and all of its tools would error.
+        group('has only the Dart MCP server configured', () {
+          const genericConfig = '''
 {
   "mcpServers": {
-    "serverpod": {
-      "command": "serverpod",
-      "args": ["mcp-server", "--server-dir", "$serverDirRelative"]
-    },
     "dart": {
       "command": "dart",
       "args": ["mcp-server"]

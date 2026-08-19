@@ -347,7 +347,11 @@ Future<void> _configureAgentSkillsAndMcp({
   required TemplateContext context,
 }) async {
   if (context.ides.isNotEmpty) {
-    await _configureProjectMcpServers(serverpodDirs, context.ides);
+    await _configureProjectMcpServers(
+      serverpodDirs,
+      context.ides,
+      isModule: context.template.isModule,
+    );
 
     await log.progress('Installing agent skills', () async {
       try {
@@ -445,35 +449,46 @@ Future<void> _moveDirectoryContents(
 }
 
 /// Writes the MCP config files for [ides] under [dirs], showing progress.
+/// Module projects get a config without the Serverpod MCP server, since they
+/// have no server to run it against.
 Future<void> _configureProjectMcpServers(
   ServerpodDirectories dirs,
-  List<TemplateIde> ides,
-) async {
+  List<TemplateIde> ides, {
+  required bool isModule,
+}) async {
   if (ides.isEmpty) return;
-  await log.progress('Configuring Serverpod MCP server', () async {
-    await _configureMcpServer(
-      dirs.projectDir.path,
-      ides,
-      serverDirRelative: p.relative(
-        dirs.serverDir.path,
-        from: dirs.projectDir.path,
-      ),
-    );
-    return true;
-  });
+  await log.progress(
+    isModule ? 'Configuring MCP servers' : 'Configuring Serverpod MCP server',
+    () async {
+      await _configureMcpServer(
+        dirs.projectDir.path,
+        ides,
+        serverDirRelative: p.relative(
+          dirs.serverDir.path,
+          from: dirs.projectDir.path,
+        ),
+        isModule: isModule,
+      );
+      return true;
+    },
+  );
 }
 
 Future<void> _configureMcpServer(
   String projectDirPath,
   List<TemplateIde> ides, {
   required String serverDirRelative,
+  required bool isModule,
 }) {
   return Future.forEach(
     ides,
     (ide) async {
       await _createFileAndWrite(
         p.join(projectDirPath, ide.filePath),
-        ide.effectiveConfig(serverDirRelative: serverDirRelative),
+        ide.effectiveConfig(
+          serverDirRelative: serverDirRelative,
+          isModule: isModule,
+        ),
       );
       for (final entry in ide.additionalFiles.entries) {
         await _createFileAndWrite(
@@ -594,8 +609,6 @@ Future<CreateResult> _performUpgrade({
     serverpodDirs: serverpodDir,
     context: context,
   );
-
-  await _configureProjectMcpServers(serverpodDir, context.ides);
 
   if (success) {
     log.info(

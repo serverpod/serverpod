@@ -97,5 +97,37 @@ void main() {
         }
       },
     );
+
+    test(
+      'when rendering the config for a module '
+      'then the Serverpod MCP server is left out',
+      () {
+        for (final ide in TemplateIde.values) {
+          final config = ide.effectiveConfig(
+            serverDirRelative: 'my_module_server',
+            isModule: true,
+          );
+
+          expect(config, isNot(contains('serverpod')), reason: ide.name);
+          expect(config, isNot(contains('my_module_server')), reason: ide.name);
+        }
+      },
+    );
+
+    test(
+      'when rendering the config for a module '
+      'then the Dart MCP server is still configured',
+      () {
+        for (final ide in TemplateIde.values) {
+          final config = ide.effectiveConfig(
+            serverDirRelative: 'my_module_server',
+            isModule: true,
+          );
+
+          expect(config, contains('dart'), reason: ide.name);
+          expect(config, contains('mcp-server'), reason: ide.name);
+        }
+      },
+    );
   });
 }
