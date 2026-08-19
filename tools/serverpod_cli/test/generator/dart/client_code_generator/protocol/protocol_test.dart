@@ -166,8 +166,8 @@ void main() {
             protocol,
             matches(
               RegExp(
-                r'    \.\.\._i(\d+)\.Protocol\(\) is _i\d+\.DatabaseSerializationManager\n'
-                r'        \? \(_i\1\.Protocol\(\) as _i\d+\.DatabaseSerializationManager\)\n'
+                r'    \.\.\._i([a-z0-9]+)\.Protocol\(\) is _i[a-z0-9]+\.DatabaseSerializationManager\n'
+                r'        \? \(_i\1\.Protocol\(\) as _i[a-z0-9]+\.DatabaseSerializationManager\)\n'
                 r'              \.getTargetTableDefinitions\(\)\n'
                 r'        : \[\],\n'
                 r'  \];',
@@ -186,18 +186,21 @@ void main() {
             matches(
               RegExp(
                 r'  @override\n'
-                r'  _i(\d+)\.Table\? getTableForType\(Type t\) \{\n'
+                r'  _i([a-z0-9]+)\.Table\? getTableForType\(Type t\) \{\n'
                 r'    \{\n'
-                r'      var protocol = _i(\d+)\.Protocol\(\);\n'
+                r'      var protocol = _i([a-z0-9]+)\.Protocol\(\);\n'
                 r'      var table = protocol is _i\1\.DatabaseSerializationManager\n'
-                r'          \? \(protocol as _i\1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                // Whitespace tolerant: whether the call wraps onto its own
+                // line depends on how long the generated import prefixes are.
+                r'          \? \(protocol as _i\1\.DatabaseSerializationManager\)'
+                r'\s*\.getTableForType\(t\)\n'
                 r'          : null;\n'
                 r'      if \(table != null\) \{\n'
                 r'        return table;\n'
                 r'      \}\n'
                 r'    \}\n'
                 r'    switch \(t\) \{\n'
-                r'      case _i(\d+)\.Example:\n'
+                r'      case _i([a-z0-9]+)\.Example:\n'
                 r'        return _i\3\.Example\.t;\n'
                 r'    \}\n'
                 r'    return null;\n'
@@ -226,7 +229,9 @@ void main() {
           expect(
             codeMap[expectedFileName],
             isNot(
-              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+              contains(
+                RegExp(r'_i[a-z0-9]+\.Protocol\.targetTableDefinitions'),
+              ),
             ),
           );
         },
@@ -238,7 +243,7 @@ void main() {
           expect(
             codeMap[expectedFileName],
             isNot(
-              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
+              contains(RegExp(r'_i[a-z0-9]+\.Protocol\(\)\.getTableForType')),
             ),
           );
         },
@@ -293,7 +298,7 @@ void main() {
             protocol,
             matches(
               RegExp(
-                r'\.\.\._i(\d+)\.Protocol\(\) is _i(\d+)\.DatabaseSerializationManager\n'
+                r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
                 r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
                 r'              \.getTargetTableDefinitions\(\)\n'
                 r'        : \[\],',
@@ -321,9 +326,12 @@ void main() {
             protocol,
             matches(
               RegExp(
-                r'var protocol = _i(\d+)\.Protocol\(\);\n'
-                r'      var table = protocol is _i(\d+)\.DatabaseSerializationManager\n'
-                r'          \? \(protocol as _i\2\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                r'var protocol = _i([a-z0-9]+)\.Protocol\(\);\n'
+                r'      var table = protocol is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
+                // Whitespace tolerant: whether the call wraps onto its own line
+                // depends on how long the generated import prefixes are.
+                r'          \? \(protocol as _i\2\.DatabaseSerializationManager\)'
+                r'\s*\.getTableForType\(t\)\n'
                 r'          : null;',
               ),
             ),
@@ -494,8 +502,8 @@ void main() {
             allOf(
               matches(
                 RegExp(
-                  r'\.\.\._i2\.Protocol\(\) is _i1\.DatabaseSerializationManager\n'
-                  r'        \? \(_i2\.Protocol\(\) as _i1\.DatabaseSerializationManager\)\n'
+                  r'\.\.\._i([a-z0-9]+)\.Protocol\(\) is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
+                  r'        \? \(_i\1\.Protocol\(\) as _i\2\.DatabaseSerializationManager\)\n'
                   r'              \.getTargetTableDefinitions\(\)\n'
                   r'        : \[\],',
                 ),
@@ -514,9 +522,12 @@ void main() {
             allOf(
               matches(
                 RegExp(
-                  r'var protocol = _i2\.Protocol\(\);\n'
-                  r'      var table = protocol is _i1\.DatabaseSerializationManager\n'
-                  r'          \? \(protocol as _i1\.DatabaseSerializationManager\)\.getTableForType\(t\)\n'
+                  r'var protocol = _i([a-z0-9]+)\.Protocol\(\);\n'
+                  r'      var table = protocol is _i([a-z0-9]+)\.DatabaseSerializationManager\n'
+                  // Whitespace tolerant: whether the call wraps onto its own line
+                  // depends on how long the generated import prefixes are.
+                  r'          \? \(protocol as _i\2\.DatabaseSerializationManager\)'
+                  r'\s*\.getTableForType\(t\)\n'
                   r'          : null;',
                 ),
               ),
@@ -531,7 +542,9 @@ void main() {
           expect(
             codeMap[expectedFileName],
             isNot(
-              contains(RegExp(r'_i\d+\.Protocol\.targetTableDefinitions')),
+              contains(
+                RegExp(r'_i[a-z0-9]+\.Protocol\.targetTableDefinitions'),
+              ),
             ),
           );
         },
@@ -543,7 +556,7 @@ void main() {
           expect(
             codeMap[expectedFileName],
             isNot(
-              contains(RegExp(r'_i\d+\.Protocol\(\)\.getTableForType')),
+              contains(RegExp(r'_i[a-z0-9]+\.Protocol\(\)\.getTableForType')),
             ),
           );
         },

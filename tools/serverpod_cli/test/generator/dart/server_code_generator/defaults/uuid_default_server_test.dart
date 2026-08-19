@@ -236,6 +236,6 @@ void main() {
 
 extension _StrExt on String {
   String get withoutImportPrefix {
-    return replaceAll(RegExp(r'_i\d+\.'), '');
+    return replaceAll(RegExp(r'_i[a-z0-9]+\.'), '');
   }
 }

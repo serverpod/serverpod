@@ -469,7 +469,7 @@ fields:
               generatedModel,
               contains('''
 abstract class Item
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {'''),
+    implements _is.SerializableModel, _is.ProtocolSerialization {'''),
             );
           },
         );
@@ -485,7 +485,7 @@ abstract class Item
               generatedClientModel,
               contains(
                 'abstract class Item implements '
-                '_i1.SerializableModel, _i1.ProtocolSerialization {',
+                '_isc.SerializableModel, _isc.ProtocolSerialization {',
               ),
             );
           },
@@ -762,7 +762,7 @@ formatter:
             generatedSharedModel,
             contains(
               'abstract class SharedModel implements '
-              '_i1.SerializableModel, _i1.ProtocolSerialization {',
+              '_iss.SerializableModel, _iss.ProtocolSerialization {',
             ),
           );
         },

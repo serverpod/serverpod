@@ -209,7 +209,7 @@ void main() {
         () {
           expect(
             endpointsFile,
-            contains("'$methodName': _i1.MethodStreamConnector("),
+            contains("'$methodName': _is.MethodStreamConnector("),
           );
         },
       );
@@ -273,7 +273,7 @@ void main() {
         () {
           expect(
             endpointsFile,
-            contains("'$methodName': _i1.MethodStreamConnector("),
+            contains("'$methodName': _is.MethodStreamConnector("),
           );
         },
       );
@@ -289,7 +289,7 @@ void main() {
             endpointsFile,
             contains(
               ' streamParams: {\n'
-              '            \'streamParam\': _i1.StreamParameterDescription<String>(\n ',
+              '            \'streamParam\': _is.StreamParameterDescription<String>(\n ',
             ),
           );
         },

@@ -73,15 +73,15 @@ void main() {
 
           // This regex checks that the generated code does NOT contain the unnecessary null-aware operator
           // after the type cast. The pattern should be:
-          // (nullableCustomClassField as _i1.ProtocolSerialization).toJsonForProtocol()
+          // (nullableCustomClassField as _i<hash>.ProtocolSerialization).toJsonForProtocol()
           // NOT:
-          // (nullableCustomClassField as _i1.ProtocolSerialization)?.toJsonForProtocol()
+          // (nullableCustomClassField as _i<hash>.ProtocolSerialization)?.toJsonForProtocol()
           var correctPatternRegex = RegExp(
-            r'\(nullableCustomClassField\s+as\s+_i\d+\.ProtocolSerialization\)\.toJsonForProtocol\(\)',
+            r'\(nullableCustomClassField\s+as\s+_i[a-z0-9]+\.ProtocolSerialization\)\.toJsonForProtocol\(\)',
           );
 
           var incorrectPatternRegex = RegExp(
-            r'\(nullableCustomClassField\s+as\s+_i\d+\.ProtocolSerialization\)\?\.toJsonForProtocol\(\)',
+            r'\(nullableCustomClassField\s+as\s+_i[a-z0-9]+\.ProtocolSerialization\)\?\.toJsonForProtocol\(\)',
           );
 
           expect(

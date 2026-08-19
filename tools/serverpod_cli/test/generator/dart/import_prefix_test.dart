@@ -70,16 +70,12 @@ void main() {
 
     test(
       'when getting the import prefix for each, '
-      'then each is shorter than a hashed prefix, which is what keeps the '
-      'hash from ever producing one of them.',
+      'then each is shorter than the nine characters of a hashed prefix, '
+      'which is what keeps the hash from ever producing one of them.',
       () {
-        var hashedLength = importPrefixFor(
-          'package:example/example.dart',
-        ).length;
-
         expect(
           reservedPrefixes.keys.map((url) => importPrefixFor(url).length),
-          everyElement(lessThan(hashedLength)),
+          everyElement(lessThan(9)),
         );
       },
     );

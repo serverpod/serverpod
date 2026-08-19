@@ -2,6 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
 import 'package:test/test.dart';
 
@@ -43,6 +44,10 @@ void main() {
 
       var grandchildClassName = 'GrandChildExample';
       var grandchildClassFileName = 'grand_child_example';
+
+      // Every model in a sealed hierarchy is emitted into the top node's
+      // library, so they all resolve through the top node's import prefix.
+      var topNodePrefix = importPrefixFor('$parentClassFileName.dart');
 
       var parent = ModelClassDefinitionBuilder()
           .withClassName(parentClassName)
@@ -173,7 +178,7 @@ void main() {
           test('that does NOT return $parentClassName.fromJson', () {
             expect(
               deserializeMethod!.toSource().contains(
-                'return _i3.$parentClassName.fromJson',
+                'return $topNodePrefix.$parentClassName.fromJson',
               ),
               isFalse,
             );
@@ -184,7 +189,7 @@ void main() {
             () {
               expect(
                 deserializeMethod!.toSource().contains(
-                  'return _i2.$childClassName.fromJson',
+                  'return $topNodePrefix.$childClassName.fromJson',
                 ),
                 isTrue,
               );
@@ -196,7 +201,7 @@ void main() {
             () {
               expect(
                 deserializeMethod!.toSource().contains(
-                  'return _i2.$grandchildClassName.fromJson',
+                  'return $topNodePrefix.$grandchildClassName.fromJson',
                 ),
                 isTrue,
               );
@@ -218,7 +223,7 @@ void main() {
           test('that does NOT return the $parentClassName', () {
             expect(
               getClassNameForObjectMethod!.toSource().contains(
-                'case _i3.$parentClassName():',
+                'case $topNodePrefix.$parentClassName():',
               ),
               isFalse,
             );
@@ -227,7 +232,7 @@ void main() {
           test('that returns the $childClassName with the top node alias', () {
             expect(
               getClassNameForObjectMethod!.toSource().contains(
-                'case _i2.$childClassName():',
+                'case $topNodePrefix.$childClassName():',
               ),
               isTrue,
             );
@@ -238,7 +243,7 @@ void main() {
             () {
               expect(
                 getClassNameForObjectMethod!.toSource().contains(
-                  'case _i2.$grandchildClassName():',
+                  'case $topNodePrefix.$grandchildClassName():',
                 ),
                 isTrue,
               );
@@ -253,11 +258,11 @@ void main() {
 
               expect(
                 getClassNameForObjectMethodSource.indexOf(
-                  'case _i2.$grandchildClassName():',
+                  'case $topNodePrefix.$grandchildClassName():',
                 ),
                 lessThan(
                   getClassNameForObjectMethodSource.indexOf(
-                    'case _i2.$childClassName():',
+                    'case $topNodePrefix.$childClassName():',
                   ),
                 ),
               );
@@ -281,7 +286,7 @@ void main() {
             () {
               expect(
                 deserializeByClassNameMethod!.toSource().contains(
-                  'return deserialize<_i3.Example>',
+                  'return deserialize<$topNodePrefix.Example>',
                 ),
                 isFalse,
               );
@@ -291,7 +296,7 @@ void main() {
           test('that returns the $childClassName with the top node alias', () {
             expect(
               deserializeByClassNameMethod!.toSource().contains(
-                'return deserialize<_i2.ChildExample>',
+                'return deserialize<$topNodePrefix.ChildExample>',
               ),
               isTrue,
             );
@@ -302,7 +307,7 @@ void main() {
             () {
               expect(
                 deserializeByClassNameMethod!.toSource().contains(
-                  'return deserialize<_i2.GrandChildExample>',
+                  'return deserialize<$topNodePrefix.GrandChildExample>',
                 ),
                 isTrue,
               );

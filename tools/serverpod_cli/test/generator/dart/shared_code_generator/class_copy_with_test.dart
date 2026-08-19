@@ -159,7 +159,10 @@ void main() {
           });
 
           test('annotated with @useResult', () {
-            expect(copyWithMethod?.metadata.first.toSource(), '@_i1.useResult');
+            expect(
+              copyWithMethod?.metadata.first.toSource(),
+              '@_iss.useResult',
+            );
           });
 
           test('annotated with @override', () {
