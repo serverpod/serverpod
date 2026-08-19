@@ -401,7 +401,16 @@ void main() {
             columnValues: (t) => [t.anInt(123)],
           );
 
-          expect(updated, throwsA(isA<DatabaseException>()));
+          expect(
+            updated,
+            throwsA(
+              isA<DatabaseException>().having(
+                (e) => e.message,
+                'message',
+                contains('no rows updated'),
+              ),
+            ),
+          );
         },
       );
     },

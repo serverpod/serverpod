@@ -17,7 +17,13 @@ void main() {
             session,
             SimpleData(id: 1, num: 1),
           ),
-          throwsA(isA<DatabaseException>()),
+          throwsA(
+            isA<DatabaseException>().having(
+              (e) => e.message,
+              'message',
+              contains('no rows deleted'),
+            ),
+          ),
         );
       },
     );

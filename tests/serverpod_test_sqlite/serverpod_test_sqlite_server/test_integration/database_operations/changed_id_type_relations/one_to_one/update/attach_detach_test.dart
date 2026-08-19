@@ -123,7 +123,14 @@ void main() async {
           await AddressUuid.db.attachRow.inhabitant(session, address, alice);
           fail('Expected an exception to be thrown');
         } catch (e) {
-          expect(e, isA<DatabaseException>());
+          expect(
+            e,
+            isA<DatabaseException>().having(
+              (e) => e.message,
+              'message',
+              contains('no rows updated'),
+            ),
+          );
         }
       },
     );
@@ -154,7 +161,14 @@ void main() async {
           await AddressUuid.db.detachRow.inhabitant(session, address);
           fail('Expected an exception to be thrown');
         } catch (e) {
-          expect(e, isA<DatabaseException>());
+          expect(
+            e,
+            isA<DatabaseException>().having(
+              (e) => e.message,
+              'message',
+              contains('no rows updated'),
+            ),
+          );
         }
       },
     );
@@ -290,7 +304,14 @@ void main() async {
           await CitizenInt.db.attachRow.address(session, alice, address);
           fail('Expected an exception to be thrown');
         } catch (e) {
-          expect(e, isA<DatabaseException>());
+          expect(
+            e,
+            isA<DatabaseException>().having(
+              (e) => e.message,
+              'message',
+              contains('no rows updated'),
+            ),
+          );
         }
       },
     );
