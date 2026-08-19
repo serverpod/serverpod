@@ -37,7 +37,7 @@ After following the regular upgrade process, address the following breaking chan
 
 **Auth:** The `authenticationKeyManager` client parameter is removed; use `authSessionManager` (Flutter) or `authKeyProvider`. The native Google Sign-In web implementation is replaced by OAuth2, and dead email exceptions are removed.
 
-**Server:** `SerializationManagerServer` is removed. Generated projects now import `src/generated/serverpod.dart` and create the server with `Serverpod(args)`; the `Serverpod(args, Protocol(), Endpoints())` form still works.
+**Server:** `SerializationManagerServer` is replaced by `DatabaseSerializationManager`. Generated projects now import `src/generated/serverpod.dart` and create the server with `Serverpod(args)`; the `Serverpod(args, Protocol(), Endpoints())` form still works, but prefer the new simpler form.
 
 ## Major upgrade: Serverpod 2.x to 3.0
 
