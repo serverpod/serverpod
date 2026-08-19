@@ -6,7 +6,9 @@ This project is a Flutter app (frontend) backed by a Serverpod server (backend).
 When the project needs users, use Serverpod's built in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server and Flutter app with `serverpod start`. NEVER start the server yourself, instead STOP and ask the user to start it. When the server is running, interact with it through the `serverpod` MCP. `serverpod start` automatically handles hot reload for both the server and the app (as soon as files change).
+The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start the server manually, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
+
+While running, `serverpod start` watches for file changes to run incremental code generation and hot reload both the server and the Flutter app.
 <!-- {{/flutterApp}} -->
 <!-- {{^flutterApp}} -->
 # Serverpod project
@@ -16,7 +18,9 @@ This project is a Serverpod server (backend).
 When the project needs users, use Serverpod's built in authentication, which is already set up in `lib/server.dart`.
 <!-- {{/auth}} -->
 
-The user starts the server with `serverpod start`. NEVER start the server yourself, instead STOP and ask the user to start it. When the server is running, interact with it through the `serverpod` MCP. `serverpod start` automatically handles hot reload for the server (as soon as files change).
+The user starts the server with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start the server manually, or ask for permission to start it yourself with `serverpod start --no-tui` — that command runs until it is stopped, so start it in the background and keep working.
+
+While running, `serverpod start` watches for file changes to run incremental code generation and hot reload the running server.
 <!-- {{/flutterApp}} -->
 
 ALWAYS use the MCP server instead of the command line. Use the MCP server to:
@@ -27,7 +31,7 @@ ALWAYS use the MCP server instead of the command line. Use the MCP server to:
 <!-- {{/database}} -->
 - `tail_server_logs` to read logs from the server.
 <!-- {{#flutterApp}} -->
-- `tail_flutter_logs` to read raw stdout/stderr from the Flutter app.
+- `tail_flutter_logs` to read the raw stdout/stderr of the Flutter app.
 - `hot_reload` / `hot_restart` to reload or restart the server and the Flutter app. ALWAYS call `hot_restart` after doing changes in the Flutter app that may not work with normal hot reload (which is automatically applied).
 - `spawn_flutter_app` to start a Flutter app declared under `serverpod: flutter_apps:` in the server `pubspec.yaml`.
 - `get_flutter_app_dtd` (Dart tooling daemon) for connecting to the app through the `dart` MCP.
@@ -46,7 +50,7 @@ NEVER edit generated code. The server's `lib/src/generated/` directory and the w
 Migrations are the exception: the `migration.sql` of a generated migration MAY be edited by hand, for example to add a data transformation, or to reach a destructive change through non-destructive steps. Leave the other files in the migration directory alone, and keep the schema that the SQL ends up with identical to `definition.sql` — new databases are created from that file and never run `migration.sql`.
 <!-- {{/database}} -->
 
-If the `serverpod` MCP cannot be reached, the server is not running: ask the user to start it with `serverpod start`. Only if that is not possible, fall back to the CLI in the server package:
+Only when the server cannot be started at all, fall back to the CLI in the server package:
 
 - `serverpod generate` to regenerate the client and the generated server code.
 <!-- {{#database}} -->
