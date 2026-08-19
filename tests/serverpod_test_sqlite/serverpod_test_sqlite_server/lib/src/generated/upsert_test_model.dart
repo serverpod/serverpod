@@ -93,8 +93,6 @@ abstract class UpsertTestModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
   }) {
@@ -103,8 +101,6 @@ abstract class UpsertTestModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UpsertTestModel.t),
       include: include,
     );
@@ -220,8 +216,6 @@ class UpsertTestModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -266,8 +260,6 @@ class UpsertTestModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -277,8 +269,6 @@ class UpsertTestModelRepository {
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -309,8 +299,6 @@ class UpsertTestModelRepository {
     _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -320,8 +308,6 @@ class UpsertTestModelRepository {
       where: where?.call(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -355,16 +341,22 @@ class UpsertTestModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> insert(
     _i1.DatabaseSession session,
     List<UpsertTestModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UpsertTestModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -398,6 +390,10 @@ class UpsertTestModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> upsert(
     _i1.DatabaseSession session,
     List<UpsertTestModel> rows, {
@@ -405,6 +401,7 @@ class UpsertTestModelRepository {
     _i1.ColumnSelections<UpsertTestModelTable>? updateColumns,
     _i1.WhereExpressionBuilder<UpsertTestModelTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UpsertTestModel>(
       rows,
@@ -412,6 +409,7 @@ class UpsertTestModelRepository {
       updateColumns: updateColumns?.call(UpsertTestModel.t),
       updateWhere: updateWhere?.call(UpsertTestModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -450,16 +448,22 @@ class UpsertTestModelRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> update(
     _i1.DatabaseSession session,
     List<UpsertTestModel> rows, {
     _i1.ColumnSelections<UpsertTestModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UpsertTestModel>(
       rows,
       columns: columns?.call(UpsertTestModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -497,6 +501,10 @@ class UpsertTestModelRepository {
 
   /// Updates all [UpsertTestModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UpsertTestModelUpdateTable>
@@ -506,9 +514,8 @@ class UpsertTestModelRepository {
     int? offset,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UpsertTestModel>(
       columnValues: columnValues(UpsertTestModel.t.updateTable),
@@ -517,9 +524,8 @@ class UpsertTestModelRepository {
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -530,22 +536,24 @@ class UpsertTestModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> delete(
     _i1.DatabaseSession session,
     List<UpsertTestModel> rows, {
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UpsertTestModel>(
       rows,
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,22 +573,24 @@ class UpsertTestModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UpsertTestModelTable> where,
     _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UpsertTestModel>(
       where: where(UpsertTestModel.t),
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

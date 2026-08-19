@@ -16,6 +16,8 @@ export 'package:serverpod/server.dart';
 // Web server
 export 'package:serverpod/web_server.dart';
 export 'package:relic/relic.dart' hide QueryParameters;
+export 'package:web_socket/web_socket.dart'
+    show WebSocketEvent, TextDataReceived, BinaryDataReceived, CloseReceived;
 
 // Database
 export 'package:serverpod/database.dart';
@@ -36,6 +38,3 @@ export 'package:serverpod/src/cache/cache_miss_handler.dart';
 // Experimental features
 export 'src/server/experimental_features.dart';
 export 'diagnostic_events.dart';
-
-export 'package:meta/meta.dart' show useResult, immutable;
-export 'package:collection/collection.dart' show DeepCollectionEquality;

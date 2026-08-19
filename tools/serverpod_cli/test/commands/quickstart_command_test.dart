@@ -23,11 +23,11 @@ void main() {
       },
     );
 
-    test('when parsing configuration then default template is server', () {
+    test('when parsing configuration then default template is fullstack', () {
       final argResults = command.argParser.parse(['myproject']);
       final config = command.resolveConfiguration(argResults);
 
-      expect(config.value(QuickstartOption.template).name, equals('server'));
+      expect(config.value(QuickstartOption.template).name, equals('fullstack'));
     });
 
     test('when parsing configuration then default force is false', () {

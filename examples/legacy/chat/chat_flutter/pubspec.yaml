@@ -1,6 +1,9 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
+# Frozen at Serverpod 4.0.0-beta.0 together with the legacy chat module, see
+# issue #5443. The chat packages are unpublished, hence the path overrides.
+
 name: chat_flutter
 description: Demo project for the chat module.
 
@@ -33,11 +36,11 @@ dependencies:
   flutter:
     sdk: flutter
   made_with_serverpod: ^1.0.0
-  serverpod_auth_email_flutter: 3.5.0-beta.10
-  serverpod_auth_shared_flutter: 3.5.0-beta.10
-  serverpod_chat_flutter: 3.5.0-beta.10
-  serverpod_client: 3.5.0-beta.10
-  serverpod_flutter: 3.5.0-beta.10
+  serverpod_auth_email_flutter: 4.0.0-beta.0
+  serverpod_auth_shared_flutter: 4.0.0-beta.0
+  serverpod_chat_flutter: 4.0.0-beta.0
+  serverpod_client: 4.0.0-beta.0
+  serverpod_flutter: 4.0.0-beta.0
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
@@ -45,22 +48,10 @@ dev_dependencies:
     sdk: flutter
 
 dependency_overrides:
-  serverpod_auth_client:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_client
-  serverpod_auth_email_flutter:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_email_flutter
-  serverpod_auth_shared_flutter:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   serverpod_chat_client:
     path: ../../../../modules/legacy/serverpod_chat/serverpod_chat_client
   serverpod_chat_flutter:
     path: ../../../../modules/legacy/serverpod_chat/serverpod_chat_flutter
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_flutter:
-    path: ../../../../packages/serverpod_flutter
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

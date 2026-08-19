@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:clock/clock.dart';
+import 'package:crypto/crypto.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart';
 import 'package:serverpod_auth_core_server/src/session/business/server_side_sessions_token.dart';
@@ -488,4 +490,120 @@ void main() {
       );
     },
   );
+
+  withServerpod('Given a session stored under the pre-fix saltless hash,', (
+    final sessionBuilder,
+    final endpoints,
+  ) {
+    late Session session;
+    late UuidValue sessionId;
+    late String sessionToken;
+    late ByteData originalSalt;
+
+    // The secret the client presents. The pre-fix digest is
+    // sha512(secret + pepper), with the stored salt never mixed in.
+    final secret = Uint8List.fromList(List.generate(32, (final i) => i + 7));
+
+    setUp(() async {
+      session = sessionBuilder.build();
+
+      final authUserId = (await serverSideSessions.authUsers.create(
+        session,
+      )).id;
+
+      originalSalt = ByteData.sublistView(
+        Uint8List.fromList(List.generate(16, (final i) => 255 - i)),
+      );
+      final legacyHash = ByteData.sublistView(
+        Uint8List.fromList(
+          sha512.convert(secret + utf8.encode('test-pepper')).bytes,
+        ),
+      );
+
+      final row = await ServerSideSession.db.insertRow(
+        session,
+        ServerSideSession(
+          authUserId: authUserId,
+          createdAt: clock.now(),
+          lastUsedAt: clock.now(),
+          scopeNames: {},
+          sessionKeyHash: legacyHash,
+          sessionKeySalt: originalSalt,
+          method: 'test',
+        ),
+      );
+      sessionId = row.id!;
+      sessionToken = buildServerSideSessionToken(
+        serverSideSessionId: sessionId,
+        secret: secret,
+      );
+    });
+
+    group('when it authenticates,', () {
+      late AuthenticationInfo? authInfo;
+      late ServerSideSession after;
+
+      setUp(() async {
+        final before = (await ServerSideSession.db.findById(
+          session,
+          sessionId,
+        ))!;
+        expect(
+          before.sessionKeyHash.lengthInBytes,
+          64,
+          reason: 'Precondition: a bare saltless digest, no version byte.',
+        );
+
+        authInfo = await serverSideSessions.authenticationHandler(
+          session,
+          sessionToken,
+        );
+
+        after = (await ServerSideSession.db.findById(session, sessionId))!;
+      });
+
+      test('then it succeeds.', () {
+        expect(
+          authInfo,
+          isNotNull,
+          reason:
+              'A pre-fix session must keep working - the fix is non-breaking.',
+        );
+      });
+
+      test(
+        'then the stored hash is upgraded in place to the versioned salted '
+        'scheme.',
+        () {
+          expect(
+            after.sessionKeyHash.lengthInBytes,
+            65,
+            reason: 'The row is re-hashed under the versioned scheme on use.',
+          );
+          expect(
+            after.sessionKeyHash.getUint8(0),
+            1,
+            reason: 'The current scheme version.',
+          );
+        },
+      );
+
+      test('then the upgrade reuses the stored salt.', () {
+        expect(
+          Uint8List.sublistView(after.sessionKeySalt),
+          Uint8List.sublistView(originalSalt),
+        );
+      });
+
+      test('then it still authenticates after the upgrade.', () async {
+        expect(
+          await serverSideSessions.authenticationHandler(
+            session,
+            sessionToken,
+          ),
+          isNotNull,
+        );
+      });
+    });
+  });
 }

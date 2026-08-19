@@ -86,8 +86,6 @@ abstract class ParentEntity
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
   }) {
@@ -96,8 +94,6 @@ abstract class ParentEntity
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ParentEntity.t),
       include: include,
     );
@@ -216,8 +212,6 @@ class ParentEntityIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -270,8 +264,6 @@ class ParentEntityRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     ParentEntityInclude? include,
@@ -282,8 +274,6 @@ class ParentEntityRepository {
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -315,8 +305,6 @@ class ParentEntityRepository {
     _i1.WhereExpressionBuilder<ParentEntityTable>? where,
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
     ParentEntityInclude? include,
@@ -327,8 +315,6 @@ class ParentEntityRepository {
       where: where?.call(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -365,16 +351,22 @@ class ParentEntityRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> insert(
     _i1.DatabaseSession session,
     List<ParentEntity> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ParentEntity>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -408,6 +400,10 @@ class ParentEntityRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> upsert(
     _i1.DatabaseSession session,
     List<ParentEntity> rows, {
@@ -415,6 +411,7 @@ class ParentEntityRepository {
     _i1.ColumnSelections<ParentEntityTable>? updateColumns,
     _i1.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ParentEntity>(
       rows,
@@ -422,6 +419,7 @@ class ParentEntityRepository {
       updateColumns: updateColumns?.call(ParentEntity.t),
       updateWhere: updateWhere?.call(ParentEntity.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -460,16 +458,22 @@ class ParentEntityRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> update(
     _i1.DatabaseSession session,
     List<ParentEntity> rows, {
     _i1.ColumnSelections<ParentEntityTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ParentEntity>(
       rows,
       columns: columns?.call(ParentEntity.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -506,6 +510,10 @@ class ParentEntityRepository {
 
   /// Updates all [ParentEntity]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ParentEntityUpdateTable> columnValues,
@@ -514,9 +522,8 @@ class ParentEntityRepository {
     int? offset,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ParentEntity>(
       columnValues: columnValues(ParentEntity.t.updateTable),
@@ -525,9 +532,8 @@ class ParentEntityRepository {
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -538,22 +544,24 @@ class ParentEntityRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> delete(
     _i1.DatabaseSession session,
     List<ParentEntity> rows, {
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ParentEntity>(
       rows,
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -573,22 +581,24 @@ class ParentEntityRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ParentEntityTable> where,
     _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ParentEntity>(
       where: where(ParentEntity.t),
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

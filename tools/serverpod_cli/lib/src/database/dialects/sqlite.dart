@@ -5,6 +5,7 @@ import 'package:serverpod_database/serverpod_database.dart';
 // [SqliteSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/sqlite/sqlite_default_value.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 import '../sql_generator.dart';
 
@@ -99,7 +100,7 @@ extension SqliteTableDefinitionSqlGeneration on TableDefinition {
     var definitions = <String>[];
 
     for (var column in columns) {
-      definitions.add('    ${column.toSqlFragment()}');
+      definitions.add('    ${column.toSqlFragment(tableName: tableName)}');
     }
 
     // Inline Foreign Keys
@@ -140,7 +141,7 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
     return isPrimary || isUnique || columnDefault != null;
   }
 
-  String toSqlFragment() {
+  String toSqlFragment({String? tableName}) {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -160,6 +161,10 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
       case ColumnType.halfvec:
       case ColumnType.sparsevec:
       case ColumnType.bit:
+      case ColumnType.geography:
+      case ColumnType.geographyLineString:
+      case ColumnType.geographyPolygon:
+      case ColumnType.geographyGeometryCollection:
         type = 'TEXT';
       case ColumnType.unknown:
         throw const FormatException('Unknown column type');
@@ -169,6 +174,19 @@ extension SqliteColumnDefinitionSqlGeneration on ColumnDefinition {
     var defaultSql = columnType.getSqliteColumnDefault(columnDefault);
 
     var defaultValue = defaultSql != null ? ' DEFAULT ($defaultSql)' : '';
+
+    if (columnDefault == defaultIntSerial && !isPrimary) {
+      final columnLocation = tableName == null
+          ? 'Column "$name"'
+          : 'Column "$name" on table "$tableName"';
+      throw MigrationUnsupportedByDialectException(
+        dialect: DatabaseDialect.sqlite.name,
+        reason:
+            '$columnLocation uses "$defaultIntSerial" as its default value, '
+            'but "${DatabaseDialect.sqlite.name}" only supports auto-increment '
+            'on the "$defaultPrimaryKeyName" column.',
+      );
+    }
 
     // The id column is special.
     if (isPrimary) {
@@ -196,6 +214,16 @@ extension SqliteIndexDefinitionSqlGeneration on IndexDefinition {
     // out by the migration manager.
     if (type != 'btree') {
       return '';
+    }
+
+    // A plain SQLite unique index would silently change this constraint.
+    if (nullsDistinct == false) {
+      throw MigrationUnsupportedByDialectException(
+        dialect: DatabaseDialect.sqlite.name,
+        reason:
+            'Index "$indexName" on table "$tableName" treats null values as '
+            'equal, which "${DatabaseDialect.sqlite.name}" cannot express.',
+      );
     }
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
@@ -226,7 +254,23 @@ extension SqliteForeignKeyDefinitionSqlGeneration on ForeignKeyDefinition {
       out += ' ON UPDATE ${onUpdate!.toSqlAction()}';
     }
 
+    var deferrableClause = deferrable?.toSqliteClause();
+    if (deferrableClause != null) {
+      out += ' $deferrableClause';
+    }
+
     return out;
+  }
+}
+
+extension on DeferrableConstraint {
+  String toSqliteClause() {
+    switch (this) {
+      case DeferrableConstraint.initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case DeferrableConstraint.initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
   }
 }
 
@@ -364,7 +408,9 @@ extension SqliteTableMigrationSqlGeneration on TableMigration {
     for (var addColumn in addColumns) {
       // Note: SQLite ADD COLUMN cannot support PRIMARY KEY or UNIQUE constraints.
       // These will be handled by the table rebuild.
-      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toSqlFragment()};\n';
+      out +=
+          'ALTER TABLE "$name" '
+          'ADD COLUMN ${addColumn.toSqlFragment(tableName: name)};\n';
     }
 
     // Add indexes

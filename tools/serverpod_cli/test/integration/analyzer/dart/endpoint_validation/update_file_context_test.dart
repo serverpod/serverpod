@@ -274,6 +274,56 @@ class ExampleEndpoint extends Endpoint {
   );
 
   group(
+    'Given a tracked and analyzed directory with a persistently invalid dart endpoint file',
+    () {
+      var trackedDirectory = Directory(
+        path.join(testProjectDirectory.path, const Uuid().v4()),
+      );
+
+      late EndpointsAnalyzer analyzer;
+      setUpAll(() async {
+        var endpointFile = File(
+          path.join(trackedDirectory.path, 'endpoint.dart'),
+        );
+        endpointFile.createSync(recursive: true);
+        // Class is missing closing brackets
+        endpointFile.writeAsStringSync('''
+import 'package:serverpod/serverpod.dart';
+
+class ExampleEndpoint extends Endpoint {
+  Future<String> hello(Session session, String name) async {
+    return 'Hello \$name';
+  }
+''');
+        analyzer = EndpointsAnalyzer(trackedDirectory);
+        await analyzer.analyze(collector: CodeGenerationCollector());
+      });
+
+      test(
+        'when the file context is updated with an unrelated non-endpoint file while the error persists '
+        'then false is returned.',
+        () async {
+          // Regression: a persistent error must not turn every unrelated change
+          // into a regeneration, or watch mode loops forever (each generation
+          // touches generated files, whose events regenerate again).
+          var nonEndpointFile = File(
+            path.join(trackedDirectory.path, 'helper.dart'),
+          );
+          nonEndpointFile.createSync(recursive: true);
+          nonEndpointFile.writeAsStringSync('''
+class HelperClass {}
+''');
+
+          await expectLater(
+            analyzer.updateFileContexts({nonEndpointFile.path}),
+            completion(false),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a tracked and analyzed endpoint file that depends on an invalid dart file',
     () {
       var trackedDirectory = Directory(

@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
+import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/util/directory.dart';
 import 'package:serverpod_cli/src/util/locate_modules.dart';
 import 'package:serverpod_cli/src/util/pubspec_helpers.dart';
@@ -87,10 +88,8 @@ class GeneratorConfig implements ModelLoadConfig {
     required this.extraClasses,
     required this.enabledFeatures,
     required this.databaseDialect,
-    required List<String> relativeFlutterPackagePathParts,
     this.experimentalFeatures = const [],
   }) : _relativeDartClientPackagePathParts = relativeDartClientPackagePathParts,
-       _relativeFlutterPackagePathParts = relativeFlutterPackagePathParts,
        _relativeServerTestToolsPathParts = relativeServerTestToolsPathParts,
        _modules = modules;
 
@@ -193,10 +192,22 @@ class GeneratorConfig implements ModelLoadConfig {
     'protocol.dart',
   ];
 
+  /// The path parts of the generated serverpod server file.
+  List<String> get generatedServerServerpodFilePathParts => [
+    ...generatedServeModelPathParts,
+    'serverpod.dart',
+  ];
+
   /// The path parts of the generated protocol file.
   List<String> get generatedServerEndpointDescriptionFilePathParts => [
     ...generatedServeModelPathParts,
     'protocol.yaml',
+  ];
+
+  /// The path of the generated Serverpod package manifest.
+  List<String> get generatedServerpodManifestFilePathParts => [
+    ...generatedServeModelPathParts,
+    ServerpodManifest.fileName,
   ];
 
   /// The path parts of the directory, where the generated code is stored in the
@@ -230,11 +241,18 @@ class GeneratorConfig implements ModelLoadConfig {
   /// Paths outside the source tree that may influence generated output
   List<String> get auxiliaryInputPaths => [
     p.joinAll([...serverPackageDirectoryPathParts, 'config', 'generator.yaml']),
+    p.joinAll([...serverPackageDirectoryPathParts, 'analysis_options.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.yaml']),
     p.joinAll([...serverPackageDirectoryPathParts, 'pubspec.lock']),
+    p.joinAll([...clientPackagePathParts, 'analysis_options.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.yaml']),
     p.joinAll([...clientPackagePathParts, 'pubspec.lock']),
     for (final pathParts in sharedModelsSourcePathsParts.values) ...[
+      p.joinAll([
+        ...serverPackageDirectoryPathParts,
+        ...pathParts,
+        'analysis_options.yaml',
+      ]),
       p.joinAll([
         ...serverPackageDirectoryPathParts,
         ...pathParts,
@@ -247,22 +265,6 @@ class GeneratorConfig implements ModelLoadConfig {
       ]),
     ],
   ];
-
-  final List<String> _relativeFlutterPackagePathParts;
-
-  /// Absolute path parts to the Flutter package; see [hasFlutterPackage]
-  /// before resolving against the filesystem.
-  List<String> get flutterPackagePathParts => [
-    ...serverPackageDirectoryPathParts,
-    ..._relativeFlutterPackagePathParts,
-  ];
-
-  /// True when [flutterPackagePathParts] is a directory with `pubspec.yaml`.
-  bool get hasFlutterPackage {
-    final dirPath = p.joinAll(flutterPackagePathParts);
-    if (!Directory(dirPath).existsSync()) return false;
-    return File(p.join(dirPath, 'pubspec.yaml')).existsSync();
-  }
 
   final List<String>? _relativeServerTestToolsPathParts;
   static const _defaultRelativeServerTestToolsPathParts = [
@@ -281,8 +283,8 @@ class GeneratorConfig implements ModelLoadConfig {
       ];
     }
 
-    var isServerpodMini = !isFeatureEnabled(ServerpodFeature.database);
-    if (isServerpodMini) {
+    var isDatabaseDisabled = !isFeatureEnabled(ServerpodFeature.database);
+    if (isDatabaseDisabled) {
       return [
         ...serverPackageDirectoryPathParts,
         ..._defaultRelativeServerTestToolsPathParts,
@@ -405,8 +407,6 @@ class GeneratorConfig implements ModelLoadConfig {
         generatorConfig['client_package_path'],
       );
     }
-
-    final relativeFlutterPackagePathParts = ['..', '${name}_flutter'];
 
     List<String>? relativeServerTestToolsPathParts;
     if (generatorConfig['server_test_tools_path'] != null) {
@@ -534,7 +534,6 @@ class GeneratorConfig implements ModelLoadConfig {
       sharedModelsSourcePathsParts: sharedModelsSourcePathsParts,
       relativeServerTestToolsPathParts: relativeServerTestToolsPathParts,
       relativeDartClientPackagePathParts: relativeDartClientPackagePathParts,
-      relativeFlutterPackagePathParts: relativeFlutterPackagePathParts,
       serializeAsJsonbByDefault: serializeAsJsonbByDefault,
       modules: modules,
       extraClasses: extraClasses,
@@ -756,6 +755,10 @@ class ModuleConfig implements ModelLoadConfig {
   /// Might be relative.
   final List<String> serverPackageDirectoryPathParts;
 
+  /// The installed shared packages the module owns, mapping each package name
+  /// to the path parts of its package root from the package config.
+  final Map<String, List<String>> sharedPackageRootPathParts;
+
   @override
   List<String> get libSourcePathParts => [
     ...serverPackageDirectoryPathParts,
@@ -796,6 +799,7 @@ class ModuleConfig implements ModelLoadConfig {
     required this.nickname,
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
+    this.sharedPackageRootPathParts = const {},
   }) : dartClientPackage = '${name}_client',
        serverPackage = '${name}_server';
 

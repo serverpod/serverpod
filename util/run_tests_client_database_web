@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Runs the client-side SQLite database suites in a browser.
+#
+# Client-side databases are a Flutter web feature first, and the web is the one
+# platform where `dart:io` exists but does nothing: Flutter's web SDK ships it
+# as a stub whose members throw at runtime. Nothing short of executing the code
+# in a browser catches that, hence these suites (see issue #5499).
+#
+# Two layers, in order of fidelity:
+#
+#   serverpod_test_sqlite_flutter  a Flutter web app that opens a client-side
+#                                  database on start, run with `flutter test
+#                                  --platform chrome` - the platform users are
+#                                  actually on.
+#   serverpod_test_sqlite_client   the CRUD battery, recompiled for the browser
+#                                  with `dart test -p chrome` - broader ORM
+#                                  coverage, and un-minified stack traces.
+#
+# Both need Chrome, and the assets that util/setup_sqlite_web_assets provides.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_client_database_web"
+    exit 1
+fi
+
+# Makes script exit on first non-zero error code
+set -e
+
+ROOT="$(pwd)"
+
+util/setup_sqlite_web_assets
+
+echo "### Running the Flutter web client database test"
+cd "$ROOT/tests/serverpod_test_sqlite/serverpod_test_sqlite_flutter"
+flutter test --platform chrome --reporter=failures-only
+
+# Only the CRUD battery: the rest of the suite covers ORM semantics that are not
+# platform specific and already run on the VM. The assets are in place for every
+# test directory, so any other one can be pointed at a browser when needed.
+echo "### Running the client CRUD battery in the browser"
+cd "$ROOT/tests/serverpod_test_sqlite/serverpod_test_sqlite_client"
+dart test -p chrome test/crud --reporter=failures-only

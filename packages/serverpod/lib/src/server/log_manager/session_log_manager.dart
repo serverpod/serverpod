@@ -59,7 +59,7 @@ class SessionLogManager {
        _serverId = serverId,
        _disableSlowSessionLogging = disableSlowSessionLogging,
        _bufferStreamingLogs =
-           (session is StreamingSession || session is MethodStreamSession) &&
+           session is MethodStreamSession &&
            !settingsForSession(session).logStreamingSessionsContinuously {
     _open = SessionOpen(
       sessionId: '${_session.sessionId.hashCode}',
@@ -93,7 +93,7 @@ class SessionLogManager {
 
     return switch (_session) {
       MethodCallSession() => '$endpoint${method != null ? '.$method' : ''}',
-      StreamingSession() || MethodStreamSession() =>
+      MethodStreamSession() =>
         'STREAM $endpoint${method != null ? '.$method' : ''}',
       FutureCallSession s => 'FUTURE ${s.futureCallName}',
       WebCallSession() => 'WEB $endpoint',
@@ -105,7 +105,6 @@ class SessionLogManager {
   SessionKind _sessionKind() => switch (_session) {
     MethodCallSession() => SessionKind.method,
     MethodStreamSession() => SessionKind.methodStream,
-    StreamingSession() => SessionKind.stream,
     FutureCallSession() => SessionKind.futureCall,
     WebCallSession() => SessionKind.web,
     InternalSession() => SessionKind.internal,
@@ -153,6 +152,7 @@ class SessionLogManager {
     required String message,
     String? error,
     StackTrace? stackTrace,
+    Map<String, Object?>? metadata,
   }) {
     _triggerCleanup();
 
@@ -170,7 +170,7 @@ class SessionLogManager {
         message: message,
         error: error,
         stackTrace: stackTrace,
-        messageId: _session.messageId,
+        metadata: metadata,
       ),
     );
   }
@@ -207,46 +207,6 @@ class SessionLogManager {
         duration: duration,
         slow: slow,
         numRowsAffected: numRowsAffected,
-        error: error,
-        stackTrace: stackTrace,
-        messageId: _session.messageId,
-      ),
-    );
-  }
-
-  /// Logs a streaming message within this session.
-  @internal
-  void logMessage({
-    required String endpointName,
-    required String messageName,
-    required int messageId,
-    required Duration duration,
-    required String? error,
-    required StackTrace? stackTrace,
-  }) {
-    _triggerCleanup();
-
-    final executionTime = duration.inMicroseconds / _microNormalizer;
-    final logSettings = _settingsForSession(_session);
-    final slow = executionTime >= logSettings.slowSessionDuration;
-
-    if (!logSettings.logAllSessions &&
-        !(logSettings.logSlowSessions && slow) &&
-        !(logSettings.logFailedSessions && error != null)) {
-      return;
-    }
-
-    final order = ++_nextEntryOrder;
-    _dispatch(
-      SessionMessageEntry(
-        sessionId: _open.sessionId,
-        order: order,
-        time: DateTime.now(),
-        endpoint: endpointName,
-        messageName: messageName,
-        messageId: messageId,
-        duration: duration,
-        slow: slow,
         error: error,
         stackTrace: stackTrace,
       ),

@@ -15,7 +15,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
-abstract class ServerHealthMetric implements _i1.SerializableModel {
+abstract class ServerHealthMetric
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ServerHealthMetric._({
     this.id,
     required this.name,
@@ -88,6 +89,20 @@ abstract class ServerHealthMetric implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.ServerHealthMetric',
+      if (id != null) 'id': id,
+      'name': name,
+      'serverId': serverId,
+      'timestamp': timestamp.toJson(),
+      'isHealthy': isHealthy,
+      'value': value,
+      'granularity': granularity,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.ServerHealthMetric',
       if (id != null) 'id': id,

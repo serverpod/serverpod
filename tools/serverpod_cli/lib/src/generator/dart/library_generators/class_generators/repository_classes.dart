@@ -339,14 +339,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -414,9 +406,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'limit': refer('limit'),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
@@ -503,14 +492,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -578,9 +559,6 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'offset': refer('offset'),
                 'transaction': refer('transaction'),
                 if (objectRelationFields.isNotEmpty)
@@ -708,7 +686,11 @@ class BuildRepositoryClass {
 ///
 /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
 /// rows are silently skipped, and only the successfully inserted rows are
-/// returned.''')
+/// returned.
+///
+/// If [noReturn] is set to `true`, the inserted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'insert'
         ..returns = TypeReference(
           (r) => r
@@ -746,6 +728,13 @@ class BuildRepositoryClass {
               ..named = true
               ..defaultTo = literalFalse.code,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -756,6 +745,7 @@ class BuildRepositoryClass {
               {
                 'transaction': refer('transaction'),
                 'ignoreConflicts': refer('ignoreConflicts'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -837,7 +827,11 @@ class BuildRepositoryClass {
 /// The returned [$className]s will have their `id` fields set.
 ///
 /// This is an atomic operation, meaning that if one of the rows fails,
-/// none of the rows will be affected.''')
+/// none of the rows will be affected.
+///
+/// If [noReturn] is set to `true`, the resulting rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'upsert'
         ..returns = TypeReference(
           (r) => r
@@ -896,6 +890,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -914,6 +915,7 @@ class BuildRepositoryClass {
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1037,7 +1039,11 @@ class BuildRepositoryClass {
 /// [columns] is provided, only those columns will be updated. Defaults to
 /// all columns.
 /// This is an atomic operation, meaning that if one of the rows fails to
-/// update, none of the rows will be updated.''')
+/// update, none of the rows will be updated.
+///
+/// If [noReturn] is set to `true`, the updated rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'update'
         ..returns = TypeReference(
           (r) => r
@@ -1079,6 +1085,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
+          ),
         ])
         ..modifier = MethodModifier.async
         ..body = refer('session')
@@ -1091,6 +1104,7 @@ class BuildRepositoryClass {
                   refer(className).property('t'),
                 ]),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1250,7 +1264,11 @@ class BuildRepositoryClass {
       methodBuilder
         ..docs.add('''
 /// Updates all [$className]s matching the [where] expression with the specified [columnValues].
-/// Returns the list of updated rows.''')
+/// Returns the list of updated rows.
+///
+/// If [noReturn] is set to `true`, the updated rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'updateWhere'
         ..returns = TypeReference(
           (r) => r
@@ -1318,14 +1336,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..named = true
-              ..defaultTo = const Code('false')
-              ..type = refer('bool'),
-          ),
-          Parameter(
-            (p) => p
               ..type = TypeReference(
                 (b) => b
                   ..isNullable = true
@@ -1334,6 +1344,13 @@ class BuildRepositoryClass {
               )
               ..name = 'transaction'
               ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
           ),
         ])
         ..modifier = MethodModifier.async
@@ -1357,10 +1374,8 @@ class BuildRepositoryClass {
                 'orderByList': refer('orderByList')
                     .nullSafeProperty('call')
                     .call([refer(className).property('t')]),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1379,7 +1394,11 @@ class BuildRepositoryClass {
 /// when sorting by multiple columns.
 ///
 /// This is an atomic operation, meaning that if one of the rows fail to
-/// be deleted, none of the rows will be deleted.''')
+/// be deleted, none of the rows will be deleted.
+///
+/// If [noReturn] is set to `true`, the deleted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'delete'
         ..returns = TypeReference(
           (r) => r
@@ -1417,14 +1436,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -1439,6 +1450,13 @@ class BuildRepositoryClass {
               )
               ..name = 'transaction'
               ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
           ),
         ])
         ..modifier = MethodModifier.async
@@ -1456,10 +1474,8 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )
@@ -1530,7 +1546,11 @@ class BuildRepositoryClass {
 /// Deletes all rows matching the [where] expression.
 ///
 /// To specify the order of the returned rows use [orderBy] or [orderByList]
-/// when sorting by multiple columns.''')
+/// when sorting by multiple columns.
+///
+/// If [noReturn] is set to `true`, the deleted rows are not read back from
+/// the database and an empty list is returned. This avoids the overhead of
+/// transferring and deserializing the rows when the result is not needed.''')
         ..name = 'deleteWhere'
         ..returns = TypeReference(
           (r) => r
@@ -1574,14 +1594,6 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = refer('bool')
-              ..name = 'orderDescending'
-              ..annotations.add(deprecatedOrderDescendingAnnotation())
-              ..defaultTo = const Code('false')
-              ..named = true,
-          ),
-          Parameter(
-            (p) => p
               ..type = typeOrderByListBuilder(className, serverCode)
               ..name = 'orderByList'
               ..named = true,
@@ -1596,6 +1608,13 @@ class BuildRepositoryClass {
               )
               ..name = 'transaction'
               ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('bool')
+              ..name = 'noReturn'
+              ..named = true
+              ..defaultTo = literalFalse.code,
           ),
         ])
         ..modifier = MethodModifier.async
@@ -1614,10 +1633,8 @@ class BuildRepositoryClass {
                     .call(
                       [refer(className).property('t')],
                     ),
-                'orderDescending': const CodeExpression(
-                  Code('// ignore: deprecated_member_use\norderDescending'),
-                ),
                 'transaction': refer('transaction'),
+                'noReturn': refer('noReturn'),
               },
               [refer(className)],
             )

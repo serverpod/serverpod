@@ -109,8 +109,6 @@ abstract class EmailCreateAccountRequest
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     EmailCreateAccountRequestInclude? include,
   }) {
@@ -119,8 +117,6 @@ abstract class EmailCreateAccountRequest
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       include: include,
     );
@@ -258,8 +254,6 @@ class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -304,8 +298,6 @@ class EmailCreateAccountRequestRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -315,8 +307,6 @@ class EmailCreateAccountRequestRepository {
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -347,8 +337,6 @@ class EmailCreateAccountRequestRepository {
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -358,8 +346,6 @@ class EmailCreateAccountRequestRepository {
       where: where?.call(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -393,16 +379,22 @@ class EmailCreateAccountRequestRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> insert(
     _i1.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<EmailCreateAccountRequest>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -436,6 +428,10 @@ class EmailCreateAccountRequestRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> upsert(
     _i1.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
@@ -444,6 +440,7 @@ class EmailCreateAccountRequestRepository {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? updateColumns,
     _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<EmailCreateAccountRequest>(
       rows,
@@ -451,6 +448,7 @@ class EmailCreateAccountRequestRepository {
       updateColumns: updateColumns?.call(EmailCreateAccountRequest.t),
       updateWhere: updateWhere?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -490,16 +488,22 @@ class EmailCreateAccountRequestRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> update(
     _i1.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
     _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<EmailCreateAccountRequest>(
       rows,
       columns: columns?.call(EmailCreateAccountRequest.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -537,6 +541,10 @@ class EmailCreateAccountRequestRepository {
 
   /// Updates all [EmailCreateAccountRequest]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
@@ -546,9 +554,8 @@ class EmailCreateAccountRequestRepository {
     int? offset,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailCreateAccountRequest>(
       columnValues: columnValues(EmailCreateAccountRequest.t.updateTable),
@@ -557,9 +564,8 @@ class EmailCreateAccountRequestRepository {
       offset: offset,
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -570,22 +576,24 @@ class EmailCreateAccountRequestRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> delete(
     _i1.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<EmailCreateAccountRequest>(
       rows,
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -605,22 +613,24 @@ class EmailCreateAccountRequestRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

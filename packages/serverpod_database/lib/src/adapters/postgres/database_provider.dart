@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -23,14 +21,12 @@ class PostgresDatabaseProvider implements DatabaseProvider {
   PostgresPoolManager createPoolManager(
     DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    PostgresDatabaseConfig config, {
-    Directory? serverDirectory,
-  }) {
+    PostgresDatabaseConfig config,
+  ) {
     return PostgresPoolManager(
       serializationManager,
       runtimeParametersBuilder,
       config,
-      serverDirectory: serverDirectory,
     );
   }
 

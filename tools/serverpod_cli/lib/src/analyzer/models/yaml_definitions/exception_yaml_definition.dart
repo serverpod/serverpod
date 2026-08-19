@@ -22,6 +22,14 @@ class ExceptionYamlDefinition {
         valueRestriction: restrictions.validateClassName,
       ),
       ValidateNode(
+        Keyword.isSealed,
+        valueRestriction: BooleanValueRestriction().validate,
+      ),
+      ValidateNode(
+        Keyword.extendsClass,
+        valueRestriction: restrictions.validateExtendingClassName,
+      ),
+      ValidateNode(
         Keyword.serverOnly,
         valueRestriction: BooleanValueRestriction().validate,
       ),
@@ -62,6 +70,11 @@ class ExceptionYamlDefinition {
                   Keyword.defaultModelKey,
                   restrictions.documentDefinition,
                 ).validate,
+              ),
+              ValidateNode(
+                Keyword.tail,
+                keyRestriction: restrictions.validateTailKey,
+                valueRestriction: BooleanValueRestriction().validate,
               ),
             },
           ),

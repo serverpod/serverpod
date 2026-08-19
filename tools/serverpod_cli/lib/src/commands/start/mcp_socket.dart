@@ -37,9 +37,11 @@ class McpSocketServer {
   Future<void> Function()? _onHotReload;
   Future<void> Function()? _onHotRestart;
   List<Object> Function()? _getLogHistory;
-  List<String> Function()? _getFlutterLogHistory;
+  List<String> Function()? _getFlutterAppIds;
+  List<String> Function(String appId)? _getFlutterLogHistory;
+  Future<bool> Function(String appId)? _onSpawnFlutterApp;
   String? Function()? _getVmServiceUri;
-  String? Function()? _getFlutterDtdUri;
+  Map<String, String?> Function()? _getFlutterDtdUris;
   Stream<void>? _vmServiceUriChanges;
 
   McpSocketServer({required String serverDir})
@@ -56,8 +58,14 @@ class McpSocketServer {
 
   /// Wire the MCP server to watch session callbacks. Can be called before or
   /// after a client connects.
+  ///
+  /// Log-history callbacks are required because they belong to the watch
+  /// session, not to an optional presentation layer such as the TUI.
   void connect({
     required Future<void> Function() onApplyMigration,
+    required List<Object> Function() getLogHistory,
+    required List<String> Function() getFlutterAppIds,
+    required List<String> Function(String appId) getFlutterLogHistory,
     Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
     onCreateMigration,
     Future<CreateMigrationMcpResult> Function({
@@ -68,10 +76,9 @@ class McpSocketServer {
     onCreateRepairMigration,
     Future<void> Function()? onHotReload,
     Future<void> Function()? onHotRestart,
-    List<Object> Function()? getLogHistory,
-    List<String> Function()? getFlutterLogHistory,
+    Future<bool> Function(String appId)? onSpawnFlutterApp,
     String? Function()? getVmServiceUri,
-    String? Function()? getFlutterDtdUri,
+    Map<String, String?> Function()? getFlutterDtdUris,
     Stream<void>? vmServiceUriChanges,
   }) {
     _onApplyMigration = onApplyMigration;
@@ -80,9 +87,11 @@ class McpSocketServer {
     _onHotReload = onHotReload;
     _onHotRestart = onHotRestart;
     _getLogHistory = getLogHistory;
+    _getFlutterAppIds = getFlutterAppIds;
     _getFlutterLogHistory = getFlutterLogHistory;
+    _onSpawnFlutterApp = onSpawnFlutterApp;
     _getVmServiceUri = getVmServiceUri;
-    _getFlutterDtdUri = getFlutterDtdUri;
+    _getFlutterDtdUris = getFlutterDtdUris;
     _vmServiceUriChanges = vmServiceUriChanges;
     final server = _mcpServer;
     if (server != null) {
@@ -92,9 +101,11 @@ class McpSocketServer {
       server.onHotReload = onHotReload;
       server.onHotRestart = onHotRestart;
       server.getLogHistory = getLogHistory;
+      server.getFlutterAppIds = getFlutterAppIds;
       server.getFlutterLogHistory = getFlutterLogHistory;
+      server.onSpawnFlutterApp = onSpawnFlutterApp;
       server.getVmServiceUri = getVmServiceUri;
-      server.getFlutterDtdUri = getFlutterDtdUri;
+      server.getFlutterDtdUris = getFlutterDtdUris;
       server.vmServiceUriChanges = vmServiceUriChanges;
     }
   }
@@ -151,9 +162,11 @@ class McpSocketServer {
     server.onHotReload = _onHotReload;
     server.onHotRestart = _onHotRestart;
     server.getLogHistory = _getLogHistory;
+    server.getFlutterAppIds = _getFlutterAppIds;
     server.getFlutterLogHistory = _getFlutterLogHistory;
+    server.onSpawnFlutterApp = _onSpawnFlutterApp;
     server.getVmServiceUri = _getVmServiceUri;
-    server.getFlutterDtdUri = _getFlutterDtdUri;
+    server.getFlutterDtdUris = _getFlutterDtdUris;
     server.vmServiceUriChanges = _vmServiceUriChanges;
 
     // Clean up on disconnect.

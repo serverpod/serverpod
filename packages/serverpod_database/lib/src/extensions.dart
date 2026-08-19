@@ -286,6 +286,16 @@ extension IndexComparisons on IndexDefinition {
       );
     }
 
+    if ((nullsDistinct ?? true) != (other.nullsDistinct ?? true)) {
+      mismatches.add(
+        IndexComparisonWarning(
+          name: 'nullsDistinct',
+          expected: '$nullsDistinct',
+          found: '${other.nullsDistinct}',
+        ),
+      );
+    }
+
     if (predicate != other.predicate) {
       mismatches.add(
         IndexComparisonWarning(
@@ -496,6 +506,16 @@ extension ForeignKeyComparisons on ForeignKeyDefinition {
           name: 'match type',
           expected: '$matchType',
           found: '${other.matchType}',
+        ),
+      );
+    }
+
+    if (deferrable != other.deferrable) {
+      mismatches.add(
+        ForeignKeyComparisonWarning(
+          name: 'deferrable',
+          expected: '$deferrable',
+          found: '${other.deferrable}',
         ),
       );
     }

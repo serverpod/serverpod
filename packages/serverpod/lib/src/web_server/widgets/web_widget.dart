@@ -1,11 +1,15 @@
-import 'package:mustache_template/mustache.dart';
-import 'package:serverpod/serverpod.dart';
 import 'dart:convert';
+
+import 'package:serverpod/serverpod.dart';
+import 'package:whiskers/whiskers.dart';
 
 /// The base class for all web widgets. Override this class to create a custom
 /// widget type, or use one of the default types which covers most common use
 /// cases.
-abstract class WebWidget {}
+abstract class WebWidget {
+  /// Renders the widget.
+  String render({String? Function(String)? onMissingVariable});
+}
 
 /// A [WebWidget] based on a HTML template. The [name] of the template should
 /// correspond to a template file in your server's web/templates directory.
@@ -39,8 +43,14 @@ class TemplateWidget extends WebWidget {
   }
 
   @override
-  String toString() {
-    return template.renderString(values);
+  String toString() => render();
+
+  @override
+  String render({String? Function(String)? onMissingVariable}) {
+    return template.renderString(
+      values,
+      onMissingVariable: (name, context) => onMissingVariable?.call(name),
+    );
   }
 }
 
@@ -53,10 +63,13 @@ class ListWidget extends WebWidget {
   ListWidget({required this.widgets});
 
   @override
-  String toString() {
+  String toString() => render();
+
+  @override
+  String render({String? Function(String)? onMissingVariable}) {
     var rendered = <String>[];
     for (var widget in widgets) {
-      rendered.add(widget.toString());
+      rendered.add(widget.render(onMissingVariable: onMissingVariable));
     }
     return rendered.join('\n');
   }
@@ -72,9 +85,12 @@ class JsonWidget extends WebWidget {
   JsonWidget({required this.object});
 
   @override
-  String toString() {
+  String render({String? Function(String)? onMissingVariable}) {
     return SerializationManager.encode(object);
   }
+
+  @override
+  String toString() => render();
 }
 
 /// A [WebWidget] that renders a HTTP redirect to the provided [url].
@@ -86,7 +102,10 @@ class RedirectWidget extends WebWidget {
   RedirectWidget({required this.url});
 
   @override
-  String toString() {
+  String render({String? Function(String)? onMissingVariable}) {
     return '';
   }
+
+  @override
+  String toString() => render();
 }

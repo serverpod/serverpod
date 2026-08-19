@@ -28,6 +28,13 @@ class TempProject {
 
   /// Absolute path to the generated server package.
   String get serverDir => p.join(workingDir.path, createServerFolderPath(name));
+
+  /// Absolute path to the generated flutter package.
+  String get flutterDir =>
+      p.join(workingDir.path, createFlutterFolderPath(name));
+
+  /// Absolute path to the generated client package.
+  String get clientDir => p.join(workingDir.path, createClientFolderPath(name));
 }
 
 /// Generate a Serverpod project for [context] via [performCreate].
@@ -35,7 +42,10 @@ class TempProject {
 /// Returns the [TempProject] whose paths the tests assert against.
 TempProject setUpPerformCreateInTempDir({required TemplateContext context}) {
   final project = TempProject(
-    'temp_test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}',
+    // The project name occurs twice in generated Flutter paths. Keep it short
+    // enough for nested tool-generated paths to stay below Windows' legacy
+    // MAX_PATH limit (for example, Flutter's generated Swift package path).
+    'tmp_${const Uuid().v4().replaceAll('-', '').substring(0, 12)}',
   );
   setUpAll(() async {
     setupForPerformCreateTest();

@@ -322,48 +322,57 @@ abstract class SharedModelContainer
     return {
       '__className__': 'SharedModelContainer',
       if (id != null) 'id': id,
-      'sharedModel': sharedModel.toJson(),
-      'sharedModelWithModuleAlias': sharedModelWithModuleAlias.toJson(),
+      'sharedModel': sharedModel.toJsonForProtocol(),
+      'sharedModelWithModuleAlias': sharedModelWithModuleAlias
+          .toJsonForProtocol(),
       if (sharedModelNullable != null)
-        'sharedModelNullable': sharedModelNullable?.toJson(),
+        'sharedModelNullable': sharedModelNullable?.toJsonForProtocol(),
       if (nonPersistedSharedModel != null)
-        'nonPersistedSharedModel': nonPersistedSharedModel?.toJson(),
-      'sharedSubclass': sharedSubclass.toJson(),
+        'nonPersistedSharedModel': nonPersistedSharedModel?.toJsonForProtocol(),
+      'sharedSubclass': sharedSubclass.toJsonForProtocol(),
       if (sharedSubclassNullable != null)
-        'sharedSubclassNullable': sharedSubclassNullable?.toJson(),
+        'sharedSubclassNullable': sharedSubclassNullable?.toJsonForProtocol(),
       'sharedEnum': sharedEnum.toJson(),
       if (sharedEnumNullable != null)
         'sharedEnumNullable': sharedEnumNullable?.toJson(),
-      'sharedSealedParent': sharedSealedParent.toJson(),
+      'sharedSealedParent': sharedSealedParent.toJsonForProtocol(),
       if (sharedSealedParentNullable != null)
-        'sharedSealedParentNullable': sharedSealedParentNullable?.toJson(),
-      'sharedSealedChild': sharedSealedChild.toJson(),
+        'sharedSealedParentNullable': sharedSealedParentNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedChild': sharedSealedChild.toJsonForProtocol(),
       if (sharedSealedChildNullable != null)
-        'sharedSealedChildNullable': sharedSealedChildNullable?.toJson(),
+        'sharedSealedChildNullable': sharedSealedChildNullable
+            ?.toJsonForProtocol(),
       'sharedModelSubclass': sharedModelSubclass.toJsonForProtocol(),
       if (sharedModelSubclassNullable != null)
         'sharedModelSubclassNullable': sharedModelSubclassNullable
             ?.toJsonForProtocol(),
-      'sharedModelList': sharedModelList.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelList': sharedModelList.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       'sharedModelNullableList': sharedModelNullableList.toJson(
-        valueToJson: (v) => v?.toJson(),
+        valueToJson: (v) => v?.toJsonForProtocol(),
       ),
       if (sharedModelListNullable != null)
         'sharedModelListNullable': sharedModelListNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
-      'sharedModelMap': sharedModelMap.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelMap': sharedModelMap.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       if (sharedModelMapNullable != null)
         'sharedModelMapNullable': sharedModelMapNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
       'sharedSubclassMap': sharedSubclassMap.toJson(
-        valueToJson: (v) => v.toJson(),
+        valueToJson: (v) => v.toJsonForProtocol(),
       ),
-      'sharedModelSet': sharedModelSet.toJson(valueToJson: (v) => v.toJson()),
+      'sharedModelSet': sharedModelSet.toJson(
+        valueToJson: (v) => v.toJsonForProtocol(),
+      ),
       if (sharedModelSetNullable != null)
         'sharedModelSetNullable': sharedModelSetNullable?.toJson(
-          valueToJson: (v) => v.toJson(),
+          valueToJson: (v) => v.toJsonForProtocol(),
         ),
     };
   }
@@ -377,8 +386,6 @@ abstract class SharedModelContainer
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
   }) {
@@ -387,8 +394,6 @@ abstract class SharedModelContainer
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(SharedModelContainer.t),
       include: include,
     );
@@ -927,8 +932,6 @@ class SharedModelContainerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -973,8 +976,6 @@ class SharedModelContainerRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -984,8 +985,6 @@ class SharedModelContainerRepository {
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -1016,8 +1015,6 @@ class SharedModelContainerRepository {
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -1027,8 +1024,6 @@ class SharedModelContainerRepository {
       where: where?.call(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -1062,16 +1057,22 @@ class SharedModelContainerRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> insert(
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<SharedModelContainer>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -1105,6 +1106,10 @@ class SharedModelContainerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> upsert(
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
@@ -1112,6 +1117,7 @@ class SharedModelContainerRepository {
     _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<SharedModelContainer>(
       rows,
@@ -1119,6 +1125,7 @@ class SharedModelContainerRepository {
       updateColumns: updateColumns?.call(SharedModelContainer.t),
       updateWhere: updateWhere?.call(SharedModelContainer.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1157,16 +1164,22 @@ class SharedModelContainerRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> update(
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.ColumnSelections<SharedModelContainerTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<SharedModelContainer>(
       rows,
       columns: columns?.call(SharedModelContainer.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1204,6 +1217,10 @@ class SharedModelContainerRepository {
 
   /// Updates all [SharedModelContainer]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<SharedModelContainerUpdateTable>
@@ -1213,9 +1230,8 @@ class SharedModelContainerRepository {
     int? offset,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedModelContainer>(
       columnValues: columnValues(SharedModelContainer.t.updateTable),
@@ -1224,9 +1240,8 @@ class SharedModelContainerRepository {
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1237,22 +1252,24 @@ class SharedModelContainerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> delete(
     _i1.DatabaseSession session,
     List<SharedModelContainer> rows, {
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<SharedModelContainer>(
       rows,
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -1272,22 +1289,24 @@ class SharedModelContainerRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
     _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedModelContainer>(
       where: where(SharedModelContainer.t),
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

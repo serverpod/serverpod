@@ -1,0 +1,8 @@
+### Exception to be thrown when a Firebase account's email has not been
+### verified, but the configured validation requires it.
+###
+### This is only thrown when the Firebase identity provider is configured with
+### `FirebaseIdpConfig.requireVerifiedEmail` (or a custom validation that
+### throws it). Clients can catch this to prompt the user to verify their
+### email address.
+exception: FirebaseEmailNotVerifiedException

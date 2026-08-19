@@ -12,11 +12,13 @@ class ModuleProject {
   final String name;
   final Pubspec pubspec;
   final bool includeGeneratorConfig;
+  final String? generatedManifestYaml;
 
   ModuleProject({
     required this.name,
     required this.pubspec,
     this.includeGeneratorConfig = true,
+    this.generatedManifestYaml,
   });
 }
 
@@ -24,11 +26,13 @@ class ModuleProjectBuilder {
   String _name;
   Pubspec _pubspec;
   bool _includeGeneratorConfig;
+  String? _generatedManifestYaml;
 
   ModuleProjectBuilder()
     : _pubspec = PubspecBuilder().build(),
       _name = 'example_module',
-      _includeGeneratorConfig = true;
+      _includeGeneratorConfig = true,
+      _generatedManifestYaml = null;
 
   ModuleProjectBuilder withName(String name) {
     _name = name;
@@ -57,11 +61,17 @@ class ModuleProjectBuilder {
     return this;
   }
 
+  ModuleProjectBuilder withGeneratedManifestYaml(String manifestYaml) {
+    _generatedManifestYaml = manifestYaml;
+    return this;
+  }
+
   ModuleProject build() {
     return ModuleProject(
       name: _name,
       pubspec: _pubspec,
       includeGeneratorConfig: _includeGeneratorConfig,
+      generatedManifestYaml: _generatedManifestYaml,
     );
   }
 }
@@ -84,7 +94,8 @@ class ProjectDependencyStructureFactory {
   String _projectName = 'example_server';
   final List<String> _projectDependencies = [];
   List<ModuleProject> _moduleProjects = [];
-  final List<String> _packageConfigPackages = [];
+  final List<({String name, String rootDirectoryName})> _packageConfigPackages =
+      [];
 
   /// Sets the name of the project.
   ProjectDependencyStructureFactory withProjectName(String name) {
@@ -121,9 +132,13 @@ class ProjectDependencyStructureFactory {
   /// Adds a package to the package config (normally created when running
   /// `pub get`).
   ProjectDependencyStructureFactory addPackageToPackageConfig(
-    String packageName,
-  ) {
-    _packageConfigPackages.add(packageName);
+    String packageName, {
+    String? rootDirectoryName,
+  }) {
+    _packageConfigPackages.add((
+      name: packageName,
+      rootDirectoryName: rootDirectoryName ?? packageName,
+    ));
     return this;
   }
 
@@ -152,6 +167,14 @@ class ProjectDependencyStructureFactory {
               GeneratorConfigFileBuilder().withType(PackageType.module).build(),
             ),
           ]),
+        if (module.generatedManifestYaml case var manifestYaml?)
+          d.dir('lib', [
+            d.dir('src', [
+              d.dir('generated', [
+                d.file('manifest.yaml', manifestYaml),
+              ]),
+            ]),
+          ]),
       ]);
 
       moduleDirectories.add(moduleDir);
@@ -161,10 +184,16 @@ class ProjectDependencyStructureFactory {
 
     var packageConfig = PackageConfigBuilder().withPackages([
       ..._packageConfigPackages.map(
-        (packageName) => PackageBuilder()
-            .withName(packageName)
+        (package) => PackageBuilder()
+            .withName(package.name)
             .withRoot(
-              Uri.directory(p.joinAll([d.sandbox, _monoRepoDir, packageName])),
+              Uri.directory(
+                p.joinAll([
+                  d.sandbox,
+                  _monoRepoDir,
+                  package.rootDirectoryName,
+                ]),
+              ),
             )
             .build(),
       ),

@@ -14,7 +14,8 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import '../changed_id_type/self.dart' as _i2;
 import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
 
-abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
+abstract class ChangedIdTypeSelf
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChangedIdTypeSelf._({
     _i1.UuidValue? id,
     required this.name,
@@ -115,6 +116,22 @@ abstract class ChangedIdTypeSelf implements _i1.SerializableModel {
       if (parent != null) 'parent': parent?.toJson(),
       if (children != null)
         'children': children?.toJson(valueToJson: (v) => v.toJson()),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ChangedIdTypeSelf',
+      if (id != null) 'id': id?.toJson(),
+      'name': name,
+      if (previous != null) 'previous': previous?.toJsonForProtocol(),
+      if (nextId != null) 'nextId': nextId?.toJson(),
+      if (next != null) 'next': next?.toJsonForProtocol(),
+      if (parentId != null) 'parentId': parentId?.toJson(),
+      if (parent != null) 'parent': parent?.toJsonForProtocol(),
+      if (children != null)
+        'children': children?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
     };
   }
 

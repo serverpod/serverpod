@@ -172,6 +172,7 @@ class _EmailSignInWidgetState extends State<EmailSignInWidget> {
           animation: primaryAnimation,
           secondaryAnimation: secondaryAnimation,
           transitionType: SharedAxisTransitionType.horizontal,
+          fillColor: Colors.transparent,
           child: child,
         );
       },

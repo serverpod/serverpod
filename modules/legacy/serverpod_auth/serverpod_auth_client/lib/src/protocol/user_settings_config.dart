@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// User settings.
-abstract class UserSettingsConfig implements _i1.SerializableModel {
+abstract class UserSettingsConfig
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,
@@ -77,6 +78,18 @@ abstract class UserSettingsConfig implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth.UserSettingsConfig',
+      'canSeeUserName': canSeeUserName,
+      'canSeeFullName': canSeeFullName,
+      'canEditUserName': canEditUserName,
+      'canEditFullName': canEditFullName,
+      'canEditUserImage': canEditUserImage,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth.UserSettingsConfig',
       'canSeeUserName': canSeeUserName,

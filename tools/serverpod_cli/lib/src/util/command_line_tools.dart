@@ -23,6 +23,20 @@ class CommandLineTools {
     _errorBuffer.clear();
   }
 
+  static bool? _flutterAvailable;
+
+  /// Resolves [dir] with `flutter pub get` whenever Flutter is available,
+  /// falling back to `dart pub get`. Generated workspaces can require the
+  /// Flutter SDK even without a Flutter app (development-mode
+  /// dependency_overrides pull in serverpod_flutter), and plain `dart pub`
+  /// only finds the SDK when dart itself is the Flutter-embedded binary -
+  /// not the case with a standalone Dart install or version managers like
+  /// puro.
+  static Future<bool> pubGet(Directory dir) async {
+    _flutterAvailable ??= await existsCommand('flutter', ['--version']);
+    return _flutterAvailable! ? flutterPubGet(dir) : dartPubGet(dir);
+  }
+
   static Future<bool> dartPubGet(Directory dir) async {
     log.debug('Running `dart pub get` in ${dir.path}', newParagraph: true);
 
@@ -34,6 +48,23 @@ class CommandLineTools {
 
     if (exitCode != 0) {
       _logError('Failed to run `dart pub get` in ${dir.path}');
+      return false;
+    }
+
+    return true;
+  }
+
+  static Future<bool> flutterPubGet(Directory dir) async {
+    log.debug('Running `flutter pub get` in ${dir.path}', newParagraph: true);
+
+    var exitCode = await _runProcessWithDefaultLogger(
+      executable: 'flutter',
+      arguments: ['pub', 'get'],
+      workingDirectory: dir.path,
+    );
+
+    if (exitCode != 0) {
+      _logError('Failed to run `flutter pub get` in ${dir.path}');
       return false;
     }
 

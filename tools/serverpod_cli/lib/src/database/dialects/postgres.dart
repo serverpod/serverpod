@@ -1,11 +1,12 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_database/serverpod_database.dart';
-
 // This is a temporary internal import since the normalize functions are not
 // meant to be exported from the database package. It will be removed once the
 // [PostgresSqlGenerator] gets moved to the database package.
 // ignore: implementation_imports
 import 'package:serverpod_database/src/adapters/postgres/postgres_default_value.dart';
+import 'package:serverpod_serialization/serverpod_serialization.dart'
+    show Geography;
 import '../sql_generator.dart';
 
 class PostgresSqlGenerator implements SqlGenerator {
@@ -68,6 +69,11 @@ extension PostgresDatabaseDefinitionPgSqlGeneration on DatabaseDefinition {
       out += '\n';
     }
 
+    if (tables.any((t) => t.columns.any((c) => c.isGeographyColumn))) {
+      out += _sqlCreatePostgisExtension();
+      out += '\n';
+    }
+
     // Must be declared at the beginning for the function to be available.
     if (tables.any(
       (t) => t.columns.any(
@@ -117,7 +123,7 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 
     var columnsPgSql = <String>[];
     for (var column in columns) {
-      columnsPgSql.add('    ${column.toPgSqlFragment(tableName: name)}');
+      columnsPgSql.add('    ${column.toPgSqlFragment()}');
     }
     out += columnsPgSql.join(',\n');
 
@@ -163,12 +169,10 @@ extension PostgresTableDefinitionPgSqlGeneration on TableDefinition {
 }
 
 extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
-  /// Whether the column is a primary key of type int serial.
-  bool get isIntSerialIdColumn =>
-      isPrimary &&
+  /// Whether the column uses a serial auto-increment default.
+  bool get isIntSerialColumn =>
       (columnType == ColumnType.integer || columnType == ColumnType.bigint) &&
-      ((columnDefault?.startsWith('nextval') ?? false) ||
-          columnDefault == defaultIntSerial);
+      columnDefault == defaultIntSerial;
 
   /// Whether the column is of a vector type.
   bool get isVectorColumn =>
@@ -177,7 +181,14 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       columnType == ColumnType.sparsevec ||
       columnType == ColumnType.bit;
 
-  String toPgSqlFragment({String tableName = ''}) {
+  /// Whether the column is of a geography type.
+  bool get isGeographyColumn =>
+      columnType == ColumnType.geography ||
+      columnType == ColumnType.geographyLineString ||
+      columnType == ColumnType.geographyPolygon ||
+      columnType == ColumnType.geographyGeometryCollection;
+
+  String toPgSqlFragment() {
     String type;
     switch (columnType) {
       case ColumnType.bigint:
@@ -222,29 +233,40 @@ extension PostgresColumnDefinitionPgSqlGeneration on ColumnDefinition {
       case ColumnType.bit:
         type = 'bit(${vectorDimension!})';
         break;
+      case ColumnType.geography:
+        type = 'geography(Point,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyLineString:
+        type = 'geography(LineString,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyPolygon:
+        type = 'geography(Polygon,${Geography.defaultSrid})';
+        break;
+      case ColumnType.geographyGeometryCollection:
+        type = 'geography(GeometryCollection,${Geography.defaultSrid})';
+        break;
       case ColumnType.unknown:
         throw (const FormatException('Unknown column type'));
     }
 
     var nullable = isNullable ? '' : ' NOT NULL';
-    var defaultSql = columnType.getPgColumnDefault(
-      columnDefault,
-      tableName,
-    );
+    var defaultSql = columnType.getPgColumnDefault(columnDefault);
 
     var defaultValue = defaultSql != null ? ' DEFAULT $defaultSql' : '';
+
+    if (isIntSerialColumn) {
+      type = columnType == ColumnType.bigint || isPrimary
+          ? 'bigserial'
+          : 'serial';
+      defaultValue = '';
+      nullable = ' NOT NULL';
+    }
 
     // The id column is special.
     if (isPrimary) {
       if (isNullable) {
         throw const FormatException('The id column must be non-nullable');
       }
-
-      if (isIntSerialIdColumn) {
-        type = 'bigserial';
-        defaultValue = '';
-      }
-
       type = '$type PRIMARY KEY';
       nullable = '';
     }
@@ -261,6 +283,11 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
     var out = '';
 
     var uniqueStr = isUnique ? ' UNIQUE' : '';
+    var nullsDistinctStr = switch (nullsDistinct) {
+      true => ' NULLS DISTINCT',
+      false => ' NULLS NOT DISTINCT',
+      null => '',
+    };
     var elementStrs = elements.map((e) => '"${e.definition}"');
     var ifNotExistsStr = ifNotExists ? ' IF NOT EXISTS' : '';
 
@@ -285,7 +312,7 @@ extension PostgresIndexDefinitionPgSqlGeneration on IndexDefinition {
 
     out +=
         'CREATE$uniqueStr INDEX$ifNotExistsStr "$indexName" ON "$tableName" '
-        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$pgvectorParams;\n';
+        'USING $type (${elementStrs.join(', ')}$ginOperatorClassStr$distanceStr)$nullsDistinctStr$pgvectorParams;\n';
 
     return out;
   }
@@ -322,9 +349,25 @@ extension PostgresForeignKeyDefinitionPgSqlGeneration on ForeignKeyDefinition {
       out += '    ON UPDATE $update';
     }
 
+    var deferrableClause = deferrable?.toPgSqlClause();
+    if (deferrableClause != null) {
+      out += '\n    $deferrableClause';
+    }
+
     out += ';\n';
 
     return out;
+  }
+}
+
+extension on DeferrableConstraint {
+  String toPgSqlClause() {
+    switch (this) {
+      case DeferrableConstraint.initiallyImmediate:
+        return 'DEFERRABLE INITIALLY IMMEDIATE';
+      case DeferrableConstraint.initiallyDeferred:
+        return 'DEFERRABLE INITIALLY DEFERRED';
+    }
   }
 }
 
@@ -366,6 +409,17 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
               e.alterTable!.addColumns.any((c) => c.isVectorColumn)),
     )) {
       out += _sqlCreateVectorExtensionIfAvailable();
+      out += '\n';
+    }
+
+    if (actions.any(
+      (e) =>
+          (e.createTable != null &&
+              e.createTable!.columns.any((c) => c.isGeographyColumn)) ||
+          (e.alterTable != null &&
+              e.alterTable!.addColumns.any((c) => c.isGeographyColumn)),
+    )) {
+      out += _sqlCreatePostgisExtension();
       out += '\n';
     }
 
@@ -513,8 +567,7 @@ extension PostgresTableMigrationPgSqlGenerator on TableMigration {
 
     // Add columns
     for (var addColumn in addColumns) {
-      out +=
-          'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment(tableName: name)};\n';
+      out += 'ALTER TABLE "$name" ADD COLUMN ${addColumn.toPgSqlFragment()};\n';
     }
 
     // Modify columns
@@ -574,10 +627,17 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
             'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
             ' DROP DEFAULT;\n';
         return out;
+      } else if (newDefault == defaultIntSerial) {
+        // Adding a serial default requires creating a sequence via the serial
+        // pseudo-type on column (re)create. SET DEFAULT cannot express this.
+        throw StateError(
+          'Cannot SET DEFAULT "$defaultIntSerial" on column "$physicalName" '
+          'of table "$tableName". Auto-increment defaults must be applied by '
+          'recreating the column with the serial type.',
+        );
       } else {
         var newDefaultSql = columnDefinition.columnType.getPgColumnDefault(
           newDefault,
-          tableName,
         );
         out +=
             'ALTER TABLE "$tableName" ALTER COLUMN "$physicalName"'
@@ -638,6 +698,22 @@ String _sqlCreateVectorExtensionIfAvailable() {
       "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS vector';"
       '\n  ELSE'
       '\n    RAISE EXCEPTION \'Required extension "vector" is not available on this instance. Please install pgvector. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-pgvector.\';'
+      '\n  END IF;'
+      '\nEND'
+      '\n\$\$;'
+      '\n';
+}
+
+String _sqlCreatePostgisExtension() {
+  return '--'
+      '\n-- CREATE POSTGIS EXTENSION IF AVAILABLE'
+      '\n--'
+      '\nDO \$\$'
+      '\nBEGIN'
+      "\n  IF EXISTS (SELECT 1 FROM pg_available_extensions WHERE name = 'postgis') THEN"
+      "\n    EXECUTE 'CREATE EXTENSION IF NOT EXISTS postgis';"
+      '\n  ELSE'
+      '\n    RAISE EXCEPTION \'Required extension "postgis" is not available on this instance. Please install PostGIS. For instructions, see https://docs.serverpod.dev/upgrading/upgrade-to-postgis.\';'
       '\n  END IF;'
       '\nEND'
       '\n\$\$;'

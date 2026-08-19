@@ -32,7 +32,14 @@ Future<bool> pubspecDependenciesMatch({
 
   var pubspecFiles = findPubspecsFiles(
     directory,
-    ignorePaths: [p.join('templates', 'pubspecs'), 'test_assets'],
+    ignorePaths: [
+      p.join('templates', 'pubspecs'),
+      p.join('tests', 'temp'),
+      'test_assets',
+      // Frozen at Serverpod 4.0.0-beta.0, see issue #5443.
+      p.join('modules', 'legacy', 'serverpod_chat'),
+      p.join('examples', 'legacy', 'chat'),
+    ],
   );
 
   Map<String, List<_ServerpodDependency>> dependencies;

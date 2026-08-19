@@ -5,11 +5,8 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var authKeyProvider = TestAuthKeyManager();
+  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
 
   setUp(() async {
     await client.authentication.removeAllUsers();
@@ -18,8 +15,7 @@ void main() {
   });
 
   tearDown(() async {
-    // ignore: deprecated_member_use
-    await client.authenticationKeyManager?.remove();
+    await authKeyProvider.remove();
     await client.authentication.removeAllUsers();
     await client.authentication.signOut();
     assert(
@@ -37,10 +33,10 @@ void main() {
           await expectLater(
             () async => await client.myLoggedIn.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -56,8 +52,7 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -78,10 +73,10 @@ void main() {
           await expectLater(
             () async => await client.myAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -97,16 +92,15 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
           await expectLater(
             () async => await client.myAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
-                  .having((e) => e.message, 'statusCode', contains('Forbidden'))
+              isA<ServerpodClientHttpException>()
+                  .having((e) => e.message, 'message', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),
           );
@@ -121,8 +115,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
@@ -143,10 +136,10 @@ void main() {
           await expectLater(
             () async => await client.myConcreteAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
+              isA<ServerpodClientHttpException>()
                   .having(
                     (e) => e.message,
-                    'statusCode',
+                    'message',
                     contains('Unauthorized'),
                   )
                   .having((e) => e.statusCode, 'statusCode', 401),
@@ -162,16 +155,15 @@ void main() {
             'test@foo.bar',
             'password',
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 
           await expectLater(
             () async => await client.myConcreteAdmin.echo('hello'),
             throwsA(
-              isA<ServerpodClientException>()
-                  .having((e) => e.message, 'statusCode', contains('Forbidden'))
+              isA<ServerpodClientHttpException>()
+                  .having((e) => e.message, 'message', contains('Forbidden'))
                   .having((e) => e.statusCode, 'statusCode', 403),
             ),
           );
@@ -186,8 +178,7 @@ void main() {
             'password',
             [Scope.admin.name!],
           );
-          // ignore: deprecated_member_use
-          await client.authenticationKeyManager!.put(
+          await authKeyProvider.put(
             '${loginResponse.keyId}:${loginResponse.key}',
           );
 

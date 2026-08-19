@@ -101,8 +101,6 @@ abstract class DateTimeDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
   }) {
@@ -111,8 +109,6 @@ abstract class DateTimeDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       include: include,
     );
@@ -223,8 +219,6 @@ class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -269,8 +263,6 @@ class DateTimeDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -280,8 +272,6 @@ class DateTimeDefaultPersistRepository {
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -312,8 +302,6 @@ class DateTimeDefaultPersistRepository {
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -323,8 +311,6 @@ class DateTimeDefaultPersistRepository {
       where: where?.call(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -358,16 +344,22 @@ class DateTimeDefaultPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> insert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DateTimeDefaultPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -401,6 +393,10 @@ class DateTimeDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> upsert(
     _i1.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
@@ -408,6 +404,7 @@ class DateTimeDefaultPersistRepository {
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefaultPersist>(
       rows,
@@ -415,6 +412,7 @@ class DateTimeDefaultPersistRepository {
       updateColumns: updateColumns?.call(DateTimeDefaultPersist.t),
       updateWhere: updateWhere?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -453,16 +451,22 @@ class DateTimeDefaultPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> update(
     _i1.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
     _i1.ColumnSelections<DateTimeDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefaultPersist>(
       rows,
       columns: columns?.call(DateTimeDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -500,6 +504,10 @@ class DateTimeDefaultPersistRepository {
 
   /// Updates all [DateTimeDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
@@ -509,9 +517,8 @@ class DateTimeDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultPersist>(
       columnValues: columnValues(DateTimeDefaultPersist.t.updateTable),
@@ -520,9 +527,8 @@ class DateTimeDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -533,22 +539,24 @@ class DateTimeDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefaultPersist>(
       rows,
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -568,22 +576,24 @@ class DateTimeDefaultPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultPersist>(
       where: where(DateTimeDefaultPersist.t),
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

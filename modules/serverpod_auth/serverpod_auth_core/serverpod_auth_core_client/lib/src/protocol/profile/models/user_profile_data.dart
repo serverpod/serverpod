@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Lightweight DTO to be used as specification while creating a new user profile.
-abstract class UserProfileData implements _i1.SerializableModel {
+abstract class UserProfileData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserProfileData._({
     this.userName,
     this.fullName,
@@ -55,6 +56,16 @@ abstract class UserProfileData implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.UserProfileData',
+      if (userName != null) 'userName': userName,
+      if (fullName != null) 'fullName': fullName,
+      if (email != null) 'email': email,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.UserProfileData',
       if (userName != null) 'userName': userName,

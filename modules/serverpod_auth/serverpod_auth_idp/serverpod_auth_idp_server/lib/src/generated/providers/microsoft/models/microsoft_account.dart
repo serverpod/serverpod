@@ -127,8 +127,6 @@ abstract class MicrosoftAccount
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
   }) {
@@ -137,8 +135,6 @@ abstract class MicrosoftAccount
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(MicrosoftAccount.t),
       include: include,
     );
@@ -319,8 +315,6 @@ class MicrosoftAccountIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -367,8 +361,6 @@ class MicrosoftAccountRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
@@ -379,8 +371,6 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -412,8 +402,6 @@ class MicrosoftAccountRepository {
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
     MicrosoftAccountInclude? include,
@@ -424,8 +412,6 @@ class MicrosoftAccountRepository {
       where: where?.call(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -462,16 +448,22 @@ class MicrosoftAccountRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> insert(
     _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<MicrosoftAccount>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -505,6 +497,10 @@ class MicrosoftAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> upsert(
     _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
@@ -512,6 +508,7 @@ class MicrosoftAccountRepository {
     _i1.ColumnSelections<MicrosoftAccountTable>? updateColumns,
     _i1.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<MicrosoftAccount>(
       rows,
@@ -519,6 +516,7 @@ class MicrosoftAccountRepository {
       updateColumns: updateColumns?.call(MicrosoftAccount.t),
       updateWhere: updateWhere?.call(MicrosoftAccount.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -557,16 +555,22 @@ class MicrosoftAccountRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> update(
     _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.ColumnSelections<MicrosoftAccountTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<MicrosoftAccount>(
       rows,
       columns: columns?.call(MicrosoftAccount.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -604,6 +608,10 @@ class MicrosoftAccountRepository {
 
   /// Updates all [MicrosoftAccount]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
@@ -613,9 +621,8 @@ class MicrosoftAccountRepository {
     int? offset,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<MicrosoftAccount>(
       columnValues: columnValues(MicrosoftAccount.t.updateTable),
@@ -624,9 +631,8 @@ class MicrosoftAccountRepository {
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -637,22 +643,24 @@ class MicrosoftAccountRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> delete(
     _i1.DatabaseSession session,
     List<MicrosoftAccount> rows, {
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<MicrosoftAccount>(
       rows,
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -672,22 +680,24 @@ class MicrosoftAccountRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
     _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MicrosoftAccount>(
       where: where(MicrosoftAccount.t),
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

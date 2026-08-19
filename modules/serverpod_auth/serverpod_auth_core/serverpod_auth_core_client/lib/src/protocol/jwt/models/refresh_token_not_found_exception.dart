@@ -14,7 +14,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Exception thrown when a refresh token cannot be found in the database.
 abstract class RefreshTokenNotFoundException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   RefreshTokenNotFoundException._();
 
   factory RefreshTokenNotFoundException() = _RefreshTokenNotFoundExceptionImpl;
@@ -31,6 +34,13 @@ abstract class RefreshTokenNotFoundException
   RefreshTokenNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_core.RefreshTokenNotFoundException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_core.RefreshTokenNotFoundException',
     };

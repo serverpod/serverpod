@@ -31,6 +31,46 @@ void main() {
   );
 
   group(
+    'Given a protocol definition, '
+    'when generating the client file,',
+    () {
+      late String generatedClient;
+
+      setUpAll(() {
+        var codeMap = generator.generateProtocolCode(
+          protocolDefinition: const ProtocolDefinition(
+            endpoints: [],
+            models: [],
+            futureCalls: [],
+          ),
+          config: config,
+        );
+        generatedClient = codeMap[expectedFileName]!;
+      });
+
+      test(
+        'then its constructor does not expose the authKeyProvider as a parameter.',
+        () {
+          expect(
+            generatedClient,
+            isNot(contains('super.authKeyProvider')),
+          );
+        },
+      );
+
+      test(
+        'then its constructor does not expose the legacy authenticationKeyManager parameter.',
+        () {
+          expect(
+            generatedClient,
+            isNot(contains('authenticationKeyManager')),
+          );
+        },
+      );
+    },
+  );
+
+  group(
     'Given a protocol definition with a method with Stream return value when generating client file',
     () {
       var endpointName = 'testing';

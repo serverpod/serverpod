@@ -6,7 +6,10 @@ export 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
     show AuthSuccess;
 
 export '../src/generated/protocol.dart'
-    show FirebaseAccount, FirebaseIdTokenVerificationException;
+    show
+        FirebaseAccount,
+        FirebaseEmailNotVerifiedException,
+        FirebaseIdTokenVerificationException;
 export '../src/providers/firebase/business/firebase_id_token_config.dart'
     show FirebaseIdTokenValidationServerException;
 export '../src/providers/firebase/business/firebase_idp.dart';

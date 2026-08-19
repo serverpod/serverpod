@@ -1,0 +1,8 @@
+class: SharedTableRecord
+table: shared_table_record
+database: all
+fields:
+  name: String
+  sharedEnum: SharedEnum
+  sharedSubclass: SharedSubclass?
+  itemCount: int, default=0

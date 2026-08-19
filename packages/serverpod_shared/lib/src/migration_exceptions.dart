@@ -106,3 +106,29 @@ class MigrationAbortedException implements Exception {
   @override
   String toString() => 'Migration aborted due to warnings.';
 }
+
+/// Exception thrown when the target database dialect cannot express part of
+/// the database definition.
+///
+/// Unlike [MigrationAbortedException] this is not a warning that `--force` can
+/// override: the migration is rejected because generating it would silently
+/// change the meaning of the schema.
+class MigrationUnsupportedByDialectException implements Exception {
+  /// The name of the dialect that cannot express the definition.
+  final String dialect;
+
+  /// A user-facing description of the unsupported part of the definition.
+  final String reason;
+
+  /// Creates a new [MigrationUnsupportedByDialectException].
+  MigrationUnsupportedByDialectException({
+    required this.dialect,
+    required this.reason,
+  });
+
+  @override
+  String toString() =>
+      'Unable to create migration for the "$dialect" database. The following '
+      'is not supported by this database:\n'
+      '  • $reason';
+}

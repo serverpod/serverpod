@@ -83,8 +83,6 @@ abstract class UriDefaultPersist
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     UriDefaultPersistInclude? include,
   }) {
@@ -93,8 +91,6 @@ abstract class UriDefaultPersist
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UriDefaultPersist.t),
       include: include,
     );
@@ -182,8 +178,6 @@ class UriDefaultPersistIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -228,8 +222,6 @@ class UriDefaultPersistRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -239,8 +231,6 @@ class UriDefaultPersistRepository {
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -271,8 +261,6 @@ class UriDefaultPersistRepository {
     _i1.WhereExpressionBuilder<UriDefaultPersistTable>? where,
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -282,8 +270,6 @@ class UriDefaultPersistRepository {
       where: where?.call(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -317,16 +303,22 @@ class UriDefaultPersistRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> insert(
     _i1.DatabaseSession session,
     List<UriDefaultPersist> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UriDefaultPersist>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -360,6 +352,10 @@ class UriDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> upsert(
     _i1.DatabaseSession session,
     List<UriDefaultPersist> rows, {
@@ -367,6 +363,7 @@ class UriDefaultPersistRepository {
     _i1.ColumnSelections<UriDefaultPersistTable>? updateColumns,
     _i1.WhereExpressionBuilder<UriDefaultPersistTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UriDefaultPersist>(
       rows,
@@ -374,6 +371,7 @@ class UriDefaultPersistRepository {
       updateColumns: updateColumns?.call(UriDefaultPersist.t),
       updateWhere: updateWhere?.call(UriDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -412,16 +410,22 @@ class UriDefaultPersistRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> update(
     _i1.DatabaseSession session,
     List<UriDefaultPersist> rows, {
     _i1.ColumnSelections<UriDefaultPersistTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UriDefaultPersist>(
       rows,
       columns: columns?.call(UriDefaultPersist.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -459,6 +463,10 @@ class UriDefaultPersistRepository {
 
   /// Updates all [UriDefaultPersist]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UriDefaultPersistUpdateTable>
@@ -468,9 +476,8 @@ class UriDefaultPersistRepository {
     int? offset,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UriDefaultPersist>(
       columnValues: columnValues(UriDefaultPersist.t.updateTable),
@@ -479,9 +486,8 @@ class UriDefaultPersistRepository {
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -492,22 +498,24 @@ class UriDefaultPersistRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> delete(
     _i1.DatabaseSession session,
     List<UriDefaultPersist> rows, {
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UriDefaultPersist>(
       rows,
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -527,22 +535,24 @@ class UriDefaultPersistRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UriDefaultPersist>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UriDefaultPersistTable> where,
     _i1.OrderByBuilder<UriDefaultPersistTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UriDefaultPersist>(
       where: where(UriDefaultPersist.t),
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

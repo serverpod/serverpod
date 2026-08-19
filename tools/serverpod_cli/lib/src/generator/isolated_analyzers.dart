@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:isolate';
 
 import 'package:cli_tools/cli_tools.dart';
+import 'package:isolated_object/isolated_object.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/commands/generate.dart'
     show GenerationRequirements;
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/log_io.dart' show IsolatedObject;
 
 import '../commands/generate.dart';
 
@@ -201,6 +201,7 @@ class _PortForwardingLogger extends Logger {
     String message,
     Future<bool> Function() runner, {
     bool newParagraph = false,
+    String? successMessage,
   }) async {
     _port.send(IsolateProgressStart(message));
     try {
@@ -211,6 +212,71 @@ class _PortForwardingLogger extends Logger {
       _port.send(IsolateProgressEnd(message, false));
       rethrow;
     }
+  }
+
+  static const _noEventsMessage = 'No events in stream';
+
+  @override
+  Future<T> progressStream<T>(
+    String initialMessage,
+    Stream<T> stream, {
+    String Function(T)? toMessage,
+    bool Function(T)? isSuccess,
+    bool newParagraph = false,
+  }) async {
+    _port.send(IsolateProgressStart(initialMessage));
+
+    if (logLevel.index > LogLevel.info.index) {
+      try {
+        final result = await _drain(stream);
+        final success = isSuccess?.call(result) ?? true;
+        _port.send(IsolateProgressEnd(initialMessage, success));
+        return result;
+      } catch (_) {
+        _port.send(IsolateProgressEnd(initialMessage, false));
+        rethrow;
+      }
+    }
+
+    T? last;
+    final events = StreamIterator(stream);
+    try {
+      if (!await events.moveNext()) {
+        _port.send(IsolateProgressEnd(initialMessage, false));
+        throw StateError(_noEventsMessage);
+      }
+
+      while (true) {
+        final event = events.current;
+        last = event;
+        final label = toMessage?.call(event) ?? event.toString();
+        // The sub-operation's lifetime is the wait for the next event.
+        var hasMore = false;
+        await progress(label, () async {
+          hasMore = await events.moveNext();
+          return true;
+        });
+        if (!hasMore) break;
+      }
+    } finally {
+      await events.cancel();
+    }
+    final result = last as T;
+    final success = isSuccess?.call(result) ?? true;
+    _port.send(IsolateProgressEnd(initialMessage, success));
+    return result;
+  }
+
+  /// Consumes [stream] honoring the same return/throw contract as [progressStream].
+  static Future<T> _drain<T>(Stream<T> stream) async {
+    T? last;
+    var hasEvent = false;
+    await for (final event in stream) {
+      hasEvent = true;
+      last = event;
+    }
+    if (!hasEvent) throw StateError(_noEventsMessage);
+    return last as T;
   }
 
   @override

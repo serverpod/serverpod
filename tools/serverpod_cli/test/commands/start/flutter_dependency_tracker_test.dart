@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/flutter_dependency_tracker.dart';
+import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
 import 'package:test/test.dart';
 
 /// Runs a real `dart pub get` in [dir]. Fixtures use only path and workspace
@@ -98,7 +99,10 @@ void main() {
     );
   }
 
-  void writeAppFlutterPubspec({Map<String, String>? deps}) {
+  void writeAppFlutterPubspec({
+    Map<String, String>? deps,
+    String? flutterBlock,
+  }) {
     write(
       p.join(wsDir, 'app_flutter', 'pubspec.yaml'),
       _pubspec(
@@ -106,11 +110,14 @@ void main() {
         workspaceMember: true,
         deps: deps ?? {'app_client': '../app_client'},
         devDeps: {'dep_dev': '../../third_party/dep_dev'},
+        flutterBlock: flutterBlock,
       ),
     );
   }
 
-  Future<FlutterDependencyTracker> createWorkspaceTracker() async {
+  Future<FlutterDependencyTracker> createWorkspaceTracker({
+    String? appPubspecFlutterBlock,
+  }) async {
     wsDir = p.join(tempDir.path, 'ws');
     writeThirdParty('dep_pure');
     writeThirdParty('dep_dev');
@@ -122,7 +129,7 @@ void main() {
         workspace: ['app_flutter', 'app_client', 'app_server'],
       ),
     );
-    writeAppFlutterPubspec();
+    writeAppFlutterPubspec(flutterBlock: appPubspecFlutterBlock);
     write(
       p.join(wsDir, 'app_client', 'pubspec.yaml'),
       _pubspec(
@@ -143,6 +150,7 @@ void main() {
     return FlutterDependencyTracker(
       dartToolDir: p.join(wsDir, '.dart_tool'),
       flutterPackageName: 'app_flutter',
+      flutterPackageDir: p.join(wsDir, 'app_flutter'),
     );
   }
 
@@ -160,7 +168,7 @@ void main() {
         writeThirdParty('dep_server_only', version: '1.0.1');
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
       },
     );
 
@@ -172,7 +180,7 @@ void main() {
         writeThirdParty('dep_pure', version: '1.0.1');
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        expect(tracker.refresh(), PackageDependencyChange.dartOnly);
       },
     );
 
@@ -189,7 +197,7 @@ void main() {
         );
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        expect(tracker.refresh(), PackageDependencyChange.dartOnly);
       },
     );
 
@@ -202,7 +210,7 @@ void main() {
         writeAppFlutterPubspec(deps: {});
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.dartOnly);
+        expect(tracker.refresh(), PackageDependencyChange.dartOnly);
       },
     );
 
@@ -213,7 +221,7 @@ void main() {
         writeThirdParty('dep_dev', version: '1.0.1');
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
       },
     );
 
@@ -223,7 +231,141 @@ void main() {
       () async {
         await _pubGet(wsDir);
 
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
+      },
+    );
+  });
+
+  group('Given a Flutter app pubspec with assets,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      tracker = await createWorkspaceTracker(
+        appPubspecFlutterBlock:
+            'flutter:\n'
+            '  assets:\n'
+            '    - assets/image.png\n',
+      );
+    });
+
+    test(
+      'when assets are unchanged, '
+      'then no change is reported',
+      () {
+        expect(tracker.refresh(), PackageDependencyChange.none);
+      },
+    );
+
+    test(
+      'when an asset is added, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets:\n'
+              '    - assets/image.png\n'
+              '    - assets/new_asset.png\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when an asset is removed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets:\n'
+              '    - assets/other.png\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when the asset list is cleared, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  assets: []\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
+      },
+    );
+  });
+
+  group('Given a Flutter app pubspec with fonts,', () {
+    late FlutterDependencyTracker tracker;
+
+    setUp(() async {
+      tracker = await createWorkspaceTracker(
+        appPubspecFlutterBlock:
+            'flutter:\n'
+            '  fonts:\n'
+            '    - family: MyFont\n'
+            '      fonts:\n'
+            '        - asset: fonts/MyFont-Regular.ttf\n',
+      );
+    });
+
+    test(
+      'when fonts are unchanged, '
+      'then no change is reported',
+      () {
+        expect(tracker.refresh(), PackageDependencyChange.none);
+      },
+    );
+
+    test(
+      'when a font family is added, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts:\n'
+              '    - family: MyFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/MyFont-Regular.ttf\n'
+              '    - family: NewFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/NewFont-Regular.ttf\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when a font asset is changed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts:\n'
+              '    - family: MyFont\n'
+              '      fonts:\n'
+              '        - asset: fonts/MyFont-Bold.ttf\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
+      },
+    );
+
+    test(
+      'when fonts are removed, '
+      'then an asset change is reported',
+      () {
+        writeAppFlutterPubspec(
+          flutterBlock:
+              'flutter:\n'
+              '  fonts: []\n',
+        );
+        expect(tracker.refresh(), PackageDependencyChange.assets);
       },
     );
   });
@@ -231,7 +373,7 @@ void main() {
   /// Resolves a standalone app depending on `dep@1.0.0` (described by
   /// [depFlutterBlock]) with a real `pub get`, bumps it to 1.0.1, re-resolves,
   /// and returns the tracker's classification of the bump.
-  Future<FlutterDependencyChange> classifyRealDependencyBump({
+  Future<PackageDependencyChange> classifyRealDependencyBump({
     String? depFlutterBlock,
     bool withBuildHook = false,
     bool corruptDepPubspecAfterResolve = false,
@@ -252,6 +394,7 @@ void main() {
     final tracker = FlutterDependencyTracker(
       dartToolDir: p.join(appDir, '.dart_tool'),
       flutterPackageName: 'app_flutter',
+      flutterPackageDir: appDir,
     );
 
     writeThirdParty('dep', version: '1.0.1', flutterBlock: depFlutterBlock);
@@ -280,7 +423,7 @@ void main() {
             '        pluginClass: DepPlugin\n',
       );
 
-      expect(change, FlutterDependencyChange.native);
+      expect(change, PackageDependencyChange.native);
     },
   );
 
@@ -298,7 +441,7 @@ void main() {
             '        ffiPlugin: true\n',
       );
 
-      expect(change, FlutterDependencyChange.native);
+      expect(change, PackageDependencyChange.native);
     },
   );
 
@@ -316,7 +459,7 @@ void main() {
             '        dartPluginClass: DepPluginLinux\n',
       );
 
-      expect(change, FlutterDependencyChange.dartOnly);
+      expect(change, PackageDependencyChange.dartOnly);
     },
   );
 
@@ -334,7 +477,7 @@ void main() {
             '        pluginClass: none\n',
       );
 
-      expect(change, FlutterDependencyChange.dartOnly);
+      expect(change, PackageDependencyChange.dartOnly);
     },
   );
 
@@ -345,7 +488,7 @@ void main() {
     () async {
       final change = await classifyRealDependencyBump(withBuildHook: true);
 
-      expect(change, FlutterDependencyChange.native);
+      expect(change, PackageDependencyChange.native);
     },
   );
 
@@ -358,7 +501,7 @@ void main() {
         corruptDepPubspecAfterResolve: true,
       );
 
-      expect(change, FlutterDependencyChange.native);
+      expect(change, PackageDependencyChange.native);
     },
   );
 
@@ -369,9 +512,9 @@ void main() {
     () async {
       await createWorkspaceTracker();
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         p.join(wsDir, 'app_flutter'),
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, p.join(wsDir, '.dart_tool'));
@@ -387,9 +530,9 @@ void main() {
       write(p.join(appDir, 'pubspec.yaml'), _pubspec('app_flutter'));
       await _pubGet(appDir);
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         appDir,
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, p.join(appDir, '.dart_tool'));
@@ -403,9 +546,9 @@ void main() {
     () async {
       final pkg = await Directory(p.join(tempDir.path, 'unresolved')).create();
 
-      final resolved = FlutterDependencyTracker.resolveDartToolDir(
+      final resolved = PackageDependencyTracker.resolveDartToolDir(
         pkg.path,
-        flutterPackageName: 'app_flutter',
+        packageName: 'app_flutter',
       );
 
       expect(resolved, isNull);
@@ -435,9 +578,9 @@ void main() {
         'when resolving its .dart_tool, '
         'then it does not latch onto the unrelated resolution',
         () {
-          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          final resolved = PackageDependencyTracker.resolveDartToolDir(
             pkg.path,
-            flutterPackageName: 'app_flutter',
+            packageName: 'app_flutter',
           );
 
           expect(resolved, isNull);
@@ -472,9 +615,9 @@ void main() {
         'when resolving its .dart_tool, '
         'then it resolves to null',
         () {
-          final resolved = FlutterDependencyTracker.resolveDartToolDir(
+          final resolved = PackageDependencyTracker.resolveDartToolDir(
             pkg.path,
-            flutterPackageName: 'app_flutter',
+            packageName: 'app_flutter',
           );
 
           expect(resolved, isNull);
@@ -491,9 +634,13 @@ void main() {
 
   late String syntheticDartTool;
 
+  late String syntheticFlutterPkgDir;
+
   Future<void> createSyntheticDartTool() async {
     syntheticDartTool = p.join(tempDir.path, '.dart_tool');
     await Directory(syntheticDartTool).create();
+    syntheticFlutterPkgDir = p.join(tempDir.path, 'flutter_app');
+    await Directory(syntheticFlutterPkgDir).create(recursive: true);
   }
 
   void writeGraph(Map<String, dynamic> graph) {
@@ -517,6 +664,7 @@ void main() {
   }) => FlutterDependencyTracker(
     dartToolDir: syntheticDartTool,
     flutterPackageName: flutterPackageName,
+    flutterPackageDir: syntheticFlutterPkgDir,
   );
 
   group('Given a resolution whose dependency graph file is absent,', () {
@@ -531,7 +679,7 @@ void main() {
       'when the closure is refreshed, '
       'then no change is reported',
       () {
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
       },
     );
   });
@@ -552,7 +700,7 @@ void main() {
       'when the closure is refreshed, '
       'then no change is reported',
       () {
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
       },
     );
   });
@@ -572,7 +720,7 @@ void main() {
         'when the closure is refreshed, '
         'then no change is reported',
         () {
-          expect(tracker.refresh(), FlutterDependencyChange.none);
+          expect(tracker.refresh(), PackageDependencyChange.none);
         },
       );
     },
@@ -594,10 +742,10 @@ void main() {
         // Simulate a transient state (e.g. mid-pub-get / flutter clean): the
         // file vanishes and is then recreated with identical contents.
         File(p.join(syntheticDartTool, 'package_graph.json')).deleteSync();
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
 
         writeGraph(minimalGraph());
-        expect(tracker.refresh(), FlutterDependencyChange.none);
+        expect(tracker.refresh(), PackageDependencyChange.none);
       },
     );
   });
@@ -634,7 +782,7 @@ void main() {
         'when the closure is refreshed, '
         'then a native change is conservatively reported',
         () {
-          expect(tracker.refresh(), FlutterDependencyChange.native);
+          expect(tracker.refresh(), PackageDependencyChange.native);
         },
       );
     },

@@ -47,6 +47,22 @@ class ZonkyArchive {
     extractTarballInto(tarBytes, destination, onProgress: onProgress);
   }
 
+  /// Extracts a bare `.tar.xz` (no outer JAR/zip layer) into [destination].
+  ///
+  /// This is the layout of Serverpod's own GitHub-Releases bundles, vs
+  /// Zonky's JAR-wrapped `.txz` handled by [extractInto]. The SHA-256 of the
+  /// whole archive is verified by [BinaryStore] before we get here, so XZ's
+  /// per-stream CRC is skipped (same rationale as [extractInto]).
+  static void extractTarXzInto(
+    Uint8List txzBytes,
+    Directory destination, {
+    void Function(double fraction)? onProgress,
+  }) {
+    destination.createSync(recursive: true);
+    var tarBytes = XZDecoder().decodeBytes(txzBytes);
+    extractTarballInto(tarBytes, destination, onProgress: onProgress);
+  }
+
   /// Tar-to-disk seam, exposed so tests can build TAR fixtures directly
   /// without going through the XZ layer (`package:archive` 3.6.x's
   /// XZEncoder/XZDecoder roundtrip is not stable enough for synthetic

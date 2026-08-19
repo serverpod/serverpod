@@ -102,6 +102,19 @@ void run(List<String> args) async {
       microsoftIdpConfig,
       passkeyIdpConfig,
     ],
+    accountMergeConfig: AccountMergeConfig(
+      applicationMergeHandler:
+          (
+            Session session, {
+            required UuidValue userToKeepId,
+            required UuidValue userToRemoveId,
+            required Transaction transaction,
+          }) async {
+            // Example auth app does not have specific application data, but if
+            // it did, this is where records would be migrated or merged away
+            // from [userToRemove] and over to [userToKeep].
+          },
+    ),
   );
 
   // Paths must match paths configured on Apple's developer portal. The values

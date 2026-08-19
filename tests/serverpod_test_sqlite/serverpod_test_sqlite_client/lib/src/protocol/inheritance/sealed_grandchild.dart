@@ -12,7 +12,7 @@
 part of 'sealed_parent.dart';
 
 abstract class SealedGrandChild extends _i1.SealedChild
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   SealedGrandChild._({
     required super.sealedInt,
     required super.sealedString,
@@ -51,6 +51,17 @@ abstract class SealedGrandChild extends _i1.SealedChild
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'SealedGrandChild',
+      'sealedInt': sealedInt,
+      'sealedString': sealedString,
+      if (nullableInt != null) 'nullableInt': nullableInt,
+      'sealedGrandchildField': sealedGrandchildField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'SealedGrandChild',
       'sealedInt': sealedInt,

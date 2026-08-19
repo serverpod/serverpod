@@ -275,6 +275,22 @@ class DefaultValueRestriction extends ValueRestriction {
       return errors;
     }
 
+    if (value == defaultIntSerial) {
+      if (key == Keyword.defaultPersistKey) {
+        return errors;
+      }
+
+      errors.add(
+        SourceSpanSeverityException(
+          'The default value "$defaultIntSerial" can not be set using the '
+          '"$key" keyword. Use the "${Keyword.defaultPersistKey}" keyword '
+          'instead.',
+          span,
+        ),
+      );
+      return errors;
+    }
+
     int? parsedValue = int.tryParse(value);
     if (parsedValue == null) {
       errors.add(
@@ -502,7 +518,7 @@ class DefaultValueRestriction extends ValueRestriction {
     }
 
     String invalidValueError =
-        'The "$key" value must be a a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
+        'The "$key" value must be a valid Uri string (e.g., "$key"=\'http://serverpod.dev\').';
 
     if (value is! String || value.isEmpty) {
       return [

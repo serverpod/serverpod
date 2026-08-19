@@ -61,3 +61,7 @@ templates/serverpod_templates/modulename_server/test/integration/test_tools/
 integrations/.env.test
 .env.test
 PLAN.md
+
+# Scratch paths for the migration tests
+**/migration_test_protocol_files/
+**/repair-migration/

@@ -158,6 +158,8 @@ class FirebaseIdpUtils {
     FirebaseAccountDetails details;
     try {
       details = _parseAccountDetails(data);
+    } on SerializableException {
+      rethrow;
     } catch (e) {
       session.logAndThrow('Invalid user info from Firebase: $e');
     }
@@ -188,6 +190,8 @@ class FirebaseIdpUtils {
 
     try {
       config.firebaseAccountDetailsValidation(details);
+    } on SerializableException {
+      rethrow;
     } catch (e) {
       throw FirebaseUserInfoMissingDataException();
     }

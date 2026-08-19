@@ -112,8 +112,6 @@ abstract class DateTimeDefault
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     DateTimeDefaultInclude? include,
   }) {
@@ -122,8 +120,6 @@ abstract class DateTimeDefault
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DateTimeDefault.t),
       include: include,
     );
@@ -247,8 +243,6 @@ class DateTimeDefaultIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -293,8 +287,6 @@ class DateTimeDefaultRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -304,8 +296,6 @@ class DateTimeDefaultRepository {
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -336,8 +326,6 @@ class DateTimeDefaultRepository {
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? where,
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -347,8 +335,6 @@ class DateTimeDefaultRepository {
       where: where?.call(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -382,16 +368,22 @@ class DateTimeDefaultRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> insert(
     _i1.DatabaseSession session,
     List<DateTimeDefault> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DateTimeDefault>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -425,6 +417,10 @@ class DateTimeDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> upsert(
     _i1.DatabaseSession session,
     List<DateTimeDefault> rows, {
@@ -432,6 +428,7 @@ class DateTimeDefaultRepository {
     _i1.ColumnSelections<DateTimeDefaultTable>? updateColumns,
     _i1.WhereExpressionBuilder<DateTimeDefaultTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefault>(
       rows,
@@ -439,6 +436,7 @@ class DateTimeDefaultRepository {
       updateColumns: updateColumns?.call(DateTimeDefault.t),
       updateWhere: updateWhere?.call(DateTimeDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -477,16 +475,22 @@ class DateTimeDefaultRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> update(
     _i1.DatabaseSession session,
     List<DateTimeDefault> rows, {
     _i1.ColumnSelections<DateTimeDefaultTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefault>(
       rows,
       columns: columns?.call(DateTimeDefault.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -524,6 +528,10 @@ class DateTimeDefaultRepository {
 
   /// Updates all [DateTimeDefault]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DateTimeDefaultUpdateTable>
@@ -533,9 +541,8 @@ class DateTimeDefaultRepository {
     int? offset,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefault>(
       columnValues: columnValues(DateTimeDefault.t.updateTable),
@@ -544,9 +551,8 @@ class DateTimeDefaultRepository {
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -557,22 +563,24 @@ class DateTimeDefaultRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> delete(
     _i1.DatabaseSession session,
     List<DateTimeDefault> rows, {
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefault>(
       rows,
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -592,22 +600,24 @@ class DateTimeDefaultRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefault>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DateTimeDefaultTable> where,
     _i1.OrderByBuilder<DateTimeDefaultTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefault>(
       where: where(DateTimeDefault.t),
       orderBy: orderBy?.call(DateTimeDefault.t),
       orderByList: orderByList?.call(DateTimeDefault.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

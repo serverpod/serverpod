@@ -17,9 +17,10 @@ import 'facebook_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class FacebookIdp {
+class FacebookIdp implements IdentityProvider {
   /// The method used when authenticating with the Facebook identity provider.
-  static const String method = 'facebook';
+  @override
+  String get method => 'facebook';
 
   /// Admin operations to work with Facebook-backed accounts.
   final FacebookIdpAdmin admin;
@@ -83,25 +84,16 @@ class FacebookIdp {
 
         final image = account.details.image;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.fullName?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new Facebook user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.fullName?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: image != null ? UserImageFromUrl(image) : null,
+          );
         } else if (image != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
@@ -109,7 +101,7 @@ class FacebookIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromUrl(
                 session,
                 account.authUserId,
@@ -141,6 +133,24 @@ class FacebookIdp {
   /// Determines whether the current session has an associated Facebook account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates [FacebookAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await FacebookAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the FacebookIdp instance from the AuthServices.

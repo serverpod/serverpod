@@ -4,7 +4,6 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../test_tags.dart';
 import '../../test_tools/serverpod_test_tools.dart';
 import '../test_utils/email_idp_test_fixture.dart';
 
@@ -12,7 +11,6 @@ void main() {
   withServerpod(
     'Given existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;
@@ -124,9 +122,84 @@ void main() {
   );
 
   withServerpod(
+    'Given an existing email account and a failed login rate limit',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      late Session session;
+      late EmailIdpTestFixture fixture;
+      late EmailIdpAuthenticationUtil authenticationUtil;
+      const email = 'parallel@serverpod.dev';
+      const password = 'Foobar123!';
+      const failedLoginRateLimit = RateLimit(
+        maxAttempts: 3,
+        timeframe: Duration(hours: 1),
+      );
+
+      setUp(() async {
+        session = sessionBuilder.build();
+        fixture = EmailIdpTestFixture(
+          config: const EmailIdpConfig(
+            secretHashPepper: 'test-pepper',
+            failedLoginRateLimit: failedLoginRateLimit,
+          ),
+        );
+
+        final authUser = await fixture.authUsers.create(session);
+        await fixture.createEmailAccount(
+          session,
+          authUserId: authUser.id,
+          email: email,
+          password: EmailAccountPassword.fromString(password),
+        );
+
+        authenticationUtil = fixture.authenticationUtil;
+      });
+
+      tearDown(() async {
+        await fixture.tearDown(session);
+      });
+
+      test(
+        'when more wrong-password logins are issued in parallel than the limit allows, '
+        'then no more than the limit are given a password comparison.',
+        () async {
+          const parallelAttempts = 12;
+
+          final passwordWasCompared = await Future.wait(
+            List.generate(parallelAttempts, (final _) async {
+              try {
+                await authenticationUtil.authenticate(
+                  session,
+                  email: email,
+                  password: '$password-incorrect',
+                  transaction: null,
+                );
+                return true;
+              } on EmailAuthenticationInvalidCredentialsException {
+                // Reaching this means the stored hash was verified against the
+                // supplied password - one guess spent.
+                return true;
+              } on EmailAuthenticationTooManyAttemptsException {
+                return false;
+              }
+            }),
+          );
+
+          expect(
+            passwordWasCompared.where((final compared) => compared).length,
+            lessThanOrEqualTo(failedLoginRateLimit.maxAttempts),
+            reason:
+                'Guesses sent in parallel must consume the same budget as '
+                'guesses sent one at a time.',
+          );
+        },
+      );
+    },
+  );
+
+  withServerpod(
     'Given non-existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -170,7 +243,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late AuthUserModel authUser;
       late Session session;
@@ -317,7 +389,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
@@ -397,7 +468,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       const email = 'test@serverpod.dev';
@@ -477,7 +547,6 @@ void main() {
     /// Disabling rollback database since we use separate transaction for
     /// logging failed sign in attempts.
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late UuidValue authUserId;

@@ -5,6 +5,7 @@ class IndexDefinitionBuilder {
   List<IndexElementDefinition> _elements;
   String _type;
   bool _isUnique;
+  bool? _nullsDistinct;
   bool _isPrimary;
   String? _predicate;
   GinOperatorClass? _ginOperatorClass;
@@ -17,6 +18,7 @@ class IndexDefinitionBuilder {
       _elements = [],
       _type = 'btree',
       _isUnique = false,
+      _nullsDistinct = null,
       _isPrimary = false,
       _predicate = null,
       _ginOperatorClass = null,
@@ -30,6 +32,7 @@ class IndexDefinitionBuilder {
       elements: _elements,
       type: _type,
       isUnique: _isUnique,
+      nullsDistinct: _nullsDistinct,
       isPrimary: _isPrimary,
       predicate: _predicate,
       ginOperatorClass: _ginOperatorClass,
@@ -74,6 +77,11 @@ class IndexDefinitionBuilder {
 
   IndexDefinitionBuilder withIsUnique(bool isUnique) {
     _isUnique = isUnique;
+    return this;
+  }
+
+  IndexDefinitionBuilder withNullsDistinct(bool? nullsDistinct) {
+    _nullsDistinct = nullsDistinct;
     return this;
   }
 

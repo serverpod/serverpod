@@ -80,8 +80,6 @@ abstract class ReadWriteTestEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
   }) {
@@ -90,8 +88,6 @@ abstract class ReadWriteTestEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       include: include,
     );
@@ -177,8 +173,6 @@ class ReadWriteTestEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -223,8 +217,6 @@ class ReadWriteTestEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -234,8 +226,6 @@ class ReadWriteTestEntryRepository {
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -266,8 +256,6 @@ class ReadWriteTestEntryRepository {
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -277,8 +265,6 @@ class ReadWriteTestEntryRepository {
       where: where?.call(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -312,16 +298,22 @@ class ReadWriteTestEntryRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> insert(
     _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ReadWriteTestEntry>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -355,6 +347,10 @@ class ReadWriteTestEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> upsert(
     _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
@@ -362,6 +358,7 @@ class ReadWriteTestEntryRepository {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? updateColumns,
     _i1.WhereExpressionBuilder<ReadWriteTestEntryTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ReadWriteTestEntry>(
       rows,
@@ -369,6 +366,7 @@ class ReadWriteTestEntryRepository {
       updateColumns: updateColumns?.call(ReadWriteTestEntry.t),
       updateWhere: updateWhere?.call(ReadWriteTestEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -407,16 +405,22 @@ class ReadWriteTestEntryRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> update(
     _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.ColumnSelections<ReadWriteTestEntryTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ReadWriteTestEntry>(
       rows,
       columns: columns?.call(ReadWriteTestEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -454,6 +458,10 @@ class ReadWriteTestEntryRepository {
 
   /// Updates all [ReadWriteTestEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ReadWriteTestEntryUpdateTable>
@@ -463,9 +471,8 @@ class ReadWriteTestEntryRepository {
     int? offset,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ReadWriteTestEntry>(
       columnValues: columnValues(ReadWriteTestEntry.t.updateTable),
@@ -474,9 +481,8 @@ class ReadWriteTestEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -487,22 +493,24 @@ class ReadWriteTestEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> delete(
     _i1.DatabaseSession session,
     List<ReadWriteTestEntry> rows, {
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ReadWriteTestEntry>(
       rows,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -522,22 +530,24 @@ class ReadWriteTestEntryRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ReadWriteTestEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ReadWriteTestEntryTable> where,
     _i1.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ReadWriteTestEntry>(
       where: where(ReadWriteTestEntry.t),
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

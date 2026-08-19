@@ -30,9 +30,46 @@ void main() {
       final surface = tester.widget<Material>(surfaceFinder.first);
 
       expect(surface.type, MaterialType.transparency);
+      expect(surface.color, Colors.transparent);
       expect(surface.borderRadius, isNull);
       expect(surface.shape, isNull);
       expect(surface.clipBehavior, Clip.none);
+    },
+  );
+
+  testWidgets(
+    'Given a SignInWidget configured with a shared button style, '
+    'when building the available sign-in options, '
+    'then the style is exposed to the buttons through a provider.',
+    (tester) async {
+      const style = SignInButtonStyle(shape: SignInButtonShape.pill);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: SignInWidget(client: _TestClient(), buttonStyle: style),
+        ),
+      );
+
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, style);
+    },
+  );
+
+  testWidgets(
+    'Given a SignInWidget configured without a shared button style, '
+    'when building the available sign-in options, '
+    'then a default style provider is inserted so buttons share the common style.',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(home: SignInWidget(client: _TestClient())),
+      );
+
+      final provider = tester.widget<SignInButtonStyleProvider>(
+        find.byType(SignInButtonStyleProvider),
+      );
+      expect(provider.style, const SignInButtonStyle());
     },
   );
 }

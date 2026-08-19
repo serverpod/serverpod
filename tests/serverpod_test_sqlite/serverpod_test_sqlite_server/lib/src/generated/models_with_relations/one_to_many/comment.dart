@@ -99,8 +99,6 @@ abstract class Comment
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     CommentInclude? include,
   }) {
@@ -109,8 +107,6 @@ abstract class Comment
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Comment.t),
       include: include,
     );
@@ -240,8 +236,6 @@ class CommentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -288,8 +282,6 @@ class CommentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
@@ -300,8 +292,6 @@ class CommentRepository {
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -333,8 +323,6 @@ class CommentRepository {
     _i1.WhereExpressionBuilder<CommentTable>? where,
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
     CommentInclude? include,
@@ -345,8 +333,6 @@ class CommentRepository {
       where: where?.call(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -383,16 +369,22 @@ class CommentRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> insert(
     _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Comment>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -426,6 +418,10 @@ class CommentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> upsert(
     _i1.DatabaseSession session,
     List<Comment> rows, {
@@ -433,6 +429,7 @@ class CommentRepository {
     _i1.ColumnSelections<CommentTable>? updateColumns,
     _i1.WhereExpressionBuilder<CommentTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Comment>(
       rows,
@@ -440,6 +437,7 @@ class CommentRepository {
       updateColumns: updateColumns?.call(Comment.t),
       updateWhere: updateWhere?.call(Comment.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -478,16 +476,22 @@ class CommentRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> update(
     _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.ColumnSelections<CommentTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Comment>(
       rows,
       columns: columns?.call(Comment.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -524,6 +528,10 @@ class CommentRepository {
 
   /// Updates all [Comment]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CommentUpdateTable> columnValues,
@@ -532,9 +540,8 @@ class CommentRepository {
     int? offset,
     _i1.OrderByBuilder<CommentTable>? orderBy,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Comment>(
       columnValues: columnValues(Comment.t.updateTable),
@@ -543,9 +550,8 @@ class CommentRepository {
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -556,22 +562,24 @@ class CommentRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> delete(
     _i1.DatabaseSession session,
     List<Comment> rows, {
     _i1.OrderByBuilder<CommentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Comment>(
       rows,
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -591,22 +599,24 @@ class CommentRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Comment>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CommentTable> where,
     _i1.OrderByBuilder<CommentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Comment>(
       where: where(Comment.t),
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

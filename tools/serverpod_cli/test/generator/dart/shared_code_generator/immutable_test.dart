@@ -2,6 +2,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as path;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/dart/shared_code_generator.dart';
+import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:test/test.dart';
 
 import '../../../test_util/builders/generator_config_builder.dart';
@@ -294,6 +295,77 @@ void main() {
               reason: 'No @immutable annotation found on $testClassName',
             );
           });
+        });
+      });
+    },
+  );
+
+  group(
+    'Given an immutable shared class with a list field when generating code',
+    () {
+      var models = [
+        ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withIsImmutable(true)
+            .withListField('events', 'String')
+            .withSharedPackageName(sharedPackageName)
+            .build(),
+      ];
+
+      late var codeMap = generator.generateSerializableModelsCode(
+        models: models,
+        config: config,
+      );
+
+      late var generatedCode = codeMap[expectedFilePath]!;
+
+      late var compilationUnit = parseString(
+        content: generatedCode,
+      ).unit;
+
+      test(
+        'then DeepCollectionEquality is imported from serverpod_serialization.',
+        () {
+          expect(generatedCode, contains(serverpodSerializationUrl));
+          expect(
+            generatedCode,
+            isNot(contains('package:collection/collection.dart')),
+          );
+          expect(generatedCode, contains('DeepCollectionEquality'));
+        },
+      );
+
+      group('then the $testClassName', () {
+        late var baseClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testClassName,
+        );
+
+        test('has a hashCode method using DeepCollectionEquality.', () {
+          var hashCodeGetter = CompilationUnitHelpers.tryFindMethodDeclaration(
+            baseClass!,
+            name: 'hashCode',
+          );
+
+          expect(hashCodeGetter, isNotNull);
+          expect(
+            hashCodeGetter!.body.toSource().contains('DeepCollectionEquality'),
+            isTrue,
+          );
+        });
+
+        test('has a == operator using DeepCollectionEquality.', () {
+          var equalsOperator = CompilationUnitHelpers.tryFindMethodDeclaration(
+            baseClass!,
+            name: '==',
+          );
+
+          expect(equalsOperator, isNotNull);
+          expect(
+            equalsOperator!.body.toSource().contains('DeepCollectionEquality'),
+            isTrue,
+          );
         });
       });
     },

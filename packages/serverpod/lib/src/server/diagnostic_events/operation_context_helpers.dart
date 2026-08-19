@@ -49,9 +49,6 @@ OperationEventContext contextFromSession(
     MethodStreamSession methodStream => _fromMethodStream(
       methodStream,
     ),
-    StreamingSession streaming => _fromStreaming(
-      streaming,
-    ),
     // likely InternalSession or InternalServerpodSession
     _ => OperationEventContext(
       serverName: session.server.name,
@@ -115,19 +112,4 @@ StreamOpContext _fromMethodStream(
   endpoint: session.endpoint,
   methodName: session.method,
   streamConnectionId: session.connectionId,
-);
-
-StreamOpContext _fromStreaming(
-  StreamingSession session,
-) => StreamOpContext(
-  serverName: session.server.name,
-  serverId: session.server.serverId,
-  serverRunMode: session.server.runMode,
-  userAuthInfo: session.authInfoOrNull,
-  sessionId: session.sessionId,
-  remoteInfo: session.request.remoteInfo,
-  uri: session.request.url,
-  endpoint: session.endpoint,
-  methodName: '-',
-  streamConnectionId: null,
 );

@@ -1,0 +1,7 @@
+# Parent used to test `relation(field=...)` when the foreign key is not declared.
+class: GeneratedRelationCompany
+table: generated_relation_company
+fields:
+  name: String
+  office: GeneratedRelationOffice?, relation(name=generated_relation_company_office)
+  employees: List<GeneratedRelationEmployee>?, relation(name=generated_relation_company_employees)

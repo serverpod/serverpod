@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -24,19 +22,14 @@ class SqliteDatabaseProvider implements DatabaseProvider {
   SqlitePoolManager createPoolManager(
     DatabaseSerializationManager serializationManager,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
-    SqliteDatabaseConfig config, {
-    Directory? serverDirectory,
-  }) {
+    SqliteDatabaseConfig config,
+  ) {
     if (runtimeParametersBuilder != null) {
       log.warning(
         'Runtime parameters are not supported on SQLite and will be ignored.',
       );
     }
-    return SqlitePoolManager(
-      serializationManager,
-      config,
-      serverDirectory: serverDirectory,
-    );
+    return SqlitePoolManager(serializationManager, config);
   }
 
   @override

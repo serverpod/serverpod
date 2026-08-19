@@ -1,9 +1,13 @@
 # This file is generated. Do not modify, instead edit the files in the templates/pubspecs directory.
 # Mode: development
 
+# Frozen at Serverpod 4.0.0-beta.0: this module depends on the legacy streaming
+# API, which is removed in later releases. No version slots on purpose, see
+# issue #5443.
+
 name: serverpod_chat_server
 description: Serverpod chat server module.
-version: 3.5.0-beta.10
+version: 4.0.0-beta.0
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -13,25 +17,9 @@ dependencies:
   http: '>=1.1.0 <2.0.0'
   image: ^4.0.15
   path: ^1.8.3
-  serverpod: 3.5.0-beta.10
-  serverpod_auth_server: 3.5.0-beta.10
-  serverpod_serialization: 3.5.0-beta.10
+  serverpod: 4.0.0-beta.0
+  serverpod_auth_server: 4.0.0-beta.0
+  serverpod_serialization: 4.0.0-beta.0
 
 dev_dependencies:
-  serverpod_lints: 3.5.0-beta.10
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_auth_server:
-    path: ../../serverpod_auth/serverpod_auth_server
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared
+  serverpod_lints: 4.0.0-beta.0

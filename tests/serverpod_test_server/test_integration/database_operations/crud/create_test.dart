@@ -113,6 +113,42 @@ void main() async {
         expect(second.number, 20);
       },
     );
+
+    test(
+      'when batch inserting with noReturn set to true '
+      'then an empty list is returned but the rows are persisted.',
+      () async {
+        var result = await UniqueData.db.insert(
+          session,
+          [
+            UniqueData(number: 1, email: 'a@serverpod.dev'),
+            UniqueData(number: 2, email: 'b@serverpod.dev'),
+          ],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(2));
+      },
+    );
+
+    test(
+      'when batch inserting with mixed ids and noReturn set to true '
+      'then an empty list is returned but all rows are persisted.',
+      () async {
+        var result = await UniqueData.db.insert(
+          session,
+          [
+            UniqueData(id: 1000, number: 1, email: 'a@serverpod.dev'),
+            UniqueData(number: 2, email: 'b@serverpod.dev'),
+          ],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(2));
+      },
+    );
   });
 
   group('Given an object data without an id when calling insertRow', () {

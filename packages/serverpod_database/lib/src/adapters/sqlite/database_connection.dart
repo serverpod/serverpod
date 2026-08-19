@@ -56,15 +56,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Include? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'find');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
     await _warnIfSqliteIgnoresLockBehavior(
       session,
@@ -98,8 +96,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
     Include? include,
     LockMode? lockMode,
@@ -112,8 +108,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       limit: 1,
       transaction: transaction,
       include: include,
@@ -188,6 +182,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
@@ -201,6 +196,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               [row],
               transaction: tx,
               ignoreConflicts: ignoreConflicts,
+              noReturn: noReturn,
             ).then((results) => results.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -214,6 +210,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           ignoreConflicts,
           withIdNull,
           transaction,
+          noReturn,
         ),
     ];
 
@@ -227,6 +224,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     bool ignoreConflicts,
     bool withIdNull,
     Transaction? transaction,
+    bool noReturn,
   ) async {
     var filteredRows = rows
         .where((r) => withIdNull ? r.id == null : r.id != null)
@@ -278,6 +276,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             columns: p.columns,
             encodedValues: p.values,
             ignoreConflicts: ignoreConflicts,
+            noReturn: noReturn,
           ),
           transaction: transaction,
           table: table,
@@ -310,12 +309,16 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<Column>? updateColumns,
     Expression? updateWhere,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.length > 1) {
       return DatabaseUtil.runInTransactionOrSavepoint(session.db, transaction, (
         tx,
       ) async {
+        // The per-row upserts always read back their rows (even when [noReturn]
+        // is set), because the returned ids are needed to detect duplicate
+        // conflict rows below.
         final results = [
           for (var row in rows)
             ...await upsert<T>(
@@ -328,10 +331,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             ),
         ];
 
-        // NOTE: Since we transform batch inserts into multiple single-row
-        // inserts, to achieve the same effect as a batch upsert, we need to
-        // throw if the input had duplicate rows - as happen with Postgres.
-        if (results.map((r) => r.id).toSet().length != rows.length) {
+        // NOTE: Since we transform batch upserts into multiple single-row
+        // upserts, to achieve the same effect as a batch upsert, we need to
+        // throw if the same row was affected twice - as happens with Postgres.
+        // Rows filtered out by [updateWhere] return nothing and must not be
+        // counted, so duplicates are detected among the returned ids only.
+        if (results.map((r) => r.id).toSet().length != results.length) {
           throw _SqliteDatabaseQueryException(
             'ON CONFLICT DO UPDATE command cannot affect row a second time',
             code: SqliteErrorCode.integrityConstraintViolation,
@@ -341,7 +346,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           );
         }
 
-        return results;
+        return noReturn ? <T>[] : results;
       });
     }
 
@@ -352,6 +357,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       conflictColumns: conflictColumns,
       updateColumns: updateColumns,
       updateWhere: updateWhere,
+      noReturn: noReturn,
     ).build();
 
     var results = await _mappedResultsQuery(
@@ -403,6 +409,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     List<Column>? columns,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((r) => r.id == null)) {
@@ -420,6 +427,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
               [row],
               columns: columns,
               transaction: tx,
+              noReturn: noReturn,
             ).then((r) => r.firstOrNull),
         ].whereType<T>().toList(),
       );
@@ -460,6 +468,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             table: table,
             setClause: setParts.join(', '),
             idSqlValue: idValue,
+            noReturn: noReturn,
           ),
           transaction: transaction,
           table: table,
@@ -539,9 +548,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'updateWhere');
 
@@ -557,7 +565,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     String selectQuery;
     if (requiresFilteredSubquery) {
-      var orders = _resolveOrderBy(orderByList, orderBy, orderDescending);
+      var orders = _resolveOrderBy(orderByList, orderBy);
       // SQLite requires LIMIT if using OFFSET. In this case, use a large limit.
       var effectiveLimit = limit ?? (offset != null ? 0x7fffffff : null);
       selectQuery = SelectQueryBuilder(table: table)
@@ -604,6 +612,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         table: table,
         setClause: _buildSetClause(columnValues),
         idListSql: idList,
+        noReturn: noReturn,
       ),
       transaction: transaction,
       table: table,
@@ -621,9 +630,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<T> rows, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     if (rows.isEmpty) return [];
     if (rows.any((r) => r.id == null)) {
@@ -636,9 +644,8 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       table.id.inSet(rows.map((row) => row.id!).castToIdType().toSet()),
       orderBy: orderBy,
       orderByList: orderByList,
-      // ignore: deprecated_member_use_from_same_package
-      orderDescending: orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -665,12 +672,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Expression where, {
     Column? orderBy,
     List<Column>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var table = _getTableOrAssert<T>(session, operation: 'deleteWhere');
-    var orderByCols = _resolveOrderBy(orderByList, orderBy, orderDescending);
+    // Ordering applies to the returned deleted rows, so it is irrelevant when
+    // nothing is returned.
+    var orderByCols = noReturn ? null : _resolveOrderBy(orderByList, orderBy);
 
     // SQLite does not support DELETE ... USING. Use subquery to get ids first.
     var selectIdsQuery = SelectQueryBuilder(table: table)
@@ -712,6 +720,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       selectIdsQuery,
       where,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -722,11 +731,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Expression where, {
     List<Object>? orderedIds,
     Transaction? transaction,
+    bool noReturn = false,
   }) async {
     var deleteQuery =
         'DELETE FROM "${table.tableName}" '
-        'WHERE "${table.id.columnName}" IN ($selectIdsQuery) '
-        'RETURNING *';
+        'WHERE "${table.id.columnName}" IN ($selectIdsQuery)'
+        '${noReturn ? '' : ' RETURNING *'}';
 
     var result = await _mappedResultsQuery(
       session,
@@ -821,13 +831,19 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
 
     // For INSERT/UPDATE/DELETE, sqlite_async's execute() returns ResultSet with
     // 0 rows, so we need to read the affected row count via SELECT changes().
+    //
+    // The statements share one write lock rather than direct access to the
+    // database object (`computeWithDatabase`): on the web the database lives in
+    // a worker, where that access cannot be handed out. A write lock serializes
+    // the statements against other writers just the same, and leaves each of
+    // them auto-committing individually, as before.
     if (script.any((s) => s.isWriteStatement) && transaction == null) {
       final connection = await _sqliteConnection;
-      return connection.computeWithDatabase((db) async {
+      return connection.writeLock((context) async {
         var updatedRows = 0;
         for (final statement in script) {
-          db.execute(statement.text, params);
-          updatedRows += db.updatedRows;
+          await context.execute(statement.text, params);
+          updatedRows += await _sqliteChangesFromContext(context);
         }
         return updatedRows;
       });
@@ -882,6 +898,9 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       final connection = await _sqliteConnection;
       return await connection.writeTransaction<R>((tx) async {
         var transaction = _SqliteTransaction(tx, session);
+        if (settings.deferConstraints) {
+          await transaction._execute('PRAGMA defer_foreign_keys = ON');
+        }
         final result = await transactionFunction(transaction);
         if (transaction._isCancelled) {
           throw _TransactionCancelledException(result);
@@ -1267,8 +1286,6 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
         var orderBy = _resolveOrderBy(
           nestedInclude.orderByList,
           nestedInclude.orderBy,
-          // ignore: deprecated_member_use_from_same_package
-          nestedInclude.orderDescending,
         );
 
         var query = SelectQueryBuilder(table: relationTable)
@@ -1352,12 +1369,10 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
   List<Order>? _resolveOrderBy(
     List<Column>? orderByList,
     Column<dynamic>? orderBy,
-    bool orderDescending,
   ) {
     assert(orderByList == null || orderBy == null);
     if (orderBy != null) {
-      if (orderBy is Order) return [orderBy];
-      return [orderDescending ? orderBy.desc() : orderBy.asc()];
+      return [orderBy is Order ? orderBy : orderBy.asc()];
     }
     if (orderByList == null || orderByList.isEmpty) return null;
     return orderByList.asOrderBy();
@@ -1441,36 +1456,42 @@ String _buildSqlSingleRowInsert({
   required List<Column> columns,
   required List<String> encodedValues,
   bool ignoreConflicts = false,
+  bool noReturn = false,
 }) {
   final onConflict = ignoreConflicts ? ' ON CONFLICT DO NOTHING' : '';
+  final returning = noReturn ? '' : ' RETURNING *';
   if (columns.isEmpty) {
     return 'INSERT INTO "${table.tableName}" DEFAULT VALUES'
-        '$onConflict RETURNING *';
+        '$onConflict$returning';
   }
   final columnNames = columns.map((c) => '"${c.columnName}"').join(', ');
   final values = encodedValues.join(', ');
   return 'INSERT INTO "${table.tableName}" ($columnNames) VALUES ($values)'
-      '$onConflict RETURNING *';
+      '$onConflict$returning';
 }
 
 String _buildSqlUpdateWhereId({
   required Table table,
   required String setClause,
   required String idSqlValue,
+  bool noReturn = false,
 }) {
+  final returning = noReturn ? '' : ' RETURNING *';
   return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" = $idSqlValue '
-      'RETURNING *';
+      'WHERE "${table.id.columnName}" = $idSqlValue'
+      '$returning';
 }
 
 String _buildSqlUpdateWhereIdIn({
   required Table table,
   required String setClause,
   required String idListSql,
+  bool noReturn = false,
 }) {
+  final returning = noReturn ? '' : ' RETURNING *';
   return 'UPDATE "${table.tableName}" SET $setClause '
-      'WHERE "${table.id.columnName}" IN ($idListSql) '
-      'RETURNING *';
+      'WHERE "${table.id.columnName}" IN ($idListSql)'
+      '$returning';
 }
 
 Table _getTableOrAssert<T>(
@@ -1507,7 +1528,20 @@ _SqliteTransaction? _castToSqliteTransaction(Transaction? transaction) {
 /// matches the native SQLite count for that connection.
 Future<int> _sqliteChangesFromTransaction(Transaction transaction) async {
   final sqliteTx = _castToSqliteTransaction(transaction)!;
-  final changesResult = await sqliteTx.execute('SELECT changes()', []);
+  return _rowCountFromChanges(await sqliteTx.execute('SELECT changes()', []));
+}
+
+/// Returns the number of rows changed by the last statement run on [context],
+/// using SQLite's `changes()` function.
+///
+/// Like [_sqliteChangesFromTransaction], but for statements run under a plain
+/// write lock rather than inside a transaction.
+Future<int> _sqliteChangesFromContext(SqliteWriteContext context) async {
+  return _rowCountFromChanges(await context.execute('SELECT changes()'));
+}
+
+/// Reads the result of a `SELECT changes()` query as a row count.
+int _rowCountFromChanges(ResultSet changesResult) {
   if (changesResult.isEmpty) return 0;
   final n = changesResult.first.columnAt(0);
   return n is int ? n : int.tryParse(n.toString()) ?? 0;

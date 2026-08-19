@@ -16,7 +16,7 @@ void main() async {
     );
 
     expect(result.exitCode, 0);
-    expect(result.stdout, contains('All tests passed!'));
+    expect(result.stdout, contains('dummy test passes'));
   });
 
   test('Given custom tag '
@@ -29,7 +29,12 @@ void main() async {
     );
 
     expect(result.exitCode, isNot(equals(0)));
-    expect(result.stdout, contains('No tests ran'));
+    // The reporter differs by environment (the GitHub reporter is auto-selected
+    // on CI, the default one locally), so accept either "no tests" phrasing.
+    expect(
+      result.stdout,
+      anyOf(contains('No tests ran'), contains('0 tests passed')),
+    );
   });
 
   test('Given default tag '
@@ -42,7 +47,7 @@ void main() async {
     );
 
     expect(result.exitCode, 0);
-    expect(result.stdout, contains('All tests passed!'));
+    expect(result.stdout, contains('dummy test passes'));
   });
 
   test('Given default tag '
@@ -55,7 +60,12 @@ void main() async {
     );
 
     expect(result.exitCode, isNot(equals(0)));
-    expect(result.stdout, contains('No tests ran'));
+    // The reporter differs by environment (the GitHub reporter is auto-selected
+    // on CI, the default one locally), so accept either "no tests" phrasing.
+    expect(
+      result.stdout,
+      anyOf(contains('No tests ran'), contains('0 tests passed')),
+    );
   });
 }
 

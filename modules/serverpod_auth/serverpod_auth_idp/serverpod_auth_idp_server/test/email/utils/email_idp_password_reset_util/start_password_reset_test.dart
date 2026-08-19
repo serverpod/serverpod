@@ -3,7 +3,6 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../../../test_tags.dart';
 import '../../../test_tools/serverpod_test_tools.dart';
 import '../../test_utils/email_idp_test_fixture.dart';
 
@@ -13,7 +12,6 @@ void main() {
   withServerpod(
     'Given existing email account',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -87,7 +85,6 @@ void main() {
   withServerpod(
     'Given successful password reset request when capturing output from send request verification code callback',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -169,7 +166,6 @@ void main() {
   withServerpod(
     'Given an email account with password resets requests attempts matching the rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -255,7 +251,6 @@ void main() {
   withServerpod(
     'Given no email account exists',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -292,7 +287,6 @@ void main() {
   withServerpod(
     'Given password reset has been requested for non existing email account past rate limit',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -352,7 +346,6 @@ void main() {
   withServerpod(
     'Given two subsequent password reset requests for the same email',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -448,7 +441,6 @@ void main() {
   withServerpod(
     'Given password reset requests exist for two users',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;

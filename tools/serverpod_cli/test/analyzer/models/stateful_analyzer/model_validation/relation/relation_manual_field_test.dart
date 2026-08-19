@@ -74,57 +74,284 @@ void main() {
   );
 
   group(
-    'Given a class with a relation pointing to a field that does not exist',
+    'Given a class with a relation that names a foreign key field that is not declared, '
+    'when the model is analyzed,',
     () {
-      var models = [
-        ModelSourceBuilder().withYaml(
-          '''
-class: Example
-table: example
-fields:
-  parent: Example?, relation(field=myParentId)
+      late final CodeGenerationCollector collector;
+      late final ClassDefinition exampleClass;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          parent: ExampleParent?, relation(field=myParentId)
         ''',
-        ).build(),
-      ];
+          ).build(),
+          ModelSourceBuilder().withFileName('example_parent').withYaml(
+            '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+        ''',
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer analyzer = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      );
-      analyzer.validateAll();
+        collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        var definitions = analyzer.validateAll();
+        exampleClass = definitions.first as ClassDefinition;
+      });
 
-      var errors = collector.errors;
-
-      test('then an error was collected.', () {
-        expect(errors, isNotEmpty);
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
       });
 
       test(
-        'then the error message reports that the field is missing.',
+        'then a persisted non-nullable integer foreign key field named myParentId is created.',
         () {
-          var error = collector.errors.first;
+          var field = exampleClass.findField('myParentId');
+          expect(field, isNotNull);
+          expect(field?.shouldPersist, isTrue);
+          expect(field?.type.className, 'int');
+          expect(field?.type.nullable, isFalse);
+        },
+      );
+
+      test('then the implicit parentId field is not created.', () {
+        var field = exampleClass.findField('parentId');
+        expect(field, isNull);
+      });
+
+      test(
+        'then the object relation points at the named foreign key field.',
+        () {
+          var relation = exampleClass.findField('parent')?.relation;
+          expect(relation, isA<ObjectRelationDefinition>());
           expect(
-            error.message,
-            'The field "myParentId" was not found in the class.',
+            (relation as ObjectRelationDefinition).fieldName,
+            'myParentId',
           );
         },
-        skip: errors.isEmpty,
       );
 
       test(
-        'then the error is reported at the field value location.',
+        'then the generated foreign key field is inserted before the object relation field.',
         () {
-          var span = collector.errors.first.span;
-
-          expect(span?.start.line, 3);
-          expect(span?.start.column, 35);
-
-          expect(span?.end.line, 3);
-          expect(span?.end.column, 35 + 'myParentId'.length);
+          expect(
+            exampleClass.fields.map((field) => field.name),
+            ['id', 'myParentId', 'parent'],
+          );
         },
-        skip: errors.isEmpty,
+      );
+
+      test(
+        'then the generated foreign key field is documented as the foreign key of the parent relation.',
+        () {
+          expect(
+            exampleClass.findField('myParentId')?.documentation,
+            ['/// The foreign key of the [parent] relation.'],
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a class with a relation that names an undeclared foreign key field to a model with a UuidValue id, '
+    'when the model is analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+      late final ClassDefinition exampleClass;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          parent: ExampleParent?, relation(field=myParentId)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('example_parent').withYaml(
+            '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          id: UuidValue, defaultModel=random
+          name: String
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        var definitions = analyzer.validateAll();
+        exampleClass = definitions.first as ClassDefinition;
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test(
+        'then the generated foreign key field has the UuidValue type.',
+        () {
+          var field = exampleClass.findField('myParentId');
+          expect(field?.type.className, 'UuidValue');
+          expect(field?.type.nullable, isFalse);
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a class with an optional relation that names a foreign key field that is not declared, '
+    'when the model is analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+      late final ClassDefinition exampleClass;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          parent: ExampleParent?, relation(optional, field=myParentId)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('example_parent').withYaml(
+            '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        var analyzer = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        );
+        var definitions = analyzer.validateAll();
+        exampleClass = definitions.first as ClassDefinition;
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
+
+      test('then the generated foreign key field is nullable.', () {
+        var field = exampleClass.findField('myParentId');
+        expect(field?.type.nullable, isTrue);
+      });
+    },
+  );
+
+  group(
+    'Given a named one-to-one relation that names an undeclared foreign key field with a unique index, '
+    'when the models are analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withFileName('user').withYaml(
+            '''
+        class: User
+        table: user
+        fields:
+          address: Address?, relation(name=user_address, field=addressId)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('address').withYaml(
+            '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given a named one-to-one relation that names an undeclared foreign key field without a unique index, '
+    'when the models are analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withFileName('user').withYaml(
+            '''
+        class: User
+        table: user
+        fields:
+          address: Address?, relation(name=user_address, field=addressId)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('address').withYaml(
+            '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address)
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test(
+        'then an error is collected that the field does not have a unique index.',
+        () {
+          expect(collector.errors, isNotEmpty);
+          expect(
+            collector.errors.first.message,
+            'The field "addressId" does not have a unique index which is required to be used in a one-to-one relation.',
+          );
+        },
       );
     },
   );
@@ -357,44 +584,128 @@ fields:
   );
 
   group(
-    'Given a class with an optional relation pointing to a field ',
+    'Given a class with an optional relation pointing to a non-nullable foreign key field, '
+    'when the model is analyzed,',
     () {
-      var models = [
-        ModelSourceBuilder()
-            .withYaml(
-              '''
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder()
+              .withYaml(
+                '''
                 class: Example
                 table: example
                 fields:
                   manualId: int
-                  relationObject: Example?, relation(optional, field=manualId), scope=serverOnly
+                  relationObject: Example?, relation(optional, field=manualId)
                 ''',
-            )
-            .withFileName('example_class')
-            .build(),
-      ];
+              )
+              .withFileName('example_class')
+              .build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      var errors = collector.errors;
-
-      test('then an error was collected.', () {
-        expect(errors, isNotEmpty);
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
       });
 
-      test('then the error message reports that the "optional" property '
-          'is mutually exclusive with the "field" property.', () {
-        expect(
-          errors.map((e) => e.message),
-          contains(
-            'The "optional" property is mutually exclusive with the "field" property.',
-          ),
-        );
+      test(
+        'then an error is collected that the optional relation requires a nullable foreign key field.',
+        () {
+          expect(
+            collector.errors.map((e) => e.message),
+            contains(
+              'An optional relation requires the foreign key field "manualId" to be nullable.',
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a class with an optional relation pointing to a nullable foreign key field, '
+    'when the model is analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder()
+              .withYaml(
+                '''
+                class: Example
+                table: example
+                fields:
+                  manualId: int?
+                  relationObject: Example?, relation(optional, field=manualId)
+                ''',
+              )
+              .withFileName('example_class')
+              .build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
+      });
+    },
+  );
+
+  group(
+    'Given an optional named one-to-one relation on the side that does not hold '
+    'the foreign key of a class with a non-nullable id, '
+    'when the models are analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withFileName('company').withYaml(
+            '''
+        class: Company
+        table: company
+        fields:
+          id: UuidValue, defaultModel=random
+          member: Member?, relation(name=company_member, optional)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('member').withYaml(
+            '''
+        class: Member
+        table: member
+        fields:
+          id: UuidValue, defaultModel=random
+          company: Company?, relation(name=company_member, field=companyId)
+        indexes:
+          member_company_idx:
+            fields: companyId
+            unique: true
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test('then no errors are collected.', () {
+        expect(collector.errors, isEmpty);
       });
     },
   );

@@ -425,5 +425,60 @@ void main() async {
         expect(deleted.first.id!, inserted.first.id);
       },
     );
+
+    test(
+      'Given an inserted entry '
+      'when batch deleting with noReturn set to true '
+      'then an empty list is returned but the rows are removed.',
+      () async {
+        var inserted = (await UniqueData.db.insert(session, [
+          UniqueData(number: 1, email: 'a@serverpod.dev'),
+        ])).first;
+
+        var result = await UniqueData.db.delete(
+          session,
+          [inserted],
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), isEmpty);
+      },
+    );
+
+    test(
+      'Given two inserted entries '
+      'when deleting rows matching a where expression with noReturn set to true '
+      'then an empty list is returned but the matching rows are removed.',
+      () async {
+        await UniqueData.db.insert(session, [
+          UniqueData(number: 1, email: 'a@serverpod.dev'),
+          UniqueData(number: 2, email: 'b@serverpod.dev'),
+        ]);
+
+        var result = await UniqueData.db.deleteWhere(
+          session,
+          where: (t) => t.number.equals(1),
+          noReturn: true,
+        );
+
+        expect(result, isEmpty);
+        expect(await UniqueData.db.find(session), hasLength(1));
+        expect(
+          await UniqueData.db.findFirstRow(
+            session,
+            where: (t) => t.number.equals(1),
+          ),
+          isNull,
+        );
+        expect(
+          await UniqueData.db.findFirstRow(
+            session,
+            where: (t) => t.number.equals(2),
+          ),
+          isNotNull,
+        );
+      },
+    );
   });
 }

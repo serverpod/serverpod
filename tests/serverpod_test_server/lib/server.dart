@@ -1,24 +1,17 @@
-import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as auth;
 import 'package:serverpod_cloud_storage_s3/serverpod_cloud_storage_s3.dart'
     as s3;
 import 'package:serverpod_test_server/src/web/routes/root.dart';
 
-import 'src/futureCalls/test_call.dart';
-import 'src/generated/endpoints.dart';
-import 'src/generated/protocol.dart';
+import 'src/generated/serverpod.dart';
 
 void run(List<String> args) async {
-  // Create serverpod
+  // Create serverpod using the generated Serverpod class, which comes
+  // pre-configured with the generated Protocol and Endpoints.
   var pod = Serverpod(
     args,
-    Protocol(),
-    Endpoints(),
     authenticationHandler: auth.authenticationHandler,
   );
-
-  // Add future calls
-  pod.registerFutureCall(TestCall(), 'testCall');
 
   // Add S3 storage
   pod.addCloudStorage(

@@ -14,7 +14,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod_client/serverpod_client.dart' as _i2;
 
 abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
-    implements _i2.SerializableModel {
+    implements _i2.SerializableModel, _i2.ProtocolSerialization {
   ChildClassWithoutId._({
     this.id,
     required super.grandParentField,
@@ -59,6 +59,17 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ChildClassWithoutId',
+      if (id != null) 'id': id?.toJson(),
+      'grandParentField': grandParentField,
+      'parentField': parentField,
+      'childField': childField,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ChildClassWithoutId',
       if (id != null) 'id': id?.toJson(),

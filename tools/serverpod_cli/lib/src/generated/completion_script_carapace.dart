@@ -48,12 +48,38 @@ commands:
   - name: create
     flags:
       -f, --force: "Create the project even if there are issues that prevent it from running out of the box."
-      --mini: "Shortcut for --template mini."
       -t, --template=: "Template to use when creating a new project"
+      --database: "Include a database in the project."
+      --no-database: "Include a database in the project."
+      --redis: "Include Redis caching in the project."
+      --no-redis: "Include Redis caching in the project."
+      --auth: "Include authentication in the project. Requires a database."
+      --no-auth: "Include authentication in the project. Requires a database."
+      --webapp: "Configure the server to host a Flutter web app."
+      --no-webapp: "Configure the server to host a Flutter web app."
+      --website: "Configure the server to host a website."
+      --no-website: "Configure the server to host a website."
+      --ide=*: "Configure agent skills and MCP servers for one or more IDEs. Use \"none\" to disable all IDE configuration."
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
+    exclusiveFlags:
+      - [database, no-database]
+      - [redis, no-redis]
+      - [auth, no-auth]
+      - [webapp, no-webapp]
+      - [website, no-website]
     completion:
       flag:
-        template: ["mini", "server", "module"]
+        template: ["fullstack", "server", "module"]
+        ide: ["none", "antigravity", "codex", "claude", "cursor", "opencode", "vscode"]
+
+  - name: database
+
+    commands:
+      - name: start
+        flags:
+          -s, --server-dir=: "Server project directory. Defaults to auto-detection."
+          -m, --mode=: "Serverpod run mode whose database config should be used."
+          -p, --port=: "TCP port override. Defaults to the configured database port."
 
   - name: quickstart
     flags:
@@ -62,7 +88,7 @@ commands:
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
     completion:
       flag:
-        template: ["server", "module"]
+        template: ["fullstack", "server", "module"]
 
   - name: generate
     flags:
@@ -104,6 +130,23 @@ commands:
       --no-list: "List all available scripts."
     exclusiveFlags:
       - [list, no-list]
+
+  - name: start
+    flags:
+      -w, --watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
+      --no-watch: "Watch files and use the Frontend Server for fast incremental compilation. With --no-watch, the server is started via `dart run`."
+      -d, --directory=: "The server directory (defaults to auto-detect from current directory)."
+      --docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
+      --no-docker: "Start Docker Compose services if a Docker Compose file exists. Defaults to on if the project has a Docker Compose file and the database is configured to PostgreSQL on localhost without a dataPath. Otherwise, defaults to off. Pass --docker or --no-docker to override the default behavior."
+      --tui: "Show interactive terminal UI."
+      --no-tui: "Show interactive terminal UI."
+      --flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+      --no-flutter: "Auto-launch the companion Flutter apps as configured on the server pubspec.yaml with `auto_launch: true`. Use --no-flutter to disable auto-launch. Apps can still be started on demand from the TUI."
+    exclusiveFlags:
+      - [watch, no-watch]
+      - [docker, no-docker]
+      - [tui, no-tui]
+      - [flutter, no-flutter]
 
   - name: upgrade
 

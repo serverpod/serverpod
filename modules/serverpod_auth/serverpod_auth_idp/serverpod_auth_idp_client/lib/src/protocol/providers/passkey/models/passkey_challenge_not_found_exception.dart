@@ -16,7 +16,10 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// a challenge id which can not be found (because either it has never existed
 /// or has been used already).
 abstract class PasskeyChallengeNotFoundException
-    implements _i1.SerializableException, _i1.SerializableModel {
+    implements
+        _i1.SerializableException,
+        _i1.SerializableModel,
+        _i1.ProtocolSerialization {
   PasskeyChallengeNotFoundException._();
 
   factory PasskeyChallengeNotFoundException() =
@@ -34,6 +37,13 @@ abstract class PasskeyChallengeNotFoundException
   PasskeyChallengeNotFoundException copyWith();
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_auth_idp.PasskeyChallengeNotFoundException',
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_auth_idp.PasskeyChallengeNotFoundException',
     };

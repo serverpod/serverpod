@@ -1,3 +1,4 @@
+import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
 /// Test serialization manager used in tests.
@@ -8,11 +9,13 @@ class TestServerpodClient extends ServerpodClientShared {
   TestServerpodClient({
     required Uri host,
     ClientAuthKeyProvider? authKeyProvider,
+    http.Client? httpClientOverride,
   }) : super(
          host.toString(),
          TestSerializationManager(),
          streamingConnectionTimeout: const Duration(seconds: 5),
          connectionTimeout: const Duration(seconds: 20),
+         httpClientOverride: httpClientOverride,
        ) {
     this.authKeyProvider = authKeyProvider;
   }

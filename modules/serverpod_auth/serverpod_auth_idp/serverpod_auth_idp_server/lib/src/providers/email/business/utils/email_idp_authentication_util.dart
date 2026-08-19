@@ -15,7 +15,6 @@ import '../email_idp_server_exceptions.dart';
 class EmailIdpAuthenticationUtil {
   final Argon2HashUtil _hashUtil;
   final DatabaseRateLimitedRequestAttemptUtil<String> _rateLimitUtil;
-  final int _maxAttempts;
 
   /// Creates a new instance of [EmailIdpAuthenticationUtil].
   EmailIdpAuthenticationUtil({
@@ -29,8 +28,7 @@ class EmailIdpAuthenticationUtil {
            maxAttempts: failedLoginRateLimit.maxAttempts,
            timeframe: failedLoginRateLimit.timeframe,
          ),
-       ),
-       _maxAttempts = failedLoginRateLimit.maxAttempts;
+       );
 
   /// Returns the [AuthUser]'s ID upon successful email/password verification.
   ///
@@ -42,8 +40,9 @@ class EmailIdpAuthenticationUtil {
   /// - [EmailAuthenticationTooManyAttemptsException] if the user has made
   ///   too many failed attempts.
   ///
-  /// In case of invalid credentials, the failed attempt will be logged to
-  /// the database outside of the [transaction] and can not be rolled back.
+  /// The attempt is logged to the database outside of the [transaction] and
+  /// can not be rolled back. A successful authentication clears the log for
+  /// [email], so the count only ever accumulates over failures.
   Future<UuidValue> authenticate(
     final Session session, {
     required String email,
@@ -52,12 +51,12 @@ class EmailIdpAuthenticationUtil {
   }) async {
     email = email.normalizedEmail;
 
-    final attemptCount = await _rateLimitUtil.countAttempts(
-      session,
-      nonce: email,
-      transaction: transaction,
-    );
-    if (attemptCount >= _maxAttempts) {
+    // Records the attempt and reads the count as one atomic step. Counting
+    // first and recording the failure afterwards left the account lookup and
+    // the Argon2 verification inside the window, so requests sent together all
+    // read the same pre-attempt count and the budget bounded a batch rather
+    // than a time window.
+    if (await _rateLimitUtil.hasTooManyAttempts(session, nonce: email)) {
       throw EmailAuthenticationTooManyAttemptsException();
     }
 
@@ -68,10 +67,6 @@ class EmailIdpAuthenticationUtil {
     );
 
     if (account == null) {
-      await _rateLimitUtil.recordAttempt(
-        session,
-        nonce: email,
-      );
       throw EmailAccountNotFoundException();
     }
 
@@ -79,12 +74,17 @@ class EmailIdpAuthenticationUtil {
       secret: password,
       hashString: account.passwordHash,
     )) {
-      await _rateLimitUtil.recordAttempt(
-        session,
-        nonce: email,
-      );
       throw EmailAuthenticationInvalidCredentialsException();
     }
+
+    // The attempt had to be counted before the outcome was known. Clearing on
+    // success keeps this a limit on *failed* logins, so someone who mistypes a
+    // few times and then gets it right is not left locked out.
+    await _rateLimitUtil.deleteAttempts(
+      session,
+      nonce: email,
+      olderThan: Duration.zero,
+    );
 
     return account.authUserId;
   }

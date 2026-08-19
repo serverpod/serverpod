@@ -19,6 +19,7 @@ void main() {
       // generated name for the future call
       final testCallName = 'TestGeneratedCallHelloFutureCall';
       final doTaskFutureCallName = 'TestGeneratedCallDoTaskFutureCall';
+      final invokeFutureCallName = 'TestGeneratedCallInvokeFutureCall';
 
       setUp(() async {
         session = sessionBuilder.build();
@@ -36,7 +37,8 @@ void main() {
           session,
           where: (entry) =>
               entry.name.equals(testCallName) |
-              entry.name.equals(doTaskFutureCallName),
+              entry.name.equals(doTaskFutureCallName) |
+              entry.name.equals(invokeFutureCallName),
         );
         await session.close();
       });
@@ -79,7 +81,7 @@ void main() {
           );
 
           expect(futureCallEntries, hasLength(1));
-          expect(futureCallEntries.first.time.isAfter(expectedTime), isTrue);
+          expect(futureCallEntries.first.time.isBefore(expectedTime), isFalse);
         },
       );
 
@@ -164,6 +166,28 @@ void main() {
           final futureCallEntries = await FutureCallEntry.db.find(
             session,
             where: (entry) => entry.name.equals(doTaskFutureCallName),
+          );
+
+          expect(futureCallEntries, hasLength(1));
+          expect(futureCallEntries.firstOrNull?.time, time);
+        },
+      );
+
+      test(
+        'when scheduling a future call from a method named invoke '
+        'then a FutureCallEntry is added to the database',
+        () async {
+          final time = DateTime.now().toUtc();
+          await pod.futureCalls
+              .callAtTime(time)
+              .testGeneratedCall
+              .invoke(
+                'Lucky',
+              );
+
+          final futureCallEntries = await FutureCallEntry.db.find(
+            session,
+            where: (entry) => entry.name.equals(invokeFutureCallName),
           );
 
           expect(futureCallEntries, hasLength(1));

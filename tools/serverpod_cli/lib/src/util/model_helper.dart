@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:super_string/super_string.dart';
+import 'package:serverpod_shared/serverpod_shared.dart';
 
 const String defaultModuleAlias = 'protocol';
 
@@ -83,6 +83,21 @@ class ModelHelper {
         isSharedModel: false,
       );
       modelSources.addAll(modelSource);
+
+      // Load the models the module owns through its shared packages. From the
+      // consuming project's perspective these are just more models provided by
+      // the module (same as its server models): available as endpoint types,
+      // but not regenerated here.
+      for (var sharedSourcePathParts
+          in moduleConfig.sharedPackageRootPathParts.values) {
+        modelSource = await _loadYamlModelsFromDisk(
+          moduleAlias: moduleConfig.nickname,
+          loadConfig: moduleConfig,
+          absoluteSourcePathParts: sharedSourcePathParts,
+          isSharedModel: false,
+        );
+        modelSources.addAll(modelSource);
+      }
     }
 
     // This sort is needed to make sure all analyzed models are processed in

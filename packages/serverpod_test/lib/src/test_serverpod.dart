@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_test/src/ephemeral_test_database.dart';
 import 'package:serverpod_test/src/io_overrides.dart';
+import 'package:serverpod_test/src/test_database_manager.dart';
 import 'package:serverpod_test/src/test_database_proxy.dart';
 import 'package:serverpod_test/src/transaction_manager.dart';
 import 'package:serverpod_test/src/with_serverpod.dart';
@@ -97,12 +99,29 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// The test endpoints that are exposed to the user.
   T testEndpoints;
 
-  late final Serverpod Function() _buildServerpodAndInitializeEndpoints;
+  final bool? _applyMigrations;
+  final EndpointDispatch _endpoints;
+  final DatabaseSerializationManager _serializationManager;
+  final ServerpodLoggingMode? _serverpodLoggingMode;
+  final String? _runMode;
+  final Directory? _serverDirectory;
+  final ExperimentalFeatures? _experimentalFeatures;
+  final RuntimeParametersListBuilder? _runtimeParametersBuilder;
+  final DatabaseInterceptor? _databaseInterceptor;
+  final ServerpodConfig Function(ServerpodConfig)? _configOverride;
 
   Serverpod? _serverpodInstance;
-  Serverpod get _serverpod {
-    return _serverpodInstance ??= _buildServerpodAndInitializeEndpoints();
-  }
+  Serverpod get _serverpod => _serverpodInstance ??= _constructServerpod();
+
+  /// This group's own database; retained to drop it on [shutdown].
+  EphemeralTestDatabase? _ephemeralDatabase;
+
+  /// The per-group database name, decided eagerly in the constructor. It is
+  /// baked into the server configuration up front (see [_constructServerpod])
+  /// so the single, test-configured server instance is the one that runs -
+  /// only the database's creation is deferred to [start].
+  late final String _targetDatabaseName =
+      TestDatabaseManager.generateDatabaseName();
 
   /// Whether the database is enabled and supported by the project configuration.
   final bool isDatabaseEnabled;
@@ -123,34 +142,70 @@ class TestServerpod<T extends InternalTestEndpoints> {
     Directory? serverDirectory,
     ExperimentalFeatures? experimentalFeatures,
     RuntimeParametersListBuilder? runtimeParametersBuilder,
+    DatabaseInterceptor? databaseInterceptor,
     ServerpodConfig Function(ServerpodConfig)? configOverride,
-  }) : testServerOutputMode =
+  }) : _applyMigrations = applyMigrations,
+       _endpoints = endpoints,
+       _serializationManager = serializationManager,
+       _serverpodLoggingMode = serverpodLoggingMode,
+       _runMode = runMode,
+       _serverDirectory = serverDirectory,
+       _experimentalFeatures = experimentalFeatures,
+       _runtimeParametersBuilder = runtimeParametersBuilder,
+       _databaseInterceptor = databaseInterceptor,
+       _configOverride = configOverride,
+       testServerOutputMode =
            testServerOutputMode ?? TestServerOutputMode.normal {
-    // Ignore output from the Serverpod constructor to avoid spamming the console.
-    // Should be changed when a proper logger is implemented.
-    // Tracked in issue: https://github.com/serverpod/serverpod/issues/2847
-    _buildServerpodAndInitializeEndpoints = () => IOOverrides.runZoned(
+    testEndpoints.initialize(serializationManager, endpoints);
+  }
+
+  /// Constructs a [Serverpod] whose configured database is this group's own: a
+  /// PostgreSQL database named [_targetDatabaseName], or a SQLite file derived
+  /// from it.
+  Serverpod _constructServerpod() {
+    // Ignore output from the Serverpod constructor to avoid spamming the
+    // console. Tracked in https://github.com/serverpod/serverpod/issues/2847
+    return IOOverrides.runZoned(
       () {
-        var serverpod = Serverpod(
+        final serverpod = Serverpod(
           _getServerpodStartUpArgs(
-            runMode: runMode,
-            applyMigrations: applyMigrations,
-            loggingMode: serverpodLoggingMode,
+            runMode: _runMode,
+            applyMigrations: _applyMigrations,
+            loggingMode: _serverpodLoggingMode,
           ),
-          serializationManager,
-          endpoints,
-          serverDirectory: serverDirectory,
-          configOverride: configOverride,
-          experimentalFeatures: experimentalFeatures,
-          runtimeParametersBuilder: runtimeParametersBuilder,
+          _serializationManager,
+          _endpoints,
+          serverDirectory: _serverDirectory,
+          configOverride: (config) {
+            var resolved = _configOverride?.call(config) ?? config;
+            final db = resolved.database;
+            if (db is PostgresDatabaseConfig) {
+              resolved = resolved.copyWith(
+                database: db.withName(_targetDatabaseName),
+              );
+            } else if (db is SqliteDatabaseConfig) {
+              resolved = resolved.copyWith(
+                database: SqliteDatabaseConfig(
+                  filePath: EphemeralTestDatabase.sqliteFilePath(
+                    db.filePath,
+                    _targetDatabaseName,
+                  ),
+                  maxConnectionCount: db.maxConnectionCount,
+                ),
+              );
+            }
+            return resolved;
+          },
+          experimentalFeatures: _experimentalFeatures,
+          runtimeParametersBuilder: _runtimeParametersBuilder,
+          databaseInterceptor: _databaseInterceptor,
         );
-        endpoints.initializeEndpoints(serverpod.server);
+        _endpoints.initializeEndpoints(serverpod.server);
         return serverpod;
       },
       stdout: () => NullStdOut(),
       stderr: () => NullStdOut(),
     );
-    testEndpoints.initialize(serializationManager, endpoints);
   }
 
   /// Executes a callback with output suppression based on the configured mode.
@@ -178,7 +233,41 @@ class TestServerpod<T extends InternalTestEndpoints> {
   /// Starts the underlying serverpod instance.
   Future<void> start() async {
     try {
-      await _withOutputMode(() => _serverpod.start(runInGuardedZone: false));
+      await _withOutputMode(() async {
+        // Provision this group's database before the server connects.
+        // PostgreSQL: CREATE DATABASE on the shared postmaster. SQLite: a
+        // drop-handle for the per-group file (created when migrations run).
+        try {
+          _ephemeralDatabase = await EphemeralTestDatabase.create(
+            runMode: _runMode ?? ServerpodRunMode.test,
+            databaseName: _targetDatabaseName,
+            serverDirectory: _serverpod.serverDirectory,
+            configOverride: _configOverride,
+          );
+        } catch (e) {
+          throw InitializationException(
+            'Failed to set up the test database. Ensure the database is '
+            'running and reachable. Error: $e',
+          );
+        }
+
+        try {
+          await _serverpod.start(runInGuardedZone: false);
+        } catch (_) {
+          // A failed start skips shutdown(), so drop this group's database
+          // here. Best-effort, preserving the original start failure.
+          try {
+            await _serverpod.shutdown(exitProcess: false);
+          } catch (_) {}
+          try {
+            await _ephemeralDatabase?.drop();
+          } catch (_) {}
+          rethrow;
+        }
+      });
+    } on InitializationException {
+      // Already a descriptive failure (e.g. database setup); surface it as-is.
+      rethrow;
     } on ExitException catch (e) {
       throw InitializationException(
         'Failed to start the serverpod instance${e.message.isEmpty ? ', check the log for more info.' : ': ${e.message}'}',
@@ -190,10 +279,16 @@ class TestServerpod<T extends InternalTestEndpoints> {
     }
   }
 
-  /// Shuts down the underlying serverpod instance.
+  /// Shuts down the underlying serverpod instance and drops this group's
+  /// database (a PostgreSQL `DROP DATABASE`, or deleting the SQLite file). The
+  /// shared embedded postmaster is intentionally left running; it is reclaimed
+  /// when the test process exits.
   Future<void> shutdown() async {
     try {
-      await _withOutputMode(() => _serverpod.shutdown(exitProcess: false));
+      await _withOutputMode(() async {
+        await _serverpod.shutdown(exitProcess: false);
+        await _ephemeralDatabase?.drop();
+      });
     } catch (e, stackTrace) {
       throw InitializationException(
         'Failed to shutdown the serverpod instance: $e\n$stackTrace',

@@ -113,6 +113,78 @@ void main() {
   );
 
   test(
+    'Given HalfVector with known number of elements when accessing length then returns that count.',
+    () {
+      expect(const HalfVector([]).length, equals(0));
+      expect(const HalfVector([1.0]).length, equals(1));
+      expect(const HalfVector([1.0, 2.0, 3.0]).length, equals(3));
+    },
+  );
+
+  test(
+    'Given HalfVector when accessing individual indices then returns correct values.',
+    () {
+      const vec = HalfVector([1.0, 2.0, 3.0]);
+      expect(vec[0], equals(1.0));
+      expect(vec[1], equals(2.0));
+      expect(vec[2], equals(3.0));
+    },
+  );
+
+  test(
+    'Given HalfVector when accessing all indices then agrees with toList().',
+    () {
+      const vec = HalfVector([1.0, 2.0, 3.0, 4.0]);
+      final list = vec.toList();
+      for (var i = 0; i < vec.length; i++) {
+        expect(vec[i], equals(list[i]), reason: 'index $i');
+      }
+    },
+  );
+
+  test(
+    'Given HalfVector when accessing negative index then throws RangeError.',
+    () {
+      expect(
+        () => const HalfVector([1.0, 2.0, 3.0])[-1],
+        throwsA(isA<RangeError>()),
+      );
+    },
+  );
+
+  test(
+    'Given HalfVector when accessing index equal to length then throws RangeError.',
+    () {
+      expect(
+        () => const HalfVector([1.0, 2.0, 3.0])[3],
+        throwsA(isA<RangeError>()),
+      );
+    },
+  );
+
+  test(
+    'Given HalfVector when iterating with for-in then yields elements in order.',
+    () {
+      const vec = HalfVector([1.0, 2.0, 3.0]);
+      expect(vec.toList(), equals([1.0, 2.0, 3.0]));
+    },
+  );
+
+  test(
+    'Given HalfVector with a matching element when calling any then returns true.',
+    () {
+      expect(const HalfVector([1.0, 2.0, 3.0]).any((v) => v > 2), isTrue);
+    },
+  );
+
+  test(
+    'Given HalfVector where all elements match when calling every then returns true.',
+    () {
+      expect(const HalfVector([1.0, 2.0, 3.0]).every((v) => v > 0), isTrue);
+    },
+  );
+
+  test(
     'Given HalfVector with various numeric values when converted to binary then precision is maintained within float16 limits.',
     () {
       final values = [

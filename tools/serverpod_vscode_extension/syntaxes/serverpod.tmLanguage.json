@@ -69,6 +69,33 @@
           "include": "#comments"
         },
         {
+          "begin": "(\\[)",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.list.begin.yaml"
+            }
+          },
+          "end": "(\\])",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.list.end.yaml"
+            }
+          },
+          "patterns": [
+            {
+              "include": "#comments"
+            },
+            {
+              "name": "punctuation.separator.comma.yaml",
+              "match": ","
+            },
+            {
+              "name": "string.unquoted.yaml",
+              "match": "\\b([a-zA-Z0-9_-]+)\\b"
+            }
+          ]
+        },
+        {
           "name": "keyword.operator.assignment.yaml",
           "match": "="
         },

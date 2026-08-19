@@ -4,7 +4,6 @@ import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 class ModelDependencyResolver {
   /// Resolves dependencies between models, this method mutates the input.
@@ -12,7 +11,7 @@ class ModelDependencyResolver {
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     // First resolve inheritance to allow evaluating inherited id fields.
-    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+    modelDefinitions.whereType<ClassDefinition>().forEach((
       classDefinition,
     ) {
       _resolveInheritance(classDefinition, modelDefinitions);
@@ -27,11 +26,7 @@ class ModelDependencyResolver {
 
     // Then resolve everything else, including relations on inherited ids.
     modelDefinitions.whereType<ClassDefinition>().forEach((classDefinition) {
-      var fields = classDefinition is ModelClassDefinition
-          ? classDefinition.fieldsIncludingInherited
-          : classDefinition.fields;
-
-      for (var fieldDefinition in fields) {
+      for (var fieldDefinition in classDefinition.fieldsIncludingInherited) {
         _resolveProtocolReference(fieldDefinition, modelDefinitions);
         _resolveEnumType(fieldDefinition.type, modelDefinitions);
 
@@ -53,7 +48,7 @@ class ModelDependencyResolver {
   }
 
   static void _resolveInheritance(
-    ModelClassDefinition classDefinition,
+    ClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
   ) {
     var extendedClass = classDefinition.extendsClass;
@@ -63,11 +58,12 @@ class ModelDependencyResolver {
     var parentClassName = extendedClass.className;
 
     var parentClass = modelDefinitions
-        .whereType<ModelClassDefinition>()
+        .whereType<ClassDefinition>()
         .where((element) => element.className == parentClassName)
         .firstOrNull;
 
-    if (parentClass == null) {
+    if (parentClass == null ||
+        parentClass.runtimeType != classDefinition.runtimeType) {
       return;
     }
 
@@ -301,10 +297,6 @@ class ModelDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
-    var relationFieldType = relation.nullableRelation
-        ? referenceDefinition.idField.type.asNullable
-        : referenceDefinition.idField.type.asNonNullable;
-
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
       referenceDefinition,
@@ -318,21 +310,22 @@ class ModelDependencyResolver {
       foreignContainerField = foreignFields.first;
     }
 
-    var foreignRelationField = SerializableModelFieldDefinition(
+    var foreignRelationField = _createForeignKeyField(
       name: _createImplicitForeignIdFieldName(fieldDefinition.name),
-      relation: ForeignRelationDefinition(
-        name: relation.name,
-        parentTable: tableName,
-        foreignFieldName: defaultPrimaryKeyName,
-        containerField: fieldDefinition,
-        foreignContainerField: foreignContainerField,
-        onUpdate: relation.onUpdate,
-        onDelete: relation.onDelete,
-      ),
-      shouldPersist: true,
-      scope: fieldDefinition.scope,
-      type: relationFieldType,
-      isRequired: false,
+      referenceDefinition: referenceDefinition,
+      containerField: fieldDefinition,
+      nullable: relation.nullableRelation,
+    );
+
+    foreignRelationField.relation = ForeignRelationDefinition(
+      name: relation.name,
+      parentTable: tableName,
+      foreignFieldName: defaultPrimaryKeyName,
+      containerField: fieldDefinition,
+      foreignContainerField: foreignContainerField,
+      onUpdate: relation.onUpdate,
+      onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     _injectForeignRelationField(
@@ -361,7 +354,24 @@ class ModelDependencyResolver {
     String relationFieldName,
   ) {
     var field = classDefinition.findField(relationFieldName);
-    if (field == null) return;
+    if (field == null) {
+      field = _createForeignKeyField(
+        name: relationFieldName,
+        referenceDefinition: referenceDefinition,
+        containerField: fieldDefinition,
+        nullable: relation.nullableRelation,
+        documentation: [
+          '/// The foreign key of the [${fieldDefinition.name}] relation.',
+        ],
+      );
+
+      _injectForeignRelationField(
+        classDefinition,
+        fieldDefinition,
+        field,
+      );
+      _resolveFieldIndexes(field, classDefinition);
+    }
 
     if (field.relation != null) {
       fieldDefinition.relation = UnresolvableObjectRelationDefinition(
@@ -390,6 +400,7 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
@@ -400,6 +411,29 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: true,
       nullableRelation: field.type.nullable,
+    );
+  }
+
+  /// Creates the field that holds the foreign key of an object relation, for
+  /// the cases where the field is not declared on the model. The field is
+  /// typed after the id of the referenced model and inherits the scope of the
+  /// object relation field it belongs to.
+  static SerializableModelFieldDefinition _createForeignKeyField({
+    required String name,
+    required ModelClassDefinition referenceDefinition,
+    required SerializableModelFieldDefinition containerField,
+    required bool nullable,
+    List<String>? documentation,
+  }) {
+    return SerializableModelFieldDefinition(
+      name: name,
+      type: nullable
+          ? referenceDefinition.idField.type.asNullable
+          : referenceDefinition.idField.type.asNonNullable,
+      scope: containerField.scope,
+      shouldPersist: true,
+      isRequired: false,
+      documentation: documentation,
     );
   }
 
@@ -543,13 +577,28 @@ class ModelDependencyResolver {
 
       if (foreignFieldName == null) return;
 
+      // The nullability of the relation is always determined by the foreign
+      // key field, never by the object field. If the foreign class is not yet
+      // resolved, the matched field is the object field and the foreign key
+      // field may not exist yet; in that case the nullability comes from the
+      // explicitly declared foreign key field, or the `optional` keyword when
+      // the foreign key field is implicit.
+      bool nullableRelation;
+      if (foreignRelation is UnresolvedObjectRelationDefinition) {
+        nullableRelation =
+            referenceClass.findField(foreignFieldName)?.type.nullable ??
+            foreignRelation.nullableRelation;
+      } else {
+        nullableRelation = foreignField.type.nullable;
+      }
+
       fieldDefinition.relation = ListRelationDefinition(
         name: relation.name,
         foreignKeyOwnerIdType: referenceClass.idField.type,
         fieldName: defaultPrimaryKeyName,
         foreignFieldName: foreignFieldName,
         foreignContainerField: foreignContainerField,
-        nullableRelation: foreignFields.first.type.nullable,
+        nullableRelation: nullableRelation,
       );
     }
   }

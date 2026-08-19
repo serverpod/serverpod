@@ -8,7 +8,8 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import '../utils/future_call_manager_builder.dart';
 
-class _CounterFutureCall extends FutureCall<SimpleData> {
+class _CounterFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   int counter = 0;
 
   @override
@@ -17,12 +18,17 @@ class _CounterFutureCall extends FutureCall<SimpleData> {
   }
 }
 
-class _CompleterFutureCall extends FutureCall<SimpleData> {
+class _CompleterFutureCall extends FutureCall<SimpleData>
+    implements InvokableFutureCall<SimpleData> {
   final Completer<SimpleData?> completer = Completer<SimpleData?>();
+  final Completer<void> invocationStarted = Completer<void>();
   int counter = 0;
 
   @override
   Future<void> invoke(Session session, SimpleData? object) async {
+    if (!invocationStarted.isCompleted) {
+      invocationStarted.complete();
+    }
     await completer.future;
     counter++;
   }
@@ -71,8 +77,7 @@ void main() {
       group('when start is called', () {
         setUp(() async {
           await futureCallManager.start();
-          // Wait for future call execution to be scheduled
-          await Future.delayed(const Duration(milliseconds: 100));
+          await testCall.invocationStarted.future;
         });
 
         tearDown(() async {

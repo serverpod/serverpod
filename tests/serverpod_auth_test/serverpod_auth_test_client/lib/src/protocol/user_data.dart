@@ -15,7 +15,8 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i2;
 import 'package:serverpod_auth_test_client/src/protocol/protocol.dart' as _i3;
 
-abstract class UserData implements _i1.SerializableModel {
+abstract class UserData
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UserData._({
     this.id,
     required this.authUserId,
@@ -76,6 +77,18 @@ abstract class UserData implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UserData',
+      if (id != null) 'id': id,
+      'authUserId': authUserId.toJson(),
+      if (authUser != null) 'authUser': authUser?.toJson(),
+      'displayName': displayName,
+      if (bio != null) 'bio': bio,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'UserData',
       if (id != null) 'id': id,

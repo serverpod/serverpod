@@ -489,7 +489,8 @@ indexes:
       expect(
         error.message,
         'The "invalidKey" property is not allowed for example_index type. Valid '
-        'keys are {fields, type, unique, operatorClass, distanceFunction, parameters}.',
+        'keys are: fields, type, unique, nulls_distinct, operatorClass, '
+        'distanceFunction, parameters.',
       );
     },
   );

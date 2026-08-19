@@ -12,12 +12,13 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import '../models_with_list_relations/person.dart' as _i2;
-import '../models_with_list_relations/city.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
-import 'package:serverpod_client/serverpod_client.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import '../models_with_list_relations/person.dart' as _i3;
+import '../models_with_list_relations/city.dart' as _i4;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i5;
 
-abstract class Organization implements _i1.TableRow<int?> {
+abstract class Organization
+    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   Organization._({
     this.id,
     required this.name,
@@ -29,9 +30,9 @@ abstract class Organization implements _i1.TableRow<int?> {
   factory Organization({
     int? id,
     required String name,
-    List<_i2.Person>? people,
+    List<_i3.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i4.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,13 +41,13 @@ abstract class Organization implements _i1.TableRow<int?> {
       name: jsonSerialization['name'] as String,
       people: jsonSerialization['people'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.Person>>(
+          : _i5.Protocol().deserialize<List<_i3.Person>>(
               jsonSerialization['people'],
             ),
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.City>(jsonSerialization['city']),
+          : _i5.Protocol().deserialize<_i4.City>(jsonSerialization['city']),
     );
   }
 
@@ -59,24 +60,24 @@ abstract class Organization implements _i1.TableRow<int?> {
 
   String name;
 
-  List<_i2.Person>? people;
+  List<_i3.Person>? people;
 
   int? cityId;
 
-  _i3.City? city;
+  _i4.City? city;
 
   @override
   _i1.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   Organization copyWith({
     int? id,
     String? name,
-    List<_i2.Person>? people,
+    List<_i3.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i4.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,9 +92,22 @@ abstract class Organization implements _i1.TableRow<int?> {
     };
   }
 
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'Organization',
+      if (id != null) 'id': id,
+      'name': name,
+      if (people != null)
+        'people': people?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (cityId != null) 'cityId': cityId,
+      if (city != null) 'city': city?.toJsonForProtocol(),
+    };
+  }
+
   static OrganizationInclude include({
-    _i2.PersonIncludeList? people,
-    _i3.CityInclude? city,
+    _i3.PersonIncludeList? people,
+    _i4.CityInclude? city,
   }) {
     return OrganizationInclude._(
       people: people,
@@ -106,8 +120,6 @@ abstract class Organization implements _i1.TableRow<int?> {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
   }) {
@@ -116,8 +128,6 @@ abstract class Organization implements _i1.TableRow<int?> {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Organization.t),
       include: include,
     );
@@ -125,7 +135,7 @@ abstract class Organization implements _i1.TableRow<int?> {
 
   @override
   String toString() {
-    return _i5.SerializationManager.encode(this);
+    return _i2.SerializationManager.encode(this);
   }
 }
 
@@ -135,9 +145,9 @@ class _OrganizationImpl extends Organization {
   _OrganizationImpl({
     int? id,
     required String name,
-    List<_i2.Person>? people,
+    List<_i3.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i4.City? city,
   }) : super._(
          id: id,
          name: name,
@@ -148,7 +158,7 @@ class _OrganizationImpl extends Organization {
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
-  @_i5.useResult
+  @_i2.useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,
@@ -160,11 +170,11 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>?
+      people: people is List<_i3.Person>?
           ? people
           : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i3.City? ? city : this.city?.copyWith(),
+      city: city is _i4.City? ? city : this.city?.copyWith(),
     );
   }
 }
@@ -200,53 +210,53 @@ class OrganizationTable extends _i1.Table<int?> {
 
   late final _i1.ColumnString name;
 
-  _i2.PersonTable? ___people;
+  _i3.PersonTable? ___people;
 
-  _i1.ManyRelation<_i2.PersonTable>? _people;
+  _i1.ManyRelation<_i3.PersonTable>? _people;
 
   late final _i1.ColumnInt cityId;
 
-  _i3.CityTable? _city;
+  _i4.CityTable? _city;
 
-  _i2.PersonTable get __people {
+  _i3.PersonTable get __people {
     if (___people != null) return ___people!;
     ___people = _i1.createRelationTable(
       relationFieldName: '__people',
       field: Organization.t.id,
-      foreignField: _i2.Person.t.organizationId,
+      foreignField: _i3.Person.t.organizationId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
+          _i3.PersonTable(tableRelation: foreignTableRelation),
     );
     return ___people!;
   }
 
-  _i3.CityTable get city {
+  _i4.CityTable get city {
     if (_city != null) return _city!;
     _city = _i1.createRelationTable(
       relationFieldName: 'city',
       field: Organization.t.cityId,
-      foreignField: _i3.City.t.id,
+      foreignField: _i4.City.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CityTable(tableRelation: foreignTableRelation),
+          _i4.CityTable(tableRelation: foreignTableRelation),
     );
     return _city!;
   }
 
-  _i1.ManyRelation<_i2.PersonTable> get people {
+  _i1.ManyRelation<_i3.PersonTable> get people {
     if (_people != null) return _people!;
     var relationTable = _i1.createRelationTable(
       relationFieldName: 'people',
       field: Organization.t.id,
-      foreignField: _i2.Person.t.organizationId,
+      foreignField: _i3.Person.t.organizationId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PersonTable(tableRelation: foreignTableRelation),
+          _i3.PersonTable(tableRelation: foreignTableRelation),
     );
-    _people = _i1.ManyRelation<_i2.PersonTable>(
+    _people = _i1.ManyRelation<_i3.PersonTable>(
       tableWithRelations: relationTable,
-      table: _i2.PersonTable(
+      table: _i3.PersonTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -274,16 +284,16 @@ class OrganizationTable extends _i1.Table<int?> {
 
 class OrganizationInclude extends _i1.IncludeObject {
   OrganizationInclude._({
-    _i2.PersonIncludeList? people,
-    _i3.CityInclude? city,
+    _i3.PersonIncludeList? people,
+    _i4.CityInclude? city,
   }) {
     _people = people;
     _city = city;
   }
 
-  _i2.PersonIncludeList? _people;
+  _i3.PersonIncludeList? _people;
 
-  _i3.CityInclude? _city;
+  _i4.CityInclude? _city;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -301,8 +311,6 @@ class OrganizationIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -355,8 +363,6 @@ class OrganizationRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
@@ -367,8 +373,6 @@ class OrganizationRepository {
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -400,8 +404,6 @@ class OrganizationRepository {
     _i1.WhereExpressionBuilder<OrganizationTable>? where,
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
     OrganizationInclude? include,
@@ -412,8 +414,6 @@ class OrganizationRepository {
       where: where?.call(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -450,16 +450,22 @@ class OrganizationRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> insert(
     _i1.DatabaseSession session,
     List<Organization> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Organization>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -493,6 +499,10 @@ class OrganizationRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> upsert(
     _i1.DatabaseSession session,
     List<Organization> rows, {
@@ -500,6 +510,7 @@ class OrganizationRepository {
     _i1.ColumnSelections<OrganizationTable>? updateColumns,
     _i1.WhereExpressionBuilder<OrganizationTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Organization>(
       rows,
@@ -507,6 +518,7 @@ class OrganizationRepository {
       updateColumns: updateColumns?.call(Organization.t),
       updateWhere: updateWhere?.call(Organization.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -545,16 +557,22 @@ class OrganizationRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> update(
     _i1.DatabaseSession session,
     List<Organization> rows, {
     _i1.ColumnSelections<OrganizationTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Organization>(
       rows,
       columns: columns?.call(Organization.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -591,6 +609,10 @@ class OrganizationRepository {
 
   /// Updates all [Organization]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<OrganizationUpdateTable> columnValues,
@@ -599,9 +621,8 @@ class OrganizationRepository {
     int? offset,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Organization>(
       columnValues: columnValues(Organization.t.updateTable),
@@ -610,9 +631,8 @@ class OrganizationRepository {
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -623,22 +643,24 @@ class OrganizationRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> delete(
     _i1.DatabaseSession session,
     List<Organization> rows, {
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Organization>(
       rows,
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -658,22 +680,24 @@ class OrganizationRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Organization>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<OrganizationTable> where,
     _i1.OrderByBuilder<OrganizationTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<OrganizationTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Organization>(
       where: where(Organization.t),
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -717,7 +741,7 @@ class OrganizationAttachRepository {
   Future<void> people(
     _i1.DatabaseSession session,
     Organization organization,
-    List<_i2.Person> person, {
+    List<_i3.Person> person, {
     _i1.Transaction? transaction,
   }) async {
     if (person.any((e) => e.id == null)) {
@@ -730,9 +754,9 @@ class OrganizationAttachRepository {
     var $person = person
         .map((e) => e.copyWith(organizationId: organization.id))
         .toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<_i3.Person>(
       $person,
-      columns: [_i2.Person.t.organizationId],
+      columns: [_i3.Person.t.organizationId],
       transaction: transaction,
     );
   }
@@ -746,7 +770,7 @@ class OrganizationAttachRowRepository {
   Future<void> city(
     _i1.DatabaseSession session,
     Organization organization,
-    _i3.City city, {
+    _i4.City city, {
     _i1.Transaction? transaction,
   }) async {
     if (organization.id == null) {
@@ -769,7 +793,7 @@ class OrganizationAttachRowRepository {
   Future<void> people(
     _i1.DatabaseSession session,
     Organization organization,
-    _i2.Person person, {
+    _i3.Person person, {
     _i1.Transaction? transaction,
   }) async {
     if (person.id == null) {
@@ -780,9 +804,9 @@ class OrganizationAttachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: organization.id);
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<_i3.Person>(
       $person,
-      columns: [_i2.Person.t.organizationId],
+      columns: [_i3.Person.t.organizationId],
       transaction: transaction,
     );
   }
@@ -798,7 +822,7 @@ class OrganizationDetachRepository {
   /// the related record.
   Future<void> people(
     _i1.DatabaseSession session,
-    List<_i2.Person> person, {
+    List<_i3.Person> person, {
     _i1.Transaction? transaction,
   }) async {
     if (person.any((e) => e.id == null)) {
@@ -806,9 +830,9 @@ class OrganizationDetachRepository {
     }
 
     var $person = person.map((e) => e.copyWith(organizationId: null)).toList();
-    await session.db.update<_i2.Person>(
+    await session.db.update<_i3.Person>(
       $person,
-      columns: [_i2.Person.t.organizationId],
+      columns: [_i3.Person.t.organizationId],
       transaction: transaction,
     );
   }
@@ -846,7 +870,7 @@ class OrganizationDetachRowRepository {
   /// the related record.
   Future<void> people(
     _i1.DatabaseSession session,
-    _i2.Person person, {
+    _i3.Person person, {
     _i1.Transaction? transaction,
   }) async {
     if (person.id == null) {
@@ -854,9 +878,9 @@ class OrganizationDetachRowRepository {
     }
 
     var $person = person.copyWith(organizationId: null);
-    await session.db.updateRow<_i2.Person>(
+    await session.db.updateRow<_i3.Person>(
       $person,
-      columns: [_i2.Person.t.organizationId],
+      columns: [_i3.Person.t.organizationId],
       transaction: transaction,
     );
   }

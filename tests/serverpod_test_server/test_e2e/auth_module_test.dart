@@ -5,11 +5,8 @@ import 'package:serverpod_test_server/test_util/test_key_manager.dart';
 import 'package:test/test.dart';
 
 void main() {
-  var client = Client(
-    serverUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestAuthKeyManager(),
-  );
+  var authKeyProvider = TestAuthKeyManager();
+  var client = Client(serverUrl)..authKeyProvider = authKeyProvider;
 
   setUp(() {});
 
@@ -30,16 +27,16 @@ void main() {
     test(
       'Access endpoint with required signin without authentication',
       () async {
-        int? statusCode;
-        try {
-          await client.signInRequired.testMethod();
-        } catch (e) {
-          if (e is ServerpodClientException) {
-            statusCode = e.statusCode;
-          }
-        }
-
-        expect(statusCode, equals(401));
+        await expectLater(
+          () async => await client.signInRequired.testMethod(),
+          throwsA(
+            isA<ServerpodClientHttpException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              401,
+            ),
+          ),
+        );
       },
     );
 
@@ -62,8 +59,7 @@ void main() {
         'password',
       );
       if (response.success) {
-        // ignore: deprecated_member_use
-        await client.authenticationKeyManager!.put(
+        await authKeyProvider.put(
           '${response.keyId}:${response.key}',
         );
       }
@@ -84,16 +80,16 @@ void main() {
     test('Sign out user', () async {
       await client.authentication.signOut();
 
-      int? statusCode;
-      try {
-        await client.signInRequired.testMethod();
-      } catch (e) {
-        if (e is ServerpodClientException) {
-          statusCode = e.statusCode;
-        }
-      }
-
-      expect(statusCode, equals(401));
+      await expectLater(
+        () async => await client.signInRequired.testMethod(),
+        throwsA(
+          isA<ServerpodClientHttpException>().having(
+            (e) => e.statusCode,
+            'statusCode',
+            401,
+          ),
+        ),
+      );
     });
   });
 
@@ -126,8 +122,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -137,8 +132,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -152,7 +146,7 @@ void main() {
         expectLater(
           client.adminScopeRequired.testMethod(),
           throwsA(
-            isA<ServerpodClientException>().having(
+            isA<ServerpodClientHttpException>().having(
               (e) => e.statusCode,
               'statusCode',
               403,
@@ -171,8 +165,7 @@ void main() {
         [Scope.admin.name!],
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -182,8 +175,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(
@@ -207,8 +199,7 @@ void main() {
         'password',
       );
       assert(response.success, 'Failed to authenticate user');
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.put(
+      await authKeyProvider.put(
         '${response.keyId}:${response.key}',
       );
       assert(
@@ -218,8 +209,7 @@ void main() {
     });
 
     tearDown(() async {
-      // ignore: deprecated_member_use
-      await client.authenticationKeyManager?.remove();
+      await authKeyProvider.remove();
       await client.authentication.removeAllUsers();
       await client.authentication.signOut();
       assert(

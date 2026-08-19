@@ -3,8 +3,9 @@ import 'dart:io';
 import 'package:cli_tools/cli_tools.dart' as cli;
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
+import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
+import 'package:serverpod_shared/log.dart' as shared;
 import 'package:serverpod_shared/log_io.dart';
-import 'package:serverpod_tui/log.dart';
 
 // ---------------------------------------------------------------------------
 // Singleton logger
@@ -37,6 +38,7 @@ void initializeLogger() {
       ),
     ),
   );
+  _attachGlobalLogBridge();
 }
 
 /// Replaces the logger singleton with the given [logger].
@@ -48,6 +50,7 @@ void initializeLoggerWith(cli.Logger logger) {
     logger.logLevel = previous.logLevel;
   }
   _logger = logger;
+  _attachGlobalLogBridge();
 }
 
 /// Singleton accessor for logger.
@@ -129,6 +132,7 @@ abstract class _SeveritySpanHelpers {
 
 /// Shuts down and closes the logger, releasing any isolate resources.
 Future<void> closeLogger() async {
+  await _detachGlobalLogBridge();
   final logger = _logger;
   _logger = null;
   if (logger == null) return;
@@ -136,4 +140,102 @@ Future<void> closeLogger() async {
   if (logger is ServerpodCliLogger) {
     await logger.close();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Global log bridge
+// ---------------------------------------------------------------------------
+
+/// Forwards records written to the global [shared.log] - the logger that
+/// packages shared with the server, such as `serverpod_database`, write to - to
+/// the CLI logger singleton.
+///
+/// The global [shared.logWriter] chain starts out empty and entry points are
+/// expected to populate it. The server does so through `ServerpodLogSetup`;
+/// the CLI never did, so every record a shared package emitted was silently
+/// dropped for the whole CLI process.
+///
+/// Forwarding to the singleton rather than registering the singleton's own
+/// writer on the chain keeps a single output path: whichever logger is
+/// installed - stdout, the TUI, an isolate port forwarder, a test logger -
+/// receives the record, and its log level and `--quiet` handling apply to it
+/// unchanged.
+class _GlobalLogBridge extends LogWriter {
+  @override
+  Future<void> log(LogEntry entry) async {
+    // Read the singleton directly rather than through `log`, which would
+    // resurrect a logger that `closeLogger` has just torn down.
+    final logger = _logger;
+    if (logger == null) return;
+
+    // cli.Logger has no error argument, and the record is dropped rather than
+    // rendered if it is not folded into the message.
+    final message = entry.error == null
+        ? entry.message
+        : '${entry.message}\n${entry.error}';
+    final metadataType = entry.metadata?[logTypeKey];
+    final type = metadataType is cli.LogType
+        ? metadataType
+        : cli.TextLogType.normal;
+
+    switch (entry.level) {
+      case LogLevel.debug:
+        logger.debug(message, type: type);
+      case LogLevel.info:
+        logger.info(message, type: type);
+      case LogLevel.warning:
+        logger.warning(message, type: type);
+      case LogLevel.error:
+      case LogLevel.fatal:
+        logger.error(message, stackTrace: entry.stackTrace, type: type);
+    }
+  }
+
+  /// Scopes are progress reporting, which the CLI drives through
+  /// [cli.Logger.progress] on its own logger. Entries logged inside a scope
+  /// still reach [log], only the scope's own start and end are not rendered.
+  @override
+  Future<void> openScope(LogScope scope) async {}
+
+  @override
+  Future<void> closeScope(
+    LogScope scope, {
+    required bool success,
+    required Duration duration,
+    Object? error,
+    StackTrace? stackTrace,
+  }) async {}
+}
+
+final _globalLogBridge = _GlobalLogBridge();
+bool _globalLogBridgeAttached = false;
+LogLevel? _globalLogLevelBeforeBridge;
+
+/// Registers [_globalLogBridge] on the global writer chain. Idempotent, so
+/// swapping the logger singleton does not stack up bridges.
+void _attachGlobalLogBridge() {
+  if (_globalLogBridgeAttached) return;
+  _globalLogBridgeAttached = true;
+
+  // Severity filtering belongs to the CLI logger, which owns the verbosity
+  // flags. Opening the global filter all the way lets `-v` reach the shared
+  // packages instead of their debug records being dropped before the bridge.
+  _globalLogLevelBeforeBridge = shared.log.logLevel;
+  shared.log.logLevel = LogLevel.debug;
+
+  shared.logWriter.add(_globalLogBridge);
+}
+
+/// Undoes [_attachGlobalLogBridge], leaving the globals as they were found.
+Future<void> _detachGlobalLogBridge() async {
+  if (!_globalLogBridgeAttached) return;
+  _globalLogBridgeAttached = false;
+
+  // Records already dispatched are only handed to the writers in the chain at
+  // the time they are written, so drain them before dropping out of it.
+  await shared.log.flush();
+
+  shared.logWriter.remove(_globalLogBridge);
+  shared.log.logLevel = _globalLogLevelBeforeBridge ?? LogLevel.info;
+  _globalLogLevelBeforeBridge = null;
 }

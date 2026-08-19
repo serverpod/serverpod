@@ -1,0 +1,4 @@
+exception: SharedSealedAppException
+sealed: true
+fields:
+  message: String

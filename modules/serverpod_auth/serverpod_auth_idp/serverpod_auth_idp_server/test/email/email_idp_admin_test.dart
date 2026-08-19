@@ -3,13 +3,13 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
-import '../test_tags.dart';
 import '../test_tools/serverpod_test_tools.dart';
 import 'test_utils/email_idp_test_fixture.dart';
 
 void main() {
   withServerpod(
     'Given an existing auth user',
+    rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -169,7 +169,6 @@ void main() {
   withServerpod(
     'Given an email account with password',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -212,7 +211,6 @@ void main() {
   withServerpod(
     'Given expired password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -446,7 +444,6 @@ void main() {
   withServerpod(
     'Given email account with maximum number of allowed password reset attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -517,7 +514,6 @@ void main() {
   withServerpod(
     'Given email account with maximum number allowed failed login attempts',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;
@@ -617,7 +613,6 @@ void main() {
   withServerpod(
     'Given an email account with password and password reset request',
     rollbackDatabase: RollbackDatabase.disabled,
-    testGroupTagsOverride: TestTags.concurrencyOneTestTags,
     (final sessionBuilder, final endpoints) {
       late Session session;
       late EmailIdpTestFixture fixture;

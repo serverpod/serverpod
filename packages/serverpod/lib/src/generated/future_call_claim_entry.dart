@@ -93,8 +93,6 @@ abstract class FutureCallClaimEntry
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     FutureCallClaimEntryInclude? include,
   }) {
@@ -103,8 +101,6 @@ abstract class FutureCallClaimEntry
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
       include: include,
     );
@@ -209,8 +205,6 @@ class FutureCallClaimEntryIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -255,8 +249,6 @@ class FutureCallClaimEntryRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -266,8 +258,6 @@ class FutureCallClaimEntryRepository {
       where: where?.call(FutureCallClaimEntry.t),
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -298,8 +288,6 @@ class FutureCallClaimEntryRepository {
     _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? offset,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -309,8 +297,6 @@ class FutureCallClaimEntryRepository {
       where: where?.call(FutureCallClaimEntry.t),
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -344,16 +330,22 @@ class FutureCallClaimEntryRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> insert(
     _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<FutureCallClaimEntry>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -387,6 +379,10 @@ class FutureCallClaimEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> upsert(
     _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
@@ -394,6 +390,7 @@ class FutureCallClaimEntryRepository {
     _i1.ColumnSelections<FutureCallClaimEntryTable>? updateColumns,
     _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<FutureCallClaimEntry>(
       rows,
@@ -401,6 +398,7 @@ class FutureCallClaimEntryRepository {
       updateColumns: updateColumns?.call(FutureCallClaimEntry.t),
       updateWhere: updateWhere?.call(FutureCallClaimEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -439,16 +437,22 @@ class FutureCallClaimEntryRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> update(
     _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.ColumnSelections<FutureCallClaimEntryTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<FutureCallClaimEntry>(
       rows,
       columns: columns?.call(FutureCallClaimEntry.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -486,6 +490,10 @@ class FutureCallClaimEntryRepository {
 
   /// Updates all [FutureCallClaimEntry]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
@@ -495,9 +503,8 @@ class FutureCallClaimEntryRepository {
     int? offset,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<FutureCallClaimEntry>(
       columnValues: columnValues(FutureCallClaimEntry.t.updateTable),
@@ -506,9 +513,8 @@ class FutureCallClaimEntryRepository {
       offset: offset,
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -519,22 +525,24 @@ class FutureCallClaimEntryRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> delete(
     _i1.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<FutureCallClaimEntry>(
       rows,
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -554,22 +562,24 @@ class FutureCallClaimEntryRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
     _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FutureCallClaimEntry>(
       where: where(FutureCallClaimEntry.t),
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

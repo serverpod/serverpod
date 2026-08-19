@@ -8,6 +8,12 @@ import 'package:serverpod_shared/log.dart';
 typedef RedisSubscriptionCallback =
     void Function(String channel, String message);
 
+/// A type alias for the [Command] class from the `redis` package.
+///
+/// Use this to call custom Redis commands via [RedisCommand.send_object] or
+/// other methods from the `redis` package.
+typedef RedisCommand = Command;
+
 /// The [RedisController] maintains an active connection to the Redis server. It
 /// handles caching, publishing, and subscriptions of strings. If the connection
 /// is broken the controller automatically tries to reconnect. Messages sent
@@ -90,6 +96,9 @@ class RedisController {
     return Socket.connect(host, port, timeout: timeout);
   }
 
+  /// Whether the last connect attempt failed and has been logged.
+  bool _connectFailureLogged = false;
+
   /// Shared helper to create and authenticate a Redis Command connection.
   Future<Command?> _createAndAuthCommand({
     bool Function(Exception e)? handleError,
@@ -108,16 +117,16 @@ class RedisController {
 
         if (result != 'OK') return null;
       }
+      _connectFailureLogged = false;
       return command;
-    } catch (e, stackTrace) {
+    } catch (e) {
       if (handleError != null && e is Exception && handleError(e)) {
         return null;
       }
-      log.error(
-        'Internal server error. Failed to connect to Redis.',
-        error: e,
-        stackTrace: stackTrace,
-      );
+      if (!_connectFailureLogged) {
+        _connectFailureLogged = true;
+        log.warning('Failed to connect to Redis at $host:$port ($e).');
+      }
       return null;
     }
   }
@@ -348,6 +357,20 @@ class RedisController {
     }
   }
 
+  /// Returns the underlying Redis [Command] connection.
+  ///
+  /// Ensures a connection is established before returning. Returns null if the
+  /// connection could not be established.
+  ///
+  /// Use this to call custom Redis commands via [RedisCommand.send_object] or
+  /// other methods from the `redis` package.
+  Future<RedisCommand?> getConnection() async {
+    if (!await _connect()) {
+      return null;
+    }
+    return _command;
+  }
+
   /// Tests Redis connectivity with a PING command.
   ///
   /// Returns true if Redis responds with PONG, false otherwise.
@@ -365,6 +388,6 @@ class RedisController {
     }
   }
 
-  /// Returns a list of
+  /// Returns a list of subscribed channels.
   List<String> get subscribedChannels => _subscriptions.keys.toList();
 }

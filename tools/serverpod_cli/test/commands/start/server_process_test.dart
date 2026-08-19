@@ -5,8 +5,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/server_process.dart';
-import 'package:serverpod_cli/src/util/sdk_path.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
 
 /// An IOSink that discards all output.
@@ -186,7 +186,7 @@ void main() {
           'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
         );
       }
-      compiler.accept();
+      await compiler.accept();
       await compiler.dispose();
 
       serverProcess = ServerProcess(
@@ -292,7 +292,7 @@ void main() {
             'Failed to compile kernel: ${result.compilerOutputLines.join('\n')}',
           );
         }
-        compiler.accept();
+        await compiler.accept();
         await compiler.dispose();
 
         expect(dillPath.contains(' '), isTrue);

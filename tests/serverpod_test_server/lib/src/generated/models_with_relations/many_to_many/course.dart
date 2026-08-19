@@ -95,8 +95,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
   }) {
@@ -105,8 +103,6 @@ abstract class Course implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Course.t),
       include: include,
     );
@@ -243,8 +239,6 @@ class CourseIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -264,10 +258,6 @@ class CourseRepository {
   final attach = const CourseAttachRepository._();
 
   final attachRow = const CourseAttachRowRepository._();
-
-  final detach = const CourseDetachRepository._();
-
-  final detachRow = const CourseDetachRowRepository._();
 
   /// Returns a list of [Course]s matching the given query parameters.
   ///
@@ -297,8 +287,6 @@ class CourseRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
@@ -309,8 +297,6 @@ class CourseRepository {
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -342,8 +328,6 @@ class CourseRepository {
     _i1.WhereExpressionBuilder<CourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
     CourseInclude? include,
@@ -354,8 +338,6 @@ class CourseRepository {
       where: where?.call(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -392,16 +374,22 @@ class CourseRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> insert(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Course>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -435,6 +423,10 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> upsert(
     _i1.DatabaseSession session,
     List<Course> rows, {
@@ -442,6 +434,7 @@ class CourseRepository {
     _i1.ColumnSelections<CourseTable>? updateColumns,
     _i1.WhereExpressionBuilder<CourseTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Course>(
       rows,
@@ -449,6 +442,7 @@ class CourseRepository {
       updateColumns: updateColumns?.call(Course.t),
       updateWhere: updateWhere?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -487,16 +481,22 @@ class CourseRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> update(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.ColumnSelections<CourseTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Course>(
       rows,
       columns: columns?.call(Course.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -533,6 +533,10 @@ class CourseRepository {
 
   /// Updates all [Course]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CourseUpdateTable> columnValues,
@@ -541,9 +545,8 @@ class CourseRepository {
     int? offset,
     _i1.OrderByBuilder<CourseTable>? orderBy,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Course>(
       columnValues: columnValues(Course.t.updateTable),
@@ -552,9 +555,8 @@ class CourseRepository {
       offset: offset,
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,22 +567,24 @@ class CourseRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> delete(
     _i1.DatabaseSession session,
     List<Course> rows, {
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Course>(
       rows,
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -600,22 +604,24 @@ class CourseRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Course>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CourseTable> where,
     _i1.OrderByBuilder<CourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CourseTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Course>(
       where: where(Course.t),
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -699,60 +705,6 @@ class CourseAttachRowRepository {
     }
 
     var $enrollment = enrollment.copyWith(courseId: course.id);
-    await session.db.updateRow<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRepository {
-  const CourseDetachRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    List<_i2.Enrollment> enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment = enrollment
-        .map((e) => e.copyWith(courseId: null))
-        .toList();
-    await session.db.update<_i2.Enrollment>(
-      $enrollment,
-      columns: [_i2.Enrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CourseDetachRowRepository {
-  const CourseDetachRowRepository._();
-
-  /// Detaches the relation between this [Course] and the given [Enrollment]
-  /// by setting the [Enrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    _i2.Enrollment enrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (enrollment.id == null) {
-      throw ArgumentError.notNull('enrollment.id');
-    }
-
-    var $enrollment = enrollment.copyWith(courseId: null);
     await session.db.updateRow<_i2.Enrollment>(
       $enrollment,
       columns: [_i2.Enrollment.t.courseId],

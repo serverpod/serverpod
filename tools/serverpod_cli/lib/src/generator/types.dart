@@ -16,7 +16,6 @@ import 'package:serverpod_cli/src/util/string_manipulation.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
-import 'package:super_string/super_string.dart';
 
 import '../config/config.dart';
 
@@ -152,6 +151,15 @@ class TypeDefinition {
 
   bool get isVectorType => vectorClassNames.contains(className);
 
+  static List<String> get geographyClassNames => [
+    'GeographyPoint',
+    'GeographyLineString',
+    'GeographyPolygon',
+    'GeographyGeometryCollection',
+  ];
+
+  bool get isGeographyType => geographyClassNames.contains(className);
+
   bool get isRecordType => className == recordTypeClassName;
 
   bool get isIdType =>
@@ -278,13 +286,25 @@ class TypeDefinition {
   );
 
   static String getRef(SerializableModelDefinition model) {
-    if (model is ModelClassDefinition) {
+    if (model is ClassDefinition) {
       var sealedTopNode = model.sealedTopNode;
       if (sealedTopNode != null) {
         return sealedTopNode.fileRef();
       }
     }
     return model.fileRef();
+  }
+
+  /// The name of the shared package in [sharedPackageNames] that declares the
+  /// library [url] points at, or `null` if [url] is not inside any of them.
+  static String? _sharedPackageNameOfUrl(
+    Iterable<String> sharedPackageNames,
+    String? url,
+  ) {
+    if (url == null) return null;
+    return sharedPackageNames
+        .where((packageName) => url.startsWith('package:$packageName/'))
+        .firstOrNull;
   }
 
   /// Generate a [Reference] from this definition.
@@ -360,7 +380,11 @@ class TypeDefinition {
                   'package:uuid/uuid.dart',
                 ].contains(url)) ||
             (url == null &&
-                (['UuidValue', ...vectorClassNames]).contains(className))) {
+                ([
+                  'UuidValue',
+                  ...geographyClassNames,
+                  ...vectorClassNames,
+                ]).contains(className))) {
           // serverpod: reference
           t.url = serverpodUrl(serverCode);
         } else if (url?.startsWith('project:') ?? false) {
@@ -400,6 +424,15 @@ class TypeDefinition {
               reference,
             ]);
           }
+        } else if (_sharedPackageNameOfUrl(
+              config.sharedModelsSourcePathsParts.keys,
+              url,
+            )
+            case var packageName?) {
+          // endpoint definition references a model from a shared package the
+          // project owns; import it through the package's public library
+          // instead of reaching into its implementation.
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (!serverCode &&
             (url?.startsWith('package:${config.serverPackage}/') ?? false)) {
           // import from the server package
@@ -427,6 +460,24 @@ class TypeDefinition {
                   'package:${module.serverPackage}/',
                   'package:${module.dartClientPackage}/',
                 );
+        } else if (config.modules
+                .where(
+                  (m) =>
+                      _sharedPackageNameOfUrl(
+                        m.sharedPackageRootPathParts.keys,
+                        url,
+                      ) !=
+                      null,
+                )
+                .firstOrNull
+            case var module?) {
+          // endpoint definition references a model from a module's shared
+          // package; import it through the module package that re-exports it
+          // instead of reaching into the shared package's implementation.
+          var packageName = serverCode
+              ? module.serverPackage
+              : module.dartClientPackage;
+          t.url = 'package:$packageName/$packageName.dart';
         } else if (className == 'SerializableModel') {
           t.url = serverpodUrl(serverCode);
         } else if (config.name != 'serverpod' &&
@@ -477,6 +528,12 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'halfvec';
     if (className == 'SparseVector') return 'sparsevec';
     if (className == 'Bit') return 'bit';
+    if (className == 'GeographyPoint') return 'geography';
+    if (className == 'GeographyLineString') return 'geography line string';
+    if (className == 'GeographyPolygon') return 'geography polygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'geography geometry collection';
+    }
     if (isJsonbSerialized) return 'jsonb';
     return 'json';
   }
@@ -504,6 +561,12 @@ class TypeDefinition {
     if (className == 'HalfVector') return 'ColumnHalfVector';
     if (className == 'SparseVector') return 'ColumnSparseVector';
     if (className == 'Bit') return 'ColumnBit';
+    if (className == 'GeographyPoint') return 'ColumnGeographyPoint';
+    if (className == 'GeographyLineString') return 'ColumnGeographyLineString';
+    if (className == 'GeographyPolygon') return 'ColumnGeographyPolygon';
+    if (className == 'GeographyGeometryCollection') {
+      return 'ColumnGeographyGeometryCollection';
+    }
 
     if (isJsonbSerialized) return 'ColumnStructured';
     return 'ColumnSerializable';
@@ -793,7 +856,9 @@ class TypeDefinition {
           .toList(),
       serializationDataType: serializationDataType,
       enumDefinition: enumDefinition,
-      url: isProjectModel ? defaultModuleAlias : url,
+      url: isProjectModel
+          ? defaultModuleAlias
+          : sharedModelDefinition?.type.moduleAlias ?? url,
       recordFieldName: recordFieldName,
       vectorDimension: vectorDimension,
     );
@@ -815,6 +880,14 @@ class TypeDefinition {
     if (className == 'HalfVector') return ValueType.halfVector;
     if (className == 'SparseVector') return ValueType.sparseVector;
     if (className == 'Bit') return ValueType.bit;
+    if (className == 'GeographyPoint') return ValueType.geographyPoint;
+    if (className == 'GeographyLineString') {
+      return ValueType.geographyLineString;
+    }
+    if (className == 'GeographyPolygon') return ValueType.geographyPolygon;
+    if (className == 'GeographyGeometryCollection') {
+      return ValueType.geographyGeometryCollection;
+    }
     if (className == 'List') return ValueType.list;
     if (className == 'Set') return ValueType.set;
     if (className == 'Map') return ValueType.map;
@@ -1046,6 +1119,10 @@ enum ValueType {
   halfVector,
   sparseVector,
   bit,
+  geographyPoint,
+  geographyLineString,
+  geographyPolygon,
+  geographyGeometryCollection,
   uri,
 }
 

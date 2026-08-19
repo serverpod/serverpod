@@ -27,6 +27,15 @@ class _MockAnalytics implements Analytics {
 
   @override
   void cleanUp() {}
+
+  @override
+  Future<void> flush() async {}
+
+  @override
+  Future<void> sendEvent({
+    required String event,
+    Map<String, dynamic> properties = const {},
+  }) async {}
 }
 
 void main() {

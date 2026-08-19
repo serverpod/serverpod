@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A greeting message which can be sent to or from the server.
-abstract class Greeting implements _i1.SerializableModel {
+abstract class Greeting
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Greeting._({
     this.id,
     required this.message,
@@ -64,6 +65,17 @@ abstract class Greeting implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'Greeting',
+      if (id != null) 'id': id,
+      'message': message,
+      'author': author,
+      'timestamp': timestamp.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Greeting',
       if (id != null) 'id': id,

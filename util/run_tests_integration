@@ -1,7 +1,15 @@
 #!/bin/bash
 
-# This script runs the integration tests that are not compatible with running concurrently (i.e. with the `--concurrency=1` flag).
-# All tests tagged with 'integration' (default tag for the test tools) will be excluded from this test script.
+# Runs the serverpod_test_server integration tests that are NOT safe to run
+# concurrently (real-server boot via IntegrationTestServer against a shared,
+# pre-migrated database), against an embedded PostgreSQL postmaster - no Docker
+# required. All tests tagged 'integration' (the test-tools default) are excluded
+# here; they run in run_tests_integration_concurrently.
+#
+# The redis-tagged tests require Redis on redis:6379 (resolved to localhost via
+# /etc/hosts; hosted in CI). Missing Redis is a test failure so CI cannot
+# silently lose coverage. Local runs that intentionally omit Redis must invoke
+# dart test directly with `-x redis`.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -9,13 +17,63 @@ if [ ! -f util/.serverpod_util_root ]; then
     exit 1
 fi
 
-# Makes script exit on first non-zero error code
 set -e
+export SERVERPOD_SILENCE_LIFECYCLE_MESSAGES="1"
+export SERVERPOD_DATABASE_DATA_PATH=".serverpod/test/pgdata"
+# Embedded PG runs the server in the host timezone, whereas the former docker
+# server ran in the container's UTC. Pin UTC so timezone-sensitive tests (e.g.
+# cron-scheduled future calls) behave identically regardless of host/runner tz.
+export TZ="UTC"
 
-cd tests/docker/tests_integration
+# Whole-file sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index, default 0 1 = a single shard). dart test's own --total-shards
+# splits at the test-CASE level, which breaks tests that intentionally share
+# state across cases in a group (e.g. test_tools/session_copy_with_test). We
+# assign whole files to a shard instead (see below), so each file's tests always
+# run together in one isolate - and a shard loads only its own files.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
 
-docker compose --progress quiet --profile concurrency_one up \
-  --abort-on-container-exit \
-  --exit-code-from serverpod_test_server \
-  --build \
-  --remove-orphans
+REPO_ROOT="$(pwd)"
+
+cd "tests/serverpod_test_server"
+rm -rf "$SERVERPOD_DATABASE_DATA_PATH"
+
+# Apply migrations to the embedded postmaster. The serial tests share one
+# pre-migrated database via IntegrationTestServer; the embedded postmaster
+# persists its data dir across this apply process and the test process.
+echo "### Apply migrations (embedded PG)"
+dart run bin/main.dart -m production -r maintenance --apply-migrations
+
+# Assign whole test files to this shard, round-robin. The tag filters below still
+# decide which tests within those files actually run.
+shard_test_files=()
+file_i=0
+while IFS= read -r test_file; do
+    if [ "$total_shards" -le 1 ] || [ $(( file_i % total_shards )) -eq "$shard_index" ]; then
+        shard_test_files+=("$test_file")
+    fi
+    file_i=$(( file_i + 1 ))
+done < <(find test_integration -name '*_test.dart' | sort)
+if [ ${#shard_test_files[@]} -eq 0 ]; then
+    echo "### No test files assigned to shard $shard_index/$total_shards"
+    exit 0
+fi
+
+# Each withServerpod group / IntegrationTestServer suite provisions its own
+# database (and binds ephemeral ports), so these run concurrently.
+echo "### Running integration tests (${#shard_test_files[@]} files, shard $shard_index/$total_shards)"
+dart test "${shard_test_files[@]}" -x integration --reporter=failures-only
+
+# Verify the embedded data path was created. Don't remove it here: the tests
+# leave the postmaster running (it is reaped on the next start), so an rm would
+# race it still writing into pgdata/base and fail the job with "Directory not
+# empty". CI runners are ephemeral and the next run's pre-test rm gives a clean
+# slate, so post-run cleanup is unnecessary anyway.
+if [ ! -d "$SERVERPOD_DATABASE_DATA_PATH" ]; then
+    echo "Test did not create the database data path: $SERVERPOD_DATABASE_DATA_PATH"
+    cd "$REPO_ROOT"
+    exit 1
+fi
+
+cd "$REPO_ROOT"

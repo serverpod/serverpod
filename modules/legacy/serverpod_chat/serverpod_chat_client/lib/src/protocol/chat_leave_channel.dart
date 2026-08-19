@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Indicates that a user wants to leave a channel.
-abstract class ChatLeaveChannel implements _i1.SerializableModel {
+abstract class ChatLeaveChannel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ChatLeaveChannel._({required this.channel});
 
   factory ChatLeaveChannel({required String channel}) = _ChatLeaveChannelImpl;
@@ -31,6 +32,14 @@ abstract class ChatLeaveChannel implements _i1.SerializableModel {
   ChatLeaveChannel copyWith({String? channel});
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod_chat.ChatLeaveChannel',
+      'channel': channel,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod_chat.ChatLeaveChannel',
       'channel': channel,

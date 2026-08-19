@@ -484,7 +484,7 @@ class EmailAuthController extends ChangeNotifier {
 
       // If we have a network error, start a timer to enable the action button
       // again after a short delay.
-      if (e is ServerpodClientException && e.statusCode == -1) {
+      if (e is ServerpodClientNetworkException) {
         Timer(const Duration(seconds: 1), () {
           _setState(EmailAuthState.idle);
         });

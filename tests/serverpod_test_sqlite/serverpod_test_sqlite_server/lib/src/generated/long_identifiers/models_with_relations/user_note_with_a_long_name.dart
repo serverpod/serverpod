@@ -88,8 +88,6 @@ abstract class UserNoteWithALongName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
   }) {
@@ -98,8 +96,6 @@ abstract class UserNoteWithALongName
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       include: include,
     );
@@ -237,8 +233,6 @@ class UserNoteWithALongNameIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -283,8 +277,6 @@ class UserNoteWithALongNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -294,8 +286,6 @@ class UserNoteWithALongNameRepository {
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -326,8 +316,6 @@ class UserNoteWithALongNameRepository {
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -337,8 +325,6 @@ class UserNoteWithALongNameRepository {
       where: where?.call(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -372,16 +358,22 @@ class UserNoteWithALongNameRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> insert(
     _i1.DatabaseSession session,
     List<UserNoteWithALongName> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UserNoteWithALongName>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -415,6 +407,10 @@ class UserNoteWithALongNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> upsert(
     _i1.DatabaseSession session,
     List<UserNoteWithALongName> rows, {
@@ -422,6 +418,7 @@ class UserNoteWithALongNameRepository {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? updateColumns,
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UserNoteWithALongName>(
       rows,
@@ -429,6 +426,7 @@ class UserNoteWithALongNameRepository {
       updateColumns: updateColumns?.call(UserNoteWithALongName.t),
       updateWhere: updateWhere?.call(UserNoteWithALongName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -467,16 +465,22 @@ class UserNoteWithALongNameRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> update(
     _i1.DatabaseSession session,
     List<UserNoteWithALongName> rows, {
     _i1.ColumnSelections<UserNoteWithALongNameTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UserNoteWithALongName>(
       rows,
       columns: columns?.call(UserNoteWithALongName.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -514,6 +518,10 @@ class UserNoteWithALongNameRepository {
 
   /// Updates all [UserNoteWithALongName]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserNoteWithALongNameUpdateTable>
@@ -523,9 +531,8 @@ class UserNoteWithALongNameRepository {
     int? offset,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNoteWithALongName>(
       columnValues: columnValues(UserNoteWithALongName.t.updateTable),
@@ -534,9 +541,8 @@ class UserNoteWithALongNameRepository {
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -547,22 +553,24 @@ class UserNoteWithALongNameRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> delete(
     _i1.DatabaseSession session,
     List<UserNoteWithALongName> rows, {
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UserNoteWithALongName>(
       rows,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -582,22 +590,24 @@ class UserNoteWithALongNameRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNoteWithALongName>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserNoteWithALongNameTable> where,
     _i1.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNoteWithALongName>(
       where: where(UserNoteWithALongName.t),
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

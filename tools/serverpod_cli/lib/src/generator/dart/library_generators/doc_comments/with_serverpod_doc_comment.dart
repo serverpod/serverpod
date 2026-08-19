@@ -51,6 +51,9 @@ A function to override the server configuration. This function is called with
 the default server configuration after it is loaded from the config/ directory
 and before it is used to start the server. Use this to override particular
 settings in the server configuration.''',
+  'databaseInterceptor': '''
+Optional interceptor that replaces the default database for each session.
+See [Serverpod.databaseInterceptor] for more information.''',
   'testGroupTagsOverride': '''
 By default Serverpod test tools tags the `withServerpod` test group with `"integration"`.
 This is to provide a simple way to only run unit or integration tests.

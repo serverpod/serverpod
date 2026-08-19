@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 
-abstract class SharedContainer implements _i1.SerializableModel {
+abstract class SharedContainer
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SharedContainer._({
     required this.sharedModel,
     required this.sharedModelWithModuleAlias,
@@ -25,6 +26,12 @@ abstract class SharedContainer implements _i1.SerializableModel {
     this.sharedSealedParentNullable,
     required this.sharedSealedChild,
     this.sharedSealedChildNullable,
+    required this.sharedSealedAppException,
+    this.sharedSealedAppExceptionNullable,
+    required this.sharedNotFoundException,
+    this.sharedNotFoundExceptionNullable,
+    required this.sharedExtendedAppException,
+    this.sharedExtendedAppExceptionNullable,
   });
 
   factory SharedContainer({
@@ -38,6 +45,12 @@ abstract class SharedContainer implements _i1.SerializableModel {
     _i2.SharedSealedParent? sharedSealedParentNullable,
     required _i2.SharedSealedChild sharedSealedChild,
     _i2.SharedSealedChild? sharedSealedChildNullable,
+    required _i2.SharedSealedAppException sharedSealedAppException,
+    _i2.SharedSealedAppException? sharedSealedAppExceptionNullable,
+    required _i2.SharedNotFoundException sharedNotFoundException,
+    _i2.SharedNotFoundException? sharedNotFoundExceptionNullable,
+    required _i2.SharedExtendedAppException sharedExtendedAppException,
+    _i2.SharedExtendedAppException? sharedExtendedAppExceptionNullable,
   }) = _SharedContainerImpl;
 
   factory SharedContainer.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -83,6 +96,36 @@ abstract class SharedContainer implements _i1.SerializableModel {
           : _i2.Protocol().deserialize<_i2.SharedSealedChild>(
               jsonSerialization['sharedSealedChildNullable'],
             ),
+      sharedSealedAppException: _i2.Protocol()
+          .deserialize<_i2.SharedSealedAppException>(
+            jsonSerialization['sharedSealedAppException'],
+          ),
+      sharedSealedAppExceptionNullable:
+          jsonSerialization['sharedSealedAppExceptionNullable'] == null
+          ? null
+          : _i2.Protocol().deserialize<_i2.SharedSealedAppException>(
+              jsonSerialization['sharedSealedAppExceptionNullable'],
+            ),
+      sharedNotFoundException: _i2.Protocol()
+          .deserialize<_i2.SharedNotFoundException>(
+            jsonSerialization['sharedNotFoundException'],
+          ),
+      sharedNotFoundExceptionNullable:
+          jsonSerialization['sharedNotFoundExceptionNullable'] == null
+          ? null
+          : _i2.Protocol().deserialize<_i2.SharedNotFoundException>(
+              jsonSerialization['sharedNotFoundExceptionNullable'],
+            ),
+      sharedExtendedAppException: _i2.Protocol()
+          .deserialize<_i2.SharedExtendedAppException>(
+            jsonSerialization['sharedExtendedAppException'],
+          ),
+      sharedExtendedAppExceptionNullable:
+          jsonSerialization['sharedExtendedAppExceptionNullable'] == null
+          ? null
+          : _i2.Protocol().deserialize<_i2.SharedExtendedAppException>(
+              jsonSerialization['sharedExtendedAppExceptionNullable'],
+            ),
     );
   }
 
@@ -106,6 +149,18 @@ abstract class SharedContainer implements _i1.SerializableModel {
 
   _i2.SharedSealedChild? sharedSealedChildNullable;
 
+  _i2.SharedSealedAppException sharedSealedAppException;
+
+  _i2.SharedSealedAppException? sharedSealedAppExceptionNullable;
+
+  _i2.SharedNotFoundException sharedNotFoundException;
+
+  _i2.SharedNotFoundException? sharedNotFoundExceptionNullable;
+
+  _i2.SharedExtendedAppException sharedExtendedAppException;
+
+  _i2.SharedExtendedAppException? sharedExtendedAppExceptionNullable;
+
   /// Returns a shallow copy of this [SharedContainer]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -120,6 +175,12 @@ abstract class SharedContainer implements _i1.SerializableModel {
     _i2.SharedSealedParent? sharedSealedParentNullable,
     _i2.SharedSealedChild? sharedSealedChild,
     _i2.SharedSealedChild? sharedSealedChildNullable,
+    _i2.SharedSealedAppException? sharedSealedAppException,
+    _i2.SharedSealedAppException? sharedSealedAppExceptionNullable,
+    _i2.SharedNotFoundException? sharedNotFoundException,
+    _i2.SharedNotFoundException? sharedNotFoundExceptionNullable,
+    _i2.SharedExtendedAppException? sharedExtendedAppException,
+    _i2.SharedExtendedAppException? sharedExtendedAppExceptionNullable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -139,6 +200,55 @@ abstract class SharedContainer implements _i1.SerializableModel {
       'sharedSealedChild': sharedSealedChild.toJson(),
       if (sharedSealedChildNullable != null)
         'sharedSealedChildNullable': sharedSealedChildNullable?.toJson(),
+      'sharedSealedAppException': sharedSealedAppException.toJson(),
+      if (sharedSealedAppExceptionNullable != null)
+        'sharedSealedAppExceptionNullable': sharedSealedAppExceptionNullable
+            ?.toJson(),
+      'sharedNotFoundException': sharedNotFoundException.toJson(),
+      if (sharedNotFoundExceptionNullable != null)
+        'sharedNotFoundExceptionNullable': sharedNotFoundExceptionNullable
+            ?.toJson(),
+      'sharedExtendedAppException': sharedExtendedAppException.toJson(),
+      if (sharedExtendedAppExceptionNullable != null)
+        'sharedExtendedAppExceptionNullable': sharedExtendedAppExceptionNullable
+            ?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'SharedContainer',
+      'sharedModel': sharedModel.toJsonForProtocol(),
+      'sharedModelWithModuleAlias': sharedModelWithModuleAlias
+          .toJsonForProtocol(),
+      'sharedSubclass': sharedSubclass.toJsonForProtocol(),
+      if (sharedSubclassNullable != null)
+        'sharedSubclassNullable': sharedSubclassNullable?.toJsonForProtocol(),
+      'sharedEnum': sharedEnum.toJson(),
+      if (sharedEnumNullable != null)
+        'sharedEnumNullable': sharedEnumNullable?.toJson(),
+      'sharedSealedParent': sharedSealedParent.toJsonForProtocol(),
+      if (sharedSealedParentNullable != null)
+        'sharedSealedParentNullable': sharedSealedParentNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedChild': sharedSealedChild.toJsonForProtocol(),
+      if (sharedSealedChildNullable != null)
+        'sharedSealedChildNullable': sharedSealedChildNullable
+            ?.toJsonForProtocol(),
+      'sharedSealedAppException': sharedSealedAppException.toJsonForProtocol(),
+      if (sharedSealedAppExceptionNullable != null)
+        'sharedSealedAppExceptionNullable': sharedSealedAppExceptionNullable
+            ?.toJsonForProtocol(),
+      'sharedNotFoundException': sharedNotFoundException.toJsonForProtocol(),
+      if (sharedNotFoundExceptionNullable != null)
+        'sharedNotFoundExceptionNullable': sharedNotFoundExceptionNullable
+            ?.toJsonForProtocol(),
+      'sharedExtendedAppException': sharedExtendedAppException
+          .toJsonForProtocol(),
+      if (sharedExtendedAppExceptionNullable != null)
+        'sharedExtendedAppExceptionNullable': sharedExtendedAppExceptionNullable
+            ?.toJsonForProtocol(),
     };
   }
 
@@ -162,6 +272,12 @@ class _SharedContainerImpl extends SharedContainer {
     _i2.SharedSealedParent? sharedSealedParentNullable,
     required _i2.SharedSealedChild sharedSealedChild,
     _i2.SharedSealedChild? sharedSealedChildNullable,
+    required _i2.SharedSealedAppException sharedSealedAppException,
+    _i2.SharedSealedAppException? sharedSealedAppExceptionNullable,
+    required _i2.SharedNotFoundException sharedNotFoundException,
+    _i2.SharedNotFoundException? sharedNotFoundExceptionNullable,
+    required _i2.SharedExtendedAppException sharedExtendedAppException,
+    _i2.SharedExtendedAppException? sharedExtendedAppExceptionNullable,
   }) : super._(
          sharedModel: sharedModel,
          sharedModelWithModuleAlias: sharedModelWithModuleAlias,
@@ -173,6 +289,12 @@ class _SharedContainerImpl extends SharedContainer {
          sharedSealedParentNullable: sharedSealedParentNullable,
          sharedSealedChild: sharedSealedChild,
          sharedSealedChildNullable: sharedSealedChildNullable,
+         sharedSealedAppException: sharedSealedAppException,
+         sharedSealedAppExceptionNullable: sharedSealedAppExceptionNullable,
+         sharedNotFoundException: sharedNotFoundException,
+         sharedNotFoundExceptionNullable: sharedNotFoundExceptionNullable,
+         sharedExtendedAppException: sharedExtendedAppException,
+         sharedExtendedAppExceptionNullable: sharedExtendedAppExceptionNullable,
        );
 
   /// Returns a shallow copy of this [SharedContainer]
@@ -190,6 +312,12 @@ class _SharedContainerImpl extends SharedContainer {
     Object? sharedSealedParentNullable = _Undefined,
     _i2.SharedSealedChild? sharedSealedChild,
     Object? sharedSealedChildNullable = _Undefined,
+    _i2.SharedSealedAppException? sharedSealedAppException,
+    Object? sharedSealedAppExceptionNullable = _Undefined,
+    _i2.SharedNotFoundException? sharedNotFoundException,
+    Object? sharedNotFoundExceptionNullable = _Undefined,
+    _i2.SharedExtendedAppException? sharedExtendedAppException,
+    Object? sharedExtendedAppExceptionNullable = _Undefined,
   }) {
     return SharedContainer(
       sharedModel: sharedModel ?? this.sharedModel.copyWith(),
@@ -215,6 +343,25 @@ class _SharedContainerImpl extends SharedContainer {
           sharedSealedChildNullable is _i2.SharedSealedChild?
           ? sharedSealedChildNullable
           : this.sharedSealedChildNullable?.copyWith(),
+      sharedSealedAppException:
+          sharedSealedAppException ?? this.sharedSealedAppException.copyWith(),
+      sharedSealedAppExceptionNullable:
+          sharedSealedAppExceptionNullable is _i2.SharedSealedAppException?
+          ? sharedSealedAppExceptionNullable
+          : this.sharedSealedAppExceptionNullable?.copyWith(),
+      sharedNotFoundException:
+          sharedNotFoundException ?? this.sharedNotFoundException.copyWith(),
+      sharedNotFoundExceptionNullable:
+          sharedNotFoundExceptionNullable is _i2.SharedNotFoundException?
+          ? sharedNotFoundExceptionNullable
+          : this.sharedNotFoundExceptionNullable?.copyWith(),
+      sharedExtendedAppException:
+          sharedExtendedAppException ??
+          this.sharedExtendedAppException.copyWith(),
+      sharedExtendedAppExceptionNullable:
+          sharedExtendedAppExceptionNullable is _i2.SharedExtendedAppException?
+          ? sharedExtendedAppExceptionNullable
+          : this.sharedExtendedAppExceptionNullable?.copyWith(),
     );
   }
 }

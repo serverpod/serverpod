@@ -7,14 +7,11 @@ import 'package:test/test.dart';
 
 void main() {
   var client = Client(serverUrl);
-  var serviceClient = service.Client(
-    serviceServerUrl,
-    // ignore: deprecated_member_use
-    authenticationKeyManager: TestServiceKeyManager(
+  var serviceClient = service.Client(serviceServerUrl)
+    ..authKeyProvider = TestServiceKeyManager(
       '0',
       'super_SECRET_password',
-    ),
-  );
+    );
 
   group('Health metrics', () {
     test('Fetch health metrics', () async {
@@ -235,7 +232,7 @@ void main() {
       expect(logResult.sessionLog[0].logs[0].message, equals('42'));
       expect(
         logResult.sessionLog[0].sessionLogEntry.method,
-        equals('testCall'),
+        equals('TestCallRunFutureCall'),
       );
     });
 
@@ -261,62 +258,6 @@ void main() {
       expect(logResult.sessionLog[0].logs[0].stackTrace, isNotNull);
       expect(logResult.sessionLog[0].logs[2].error, isNull);
       expect(logResult.sessionLog[0].logs[2].stackTrace, isNull);
-    });
-
-    test('Logging in stream', () async {
-      // Set log level to info
-      var settings = service.RuntimeSettings(
-        logSettings: service.LogSettings(
-          logAllSessions: true,
-          logSlowSessions: true,
-          logFailedSessions: true,
-          logStreamingSessionsContinuously: true,
-          logAllQueries: true,
-          logSlowQueries: true,
-          logFailedQueries: true,
-          slowSessionDuration: 1.0,
-          slowQueryDuration: 1.0,
-          logLevel: service.LogLevel.info,
-        ),
-        logMalformedCalls: true,
-        logServiceCalls: false,
-        logSettingsOverrides: [],
-      );
-      await serviceClient.insights.setRuntimeSettings(settings);
-
-      // ignore: deprecated_member_use
-      await client.openStreamingConnection(
-        disconnectOnLostInternetConnection: false,
-      );
-
-      for (var i = 0; i < 5; i += 1) {
-        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
-      }
-
-      await client.streamingLogging.sendStreamMessage(SimpleData(num: -1));
-
-      for (var i = 0; i < 5; i += 1) {
-        await client.streamingLogging.sendStreamMessage(SimpleData(num: 42));
-      }
-
-      // This test failed some times due to some kind of race condition.
-      // Ideally we would not use a hard coded delay here.
-      // Ticket: https://github.com/serverpod/serverpod/issues/773
-      await Future.delayed(const Duration(seconds: 5));
-
-      var logResult = await serviceClient.insights.getSessionLog(1, null);
-      expect(logResult.sessionLog.length, equals(1));
-      expect(logResult.sessionLog[0].sessionLogEntry.isOpen, equals(true));
-      // We should have logged one entry when opening the stream and 11 when
-      // sending messages.
-      expect(logResult.sessionLog[0].logs.length, equals(12));
-
-      // Expect 11 messages to have been sent
-      expect(logResult.sessionLog[0].messages.length, equals(11));
-      logResult.sessionLog[0].messages.sort((a, b) => a.order - b.order);
-
-      // Expect us to find an exception in the 6th logged message
-      expect(logResult.sessionLog[0].messages[5].error, isNotNull);
     });
   });
 

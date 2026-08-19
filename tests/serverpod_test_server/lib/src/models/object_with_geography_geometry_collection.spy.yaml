@@ -1,0 +1,16 @@
+class: ObjectWithGeographyGeometryCollection
+table: object_with_geography_geometry_collection
+fields:
+  geometryCollection: GeographyGeometryCollection
+  geometryCollectionIndexedGist: GeographyGeometryCollection
+  geometryCollectionIndexedSpgist: GeographyGeometryCollection
+
+indexes:
+  geography_geometry_collection_index_default:
+    fields: geometryCollection
+  geography_geometry_collection_index_gist:
+    fields: geometryCollectionIndexedGist
+    type: gist
+  geography_geometry_collection_index_spgist:
+    fields: geometryCollectionIndexedSpgist
+    type: spgist

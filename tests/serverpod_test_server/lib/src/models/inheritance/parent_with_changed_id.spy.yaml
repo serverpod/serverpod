@@ -2,3 +2,5 @@ class: ParentWithChangedId
 serverOnly: true
 fields:
   id: UuidValue, defaultModel=random_v7
+  createdAt: DateTime?, tail
+  updatedAt: DateTime?, tail

@@ -18,11 +18,7 @@ void main() async {
 
   group('Given auth key in valid HTTP header format', () {
     var authKeyManager = TestBasicAuthenticationKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -31,7 +27,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {
@@ -108,11 +105,7 @@ void main() async {
 
   group('Given auth key in invalid Basic HTTP header format', () {
     var incorrectAuthKeyManager = TestIncorrectAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: incorrectAuthKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -121,7 +114,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = incorrectAuthKeyManager;
     });
 
     tearDown(() async {
@@ -137,17 +131,17 @@ void main() async {
         var key = 'username-4711:password-4711';
         await incorrectAuthKeyManager.put(key);
 
-        ServerpodClientException? clientException;
-        try {
-          await client.echoRequest.echoAuthenticationKey();
-        } catch (e) {
-          clientException = e as ServerpodClientException?;
-        }
-        expect(clientException, isNotNull);
-        expect(clientException!.statusCode, equals(400));
-        expect(
-          clientException.message,
-          startsWith('Bad request: '),
+        await expectLater(
+          () async => await client.echoRequest.echoAuthenticationKey(),
+          throwsA(
+            isA<ServerpodClientBadRequest>()
+                .having((e) => e.statusCode, 'statusCode', equals(400))
+                .having(
+                  (e) => e.message,
+                  'message',
+                  startsWith('Bad request: '),
+                ),
+          ),
         );
       },
     );
@@ -155,11 +149,7 @@ void main() async {
 
   group('Given auth key with Bearer HTTP header format', () {
     var authKeyManager = TestAuthKeyManager();
-    var client = Client(
-      'http://localhost:8080/',
-      // ignore: deprecated_member_use
-      authenticationKeyManager: authKeyManager,
-    );
+    late Client client;
     late Serverpod server;
 
     setUp(() async {
@@ -168,7 +158,8 @@ void main() async {
       server = IntegrationTestServer.create(
         authenticationHandler: authenticationHandler,
       );
-      await server.start();
+      await server.startWithDatabase();
+      client = Client(server.apiUrl)..authKeyProvider = authKeyManager;
     });
 
     tearDown(() async {
@@ -233,17 +224,19 @@ void main() async {
         var key = 'doubled-bearer jwt-token-4712';
         await authKeyManager.put(key);
 
-        ServerpodClientException? clientException;
-        try {
-          await client.echoRequest.echoHttpHeader('authorization');
-        } catch (e) {
-          clientException = e as ServerpodClientException?;
-        }
-        expect(clientException, isNotNull);
-        expect(clientException!.statusCode, equals(400));
-        expect(
-          clientException.message,
-          'Bad request: Request has invalid "authorization" header',
+        await expectLater(
+          () async => await client.echoRequest.echoHttpHeader('authorization'),
+          throwsA(
+            isA<ServerpodClientBadRequest>()
+                .having((e) => e.statusCode, 'statusCode', equals(400))
+                .having(
+                  (e) => e.message,
+                  'message',
+                  equals(
+                    'Bad request: Request has invalid "authorization" header',
+                  ),
+                ),
+          ),
         );
       },
     );

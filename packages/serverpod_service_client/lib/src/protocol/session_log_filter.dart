@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// The log filter is used when searching for specific log entries.
-abstract class SessionLogFilter implements _i1.SerializableModel {
+abstract class SessionLogFilter
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   SessionLogFilter._({
     this.endpoint,
     this.method,
@@ -99,6 +100,22 @@ abstract class SessionLogFilter implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.SessionLogFilter',
+      if (endpoint != null) 'endpoint': endpoint,
+      if (method != null) 'method': method,
+      if (futureCall != null) 'futureCall': futureCall,
+      'slow': slow,
+      'error': error,
+      'open': open,
+      if (lastSessionLogId != null) 'lastSessionLogId': lastSessionLogId,
+      if (startTime != null) 'startTime': startTime?.toJson(),
+      if (endTime != null) 'endTime': endTime?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.SessionLogFilter',
       if (endpoint != null) 'endpoint': endpoint,

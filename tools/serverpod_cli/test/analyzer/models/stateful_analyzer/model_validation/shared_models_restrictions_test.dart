@@ -10,9 +10,45 @@ void main() {
   var config = GeneratorConfigBuilder().build();
 
   test(
-    'Given a shared package model when the model has a table property '
+    'Given a shared package model when the model has a table property with "database: all" '
     'when analyzing model '
-    'then an error is collected that table is not allowed in shared packages.',
+    'then no error is collected.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withYaml(
+              '''
+class: SharedExample
+table: shared_example
+database: all
+fields:
+  name: String
+''',
+            )
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be collected',
+      );
+    },
+  );
+
+  test(
+    'Given a shared package model when the model has a table property without "database: all" '
+    'when analyzing model '
+    'then an error is collected that the table requires "database: all".',
     () {
       var models = <ModelSource>[
         ModelSourceBuilder()
@@ -43,7 +79,8 @@ fields:
       );
       expect(
         collector.errors.first.message,
-        'The "table" property is not allowed in shared packages.',
+        'The "table" property in shared packages requires the "database" '
+        'property to be set to "all".',
       );
     },
   );
@@ -179,6 +216,57 @@ fields:
   );
 
   test(
+    'Given shared package tables with object and list relations, '
+    'when analyzing the models, '
+    'then no error is collected.',
+    () {
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('company')
+            .withYaml(
+              '''
+class: Company
+table: company
+database: all
+fields:
+  employees: List<Employee>?, relation(name=company_employees)
+''',
+            )
+            .build(),
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('employee')
+            .withYaml(
+              '''
+class: Employee
+table: employee
+database: all
+fields:
+  company: Company?, relation(name=company_employees, onDelete=Cascade)
+''',
+            )
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be collected',
+      );
+    },
+  );
+
+  test(
     'Given a sealed shared package model and a subclass on the project package '
     'when analyzing model '
     'then an error is collected that sealed models can not be inherited from.',
@@ -221,7 +309,7 @@ fields:
 
       expect(
         collector.errors.first.message,
-        'Can not extend a sealed model from another package.',
+        'Cannot extend a sealed model class from another package.',
       );
     },
   );

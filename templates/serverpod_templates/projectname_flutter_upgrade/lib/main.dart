@@ -1,7 +1,9 @@
 import 'package:projectname_client/projectname_client.dart';
 import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
+// {{#auth}}
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
+// {{/auth}}
 
 import 'screens/greetings_screen.dart';
 
@@ -32,11 +34,26 @@ void main() async {
 
   client = Client(serverUrl)
     ..connectivityMonitor = FlutterConnectivityMonitor()
-    ..authSessionManager = FlutterAuthSessionManager();
+    // {{#auth}}
+    ..authSessionManager = FlutterAuthSessionManager()
+  // {{/auth}}
+  ;
 
+  // {{#auth}}
   client.auth.initialize();
+  // {{/auth}}
 
   runApp(const MyApp());
+}
+
+/// Builds a theme for the given [brightness].
+ThemeData _buildTheme(Brightness brightness) {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: brightness,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -46,7 +63,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Serverpod Example'),
     );
   }
@@ -62,6 +81,7 @@ class MyHomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
       body: const GreetingsScreen(),
+      // {{#auth}}
       // To test authentication in this example app, uncomment the line below
       // and comment out the line above. This wraps the GreetingsScreen with a
       // SignInScreen, which automatically shows a sign-in UI when the user is
@@ -74,6 +94,7 @@ class MyHomePage extends StatelessWidget {
       //     },
       //   ),
       // ),
+      // {{/auth}}
     );
   }
 }

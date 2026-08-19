@@ -1,79 +1,52 @@
-import 'package:serverpod_shared/log.dart' hide log;
 import 'package:serverpod_tui/serverpod_tui.dart';
-import 'package:vm_service/vm_service.dart' show Event;
 
 import '../../../util/serverpod_cli_logger.dart';
+import '../log_history.dart';
 import 'app.dart';
 
 int _actionCounter = 0;
 
-/// Dispatches a structured server log event to the TUI state.
-void handleServerLogEvent(TuiAppStateHolder holder, Event event) {
-  if (event.extensionKind != 'ext.serverpod.log') return;
-  final data = event.extensionData?.data;
-  if (data == null) return;
-
-  final state = holder.state;
-  final type = data['type'] as String?;
-  switch (type) {
-    case 'log':
-      final stackTrace = data['stackTrace'] as String?;
-      state.logHistory.add(
-        LogEntry(
-          level: parseLogLevel(data['level'] as String? ?? 'info'),
-          time:
-              DateTime.tryParse(data['timestamp'] as String? ?? '') ??
-              DateTime.now(),
-          message: data['message'] as String? ?? '',
-          scope: LogScope.root('server'),
-          error: data['error']?.toString(),
-          stackTrace: stackTrace != null && stackTrace.isNotEmpty
-              ? StackTrace.fromString(stackTrace)
-              : null,
-        ),
-      );
-
-    case 'scope_start':
-      final id = data['id'] as String? ?? '';
-      final label = data['label'] as String? ?? '';
-      // Don't track internal scopes as operations.
-      if (label == 'INTERNAL') break;
-      state.activeOperations[id] = TrackedOperation(
-        id: id,
-        label: label,
-      );
-
-    case 'scope_end':
-      final id = data['id'] as String? ?? '';
-      final op = state.activeOperations.remove(id);
-      if (op != null) {
-        op.stopwatch.stop();
-        final serverDuration = (data['duration'] as num?)?.toDouble();
-        state.logHistory.add(
-          CompletedOperation(
-            label: op.label,
-            success: data['success'] as bool? ?? true,
-            duration: serverDuration != null
-                ? Duration(microseconds: (serverDuration * 1000000).round())
-                : op.stopwatch.elapsed,
-          ),
-        );
+/// Renders a session's [StartLogHistory] in the TUI.
+///
+/// Declared here rather than on [StartLogHistory] itself so the history stays
+/// unaware of the TUI: the watch loop fills it whether or not one is running.
+extension TuiLogHistory on StartLogHistory {
+  /// Subscribes [holder] to this history, so the TUI repaints whenever the
+  /// watch loop records something and surfaces the entries that need more than
+  /// a repaint.
+  void attachHolder(StartAppStateHolder holder) {
+    onChanged = holder.markDirty;
+    onServerEntry = (entry) {
+      // An alert carries `metadata: {'alert': true}`. AlertMessage.parse
+      // strips any `<...>` copy markup for display; the recorded log line
+      // keeps the markup.
+      if (entry.metadata?['alert'] == true) {
+        holder.showAlert(AlertMessage.parse(entry.message), time: entry.time);
       }
+    };
+    // The entry's raw text is already in this history; only the structured
+    // copy the app's tab renders is left to add.
+    onFlutterEntry = holder.state.addFlutterLogEntry;
   }
-  holder.markDirty();
 }
 
 /// Runs an async action as a tracked operation with spinner in the TUI.
 ///
-/// Guards against concurrent actions - if [state.actionBusy] is true or
-/// [state.serverReady] is false, the action is silently ignored.
+/// Guards against concurrent actions - if [state.actionBusy] is true the action
+/// is silently ignored. The action also requires [state.serverReady], unless
+/// [allowWhenStartable] is set and the session is degraded but
+/// [state.serverStartable] (used by the "Start server" recovery action, which
+/// runs precisely when no server is up yet).
 void runTrackedAction(
   StartAppStateHolder holder,
   String label,
-  Future<void> Function() action,
-) {
+  Future<void> Function() action, {
+  bool allowWhenStartable = false,
+}) {
   final state = holder.state;
-  if (state.actionBusy || !state.serverReady) return;
+  final ready =
+      state.serverReady || (allowWhenStartable && state.serverStartable);
+  if (state.actionBusy || !ready) return;
 
   state.actionBusy = true;
   final id =
@@ -110,15 +83,4 @@ void _completeTrackedAction(
     );
   }
   holder.markDirty();
-}
-
-LogLevel parseLogLevel(String level) {
-  return switch (level) {
-    'debug' => LogLevel.debug,
-    'info' => LogLevel.info,
-    'warning' || 'warn' => LogLevel.warning,
-    'error' => LogLevel.error,
-    'fatal' => LogLevel.fatal,
-    _ => LogLevel.info,
-  };
 }

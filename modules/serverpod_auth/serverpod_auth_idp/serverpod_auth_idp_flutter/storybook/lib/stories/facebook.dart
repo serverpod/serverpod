@@ -1,3 +1,4 @@
+import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:serverpod_auth_idp_flutter_facebook/serverpod_auth_idp_flutter_facebook.dart';
 import 'package:storybook_toolkit/storybook_toolkit.dart';
 
@@ -14,28 +15,28 @@ final facebookStories = [
         initial: FacebookButtonStyle.blue,
       );
 
-      final size = context.knobs.options<FacebookButtonSize>(
+      final size = context.knobs.options<SignInButtonSize>(
         label: 'Size',
-        options: FacebookButtonSize.values.asOptions(),
-        initial: FacebookButtonSize.large,
+        options: SignInButtonSize.values.asOptions(),
+        initial: SignInButtonSize.large,
       );
 
-      final shape = context.knobs.options<FacebookButtonShape>(
+      final shape = context.knobs.options<SignInButtonShape>(
         label: 'Shape',
-        options: FacebookButtonShape.values.asOptions(),
-        initial: FacebookButtonShape.pill,
+        options: SignInButtonShape.values.asOptions(),
+        initial: SignInButtonShape.pill,
       );
 
-      final type = context.knobs.options<FacebookButtonText>(
+      final text = context.knobs.options<SignInButtonTextVariant>(
         label: 'Text',
-        options: FacebookButtonText.values.asOptions(),
-        initial: FacebookButtonText.continueWith,
+        options: SignInButtonTextVariant.values.asOptions(),
+        initial: SignInButtonTextVariant.continueWith,
       );
 
-      final logoAlignment = context.knobs.options<FacebookButtonLogoAlignment>(
+      final logoAlignment = context.knobs.options<SignInButtonLogoAlignment>(
         label: 'Logo alignment',
-        options: FacebookButtonLogoAlignment.values.asOptions(),
-        initial: FacebookButtonLogoAlignment.left,
+        options: SignInButtonLogoAlignment.values.asOptions(),
+        initial: SignInButtonLogoAlignment.left,
       );
 
       return buildIsolatedElementsForStory(context, {
@@ -45,7 +46,7 @@ final facebookStories = [
             isLoading: false,
             isDisabled: false,
             style: style,
-            type: type,
+            text: text,
             size: size,
             shape: shape,
             logoAlignment: logoAlignment,

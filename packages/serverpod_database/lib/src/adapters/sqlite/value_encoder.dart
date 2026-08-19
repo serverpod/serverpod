@@ -53,15 +53,10 @@ class SqliteValueEncoder implements ValueEncoder {
     } else if (input is BigInt) {
       return "'${input.toString()}'";
     } else if (input is String) {
-      if (input.startsWith('decode(\'') && input.endsWith('\', \'base64\')')) {
-        // This is a bit of a hack to get ByteData working. Strings that starts
-        // with `decode('` and ends with `', 'base64') will be incorrectly
-        // encoded to base64. Best would be to find a better way to detect when
-        // we are trying to store a ByteData.
-        return input;
-      }
       if (!escapeStrings) return input;
       return "'${_escapeString(input)}'";
+    } else if (input is Geography) {
+      return "'${_escapeString(input.toEwkt())}'";
     } else if (input is Vector ||
         input is HalfVector ||
         input is SparseVector ||
@@ -121,6 +116,13 @@ class SqliteValueEncoder implements ValueEncoder {
       ColumnDuration() => DurationJsonExtension.fromJson(value),
       ColumnUuid() => UuidValueJsonExtension.fromJson(value),
       ColumnByteData() => ByteDataJsonExtension.fromJson(value),
+      ColumnGeographyPoint() => GeographyPointJsonExtension.fromJson(value),
+      ColumnGeographyLineString() => GeographyLineStringJsonExtension.fromJson(
+        value,
+      ),
+      ColumnGeographyPolygon() => GeographyPolygonJsonExtension.fromJson(value),
+      ColumnGeographyGeometryCollection() =>
+        GeographyGeometryCollectionJsonExtension.fromJson(value),
       ColumnStructured() => _decodeJsonbValue(value),
       ColumnSerializable() => _decodeJsonValue(value),
       _ => value,
@@ -128,6 +130,7 @@ class SqliteValueEncoder implements ValueEncoder {
   }
 
   /// Coerces [value] for [column] as a model value.
+  @override
   String encodeColumnValue(
     Column column,
     dynamic value, {

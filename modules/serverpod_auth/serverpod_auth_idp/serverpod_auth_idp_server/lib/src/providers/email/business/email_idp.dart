@@ -18,9 +18,10 @@ import 'email_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class EmailIdp {
+class EmailIdp implements IdentityProvider {
   /// The method used when authenticating with the Email identity provider.
-  static const String method = 'email';
+  @override
+  String get method => 'email';
 
   /// Admin operations to work with email-backed accounts.
   final EmailIdpAdmin admin;
@@ -233,12 +234,6 @@ class EmailIdp {
                   level: LogLevel.debug,
                 );
                 break;
-              case EmailAccountRequestAlreadyExistsException():
-                session.log(
-                  'Failed to start account registration for $email, reason: email account request already exists',
-                  level: LogLevel.debug,
-                );
-                break;
               default:
                 rethrow;
             }
@@ -303,6 +298,24 @@ class EmailIdp {
   /// Determines whether the current session has an associated email account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates all [EmailAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await EmailAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the EmailIdp instance from the AuthServices.

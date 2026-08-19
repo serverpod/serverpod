@@ -9,9 +9,6 @@ class ScriptParseException extends YamlException {
   ScriptParseException(super.message, [super.span]);
 }
 
-@Deprecated('Use ScriptParseException instead')
-typedef ScriptsParseException = ScriptParseException;
-
 /// Exception thrown when a script does not support the current platform.
 class UnsupportedPlatformException implements Exception {
   final String scriptName;

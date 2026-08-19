@@ -6,8 +6,10 @@ import 'package:config/config.dart';
 import 'package:path/path.dart' as path;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analytics/generate_analytics.dart';
 import 'package:serverpod_cli/src/commands/messages.dart';
 import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
+import 'package:serverpod_cli/src/commands/watcher.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/generator/analyzers.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
@@ -262,13 +264,24 @@ Future<GenerateResult> analyzeAndGenerate({
     return true;
   });
   if (incremental) {
-    if (!needsGenerate) return (success: true, generatedFiles: <String>{});
+    if (!needsGenerate) {
+      return (
+        success: true,
+        generatedFiles: <String>{},
+        protocolAnalyticsSnapshot: null,
+      );
+    }
   } else if (verifyStaleness &&
       sourceStats != null &&
       await isGenerationUpToDate(config, sourceStats)) {
     log.debug('Generated code is up to date, skipping.');
-    return (success: true, generatedFiles: <String>{});
+    return (
+      success: true,
+      generatedFiles: <String>{},
+      protocolAnalyticsSnapshot: null,
+    );
   }
+  final stopwatch = Stopwatch()..start();
   late final GenerateResult result;
   await log.progress('Generating code', () async {
     result = await analyzers.performGenerate(
@@ -278,6 +291,7 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     return result.success;
   });
+  stopwatch.stop();
   if (result.success) {
     await writeGenerationStamp(
       config,
@@ -288,6 +302,15 @@ Future<GenerateResult> analyzeAndGenerate({
     );
     log.debug(incrementalCodeGenerationComplete);
   }
+
+  await reportGenerateAnalytics(
+    config: config,
+    success: result.success,
+    duration: stopwatch.elapsed,
+    incremental: incremental,
+    protocolAnalyticsSnapshot: result.protocolAnalyticsSnapshot,
+  );
+
   return result;
 }
 
@@ -314,8 +337,6 @@ Future<bool> _performGenerateWatch({
     log.info(generatedCodeAlreadyUpToDate, type: TextLogType.success);
   }
 
-  log.debug(initialCodeGenerationComplete);
-
   // Set up file watcher for source directories only (no web or client).
   final watcher = FileWatcher(
     watchPaths: {
@@ -324,12 +345,28 @@ Future<bool> _performGenerateWatch({
     },
   );
 
+  // Announce "Listening for changes" only once the OS watcher is actually
+  // initialized: events that occur before that (the initial directory scan
+  // can take seconds, notably on Windows) are silently dropped. The `ready`
+  // future only starts completing once the stream below has a subscriber.
+  unawaited(
+    watcher.ready.then((_) => log.debug(initialCodeGenerationComplete)),
+  );
+
+  // The generated dirs live inside the watched lib/ dirs, so generation
+  // output shows up as watcher events. Feeding those back into generation
+  // would make every run trigger the next one.
+  final generatedDirPaths = config.generatedDirPaths;
+  bool isGenerated(String filePath) => generatedDirPaths.any(
+    (dir) => path.isWithin(dir, path.absolute(filePath)),
+  );
+
   // Process file change events.
   await for (final event in watcher.onFilesChanged) {
     final affectedPaths = {
       ...event.dartFiles,
       ...event.modelFiles,
-    };
+    }.where((f) => !isGenerated(f)).toSet();
 
     if (affectedPaths.isEmpty) continue;
 

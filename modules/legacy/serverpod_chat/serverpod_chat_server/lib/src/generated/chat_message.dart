@@ -148,7 +148,7 @@ abstract class ChatMessage
       'message': message,
       'time': time.toJson(),
       'sender': sender,
-      if (senderInfo != null) 'senderInfo': senderInfo?.toJsonForProtocol(),
+      if (senderInfo != null) 'senderInfo': senderInfo?.toJson(),
       'removed': removed,
       if (clientMessageId != null) 'clientMessageId': clientMessageId,
       if (sent != null) 'sent': sent,
@@ -168,8 +168,6 @@ abstract class ChatMessage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     ChatMessageInclude? include,
   }) {
@@ -178,8 +176,6 @@ abstract class ChatMessage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ChatMessage.t),
       include: include,
     );
@@ -372,8 +368,6 @@ class ChatMessageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -418,8 +412,6 @@ class ChatMessageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -429,8 +421,6 @@ class ChatMessageRepository {
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -461,8 +451,6 @@ class ChatMessageRepository {
     _i1.WhereExpressionBuilder<ChatMessageTable>? where,
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -472,8 +460,6 @@ class ChatMessageRepository {
       where: where?.call(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -507,16 +493,22 @@ class ChatMessageRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> insert(
     _i1.DatabaseSession session,
     List<ChatMessage> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<ChatMessage>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -550,6 +542,10 @@ class ChatMessageRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> upsert(
     _i1.DatabaseSession session,
     List<ChatMessage> rows, {
@@ -557,6 +553,7 @@ class ChatMessageRepository {
     _i1.ColumnSelections<ChatMessageTable>? updateColumns,
     _i1.WhereExpressionBuilder<ChatMessageTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<ChatMessage>(
       rows,
@@ -564,6 +561,7 @@ class ChatMessageRepository {
       updateColumns: updateColumns?.call(ChatMessage.t),
       updateWhere: updateWhere?.call(ChatMessage.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -602,16 +600,22 @@ class ChatMessageRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> update(
     _i1.DatabaseSession session,
     List<ChatMessage> rows, {
     _i1.ColumnSelections<ChatMessageTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<ChatMessage>(
       rows,
       columns: columns?.call(ChatMessage.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -648,6 +652,10 @@ class ChatMessageRepository {
 
   /// Updates all [ChatMessage]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<ChatMessageUpdateTable> columnValues,
@@ -656,9 +664,8 @@ class ChatMessageRepository {
     int? offset,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChatMessage>(
       columnValues: columnValues(ChatMessage.t.updateTable),
@@ -667,9 +674,8 @@ class ChatMessageRepository {
       offset: offset,
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -680,22 +686,24 @@ class ChatMessageRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> delete(
     _i1.DatabaseSession session,
     List<ChatMessage> rows, {
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<ChatMessage>(
       rows,
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -715,22 +723,24 @@ class ChatMessageRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChatMessage>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ChatMessageTable> where,
     _i1.OrderByBuilder<ChatMessageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ChatMessageTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChatMessage>(
       where: where(ChatMessage.t),
       orderBy: orderBy?.call(ChatMessage.t),
       orderByList: orderByList?.call(ChatMessage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// Represents a chat channel.
-abstract class Channel implements _i1.SerializableModel {
+abstract class Channel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   Channel._({
     this.id,
     required this.name,
@@ -55,6 +56,16 @@ abstract class Channel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'Channel',
+      if (id != null) 'id': id,
+      'name': name,
+      'channel': channel,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'Channel',
       if (id != null) 'id': id,

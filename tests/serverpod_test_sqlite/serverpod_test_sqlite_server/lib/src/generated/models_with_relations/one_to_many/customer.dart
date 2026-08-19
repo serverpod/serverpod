@@ -95,8 +95,6 @@ abstract class Customer
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
@@ -105,8 +103,6 @@ abstract class Customer
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(Customer.t),
       include: include,
     );
@@ -243,8 +239,6 @@ class CustomerIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -264,10 +258,6 @@ class CustomerRepository {
   final attach = const CustomerAttachRepository._();
 
   final attachRow = const CustomerAttachRowRepository._();
-
-  final detach = const CustomerDetachRepository._();
-
-  final detachRow = const CustomerDetachRowRepository._();
 
   /// Returns a list of [Customer]s matching the given query parameters.
   ///
@@ -297,8 +287,6 @@ class CustomerRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
@@ -309,8 +297,6 @@ class CustomerRepository {
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -342,8 +328,6 @@ class CustomerRepository {
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
     CustomerInclude? include,
@@ -354,8 +338,6 @@ class CustomerRepository {
       where: where?.call(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -392,16 +374,22 @@ class CustomerRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> insert(
     _i1.DatabaseSession session,
     List<Customer> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<Customer>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -435,6 +423,10 @@ class CustomerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> upsert(
     _i1.DatabaseSession session,
     List<Customer> rows, {
@@ -442,6 +434,7 @@ class CustomerRepository {
     _i1.ColumnSelections<CustomerTable>? updateColumns,
     _i1.WhereExpressionBuilder<CustomerTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<Customer>(
       rows,
@@ -449,6 +442,7 @@ class CustomerRepository {
       updateColumns: updateColumns?.call(Customer.t),
       updateWhere: updateWhere?.call(Customer.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -487,16 +481,22 @@ class CustomerRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> update(
     _i1.DatabaseSession session,
     List<Customer> rows, {
     _i1.ColumnSelections<CustomerTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<Customer>(
       rows,
       columns: columns?.call(Customer.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -533,6 +533,10 @@ class CustomerRepository {
 
   /// Updates all [Customer]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
@@ -541,9 +545,8 @@ class CustomerRepository {
     int? offset,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<Customer>(
       columnValues: columnValues(Customer.t.updateTable),
@@ -552,9 +555,8 @@ class CustomerRepository {
       offset: offset,
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -565,22 +567,24 @@ class CustomerRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> delete(
     _i1.DatabaseSession session,
     List<Customer> rows, {
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<Customer>(
       rows,
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -600,22 +604,24 @@ class CustomerRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<CustomerTable> where,
     _i1.OrderByBuilder<CustomerTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Customer>(
       where: where(Customer.t),
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -697,58 +703,6 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerDetachRepository {
-  const CustomerDetachRepository._();
-
-  /// Detaches the relation between this [Customer] and the given [Order]
-  /// by setting the [Order]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    List<_i2.Order> order, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (order.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('order.id');
-    }
-
-    var $order = order.map((e) => e.copyWith(customerId: null)).toList();
-    await session.db.update<_i2.Order>(
-      $order,
-      columns: [_i2.Order.t.customerId],
-      transaction: transaction,
-    );
-  }
-}
-
-class CustomerDetachRowRepository {
-  const CustomerDetachRowRepository._();
-
-  /// Detaches the relation between this [Customer] and the given [Order]
-  /// by setting the [Order]'s foreign key `customerId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> orders(
-    _i1.DatabaseSession session,
-    _i2.Order order, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (order.id == null) {
-      throw ArgumentError.notNull('order.id');
-    }
-
-    var $order = order.copyWith(customerId: null);
     await session.db.updateRow<_i2.Order>(
       $order,
       columns: [_i2.Order.t.customerId],

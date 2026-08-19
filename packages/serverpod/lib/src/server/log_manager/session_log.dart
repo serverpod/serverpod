@@ -14,9 +14,6 @@ enum SessionKind {
   /// A server-streaming method-call session.
   methodStream,
 
-  /// A long-lived websocket streaming session.
-  stream,
-
   /// A web-server session (HTTP request).
   web,
 
@@ -30,17 +27,13 @@ enum SessionKind {
   unknown,
 }
 
-/// Kind of a [SessionEntry]: plain log message, database query, or
-/// streaming-message handler.
+/// Kind of a [SessionEntry]: plain log message or database query.
 enum SessionEntryKind {
   /// A free-form log message produced via `session.log(...)`.
   log,
 
   /// A database query observed through the session.
   query,
-
-  /// A streaming-message handler record (stream sessions only).
-  message,
 }
 
 /// Event signalling that a session has begun. Carries the identifying
@@ -139,7 +132,6 @@ sealed class SessionEntry {
     required this.sessionId,
     required this.order,
     required this.time,
-    this.messageId,
   });
 
   /// Session this entry belongs to.
@@ -150,11 +142,6 @@ sealed class SessionEntry {
 
   /// Wall-clock time at which the entry was produced.
   final DateTime time;
-
-  /// Per-session message id (only set during streaming-message
-  /// dispatch); carried on log / query entries produced while a
-  /// message is being handled so they correlate to the message row.
-  final int? messageId;
 
   /// Discriminator for switch-style consumers.
   SessionEntryKind get kind;
@@ -171,7 +158,7 @@ class SessionLogEntry extends SessionEntry {
     required this.message,
     this.error,
     this.stackTrace,
-    super.messageId,
+    this.metadata,
   });
 
   /// Severity of the log message.
@@ -185,6 +172,10 @@ class SessionLogEntry extends SessionEntry {
 
   /// Stack trace for [error], if any.
   final StackTrace? stackTrace;
+
+  /// Structured metadata, forwarded to the VM service stream and ignored by
+  /// the database log.
+  final Map<String, Object?>? metadata;
 
   @override
   SessionEntryKind get kind => SessionEntryKind.log;
@@ -203,7 +194,6 @@ class SessionQueryEntry extends SessionEntry {
     this.numRowsAffected,
     this.error,
     this.stackTrace,
-    super.messageId,
   });
 
   /// The SQL (or equivalent) query text.
@@ -228,47 +218,6 @@ class SessionQueryEntry extends SessionEntry {
   SessionEntryKind get kind => SessionEntryKind.query;
 }
 
-/// Streaming-message handler record (only produced for
-/// [SessionKind.stream] / [SessionKind.methodStream]).
-class SessionMessageEntry extends SessionEntry {
-  /// Creates a [SessionMessageEntry]. [messageId] is required for
-  /// message entries (unlike on other [SessionEntry] kinds where it is
-  /// optional).
-  const SessionMessageEntry({
-    required super.sessionId,
-    required super.order,
-    required super.time,
-    required this.endpoint,
-    required this.messageName,
-    required int messageId,
-    required this.duration,
-    required this.slow,
-    this.error,
-    this.stackTrace,
-  }) : super(messageId: messageId);
-
-  /// Endpoint that received the message.
-  final String endpoint;
-
-  /// Dart class name of the message.
-  final String messageName;
-
-  /// Handler execution time.
-  final Duration duration;
-
-  /// Whether [duration] exceeded the slow-session threshold.
-  final bool slow;
-
-  /// Error captured when the handler failed.
-  final String? error;
-
-  /// Stack trace for [error], if any.
-  final StackTrace? stackTrace;
-
-  @override
-  SessionEntryKind get kind => SessionEntryKind.message;
-}
-
 /// Sink for session-shaped events.
 ///
 /// Parallels [LogWriter] from `serverpod_shared`, but speaks
@@ -279,7 +228,7 @@ abstract class SessionLogWriter {
   /// Records the start of a session.
   Future<void> open(SessionOpen event);
 
-  /// Records an in-session entry (log, query, or message).
+  /// Records an in-session entry (log or query).
   Future<void> record(SessionEntry entry);
 
   /// Records the end of a session.

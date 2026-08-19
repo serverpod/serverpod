@@ -10,3 +10,9 @@ fields:
   sharedSealedParentNullable: SharedSealedParent?
   sharedSealedChild: SharedSealedChild
   sharedSealedChildNullable: SharedSealedChild?
+  sharedSealedAppException: SharedSealedAppException
+  sharedSealedAppExceptionNullable: SharedSealedAppException?
+  sharedNotFoundException: SharedNotFoundException
+  sharedNotFoundExceptionNullable: SharedNotFoundException?
+  sharedExtendedAppException: SharedExtendedAppException
+  sharedExtendedAppExceptionNullable: SharedExtendedAppException?

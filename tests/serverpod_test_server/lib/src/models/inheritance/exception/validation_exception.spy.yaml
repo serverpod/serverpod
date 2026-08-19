@@ -1,0 +1,4 @@
+exception: ValidationException
+extends: SealedAppException
+fields:
+  field: String

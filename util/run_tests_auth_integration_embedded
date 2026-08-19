@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Runs the serverpod_auth_test_server integration tests against an embedded PG
+#
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/run_tests_auth_integration_embedded"
+    exit 1
+fi
+
+# Optional sharding for parallel CI jobs: pass <shard-index> <total-shards>
+# (0-based index). Defaults to a single shard, so non-sharded callers are
+# unchanged.
+shard_index="${1:-0}"
+total_shards="${2:-1}"
+shard_args=()
+if [ "$total_shards" -gt 1 ]; then
+    shard_args=(--total-shards "$total_shards" --shard-index "$shard_index")
+fi
+
+exec bash util/run_tests_integration_embedded \
+    tests/serverpod_auth_test/serverpod_auth_test_server \
+    "${shard_args[@]}"

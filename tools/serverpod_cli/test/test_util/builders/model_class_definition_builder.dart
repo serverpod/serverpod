@@ -1,6 +1,7 @@
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 import 'foreign_relation_definition_builder.dart';
@@ -28,6 +29,7 @@ class ModelClassDefinitionBuilder {
   List<InheritanceDefinition> _childClasses;
   InheritanceDefinition? _extendsClass;
   String? _sharedPackageName;
+  String? _moduleAlias;
 
   ModelClassDefinitionBuilder()
     : _fileName = 'example',
@@ -80,7 +82,7 @@ class ModelClassDefinitionBuilder {
       sharedPackageName: _sharedPackageName,
       type: TypeDefinitionBuilder()
           .withClassName(_className)
-          .withUrl(_sharedPackageName)
+          .withUrl(_sharedPackageName ?? _moduleAlias)
           .build(),
     );
   }
@@ -270,6 +272,7 @@ class ModelClassDefinitionBuilder {
     String? foreignKeyFieldName,
     TypeDefinition? foreignKeyParentTableIdType,
     bool nullableRelation = false,
+    DeferrableConstraint? deferrable,
   }) {
     var foreignFieldName = foreignKeyFieldName ?? '${fieldName}Id';
     var foreignTableIdType = foreignKeyParentTableIdType ?? TypeDefinition.int;
@@ -297,6 +300,7 @@ class ModelClassDefinitionBuilder {
             ForeignRelationDefinitionBuilder()
                 .withParentTable(parentTable)
                 .withReferenceFieldName('id')
+                .withDeferrable(deferrable)
                 .build(),
           )
           .build(),
@@ -412,6 +416,7 @@ class ModelClassDefinitionBuilder {
               name: index.indexName,
               type: index.type,
               unique: index.isUnique,
+              nullsDistinct: index.nullsDistinct,
               fields: index.elements.map((e) => e.definition).toList(),
               ginOperatorClass: index.ginOperatorClass,
               vectorDistanceFunction: index.vectorDistanceFunction,
@@ -455,6 +460,11 @@ class ModelClassDefinitionBuilder {
 
   ModelClassDefinitionBuilder withSharedPackageName(String? sharedPackageName) {
     _sharedPackageName = sharedPackageName;
+    return this;
+  }
+
+  ModelClassDefinitionBuilder withModuleAlias(String moduleAlias) {
+    _moduleAlias = moduleAlias;
     return this;
   }
 }

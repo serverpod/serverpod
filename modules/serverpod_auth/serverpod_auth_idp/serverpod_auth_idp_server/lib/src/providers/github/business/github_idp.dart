@@ -17,9 +17,10 @@ import 'github_idp_utils.dart';
 ///
 /// If you would like to modify the authentication flow, consider creating
 /// custom implementations of the relevant methods.
-class GitHubIdp {
+class GitHubIdp implements IdentityProvider {
   /// The method used when authenticating with the GitHub identity provider.
-  static const String method = 'github';
+  @override
+  String get method => 'github';
 
   /// Admin operations to work with GitHub-backed accounts.
   final GitHubIdpAdmin admin;
@@ -92,25 +93,16 @@ class GitHubIdp {
 
         final image = account.details.image;
         if (account.newAccount) {
-          try {
-            await _userProfiles.createUserProfile(
-              session,
-              account.authUserId,
-              UserProfileData(
-                fullName: account.details.name?.trim(),
-                email: account.details.email,
-              ),
-              transaction: transaction,
-              imageSource: image != null ? UserImageFromUrl(image) : null,
-            );
-          } catch (e, stackTrace) {
-            session.log(
-              'Failed to create user profile for new GitHub user.',
-              level: LogLevel.error,
-              exception: e,
-              stackTrace: stackTrace,
-            );
-          }
+          await _userProfiles.createUserProfile(
+            session,
+            account.authUserId,
+            UserProfileData(
+              fullName: account.details.name?.trim(),
+              email: account.details.email,
+            ),
+            transaction: transaction,
+            imageSource: image != null ? UserImageFromUrl(image) : null,
+          );
         } else if (image != null) {
           try {
             final user = await UserProfile.db.findFirstRow(
@@ -118,7 +110,7 @@ class GitHubIdp {
               where: (final t) => t.authUserId.equals(account.authUserId),
               transaction: transaction,
             );
-            if (user != null && user.image == null) {
+            if (user != null && user.imageId == null) {
               await _userProfiles.setUserImageFromUrl(
                 session,
                 account.authUserId,
@@ -150,6 +142,24 @@ class GitHubIdp {
   /// Determines whether the current session has an associated GitHub account.
   Future<bool> hasAccount(final Session session) async =>
       await utils.getAccount(session) != null;
+
+  /// Migrates all [GitHubAccount]s from [userToRemoveId] to [userToKeepId].
+  @override
+  Future<void> mergeAuthUsers(
+    final Session session, {
+    required final UuidValue userToKeepId,
+    required final UuidValue userToRemoveId,
+    required final Transaction transaction,
+  }) async {
+    await GitHubAccount.db.updateWhere(
+      session,
+      where: (final t) => t.authUserId.equals(userToRemoveId),
+      columnValues: (final t) => [
+        t.authUserId(userToKeepId),
+      ],
+      transaction: transaction,
+    );
+  }
 }
 
 /// Extension to get the GitHubIdp instance from the AuthServices.

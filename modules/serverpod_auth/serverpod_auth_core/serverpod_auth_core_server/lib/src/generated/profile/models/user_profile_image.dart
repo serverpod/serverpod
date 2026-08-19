@@ -138,8 +138,6 @@ abstract class UserProfileImage
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     UserProfileImageInclude? include,
   }) {
@@ -148,8 +146,6 @@ abstract class UserProfileImage
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(UserProfileImage.t),
       include: include,
     );
@@ -340,8 +336,6 @@ class UserProfileImageIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -388,8 +382,6 @@ class UserProfileImageRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
@@ -400,8 +392,6 @@ class UserProfileImageRepository {
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -433,8 +423,6 @@ class UserProfileImageRepository {
     _i1.WhereExpressionBuilder<UserProfileImageTable>? where,
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
     UserProfileImageInclude? include,
@@ -445,8 +433,6 @@ class UserProfileImageRepository {
       where: where?.call(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -483,16 +469,22 @@ class UserProfileImageRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> insert(
     _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<UserProfileImage>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -526,6 +518,10 @@ class UserProfileImageRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> upsert(
     _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
@@ -533,6 +529,7 @@ class UserProfileImageRepository {
     _i1.ColumnSelections<UserProfileImageTable>? updateColumns,
     _i1.WhereExpressionBuilder<UserProfileImageTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<UserProfileImage>(
       rows,
@@ -540,6 +537,7 @@ class UserProfileImageRepository {
       updateColumns: updateColumns?.call(UserProfileImage.t),
       updateWhere: updateWhere?.call(UserProfileImage.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -578,16 +576,22 @@ class UserProfileImageRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> update(
     _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.ColumnSelections<UserProfileImageTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<UserProfileImage>(
       rows,
       columns: columns?.call(UserProfileImage.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -625,6 +629,10 @@ class UserProfileImageRepository {
 
   /// Updates all [UserProfileImage]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<UserProfileImageUpdateTable>
@@ -634,9 +642,8 @@ class UserProfileImageRepository {
     int? offset,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserProfileImage>(
       columnValues: columnValues(UserProfileImage.t.updateTable),
@@ -645,9 +652,8 @@ class UserProfileImageRepository {
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -658,22 +664,24 @@ class UserProfileImageRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> delete(
     _i1.DatabaseSession session,
     List<UserProfileImage> rows, {
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<UserProfileImage>(
       rows,
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -693,22 +701,24 @@ class UserProfileImageRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfileImage>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<UserProfileImageTable> where,
     _i1.OrderByBuilder<UserProfileImageTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<UserProfileImageTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserProfileImage>(
       where: where(UserProfileImage.t),
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

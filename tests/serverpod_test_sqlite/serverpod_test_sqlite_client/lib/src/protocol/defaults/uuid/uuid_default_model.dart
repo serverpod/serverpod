@@ -12,7 +12,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class UuidDefaultModel implements _i1.SerializableModel {
+abstract class UuidDefaultModel
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   UuidDefaultModel._({
     this.id,
     _i1.UuidValue? uuidDefaultModelRandom,
@@ -105,6 +106,21 @@ abstract class UuidDefaultModel implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'UuidDefaultModel',
+      if (id != null) 'id': id,
+      'uuidDefaultModelRandom': uuidDefaultModelRandom.toJson(),
+      'uuidDefaultModelRandomV7': uuidDefaultModelRandomV7.toJson(),
+      if (uuidDefaultModelRandomNull != null)
+        'uuidDefaultModelRandomNull': uuidDefaultModelRandomNull?.toJson(),
+      'uuidDefaultModelStr': uuidDefaultModelStr.toJson(),
+      if (uuidDefaultModelStrNull != null)
+        'uuidDefaultModelStrNull': uuidDefaultModelStrNull?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'UuidDefaultModel',
       if (id != null) 'id': id,

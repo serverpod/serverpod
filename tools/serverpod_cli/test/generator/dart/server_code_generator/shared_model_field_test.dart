@@ -78,7 +78,7 @@ void main() {
       });
 
       test(
-        'then toJsonForProtocol uses toJson for shared model field, not toJsonForProtocol.',
+        'then toJsonForProtocol uses toJsonForProtocol for shared model field.',
         () {
           expect(codeMap.containsKey(testContainerExpectedFilePath), isTrue);
 
@@ -101,23 +101,110 @@ void main() {
           var code = toJsonForProtocolMethod!.toSource();
 
           expect(
-            code.contains('sharedModelField.toJson()'),
+            code.contains('sharedModelField.toJsonForProtocol()'),
             isTrue,
             reason:
-                'Shared model fields must use toJson() since they do not '
-                'implement ProtocolSerialization',
-          );
-          expect(
-            code.contains('sharedModelField.toJsonForProtocol()'),
-            isFalse,
-            reason:
-                'Shared model fields must NOT use toJsonForProtocol() '
-                'as they do not implement ProtocolSerialization',
+                'Shared model fields use toJsonForProtocol() since every model '
+                'implements ProtocolSerialization',
           );
         },
       );
 
       test('then toJson method uses toJson for shared model field.', () {
+        var compilationUnit = parseString(
+          content: codeMap[testContainerExpectedFilePath]!,
+        ).unit;
+        var containerClass = CompilationUnitHelpers.tryFindClassDeclaration(
+          compilationUnit,
+          name: testContainerClassName,
+        );
+
+        var toJsonMethod = CompilationUnitHelpers.tryFindMethodDeclaration(
+          containerClass!,
+          name: 'toJson',
+        );
+        expect(toJsonMethod, isNotNull);
+        expect(toJsonMethod!.toSource(), contains('sharedModelField.toJson()'));
+      });
+    },
+  );
+
+  group(
+    'Given a server model with a shared package table class field '
+    'when generating toJsonForProtocol',
+    () {
+      late ModelClassDefinition sharedModel;
+      late ModelClassDefinition containerModel;
+      late Map<String, String> codeMap;
+
+      setUpAll(() {
+        sharedModel = ModelClassDefinitionBuilder()
+            .withClassName(testClassName)
+            .withFileName(testClassFileName)
+            .withTableName('shared_model')
+            .withDatabase(ModelDatabaseDefinition.all)
+            .withSimpleField('name', 'String')
+            .withSharedPackageName(sharedPackageName)
+            .build();
+
+        var sharedModelType = TypeDefinitionBuilder()
+            .withClassName(testClassName)
+            .withNullable(false)
+            .withUrl(sharedPackageName)
+            .withModelDefinition(sharedModel)
+            .build();
+
+        containerModel = ModelClassDefinitionBuilder()
+            .withClassName(testContainerClassName)
+            .withFileName(testContainerClassFileName)
+            .withField(
+              FieldDefinitionBuilder()
+                  .withName('sharedModelField')
+                  .withType(sharedModelType)
+                  .build(),
+            )
+            .build();
+
+        codeMap = generator.generateSerializableModelsCode(
+          models: [sharedModel, containerModel],
+          config: config,
+        );
+      });
+
+      test(
+        'then toJsonForProtocol uses toJsonForProtocol for the shared table instead of toJson.',
+        () {
+          expect(codeMap.containsKey(testContainerExpectedFilePath), isTrue);
+
+          var compilationUnit = parseString(
+            content: codeMap[testContainerExpectedFilePath]!,
+          ).unit;
+          var containerClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testContainerClassName,
+          );
+          expect(containerClass, isNotNull);
+
+          var toJsonForProtocolMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                containerClass!,
+                name: 'toJsonForProtocol',
+              );
+          expect(toJsonForProtocolMethod, isNotNull);
+
+          var code = toJsonForProtocolMethod!.toSource();
+
+          expect(
+            code.contains('sharedModelField.toJsonForProtocol()'),
+            isTrue,
+            reason:
+                'Shared table model fields must use toJsonForProtocol() so '
+                'hidden persisted scope:none relation FKs stay off the wire.',
+          );
+        },
+      );
+
+      test('then toJson method uses toJson for the shared table field.', () {
         var compilationUnit = parseString(
           content: codeMap[testContainerExpectedFilePath]!,
         ).unit;
@@ -184,23 +271,32 @@ void main() {
       });
 
       test(
-        'then toJsonForProtocol uses toJson in valueToJson for List elements.',
+        'then toJsonForProtocol uses toJsonForProtocol in valueToJson for List elements.',
         () {
           expect(codeMap.containsKey(testContainerExpectedFilePath), isTrue);
 
-          var code = codeMap[testContainerExpectedFilePath]!;
+          var compilationUnit = parseString(
+            content: codeMap[testContainerExpectedFilePath]!,
+          ).unit;
+          var containerClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: testContainerClassName,
+          );
+          var toJsonForProtocolMethod =
+              CompilationUnitHelpers.tryFindMethodDeclaration(
+                containerClass!,
+                name: 'toJsonForProtocol',
+              );
+          expect(toJsonForProtocolMethod, isNotNull);
+
+          var code = toJsonForProtocolMethod!.toSource();
 
           expect(
-            code.contains('valueToJson: (v) => v.toJson()'),
+            code.contains('valueToJson: (v) => v.toJsonForProtocol()'),
             isTrue,
             reason:
-                'List<SharedModel> valueToJson must use toJson() for elements',
-          );
-          expect(
-            code.contains('valueToJson: (v) => v.toJsonForProtocol()'),
-            isFalse,
-            reason:
-                'List<SharedModel> must NOT use toJsonForProtocol() for elements',
+                'List<SharedModel> valueToJson uses toJsonForProtocol() for '
+                'elements since every model implements ProtocolSerialization',
           );
         },
       );

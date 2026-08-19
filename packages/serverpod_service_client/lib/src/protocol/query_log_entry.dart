@@ -13,7 +13,8 @@
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
 /// A log entry for a database query.
-abstract class QueryLogEntry implements _i1.SerializableModel {
+abstract class QueryLogEntry
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -113,6 +114,24 @@ abstract class QueryLogEntry implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.QueryLogEntry',
+      if (id != null) 'id': id,
+      'serverId': serverId,
+      'sessionLogId': sessionLogId,
+      if (messageId != null) 'messageId': messageId,
+      'query': query,
+      'duration': duration,
+      if (numRows != null) 'numRows': numRows,
+      if (error != null) 'error': error,
+      if (stackTrace != null) 'stackTrace': stackTrace,
+      'slow': slow,
+      'order': order,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.QueryLogEntry',
       if (id != null) 'id': id,

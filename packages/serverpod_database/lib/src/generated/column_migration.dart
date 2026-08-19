@@ -13,7 +13,8 @@
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
 import 'package:serverpod_database/serverpod_database.dart' as _i2;
 
-abstract class ColumnMigration implements _i1.SerializableModel {
+abstract class ColumnMigration
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
   ColumnMigration._({
     required this.columnName,
     this.newColumnName,
@@ -82,6 +83,20 @@ abstract class ColumnMigration implements _i1.SerializableModel {
   });
   @override
   Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'serverpod.ColumnMigration',
+      'columnName': columnName,
+      if (newColumnName != null) 'newColumnName': newColumnName,
+      'addNullable': addNullable,
+      'removeNullable': removeNullable,
+      'changeDefault': changeDefault,
+      if (newDefault != null) 'newDefault': newDefault,
+      if (newType != null) 'newType': newType?.toJson(),
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'serverpod.ColumnMigration',
       'columnName': columnName,

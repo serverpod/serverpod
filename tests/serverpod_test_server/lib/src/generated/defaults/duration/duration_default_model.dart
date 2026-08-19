@@ -115,8 +115,6 @@ abstract class DurationDefaultModel
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     DurationDefaultModelInclude? include,
   }) {
@@ -125,8 +123,6 @@ abstract class DurationDefaultModel
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(DurationDefaultModel.t),
       include: include,
     );
@@ -232,8 +228,6 @@ class DurationDefaultModelIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
   }) {
@@ -278,8 +272,6 @@ class DurationDefaultModelRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -289,8 +281,6 @@ class DurationDefaultModelRepository {
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -321,8 +311,6 @@ class DurationDefaultModelRepository {
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? where,
     int? offset,
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -332,8 +320,6 @@ class DurationDefaultModelRepository {
       where: where?.call(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -367,16 +353,22 @@ class DurationDefaultModelRepository {
   /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
   /// rows are silently skipped, and only the successfully inserted rows are
   /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> insert(
     _i1.DatabaseSession session,
     List<DurationDefaultModel> rows, {
     _i1.Transaction? transaction,
     bool ignoreConflicts = false,
+    bool noReturn = false,
   }) async {
     return session.db.insert<DurationDefaultModel>(
       rows,
       transaction: transaction,
       ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
     );
   }
 
@@ -410,6 +402,10 @@ class DurationDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fails,
   /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> upsert(
     _i1.DatabaseSession session,
     List<DurationDefaultModel> rows, {
@@ -417,6 +413,7 @@ class DurationDefaultModelRepository {
     _i1.ColumnSelections<DurationDefaultModelTable>? updateColumns,
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? updateWhere,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.upsert<DurationDefaultModel>(
       rows,
@@ -424,6 +421,7 @@ class DurationDefaultModelRepository {
       updateColumns: updateColumns?.call(DurationDefaultModel.t),
       updateWhere: updateWhere?.call(DurationDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -462,16 +460,22 @@ class DurationDefaultModelRepository {
   /// all columns.
   /// This is an atomic operation, meaning that if one of the rows fails to
   /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> update(
     _i1.DatabaseSession session,
     List<DurationDefaultModel> rows, {
     _i1.ColumnSelections<DurationDefaultModelTable>? columns,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.update<DurationDefaultModel>(
       rows,
       columns: columns?.call(DurationDefaultModel.t),
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -509,6 +513,10 @@ class DurationDefaultModelRepository {
 
   /// Updates all [DurationDefaultModel]s matching the [where] expression with the specified [columnValues].
   /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> updateWhere(
     _i1.DatabaseSession session, {
     required _i1.ColumnValueListBuilder<DurationDefaultModelUpdateTable>
@@ -518,9 +526,8 @@ class DurationDefaultModelRepository {
     int? offset,
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefaultModel>(
       columnValues: columnValues(DurationDefaultModel.t.updateTable),
@@ -529,9 +536,8 @@ class DurationDefaultModelRepository {
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -542,22 +548,24 @@ class DurationDefaultModelRepository {
   ///
   /// This is an atomic operation, meaning that if one of the rows fail to
   /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> delete(
     _i1.DatabaseSession session,
     List<DurationDefaultModel> rows, {
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.delete<DurationDefaultModel>(
       rows,
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 
@@ -577,22 +585,24 @@ class DurationDefaultModelRepository {
   ///
   /// To specify the order of the returned rows use [orderBy] or [orderByList]
   /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultModel>> deleteWhere(
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<DurationDefaultModelTable> where,
     _i1.OrderByBuilder<DurationDefaultModelTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     _i1.Transaction? transaction,
+    bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefaultModel>(
       where: where(DurationDefaultModel.t),
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
+      noReturn: noReturn,
     );
   }
 

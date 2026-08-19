@@ -3,7 +3,7 @@ import 'package:serverpod/serverpod.dart';
 ///
 class GoogleSignInRedirectPageWidget extends WebWidget {
   @override
-  String toString() {
+  String render({String? Function(String)? onMissingVariable}) {
     return '''<html>
 
 <head>

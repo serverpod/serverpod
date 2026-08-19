@@ -10,7 +10,9 @@ class TestWidget extends WebWidget {
   TestWidget(this.method);
 
   @override
-  String toString() => '<html><body>Method: $method</body></html>';
+  String render({String? Function(String)? onMissingVariable}) {
+    return '<html><body>Method: $method</body></html>';
+  }
 }
 
 class GetPostRoute extends WidgetRoute {
@@ -19,6 +21,15 @@ class GetPostRoute extends WidgetRoute {
   @override
   Future<WebWidget> build(Session session, Request request) async {
     return TestWidget(request.method.toString());
+  }
+}
+
+class NotFoundRoute extends WidgetRoute {
+  NotFoundRoute() : super(methods: {Method.get, Method.post});
+
+  @override
+  Future<WebWidget?> build(Session session, Request request) async {
+    return null;
   }
 }
 
@@ -49,6 +60,7 @@ void main() {
       );
 
       pod.webServer.addRoute(GetPostRoute(), '/test-route');
+      pod.webServer.addRoute(NotFoundRoute(), '/not-found-route');
 
       await pod.start();
       port = pod.webServer.port!;
@@ -79,6 +91,32 @@ void main() {
 
         expect(response.statusCode, 200);
         expect(response.body, contains('Method: Method.post'));
+      },
+    );
+
+    test(
+      'when GET request is made for a route that returns a null web widget, '
+      'then a 404 response is returned.',
+      () async {
+        var response = await http.get(
+          Uri.parse('http://localhost:$port/not-found-route'),
+        );
+
+        expect(response.statusCode, 404);
+        expect(response.body, contains('Not found'));
+      },
+    );
+
+    test(
+      'when POST request is made for a route that returns a null web widget, '
+      'then a 404 response is returned.',
+      () async {
+        var response = await http.post(
+          Uri.parse('http://localhost:$port/not-found-route'),
+        );
+
+        expect(response.statusCode, 404);
+        expect(response.body, contains('Not found'));
       },
     );
   });
