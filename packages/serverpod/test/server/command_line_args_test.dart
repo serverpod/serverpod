@@ -380,7 +380,11 @@ void main() {
     test(
       'when a custom flag follows a known option then the known option is respected',
       () {
-        final args = CommandLineArgs(['--mode', 'production', '--myCustomFlag']);
+        final args = CommandLineArgs([
+          '--mode',
+          'production',
+          '--myCustomFlag',
+        ]);
         expect(args.runMode, equals('production'));
         expect(args.serverId, equals('default'));
         expect(args.loggingMode, equals(ServerpodLoggingMode.normal));
@@ -393,7 +397,11 @@ void main() {
     test(
       'when a custom flag precedes a known option then the known option is respected',
       () {
-        final args = CommandLineArgs(['--myCustomFlag', '--mode', 'production']);
+        final args = CommandLineArgs([
+          '--myCustomFlag',
+          '--mode',
+          'production',
+        ]);
         expect(args.runMode, equals('production'));
       },
     );
@@ -426,11 +434,15 @@ void main() {
       'when multiple known options are mixed with custom flags then all known options are parsed correctly',
       () {
         final args = CommandLineArgs([
-          '--mode', 'production',
+          '--mode',
+          'production',
           '--myCustomFlag',
-          '--server-id', 'my-server',
-          '--anotherCustom', 'val',
-          '--role', 'serverless',
+          '--server-id',
+          'my-server',
+          '--anotherCustom',
+          'val',
+          '--role',
+          'serverless',
           '--apply-migrations',
         ]);
         expect(args.runMode, equals('production'));
