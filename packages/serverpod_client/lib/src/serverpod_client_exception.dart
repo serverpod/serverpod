@@ -1,10 +1,4 @@
-import 'package:serverpod_serialization/serverpod_serialization.dart';
-
 import 'http/http_status.dart';
-import 'serverpod_client_shared.dart';
-
-part 'method_stream/method_stream_manager_exceptions.dart';
-part 'serverpod_client_get_endpoint_exception.dart';
 
 /// [Exception] thrown when errors in communication with the server occurs.
 sealed class ServerpodClientException implements Exception {

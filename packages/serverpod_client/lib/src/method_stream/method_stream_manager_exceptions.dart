@@ -1,9 +1,12 @@
-part of '../serverpod_client_exception.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
 /// Exceptions thrown by the [ClientMethodStreamManager].
-abstract class MethodStreamException extends ServerpodClientException {
+abstract class MethodStreamException implements Exception {
+  /// The error message to show to the user.
+  final String message;
+
   /// Creates a new [MethodStreamException].
-  const MethodStreamException(super.message);
+  const MethodStreamException(this.message);
 
   @override
   String toString() => message;
