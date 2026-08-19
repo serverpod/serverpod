@@ -41,7 +41,7 @@ Under `sessionLogs:` in the config YAML:
 | retentionPeriod | 90d |
 | retentionCount | 100000 |
 
-Each setting also has a `SERVERPOD_SESSION_*` environment variable, listed in [Serverpod Configuration](../serverpod-configuration/SKILL.md).
+Each setting also has a `SERVERPOD_SESSION_*` environment variable, listed in [`serverpod-configuration/references/environment-variables.md`](../serverpod-configuration/references/environment-variables.md).
 
 Set retention so log tables don't grow unbounded. Avoid logging sensitive data.
 
