@@ -199,13 +199,7 @@ void main() {
 
           await expectLater(
             duplicateInsert,
-            throwsA(
-              isA<DatabaseQueryException>().having(
-                (error) => error.code,
-                'code',
-                PgErrorCode.uniqueViolation,
-              ),
-            ),
+            throwsA(isA<DatabaseUniqueViolationException>()),
           );
         },
       );

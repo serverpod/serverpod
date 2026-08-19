@@ -63,8 +63,38 @@ class DatabaseQueryException extends DatabaseException {
       if (constraintName != null) 'constraint: $constraintName',
       if (position != null) 'position: $position',
     ].join(', ');
-    return 'DatabaseQueryException: { $details }';
+    return '$runtimeType: { $details }';
   }
+}
+
+/// Exception thrown when a query violates a unique constraint.
+class DatabaseUniqueViolationException extends DatabaseQueryException {
+  /// Creates a new [DatabaseUniqueViolationException].
+  DatabaseUniqueViolationException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
+}
+
+/// Exception thrown when a query violates a foreign key constraint..
+class DatabaseForeignKeyViolationException extends DatabaseQueryException {
+  /// Creates a new [DatabaseForeignKeyViolationException].
+  DatabaseForeignKeyViolationException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
 }
 
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)

@@ -184,13 +184,7 @@ void main() {
         // and does not fail the dart test runner.
         await expectLater(
           future,
-          throwsA(
-            isA<DatabaseQueryException>().having(
-              (e) => e.code,
-              'code',
-              SqliteErrorCode.uniqueViolation,
-            ),
-          ),
+          throwsA(isA<DatabaseUniqueViolationException>()),
         );
       });
 

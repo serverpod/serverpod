@@ -1239,7 +1239,13 @@ DatabaseQueryException _queryExceptionFromServerException(
   pg.ServerException e, {
   String? messageOverride,
 }) {
-  return DatabaseQueryException(
+  final builder = switch (e.code) {
+    PgErrorCode.uniqueViolation => DatabaseUniqueViolationException.new,
+    PgErrorCode.foreignKeyViolation => DatabaseForeignKeyViolationException.new,
+    _ => DatabaseQueryException.new,
+  };
+
+  return builder(
     messageOverride ?? e.message,
     code: e.code,
     detail: e.detail,

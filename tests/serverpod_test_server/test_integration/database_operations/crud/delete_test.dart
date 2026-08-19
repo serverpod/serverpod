@@ -377,13 +377,7 @@ void main() async {
 
         expect(
           () async => await UniqueData.db.delete(session, inserted),
-          throwsA(
-            isA<DatabaseQueryException>().having(
-              (e) => e.code,
-              'code',
-              PgErrorCode.foreignKeyViolation,
-            ),
-          ),
+          throwsA(isA<DatabaseForeignKeyViolationException>()),
         );
 
         var first = await UniqueData.db.findById(session, inserted.first.id!);

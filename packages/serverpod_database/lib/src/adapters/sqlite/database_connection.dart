@@ -1663,9 +1663,14 @@ DatabaseQueryException _queryExceptionFromSqliteException(Object e) {
   if (e.resultCode == 19 && e.message.contains('FOREIGN KEY')) {
     code = 787;
   }
-  return DatabaseQueryException(
-    e.message,
-    code: code.toString(),
-    detail: e.explanation,
-  );
+
+  final codeString = code.toString();
+  final builder = switch (codeString) {
+    SqliteErrorCode.uniqueViolation => DatabaseUniqueViolationException.new,
+    SqliteErrorCode.foreignKeyViolation =>
+      DatabaseForeignKeyViolationException.new,
+    _ => DatabaseQueryException.new,
+  };
+
+  return builder(e.message, code: codeString, detail: e.explanation);
 }
