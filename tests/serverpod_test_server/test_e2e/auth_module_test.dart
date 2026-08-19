@@ -27,16 +27,16 @@ void main() {
     test(
       'Access endpoint with required signin without authentication',
       () async {
-        int? statusCode;
-        try {
-          await client.signInRequired.testMethod();
-        } catch (e) {
-          if (e is ServerpodClientException) {
-            statusCode = e.statusCode;
-          }
-        }
-
-        expect(statusCode, equals(401));
+        await expectLater(
+          () async => await client.signInRequired.testMethod(),
+          throwsA(
+            isA<ServerpodClientHttpException>().having(
+              (e) => e.statusCode,
+              'statusCode',
+              401,
+            ),
+          ),
+        );
       },
     );
 
@@ -80,16 +80,16 @@ void main() {
     test('Sign out user', () async {
       await client.authentication.signOut();
 
-      int? statusCode;
-      try {
-        await client.signInRequired.testMethod();
-      } catch (e) {
-        if (e is ServerpodClientException) {
-          statusCode = e.statusCode;
-        }
-      }
-
-      expect(statusCode, equals(401));
+      await expectLater(
+        () async => await client.signInRequired.testMethod(),
+        throwsA(
+          isA<ServerpodClientHttpException>().having(
+            (e) => e.statusCode,
+            'statusCode',
+            401,
+          ),
+        ),
+      );
     });
   });
 
@@ -146,7 +146,7 @@ void main() {
         expectLater(
           client.adminScopeRequired.testMethod(),
           throwsA(
-            isA<ServerpodClientException>().having(
+            isA<ServerpodClientHttpException>().having(
               (e) => e.statusCode,
               'statusCode',
               403,

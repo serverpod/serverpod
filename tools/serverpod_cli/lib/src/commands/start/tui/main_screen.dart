@@ -31,6 +31,7 @@ class MainScreen extends StatelessComponent {
     required this.onDismissAlert,
     required this.onStopOrCloseAppTab,
     required this.onToggleStackTrace,
+    required this.onOpenAppUrl,
   });
 
   final ServerWatchState state;
@@ -61,6 +62,10 @@ class MainScreen extends StatelessComponent {
   /// Flips the stack-trace visibility of one log entry, invoked by clicking
   /// its expand/collapse affordance (`E` toggles all entries at once).
   final void Function(LogEntry entry) onToggleStackTrace;
+
+  /// Opens the running app's published URL in the browser, invoked by
+  /// clicking the URL in the app tab's status line.
+  final void Function(AppLogTab tab) onOpenAppUrl;
 
   List<(String, List<(String, String)>)> get _helpBindings => [
     (
@@ -263,7 +268,7 @@ class MainScreen extends StatelessComponent {
                   ),
                 ),
               ),
-              const Divider(indent: -1, endIndent: -1),
+              Divider(color: st.subtleDivider, indent: -1, endIndent: -1),
               Expanded(
                 child: Scrollbar(
                   controller: appPanelScrollController,
@@ -499,7 +504,8 @@ class MainScreen extends StatelessComponent {
   /// Breadcrumb for a Flutter app tab: a muted app id and the URL or startup
   /// stage, with a pinned `X Stop App`/`X Close Tab` hint. Only the status text
   /// shimmers while launching, and it is truncated when the line is too narrow
-  /// so the hint always stays visible.
+  /// so the hint always stays visible. A running app's URL is underlined and
+  /// opens in the browser when clicked.
   Component? _buildFlutterStatusLine(ServerpodThemeData st, AppLogTab tab) {
     final mutedText = TextStyle(
       color: st.debugLevel,
@@ -549,8 +555,23 @@ class MainScreen extends StatelessComponent {
                   labelPart.length + labelSep.length + xHintPlain.length + 1;
               final shownStatus = _fit(statusText, maxWidth - reserved);
 
-              Component status = Text(shownStatus, style: mutedText);
-              if (loading) status = Shimmer(child: status);
+              // A published URL is underlined and clickable, opening the
+              // running web app in the browser.
+              Component status;
+              if (tab.ready && tab.url != null) {
+                status = GestureDetector(
+                  onTap: () => onOpenAppUrl(tab),
+                  child: Text(
+                    shownStatus,
+                    style: mutedText.copyWith(
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                );
+              } else {
+                status = Text(shownStatus, style: mutedText);
+                if (loading) status = Shimmer(child: status);
+              }
 
               return Row(
                 children: [

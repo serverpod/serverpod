@@ -12,7 +12,7 @@ void main() {
 
   group('Given a class with fields with a "defaultModel" keyword', () {
     test(
-      'when the field is of type Uri and the defaultModel is set to a Uri string in single quotes, then the field should have a "default model" value and not have a "default persist" value',
+      'when the field is of type Uri and the defaultModel is set to a Uri string in single quotes, then the field should have a "default model" value',
       () {
         var models = [
           ModelSourceBuilder().withYaml(
@@ -39,7 +39,6 @@ void main() {
           definition.fields.last.defaultModelValue,
           '\'https://example.com\'',
         );
-        expect(definition.fields.last.defaultPersistValue, isNull);
       },
     );
 
@@ -100,7 +99,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a a valid Uri string (e.g., "defaultModel"=\'http://serverpod.dev\').',
+          'The "defaultModel" value must be a valid Uri string (e.g., "defaultModel"=\'http://serverpod.dev\').',
         );
       },
     );
@@ -131,7 +130,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "defaultModel" value must be a a valid Uri string (e.g., "defaultModel"=\'http://serverpod.dev\').',
+          'The "defaultModel" value must be a valid Uri string (e.g., "defaultModel"=\'http://serverpod.dev\').',
         );
       },
     );

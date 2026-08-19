@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:nocterm/nocterm.dart' hide LogEntry;
-import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_cli/src/util/browser_launcher.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/log.dart' hide log;
 import 'package:serverpod_tui/serverpod_tui.dart';
 
 import 'inspectable_scroll_controller.dart';
@@ -15,6 +17,9 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   StartAppStateHolder(this._state);
 
   final ServerWatchState _state;
+
+  /// Opens a URL in the default browser. Overridable in tests.
+  Future<bool> Function(Uri url) openUrl = BrowserLauncher.openUrl;
 
   ServerpodWatchAppState? _widgetState;
   VoidCallback? _onHotReload;
@@ -302,6 +307,18 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     return false;
   }
 
+  /// Opens the URL of [tab]'s running app in the default browser. Bound to
+  /// clicking the URL in the app tab's status line.
+  void _openAppUrl(AppLogTab tab) {
+    final url = tab.url;
+    if (url == null) return;
+    unawaited(
+      component.holder.openUrl(Uri.parse(url)).then((ok) {
+        if (!ok) log.warning('Could not open browser at $url');
+      }),
+    );
+  }
+
   @override
   void onExit() {
     final quit = onQuit;
@@ -349,6 +366,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
           onStopOrCloseAppTab: _stopOrCloseAppTab,
+          onOpenAppUrl: _openAppUrl,
           onToggleStackTrace: (entry) {
             state.toggleStackTrace(entry);
             _rebuild();

@@ -252,6 +252,7 @@ class FlutterAppManager {
 
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
+    runtime.stopSignaled = false;
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
@@ -295,6 +296,19 @@ class FlutterAppManager {
     runtime.process = process;
     runtime.spawnInFlight = false;
 
+    // A ready app whose process exits without an explicit [stop] - browser
+    // window closed (heartbeat teardown), daemon app.stop, crash - must still
+    // reach [onStop]. Never-ready exits are launch failures, signaled by
+    // [_connectAfterLaunch] instead. The process check drops a stale listener
+    // once a relaunch has installed a new process.
+    unawaited(
+      process.exitCode.then((_) {
+        if (runtime.process != process) return;
+        runtime.process = null;
+        if (runtime.readySignaled) _signalStopped(runtime);
+      }),
+    );
+
     // Configured targets are reported by `cli.session_start`; this is the
     // usage side, so a platform declared once and never run does not weigh as
     // much as one launched every session.
@@ -326,6 +340,9 @@ class FlutterAppManager {
     if (runtime == null) return;
 
     runtime.relaunchInProgress = runtime.process != null;
+    // The relaunch resets the tab via [onEnsureAppTab]; a stop signal in
+    // between would only flash a stopped state.
+    runtime.stopSignaled = true;
     await runtime.process?.stop();
     runtime.process = null;
     await launch(appId);
@@ -337,11 +354,10 @@ class FlutterAppManager {
   Future<void> stop(String appId) async {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
-    final app = runtime.app;
     runtime.relaunchInProgress = false;
     await runtime.process?.stop();
     runtime.process = null;
-    onStop(app);
+    _signalStopped(runtime);
   }
 
   /// Loads configured apps from [serverPubspecFile].
@@ -406,6 +422,8 @@ class FlutterAppManager {
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {
+      // Session shutdown; don't churn [onStop] consumers per app.
+      runtime.stopSignaled = true;
       await runtime.process?.stop();
       runtime.process = null;
       await File(runtime.infoFile).deleteIfExists();
@@ -538,6 +556,15 @@ class FlutterAppManager {
     onReady(runtime.app, url);
   }
 
+  /// Invokes [onStop] at most once per launch. Stop has several sources - an
+  /// explicit [stop] and the process exiting on its own - so a second signal
+  /// is swallowed here.
+  void _signalStopped(_AppRuntime runtime) {
+    if (runtime.stopSignaled) return;
+    runtime.stopSignaled = true;
+    onStop(runtime.app);
+  }
+
   Future<void> _connectAfterLaunch(
     _AppRuntime runtime,
     FlutterProcess process, {
@@ -604,4 +631,5 @@ class _AppRuntime {
   bool spawnInFlight = false;
   bool relaunchInProgress = false;
   bool readySignaled = false;
+  bool stopSignaled = false;
 }

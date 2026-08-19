@@ -628,7 +628,7 @@ final class ClientMethodStreamManager {
       unawaited(_listenToWebSocketStream(webSocket));
 
       await _handshakeComplete.future.catchError(
-        (e, s) => throw ConnectionAttemptTimedOutException(),
+        (e, s) => throw const ConnectionAttemptTimedOutException(),
       );
       _webSocket = webSocket;
       _startKeepAlive();

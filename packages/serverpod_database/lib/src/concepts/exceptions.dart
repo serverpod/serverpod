@@ -1,5 +1,5 @@
 /// Exception thrown when an error occurs in the database.
-abstract base class DatabaseException implements Exception {
+abstract class DatabaseException implements Exception {
   /// Returns the message of the exception.
   String get message;
 
@@ -8,7 +8,7 @@ abstract base class DatabaseException implements Exception {
 }
 
 /// Exception thrown when an exception occurs during a database query.
-abstract base class DatabaseQueryException implements DatabaseException {
+abstract class DatabaseQueryException implements DatabaseException {
   /// Returns the error code of the exception.
   String? get code;
 
