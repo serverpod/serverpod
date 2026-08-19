@@ -1,4 +1,4 @@
-part of '../serverpod_client_exception.dart';
+import 'package:serverpod_client/serverpod_client.dart';
 
 /// Exceptions thrown by the [ClientMethodStreamManager].
 abstract class MethodStreamException implements Exception {
