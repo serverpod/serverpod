@@ -521,6 +521,68 @@ void main() {
   );
 
   group(
+    'Given an initialized FlutterAppManager running a web app that can exit '
+    'on its own',
+    () {
+      late _ManagerFixture f;
+      late Directory exitDir;
+      late File exitFile;
+      late Completer<String?> ready;
+      late int stopCalls;
+
+      setUp(() async {
+        ready = Completer<String?>();
+        stopCalls = 0;
+        exitDir = await Directory.systemTemp.createTemp('flutter_exit_');
+        exitFile = File(p.join(exitDir.path, 'exit'));
+        f = await _ManagerFixture.create(
+          shim: 'emits_machine_events.dart',
+          shimArgs: ['--exit-file=${exitFile.path}'],
+          fakeVmService: true,
+          onReady: (_, url) => ready.complete(url),
+          onStop: (_) => stopCalls++,
+        );
+        await f.manager.launch('project');
+        await ready.future.timeout(const Duration(seconds: 30));
+      });
+
+      tearDown(() async {
+        await f.dispose();
+        await exitDir.deleteBestEffort(recursive: true);
+      });
+
+      test(
+        'when the process exits without a stop call then onStop fires once '
+        'and the app reports not running',
+        () async {
+          // The shim exits once this file appears, simulating e.g. the
+          // heartbeat teardown after the app's browser window is closed.
+          exitFile.createSync();
+
+          await _eventually(() => stopCalls > 0);
+
+          expect(stopCalls, 1);
+          expect(f.manager.isRunning('project'), isFalse);
+          expect(f.manager.isLaunching('project'), isFalse);
+        },
+      );
+
+      test(
+        'when the app is stopped explicitly then onStop fires exactly once',
+        () async {
+          await f.manager.stop('project');
+
+          // Let the process-exit listener settle; it must not double-signal.
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+
+          expect(stopCalls, 1);
+          expect(f.manager.isRunning('project'), isFalse);
+        },
+      );
+    },
+  );
+
+  group(
     'Given an initialized FlutterAppManager running an app on a desktop device',
     () {
       late _ManagerFixture f;
