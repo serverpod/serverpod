@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Represents a snapshot of the number of open connections the server currently
 /// is handling. An entry is written every minute for each server. All health
 /// data can be accessed through Serverpod Insights.
 abstract class ServerHealthConnectionInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ServerHealthConnectionInfo._({
     this.id,
     required this.serverId,
@@ -43,7 +43,7 @@ abstract class ServerHealthConnectionInfo
     return ServerHealthConnectionInfo(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
       active: jsonSerialization['active'] as int,
@@ -79,7 +79,7 @@ abstract class ServerHealthConnectionInfo
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ServerHealthConnectionInfo copyWith({
     int? id,
     String? serverId,
@@ -119,7 +119,7 @@ abstract class ServerHealthConnectionInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -146,7 +146,7 @@ class _ServerHealthConnectionInfoImpl extends ServerHealthConnectionInfo {
 
   /// Returns a shallow copy of this [ServerHealthConnectionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ServerHealthConnectionInfo copyWith({
     Object? id = _Undefined,

@@ -10,421 +10,439 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/legacy_admin_endpoint.dart' as _i2;
-import '../endpoints/legacy_email_endpoint.dart' as _i3;
-import '../endpoints/legacy_status_endpoint.dart' as _i4;
-import '../endpoints/legacy_user_endpoint.dart' as _i5;
-import '../endpoints/session_migration_endpoint.dart' as _i6;
-import 'dart:typed_data' as _i7;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i8;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i9;
+    as _iais;
+import '../endpoints/legacy_admin_endpoint.dart' as _ipsxdxoh;
+import '../endpoints/legacy_email_endpoint.dart' as _id75tg82;
+import '../endpoints/legacy_status_endpoint.dart' as _itabijgr;
+import '../endpoints/legacy_user_endpoint.dart' as _i3lz1mgs;
+import '../endpoints/session_migration_endpoint.dart' as _i85kth1k;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'legacyAdmin': _i2.LegacyAdminEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'legacyAdmin': _ipsxdxoh.LegacyAdminEndpoint()
         ..initialize(
           server,
           'legacyAdmin',
           'serverpod_auth_bridge',
         ),
-      'legacyEmail': _i3.LegacyEmailEndpoint()
+      'legacyEmail': _id75tg82.LegacyEmailEndpoint()
         ..initialize(
           server,
           'legacyEmail',
           'serverpod_auth_bridge',
         ),
-      'legacyStatus': _i4.LegacyStatusEndpoint()
+      'legacyStatus': _itabijgr.LegacyStatusEndpoint()
         ..initialize(
           server,
           'legacyStatus',
           'serverpod_auth_bridge',
         ),
-      'legacyUser': _i5.LegacyUserEndpoint()
+      'legacyUser': _i3lz1mgs.LegacyUserEndpoint()
         ..initialize(
           server,
           'legacyUser',
           'serverpod_auth_bridge',
         ),
-      'sessionMigration': _i6.SessionMigrationEndpoint()
+      'sessionMigration': _i85kth1k.SessionMigrationEndpoint()
         ..initialize(
           server,
           'sessionMigration',
           'serverpod_auth_bridge',
         ),
     };
-    connectors['legacyAdmin'] = _i1.EndpointConnector(
+    connectors['legacyAdmin'] = _is.EndpointConnector(
       name: 'legacyAdmin',
       endpoint: endpoints['legacyAdmin']!,
       methodConnectors: {
-        'getUserInfo': _i1.MethodConnector(
+        'getUserInfo': _is.MethodConnector(
           name: 'getUserInfo',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyAdmin'] as _i2.LegacyAdminEndpoint)
-                  .getUserInfo(
-                    session,
-                    params['userId'],
-                  ),
+              ) async =>
+                  (endpoints['legacyAdmin'] as _ipsxdxoh.LegacyAdminEndpoint)
+                      .getUserInfo(
+                        session,
+                        params['userId'],
+                      ),
         ),
-        'blockUser': _i1.MethodConnector(
+        'blockUser': _is.MethodConnector(
           name: 'blockUser',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyAdmin'] as _i2.LegacyAdminEndpoint)
-                  .blockUser(
-                    session,
-                    params['userId'],
-                  ),
+              ) async =>
+                  (endpoints['legacyAdmin'] as _ipsxdxoh.LegacyAdminEndpoint)
+                      .blockUser(
+                        session,
+                        params['userId'],
+                      ),
         ),
-        'unblockUser': _i1.MethodConnector(
+        'unblockUser': _is.MethodConnector(
           name: 'unblockUser',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyAdmin'] as _i2.LegacyAdminEndpoint)
-                  .unblockUser(
-                    session,
-                    params['userId'],
-                  ),
+              ) async =>
+                  (endpoints['legacyAdmin'] as _ipsxdxoh.LegacyAdminEndpoint)
+                      .unblockUser(
+                        session,
+                        params['userId'],
+                      ),
         ),
       },
     );
-    connectors['legacyEmail'] = _i1.EndpointConnector(
+    connectors['legacyEmail'] = _is.EndpointConnector(
       name: 'legacyEmail',
       endpoint: endpoints['legacyEmail']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
+        'authenticate': _is.MethodConnector(
           name: 'authenticate',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .authenticate(
-                    session,
-                    params['email'],
-                    params['password'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .authenticate(
+                        session,
+                        params['email'],
+                        params['password'],
+                      ),
         ),
-        'createAccountRequest': _i1.MethodConnector(
+        'createAccountRequest': _is.MethodConnector(
           name: 'createAccountRequest',
           params: {
-            'userName': _i1.ParameterDescription(
+            'userName': _is.ParameterDescription(
               name: 'userName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .createAccountRequest(
-                    session,
-                    params['userName'],
-                    params['email'],
-                    params['password'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .createAccountRequest(
+                        session,
+                        params['userName'],
+                        params['email'],
+                        params['password'],
+                      ),
         ),
-        'createAccount': _i1.MethodConnector(
+        'createAccount': _is.MethodConnector(
           name: 'createAccount',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'verificationCode': _i1.ParameterDescription(
+            'verificationCode': _is.ParameterDescription(
               name: 'verificationCode',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .createAccount(
-                    session,
-                    params['email'],
-                    params['verificationCode'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .createAccount(
+                        session,
+                        params['email'],
+                        params['verificationCode'],
+                      ),
         ),
-        'changePassword': _i1.MethodConnector(
+        'changePassword': _is.MethodConnector(
           name: 'changePassword',
           params: {
-            'oldPassword': _i1.ParameterDescription(
+            'oldPassword': _is.ParameterDescription(
               name: 'oldPassword',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'newPassword': _i1.ParameterDescription(
+            'newPassword': _is.ParameterDescription(
               name: 'newPassword',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .changePassword(
-                    session,
-                    params['oldPassword'],
-                    params['newPassword'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .changePassword(
+                        session,
+                        params['oldPassword'],
+                        params['newPassword'],
+                      ),
         ),
-        'initiatePasswordReset': _i1.MethodConnector(
+        'initiatePasswordReset': _is.MethodConnector(
           name: 'initiatePasswordReset',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .initiatePasswordReset(
-                    session,
-                    params['email'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .initiatePasswordReset(
+                        session,
+                        params['email'],
+                      ),
         ),
-        'resetPassword': _i1.MethodConnector(
+        'resetPassword': _is.MethodConnector(
           name: 'resetPassword',
           params: {
-            'verificationCode': _i1.ParameterDescription(
+            'verificationCode': _is.ParameterDescription(
               name: 'verificationCode',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyEmail'] as _i3.LegacyEmailEndpoint)
-                  .resetPassword(
-                    session,
-                    params['verificationCode'],
-                    params['password'],
-                  ),
+              ) async =>
+                  (endpoints['legacyEmail'] as _id75tg82.LegacyEmailEndpoint)
+                      .resetPassword(
+                        session,
+                        params['verificationCode'],
+                        params['password'],
+                      ),
         ),
       },
     );
-    connectors['legacyStatus'] = _i1.EndpointConnector(
+    connectors['legacyStatus'] = _is.EndpointConnector(
       name: 'legacyStatus',
       endpoint: endpoints['legacyStatus']!,
       methodConnectors: {
-        'isSignedIn': _i1.MethodConnector(
+        'isSignedIn': _is.MethodConnector(
           name: 'isSignedIn',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
-                  .isSignedIn(session),
+              ) async =>
+                  (endpoints['legacyStatus'] as _itabijgr.LegacyStatusEndpoint)
+                      .isSignedIn(session),
         ),
-        'signOutDevice': _i1.MethodConnector(
+        'signOutDevice': _is.MethodConnector(
           name: 'signOutDevice',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
-                  .signOutDevice(session),
+              ) async =>
+                  (endpoints['legacyStatus'] as _itabijgr.LegacyStatusEndpoint)
+                      .signOutDevice(session),
         ),
-        'signOutAllDevices': _i1.MethodConnector(
+        'signOutAllDevices': _is.MethodConnector(
           name: 'signOutAllDevices',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
-                  .signOutAllDevices(session),
+              ) async =>
+                  (endpoints['legacyStatus'] as _itabijgr.LegacyStatusEndpoint)
+                      .signOutAllDevices(session),
         ),
-        'getUserInfo': _i1.MethodConnector(
+        'getUserInfo': _is.MethodConnector(
           name: 'getUserInfo',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
-                  .getUserInfo(session),
+              ) async =>
+                  (endpoints['legacyStatus'] as _itabijgr.LegacyStatusEndpoint)
+                      .getUserInfo(session),
         ),
-        'getUserSettingsConfig': _i1.MethodConnector(
+        'getUserSettingsConfig': _is.MethodConnector(
           name: 'getUserSettingsConfig',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyStatus'] as _i4.LegacyStatusEndpoint)
-                  .getUserSettingsConfig(session),
+              ) async =>
+                  (endpoints['legacyStatus'] as _itabijgr.LegacyStatusEndpoint)
+                      .getUserSettingsConfig(session),
         ),
       },
     );
-    connectors['legacyUser'] = _i1.EndpointConnector(
+    connectors['legacyUser'] = _is.EndpointConnector(
       name: 'legacyUser',
       endpoint: endpoints['legacyUser']!,
       methodConnectors: {
-        'removeUserImage': _i1.MethodConnector(
+        'removeUserImage': _is.MethodConnector(
           name: 'removeUserImage',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
-                  .removeUserImage(session),
+              ) async =>
+                  (endpoints['legacyUser'] as _i3lz1mgs.LegacyUserEndpoint)
+                      .removeUserImage(session),
         ),
-        'setUserImage': _i1.MethodConnector(
+        'setUserImage': _is.MethodConnector(
           name: 'setUserImage',
           params: {
-            'image': _i1.ParameterDescription(
+            'image': _is.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i7.ByteData>(),
+              type: _is.getType<_idt.ByteData>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
-                  .setUserImage(
-                    session,
-                    params['image'],
-                  ),
+              ) async =>
+                  (endpoints['legacyUser'] as _i3lz1mgs.LegacyUserEndpoint)
+                      .setUserImage(
+                        session,
+                        params['image'],
+                      ),
         ),
-        'changeUserName': _i1.MethodConnector(
+        'changeUserName': _is.MethodConnector(
           name: 'changeUserName',
           params: {
-            'userName': _i1.ParameterDescription(
+            'userName': _is.ParameterDescription(
               name: 'userName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
-                  .changeUserName(
-                    session,
-                    params['userName'],
-                  ),
+              ) async =>
+                  (endpoints['legacyUser'] as _i3lz1mgs.LegacyUserEndpoint)
+                      .changeUserName(
+                        session,
+                        params['userName'],
+                      ),
         ),
-        'changeFullName': _i1.MethodConnector(
+        'changeFullName': _is.MethodConnector(
           name: 'changeFullName',
           params: {
-            'fullName': _i1.ParameterDescription(
+            'fullName': _is.ParameterDescription(
               name: 'fullName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['legacyUser'] as _i5.LegacyUserEndpoint)
-                  .changeFullName(
-                    session,
-                    params['fullName'],
-                  ),
+              ) async =>
+                  (endpoints['legacyUser'] as _i3lz1mgs.LegacyUserEndpoint)
+                      .changeFullName(
+                        session,
+                        params['fullName'],
+                      ),
         ),
       },
     );
-    connectors['sessionMigration'] = _i1.EndpointConnector(
+    connectors['sessionMigration'] = _is.EndpointConnector(
       name: 'sessionMigration',
       endpoint: endpoints['sessionMigration']!,
       methodConnectors: {
-        'convertSession': _i1.MethodConnector(
+        'convertSession': _is.MethodConnector(
           name: 'convertSession',
           params: {
-            'sessionKey': _i1.ParameterDescription(
+            'sessionKey': _is.ParameterDescription(
               name: 'sessionKey',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['sessionMigration']
-                          as _i6.SessionMigrationEndpoint)
+                          as _i85kth1k.SessionMigrationEndpoint)
                       .convertSession(
                         session,
                         sessionKey: params['sessionKey'],
@@ -432,9 +450,9 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i8.Endpoints()
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i9.Endpoints()
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
       ..initializeEndpoints(server);
   }
 }

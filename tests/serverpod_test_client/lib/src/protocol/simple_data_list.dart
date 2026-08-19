@@ -10,31 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class SimpleDataList
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SimpleDataList._({required this.rows});
 
-  factory SimpleDataList({required List<_i2.SimpleData> rows}) =
+  factory SimpleDataList({required List<_i0zisc0t.SimpleData> rows}) =
       _SimpleDataListImpl;
 
   factory SimpleDataList.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataList(
-      rows: _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+      rows: _iza9lbb5.Protocol().deserialize<List<_i0zisc0t.SimpleData>>(
         jsonSerialization['rows'],
       ),
     );
   }
 
-  List<_i2.SimpleData> rows;
+  List<_i0zisc0t.SimpleData> rows;
 
   /// Returns a shallow copy of this [SimpleDataList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  SimpleDataList copyWith({List<_i2.SimpleData>? rows});
+  @_isc.useResult
+  SimpleDataList copyWith({List<_i0zisc0t.SimpleData>? rows});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -53,19 +53,19 @@ abstract class SimpleDataList
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _SimpleDataListImpl extends SimpleDataList {
-  _SimpleDataListImpl({required List<_i2.SimpleData> rows})
+  _SimpleDataListImpl({required List<_i0zisc0t.SimpleData> rows})
     : super._(rows: rows);
 
   /// Returns a shallow copy of this [SimpleDataList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
-  SimpleDataList copyWith({List<_i2.SimpleData>? rows}) {
+  SimpleDataList copyWith({List<_i0zisc0t.SimpleData>? rows}) {
     return SimpleDataList(
       rows: rows ?? this.rows.map((e0) => e0.copyWith()).toList(),
     );

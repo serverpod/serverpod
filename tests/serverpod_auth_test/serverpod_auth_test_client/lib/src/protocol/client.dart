@@ -10,25 +10,25 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'dart:async' as _i3;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
-import 'dart:typed_data' as _i6;
+import 'dart:async' as _ida;
+import 'dart:typed_data' as _idt;
+import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as _i7;
+    as _iabc;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _iacc;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _iaic;
 import 'package:serverpod_auth_migration_client/serverpod_auth_migration_client.dart'
-    as _i8;
-import 'package:http/http.dart' as _i9;
-import 'protocol.dart' as _i10;
+    as _iamc;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'protocol.dart' as _il2as5qe;
 
 /// Endpoint for Apple-based authentication.
 /// {@category Endpoint}
-class EndpointAppleAccount extends _i1.EndpointAppleIdpBase {
-  EndpointAppleAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointAppleAccount extends _iaic.EndpointAppleIdpBase {
+  EndpointAppleAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'appleAccount';
@@ -42,13 +42,13 @@ class EndpointAppleAccount extends _i1.EndpointAppleIdpBase {
   ///
   /// Returns a session for the user upon successful login.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'appleAccount',
     'login',
     {
@@ -61,7 +61,7 @@ class EndpointAppleAccount extends _i1.EndpointAppleIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'appleAccount',
     'hasAccount',
     {},
@@ -70,29 +70,29 @@ class EndpointAppleAccount extends _i1.EndpointAppleIdpBase {
 
 /// Endpoint for testing authentication.
 /// {@category Endpoint}
-class EndpointAuthTest extends _i2.EndpointRef {
-  EndpointAuthTest(_i2.EndpointCaller caller) : super(caller);
+class EndpointAuthTest extends _isc.EndpointRef {
+  EndpointAuthTest(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'authTest';
 
   /// Creates a new test user.
-  _i3.Future<_i2.UuidValue> createTestUser() =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> createTestUser() =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'authTest',
         'createTestUser',
         {},
       );
 
   /// Creates a new session authentication for the test user.
-  _i3.Future<_i4.AuthSuccess> createSasToken(_i2.UuidValue authUserId) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> createSasToken(_isc.UuidValue authUserId) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'authTest',
         'createSasToken',
         {'authUserId': authUserId},
       );
 
-  _i3.Future<void> deleteSasTokens(_i2.UuidValue authUserId) =>
+  _ida.Future<void> deleteSasTokens(_isc.UuidValue authUserId) =>
       caller.callServerEndpoint<void>(
         'authTest',
         'deleteSasTokens',
@@ -100,15 +100,15 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Creates a new JWT token for the test user.
-  _i3.Future<_i4.AuthSuccess> createJwtToken(_i2.UuidValue authUserId) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> createJwtToken(_isc.UuidValue authUserId) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'authTest',
         'createJwtToken',
         {'authUserId': authUserId},
       );
 
   /// Deletes all refresh tokens for the test user.
-  _i3.Future<void> deleteJwtRefreshTokens(_i2.UuidValue authUserId) =>
+  _ida.Future<void> deleteJwtRefreshTokens(_isc.UuidValue authUserId) =>
       caller.callServerEndpoint<void>(
         'authTest',
         'deleteJwtRefreshTokens',
@@ -116,7 +116,7 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Destroys a specific refresh token by ID.
-  _i3.Future<bool> destroySpecificRefreshToken(String token) =>
+  _ida.Future<bool> destroySpecificRefreshToken(String token) =>
       caller.callServerEndpoint<bool>(
         'authTest',
         'destroySpecificRefreshToken',
@@ -124,14 +124,14 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Checks if the session is authenticated for the test user.
-  _i3.Future<bool> checkSession(_i2.UuidValue authUserId) =>
+  _ida.Future<bool> checkSession(_isc.UuidValue authUserId) =>
       caller.callServerEndpoint<bool>(
         'authTest',
         'checkSession',
         {'authUserId': authUserId},
       );
 
-  _i3.Future<bool> checkSessionUnauthenticated() =>
+  _ida.Future<bool> checkSessionUnauthenticated() =>
       caller.callServerEndpoint<bool>(
         'authTest',
         'checkSessionUnauthenticated',
@@ -139,8 +139,8 @@ class EndpointAuthTest extends _i2.EndpointRef {
         authenticated: false,
       );
 
-  _i3.Stream<bool> checkSessionUnauthenticatedStream() =>
-      caller.callStreamingServerEndpoint<_i3.Stream<bool>, bool>(
+  _ida.Stream<bool> checkSessionUnauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<bool>, bool>(
         'authTest',
         'checkSessionUnauthenticatedStream',
         {},
@@ -148,29 +148,29 @@ class EndpointAuthTest extends _i2.EndpointRef {
         authenticated: false,
       );
 
-  _i3.Stream<String?> openPublicUserStream() =>
-      caller.callStreamingServerEndpoint<_i3.Stream<String?>, String?>(
+  _ida.Stream<String?> openPublicUserStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<String?>, String?>(
         'authTest',
         'openPublicUserStream',
         {},
         {},
       );
 
-  _i3.Future<void> resetJwtRefreshConcurrency() =>
+  _ida.Future<void> resetJwtRefreshConcurrency() =>
       caller.callServerEndpoint<void>(
         'authTest',
         'resetJwtRefreshConcurrency',
         {},
       );
 
-  _i3.Future<int> getMaxConcurrentJwtRefreshes() =>
+  _ida.Future<int> getMaxConcurrentJwtRefreshes() =>
       caller.callServerEndpoint<int>(
         'authTest',
         'getMaxConcurrentJwtRefreshes',
         {},
       );
 
-  _i3.Future<int> getJwtRefreshCallCount() => caller.callServerEndpoint<int>(
+  _ida.Future<int> getJwtRefreshCallCount() => caller.callServerEndpoint<int>(
     'authTest',
     'getJwtRefreshCallCount',
     {},
@@ -178,7 +178,7 @@ class EndpointAuthTest extends _i2.EndpointRef {
 
   /// Returns the auth-mode marker and whether an authorization header was
   /// received, as seen by the server on this authenticated call.
-  _i3.Future<List<String?>> getReceivedAuthHeaders() =>
+  _ida.Future<List<String?>> getReceivedAuthHeaders() =>
       caller.callServerEndpoint<List<String?>>(
         'authTest',
         'getReceivedAuthHeaders',
@@ -186,7 +186,7 @@ class EndpointAuthTest extends _i2.EndpointRef {
       );
 
   /// Like [getReceivedAuthHeaders], for an unauthenticated call.
-  _i3.Future<List<String?>> getReceivedAuthHeadersUnauthenticated() =>
+  _ida.Future<List<String?>> getReceivedAuthHeadersUnauthenticated() =>
       caller.callServerEndpoint<List<String?>>(
         'authTest',
         'getReceivedAuthHeadersUnauthenticated',
@@ -196,14 +196,14 @@ class EndpointAuthTest extends _i2.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointUnauthenticatedRequireLoginAuthTest extends _i2.EndpointRef {
-  EndpointUnauthenticatedRequireLoginAuthTest(_i2.EndpointCaller caller)
+class EndpointUnauthenticatedRequireLoginAuthTest extends _isc.EndpointRef {
+  EndpointUnauthenticatedRequireLoginAuthTest(_isc.EndpointCaller caller)
     : super(caller);
 
   @override
   String get name => 'unauthenticatedRequireLoginAuthTest';
 
-  _i3.Future<void> call() => caller.callServerEndpoint<void>(
+  _ida.Future<void> call() => caller.callServerEndpoint<void>(
     'unauthenticatedRequireLoginAuthTest',
     'call',
     {},
@@ -212,22 +212,23 @@ class EndpointUnauthenticatedRequireLoginAuthTest extends _i2.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointAuthenticatedStreamingTest extends _i2.EndpointRef {
-  EndpointAuthenticatedStreamingTest(_i2.EndpointCaller caller) : super(caller);
+class EndpointAuthenticatedStreamingTest extends _isc.EndpointRef {
+  EndpointAuthenticatedStreamingTest(_isc.EndpointCaller caller)
+    : super(caller);
 
   @override
   String get name => 'authenticatedStreamingTest';
 
-  _i3.Stream<int> openAuthenticatedStream() =>
-      caller.callStreamingServerEndpoint<_i3.Stream<int>, int>(
+  _ida.Stream<int> openAuthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
         'authenticatedStreamingTest',
         'openAuthenticatedStream',
         {},
         {},
       );
 
-  _i3.Stream<String> watchAuthenticatedUserId() =>
-      caller.callStreamingServerEndpoint<_i3.Stream<String>, String>(
+  _ida.Stream<String> watchAuthenticatedUserId() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<String>, String>(
         'authenticatedStreamingTest',
         'watchAuthenticatedUserId',
         {},
@@ -236,14 +237,14 @@ class EndpointAuthenticatedStreamingTest extends _i2.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
-  EndpointEmailAccountBackwardsCompatibilityTest(_i2.EndpointCaller caller)
+class EndpointEmailAccountBackwardsCompatibilityTest extends _isc.EndpointRef {
+  EndpointEmailAccountBackwardsCompatibilityTest(_isc.EndpointCaller caller)
     : super(caller);
 
   @override
   String get name => 'emailAccountBackwardsCompatibilityTest';
 
-  _i3.Future<int> createLegacyUser({
+  _ida.Future<int> createLegacyUser({
     required String email,
     required String password,
   }) => caller.callServerEndpoint<int>(
@@ -255,10 +256,10 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
     },
   );
 
-  _i3.Future<_i5.AuthKey> createLegacySession({
+  _ida.Future<_i312scxx.AuthKey> createLegacySession({
     required int userId,
     required Set<String> scopes,
-  }) => caller.callServerEndpoint<_i5.AuthKey>(
+  }) => caller.callServerEndpoint<_i312scxx.AuthKey>(
     'emailAccountBackwardsCompatibilityTest',
     'createLegacySession',
     {
@@ -267,7 +268,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
     },
   );
 
-  _i3.Future<void> migrateUser({
+  _ida.Future<void> migrateUser({
     required int legacyUserId,
     String? password,
   }) => caller.callServerEndpoint<void>(
@@ -280,15 +281,15 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
   );
 
   /// Returns the new auth user ID.
-  _i3.Future<_i2.UuidValue?> getNewAuthUserId({required int userId}) =>
-      caller.callServerEndpoint<_i2.UuidValue?>(
+  _ida.Future<_isc.UuidValue?> getNewAuthUserId({required int userId}) =>
+      caller.callServerEndpoint<_isc.UuidValue?>(
         'emailAccountBackwardsCompatibilityTest',
         'getNewAuthUserId',
         {'userId': userId},
       );
 
   /// Delete `UserInfo`, `AuthKey` and `EmailAuth` entities for the user
-  _i3.Future<void> deleteLegacyAuthData({required int userId}) =>
+  _ida.Future<void> deleteLegacyAuthData({required int userId}) =>
       caller.callServerEndpoint<void>(
         'emailAccountBackwardsCompatibilityTest',
         'deleteLegacyAuthData',
@@ -299,7 +300,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
   ///
   /// Since the server runs with the backwards compatible auth handler, both
   /// old session keys will work post migration.
-  _i3.Future<String?> sessionUserIdentifier() =>
+  _ida.Future<String?> sessionUserIdentifier() =>
       caller.callServerEndpoint<String?>(
         'emailAccountBackwardsCompatibilityTest',
         'sessionUserIdentifier',
@@ -307,7 +308,7 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
       );
 
   /// Returns the user ID of associated with the session derived from the session key
-  _i3.Future<bool> checkLegacyPassword({
+  _ida.Future<bool> checkLegacyPassword({
     required String email,
     required String password,
   }) => caller.callServerEndpoint<bool>(
@@ -322,8 +323,8 @@ class EndpointEmailAccountBackwardsCompatibilityTest extends _i2.EndpointRef {
 
 /// Endpoint for email-based authentication.
 /// {@category Endpoint}
-class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
-  EndpointEmailAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointEmailAccount extends _iaic.EndpointEmailIdpBase {
+  EndpointEmailAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'emailAccount';
@@ -338,10 +339,10 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'emailAccount',
     'login',
     {
@@ -361,8 +362,8 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
   @override
-  _i3.Future<_i2.UuidValue> startRegistration({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startRegistration({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'emailAccount',
         'startRegistration',
         {'email': email},
@@ -379,8 +380,8 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
   @override
-  _i3.Future<String> verifyRegistrationCode({
-    required _i2.UuidValue accountRequestId,
+  _ida.Future<String> verifyRegistrationCode({
+    required _isc.UuidValue accountRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'emailAccount',
@@ -406,10 +407,10 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i3.Future<_i4.AuthSuccess> finishRegistration({
+  _ida.Future<_iacc.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'emailAccount',
     'finishRegistration',
     {
@@ -432,8 +433,8 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   ///   made too many attempts trying to request a password reset.
   ///
   @override
-  _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'emailAccount',
         'startPasswordReset',
         {'email': email},
@@ -454,8 +455,8 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
   @override
-  _i3.Future<String> verifyPasswordResetCode({
-    required _i2.UuidValue passwordResetRequestId,
+  _ida.Future<String> verifyPasswordResetCode({
+    required _isc.UuidValue passwordResetRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'emailAccount',
@@ -481,7 +482,7 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i3.Future<void> finishPasswordReset({
+  _ida.Future<void> finishPasswordReset({
     required String finishPasswordResetToken,
     required String newPassword,
   }) => caller.callServerEndpoint<void>(
@@ -494,7 +495,7 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'emailAccount',
     'hasAccount',
     {},
@@ -503,8 +504,8 @@ class EndpointEmailAccount extends _i1.EndpointEmailIdpBase {
 
 /// Endpoint for Firebase-based authentication.
 /// {@category Endpoint}
-class EndpointFirebaseAccount extends _i1.EndpointFirebaseIdpBase {
-  EndpointFirebaseAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointFirebaseAccount extends _iaic.EndpointFirebaseIdpBase {
+  EndpointFirebaseAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'firebaseAccount';
@@ -514,15 +515,15 @@ class EndpointFirebaseAccount extends _i1.EndpointFirebaseIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({required String idToken}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'firebaseAccount',
         'login',
         {'idToken': idToken},
       );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'firebaseAccount',
     'hasAccount',
     {},
@@ -531,8 +532,8 @@ class EndpointFirebaseAccount extends _i1.EndpointFirebaseIdpBase {
 
 /// Endpoint for GitHub-based authentication.
 /// {@category Endpoint}
-class EndpointGitHubAccount extends _i1.EndpointGitHubIdpBase {
-  EndpointGitHubAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointGitHubAccount extends _iaic.EndpointGitHubIdpBase {
+  EndpointGitHubAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'gitHubAccount';
@@ -546,11 +547,11 @@ class EndpointGitHubAccount extends _i1.EndpointGitHubIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'gitHubAccount',
     'login',
     {
@@ -561,7 +562,7 @@ class EndpointGitHubAccount extends _i1.EndpointGitHubIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'gitHubAccount',
     'hasAccount',
     {},
@@ -572,18 +573,18 @@ class EndpointGitHubAccount extends _i1.EndpointGitHubIdpBase {
 /// accounts.
 /// {@category Endpoint}
 class EndpointGoogleAccountBackwardsCompatibilityTest
-    extends _i1.EndpointGoogleIdpBase {
-  EndpointGoogleAccountBackwardsCompatibilityTest(_i2.EndpointCaller caller)
+    extends _iaic.EndpointGoogleIdpBase {
+  EndpointGoogleAccountBackwardsCompatibilityTest(_isc.EndpointCaller caller)
     : super(caller);
 
   @override
   String get name => 'googleAccountBackwardsCompatibilityTest';
 
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleAccountBackwardsCompatibilityTest',
     'login',
     {
@@ -600,11 +601,11 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> loginWithCode({
+  _ida.Future<_iacc.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleAccountBackwardsCompatibilityTest',
     'loginWithCode',
     {
@@ -615,7 +616,7 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'googleAccountBackwardsCompatibilityTest',
     'hasAccount',
     {},
@@ -624,8 +625,8 @@ class EndpointGoogleAccountBackwardsCompatibilityTest
 
 /// Endpoint for Google-based authentication.
 /// {@category Endpoint}
-class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
-  EndpointGoogleAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointGoogleAccount extends _iaic.EndpointGoogleIdpBase {
+  EndpointGoogleAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'googleAccount';
@@ -635,10 +636,10 @@ class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleAccount',
     'login',
     {
@@ -655,11 +656,11 @@ class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> loginWithCode({
+  _ida.Future<_iacc.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleAccount',
     'loginWithCode',
     {
@@ -670,7 +671,7 @@ class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'googleAccount',
     'hasAccount',
     {},
@@ -678,15 +679,15 @@ class EndpointGoogleAccount extends _i1.EndpointGoogleIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
-  EndpointJwtRefresh(_i2.EndpointCaller caller) : super(caller);
+class EndpointJwtRefresh extends _iacc.EndpointRefreshJwtTokens {
+  EndpointJwtRefresh(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'jwtRefresh';
 
   @override
-  _i3.Future<_i4.AuthSuccess> refreshAccessToken({String? refreshToken}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> refreshAccessToken({String? refreshToken}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'jwtRefresh',
         'refreshAccessToken',
         {'refreshToken': refreshToken},
@@ -696,16 +697,17 @@ class EndpointJwtRefresh extends _i4.EndpointRefreshJwtTokens {
 
 /// Endpoint for Passkey-based authentication.
 /// {@category Endpoint}
-class EndpointPasskeyAccount extends _i1.EndpointPasskeyIdpBase {
-  EndpointPasskeyAccount(_i2.EndpointCaller caller) : super(caller);
+class EndpointPasskeyAccount extends _iaic.EndpointPasskeyIdpBase {
+  EndpointPasskeyAccount(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'passkeyAccount';
 
   /// Returns a new challenge to be used for a login or registration request.
   @override
-  _i3.Future<({_i6.ByteData challenge, _i2.UuidValue id})> createChallenge() =>
-      caller.callServerEndpoint<({_i6.ByteData challenge, _i2.UuidValue id})>(
+  _ida.Future<({_idt.ByteData challenge, _isc.UuidValue id})>
+  createChallenge() =>
+      caller.callServerEndpoint<({_idt.ByteData challenge, _isc.UuidValue id})>(
         'passkeyAccount',
         'createChallenge',
         {},
@@ -715,8 +717,8 @@ class EndpointPasskeyAccount extends _i1.EndpointPasskeyIdpBase {
   ///
   /// Throws if the user is not authenticated.
   @override
-  _i3.Future<void> register({
-    required _i1.PasskeyRegistrationRequest registrationRequest,
+  _ida.Future<void> register({
+    required _iaic.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
     'passkeyAccount',
     'register',
@@ -725,16 +727,16 @@ class EndpointPasskeyAccount extends _i1.EndpointPasskeyIdpBase {
 
   /// Authenticates the user related to the given Passkey.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
-    required _i1.PasskeyLoginRequest loginRequest,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({
+    required _iaic.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'passkeyAccount',
     'login',
     {'loginRequest': loginRequest},
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'passkeyAccount',
     'hasAccount',
     {},
@@ -743,8 +745,8 @@ class EndpointPasskeyAccount extends _i1.EndpointPasskeyIdpBase {
 
 /// Endpoint for email-based authentication which imports the legacy passwords.
 /// {@category Endpoint}
-class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
-  EndpointPasswordImportingEmailAccount(_i2.EndpointCaller caller)
+class EndpointPasswordImportingEmailAccount extends _iaic.EndpointEmailIdpBase {
+  EndpointPasswordImportingEmailAccount(_isc.EndpointCaller caller)
     : super(caller);
 
   @override
@@ -754,10 +756,10 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// In case an expected error occurs, this throws a `EmailAccountLoginException`.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'passwordImportingEmailAccount',
     'login',
     {
@@ -777,8 +779,8 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
   @override
-  _i3.Future<_i2.UuidValue> startRegistration({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startRegistration({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'passwordImportingEmailAccount',
         'startRegistration',
         {'email': email},
@@ -795,8 +797,8 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
   @override
-  _i3.Future<String> verifyRegistrationCode({
-    required _i2.UuidValue accountRequestId,
+  _ida.Future<String> verifyRegistrationCode({
+    required _isc.UuidValue accountRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'passwordImportingEmailAccount',
@@ -822,10 +824,10 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i3.Future<_i4.AuthSuccess> finishRegistration({
+  _ida.Future<_iacc.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'passwordImportingEmailAccount',
     'finishRegistration',
     {
@@ -848,8 +850,8 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   ///   made too many attempts trying to request a password reset.
   ///
   @override
-  _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'passwordImportingEmailAccount',
         'startPasswordReset',
         {'email': email},
@@ -870,8 +872,8 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
   @override
-  _i3.Future<String> verifyPasswordResetCode({
-    required _i2.UuidValue passwordResetRequestId,
+  _ida.Future<String> verifyPasswordResetCode({
+    required _isc.UuidValue passwordResetRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'passwordImportingEmailAccount',
@@ -897,7 +899,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i3.Future<void> finishPasswordReset({
+  _ida.Future<void> finishPasswordReset({
     required String finishPasswordResetToken,
     required String newPassword,
   }) => caller.callServerEndpoint<void>(
@@ -910,7 +912,7 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'passwordImportingEmailAccount',
     'hasAccount',
     {},
@@ -919,8 +921,8 @@ class EndpointPasswordImportingEmailAccount extends _i1.EndpointEmailIdpBase {
 
 /// Endpoint to view and edit one's profile.
 /// {@category Endpoint}
-class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
-  EndpointUserProfile(_i2.EndpointCaller caller) : super(caller);
+class EndpointUserProfile extends _iacc.EndpointUserProfileEditBase {
+  EndpointUserProfile(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'userProfile';
@@ -929,8 +931,8 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
   ///
   /// The client should handle displaying a placeholder for users without images.
   @override
-  _i3.Future<_i4.UserProfileModel> removeUserImage() =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_iacc.UserProfileModel> removeUserImage() =>
+      caller.callServerEndpoint<_iacc.UserProfileModel>(
         'userProfile',
         'removeUserImage',
         {},
@@ -938,8 +940,8 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
   /// Sets a new user image for the signed in user.
   @override
-  _i3.Future<_i4.UserProfileModel> setUserImage(_i6.ByteData image) =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_iacc.UserProfileModel> setUserImage(_idt.ByteData image) =>
+      caller.callServerEndpoint<_iacc.UserProfileModel>(
         'userProfile',
         'setUserImage',
         {'image': image},
@@ -947,8 +949,8 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
   /// Changes the name of a user.
   @override
-  _i3.Future<_i4.UserProfileModel> changeUserName(String? userName) =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_iacc.UserProfileModel> changeUserName(String? userName) =>
+      caller.callServerEndpoint<_iacc.UserProfileModel>(
         'userProfile',
         'changeUserName',
         {'userName': userName},
@@ -956,8 +958,8 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
   /// Changes the full name of a user.
   @override
-  _i3.Future<_i4.UserProfileModel> changeFullName(String? fullName) =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_iacc.UserProfileModel> changeFullName(String? fullName) =>
+      caller.callServerEndpoint<_iacc.UserProfileModel>(
         'userProfile',
         'changeFullName',
         {'fullName': fullName},
@@ -965,8 +967,8 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
   /// Returns the user profile of the current user.
   @override
-  _i3.Future<_i4.UserProfileModel> get() =>
-      caller.callServerEndpoint<_i4.UserProfileModel>(
+  _ida.Future<_iacc.UserProfileModel> get() =>
+      caller.callServerEndpoint<_iacc.UserProfileModel>(
         'userProfile',
         'get',
         {},
@@ -975,42 +977,42 @@ class EndpointUserProfile extends _i4.EndpointUserProfileEditBase {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_bridge = _i7.Caller(client);
-    serverpod_auth_core = _i4.Caller(client);
-    serverpod_auth_idp = _i1.Caller(client);
-    serverpod_auth_migration = _i8.Caller(client);
-    auth = _i5.Caller(client);
+    serverpod_auth_bridge = _iabc.Caller(client);
+    serverpod_auth_core = _iacc.Caller(client);
+    serverpod_auth_idp = _iaic.Caller(client);
+    serverpod_auth_migration = _iamc.Caller(client);
+    auth = _i312scxx.Caller(client);
   }
 
-  late final _i7.Caller serverpod_auth_bridge;
+  late final _iabc.Caller serverpod_auth_bridge;
 
-  late final _i4.Caller serverpod_auth_core;
+  late final _iacc.Caller serverpod_auth_core;
 
-  late final _i1.Caller serverpod_auth_idp;
+  late final _iaic.Caller serverpod_auth_idp;
 
-  late final _i8.Caller serverpod_auth_migration;
+  late final _iamc.Caller serverpod_auth_migration;
 
-  late final _i5.Caller auth;
+  late final _i312scxx.Caller auth;
 }
 
-class Client extends _i2.ServerpodClientShared {
+class Client extends _isc.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i2.MethodCallContext,
+      _isc.MethodCallContext,
       Object,
       StackTrace,
     )?
     onFailedCall,
-    Function(_i2.MethodCallContext)? onSucceededCall,
+    Function(_isc.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i9.Client? httpClientOverride,
+    _i85jenna.Client? httpClientOverride,
   }) : super(
          host,
-         _i10.Protocol(),
+         _il2as5qe.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -1075,7 +1077,7 @@ class Client extends _i2.ServerpodClientShared {
   late final Modules modules;
 
   @override
-  Map<String, _i2.EndpointRef> get endpointRefLookup => {
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'appleAccount': appleAccount,
     'authTest': authTest,
     'unauthenticatedRequireLoginAuthTest': unauthenticatedRequireLoginAuthTest,
@@ -1095,7 +1097,7 @@ class Client extends _i2.ServerpodClientShared {
   };
 
   @override
-  Map<String, _i2.ModuleEndpointCaller> get moduleLookup => {
+  Map<String, _isc.ModuleEndpointCaller> get moduleLookup => {
     'serverpod_auth_bridge': modules.serverpod_auth_bridge,
     'serverpod_auth_core': modules.serverpod_auth_core,
     'serverpod_auth_idp': modules.serverpod_auth_idp,

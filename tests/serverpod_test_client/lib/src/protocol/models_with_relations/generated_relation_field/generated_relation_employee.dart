@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _ipeijyfj;
 
 abstract class GeneratedRelationEmployee
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   GeneratedRelationEmployee._({
     this.id,
     required this.name,
@@ -30,9 +30,9 @@ abstract class GeneratedRelationEmployee
     int? id,
     required String name,
     required int customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
     int? customPreviousCompanyId,
-    _i2.GeneratedRelationCompany? previousCompany,
+    _ipeijyfj.GeneratedRelationCompany? previousCompany,
   }) = _GeneratedRelationEmployeeImpl;
 
   factory GeneratedRelationEmployee.fromJson(
@@ -44,16 +44,18 @@ abstract class GeneratedRelationEmployee
       customCompanyId: jsonSerialization['customCompanyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.GeneratedRelationCompany>(
-              jsonSerialization['company'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<_ipeijyfj.GeneratedRelationCompany>(
+                  jsonSerialization['company'],
+                ),
       customPreviousCompanyId:
           jsonSerialization['customPreviousCompanyId'] as int?,
       previousCompany: jsonSerialization['previousCompany'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.GeneratedRelationCompany>(
-              jsonSerialization['previousCompany'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<_ipeijyfj.GeneratedRelationCompany>(
+                  jsonSerialization['previousCompany'],
+                ),
     );
   }
 
@@ -67,23 +69,23 @@ abstract class GeneratedRelationEmployee
   /// The foreign key of the [company] relation.
   int customCompanyId;
 
-  _i2.GeneratedRelationCompany? company;
+  _ipeijyfj.GeneratedRelationCompany? company;
 
   /// The foreign key of the [previousCompany] relation.
   int? customPreviousCompanyId;
 
-  _i2.GeneratedRelationCompany? previousCompany;
+  _ipeijyfj.GeneratedRelationCompany? previousCompany;
 
   /// Returns a shallow copy of this [GeneratedRelationEmployee]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   GeneratedRelationEmployee copyWith({
     int? id,
     String? name,
     int? customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
     int? customPreviousCompanyId,
-    _i2.GeneratedRelationCompany? previousCompany,
+    _ipeijyfj.GeneratedRelationCompany? previousCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -116,7 +118,7 @@ abstract class GeneratedRelationEmployee
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -127,9 +129,9 @@ class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
     int? id,
     required String name,
     required int customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
     int? customPreviousCompanyId,
-    _i2.GeneratedRelationCompany? previousCompany,
+    _ipeijyfj.GeneratedRelationCompany? previousCompany,
   }) : super._(
          id: id,
          name: name,
@@ -141,7 +143,7 @@ class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
 
   /// Returns a shallow copy of this [GeneratedRelationEmployee]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   GeneratedRelationEmployee copyWith({
     Object? id = _Undefined,
@@ -155,13 +157,13 @@ class _GeneratedRelationEmployeeImpl extends GeneratedRelationEmployee {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _i2.GeneratedRelationCompany?
+      company: company is _ipeijyfj.GeneratedRelationCompany?
           ? company
           : this.company?.copyWith(),
       customPreviousCompanyId: customPreviousCompanyId is int?
           ? customPreviousCompanyId
           : this.customPreviousCompanyId,
-      previousCompany: previousCompany is _i2.GeneratedRelationCompany?
+      previousCompany: previousCompany is _ipeijyfj.GeneratedRelationCompany?
           ? previousCompany
           : this.previousCompany?.copyWith(),
     );

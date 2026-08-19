@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// The definition of a (desired) column in the database.
 abstract class ColumnDefinition
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   ColumnDefinition._({
     required this.name,
     this.fieldName,
@@ -29,7 +29,7 @@ abstract class ColumnDefinition
   factory ColumnDefinition({
     required String name,
     String? fieldName,
-    required _i2.ColumnType columnType,
+    required _isd.ColumnType columnType,
     required bool isNullable,
     String? columnDefault,
     String? dartType,
@@ -40,10 +40,10 @@ abstract class ColumnDefinition
     return ColumnDefinition(
       name: jsonSerialization['name'] as String,
       fieldName: jsonSerialization['fieldName'] as String?,
-      columnType: _i2.ColumnType.fromJson(
+      columnType: _isd.ColumnType.fromJson(
         (jsonSerialization['columnType'] as int),
       ),
-      isNullable: _i1.BoolJsonExtension.fromJson(
+      isNullable: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['isNullable'],
       ),
       columnDefault: jsonSerialization['columnDefault'] as String?,
@@ -61,7 +61,7 @@ abstract class ColumnDefinition
   String? fieldName;
 
   /// The actual column type
-  _i2.ColumnType columnType;
+  _isd.ColumnType columnType;
 
   /// Whether this column is nullable.
   bool isNullable;
@@ -80,11 +80,11 @@ abstract class ColumnDefinition
 
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   ColumnDefinition copyWith({
     String? name,
     String? fieldName,
-    _i2.ColumnType? columnType,
+    _isd.ColumnType? columnType,
     bool? isNullable,
     String? columnDefault,
     String? dartType,
@@ -120,7 +120,7 @@ abstract class ColumnDefinition
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +130,7 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
   _ColumnDefinitionImpl({
     required String name,
     String? fieldName,
-    required _i2.ColumnType columnType,
+    required _isd.ColumnType columnType,
     required bool isNullable,
     String? columnDefault,
     String? dartType,
@@ -147,12 +147,12 @@ class _ColumnDefinitionImpl extends ColumnDefinition {
 
   /// Returns a shallow copy of this [ColumnDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   ColumnDefinition copyWith({
     String? name,
     Object? fieldName = _Undefined,
-    _i2.ColumnType? columnType,
+    _isd.ColumnType? columnType,
     bool? isNullable,
     Object? columnDefault = _Undefined,
     Object? dartType = _Undefined,

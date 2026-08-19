@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Test enum with default serialization (should be byName).
-enum TestEnumDefaultSerialization implements _i1.SerializableModel {
+enum TestEnumDefaultSerialization implements _isc.SerializableModel {
   alpha,
   beta,
   gamma,

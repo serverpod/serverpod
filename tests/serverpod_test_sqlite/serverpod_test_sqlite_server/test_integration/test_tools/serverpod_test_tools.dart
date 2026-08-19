@@ -11,14 +11,14 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test/serverpod_test.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:io' as _i3;
-import 'dart:async' as _i4;
-import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
-    as _i5;
+import 'dart:async' as _ida;
+import 'dart:io' as _idi;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
-    as _i6;
+    as _il0f3y8p;
+import 'package:serverpod_test_sqlite_server/src/generated/simple_data.dart'
+    as _ip5dmlum;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart';
 import 'package:serverpod_test_sqlite_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -103,27 +103,27 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// isolate's cwd is not the server package root (e.g. running tests from a
 /// workspace parent directory) so config and migrations are still loaded
 /// from the right place.
-@_i1.isTestGroup
+@_ist.isTestGroup
 void withServerpod(
   String testGroupName,
-  _i1.TestClosure<TestEndpoints> testClosure, {
+  _ist.TestClosure<TestEndpoints> testClosure, {
   bool? applyMigrations,
-  _i2.ServerpodConfig Function(_i2.ServerpodConfig)? configOverride,
-  _i2.DatabaseInterceptor? databaseInterceptor,
+  _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
+  _is.DatabaseInterceptor? databaseInterceptor,
   bool? enableSessionLogging,
-  _i2.ExperimentalFeatures? experimentalFeatures,
-  _i1.RollbackDatabase? rollbackDatabase,
+  _is.ExperimentalFeatures? experimentalFeatures,
+  _ist.RollbackDatabase? rollbackDatabase,
   String? runMode,
-  _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
-  _i3.Directory? serverDirectory,
-  _i2.ServerpodLoggingMode? serverpodLoggingMode,
+  _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _idi.Directory? serverDirectory,
+  _is.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
-  _i1.TestServerOutputMode? testServerOutputMode,
+  _ist.TestServerOutputMode? testServerOutputMode,
 }) {
-  _i1.buildWithServerpod<_InternalTestEndpoints>(
+  _ist.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
-    _i1.TestServerpod(
+    _ist.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
       serializationManager: Protocol(),
@@ -153,11 +153,11 @@ class TestEndpoints {
 }
 
 class _InternalTestEndpoints extends TestEndpoints
-    implements _i1.InternalTestEndpoints {
+    implements _ist.InternalTestEndpoints {
   @override
   void initialize(
-    _i2.SerializationManager serializationManager,
-    _i2.EndpointDispatch endpoints,
+    _is.SerializationManager serializationManager,
+    _is.EndpointDispatch endpoints,
   ) {
     testTools = _TestToolsEndpoint(
       endpoints,
@@ -176,17 +176,17 @@ class _TestToolsEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<void> createSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleData',
           );
@@ -195,7 +195,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleData',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -203,7 +203,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -211,12 +211,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<List<_i5.SimpleData>> getAllSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<List<_ip5dmlum.SimpleData>> getAllSimpleData(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'getAllSimpleData',
           );
@@ -225,7 +225,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'getAllSimpleData',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -233,7 +233,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<List<_i5.SimpleData>>);
+                as _ida.Future<List<_ip5dmlum.SimpleData>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -241,13 +241,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDatasInsideTransactions(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDatasInsideTransactions(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDatasInsideTransactions',
           );
@@ -256,7 +256,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDatasInsideTransactions',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -264,7 +264,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -272,13 +272,13 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDataAndThrowInsideTransaction(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDataAndThrowInsideTransaction(
+    _ist.TestSessionBuilder sessionBuilder,
     int data,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDataAndThrowInsideTransaction',
           );
@@ -287,7 +287,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDataAndThrowInsideTransaction',
-          parameters: _i1.testObjectToJson({'data': data}),
+          parameters: _ist.testObjectToJson({'data': data}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -295,7 +295,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -303,12 +303,12 @@ class _TestToolsEndpoint {
     });
   }
 
-  _i4.Future<void> createSimpleDatasInParallelTransactionCalls(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> createSimpleDatasInParallelTransactionCalls(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'testTools',
             method: 'createSimpleDatasInParallelTransactionCalls',
           );
@@ -317,7 +317,7 @@ class _TestToolsEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'testTools',
           methodName: 'createSimpleDatasInParallelTransactionCalls',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -325,7 +325,7 @@ class _TestToolsEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -336,13 +336,13 @@ class _TestToolsEndpoint {
 
 class _InsertSimpleDataCallFutureCall {
   Future<void> persistIncrementedSimpleData(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i5.SimpleData data,
+    _ist.TestSessionBuilder sessionBuilder,
+    _ip5dmlum.SimpleData data,
   ) async {
-    var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder)
-        .internalBuild();
+    var _localUniqueSession =
+        (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild();
     try {
-      await _i6.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
+      await _il0f3y8p.InsertSimpleDataCallPersistIncrementedSimpleDataFutureCall()
           .invoke(
             _localUniqueSession,
             data,

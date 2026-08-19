@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DurationDefault
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DurationDefault._({
     this.id,
     Duration? durationDefault,
@@ -48,12 +48,12 @@ abstract class DurationDefault
       id: jsonSerialization['id'] as int?,
       durationDefault: jsonSerialization['durationDefault'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefault'],
             ),
       durationDefaultNull: jsonSerialization['durationDefaultNull'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultNull'],
             ),
     );
@@ -71,11 +71,11 @@ abstract class DurationDefault
   Duration? durationDefaultNull;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DurationDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DurationDefault copyWith({
     int? id,
     Duration? durationDefault,
@@ -108,11 +108,11 @@ abstract class DurationDefault
   }
 
   static DurationDefaultIncludeList includeList({
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? where,
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
     DurationDefaultInclude? include,
   }) {
     return DurationDefaultIncludeList._(
@@ -127,7 +127,7 @@ abstract class DurationDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -146,7 +146,7 @@ class _DurationDefaultImpl extends DurationDefault {
 
   /// Returns a shallow copy of this [DurationDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DurationDefault copyWith({
     Object? id = _Undefined,
@@ -163,32 +163,32 @@ class _DurationDefaultImpl extends DurationDefault {
   }
 }
 
-class DurationDefaultUpdateTable extends _i1.UpdateTable<DurationDefaultTable> {
+class DurationDefaultUpdateTable extends _is.UpdateTable<DurationDefaultTable> {
   DurationDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<Duration, Duration> durationDefault(Duration value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Duration, Duration> durationDefault(Duration value) =>
+      _is.ColumnValue(
         table.durationDefault,
         value,
       );
 
-  _i1.ColumnValue<Duration, Duration> durationDefaultNull(Duration? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Duration, Duration> durationDefaultNull(Duration? value) =>
+      _is.ColumnValue(
         table.durationDefaultNull,
         value,
       );
 }
 
-class DurationDefaultTable extends _i1.Table<int?> {
+class DurationDefaultTable extends _is.Table<int?> {
   DurationDefaultTable({super.tableRelation})
     : super(tableName: 'duration_default') {
     updateTable = DurationDefaultUpdateTable(this);
-    durationDefault = _i1.ColumnDuration(
+    durationDefault = _is.ColumnDuration(
       'durationDefault',
       this,
       hasDefault: true,
     );
-    durationDefaultNull = _i1.ColumnDuration(
+    durationDefaultNull = _is.ColumnDuration(
       'durationDefaultNull',
       this,
       hasDefault: true,
@@ -197,31 +197,31 @@ class DurationDefaultTable extends _i1.Table<int?> {
 
   late final DurationDefaultUpdateTable updateTable;
 
-  late final _i1.ColumnDuration durationDefault;
+  late final _is.ColumnDuration durationDefault;
 
-  late final _i1.ColumnDuration durationDefaultNull;
+  late final _is.ColumnDuration durationDefaultNull;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     durationDefault,
     durationDefaultNull,
   ];
 }
 
-class DurationDefaultInclude extends _i1.IncludeObject {
+class DurationDefaultInclude extends _is.IncludeObject {
   DurationDefaultInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DurationDefault.t;
+  _is.Table<int?> get table => DurationDefault.t;
 }
 
-class DurationDefaultIncludeList extends _i1.IncludeList {
+class DurationDefaultIncludeList extends _is.IncludeList {
   DurationDefaultIncludeList._({
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? where,
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -232,10 +232,10 @@ class DurationDefaultIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DurationDefault.t;
+  _is.Table<int?> get table => DurationDefault.t;
 }
 
 class DurationDefaultRepository {
@@ -264,15 +264,15 @@ class DurationDefaultRepository {
   /// );
   /// ```
   Future<List<DurationDefault>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DurationDefault>(
       where: where?.call(DurationDefault.t),
@@ -304,14 +304,14 @@ class DurationDefaultRepository {
   /// );
   /// ```
   Future<DurationDefault?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DurationDefault>(
       where: where?.call(DurationDefault.t),
@@ -326,11 +326,11 @@ class DurationDefaultRepository {
 
   /// Finds a single [DurationDefault] by its [id] or null if no such row exists.
   Future<DurationDefault?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DurationDefault>(
       id,
@@ -355,9 +355,9 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefault> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -373,9 +373,9 @@ class DurationDefaultRepository {
   ///
   /// The returned [DurationDefault] will have its `id` field set.
   Future<DurationDefault> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DurationDefault>(
       row,
@@ -404,12 +404,12 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefault> rows, {
-    required _i1.ColumnSelections<DurationDefaultTable> conflictColumns,
-    _i1.ColumnSelections<DurationDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DurationDefaultTable> conflictColumns,
+    _is.ColumnSelections<DurationDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<DurationDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DurationDefault>(
@@ -436,12 +436,12 @@ class DurationDefaultRepository {
   ///
   /// The returned [DurationDefault] will have its `id` field set.
   Future<DurationDefault?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefault row, {
-    required _i1.ColumnSelections<DurationDefaultTable> conflictColumns,
-    _i1.ColumnSelections<DurationDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DurationDefaultTable> conflictColumns,
+    _is.ColumnSelections<DurationDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<DurationDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefault>(
       row,
@@ -462,10 +462,10 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefault> rows, {
-    _i1.ColumnSelections<DurationDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DurationDefaultTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DurationDefault>(
@@ -480,10 +480,10 @@ class DurationDefaultRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DurationDefault> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefault row, {
-    _i1.ColumnSelections<DurationDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DurationDefaultTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DurationDefault>(
       row,
@@ -495,11 +495,11 @@ class DurationDefaultRepository {
   /// Updates a single [DurationDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DurationDefault?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+    required _is.ColumnValueListBuilder<DurationDefaultUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefault>(
       id,
@@ -515,15 +515,15 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DurationDefaultUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DurationDefaultUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
+    required _is.WhereExpressionBuilder<DurationDefaultTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefault>(
@@ -550,11 +550,11 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefault> rows, {
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DurationDefault>(
@@ -568,9 +568,9 @@ class DurationDefaultRepository {
 
   /// Deletes a single [DurationDefault].
   Future<DurationDefault> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DurationDefault>(
       row,
@@ -587,11 +587,11 @@ class DurationDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefault>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
-    _i1.OrderByBuilder<DurationDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DurationDefaultTable> where,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefault>(
@@ -606,10 +606,10 @@ class DurationDefaultRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DurationDefault>(
       where: where?.call(DurationDefault.t),
@@ -620,11 +620,11 @@ class DurationDefaultRepository {
 
   /// Acquires row-level locks on [DurationDefault] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DurationDefaultTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DurationDefaultTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DurationDefault>(
       where: where(DurationDefault.t),

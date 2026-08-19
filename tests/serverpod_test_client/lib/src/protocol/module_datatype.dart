@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import 'package:serverpod_test_module_client/serverpod_test_module_client.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _i89s5423;
 
 abstract class ModuleDatatype
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ModuleDatatype._({
     required this.model,
     required this.list,
@@ -25,47 +25,47 @@ abstract class ModuleDatatype
   });
 
   factory ModuleDatatype({
-    required _i2.ModuleClass model,
-    required List<_i2.ModuleClass> list,
-    required Map<String, _i2.ModuleClass> map,
-    (_i2.ModuleClass,)? record,
+    required _i89s5423.ModuleClass model,
+    required List<_i89s5423.ModuleClass> list,
+    required Map<String, _i89s5423.ModuleClass> map,
+    (_i89s5423.ModuleClass,)? record,
   }) = _ModuleDatatypeImpl;
 
   factory ModuleDatatype.fromJson(Map<String, dynamic> jsonSerialization) {
     return ModuleDatatype(
-      model: _i3.Protocol().deserialize<_i2.ModuleClass>(
+      model: _iza9lbb5.Protocol().deserialize<_i89s5423.ModuleClass>(
         jsonSerialization['model'],
       ),
-      list: _i3.Protocol().deserialize<List<_i2.ModuleClass>>(
+      list: _iza9lbb5.Protocol().deserialize<List<_i89s5423.ModuleClass>>(
         jsonSerialization['list'],
       ),
-      map: _i3.Protocol().deserialize<Map<String, _i2.ModuleClass>>(
+      map: _iza9lbb5.Protocol().deserialize<Map<String, _i89s5423.ModuleClass>>(
         jsonSerialization['map'],
       ),
       record: jsonSerialization['record'] == null
           ? null
-          : _i3.Protocol().deserialize<(_i2.ModuleClass,)?>(
+          : _iza9lbb5.Protocol().deserialize<(_i89s5423.ModuleClass,)?>(
               (jsonSerialization['record'] as Map<String, dynamic>),
             ),
     );
   }
 
-  _i2.ModuleClass model;
+  _i89s5423.ModuleClass model;
 
-  List<_i2.ModuleClass> list;
+  List<_i89s5423.ModuleClass> list;
 
-  Map<String, _i2.ModuleClass> map;
+  Map<String, _i89s5423.ModuleClass> map;
 
-  (_i2.ModuleClass,)? record;
+  (_i89s5423.ModuleClass,)? record;
 
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ModuleDatatype copyWith({
-    _i2.ModuleClass? model,
-    List<_i2.ModuleClass>? list,
-    Map<String, _i2.ModuleClass>? map,
-    (_i2.ModuleClass,)? record,
+    _i89s5423.ModuleClass? model,
+    List<_i89s5423.ModuleClass>? list,
+    Map<String, _i89s5423.ModuleClass>? map,
+    (_i89s5423.ModuleClass,)? record,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -74,7 +74,8 @@ abstract class ModuleDatatype
       'model': model.toJson(),
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
-      if (record != null) 'record': _i3.Protocol().mapRecordToJson(record),
+      if (record != null)
+        'record': _iza9lbb5.Protocol().mapRecordToJson(record),
     };
   }
 
@@ -85,13 +86,14 @@ abstract class ModuleDatatype
       'model': model.toJson(),
       'list': list.toJson(valueToJson: (v) => v.toJson()),
       'map': map.toJson(valueToJson: (v) => v.toJson()),
-      if (record != null) 'record': _i3.Protocol().mapRecordToJson(record),
+      if (record != null)
+        'record': _iza9lbb5.Protocol().mapRecordToJson(record),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,10 +101,10 @@ class _Undefined {}
 
 class _ModuleDatatypeImpl extends ModuleDatatype {
   _ModuleDatatypeImpl({
-    required _i2.ModuleClass model,
-    required List<_i2.ModuleClass> list,
-    required Map<String, _i2.ModuleClass> map,
-    (_i2.ModuleClass,)? record,
+    required _i89s5423.ModuleClass model,
+    required List<_i89s5423.ModuleClass> list,
+    required Map<String, _i89s5423.ModuleClass> map,
+    (_i89s5423.ModuleClass,)? record,
   }) : super._(
          model: model,
          list: list,
@@ -112,12 +114,12 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
 
   /// Returns a shallow copy of this [ModuleDatatype]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ModuleDatatype copyWith({
-    _i2.ModuleClass? model,
-    List<_i2.ModuleClass>? list,
-    Map<String, _i2.ModuleClass>? map,
+    _i89s5423.ModuleClass? model,
+    List<_i89s5423.ModuleClass>? list,
+    Map<String, _i89s5423.ModuleClass>? map,
     Object? record = _Undefined,
   }) {
     return ModuleDatatype(
@@ -134,7 +136,7 @@ class _ModuleDatatypeImpl extends ModuleDatatype {
               value0.copyWith(),
             ),
           ),
-      record: record is (_i2.ModuleClass,)?
+      record: record is (_i89s5423.ModuleClass,)?
           ? record
           : this.record == null
           ? null

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithGeographyPolygon
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithGeographyPolygon._({
     this.id,
     required this.polygon,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyPolygon
 
   factory ObjectWithGeographyPolygon({
     int? id,
-    required _i1.GeographyPolygon polygon,
-    required _i1.GeographyPolygon polygonIndexedGist,
-    required _i1.GeographyPolygon polygonIndexedSpgist,
+    required _isc.GeographyPolygon polygon,
+    required _isc.GeographyPolygon polygonIndexedGist,
+    required _isc.GeographyPolygon polygonIndexedSpgist,
   }) = _ObjectWithGeographyPolygonImpl;
 
   factory ObjectWithGeographyPolygon.fromJson(
@@ -33,13 +33,13 @@ abstract class ObjectWithGeographyPolygon
   ) {
     return ObjectWithGeographyPolygon(
       id: jsonSerialization['id'] as int?,
-      polygon: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygon: _isc.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygon'],
       ),
-      polygonIndexedGist: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygonIndexedGist: _isc.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygonIndexedGist'],
       ),
-      polygonIndexedSpgist: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygonIndexedSpgist: _isc.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygonIndexedSpgist'],
       ),
     );
@@ -50,20 +50,20 @@ abstract class ObjectWithGeographyPolygon
   /// the id will be null.
   int? id;
 
-  _i1.GeographyPolygon polygon;
+  _isc.GeographyPolygon polygon;
 
-  _i1.GeographyPolygon polygonIndexedGist;
+  _isc.GeographyPolygon polygonIndexedGist;
 
-  _i1.GeographyPolygon polygonIndexedSpgist;
+  _isc.GeographyPolygon polygonIndexedSpgist;
 
   /// Returns a shallow copy of this [ObjectWithGeographyPolygon]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithGeographyPolygon copyWith({
     int? id,
-    _i1.GeographyPolygon? polygon,
-    _i1.GeographyPolygon? polygonIndexedGist,
-    _i1.GeographyPolygon? polygonIndexedSpgist,
+    _isc.GeographyPolygon? polygon,
+    _isc.GeographyPolygon? polygonIndexedGist,
+    _isc.GeographyPolygon? polygonIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,7 +89,7 @@ abstract class ObjectWithGeographyPolygon
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,9 +98,9 @@ class _Undefined {}
 class _ObjectWithGeographyPolygonImpl extends ObjectWithGeographyPolygon {
   _ObjectWithGeographyPolygonImpl({
     int? id,
-    required _i1.GeographyPolygon polygon,
-    required _i1.GeographyPolygon polygonIndexedGist,
-    required _i1.GeographyPolygon polygonIndexedSpgist,
+    required _isc.GeographyPolygon polygon,
+    required _isc.GeographyPolygon polygonIndexedGist,
+    required _isc.GeographyPolygon polygonIndexedSpgist,
   }) : super._(
          id: id,
          polygon: polygon,
@@ -110,13 +110,13 @@ class _ObjectWithGeographyPolygonImpl extends ObjectWithGeographyPolygon {
 
   /// Returns a shallow copy of this [ObjectWithGeographyPolygon]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithGeographyPolygon copyWith({
     Object? id = _Undefined,
-    _i1.GeographyPolygon? polygon,
-    _i1.GeographyPolygon? polygonIndexedGist,
-    _i1.GeographyPolygon? polygonIndexedSpgist,
+    _isc.GeographyPolygon? polygon,
+    _isc.GeographyPolygon? polygonIndexedGist,
+    _isc.GeographyPolygon? polygonIndexedSpgist,
   }) {
     return ObjectWithGeographyPolygon(
       id: id is int? ? id : this.id,

@@ -11,28 +11,28 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_bridge_client/serverpod_auth_bridge_client.dart'
-    as _i2;
+    as _iabc;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i3;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i4;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i5;
+    as _iaic;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_isc.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _isc.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -67,17 +67,17 @@ class Protocol extends _i1.SerializationManager {
     }
 
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iabc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iaic.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _i312scxx.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -129,8 +129,8 @@ class Protocol extends _i1.SerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _isc.SerializationManager.toEncodableForProtocol(wrapped)
+          : _isc.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -183,16 +183,16 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _iabc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i5.Protocol().mapRecordToJson(record);
+      return _i312scxx.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

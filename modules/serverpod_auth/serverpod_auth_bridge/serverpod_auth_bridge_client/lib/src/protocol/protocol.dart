@@ -11,33 +11,33 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'legacy_authentication_fail_reason.dart' as _i2;
-import 'legacy_authentication_response.dart' as _i3;
-import 'legacy_user_info.dart' as _i4;
-import 'legacy_user_settings_config.dart' as _i5;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i6;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i7;
+    as _iaic;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'legacy_authentication_fail_reason.dart' as _ijl7odiy;
+import 'legacy_authentication_response.dart' as _i1vkno9i;
+import 'legacy_user_info.dart' as _izh8x5we;
+import 'legacy_user_settings_config.dart' as _iivi3sn7;
 export 'legacy_authentication_fail_reason.dart';
 export 'legacy_authentication_response.dart';
 export 'legacy_user_info.dart';
 export 'legacy_user_settings_config.dart';
 export 'client.dart';
 
-class Protocol extends _i1.SerializationManager {
+class Protocol extends _isc.SerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_isc.SerializationManager> _hostProtocols = {};
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _isc.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -71,55 +71,59 @@ class Protocol extends _i1.SerializationManager {
       }
     }
 
-    if (t == _i2.LegacyAuthenticationFailReason) {
-      return _i2.LegacyAuthenticationFailReason.fromJson(data) as T;
+    if (t == _ijl7odiy.LegacyAuthenticationFailReason) {
+      return _ijl7odiy.LegacyAuthenticationFailReason.fromJson(data) as T;
     }
-    if (t == _i3.LegacyAuthenticationResponse) {
-      return _i3.LegacyAuthenticationResponse.fromJson(data) as T;
+    if (t == _i1vkno9i.LegacyAuthenticationResponse) {
+      return _i1vkno9i.LegacyAuthenticationResponse.fromJson(data) as T;
     }
-    if (t == _i4.LegacyUserInfo) {
-      return _i4.LegacyUserInfo.fromJson(data) as T;
+    if (t == _izh8x5we.LegacyUserInfo) {
+      return _izh8x5we.LegacyUserInfo.fromJson(data) as T;
     }
-    if (t == _i5.LegacyUserSettingsConfig) {
-      return _i5.LegacyUserSettingsConfig.fromJson(data) as T;
+    if (t == _iivi3sn7.LegacyUserSettingsConfig) {
+      return _iivi3sn7.LegacyUserSettingsConfig.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i2.LegacyAuthenticationFailReason?>()) {
+    if (t == _isc.getType<_ijl7odiy.LegacyAuthenticationFailReason?>()) {
       return (data != null
-              ? _i2.LegacyAuthenticationFailReason.fromJson(data)
+              ? _ijl7odiy.LegacyAuthenticationFailReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i3.LegacyAuthenticationResponse?>()) {
+    if (t == _isc.getType<_i1vkno9i.LegacyAuthenticationResponse?>()) {
       return (data != null
-              ? _i3.LegacyAuthenticationResponse.fromJson(data)
+              ? _i1vkno9i.LegacyAuthenticationResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i4.LegacyUserInfo?>()) {
-      return (data != null ? _i4.LegacyUserInfo.fromJson(data) : null) as T;
+    if (t == _isc.getType<_izh8x5we.LegacyUserInfo?>()) {
+      return (data != null ? _izh8x5we.LegacyUserInfo.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i5.LegacyUserSettingsConfig?>()) {
-      return (data != null ? _i5.LegacyUserSettingsConfig.fromJson(data) : null)
+    if (t == _isc.getType<_iivi3sn7.LegacyUserSettingsConfig?>()) {
+      return (data != null
+              ? _iivi3sn7.LegacyUserSettingsConfig.fromJson(data)
+              : null)
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     try {
-      return _i6.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i7.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iaic.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i2.LegacyAuthenticationFailReason => 'LegacyAuthenticationFailReason',
-      _i3.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
-      _i4.LegacyUserInfo => 'LegacyUserInfo',
-      _i5.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
+      _ijl7odiy.LegacyAuthenticationFailReason =>
+        'LegacyAuthenticationFailReason',
+      _i1vkno9i.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
+      _izh8x5we.LegacyUserInfo => 'LegacyUserInfo',
+      _iivi3sn7.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
       _ => null,
     };
   }
@@ -137,13 +141,13 @@ class Protocol extends _i1.SerializationManager {
     }
 
     switch (data) {
-      case _i2.LegacyAuthenticationFailReason():
+      case _ijl7odiy.LegacyAuthenticationFailReason():
         return 'LegacyAuthenticationFailReason';
-      case _i3.LegacyAuthenticationResponse():
+      case _i1vkno9i.LegacyAuthenticationResponse():
         return 'LegacyAuthenticationResponse';
-      case _i4.LegacyUserInfo():
+      case _izh8x5we.LegacyUserInfo():
         return 'LegacyUserInfo';
-      case _i5.LegacyUserSettingsConfig():
+      case _iivi3sn7.LegacyUserSettingsConfig():
         return 'LegacyUserSettingsConfig';
     }
     return null;
@@ -156,16 +160,18 @@ class Protocol extends _i1.SerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'LegacyAuthenticationFailReason') {
-      return deserialize<_i2.LegacyAuthenticationFailReason>(data['data']);
+      return deserialize<_ijl7odiy.LegacyAuthenticationFailReason>(
+        data['data'],
+      );
     }
     if (dataClassName == 'LegacyAuthenticationResponse') {
-      return deserialize<_i3.LegacyAuthenticationResponse>(data['data']);
+      return deserialize<_i1vkno9i.LegacyAuthenticationResponse>(data['data']);
     }
     if (dataClassName == 'LegacyUserInfo') {
-      return deserialize<_i4.LegacyUserInfo>(data['data']);
+      return deserialize<_izh8x5we.LegacyUserInfo>(data['data']);
     }
     if (dataClassName == 'LegacyUserSettingsConfig') {
-      return deserialize<_i5.LegacyUserSettingsConfig>(data['data']);
+      return deserialize<_iivi3sn7.LegacyUserSettingsConfig>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -188,8 +194,8 @@ class Protocol extends _i1.SerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _isc.SerializationManager.toEncodableForProtocol(wrapped)
+          : _isc.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -242,10 +248,10 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     try {
-      return _i6.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i7.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

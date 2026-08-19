@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Information about a single server in a cluster.
 abstract class ClusterServerInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ClusterServerInfo._({required this.serverId});
 
   factory ClusterServerInfo({required String serverId}) =
@@ -29,7 +29,7 @@ abstract class ClusterServerInfo
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ClusterServerInfo copyWith({String? serverId});
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +49,7 @@ abstract class ClusterServerInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -59,7 +59,7 @@ class _ClusterServerInfoImpl extends ClusterServerInfo {
 
   /// Returns a shallow copy of this [ClusterServerInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ClusterServerInfo copyWith({String? serverId}) {
     return ClusterServerInfo(serverId: serverId ?? this.serverId);

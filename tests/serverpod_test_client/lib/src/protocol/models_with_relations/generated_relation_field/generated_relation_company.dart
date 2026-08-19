@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/generated_relation_field/generated_relation_office.dart'
-    as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_employee.dart'
-    as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+    as _inw8ul07;
+import '../../models_with_relations/generated_relation_field/generated_relation_office.dart'
+    as _im57bsix;
 
 abstract class GeneratedRelationCompany
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   GeneratedRelationCompany._({
     this.id,
     required this.name,
@@ -29,8 +29,8 @@ abstract class GeneratedRelationCompany
   factory GeneratedRelationCompany({
     int? id,
     required String name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   }) = _GeneratedRelationCompanyImpl;
 
   factory GeneratedRelationCompany.fromJson(
@@ -41,14 +41,15 @@ abstract class GeneratedRelationCompany
       name: jsonSerialization['name'] as String,
       office: jsonSerialization['office'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.GeneratedRelationOffice>(
+          : _iza9lbb5.Protocol().deserialize<_im57bsix.GeneratedRelationOffice>(
               jsonSerialization['office'],
             ),
       employees: jsonSerialization['employees'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.GeneratedRelationEmployee>>(
-              jsonSerialization['employees'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_inw8ul07.GeneratedRelationEmployee>>(
+                  jsonSerialization['employees'],
+                ),
     );
   }
 
@@ -59,18 +60,18 @@ abstract class GeneratedRelationCompany
 
   String name;
 
-  _i2.GeneratedRelationOffice? office;
+  _im57bsix.GeneratedRelationOffice? office;
 
-  List<_i3.GeneratedRelationEmployee>? employees;
+  List<_inw8ul07.GeneratedRelationEmployee>? employees;
 
   /// Returns a shallow copy of this [GeneratedRelationCompany]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   GeneratedRelationCompany copyWith({
     int? id,
     String? name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +101,7 @@ abstract class GeneratedRelationCompany
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,8 +111,8 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
   _GeneratedRelationCompanyImpl({
     int? id,
     required String name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   }) : super._(
          id: id,
          name: name,
@@ -121,7 +122,7 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
 
   /// Returns a shallow copy of this [GeneratedRelationCompany]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   GeneratedRelationCompany copyWith({
     Object? id = _Undefined,
@@ -132,10 +133,10 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
     return GeneratedRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _i2.GeneratedRelationOffice?
+      office: office is _im57bsix.GeneratedRelationOffice?
           ? office
           : this.office?.copyWith(),
-      employees: employees is List<_i3.GeneratedRelationEmployee>?
+      employees: employees is List<_inw8ul07.GeneratedRelationEmployee>?
           ? employees
           : this.employees?.map((e0) => e0.copyWith()).toList(),
     );

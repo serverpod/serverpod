@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
 
 abstract class TownInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TownInt._({
     this.id,
     required this.name,
@@ -27,7 +28,7 @@ abstract class TownInt
     int? id,
     required String name,
     int? mayorId,
-    _i2.CitizenInt? mayor,
+    _i7hzilwf.CitizenInt? mayor,
   }) = _TownIntImpl;
 
   factory TownInt.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class TownInt
       mayorId: jsonSerialization['mayorId'] as int?,
       mayor: jsonSerialization['mayor'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.CitizenInt>(
+          : _i0ntutnq.Protocol().deserialize<_i7hzilwf.CitizenInt>(
               jsonSerialization['mayor'],
             ),
     );
@@ -52,16 +53,16 @@ abstract class TownInt
 
   int? mayorId;
 
-  _i2.CitizenInt? mayor;
+  _i7hzilwf.CitizenInt? mayor;
 
   /// Returns a shallow copy of this [TownInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TownInt copyWith({
     int? id,
     String? name,
     int? mayorId,
-    _i2.CitizenInt? mayor,
+    _i7hzilwf.CitizenInt? mayor,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +88,7 @@ abstract class TownInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +99,7 @@ class _TownIntImpl extends TownInt {
     int? id,
     required String name,
     int? mayorId,
-    _i2.CitizenInt? mayor,
+    _i7hzilwf.CitizenInt? mayor,
   }) : super._(
          id: id,
          name: name,
@@ -108,7 +109,7 @@ class _TownIntImpl extends TownInt {
 
   /// Returns a shallow copy of this [TownInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TownInt copyWith({
     Object? id = _Undefined,
@@ -120,7 +121,7 @@ class _TownIntImpl extends TownInt {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       mayorId: mayorId is int? ? mayorId : this.mayorId,
-      mayor: mayor is _i2.CitizenInt? ? mayor : this.mayor?.copyWith(),
+      mayor: mayor is _i7hzilwf.CitizenInt? ? mayor : this.mayor?.copyWith(),
     );
   }
 }

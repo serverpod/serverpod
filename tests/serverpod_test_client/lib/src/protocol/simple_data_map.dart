@@ -10,31 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class SimpleDataMap
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SimpleDataMap._({required this.data});
 
-  factory SimpleDataMap({required Map<String, _i2.SimpleData> data}) =
+  factory SimpleDataMap({required Map<String, _i0zisc0t.SimpleData> data}) =
       _SimpleDataMapImpl;
 
   factory SimpleDataMap.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataMap(
-      data: _i3.Protocol().deserialize<Map<String, _i2.SimpleData>>(
+      data: _iza9lbb5.Protocol().deserialize<Map<String, _i0zisc0t.SimpleData>>(
         jsonSerialization['data'],
       ),
     );
   }
 
-  Map<String, _i2.SimpleData> data;
+  Map<String, _i0zisc0t.SimpleData> data;
 
   /// Returns a shallow copy of this [SimpleDataMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data});
+  @_isc.useResult
+  SimpleDataMap copyWith({Map<String, _i0zisc0t.SimpleData>? data});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -53,19 +53,19 @@ abstract class SimpleDataMap
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _SimpleDataMapImpl extends SimpleDataMap {
-  _SimpleDataMapImpl({required Map<String, _i2.SimpleData> data})
+  _SimpleDataMapImpl({required Map<String, _i0zisc0t.SimpleData> data})
     : super._(data: data);
 
   /// Returns a shallow copy of this [SimpleDataMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
-  SimpleDataMap copyWith({Map<String, _i2.SimpleData>? data}) {
+  SimpleDataMap copyWith({Map<String, _i0zisc0t.SimpleData>? data}) {
     return SimpleDataMap(
       data:
           data ??

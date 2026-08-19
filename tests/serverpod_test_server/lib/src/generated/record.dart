@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
 abstract class Record
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   Record._({this.aBoolRecord});
 
   factory Record({(bool,)? aBoolRecord}) = _RecordImpl;
@@ -23,7 +23,7 @@ abstract class Record
     return Record(
       aBoolRecord: jsonSerialization['aBoolRecord'] == null
           ? null
-          : _i2.Protocol().deserialize<(bool,)?>(
+          : _igqrxdcj.Protocol().deserialize<(bool,)?>(
               (jsonSerialization['aBoolRecord'] as Map<String, dynamic>),
             ),
     );
@@ -33,14 +33,14 @@ abstract class Record
 
   /// Returns a shallow copy of this [Record]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Record copyWith({(bool,)? aBoolRecord});
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'Record',
       if (aBoolRecord != null)
-        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
+        'aBoolRecord': _igqrxdcj.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 
@@ -49,13 +49,13 @@ abstract class Record
     return {
       '__className__': 'Record',
       if (aBoolRecord != null)
-        'aBoolRecord': _i2.Protocol().mapRecordToJson(aBoolRecord),
+        'aBoolRecord': _igqrxdcj.Protocol().mapRecordToJson(aBoolRecord),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -66,7 +66,7 @@ class _RecordImpl extends Record {
 
   /// Returns a shallow copy of this [Record]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Record copyWith({Object? aBoolRecord = _Undefined}) {
     return Record(

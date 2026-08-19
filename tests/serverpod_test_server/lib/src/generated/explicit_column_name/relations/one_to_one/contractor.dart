@@ -11,12 +11,13 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../explicit_column_name/relations/one_to_one/service.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../../explicit_column_name/relations/one_to_one/service.dart'
+    as _iml73r3x;
 
 abstract class Contractor
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Contractor._({
     this.id,
     required this.name,
@@ -28,7 +29,7 @@ abstract class Contractor
     int? id,
     required String name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   }) = _ContractorImpl;
 
   factory Contractor.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -38,7 +39,7 @@ abstract class Contractor
       serviceIdField: jsonSerialization['serviceIdField'] as int?,
       service: jsonSerialization['service'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Service>(
+          : _igqrxdcj.Protocol().deserialize<_iml73r3x.Service>(
               jsonSerialization['service'],
             ),
     );
@@ -55,19 +56,19 @@ abstract class Contractor
 
   int? serviceIdField;
 
-  _i2.Service? service;
+  _iml73r3x.Service? service;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Contractor]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Contractor copyWith({
     int? id,
     String? name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,16 +92,16 @@ abstract class Contractor
     };
   }
 
-  static ContractorInclude include({_i2.ServiceInclude? service}) {
+  static ContractorInclude include({_iml73r3x.ServiceInclude? service}) {
     return ContractorInclude._(service: service);
   }
 
   static ContractorIncludeList includeList({
-    _i1.WhereExpressionBuilder<ContractorTable>? where,
+    _is.WhereExpressionBuilder<ContractorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
     ContractorInclude? include,
   }) {
     return ContractorIncludeList._(
@@ -115,7 +116,7 @@ abstract class Contractor
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -126,7 +127,7 @@ class _ContractorImpl extends Contractor {
     int? id,
     required String name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   }) : super._(
          id: id,
          name: name,
@@ -136,7 +137,7 @@ class _ContractorImpl extends Contractor {
 
   /// Returns a shallow copy of this [Contractor]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Contractor copyWith({
     Object? id = _Undefined,
@@ -150,33 +151,35 @@ class _ContractorImpl extends Contractor {
       serviceIdField: serviceIdField is int?
           ? serviceIdField
           : this.serviceIdField,
-      service: service is _i2.Service? ? service : this.service?.copyWith(),
+      service: service is _iml73r3x.Service?
+          ? service
+          : this.service?.copyWith(),
     );
   }
 }
 
-class ContractorUpdateTable extends _i1.UpdateTable<ContractorTable> {
+class ContractorUpdateTable extends _is.UpdateTable<ContractorTable> {
   ContractorUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> serviceIdField(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> serviceIdField(int? value) => _is.ColumnValue(
     table.serviceIdField,
     value,
   );
 }
 
-class ContractorTable extends _i1.Table<int?> {
+class ContractorTable extends _is.Table<int?> {
   ContractorTable({super.tableRelation}) : super(tableName: 'contractor') {
     updateTable = ContractorUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    serviceIdField = _i1.ColumnInt(
+    serviceIdField = _is.ColumnInt(
       'fk_contractor_service_id',
       this,
       fieldName: 'serviceIdField',
@@ -185,34 +188,34 @@ class ContractorTable extends _i1.Table<int?> {
 
   late final ContractorUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt serviceIdField;
+  late final _is.ColumnInt serviceIdField;
 
-  _i2.ServiceTable? _service;
+  _iml73r3x.ServiceTable? _service;
 
-  _i2.ServiceTable get service {
+  _iml73r3x.ServiceTable get service {
     if (_service != null) return _service!;
-    _service = _i1.createRelationTable(
+    _service = _is.createRelationTable(
       relationFieldName: 'service',
       field: Contractor.t.serviceIdField,
-      foreignField: _i2.Service.t.id,
+      foreignField: _iml73r3x.Service.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ServiceTable(tableRelation: foreignTableRelation),
+          _iml73r3x.ServiceTable(tableRelation: foreignTableRelation),
     );
     return _service!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     serviceIdField,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'service') {
       return service;
     }
@@ -220,23 +223,23 @@ class ContractorTable extends _i1.Table<int?> {
   }
 }
 
-class ContractorInclude extends _i1.IncludeObject {
-  ContractorInclude._({_i2.ServiceInclude? service}) {
+class ContractorInclude extends _is.IncludeObject {
+  ContractorInclude._({_iml73r3x.ServiceInclude? service}) {
     _service = service;
   }
 
-  _i2.ServiceInclude? _service;
+  _iml73r3x.ServiceInclude? _service;
 
   @override
-  Map<String, _i1.Include?> get includes => {'service': _service};
+  Map<String, _is.Include?> get includes => {'service': _service};
 
   @override
-  _i1.Table<int?> get table => Contractor.t;
+  _is.Table<int?> get table => Contractor.t;
 }
 
-class ContractorIncludeList extends _i1.IncludeList {
+class ContractorIncludeList extends _is.IncludeList {
   ContractorIncludeList._({
-    _i1.WhereExpressionBuilder<ContractorTable>? where,
+    _is.WhereExpressionBuilder<ContractorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -247,10 +250,10 @@ class ContractorIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Contractor.t;
+  _is.Table<int?> get table => Contractor.t;
 }
 
 class ContractorRepository {
@@ -283,16 +286,16 @@ class ContractorRepository {
   /// );
   /// ```
   Future<List<Contractor>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ContractorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ContractorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
     ContractorInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Contractor>(
       where: where?.call(Contractor.t),
@@ -325,15 +328,15 @@ class ContractorRepository {
   /// );
   /// ```
   Future<Contractor?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ContractorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ContractorTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
     ContractorInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Contractor>(
       where: where?.call(Contractor.t),
@@ -349,12 +352,12 @@ class ContractorRepository {
 
   /// Finds a single [Contractor] by its [id] or null if no such row exists.
   Future<Contractor?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     ContractorInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Contractor>(
       id,
@@ -380,9 +383,9 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Contractor> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -398,9 +401,9 @@ class ContractorRepository {
   ///
   /// The returned [Contractor] will have its `id` field set.
   Future<Contractor> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Contractor>(
       row,
@@ -429,12 +432,12 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Contractor> rows, {
-    required _i1.ColumnSelections<ContractorTable> conflictColumns,
-    _i1.ColumnSelections<ContractorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ContractorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ContractorTable> conflictColumns,
+    _is.ColumnSelections<ContractorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ContractorTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Contractor>(
@@ -461,12 +464,12 @@ class ContractorRepository {
   ///
   /// The returned [Contractor] will have its `id` field set.
   Future<Contractor?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor row, {
-    required _i1.ColumnSelections<ContractorTable> conflictColumns,
-    _i1.ColumnSelections<ContractorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ContractorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ContractorTable> conflictColumns,
+    _is.ColumnSelections<ContractorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ContractorTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Contractor>(
       row,
@@ -487,10 +490,10 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Contractor> rows, {
-    _i1.ColumnSelections<ContractorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ContractorTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Contractor>(
@@ -505,10 +508,10 @@ class ContractorRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Contractor> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor row, {
-    _i1.ColumnSelections<ContractorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ContractorTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Contractor>(
       row,
@@ -520,10 +523,10 @@ class ContractorRepository {
   /// Updates a single [Contractor] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Contractor?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Contractor>(
       id,
@@ -539,14 +542,14 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ContractorTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ContractorUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ContractorTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Contractor>(
@@ -573,11 +576,11 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Contractor> rows, {
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Contractor>(
@@ -591,9 +594,9 @@ class ContractorRepository {
 
   /// Deletes a single [Contractor].
   Future<Contractor> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Contractor>(
       row,
@@ -610,11 +613,11 @@ class ContractorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Contractor>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ContractorTable> where,
-    _i1.OrderByBuilder<ContractorTable>? orderBy,
-    _i1.OrderByListBuilder<ContractorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ContractorTable> where,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Contractor>(
@@ -629,10 +632,10 @@ class ContractorRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ContractorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ContractorTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Contractor>(
       where: where?.call(Contractor.t),
@@ -643,11 +646,11 @@ class ContractorRepository {
 
   /// Acquires row-level locks on [Contractor] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ContractorTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ContractorTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Contractor>(
       where: where(Contractor.t),
@@ -664,10 +667,10 @@ class ContractorAttachRowRepository {
   /// Creates a relation between the given [Contractor] and [Service]
   /// by setting the [Contractor]'s foreign key `serviceIdField` to refer to the [Service].
   Future<void> service(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor contractor,
-    _i2.Service service, {
-    _i1.Transaction? transaction,
+    _iml73r3x.Service service, {
+    _is.Transaction? transaction,
   }) async {
     if (contractor.id == null) {
       throw ArgumentError.notNull('contractor.id');
@@ -694,9 +697,9 @@ class ContractorDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> service(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Contractor contractor, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (contractor.id == null) {
       throw ArgumentError.notNull('contractor.id');

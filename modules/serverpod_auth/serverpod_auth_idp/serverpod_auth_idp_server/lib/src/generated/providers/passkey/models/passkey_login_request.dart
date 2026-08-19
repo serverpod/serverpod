@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Data to be sent for a Passkey login.
 abstract class PasskeyLoginRequest
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   PasskeyLoginRequest._({
     required this.challengeId,
     required this.keyId,
@@ -25,55 +25,55 @@ abstract class PasskeyLoginRequest
   });
 
   factory PasskeyLoginRequest({
-    required _i1.UuidValue challengeId,
-    required _i2.ByteData keyId,
-    required _i2.ByteData authenticatorData,
-    required _i2.ByteData clientDataJSON,
-    required _i2.ByteData signature,
+    required _is.UuidValue challengeId,
+    required _idt.ByteData keyId,
+    required _idt.ByteData authenticatorData,
+    required _idt.ByteData clientDataJSON,
+    required _idt.ByteData signature,
   }) = _PasskeyLoginRequestImpl;
 
   factory PasskeyLoginRequest.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyLoginRequest(
-      challengeId: _i1.UuidValueJsonExtension.fromJson(
+      challengeId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),
-      keyId: _i1.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
-      authenticatorData: _i1.ByteDataJsonExtension.fromJson(
+      keyId: _is.ByteDataJsonExtension.fromJson(jsonSerialization['keyId']),
+      authenticatorData: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['authenticatorData'],
       ),
-      clientDataJSON: _i1.ByteDataJsonExtension.fromJson(
+      clientDataJSON: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['clientDataJSON'],
       ),
-      signature: _i1.ByteDataJsonExtension.fromJson(
+      signature: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['signature'],
       ),
     );
   }
 
   /// The ID of the solved challenge.
-  _i1.UuidValue challengeId;
+  _is.UuidValue challengeId;
 
   /// The ID of the key used.
-  _i2.ByteData keyId;
+  _idt.ByteData keyId;
 
   /// The client authenticator's response data.
-  _i2.ByteData authenticatorData;
+  _idt.ByteData authenticatorData;
 
   /// The client authenticator's JSON data.
-  _i2.ByteData clientDataJSON;
+  _idt.ByteData clientDataJSON;
 
   /// The signature of the client's key on the challenge.
-  _i2.ByteData signature;
+  _idt.ByteData signature;
 
   /// Returns a shallow copy of this [PasskeyLoginRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PasskeyLoginRequest copyWith({
-    _i1.UuidValue? challengeId,
-    _i2.ByteData? keyId,
-    _i2.ByteData? authenticatorData,
-    _i2.ByteData? clientDataJSON,
-    _i2.ByteData? signature,
+    _is.UuidValue? challengeId,
+    _idt.ByteData? keyId,
+    _idt.ByteData? authenticatorData,
+    _idt.ByteData? clientDataJSON,
+    _idt.ByteData? signature,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,17 +101,17 @@ abstract class PasskeyLoginRequest
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _PasskeyLoginRequestImpl extends PasskeyLoginRequest {
   _PasskeyLoginRequestImpl({
-    required _i1.UuidValue challengeId,
-    required _i2.ByteData keyId,
-    required _i2.ByteData authenticatorData,
-    required _i2.ByteData clientDataJSON,
-    required _i2.ByteData signature,
+    required _is.UuidValue challengeId,
+    required _idt.ByteData keyId,
+    required _idt.ByteData authenticatorData,
+    required _idt.ByteData clientDataJSON,
+    required _idt.ByteData signature,
   }) : super._(
          challengeId: challengeId,
          keyId: keyId,
@@ -122,14 +122,14 @@ class _PasskeyLoginRequestImpl extends PasskeyLoginRequest {
 
   /// Returns a shallow copy of this [PasskeyLoginRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PasskeyLoginRequest copyWith({
-    _i1.UuidValue? challengeId,
-    _i2.ByteData? keyId,
-    _i2.ByteData? authenticatorData,
-    _i2.ByteData? clientDataJSON,
-    _i2.ByteData? signature,
+    _is.UuidValue? challengeId,
+    _idt.ByteData? keyId,
+    _idt.ByteData? authenticatorData,
+    _idt.ByteData? clientDataJSON,
+    _idt.ByteData? signature,
   }) {
     return PasskeyLoginRequest(
       challengeId: challengeId ?? this.challengeId,

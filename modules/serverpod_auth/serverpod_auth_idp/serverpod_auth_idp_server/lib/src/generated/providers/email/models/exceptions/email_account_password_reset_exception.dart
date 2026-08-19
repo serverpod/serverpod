@@ -10,9 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import '../../../../providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
-    as _i2;
+    as _i17ufdat;
 
 /// Exception to be thrown if email reset request fails.
 ///
@@ -20,32 +20,32 @@ import '../../../../providers/email/models/exceptions/email_account_password_res
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountPasswordResetException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   EmailAccountPasswordResetException._({required this.reason});
 
   factory EmailAccountPasswordResetException({
-    required _i2.EmailAccountPasswordResetExceptionReason reason,
+    required _i17ufdat.EmailAccountPasswordResetExceptionReason reason,
   }) = _EmailAccountPasswordResetExceptionImpl;
 
   factory EmailAccountPasswordResetException.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return EmailAccountPasswordResetException(
-      reason: _i2.EmailAccountPasswordResetExceptionReason.fromJson(
+      reason: _i17ufdat.EmailAccountPasswordResetExceptionReason.fromJson(
         (jsonSerialization['reason'] as String),
       ),
     );
   }
 
-  _i2.EmailAccountPasswordResetExceptionReason reason;
+  _i17ufdat.EmailAccountPasswordResetExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAccountPasswordResetException copyWith({
-    _i2.EmailAccountPasswordResetExceptionReason? reason,
+    _i17ufdat.EmailAccountPasswordResetExceptionReason? reason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -72,15 +72,15 @@ abstract class EmailAccountPasswordResetException
 class _EmailAccountPasswordResetExceptionImpl
     extends EmailAccountPasswordResetException {
   _EmailAccountPasswordResetExceptionImpl({
-    required _i2.EmailAccountPasswordResetExceptionReason reason,
+    required _i17ufdat.EmailAccountPasswordResetExceptionReason reason,
   }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountPasswordResetException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAccountPasswordResetException copyWith({
-    _i2.EmailAccountPasswordResetExceptionReason? reason,
+    _i17ufdat.EmailAccountPasswordResetExceptionReason? reason,
   }) {
     return EmailAccountPasswordResetException(reason: reason ?? this.reason);
   }

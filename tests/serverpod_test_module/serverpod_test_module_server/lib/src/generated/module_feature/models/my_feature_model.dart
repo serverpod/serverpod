@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class MyModuleFeatureModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   MyModuleFeatureModel._({required this.name});
 
   factory MyModuleFeatureModel({required String name}) =
@@ -29,7 +29,7 @@ abstract class MyModuleFeatureModel
 
   /// Returns a shallow copy of this [MyModuleFeatureModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MyModuleFeatureModel copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +49,7 @@ abstract class MyModuleFeatureModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -58,7 +58,7 @@ class _MyModuleFeatureModelImpl extends MyModuleFeatureModel {
 
   /// Returns a shallow copy of this [MyModuleFeatureModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MyModuleFeatureModel copyWith({String? name}) {
     return MyModuleFeatureModel(name: name ?? this.name);

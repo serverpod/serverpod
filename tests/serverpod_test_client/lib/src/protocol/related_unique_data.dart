@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'unique_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'unique_data.dart' as _iufhyrjh;
 
 abstract class RelatedUniqueData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -26,7 +26,7 @@ abstract class RelatedUniqueData
   factory RelatedUniqueData({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     required int number,
   }) = _RelatedUniqueDataImpl;
 
@@ -36,7 +36,7 @@ abstract class RelatedUniqueData
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UniqueData>(
+          : _iza9lbb5.Protocol().deserialize<_iufhyrjh.UniqueData>(
               jsonSerialization['uniqueData'],
             ),
       number: jsonSerialization['number'] as int,
@@ -50,17 +50,17 @@ abstract class RelatedUniqueData
 
   int uniqueDataId;
 
-  _i2.UniqueData? uniqueData;
+  _iufhyrjh.UniqueData? uniqueData;
 
   int number;
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     int? number,
   });
   @override
@@ -87,7 +87,7 @@ abstract class RelatedUniqueData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -97,7 +97,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   _RelatedUniqueDataImpl({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     required int number,
   }) : super._(
          id: id,
@@ -108,7 +108,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
@@ -119,7 +119,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _i2.UniqueData?
+      uniqueData: uniqueData is _iufhyrjh.UniqueData?
           ? uniqueData
           : this.uniqueData?.copyWith(),
       number: number ?? this.number,

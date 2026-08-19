@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
 abstract class ObjectWithCustomClass
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithCustomClass._({
     required this.customClassWithoutProtocolSerialization,
     required this.customClassWithProtocolSerialization,
@@ -22,11 +22,11 @@ abstract class ObjectWithCustomClass
   });
 
   factory ObjectWithCustomClass({
-    required _i2.CustomClassWithoutProtocolSerialization
+    required _ilwf0zl1.CustomClassWithoutProtocolSerialization
     customClassWithoutProtocolSerialization,
-    required _i2.CustomClassWithProtocolSerialization
+    required _ilwf0zl1.CustomClassWithProtocolSerialization
     customClassWithProtocolSerialization,
-    required _i2.CustomClassWithProtocolSerializationMethod
+    required _ilwf0zl1.CustomClassWithProtocolSerializationMethod
     customClassWithProtocolSerializationMethod,
   }) = _ObjectWithCustomClassImpl;
 
@@ -35,37 +35,38 @@ abstract class ObjectWithCustomClass
   ) {
     return ObjectWithCustomClass(
       customClassWithoutProtocolSerialization:
-          _i2.CustomClassWithoutProtocolSerialization.fromJson(
+          _ilwf0zl1.CustomClassWithoutProtocolSerialization.fromJson(
             jsonSerialization['customClassWithoutProtocolSerialization'],
           ),
       customClassWithProtocolSerialization:
-          _i2.CustomClassWithProtocolSerialization.fromJson(
+          _ilwf0zl1.CustomClassWithProtocolSerialization.fromJson(
             jsonSerialization['customClassWithProtocolSerialization'],
           ),
       customClassWithProtocolSerializationMethod:
-          _i2.CustomClassWithProtocolSerializationMethod.fromJson(
+          _ilwf0zl1.CustomClassWithProtocolSerializationMethod.fromJson(
             jsonSerialization['customClassWithProtocolSerializationMethod'],
           ),
     );
   }
 
-  _i2.CustomClassWithoutProtocolSerialization
+  _ilwf0zl1.CustomClassWithoutProtocolSerialization
   customClassWithoutProtocolSerialization;
 
-  _i2.CustomClassWithProtocolSerialization customClassWithProtocolSerialization;
+  _ilwf0zl1.CustomClassWithProtocolSerialization
+  customClassWithProtocolSerialization;
 
-  _i2.CustomClassWithProtocolSerializationMethod
+  _ilwf0zl1.CustomClassWithProtocolSerializationMethod
   customClassWithProtocolSerializationMethod;
 
   /// Returns a shallow copy of this [ObjectWithCustomClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithCustomClass copyWith({
-    _i2.CustomClassWithoutProtocolSerialization?
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
     customClassWithoutProtocolSerialization,
-    _i2.CustomClassWithProtocolSerialization?
+    _ilwf0zl1.CustomClassWithProtocolSerialization?
     customClassWithProtocolSerialization,
-    _i2.CustomClassWithProtocolSerializationMethod?
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
     customClassWithProtocolSerializationMethod,
   });
   @override
@@ -87,17 +88,17 @@ abstract class ObjectWithCustomClass
       '__className__': 'ObjectWithCustomClass',
       'customClassWithoutProtocolSerialization':
           // ignore: unnecessary_type_check
-          customClassWithoutProtocolSerialization is _i1.ProtocolSerialization
+          customClassWithoutProtocolSerialization is _isc.ProtocolSerialization
           ? (customClassWithoutProtocolSerialization
-                    as _i1.ProtocolSerialization)
+                    as _isc.ProtocolSerialization)
                 .toJsonForProtocol()
           :
             // ignore: dead_code
             customClassWithoutProtocolSerialization.toJson(),
       'customClassWithProtocolSerialization':
           // ignore: unnecessary_type_check
-          customClassWithProtocolSerialization is _i1.ProtocolSerialization
-          ? (customClassWithProtocolSerialization as _i1.ProtocolSerialization)
+          customClassWithProtocolSerialization is _isc.ProtocolSerialization
+          ? (customClassWithProtocolSerialization as _isc.ProtocolSerialization)
                 .toJsonForProtocol()
           :
             // ignore: dead_code
@@ -105,9 +106,9 @@ abstract class ObjectWithCustomClass
       'customClassWithProtocolSerializationMethod':
           // ignore: unnecessary_type_check
           customClassWithProtocolSerializationMethod
-              is _i1.ProtocolSerialization
+              is _isc.ProtocolSerialization
           ? (customClassWithProtocolSerializationMethod
-                    as _i1.ProtocolSerialization)
+                    as _isc.ProtocolSerialization)
                 .toJsonForProtocol()
           :
             // ignore: dead_code
@@ -117,17 +118,17 @@ abstract class ObjectWithCustomClass
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
   _ObjectWithCustomClassImpl({
-    required _i2.CustomClassWithoutProtocolSerialization
+    required _ilwf0zl1.CustomClassWithoutProtocolSerialization
     customClassWithoutProtocolSerialization,
-    required _i2.CustomClassWithProtocolSerialization
+    required _ilwf0zl1.CustomClassWithProtocolSerialization
     customClassWithProtocolSerialization,
-    required _i2.CustomClassWithProtocolSerializationMethod
+    required _ilwf0zl1.CustomClassWithProtocolSerializationMethod
     customClassWithProtocolSerializationMethod,
   }) : super._(
          customClassWithoutProtocolSerialization:
@@ -140,14 +141,14 @@ class _ObjectWithCustomClassImpl extends ObjectWithCustomClass {
 
   /// Returns a shallow copy of this [ObjectWithCustomClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithCustomClass copyWith({
-    _i2.CustomClassWithoutProtocolSerialization?
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
     customClassWithoutProtocolSerialization,
-    _i2.CustomClassWithProtocolSerialization?
+    _ilwf0zl1.CustomClassWithProtocolSerialization?
     customClassWithProtocolSerialization,
-    _i2.CustomClassWithProtocolSerializationMethod?
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
     customClassWithProtocolSerializationMethod,
   }) {
     return ObjectWithCustomClass(

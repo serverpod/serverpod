@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class EmptyModelRelationItem
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EmptyModelRelationItem._({
     this.id,
     required this.name,
@@ -42,7 +42,7 @@ abstract class EmptyModelRelationItem
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EmptyModelRelationItem copyWith({
     int? id,
     String? name,
@@ -67,7 +67,7 @@ abstract class EmptyModelRelationItem
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -84,7 +84,7 @@ class _EmptyModelRelationItemImpl extends EmptyModelRelationItem {
 
   /// Returns a shallow copy of this [EmptyModelRelationItem]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EmptyModelRelationItem copyWith({
     Object? id = _Undefined,

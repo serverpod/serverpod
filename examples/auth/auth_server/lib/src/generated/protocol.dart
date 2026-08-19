@@ -11,27 +11,27 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i3;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i4;
-import 'greeting.dart' as _i5;
-import 'dart:typed_data' as _i6;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _iais;
+import 'greeting.dart' as _ig8bxnp5;
 export 'greeting.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [
-    ..._i3.Protocol.targetTableDefinitions,
-    ..._i4.Protocol.targetTableDefinitions,
-    ..._i2.Protocol.targetTableDefinitions,
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    ..._iais.Protocol.targetTableDefinitions,
+    ..._iacs.Protocol.targetTableDefinitions,
+    ..._isp.Protocol.targetTableDefinitions,
   ];
 
   static String? getClassNameFromObjectJson(dynamic data) {
@@ -61,36 +61,36 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i5.Greeting) {
-      return _i5.Greeting.fromJson(data) as T;
+    if (t == _ig8bxnp5.Greeting) {
+      return _ig8bxnp5.Greeting.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.Greeting?>()) {
-      return (data != null ? _i5.Greeting.fromJson(data) : null) as T;
+    if (t == _is.getType<_ig8bxnp5.Greeting?>()) {
+      return (data != null ? _ig8bxnp5.Greeting.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<({_i6.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i6.ByteData>(
+            challenge: deserialize<_idt.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
+            id: deserialize<_is.UuidValue>(data['n']['id']),
           )
           as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iais.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacs.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i5.Greeting => 'Greeting',
+      _ig8bxnp5.Greeting => 'Greeting',
       _ => null,
     };
   }
@@ -105,22 +105,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i5.Greeting():
+      case _ig8bxnp5.Greeting():
         return 'Greeting';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _iais.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _iacs.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -134,44 +134,44 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'Greeting') {
-      return deserialize<_i5.Greeting>(data['data']);
+      return deserialize<_ig8bxnp5.Greeting>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _iais.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _iacs.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i3.Protocol().registerHostProtocol('auth', this);
-    _i4.Protocol().registerHostProtocol('auth', this);
+    _iais.Protocol().registerHostProtocol('auth', this);
+    _iacs.Protocol().registerHostProtocol('auth', this);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _iais.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i4.Protocol().getTableForType(t);
+      var table = _iacs.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
@@ -180,7 +180,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -195,7 +195,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i6.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_idt.ByteData challenge, _is.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -204,10 +204,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       };
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iais.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iacs.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

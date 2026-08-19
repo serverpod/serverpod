@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../empty_model/empty_model_relation_item.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../empty_model/empty_model_relation_item.dart' as _iq60yogb;
 
 abstract class RelationEmptyModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RelationEmptyModel._({
     this.id,
     this.items,
@@ -23,7 +23,7 @@ abstract class RelationEmptyModel
 
   factory RelationEmptyModel({
     int? id,
-    List<_i2.EmptyModelRelationItem>? items,
+    List<_iq60yogb.EmptyModelRelationItem>? items,
   }) = _RelationEmptyModelImpl;
 
   factory RelationEmptyModel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -31,9 +31,10 @@ abstract class RelationEmptyModel
       id: jsonSerialization['id'] as int?,
       items: jsonSerialization['items'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.EmptyModelRelationItem>>(
-              jsonSerialization['items'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_iq60yogb.EmptyModelRelationItem>>(
+                  jsonSerialization['items'],
+                ),
     );
   }
 
@@ -42,14 +43,14 @@ abstract class RelationEmptyModel
   /// the id will be null.
   int? id;
 
-  List<_i2.EmptyModelRelationItem>? items;
+  List<_iq60yogb.EmptyModelRelationItem>? items;
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RelationEmptyModel copyWith({
     int? id,
-    List<_i2.EmptyModelRelationItem>? items,
+    List<_iq60yogb.EmptyModelRelationItem>? items,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -72,7 +73,7 @@ abstract class RelationEmptyModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -81,7 +82,7 @@ class _Undefined {}
 class _RelationEmptyModelImpl extends RelationEmptyModel {
   _RelationEmptyModelImpl({
     int? id,
-    List<_i2.EmptyModelRelationItem>? items,
+    List<_iq60yogb.EmptyModelRelationItem>? items,
   }) : super._(
          id: id,
          items: items,
@@ -89,7 +90,7 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
 
   /// Returns a shallow copy of this [RelationEmptyModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RelationEmptyModel copyWith({
     Object? id = _Undefined,
@@ -97,7 +98,7 @@ class _RelationEmptyModelImpl extends RelationEmptyModel {
   }) {
     return RelationEmptyModel(
       id: id is int? ? id : this.id,
-      items: items is List<_i2.EmptyModelRelationItem>?
+      items: items is List<_iq60yogb.EmptyModelRelationItem>?
           ? items
           : this.items?.map((e0) => e0.copyWith()).toList(),
     );

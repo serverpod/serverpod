@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class ObjectWithJsonbClassLevel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithJsonbClassLevel._({
     this.id,
     required this.implicitJsonb,
@@ -34,13 +34,15 @@ abstract class ObjectWithJsonbClassLevel
   ) {
     return ObjectWithJsonbClassLevel(
       id: jsonSerialization['id'] as int?,
-      implicitJsonb: _i2.Protocol().deserialize<List<String>>(
+      implicitJsonb: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['implicitJsonb'],
       ),
-      explicitJsonb: _i2.Protocol().deserialize<List<String>>(
+      explicitJsonb: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['explicitJsonb'],
       ),
-      json: _i2.Protocol().deserialize<List<String>>(jsonSerialization['json']),
+      json: _iza9lbb5.Protocol().deserialize<List<String>>(
+        jsonSerialization['json'],
+      ),
     );
   }
 
@@ -57,7 +59,7 @@ abstract class ObjectWithJsonbClassLevel
 
   /// Returns a shallow copy of this [ObjectWithJsonbClassLevel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithJsonbClassLevel copyWith({
     int? id,
     List<String>? implicitJsonb,
@@ -88,7 +90,7 @@ abstract class ObjectWithJsonbClassLevel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -109,7 +111,7 @@ class _ObjectWithJsonbClassLevelImpl extends ObjectWithJsonbClassLevel {
 
   /// Returns a shallow copy of this [ObjectWithJsonbClassLevel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithJsonbClassLevel copyWith({
     Object? id = _Undefined,

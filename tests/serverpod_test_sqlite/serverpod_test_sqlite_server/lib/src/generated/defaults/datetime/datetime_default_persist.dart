@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DateTimeDefaultPersist
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DateTimeDefaultPersist._({
     this.id,
     this.dateTimeDefaultPersistNow,
@@ -34,13 +34,13 @@ abstract class DateTimeDefaultPersist
       dateTimeDefaultPersistNow:
           jsonSerialization['dateTimeDefaultPersistNow'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultPersistNow'],
             ),
       dateTimeDefaultPersistStr:
           jsonSerialization['dateTimeDefaultPersistStr'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultPersistStr'],
             ),
     );
@@ -58,11 +58,11 @@ abstract class DateTimeDefaultPersist
   DateTime? dateTimeDefaultPersistStr;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DateTimeDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DateTimeDefaultPersist copyWith({
     int? id,
     DateTime? dateTimeDefaultPersistNow,
@@ -97,11 +97,11 @@ abstract class DateTimeDefaultPersist
   }
 
   static DateTimeDefaultPersistIncludeList includeList({
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
   }) {
     return DateTimeDefaultPersistIncludeList._(
@@ -116,7 +116,7 @@ abstract class DateTimeDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -135,7 +135,7 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
 
   /// Returns a shallow copy of this [DateTimeDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DateTimeDefaultPersist copyWith({
     Object? id = _Undefined,
@@ -155,34 +155,34 @@ class _DateTimeDefaultPersistImpl extends DateTimeDefaultPersist {
 }
 
 class DateTimeDefaultPersistUpdateTable
-    extends _i1.UpdateTable<DateTimeDefaultPersistTable> {
+    extends _is.UpdateTable<DateTimeDefaultPersistTable> {
   DateTimeDefaultPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
+  _is.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistNow(
     DateTime? value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.dateTimeDefaultPersistNow,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistStr(
+  _is.ColumnValue<DateTime, DateTime> dateTimeDefaultPersistStr(
     DateTime? value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.dateTimeDefaultPersistStr,
     value,
   );
 }
 
-class DateTimeDefaultPersistTable extends _i1.Table<int?> {
+class DateTimeDefaultPersistTable extends _is.Table<int?> {
   DateTimeDefaultPersistTable({super.tableRelation})
     : super(tableName: 'datetime_default_persist') {
     updateTable = DateTimeDefaultPersistUpdateTable(this);
-    dateTimeDefaultPersistNow = _i1.ColumnDateTime(
+    dateTimeDefaultPersistNow = _is.ColumnDateTime(
       'dateTimeDefaultPersistNow',
       this,
       hasDefault: true,
     );
-    dateTimeDefaultPersistStr = _i1.ColumnDateTime(
+    dateTimeDefaultPersistStr = _is.ColumnDateTime(
       'dateTimeDefaultPersistStr',
       this,
       hasDefault: true,
@@ -191,31 +191,31 @@ class DateTimeDefaultPersistTable extends _i1.Table<int?> {
 
   late final DateTimeDefaultPersistUpdateTable updateTable;
 
-  late final _i1.ColumnDateTime dateTimeDefaultPersistNow;
+  late final _is.ColumnDateTime dateTimeDefaultPersistNow;
 
-  late final _i1.ColumnDateTime dateTimeDefaultPersistStr;
+  late final _is.ColumnDateTime dateTimeDefaultPersistStr;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     dateTimeDefaultPersistNow,
     dateTimeDefaultPersistStr,
   ];
 }
 
-class DateTimeDefaultPersistInclude extends _i1.IncludeObject {
+class DateTimeDefaultPersistInclude extends _is.IncludeObject {
   DateTimeDefaultPersistInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DateTimeDefaultPersist.t;
+  _is.Table<int?> get table => DateTimeDefaultPersist.t;
 }
 
-class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
+class DateTimeDefaultPersistIncludeList extends _is.IncludeList {
   DateTimeDefaultPersistIncludeList._({
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -226,10 +226,10 @@ class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DateTimeDefaultPersist.t;
+  _is.Table<int?> get table => DateTimeDefaultPersist.t;
 }
 
 class DateTimeDefaultPersistRepository {
@@ -258,15 +258,15 @@ class DateTimeDefaultPersistRepository {
   /// );
   /// ```
   Future<List<DateTimeDefaultPersist>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
@@ -298,14 +298,14 @@ class DateTimeDefaultPersistRepository {
   /// );
   /// ```
   Future<DateTimeDefaultPersist?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
@@ -320,11 +320,11 @@ class DateTimeDefaultPersistRepository {
 
   /// Finds a single [DateTimeDefaultPersist] by its [id] or null if no such row exists.
   Future<DateTimeDefaultPersist?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DateTimeDefaultPersist>(
       id,
@@ -349,9 +349,9 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -367,9 +367,9 @@ class DateTimeDefaultPersistRepository {
   ///
   /// The returned [DateTimeDefaultPersist] will have its `id` field set.
   Future<DateTimeDefaultPersist> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DateTimeDefaultPersist>(
       row,
@@ -398,12 +398,12 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
-    required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefaultPersist>(
@@ -430,12 +430,12 @@ class DateTimeDefaultPersistRepository {
   ///
   /// The returned [DateTimeDefaultPersist] will have its `id` field set.
   Future<DateTimeDefaultPersist?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultPersist row, {
-    required _i1.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DateTimeDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<DateTimeDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultPersist>(
       row,
@@ -456,10 +456,10 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
-    _i1.ColumnSelections<DateTimeDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DateTimeDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefaultPersist>(
@@ -474,10 +474,10 @@ class DateTimeDefaultPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DateTimeDefaultPersist> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultPersist row, {
-    _i1.ColumnSelections<DateTimeDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DateTimeDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DateTimeDefaultPersist>(
       row,
@@ -489,11 +489,11 @@ class DateTimeDefaultPersistRepository {
   /// Updates a single [DateTimeDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DateTimeDefaultPersist?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
+    required _is.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefaultPersist>(
       id,
@@ -509,15 +509,15 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DateTimeDefaultPersistUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
+    required _is.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultPersist>(
@@ -544,11 +544,11 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultPersist> rows, {
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefaultPersist>(
@@ -562,9 +562,9 @@ class DateTimeDefaultPersistRepository {
 
   /// Deletes a single [DateTimeDefaultPersist].
   Future<DateTimeDefaultPersist> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DateTimeDefaultPersist>(
       row,
@@ -581,11 +581,11 @@ class DateTimeDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultPersist>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
-    _i1.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
+    _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultPersist>(
@@ -600,10 +600,10 @@ class DateTimeDefaultPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DateTimeDefaultPersist>(
       where: where?.call(DateTimeDefaultPersist.t),
@@ -614,11 +614,11 @@ class DateTimeDefaultPersistRepository {
 
   /// Acquires row-level locks on [DateTimeDefaultPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DateTimeDefaultPersistTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DateTimeDefaultPersist>(
       where: where(DateTimeDefaultPersist.t),

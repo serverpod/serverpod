@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:io' as _i2;
-import 'protocol.dart' as _i3;
-import 'endpoints.dart' as _i4;
+import 'dart:io' as _idi;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'endpoints.dart' as _iavctuc6;
+import 'protocol.dart' as _il2as5qe;
 export 'package:serverpod/serverpod.dart' hide Serverpod;
 
 /// The Serverpod server for this project.
@@ -25,25 +25,25 @@ export 'package:serverpod/serverpod.dart' hide Serverpod;
 /// ```dart
 /// final pod = Serverpod(args);
 /// ```
-class Serverpod extends _i1.Serverpod {
+class Serverpod extends _is.Serverpod {
   Serverpod(
     List<String> args, {
-    _i2.Directory? serverDirectory,
-    _i1.ServerpodConfig? config,
-    _i1.ServerpodConfig Function(_i1.ServerpodConfig)? configOverride,
-    _i1.AuthenticationHandler? authenticationHandler,
-    _i1.HealthCheckHandler? healthCheckHandler,
-    _i1.HealthConfig? healthConfig,
-    _i1.Headers? httpResponseHeaders,
-    _i1.Headers? httpOptionsResponseHeaders,
-    _i1.SecurityContextConfig? securityContextConfig,
-    _i1.ExperimentalFeatures? experimentalFeatures,
-    _i1.RuntimeParametersListBuilder? runtimeParametersBuilder,
-    _i1.DatabaseInterceptor? databaseInterceptor,
+    _idi.Directory? serverDirectory,
+    _is.ServerpodConfig? config,
+    _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
+    _is.AuthenticationHandler? authenticationHandler,
+    _is.HealthCheckHandler? healthCheckHandler,
+    _is.HealthConfig? healthConfig,
+    _is.Headers? httpResponseHeaders,
+    _is.Headers? httpOptionsResponseHeaders,
+    _is.SecurityContextConfig? securityContextConfig,
+    _is.ExperimentalFeatures? experimentalFeatures,
+    _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
+    _is.DatabaseInterceptor? databaseInterceptor,
   }) : super(
          args,
-         _i3.Protocol(),
-         _i4.Endpoints(),
+         _il2as5qe.Protocol(),
+         _iavctuc6.Endpoints(),
          serverDirectory: serverDirectory,
          config: config,
          configOverride: configOverride,

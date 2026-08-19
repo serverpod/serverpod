@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Bindings to a future call claim entry in the database.
 abstract class FutureCallClaimEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   FutureCallClaimEntry._({
     this.id,
     this.futureCallId,
@@ -33,7 +33,7 @@ abstract class FutureCallClaimEntry
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
       futureCallId: jsonSerialization['futureCallId'] as int?,
-      lastHeartbeatTime: _i1.DateTimeJsonExtension.fromJson(
+      lastHeartbeatTime: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastHeartbeatTime'],
       ),
     );
@@ -54,11 +54,11 @@ abstract class FutureCallClaimEntry
   DateTime lastHeartbeatTime;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   FutureCallClaimEntry copyWith({
     int? id,
     int? futureCallId,
@@ -89,11 +89,11 @@ abstract class FutureCallClaimEntry
   }
 
   static FutureCallClaimEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     FutureCallClaimEntryInclude? include,
   }) {
     return FutureCallClaimEntryIncludeList._(
@@ -108,7 +108,7 @@ abstract class FutureCallClaimEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,
@@ -143,30 +143,30 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
 }
 
 class FutureCallClaimEntryUpdateTable
-    extends _i1.UpdateTable<FutureCallClaimEntryTable> {
+    extends _is.UpdateTable<FutureCallClaimEntryTable> {
   FutureCallClaimEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> futureCallId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> futureCallId(int? value) => _is.ColumnValue(
     table.futureCallId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> lastHeartbeatTime(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> lastHeartbeatTime(DateTime value) =>
+      _is.ColumnValue(
         table.lastHeartbeatTime,
         value,
       );
 }
 
-class FutureCallClaimEntryTable extends _i1.Table<int?> {
+class FutureCallClaimEntryTable extends _is.Table<int?> {
   FutureCallClaimEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_future_call_claim') {
     updateTable = FutureCallClaimEntryUpdateTable(this);
-    futureCallId = _i1.ColumnInt(
+    futureCallId = _is.ColumnInt(
       'futureCallId',
       this,
     );
-    lastHeartbeatTime = _i1.ColumnDateTime(
+    lastHeartbeatTime = _is.ColumnDateTime(
       'lastHeartbeatTime',
       this,
     );
@@ -175,33 +175,33 @@ class FutureCallClaimEntryTable extends _i1.Table<int?> {
   late final FutureCallClaimEntryUpdateTable updateTable;
 
   /// The id of the future call this claim entry is associated with
-  late final _i1.ColumnInt futureCallId;
+  late final _is.ColumnInt futureCallId;
 
   /// Last heartbeat timestamp for this claim entry.
   /// Used to detect stale claims that should be cleaned up.
-  late final _i1.ColumnDateTime lastHeartbeatTime;
+  late final _is.ColumnDateTime lastHeartbeatTime;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     futureCallId,
     lastHeartbeatTime,
   ];
 }
 
-class FutureCallClaimEntryInclude extends _i1.IncludeObject {
+class FutureCallClaimEntryInclude extends _is.IncludeObject {
   FutureCallClaimEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => FutureCallClaimEntry.t;
+  _is.Table<int?> get table => FutureCallClaimEntry.t;
 }
 
-class FutureCallClaimEntryIncludeList extends _i1.IncludeList {
+class FutureCallClaimEntryIncludeList extends _is.IncludeList {
   FutureCallClaimEntryIncludeList._({
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -212,10 +212,10 @@ class FutureCallClaimEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => FutureCallClaimEntry.t;
+  _is.Table<int?> get table => FutureCallClaimEntry.t;
 }
 
 class FutureCallClaimEntryRepository {
@@ -244,15 +244,15 @@ class FutureCallClaimEntryRepository {
   /// );
   /// ```
   Future<List<FutureCallClaimEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FutureCallClaimEntry>(
       where: where?.call(FutureCallClaimEntry.t),
@@ -284,14 +284,14 @@ class FutureCallClaimEntryRepository {
   /// );
   /// ```
   Future<FutureCallClaimEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FutureCallClaimEntry>(
       where: where?.call(FutureCallClaimEntry.t),
@@ -306,11 +306,11 @@ class FutureCallClaimEntryRepository {
 
   /// Finds a single [FutureCallClaimEntry] by its [id] or null if no such row exists.
   Future<FutureCallClaimEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FutureCallClaimEntry>(
       id,
@@ -335,9 +335,9 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -353,9 +353,9 @@ class FutureCallClaimEntryRepository {
   ///
   /// The returned [FutureCallClaimEntry] will have its `id` field set.
   Future<FutureCallClaimEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallClaimEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<FutureCallClaimEntry>(
       row,
@@ -384,12 +384,12 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
-    required _i1.ColumnSelections<FutureCallClaimEntryTable> conflictColumns,
-    _i1.ColumnSelections<FutureCallClaimEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FutureCallClaimEntryTable> conflictColumns,
+    _is.ColumnSelections<FutureCallClaimEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<FutureCallClaimEntry>(
@@ -416,12 +416,12 @@ class FutureCallClaimEntryRepository {
   ///
   /// The returned [FutureCallClaimEntry] will have its `id` field set.
   Future<FutureCallClaimEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallClaimEntry row, {
-    required _i1.ColumnSelections<FutureCallClaimEntryTable> conflictColumns,
-    _i1.ColumnSelections<FutureCallClaimEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FutureCallClaimEntryTable> conflictColumns,
+    _is.ColumnSelections<FutureCallClaimEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<FutureCallClaimEntry>(
       row,
@@ -442,10 +442,10 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
-    _i1.ColumnSelections<FutureCallClaimEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FutureCallClaimEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<FutureCallClaimEntry>(
@@ -460,10 +460,10 @@ class FutureCallClaimEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FutureCallClaimEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallClaimEntry row, {
-    _i1.ColumnSelections<FutureCallClaimEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FutureCallClaimEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<FutureCallClaimEntry>(
       row,
@@ -475,11 +475,11 @@ class FutureCallClaimEntryRepository {
   /// Updates a single [FutureCallClaimEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FutureCallClaimEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
+    required _is.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallClaimEntry>(
       id,
@@ -495,15 +495,15 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<FutureCallClaimEntryUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
+    required _is.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FutureCallClaimEntry>(
@@ -530,11 +530,11 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallClaimEntry> rows, {
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<FutureCallClaimEntry>(
@@ -548,9 +548,9 @@ class FutureCallClaimEntryRepository {
 
   /// Deletes a single [FutureCallClaimEntry].
   Future<FutureCallClaimEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallClaimEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<FutureCallClaimEntry>(
       row,
@@ -567,11 +567,11 @@ class FutureCallClaimEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallClaimEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
-    _i1.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FutureCallClaimEntry>(
@@ -586,10 +586,10 @@ class FutureCallClaimEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<FutureCallClaimEntry>(
       where: where?.call(FutureCallClaimEntry.t),
@@ -600,11 +600,11 @@ class FutureCallClaimEntryRepository {
 
   /// Acquires row-level locks on [FutureCallClaimEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FutureCallClaimEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FutureCallClaimEntry>(
       where: where(FutureCallClaimEntry.t),

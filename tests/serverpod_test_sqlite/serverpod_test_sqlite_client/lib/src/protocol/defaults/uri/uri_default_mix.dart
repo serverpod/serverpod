@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UriDefaultMix
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UriDefaultMix._({
     this.id,
     Uri? uriDefaultAndDefaultModel,
@@ -42,19 +42,19 @@ abstract class UriDefaultMix
       uriDefaultAndDefaultModel:
           jsonSerialization['uriDefaultAndDefaultModel'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(
+          : _isc.UriJsonExtension.fromJson(
               jsonSerialization['uriDefaultAndDefaultModel'],
             ),
       uriDefaultAndDefaultPersist:
           jsonSerialization['uriDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(
+          : _isc.UriJsonExtension.fromJson(
               jsonSerialization['uriDefaultAndDefaultPersist'],
             ),
       uriDefaultModelAndDefaultPersist:
           jsonSerialization['uriDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(
+          : _isc.UriJsonExtension.fromJson(
               jsonSerialization['uriDefaultModelAndDefaultPersist'],
             ),
     );
@@ -73,7 +73,7 @@ abstract class UriDefaultMix
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UriDefaultMix copyWith({
     int? id,
     Uri? uriDefaultAndDefaultModel,
@@ -106,7 +106,7 @@ abstract class UriDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _UriDefaultMixImpl extends UriDefaultMix {
 
   /// Returns a shallow copy of this [UriDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UriDefaultMix copyWith({
     Object? id = _Undefined,

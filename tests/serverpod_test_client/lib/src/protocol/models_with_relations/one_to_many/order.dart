@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/one_to_many/customer.dart' as _i2;
-import '../../models_with_relations/one_to_many/comment.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/one_to_many/comment.dart' as _ij3ynzrj;
+import '../../models_with_relations/one_to_many/customer.dart' as _i3fqgdb1;
 
 abstract class Order
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Order._({
     this.id,
     required this.description,
@@ -29,8 +29,8 @@ abstract class Order
     int? id,
     required String description,
     required int customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3fqgdb1.Customer? customer,
+    List<_ij3ynzrj.Comment>? comments,
   }) = _OrderImpl;
 
   factory Order.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,12 +40,12 @@ abstract class Order
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Customer>(
+          : _iza9lbb5.Protocol().deserialize<_i3fqgdb1.Customer>(
               jsonSerialization['customer'],
             ),
       comments: jsonSerialization['comments'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Comment>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ij3ynzrj.Comment>>(
               jsonSerialization['comments'],
             ),
     );
@@ -60,19 +60,19 @@ abstract class Order
 
   int customerId;
 
-  _i2.Customer? customer;
+  _i3fqgdb1.Customer? customer;
 
-  List<_i3.Comment>? comments;
+  List<_ij3ynzrj.Comment>? comments;
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Order copyWith({
     int? id,
     String? description,
     int? customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3fqgdb1.Customer? customer,
+    List<_ij3ynzrj.Comment>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -102,7 +102,7 @@ abstract class Order
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -113,8 +113,8 @@ class _OrderImpl extends Order {
     int? id,
     required String description,
     required int customerId,
-    _i2.Customer? customer,
-    List<_i3.Comment>? comments,
+    _i3fqgdb1.Customer? customer,
+    List<_ij3ynzrj.Comment>? comments,
   }) : super._(
          id: id,
          description: description,
@@ -125,7 +125,7 @@ class _OrderImpl extends Order {
 
   /// Returns a shallow copy of this [Order]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Order copyWith({
     Object? id = _Undefined,
@@ -138,10 +138,10 @@ class _OrderImpl extends Order {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _i2.Customer?
+      customer: customer is _i3fqgdb1.Customer?
           ? customer
           : this.customer?.copyWith(),
-      comments: comments is List<_i3.Comment>?
+      comments: comments is List<_ij3ynzrj.Comment>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );

@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Exception thrown when a user attempts to authenticate but their account is blocked.
 abstract class AuthUserBlockedException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   AuthUserBlockedException._();
 
   factory AuthUserBlockedException() = _AuthUserBlockedExceptionImpl;
@@ -30,7 +30,7 @@ abstract class AuthUserBlockedException
 
   /// Returns a shallow copy of this [AuthUserBlockedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AuthUserBlockedException copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -53,7 +53,7 @@ class _AuthUserBlockedExceptionImpl extends AuthUserBlockedException {
 
   /// Returns a shallow copy of this [AuthUserBlockedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AuthUserBlockedException copyWith() {
     return AuthUserBlockedException();

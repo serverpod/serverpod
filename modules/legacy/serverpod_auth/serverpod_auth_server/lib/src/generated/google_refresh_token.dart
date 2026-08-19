@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Database bindings for a Google refresh token.
 abstract class GoogleRefreshToken
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   GoogleRefreshToken._({
     this.id,
     required this.userId,
@@ -49,11 +49,11 @@ abstract class GoogleRefreshToken
   String refreshToken;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   GoogleRefreshToken copyWith({
     int? id,
     int? userId,
@@ -84,11 +84,11 @@ abstract class GoogleRefreshToken
   }
 
   static GoogleRefreshTokenIncludeList includeList({
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
   }) {
     return GoogleRefreshTokenIncludeList._(
@@ -103,7 +103,7 @@ abstract class GoogleRefreshToken
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -122,7 +122,7 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
 
   /// Returns a shallow copy of this [GoogleRefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   GoogleRefreshToken copyWith({
     Object? id = _Undefined,
@@ -138,29 +138,29 @@ class _GoogleRefreshTokenImpl extends GoogleRefreshToken {
 }
 
 class GoogleRefreshTokenUpdateTable
-    extends _i1.UpdateTable<GoogleRefreshTokenTable> {
+    extends _is.UpdateTable<GoogleRefreshTokenTable> {
   GoogleRefreshTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> refreshToken(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> refreshToken(String value) => _is.ColumnValue(
     table.refreshToken,
     value,
   );
 }
 
-class GoogleRefreshTokenTable extends _i1.Table<int?> {
+class GoogleRefreshTokenTable extends _is.Table<int?> {
   GoogleRefreshTokenTable({super.tableRelation})
     : super(tableName: 'serverpod_google_refresh_token') {
     updateTable = GoogleRefreshTokenUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _is.ColumnInt(
       'userId',
       this,
     );
-    refreshToken = _i1.ColumnString(
+    refreshToken = _is.ColumnString(
       'refreshToken',
       this,
     );
@@ -169,32 +169,32 @@ class GoogleRefreshTokenTable extends _i1.Table<int?> {
   late final GoogleRefreshTokenUpdateTable updateTable;
 
   /// The user id associated with the token.
-  late final _i1.ColumnInt userId;
+  late final _is.ColumnInt userId;
 
   /// The token itself.
-  late final _i1.ColumnString refreshToken;
+  late final _is.ColumnString refreshToken;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userId,
     refreshToken,
   ];
 }
 
-class GoogleRefreshTokenInclude extends _i1.IncludeObject {
+class GoogleRefreshTokenInclude extends _is.IncludeObject {
   GoogleRefreshTokenInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => GoogleRefreshToken.t;
+  _is.Table<int?> get table => GoogleRefreshToken.t;
 }
 
-class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
+class GoogleRefreshTokenIncludeList extends _is.IncludeList {
   GoogleRefreshTokenIncludeList._({
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -205,10 +205,10 @@ class GoogleRefreshTokenIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => GoogleRefreshToken.t;
+  _is.Table<int?> get table => GoogleRefreshToken.t;
 }
 
 class GoogleRefreshTokenRepository {
@@ -237,15 +237,15 @@ class GoogleRefreshTokenRepository {
   /// );
   /// ```
   Future<List<GoogleRefreshToken>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
@@ -277,14 +277,14 @@ class GoogleRefreshTokenRepository {
   /// );
   /// ```
   Future<GoogleRefreshToken?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
@@ -299,11 +299,11 @@ class GoogleRefreshTokenRepository {
 
   /// Finds a single [GoogleRefreshToken] by its [id] or null if no such row exists.
   Future<GoogleRefreshToken?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GoogleRefreshToken>(
       id,
@@ -328,9 +328,9 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -346,9 +346,9 @@ class GoogleRefreshTokenRepository {
   ///
   /// The returned [GoogleRefreshToken] will have its `id` field set.
   Future<GoogleRefreshToken> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleRefreshToken row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<GoogleRefreshToken>(
       row,
@@ -377,12 +377,12 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
-    required _i1.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
-    _i1.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
+    _is.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<GoogleRefreshToken>(
@@ -409,12 +409,12 @@ class GoogleRefreshTokenRepository {
   ///
   /// The returned [GoogleRefreshToken] will have its `id` field set.
   Future<GoogleRefreshToken?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleRefreshToken row, {
-    required _i1.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
-    _i1.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GoogleRefreshTokenTable> conflictColumns,
+    _is.ColumnSelections<GoogleRefreshTokenTable>? updateColumns,
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GoogleRefreshToken>(
       row,
@@ -435,10 +435,10 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
-    _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GoogleRefreshTokenTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<GoogleRefreshToken>(
@@ -453,10 +453,10 @@ class GoogleRefreshTokenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GoogleRefreshToken> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleRefreshToken row, {
-    _i1.ColumnSelections<GoogleRefreshTokenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GoogleRefreshTokenTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<GoogleRefreshToken>(
       row,
@@ -468,11 +468,11 @@ class GoogleRefreshTokenRepository {
   /// Updates a single [GoogleRefreshToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GoogleRefreshToken?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
+    required _is.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<GoogleRefreshToken>(
       id,
@@ -488,15 +488,15 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<GoogleRefreshTokenUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    required _is.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GoogleRefreshToken>(
@@ -523,11 +523,11 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleRefreshToken> rows, {
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<GoogleRefreshToken>(
@@ -541,9 +541,9 @@ class GoogleRefreshTokenRepository {
 
   /// Deletes a single [GoogleRefreshToken].
   Future<GoogleRefreshToken> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleRefreshToken row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<GoogleRefreshToken>(
       row,
@@ -560,11 +560,11 @@ class GoogleRefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleRefreshToken>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
-    _i1.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GoogleRefreshToken>(
@@ -579,10 +579,10 @@ class GoogleRefreshTokenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<GoogleRefreshToken>(
       where: where?.call(GoogleRefreshToken.t),
@@ -593,11 +593,11 @@ class GoogleRefreshTokenRepository {
 
   /// Acquires row-level locks on [GoogleRefreshToken] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GoogleRefreshTokenTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GoogleRefreshToken>(
       where: where(GoogleRefreshToken.t),

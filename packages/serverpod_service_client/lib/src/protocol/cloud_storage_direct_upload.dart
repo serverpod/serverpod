@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -38,7 +38,7 @@ abstract class CloudStorageDirectUploadEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration: _i1.DateTimeJsonExtension.fromJson(
+      expiration: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiration'],
       ),
       authKey: jsonSerialization['authKey'] as String,
@@ -64,7 +64,7 @@ abstract class CloudStorageDirectUploadEntry
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -98,7 +98,7 @@ abstract class CloudStorageDirectUploadEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -121,7 +121,7 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,

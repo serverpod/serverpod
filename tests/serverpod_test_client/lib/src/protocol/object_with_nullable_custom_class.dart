@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
 abstract class ObjectWithNullableCustomClass
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithNullableCustomClass._({
     this.nullableCustomClassWithoutProtocolSerialization,
     this.nullableCustomClassWithProtocolSerialization,
@@ -23,13 +23,14 @@ abstract class ObjectWithNullableCustomClass
   });
 
   factory ObjectWithNullableCustomClass({
-    _i2.CustomClassWithoutProtocolSerialization?
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
     nullableCustomClassWithoutProtocolSerialization,
-    _i2.CustomClassWithProtocolSerialization?
+    _ilwf0zl1.CustomClassWithProtocolSerialization?
     nullableCustomClassWithProtocolSerialization,
-    _i2.CustomClassWithProtocolSerializationMethod?
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
     nullableCustomClassWithProtocolSerializationMethod,
-    required _i2.CustomClassWithProtocolSerialization nonNullableCustomClass,
+    required _ilwf0zl1.CustomClassWithProtocolSerialization
+    nonNullableCustomClass,
   }) = _ObjectWithNullableCustomClassImpl;
 
   factory ObjectWithNullableCustomClass.fromJson(
@@ -40,51 +41,52 @@ abstract class ObjectWithNullableCustomClass
           jsonSerialization['nullableCustomClassWithoutProtocolSerialization'] ==
               null
           ? null
-          : _i2.CustomClassWithoutProtocolSerialization.fromJson(
+          : _ilwf0zl1.CustomClassWithoutProtocolSerialization.fromJson(
               jsonSerialization['nullableCustomClassWithoutProtocolSerialization'],
             ),
       nullableCustomClassWithProtocolSerialization:
           jsonSerialization['nullableCustomClassWithProtocolSerialization'] ==
               null
           ? null
-          : _i2.CustomClassWithProtocolSerialization.fromJson(
+          : _ilwf0zl1.CustomClassWithProtocolSerialization.fromJson(
               jsonSerialization['nullableCustomClassWithProtocolSerialization'],
             ),
       nullableCustomClassWithProtocolSerializationMethod:
           jsonSerialization['nullableCustomClassWithProtocolSerializationMethod'] ==
               null
           ? null
-          : _i2.CustomClassWithProtocolSerializationMethod.fromJson(
+          : _ilwf0zl1.CustomClassWithProtocolSerializationMethod.fromJson(
               jsonSerialization['nullableCustomClassWithProtocolSerializationMethod'],
             ),
-      nonNullableCustomClass: _i2.CustomClassWithProtocolSerialization.fromJson(
-        jsonSerialization['nonNullableCustomClass'],
-      ),
+      nonNullableCustomClass:
+          _ilwf0zl1.CustomClassWithProtocolSerialization.fromJson(
+            jsonSerialization['nonNullableCustomClass'],
+          ),
     );
   }
 
-  _i2.CustomClassWithoutProtocolSerialization?
+  _ilwf0zl1.CustomClassWithoutProtocolSerialization?
   nullableCustomClassWithoutProtocolSerialization;
 
-  _i2.CustomClassWithProtocolSerialization?
+  _ilwf0zl1.CustomClassWithProtocolSerialization?
   nullableCustomClassWithProtocolSerialization;
 
-  _i2.CustomClassWithProtocolSerializationMethod?
+  _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
   nullableCustomClassWithProtocolSerializationMethod;
 
-  _i2.CustomClassWithProtocolSerialization nonNullableCustomClass;
+  _ilwf0zl1.CustomClassWithProtocolSerialization nonNullableCustomClass;
 
   /// Returns a shallow copy of this [ObjectWithNullableCustomClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithNullableCustomClass copyWith({
-    _i2.CustomClassWithoutProtocolSerialization?
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
     nullableCustomClassWithoutProtocolSerialization,
-    _i2.CustomClassWithProtocolSerialization?
+    _ilwf0zl1.CustomClassWithProtocolSerialization?
     nullableCustomClassWithProtocolSerialization,
-    _i2.CustomClassWithProtocolSerializationMethod?
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
     nullableCustomClassWithProtocolSerializationMethod,
-    _i2.CustomClassWithProtocolSerialization? nonNullableCustomClass,
+    _ilwf0zl1.CustomClassWithProtocolSerialization? nonNullableCustomClass,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -111,9 +113,9 @@ abstract class ObjectWithNullableCustomClass
         'nullableCustomClassWithoutProtocolSerialization':
             // ignore: unnecessary_type_check
             nullableCustomClassWithoutProtocolSerialization
-                is _i1.ProtocolSerialization
+                is _isc.ProtocolSerialization
             ? (nullableCustomClassWithoutProtocolSerialization
-                      as _i1.ProtocolSerialization)
+                      as _isc.ProtocolSerialization)
                   .toJsonForProtocol()
             :
               // ignore: dead_code
@@ -122,9 +124,9 @@ abstract class ObjectWithNullableCustomClass
         'nullableCustomClassWithProtocolSerialization':
             // ignore: unnecessary_type_check
             nullableCustomClassWithProtocolSerialization
-                is _i1.ProtocolSerialization
+                is _isc.ProtocolSerialization
             ? (nullableCustomClassWithProtocolSerialization
-                      as _i1.ProtocolSerialization)
+                      as _isc.ProtocolSerialization)
                   .toJsonForProtocol()
             :
               // ignore: dead_code
@@ -133,17 +135,17 @@ abstract class ObjectWithNullableCustomClass
         'nullableCustomClassWithProtocolSerializationMethod':
             // ignore: unnecessary_type_check
             nullableCustomClassWithProtocolSerializationMethod
-                is _i1.ProtocolSerialization
+                is _isc.ProtocolSerialization
             ? (nullableCustomClassWithProtocolSerializationMethod
-                      as _i1.ProtocolSerialization)
+                      as _isc.ProtocolSerialization)
                   .toJsonForProtocol()
             :
               // ignore: dead_code
               nullableCustomClassWithProtocolSerializationMethod?.toJson(),
       'nonNullableCustomClass':
           // ignore: unnecessary_type_check
-          nonNullableCustomClass is _i1.ProtocolSerialization
-          ? (nonNullableCustomClass as _i1.ProtocolSerialization)
+          nonNullableCustomClass is _isc.ProtocolSerialization
+          ? (nonNullableCustomClass as _isc.ProtocolSerialization)
                 .toJsonForProtocol()
           :
             // ignore: dead_code
@@ -153,7 +155,7 @@ abstract class ObjectWithNullableCustomClass
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -161,13 +163,14 @@ class _Undefined {}
 
 class _ObjectWithNullableCustomClassImpl extends ObjectWithNullableCustomClass {
   _ObjectWithNullableCustomClassImpl({
-    _i2.CustomClassWithoutProtocolSerialization?
+    _ilwf0zl1.CustomClassWithoutProtocolSerialization?
     nullableCustomClassWithoutProtocolSerialization,
-    _i2.CustomClassWithProtocolSerialization?
+    _ilwf0zl1.CustomClassWithProtocolSerialization?
     nullableCustomClassWithProtocolSerialization,
-    _i2.CustomClassWithProtocolSerializationMethod?
+    _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
     nullableCustomClassWithProtocolSerializationMethod,
-    required _i2.CustomClassWithProtocolSerialization nonNullableCustomClass,
+    required _ilwf0zl1.CustomClassWithProtocolSerialization
+    nonNullableCustomClass,
   }) : super._(
          nullableCustomClassWithoutProtocolSerialization:
              nullableCustomClassWithoutProtocolSerialization,
@@ -180,28 +183,28 @@ class _ObjectWithNullableCustomClassImpl extends ObjectWithNullableCustomClass {
 
   /// Returns a shallow copy of this [ObjectWithNullableCustomClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithNullableCustomClass copyWith({
     Object? nullableCustomClassWithoutProtocolSerialization = _Undefined,
     Object? nullableCustomClassWithProtocolSerialization = _Undefined,
     Object? nullableCustomClassWithProtocolSerializationMethod = _Undefined,
-    _i2.CustomClassWithProtocolSerialization? nonNullableCustomClass,
+    _ilwf0zl1.CustomClassWithProtocolSerialization? nonNullableCustomClass,
   }) {
     return ObjectWithNullableCustomClass(
       nullableCustomClassWithoutProtocolSerialization:
           nullableCustomClassWithoutProtocolSerialization
-              is _i2.CustomClassWithoutProtocolSerialization?
+              is _ilwf0zl1.CustomClassWithoutProtocolSerialization?
           ? nullableCustomClassWithoutProtocolSerialization
           : this.nullableCustomClassWithoutProtocolSerialization?.copyWith(),
       nullableCustomClassWithProtocolSerialization:
           nullableCustomClassWithProtocolSerialization
-              is _i2.CustomClassWithProtocolSerialization?
+              is _ilwf0zl1.CustomClassWithProtocolSerialization?
           ? nullableCustomClassWithProtocolSerialization
           : this.nullableCustomClassWithProtocolSerialization?.copyWith(),
       nullableCustomClassWithProtocolSerializationMethod:
           nullableCustomClassWithProtocolSerializationMethod
-              is _i2.CustomClassWithProtocolSerializationMethod?
+              is _ilwf0zl1.CustomClassWithProtocolSerializationMethod?
           ? nullableCustomClassWithProtocolSerializationMethod
           : this.nullableCustomClassWithProtocolSerializationMethod?.copyWith(),
       nonNullableCustomClass:

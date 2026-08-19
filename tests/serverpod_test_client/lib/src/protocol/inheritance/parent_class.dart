@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-class ParentClass extends _i1.GrandparentClass
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+class ParentClass extends _iv35mfmj.GrandparentClass
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ParentClass({
     this.id,
     required super.grandParentField,
@@ -38,7 +38,7 @@ class ParentClass extends _i1.GrandparentClass
 
   /// Returns a shallow copy of this [ParentClass]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   ParentClass copyWith({
     Object? id = _Undefined,
     String? grandParentField,
@@ -73,7 +73,7 @@ class ParentClass extends _i1.GrandparentClass
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _ittc76ec;
 
 abstract class Post
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -28,9 +28,9 @@ abstract class Post
   factory Post({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   }) = _PostImpl;
 
   factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,11 +39,15 @@ abstract class Post
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
+          : _iza9lbb5.Protocol().deserialize<_ittc76ec.Post>(
+              jsonSerialization['previous'],
+            ),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
+          : _iza9lbb5.Protocol().deserialize<_ittc76ec.Post>(
+              jsonSerialization['next'],
+            ),
     );
   }
 
@@ -54,21 +58,21 @@ abstract class Post
 
   String content;
 
-  _i2.Post? previous;
+  _ittc76ec.Post? previous;
 
   int? nextId;
 
-  _i2.Post? next;
+  _ittc76ec.Post? next;
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Post copyWith({
     int? id,
     String? content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -96,7 +100,7 @@ abstract class Post
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,9 +110,9 @@ class _PostImpl extends Post {
   _PostImpl({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   }) : super._(
          id: id,
          content: content,
@@ -119,7 +123,7 @@ class _PostImpl extends Post {
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,
@@ -131,9 +135,11 @@ class _PostImpl extends Post {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _i2.Post? ? previous : this.previous?.copyWith(),
+      previous: previous is _ittc76ec.Post?
+          ? previous
+          : this.previous?.copyWith(),
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _i2.Post? ? next : this.next?.copyWith(),
+      next: next is _ittc76ec.Post? ? next : this.next?.copyWith(),
     );
   }
 }

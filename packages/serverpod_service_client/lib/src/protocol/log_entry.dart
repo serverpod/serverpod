@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'log_level.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'log_level.dart' as _iavjjqw5;
 
 /// Bindings to a log entry in the database.
 abstract class LogEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   LogEntry._({
     this.id,
     required this.sessionLogId,
@@ -37,7 +37,7 @@ abstract class LogEntry
     String? reference,
     required String serverId,
     required DateTime time,
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required String message,
     String? error,
     String? stackTrace,
@@ -51,8 +51,10 @@ abstract class LogEntry
       messageId: jsonSerialization['messageId'] as int?,
       reference: jsonSerialization['reference'] as String?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
-      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
+      time: _isc.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      logLevel: _iavjjqw5.LogLevel.fromJson(
+        (jsonSerialization['logLevel'] as int),
+      ),
       message: jsonSerialization['message'] as String,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
@@ -81,7 +83,7 @@ abstract class LogEntry
   DateTime time;
 
   /// The log level of this entry.
-  _i2.LogLevel logLevel;
+  _iavjjqw5.LogLevel logLevel;
 
   /// The logging message.
   String message;
@@ -97,7 +99,7 @@ abstract class LogEntry
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   LogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -105,7 +107,7 @@ abstract class LogEntry
     String? reference,
     String? serverId,
     DateTime? time,
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     String? message,
     String? error,
     String? stackTrace,
@@ -149,7 +151,7 @@ abstract class LogEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -163,7 +165,7 @@ class _LogEntryImpl extends LogEntry {
     String? reference,
     required String serverId,
     required DateTime time,
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required String message,
     String? error,
     String? stackTrace,
@@ -184,7 +186,7 @@ class _LogEntryImpl extends LogEntry {
 
   /// Returns a shallow copy of this [LogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   LogEntry copyWith({
     Object? id = _Undefined,
@@ -193,7 +195,7 @@ class _LogEntryImpl extends LogEntry {
     Object? reference = _Undefined,
     String? serverId,
     DateTime? time,
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     String? message,
     Object? error = _Undefined,
     Object? stackTrace = _Undefined,

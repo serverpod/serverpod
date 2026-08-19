@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'future_call_scheduling.dart' as _i2;
-import 'package:serverpod/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'future_call_scheduling.dart' as _is8pd350;
 
 /// A serialized future call with bindings to the database.
 abstract class FutureCallEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   FutureCallEntry._({
     this.id,
     required this.name,
@@ -34,20 +34,20 @@ abstract class FutureCallEntry
     String? serializedObject,
     required String serverId,
     String? identifier,
-    _i2.FutureCallScheduling? scheduling,
+    _is8pd350.FutureCallScheduling? scheduling,
   }) = _FutureCallEntryImpl;
 
   factory FutureCallEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return FutureCallEntry(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      time: _is.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       serializedObject: jsonSerialization['serializedObject'] as String?,
       serverId: jsonSerialization['serverId'] as String,
       identifier: jsonSerialization['identifier'] as String?,
       scheduling: jsonSerialization['scheduling'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.FutureCallScheduling>(
+          : _ic00rqxb.Protocol().deserialize<_is8pd350.FutureCallScheduling>(
               jsonSerialization['scheduling'],
             ),
     );
@@ -77,14 +77,14 @@ abstract class FutureCallEntry
 
   /// Specifies how recurring calls should be scheduled.
   /// This field is null for one-off future calls.
-  _i2.FutureCallScheduling? scheduling;
+  _is8pd350.FutureCallScheduling? scheduling;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   FutureCallEntry copyWith({
     int? id,
     String? name,
@@ -92,7 +92,7 @@ abstract class FutureCallEntry
     String? serializedObject,
     String? serverId,
     String? identifier,
-    _i2.FutureCallScheduling? scheduling,
+    _is8pd350.FutureCallScheduling? scheduling,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,11 +127,11 @@ abstract class FutureCallEntry
   }
 
   static FutureCallEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
   }) {
     return FutureCallEntryIncludeList._(
@@ -146,7 +146,7 @@ abstract class FutureCallEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -160,7 +160,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
     String? serializedObject,
     required String serverId,
     String? identifier,
-    _i2.FutureCallScheduling? scheduling,
+    _is8pd350.FutureCallScheduling? scheduling,
   }) : super._(
          id: id,
          name: name,
@@ -173,7 +173,7 @@ class _FutureCallEntryImpl extends FutureCallEntry {
 
   /// Returns a shallow copy of this [FutureCallEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   FutureCallEntry copyWith({
     Object? id = _Undefined,
@@ -193,74 +193,77 @@ class _FutureCallEntryImpl extends FutureCallEntry {
           : this.serializedObject,
       serverId: serverId ?? this.serverId,
       identifier: identifier is String? ? identifier : this.identifier,
-      scheduling: scheduling is _i2.FutureCallScheduling?
+      scheduling: scheduling is _is8pd350.FutureCallScheduling?
           ? scheduling
           : this.scheduling?.copyWith(),
     );
   }
 }
 
-class FutureCallEntryUpdateTable extends _i1.UpdateTable<FutureCallEntryTable> {
+class FutureCallEntryUpdateTable extends _is.UpdateTable<FutureCallEntryTable> {
   FutureCallEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> time(DateTime value) => _is.ColumnValue(
     table.time,
     value,
   );
 
-  _i1.ColumnValue<String, String> serializedObject(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> serializedObject(String? value) =>
+      _is.ColumnValue(
         table.serializedObject,
         value,
       );
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<String, String> identifier(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> identifier(String? value) => _is.ColumnValue(
     table.identifier,
     value,
   );
 
-  _i1.ColumnValue<_i2.FutureCallScheduling, _i2.FutureCallScheduling>
-  scheduling(_i2.FutureCallScheduling? value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _is8pd350.FutureCallScheduling,
+    _is8pd350.FutureCallScheduling
+  >
+  scheduling(_is8pd350.FutureCallScheduling? value) => _is.ColumnValue(
     table.scheduling,
     value,
   );
 }
 
-class FutureCallEntryTable extends _i1.Table<int?> {
+class FutureCallEntryTable extends _is.Table<int?> {
   FutureCallEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_future_call') {
     updateTable = FutureCallEntryUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    time = _i1.ColumnDateTime(
+    time = _is.ColumnDateTime(
       'time',
       this,
     );
-    serializedObject = _i1.ColumnString(
+    serializedObject = _is.ColumnString(
       'serializedObject',
       this,
     );
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    identifier = _i1.ColumnString(
+    identifier = _is.ColumnString(
       'identifier',
       this,
     );
-    scheduling = _i1.ColumnSerializable<_i2.FutureCallScheduling>(
+    scheduling = _is.ColumnSerializable<_is8pd350.FutureCallScheduling>(
       'scheduling',
       this,
     );
@@ -269,26 +272,26 @@ class FutureCallEntryTable extends _i1.Table<int?> {
   late final FutureCallEntryUpdateTable updateTable;
 
   /// Name of the future call. Used to find the correct method to call.
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
   /// Time to execute the call.
-  late final _i1.ColumnDateTime time;
+  late final _is.ColumnDateTime time;
 
   /// The serialized object, used as a parameter to the call.
-  late final _i1.ColumnString serializedObject;
+  late final _is.ColumnString serializedObject;
 
   /// The id of the server where the call was created.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// An optional identifier which can be used to cancel the call.
-  late final _i1.ColumnString identifier;
+  late final _is.ColumnString identifier;
 
   /// Specifies how recurring calls should be scheduled.
   /// This field is null for one-off future calls.
-  late final _i1.ColumnSerializable<_i2.FutureCallScheduling> scheduling;
+  late final _is.ColumnSerializable<_is8pd350.FutureCallScheduling> scheduling;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     time,
@@ -299,19 +302,19 @@ class FutureCallEntryTable extends _i1.Table<int?> {
   ];
 }
 
-class FutureCallEntryInclude extends _i1.IncludeObject {
+class FutureCallEntryInclude extends _is.IncludeObject {
   FutureCallEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => FutureCallEntry.t;
+  _is.Table<int?> get table => FutureCallEntry.t;
 }
 
-class FutureCallEntryIncludeList extends _i1.IncludeList {
+class FutureCallEntryIncludeList extends _is.IncludeList {
   FutureCallEntryIncludeList._({
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -322,10 +325,10 @@ class FutureCallEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => FutureCallEntry.t;
+  _is.Table<int?> get table => FutureCallEntry.t;
 }
 
 class FutureCallEntryRepository {
@@ -354,15 +357,15 @@ class FutureCallEntryRepository {
   /// );
   /// ```
   Future<List<FutureCallEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
@@ -394,14 +397,14 @@ class FutureCallEntryRepository {
   /// );
   /// ```
   Future<FutureCallEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
@@ -416,11 +419,11 @@ class FutureCallEntryRepository {
 
   /// Finds a single [FutureCallEntry] by its [id] or null if no such row exists.
   Future<FutureCallEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FutureCallEntry>(
       id,
@@ -445,9 +448,9 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -463,9 +466,9 @@ class FutureCallEntryRepository {
   ///
   /// The returned [FutureCallEntry] will have its `id` field set.
   Future<FutureCallEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<FutureCallEntry>(
       row,
@@ -494,12 +497,12 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallEntry> rows, {
-    required _i1.ColumnSelections<FutureCallEntryTable> conflictColumns,
-    _i1.ColumnSelections<FutureCallEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FutureCallEntryTable> conflictColumns,
+    _is.ColumnSelections<FutureCallEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<FutureCallEntry>(
@@ -526,12 +529,12 @@ class FutureCallEntryRepository {
   ///
   /// The returned [FutureCallEntry] will have its `id` field set.
   Future<FutureCallEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallEntry row, {
-    required _i1.ColumnSelections<FutureCallEntryTable> conflictColumns,
-    _i1.ColumnSelections<FutureCallEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FutureCallEntryTable> conflictColumns,
+    _is.ColumnSelections<FutureCallEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<FutureCallEntry>(
       row,
@@ -552,10 +555,10 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallEntry> rows, {
-    _i1.ColumnSelections<FutureCallEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FutureCallEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<FutureCallEntry>(
@@ -570,10 +573,10 @@ class FutureCallEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FutureCallEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallEntry row, {
-    _i1.ColumnSelections<FutureCallEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FutureCallEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<FutureCallEntry>(
       row,
@@ -585,11 +588,11 @@ class FutureCallEntryRepository {
   /// Updates a single [FutureCallEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FutureCallEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
+    required _is.ColumnValueListBuilder<FutureCallEntryUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<FutureCallEntry>(
       id,
@@ -605,15 +608,15 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<FutureCallEntryUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<FutureCallEntryUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
+    required _is.WhereExpressionBuilder<FutureCallEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FutureCallEntry>(
@@ -640,11 +643,11 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FutureCallEntry> rows, {
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<FutureCallEntry>(
@@ -658,9 +661,9 @@ class FutureCallEntryRepository {
 
   /// Deletes a single [FutureCallEntry].
   Future<FutureCallEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FutureCallEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<FutureCallEntry>(
       row,
@@ -677,11 +680,11 @@ class FutureCallEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FutureCallEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
-    _i1.OrderByBuilder<FutureCallEntryTable>? orderBy,
-    _i1.OrderByListBuilder<FutureCallEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FutureCallEntryTable> where,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FutureCallEntry>(
@@ -696,10 +699,10 @@ class FutureCallEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<FutureCallEntry>(
       where: where?.call(FutureCallEntry.t),
@@ -710,11 +713,11 @@ class FutureCallEntryRepository {
 
   /// Acquires row-level locks on [FutureCallEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FutureCallEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FutureCallEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FutureCallEntry>(
       where: where(FutureCallEntry.t),

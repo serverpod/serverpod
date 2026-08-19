@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
-    as _i3;
+    as _isg9n5v0;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _iacs;
 
 abstract class LegacyExternalUserIdentifier
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   LegacyExternalUserIdentifier._({
     this.id,
     required this.authUserId,
@@ -27,9 +27,9 @@ abstract class LegacyExternalUserIdentifier
   });
 
   factory LegacyExternalUserIdentifier({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
   }) = _LegacyExternalUserIdentifierImpl;
 
@@ -39,13 +39,13 @@ abstract class LegacyExternalUserIdentifier
     return LegacyExternalUserIdentifier(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _isg9n5v0.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
@@ -57,12 +57,12 @@ abstract class LegacyExternalUserIdentifier
   static const db = LegacyExternalUserIdentifierRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The user identifier as imported from `serverpod_auth`.
   ///
@@ -71,15 +71,15 @@ abstract class LegacyExternalUserIdentifier
   String userIdentifier;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [LegacyExternalUserIdentifier]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacyExternalUserIdentifier copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     String? userIdentifier,
   });
   @override
@@ -99,17 +99,17 @@ abstract class LegacyExternalUserIdentifier
   }
 
   static LegacyExternalUserIdentifierInclude include({
-    _i2.AuthUserInclude? authUser,
+    _iacs.AuthUserInclude? authUser,
   }) {
     return LegacyExternalUserIdentifierInclude._(authUser: authUser);
   }
 
   static LegacyExternalUserIdentifierIncludeList includeList({
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     LegacyExternalUserIdentifierInclude? include,
   }) {
     return LegacyExternalUserIdentifierIncludeList._(
@@ -124,7 +124,7 @@ abstract class LegacyExternalUserIdentifier
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -132,9 +132,9 @@ class _Undefined {}
 
 class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
   _LegacyExternalUserIdentifierImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
   }) : super._(
          id: id,
@@ -145,18 +145,18 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
 
   /// Returns a shallow copy of this [LegacyExternalUserIdentifier]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacyExternalUserIdentifier copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     String? userIdentifier,
   }) {
     return LegacyExternalUserIdentifier(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       userIdentifier: userIdentifier ?? this.userIdentifier,
@@ -165,32 +165,32 @@ class _LegacyExternalUserIdentifierImpl extends LegacyExternalUserIdentifier {
 }
 
 class LegacyExternalUserIdentifierUpdateTable
-    extends _i1.UpdateTable<LegacyExternalUserIdentifierTable> {
+    extends _is.UpdateTable<LegacyExternalUserIdentifierTable> {
   LegacyExternalUserIdentifierUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 }
 
-class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
+class LegacyExternalUserIdentifierTable extends _is.Table<_is.UuidValue?> {
   LegacyExternalUserIdentifierTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_bridge_external_user_id') {
     updateTable = LegacyExternalUserIdentifierUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
@@ -198,39 +198,39 @@ class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
 
   late final LegacyExternalUserIdentifierUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The user identifier as imported from `serverpod_auth`.
   ///
   /// This could be an external user ID for e.g. "Sign in with Apple", or an
   /// email address (in the Google Sign-In case).
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: LegacyExternalUserIdentifier.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     userIdentifier,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -238,23 +238,23 @@ class LegacyExternalUserIdentifierTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class LegacyExternalUserIdentifierInclude extends _i1.IncludeObject {
-  LegacyExternalUserIdentifierInclude._({_i2.AuthUserInclude? authUser}) {
+class LegacyExternalUserIdentifierInclude extends _is.IncludeObject {
+  LegacyExternalUserIdentifierInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => LegacyExternalUserIdentifier.t;
+  _is.Table<_is.UuidValue?> get table => LegacyExternalUserIdentifier.t;
 }
 
-class LegacyExternalUserIdentifierIncludeList extends _i1.IncludeList {
+class LegacyExternalUserIdentifierIncludeList extends _is.IncludeList {
   LegacyExternalUserIdentifierIncludeList._({
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -265,10 +265,10 @@ class LegacyExternalUserIdentifierIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => LegacyExternalUserIdentifier.t;
+  _is.Table<_is.UuidValue?> get table => LegacyExternalUserIdentifier.t;
 }
 
 class LegacyExternalUserIdentifierRepository {
@@ -299,16 +299,16 @@ class LegacyExternalUserIdentifierRepository {
   /// );
   /// ```
   Future<List<LegacyExternalUserIdentifier>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
@@ -341,15 +341,15 @@ class LegacyExternalUserIdentifierRepository {
   /// );
   /// ```
   Future<LegacyExternalUserIdentifier?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     int? offset,
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
@@ -365,12 +365,12 @@ class LegacyExternalUserIdentifierRepository {
 
   /// Finds a single [LegacyExternalUserIdentifier] by its [id] or null if no such row exists.
   Future<LegacyExternalUserIdentifier?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     LegacyExternalUserIdentifierInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LegacyExternalUserIdentifier>(
       id,
@@ -396,9 +396,9 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyExternalUserIdentifier> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -414,9 +414,9 @@ class LegacyExternalUserIdentifierRepository {
   ///
   /// The returned [LegacyExternalUserIdentifier] will have its `id` field set.
   Future<LegacyExternalUserIdentifier> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyExternalUserIdentifier row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<LegacyExternalUserIdentifier>(
       row,
@@ -445,13 +445,13 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyExternalUserIdentifier> rows, {
-    required _i1.ColumnSelections<LegacyExternalUserIdentifierTable>
+    required _is.ColumnSelections<LegacyExternalUserIdentifierTable>
     conflictColumns,
-    _i1.ColumnSelections<LegacyExternalUserIdentifierTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyExternalUserIdentifierTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<LegacyExternalUserIdentifier>(
@@ -478,13 +478,13 @@ class LegacyExternalUserIdentifierRepository {
   ///
   /// The returned [LegacyExternalUserIdentifier] will have its `id` field set.
   Future<LegacyExternalUserIdentifier?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyExternalUserIdentifier row, {
-    required _i1.ColumnSelections<LegacyExternalUserIdentifierTable>
+    required _is.ColumnSelections<LegacyExternalUserIdentifierTable>
     conflictColumns,
-    _i1.ColumnSelections<LegacyExternalUserIdentifierTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyExternalUserIdentifierTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<LegacyExternalUserIdentifier>(
       row,
@@ -505,10 +505,10 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyExternalUserIdentifier> rows, {
-    _i1.ColumnSelections<LegacyExternalUserIdentifierTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyExternalUserIdentifierTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<LegacyExternalUserIdentifier>(
@@ -523,10 +523,10 @@ class LegacyExternalUserIdentifierRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LegacyExternalUserIdentifier> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyExternalUserIdentifier row, {
-    _i1.ColumnSelections<LegacyExternalUserIdentifierTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyExternalUserIdentifierTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<LegacyExternalUserIdentifier>(
       row,
@@ -538,11 +538,11 @@ class LegacyExternalUserIdentifierRepository {
   /// Updates a single [LegacyExternalUserIdentifier] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LegacyExternalUserIdentifier?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyExternalUserIdentifier>(
       id,
@@ -558,16 +558,16 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<LegacyExternalUserIdentifierUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
+    required _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacyExternalUserIdentifier>(
@@ -594,11 +594,11 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyExternalUserIdentifier> rows, {
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<LegacyExternalUserIdentifier>(
@@ -612,9 +612,9 @@ class LegacyExternalUserIdentifierRepository {
 
   /// Deletes a single [LegacyExternalUserIdentifier].
   Future<LegacyExternalUserIdentifier> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyExternalUserIdentifier row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<LegacyExternalUserIdentifier>(
       row,
@@ -631,12 +631,12 @@ class LegacyExternalUserIdentifierRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyExternalUserIdentifier>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
     where,
-    _i1.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacyExternalUserIdentifier>(
@@ -651,10 +651,10 @@ class LegacyExternalUserIdentifierRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacyExternalUserIdentifier>(
       where: where?.call(LegacyExternalUserIdentifier.t),
@@ -665,12 +665,12 @@ class LegacyExternalUserIdentifierRepository {
 
   /// Acquires row-level locks on [LegacyExternalUserIdentifier] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacyExternalUserIdentifier>(
       where: where(LegacyExternalUserIdentifier.t),
@@ -687,10 +687,10 @@ class LegacyExternalUserIdentifierAttachRowRepository {
   /// Creates a relation between the given [LegacyExternalUserIdentifier] and [AuthUser]
   /// by setting the [LegacyExternalUserIdentifier]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyExternalUserIdentifier legacyExternalUserIdentifier,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (legacyExternalUserIdentifier.id == null) {
       throw ArgumentError.notNull('legacyExternalUserIdentifier.id');

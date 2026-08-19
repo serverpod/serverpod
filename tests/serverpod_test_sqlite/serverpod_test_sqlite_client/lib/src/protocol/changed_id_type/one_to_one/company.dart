@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_one/town.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/one_to_one/town.dart' as _i3qwzvq1;
 
 abstract class CompanyUuid
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CompanyUuid._({
     this.id,
     required this.name,
@@ -24,44 +25,46 @@ abstract class CompanyUuid
   });
 
   factory CompanyUuid({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3qwzvq1.TownInt? town,
   }) = _CompanyUuidImpl;
 
   factory CompanyUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CompanyUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.TownInt>(jsonSerialization['town']),
+          : _i0ntutnq.Protocol().deserialize<_i3qwzvq1.TownInt>(
+              jsonSerialization['town'],
+            ),
     );
   }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
   String name;
 
   int townId;
 
-  _i2.TownInt? town;
+  _i3qwzvq1.TownInt? town;
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CompanyUuid copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     String? name,
     int? townId,
-    _i2.TownInt? town,
+    _i3qwzvq1.TownInt? town,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +90,7 @@ abstract class CompanyUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,10 +98,10 @@ class _Undefined {}
 
 class _CompanyUuidImpl extends CompanyUuid {
   _CompanyUuidImpl({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
     required int townId,
-    _i2.TownInt? town,
+    _i3qwzvq1.TownInt? town,
   }) : super._(
          id: id,
          name: name,
@@ -108,7 +111,7 @@ class _CompanyUuidImpl extends CompanyUuid {
 
   /// Returns a shallow copy of this [CompanyUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CompanyUuid copyWith({
     Object? id = _Undefined,
@@ -117,10 +120,10 @@ class _CompanyUuidImpl extends CompanyUuid {
     Object? town = _Undefined,
   }) {
     return CompanyUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i2.TownInt? ? town : this.town?.copyWith(),
+      town: town is _i3qwzvq1.TownInt? ? town : this.town?.copyWith(),
     );
   }
 }

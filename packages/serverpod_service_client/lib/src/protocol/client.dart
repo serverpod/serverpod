@@ -10,58 +10,60 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
+import 'dart:async' as _ida;
+import 'package:http/http.dart' as _i85jenna;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_service_client/src/protocol/caches_info.dart'
+    as _i6gd0gov;
 import 'package:serverpod_service_client/src/protocol/runtime_settings.dart'
-    as _i3;
-import 'package:serverpod_service_client/src/protocol/session_log_result.dart'
-    as _i4;
-import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
-    as _i5;
-import 'package:serverpod_service_client/src/protocol/caches_info.dart' as _i6;
+    as _ipr165ix;
 import 'package:serverpod_service_client/src/protocol/server_health_result.dart'
-    as _i7;
-import 'package:serverpod_database/serverpod_database.dart' as _i8;
-import 'package:http/http.dart' as _i9;
-import 'protocol.dart' as _i10;
+    as _i5svn267;
+import 'package:serverpod_service_client/src/protocol/session_log_filter.dart'
+    as _i215g5d9;
+import 'package:serverpod_service_client/src/protocol/session_log_result.dart'
+    as _iizgo6ax;
+import 'protocol.dart' as _il2as5qe;
 
 /// The [InsightsEndpoint] provides a way to access real time information from
 /// the running server or to change settings.
 /// {@category Endpoint}
-class EndpointInsights extends _i1.EndpointRef {
-  EndpointInsights(_i1.EndpointCaller caller) : super(caller);
+class EndpointInsights extends _isc.EndpointRef {
+  EndpointInsights(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'insights';
 
   /// Get the current [RuntimeSettings] from the running [Server].
-  _i2.Future<_i3.RuntimeSettings> getRuntimeSettings() =>
-      caller.callServerEndpoint<_i3.RuntimeSettings>(
+  _ida.Future<_ipr165ix.RuntimeSettings> getRuntimeSettings() =>
+      caller.callServerEndpoint<_ipr165ix.RuntimeSettings>(
         'insights',
         'getRuntimeSettings',
         {},
       );
 
   /// Update the current [RuntimeSettings] in the running [Server].
-  _i2.Future<void> setRuntimeSettings(_i3.RuntimeSettings runtimeSettings) =>
-      caller.callServerEndpoint<void>(
-        'insights',
-        'setRuntimeSettings',
-        {'runtimeSettings': runtimeSettings},
-      );
+  _ida.Future<void> setRuntimeSettings(
+    _ipr165ix.RuntimeSettings runtimeSettings,
+  ) => caller.callServerEndpoint<void>(
+    'insights',
+    'setRuntimeSettings',
+    {'runtimeSettings': runtimeSettings},
+  );
 
   /// Clear all server logs.
-  _i2.Future<void> clearAllLogs() => caller.callServerEndpoint<void>(
+  _ida.Future<void> clearAllLogs() => caller.callServerEndpoint<void>(
     'insights',
     'clearAllLogs',
     {},
   );
 
   /// Get the latest [numEntries] from the session log.
-  _i2.Future<_i4.SessionLogResult> getSessionLog(
+  _ida.Future<_iizgo6ax.SessionLogResult> getSessionLog(
     int? numEntries,
-    _i5.SessionLogFilter? filter,
-  ) => caller.callServerEndpoint<_i4.SessionLogResult>(
+    _i215g5d9.SessionLogFilter? filter,
+  ) => caller.callServerEndpoint<_iizgo6ax.SessionLogResult>(
     'insights',
     'getSessionLog',
     {
@@ -71,10 +73,10 @@ class EndpointInsights extends _i1.EndpointRef {
   );
 
   /// Get the latest [numEntries] from the session log.
-  _i2.Future<_i4.SessionLogResult> getOpenSessionLog(
+  _ida.Future<_iizgo6ax.SessionLogResult> getOpenSessionLog(
     int? numEntries,
-    _i5.SessionLogFilter? filter,
-  ) => caller.callServerEndpoint<_i4.SessionLogResult>(
+    _i215g5d9.SessionLogFilter? filter,
+  ) => caller.callServerEndpoint<_iizgo6ax.SessionLogResult>(
     'insights',
     'getOpenSessionLog',
     {
@@ -84,33 +86,33 @@ class EndpointInsights extends _i1.EndpointRef {
   );
 
   /// Retrieve information about the state of the caches on this server.
-  _i2.Future<_i6.CachesInfo> getCachesInfo(bool fetchKeys) =>
-      caller.callServerEndpoint<_i6.CachesInfo>(
+  _ida.Future<_i6gd0gov.CachesInfo> getCachesInfo(bool fetchKeys) =>
+      caller.callServerEndpoint<_i6gd0gov.CachesInfo>(
         'insights',
         'getCachesInfo',
         {'fetchKeys': fetchKeys},
       );
 
   /// Safely shuts down this [ServerPod].
-  _i2.Future<void> shutdown() => caller.callServerEndpoint<void>(
+  _ida.Future<void> shutdown() => caller.callServerEndpoint<void>(
     'insights',
     'shutdown',
     {},
   );
 
   /// Performs a health check on the running [ServerPod].
-  _i2.Future<_i7.ServerHealthResult> checkHealth() =>
-      caller.callServerEndpoint<_i7.ServerHealthResult>(
+  _ida.Future<_i5svn267.ServerHealthResult> checkHealth() =>
+      caller.callServerEndpoint<_i5svn267.ServerHealthResult>(
         'insights',
         'checkHealth',
         {},
       );
 
   /// Gets historical health check data. Returns data for the whole cluster.
-  _i2.Future<_i7.ServerHealthResult> getHealthData(
+  _ida.Future<_i5svn267.ServerHealthResult> getHealthData(
     DateTime start,
     DateTime end,
-  ) => caller.callServerEndpoint<_i7.ServerHealthResult>(
+  ) => caller.callServerEndpoint<_i5svn267.ServerHealthResult>(
     'insights',
     'getHealthData',
     {
@@ -120,7 +122,7 @@ class EndpointInsights extends _i1.EndpointRef {
   );
 
   /// Performs a hot reload of the server.
-  _i2.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
     'insights',
     'hotReload',
     {},
@@ -135,8 +137,8 @@ class EndpointInsights extends _i1.EndpointRef {
   ///
   /// See also:
   /// - [getLiveDatabaseDefinition]
-  _i2.Future<List<_i8.TableDefinition>> getTargetTableDefinition() =>
-      caller.callServerEndpoint<List<_i8.TableDefinition>>(
+  _ida.Future<List<_isd.TableDefinition>> getTargetTableDefinition() =>
+      caller.callServerEndpoint<List<_isd.TableDefinition>>(
         'insights',
         'getTargetTableDefinition',
         {},
@@ -149,8 +151,8 @@ class EndpointInsights extends _i1.EndpointRef {
   ///
   /// See also:
   /// - [getTargetTableDefinition]
-  _i2.Future<_i8.DatabaseDefinition> getLiveDatabaseDefinition() =>
-      caller.callServerEndpoint<_i8.DatabaseDefinition>(
+  _ida.Future<_isd.DatabaseDefinition> getLiveDatabaseDefinition() =>
+      caller.callServerEndpoint<_isd.DatabaseDefinition>(
         'insights',
         'getLiveDatabaseDefinition',
         {},
@@ -167,10 +169,10 @@ class EndpointInsights extends _i1.EndpointRef {
   ///
   /// Used by `serverpod start`'s watch loop to apply newly generated
   /// migrations without restarting the pod.
-  _i2.Future<_i8.MigrationsApplyResult> applyMigrations({
+  _ida.Future<_isd.MigrationsApplyResult> applyMigrations({
     required bool applyRepairMigration,
     required bool applyMigrations,
-  }) => caller.callServerEndpoint<_i8.MigrationsApplyResult>(
+  }) => caller.callServerEndpoint<_isd.MigrationsApplyResult>(
     'insights',
     'applyMigrations',
     {
@@ -182,20 +184,20 @@ class EndpointInsights extends _i1.EndpointRef {
   /// Returns the target and live database definitions. See
   /// [getTargetTableDefinition] and [getLiveDatabaseDefinition] for more
   /// details.
-  _i2.Future<_i8.DatabaseDefinitions> getDatabaseDefinitions() =>
-      caller.callServerEndpoint<_i8.DatabaseDefinitions>(
+  _ida.Future<_isd.DatabaseDefinitions> getDatabaseDefinitions() =>
+      caller.callServerEndpoint<_isd.DatabaseDefinitions>(
         'insights',
         'getDatabaseDefinitions',
         {},
       );
 
   /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i8.BulkData> fetchDatabaseBulkData({
+  _ida.Future<_isd.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
     required int limit,
-    _i8.Filter? filter,
-  }) => caller.callServerEndpoint<_i8.BulkData>(
+    _isd.Filter? filter,
+  }) => caller.callServerEndpoint<_isd.BulkData>(
     'insights',
     'fetchDatabaseBulkData',
     {
@@ -208,15 +210,15 @@ class EndpointInsights extends _i1.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
-  _i2.Future<_i8.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i8.BulkQueryResult>(
+  _ida.Future<_isd.BulkQueryResult> runQueries(List<String> queries) =>
+      caller.callServerEndpoint<_isd.BulkQueryResult>(
         'insights',
         'runQueries',
         {'queries': queries},
       );
 
   /// Returns the approximate number of rows in the provided [table].
-  _i2.Future<int> getDatabaseRowCount({required String table}) =>
+  _ida.Future<int> getDatabaseRowCount({required String table}) =>
       caller.callServerEndpoint<int>(
         'insights',
         'getDatabaseRowCount',
@@ -224,7 +226,7 @@ class EndpointInsights extends _i1.EndpointRef {
       );
 
   /// Executes SQL commands. Returns the number of rows affected.
-  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
+  _ida.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
     'insights',
     'executeSql',
     {'sql': sql},
@@ -234,7 +236,7 @@ class EndpointInsights extends _i1.EndpointRef {
   /// [Serverpod.filesWhitelistedForInsights] can be fetched.
   /// The file path must be in unix format and relative to the servers root
   /// directory.
-  _i2.Future<String> fetchFile(String path) =>
+  _ida.Future<String> fetchFile(String path) =>
       caller.callServerEndpoint<String>(
         'insights',
         'fetchFile',
@@ -242,24 +244,24 @@ class EndpointInsights extends _i1.EndpointRef {
       );
 }
 
-class Client extends _i1.ServerpodClientShared {
+class Client extends _isc.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i1.MethodCallContext,
+      _isc.MethodCallContext,
       Object,
       StackTrace,
     )?
     onFailedCall,
-    Function(_i1.MethodCallContext)? onSucceededCall,
+    Function(_isc.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i9.Client? httpClientOverride,
+    _i85jenna.Client? httpClientOverride,
   }) : super(
          host,
-         _i10.Protocol(),
+         _il2as5qe.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -275,8 +277,8 @@ class Client extends _i1.ServerpodClientShared {
   late final EndpointInsights insights;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'insights': insights};
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {'insights': insights};
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {};
+  Map<String, _isc.ModuleEndpointCaller> get moduleLookup => {};
 }

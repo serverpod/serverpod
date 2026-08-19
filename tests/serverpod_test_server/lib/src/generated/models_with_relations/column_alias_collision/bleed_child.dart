@@ -10,7 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Child model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -20,7 +20,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// alias of one relation's `id` collides with the other relation's
 /// `bleedingText`, bleeding the string into the int field on deserialization.
 abstract class BleedChild
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   BleedChild._({
     this.id,
     this.bleedingText,
@@ -48,11 +48,11 @@ abstract class BleedChild
   String? bleedingText;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BleedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BleedChild copyWith({
     int? id,
     String? bleedingText,
@@ -80,11 +80,11 @@ abstract class BleedChild
   }
 
   static BleedChildIncludeList includeList({
-    _i1.WhereExpressionBuilder<BleedChildTable>? where,
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
     BleedChildInclude? include,
   }) {
     return BleedChildIncludeList._(
@@ -99,7 +99,7 @@ abstract class BleedChild
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -116,7 +116,7 @@ class _BleedChildImpl extends BleedChild {
 
   /// Returns a shallow copy of this [BleedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BleedChild copyWith({
     Object? id = _Undefined,
@@ -129,20 +129,20 @@ class _BleedChildImpl extends BleedChild {
   }
 }
 
-class BleedChildUpdateTable extends _i1.UpdateTable<BleedChildTable> {
+class BleedChildUpdateTable extends _is.UpdateTable<BleedChildTable> {
   BleedChildUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> bleedingText(String? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> bleedingText(String? value) =>
+      _is.ColumnValue(
         table.bleedingText,
         value,
       );
 }
 
-class BleedChildTable extends _i1.Table<int?> {
+class BleedChildTable extends _is.Table<int?> {
   BleedChildTable({super.tableRelation}) : super(tableName: 'bleed_child') {
     updateTable = BleedChildUpdateTable(this);
-    bleedingText = _i1.ColumnString(
+    bleedingText = _is.ColumnString(
       'bleedingText',
       this,
     );
@@ -150,28 +150,28 @@ class BleedChildTable extends _i1.Table<int?> {
 
   late final BleedChildUpdateTable updateTable;
 
-  late final _i1.ColumnString bleedingText;
+  late final _is.ColumnString bleedingText;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     bleedingText,
   ];
 }
 
-class BleedChildInclude extends _i1.IncludeObject {
+class BleedChildInclude extends _is.IncludeObject {
   BleedChildInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => BleedChild.t;
+  _is.Table<int?> get table => BleedChild.t;
 }
 
-class BleedChildIncludeList extends _i1.IncludeList {
+class BleedChildIncludeList extends _is.IncludeList {
   BleedChildIncludeList._({
-    _i1.WhereExpressionBuilder<BleedChildTable>? where,
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -182,10 +182,10 @@ class BleedChildIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => BleedChild.t;
+  _is.Table<int?> get table => BleedChild.t;
 }
 
 class BleedChildRepository {
@@ -214,15 +214,15 @@ class BleedChildRepository {
   /// );
   /// ```
   Future<List<BleedChild>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedChildTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BleedChild>(
       where: where?.call(BleedChild.t),
@@ -254,14 +254,14 @@ class BleedChildRepository {
   /// );
   /// ```
   Future<BleedChild?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedChildTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BleedChild>(
       where: where?.call(BleedChild.t),
@@ -276,11 +276,11 @@ class BleedChildRepository {
 
   /// Finds a single [BleedChild] by its [id] or null if no such row exists.
   Future<BleedChild?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BleedChild>(
       id,
@@ -305,9 +305,9 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedChild> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -323,9 +323,9 @@ class BleedChildRepository {
   ///
   /// The returned [BleedChild] will have its `id` field set.
   Future<BleedChild> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedChild row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<BleedChild>(
       row,
@@ -354,12 +354,12 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedChild> rows, {
-    required _i1.ColumnSelections<BleedChildTable> conflictColumns,
-    _i1.ColumnSelections<BleedChildTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BleedChildTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BleedChildTable> conflictColumns,
+    _is.ColumnSelections<BleedChildTable>? updateColumns,
+    _is.WhereExpressionBuilder<BleedChildTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<BleedChild>(
@@ -386,12 +386,12 @@ class BleedChildRepository {
   ///
   /// The returned [BleedChild] will have its `id` field set.
   Future<BleedChild?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedChild row, {
-    required _i1.ColumnSelections<BleedChildTable> conflictColumns,
-    _i1.ColumnSelections<BleedChildTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BleedChildTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BleedChildTable> conflictColumns,
+    _is.ColumnSelections<BleedChildTable>? updateColumns,
+    _is.WhereExpressionBuilder<BleedChildTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BleedChild>(
       row,
@@ -412,10 +412,10 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedChild> rows, {
-    _i1.ColumnSelections<BleedChildTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BleedChildTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<BleedChild>(
@@ -430,10 +430,10 @@ class BleedChildRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BleedChild> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedChild row, {
-    _i1.ColumnSelections<BleedChildTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BleedChildTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<BleedChild>(
       row,
@@ -445,10 +445,10 @@ class BleedChildRepository {
   /// Updates a single [BleedChild] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BleedChild?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BleedChildUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<BleedChildUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<BleedChild>(
       id,
@@ -464,14 +464,14 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BleedChildUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<BleedChildTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BleedChildUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<BleedChildTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BleedChild>(
@@ -498,11 +498,11 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedChild> rows, {
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<BleedChild>(
@@ -516,9 +516,9 @@ class BleedChildRepository {
 
   /// Deletes a single [BleedChild].
   Future<BleedChild> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedChild row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<BleedChild>(
       row,
@@ -535,11 +535,11 @@ class BleedChildRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedChild>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BleedChildTable> where,
-    _i1.OrderByBuilder<BleedChildTable>? orderBy,
-    _i1.OrderByListBuilder<BleedChildTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BleedChildTable> where,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BleedChild>(
@@ -554,10 +554,10 @@ class BleedChildRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedChildTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<BleedChild>(
       where: where?.call(BleedChild.t),
@@ -568,11 +568,11 @@ class BleedChildRepository {
 
   /// Acquires row-level locks on [BleedChild] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BleedChildTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BleedChildTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BleedChild>(
       where: where(BleedChild.t),

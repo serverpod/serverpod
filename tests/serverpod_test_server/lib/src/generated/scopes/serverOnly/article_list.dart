@@ -10,30 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../scopes/serverOnly/article.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../scopes/serverOnly/article.dart' as _irqkdpac;
 
 abstract class ArticleList
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ArticleList._({required this.results});
 
-  factory ArticleList({required List<_i2.Article> results}) = _ArticleListImpl;
+  factory ArticleList({required List<_irqkdpac.Article> results}) =
+      _ArticleListImpl;
 
   factory ArticleList.fromJson(Map<String, dynamic> jsonSerialization) {
     return ArticleList(
-      results: _i3.Protocol().deserialize<List<_i2.Article>>(
+      results: _igqrxdcj.Protocol().deserialize<List<_irqkdpac.Article>>(
         jsonSerialization['results'],
       ),
     );
   }
 
-  List<_i2.Article> results;
+  List<_irqkdpac.Article> results;
 
   /// Returns a shallow copy of this [ArticleList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  ArticleList copyWith({List<_i2.Article>? results});
+  @_is.useResult
+  ArticleList copyWith({List<_irqkdpac.Article>? results});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -49,19 +50,19 @@ abstract class ArticleList
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _ArticleListImpl extends ArticleList {
-  _ArticleListImpl({required List<_i2.Article> results})
+  _ArticleListImpl({required List<_irqkdpac.Article> results})
     : super._(results: results);
 
   /// Returns a shallow copy of this [ArticleList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
-  ArticleList copyWith({List<_i2.Article>? results}) {
+  ArticleList copyWith({List<_irqkdpac.Article>? results}) {
     return ArticleList(
       results: results ?? this.results.map((e0) => e0.copyWith()).toList(),
     );

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class EnumDefaultPersist
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EnumDefaultPersist._({
     this.id,
     this.byNameEnumDefaultPersist,
@@ -24,8 +24,8 @@ abstract class EnumDefaultPersist
 
   factory EnumDefaultPersist({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   }) = _EnumDefaultPersistImpl;
 
   factory EnumDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,13 +34,13 @@ abstract class EnumDefaultPersist
       byNameEnumDefaultPersist:
           jsonSerialization['byNameEnumDefaultPersist'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultPersist'] as String),
             ),
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefaultPersist'] as int),
             ),
     );
@@ -51,17 +51,17 @@ abstract class EnumDefaultPersist
   /// the id will be null.
   int? id;
 
-  _i2.ByNameEnum? byNameEnumDefaultPersist;
+  _iwklobdz.ByNameEnum? byNameEnumDefaultPersist;
 
-  _i3.ByIndexEnum? byIndexEnumDefaultPersist;
+  _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist;
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EnumDefaultPersist copyWith({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,7 +89,7 @@ abstract class EnumDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,8 +98,8 @@ class _Undefined {}
 class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   _EnumDefaultPersistImpl({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
          id: id,
          byNameEnumDefaultPersist: byNameEnumDefaultPersist,
@@ -108,7 +108,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EnumDefaultPersist copyWith({
     Object? id = _Undefined,
@@ -117,10 +117,12 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }) {
     return EnumDefaultPersist(
       id: id is int? ? id : this.id,
-      byNameEnumDefaultPersist: byNameEnumDefaultPersist is _i2.ByNameEnum?
+      byNameEnumDefaultPersist:
+          byNameEnumDefaultPersist is _iwklobdz.ByNameEnum?
           ? byNameEnumDefaultPersist
           : this.byNameEnumDefaultPersist,
-      byIndexEnumDefaultPersist: byIndexEnumDefaultPersist is _i3.ByIndexEnum?
+      byIndexEnumDefaultPersist:
+          byIndexEnumDefaultPersist is _ido5z594.ByIndexEnum?
           ? byIndexEnumDefaultPersist
           : this.byIndexEnumDefaultPersist,
     );

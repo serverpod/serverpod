@@ -10,31 +10,32 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
-class SharedModel implements _i1.SerializableModel, _i1.ProtocolSerialization {
+class SharedModel
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   SharedModel({
-    _i1.UuidValue? id,
+    _iss.UuidValue? id,
     required this.name,
     this.data,
     DateTime? createdAt,
-  }) : id = id ?? const _i1.Uuid().v4obj(),
+  }) : id = id ?? const _iss.Uuid().v4obj(),
        createdAt = createdAt ?? DateTime.now();
 
   factory SharedModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return SharedModel(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _iss.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       data: jsonSerialization['data'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _iss.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 
-  _i1.UuidValue id;
+  _iss.UuidValue id;
 
   String name;
 
@@ -44,9 +45,9 @@ class SharedModel implements _i1.SerializableModel, _i1.ProtocolSerialization {
 
   /// Returns a shallow copy of this [SharedModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   SharedModel copyWith({
-    _i1.UuidValue? id,
+    _iss.UuidValue? id,
     String? name,
     Object? data = _Undefined,
     DateTime? createdAt,
@@ -83,7 +84,7 @@ class SharedModel implements _i1.SerializableModel, _i1.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 

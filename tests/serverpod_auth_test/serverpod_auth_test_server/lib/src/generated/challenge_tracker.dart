@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i2;
-import 'package:serverpod_auth_test_server/src/generated/protocol.dart' as _i3;
+    as _iais;
+import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
+    as _ik2mg1i3;
 
 abstract class ChallengeTracker
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ChallengeTracker._({
     this.id,
     required this.secretChallengeId,
@@ -28,8 +29,8 @@ abstract class ChallengeTracker
 
   factory ChallengeTracker({
     int? id,
-    required _i1.UuidValue secretChallengeId,
-    _i2.SecretChallenge? secretChallenge,
+    required _is.UuidValue secretChallengeId,
+    _iais.SecretChallenge? secretChallenge,
     DateTime? trackedAt,
     String? notes,
   }) = _ChallengeTrackerImpl;
@@ -37,17 +38,17 @@ abstract class ChallengeTracker
   factory ChallengeTracker.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChallengeTracker(
       id: jsonSerialization['id'] as int?,
-      secretChallengeId: _i1.UuidValueJsonExtension.fromJson(
+      secretChallengeId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['secretChallengeId'],
       ),
       secretChallenge: jsonSerialization['secretChallenge'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
+          : _ik2mg1i3.Protocol().deserialize<_iais.SecretChallenge>(
               jsonSerialization['secretChallenge'],
             ),
       trackedAt: jsonSerialization['trackedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['trackedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['trackedAt']),
       notes: jsonSerialization['notes'] as String?,
     );
   }
@@ -59,10 +60,10 @@ abstract class ChallengeTracker
   @override
   int? id;
 
-  _i1.UuidValue secretChallengeId;
+  _is.UuidValue secretChallengeId;
 
   /// The [SecretChallenge] being tracked
-  _i2.SecretChallenge? secretChallenge;
+  _iais.SecretChallenge? secretChallenge;
 
   /// Tracking timestamp
   DateTime trackedAt;
@@ -71,15 +72,15 @@ abstract class ChallengeTracker
   String? notes;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ChallengeTracker]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ChallengeTracker copyWith({
     int? id,
-    _i1.UuidValue? secretChallengeId,
-    _i2.SecretChallenge? secretChallenge,
+    _is.UuidValue? secretChallengeId,
+    _iais.SecretChallenge? secretChallenge,
     DateTime? trackedAt,
     String? notes,
   });
@@ -101,17 +102,17 @@ abstract class ChallengeTracker
   }
 
   static ChallengeTrackerInclude include({
-    _i2.SecretChallengeInclude? secretChallenge,
+    _iais.SecretChallengeInclude? secretChallenge,
   }) {
     return ChallengeTrackerInclude._(secretChallenge: secretChallenge);
   }
 
   static ChallengeTrackerIncludeList includeList({
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     ChallengeTrackerInclude? include,
   }) {
     return ChallengeTrackerIncludeList._(
@@ -126,7 +127,7 @@ abstract class ChallengeTracker
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -135,8 +136,8 @@ class _Undefined {}
 class _ChallengeTrackerImpl extends ChallengeTracker {
   _ChallengeTrackerImpl({
     int? id,
-    required _i1.UuidValue secretChallengeId,
-    _i2.SecretChallenge? secretChallenge,
+    required _is.UuidValue secretChallengeId,
+    _iais.SecretChallenge? secretChallenge,
     DateTime? trackedAt,
     String? notes,
   }) : super._(
@@ -149,11 +150,11 @@ class _ChallengeTrackerImpl extends ChallengeTracker {
 
   /// Returns a shallow copy of this [ChallengeTracker]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ChallengeTracker copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? secretChallengeId,
+    _is.UuidValue? secretChallengeId,
     Object? secretChallenge = _Undefined,
     DateTime? trackedAt,
     Object? notes = _Undefined,
@@ -161,7 +162,7 @@ class _ChallengeTrackerImpl extends ChallengeTracker {
     return ChallengeTracker(
       id: id is int? ? id : this.id,
       secretChallengeId: secretChallengeId ?? this.secretChallengeId,
-      secretChallenge: secretChallenge is _i2.SecretChallenge?
+      secretChallenge: secretChallenge is _iais.SecretChallenge?
           ? secretChallenge
           : this.secretChallenge?.copyWith(),
       trackedAt: trackedAt ?? this.trackedAt,
@@ -171,41 +172,41 @@ class _ChallengeTrackerImpl extends ChallengeTracker {
 }
 
 class ChallengeTrackerUpdateTable
-    extends _i1.UpdateTable<ChallengeTrackerTable> {
+    extends _is.UpdateTable<ChallengeTrackerTable> {
   ChallengeTrackerUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> secretChallengeId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> secretChallengeId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.secretChallengeId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> trackedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> trackedAt(DateTime value) =>
+      _is.ColumnValue(
         table.trackedAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> notes(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> notes(String? value) => _is.ColumnValue(
     table.notes,
     value,
   );
 }
 
-class ChallengeTrackerTable extends _i1.Table<int?> {
+class ChallengeTrackerTable extends _is.Table<int?> {
   ChallengeTrackerTable({super.tableRelation})
     : super(tableName: 'challenge_tracker') {
     updateTable = ChallengeTrackerUpdateTable(this);
-    secretChallengeId = _i1.ColumnUuid(
+    secretChallengeId = _is.ColumnUuid(
       'secretChallengeId',
       this,
     );
-    trackedAt = _i1.ColumnDateTime(
+    trackedAt = _is.ColumnDateTime(
       'trackedAt',
       this,
     );
-    notes = _i1.ColumnString(
+    notes = _is.ColumnString(
       'notes',
       this,
     );
@@ -213,32 +214,32 @@ class ChallengeTrackerTable extends _i1.Table<int?> {
 
   late final ChallengeTrackerUpdateTable updateTable;
 
-  late final _i1.ColumnUuid secretChallengeId;
+  late final _is.ColumnUuid secretChallengeId;
 
   /// The [SecretChallenge] being tracked
-  _i2.SecretChallengeTable? _secretChallenge;
+  _iais.SecretChallengeTable? _secretChallenge;
 
   /// Tracking timestamp
-  late final _i1.ColumnDateTime trackedAt;
+  late final _is.ColumnDateTime trackedAt;
 
   /// Notes about the challenge
-  late final _i1.ColumnString notes;
+  late final _is.ColumnString notes;
 
-  _i2.SecretChallengeTable get secretChallenge {
+  _iais.SecretChallengeTable get secretChallenge {
     if (_secretChallenge != null) return _secretChallenge!;
-    _secretChallenge = _i1.createRelationTable(
+    _secretChallenge = _is.createRelationTable(
       relationFieldName: 'secretChallenge',
       field: ChallengeTracker.t.secretChallengeId,
-      foreignField: _i2.SecretChallenge.t.id,
+      foreignField: _iais.SecretChallenge.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.SecretChallengeTable(tableRelation: foreignTableRelation),
+          _iais.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _secretChallenge!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     secretChallengeId,
     trackedAt,
@@ -246,7 +247,7 @@ class ChallengeTrackerTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'secretChallenge') {
       return secretChallenge;
     }
@@ -254,25 +255,25 @@ class ChallengeTrackerTable extends _i1.Table<int?> {
   }
 }
 
-class ChallengeTrackerInclude extends _i1.IncludeObject {
-  ChallengeTrackerInclude._({_i2.SecretChallengeInclude? secretChallenge}) {
+class ChallengeTrackerInclude extends _is.IncludeObject {
+  ChallengeTrackerInclude._({_iais.SecretChallengeInclude? secretChallenge}) {
     _secretChallenge = secretChallenge;
   }
 
-  _i2.SecretChallengeInclude? _secretChallenge;
+  _iais.SecretChallengeInclude? _secretChallenge;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'secretChallenge': _secretChallenge,
   };
 
   @override
-  _i1.Table<int?> get table => ChallengeTracker.t;
+  _is.Table<int?> get table => ChallengeTracker.t;
 }
 
-class ChallengeTrackerIncludeList extends _i1.IncludeList {
+class ChallengeTrackerIncludeList extends _is.IncludeList {
   ChallengeTrackerIncludeList._({
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -283,10 +284,10 @@ class ChallengeTrackerIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ChallengeTracker.t;
+  _is.Table<int?> get table => ChallengeTracker.t;
 }
 
 class ChallengeTrackerRepository {
@@ -317,16 +318,16 @@ class ChallengeTrackerRepository {
   /// );
   /// ```
   Future<List<ChallengeTracker>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
     ChallengeTrackerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
@@ -359,15 +360,15 @@ class ChallengeTrackerRepository {
   /// );
   /// ```
   Future<ChallengeTracker?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
     ChallengeTrackerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
@@ -383,12 +384,12 @@ class ChallengeTrackerRepository {
 
   /// Finds a single [ChallengeTracker] by its [id] or null if no such row exists.
   Future<ChallengeTracker?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     ChallengeTrackerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChallengeTracker>(
       id,
@@ -414,9 +415,9 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChallengeTracker> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -432,9 +433,9 @@ class ChallengeTrackerRepository {
   ///
   /// The returned [ChallengeTracker] will have its `id` field set.
   Future<ChallengeTracker> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ChallengeTracker row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ChallengeTracker>(
       row,
@@ -463,12 +464,12 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChallengeTracker> rows, {
-    required _i1.ColumnSelections<ChallengeTrackerTable> conflictColumns,
-    _i1.ColumnSelections<ChallengeTrackerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ChallengeTrackerTable> conflictColumns,
+    _is.ColumnSelections<ChallengeTrackerTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ChallengeTracker>(
@@ -495,12 +496,12 @@ class ChallengeTrackerRepository {
   ///
   /// The returned [ChallengeTracker] will have its `id` field set.
   Future<ChallengeTracker?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ChallengeTracker row, {
-    required _i1.ColumnSelections<ChallengeTrackerTable> conflictColumns,
-    _i1.ColumnSelections<ChallengeTrackerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ChallengeTrackerTable> conflictColumns,
+    _is.ColumnSelections<ChallengeTrackerTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChallengeTracker>(
       row,
@@ -521,10 +522,10 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChallengeTracker> rows, {
-    _i1.ColumnSelections<ChallengeTrackerTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ChallengeTrackerTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ChallengeTracker>(
@@ -539,10 +540,10 @@ class ChallengeTrackerRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChallengeTracker> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ChallengeTracker row, {
-    _i1.ColumnSelections<ChallengeTrackerTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ChallengeTrackerTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ChallengeTracker>(
       row,
@@ -554,11 +555,11 @@ class ChallengeTrackerRepository {
   /// Updates a single [ChallengeTracker] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChallengeTracker?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
+    required _is.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ChallengeTracker>(
       id,
@@ -574,15 +575,15 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ChallengeTrackerUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    required _is.WhereExpressionBuilder<ChallengeTrackerTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChallengeTracker>(
@@ -609,11 +610,11 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChallengeTracker> rows, {
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ChallengeTracker>(
@@ -627,9 +628,9 @@ class ChallengeTrackerRepository {
 
   /// Deletes a single [ChallengeTracker].
   Future<ChallengeTracker> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ChallengeTracker row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ChallengeTracker>(
       row,
@@ -646,11 +647,11 @@ class ChallengeTrackerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChallengeTracker>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
-    _i1.OrderByBuilder<ChallengeTrackerTable>? orderBy,
-    _i1.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChallengeTracker>(
@@ -665,10 +666,10 @@ class ChallengeTrackerRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ChallengeTracker>(
       where: where?.call(ChallengeTracker.t),
@@ -679,11 +680,11 @@ class ChallengeTrackerRepository {
 
   /// Acquires row-level locks on [ChallengeTracker] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ChallengeTrackerTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChallengeTrackerTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChallengeTracker>(
       where: where(ChallengeTracker.t),
@@ -700,10 +701,10 @@ class ChallengeTrackerAttachRowRepository {
   /// Creates a relation between the given [ChallengeTracker] and [SecretChallenge]
   /// by setting the [ChallengeTracker]'s foreign key `secretChallengeId` to refer to the [SecretChallenge].
   Future<void> secretChallenge(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ChallengeTracker challengeTracker,
-    _i2.SecretChallenge secretChallenge, {
-    _i1.Transaction? transaction,
+    _iais.SecretChallenge secretChallenge, {
+    _is.Transaction? transaction,
   }) async {
     if (challengeTracker.id == null) {
       throw ArgumentError.notNull('challengeTracker.id');

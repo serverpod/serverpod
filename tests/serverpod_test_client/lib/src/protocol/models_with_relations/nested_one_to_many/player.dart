@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
 
 abstract class Player
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Player._({
     this.id,
     required this.name,
@@ -27,7 +27,7 @@ abstract class Player
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   }) = _PlayerImpl;
 
   factory Player.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,9 @@ abstract class Player
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _iza9lbb5.Protocol().deserialize<_iaks25tn.Team>(
+              jsonSerialization['team'],
+            ),
     );
   }
 
@@ -50,16 +52,16 @@ abstract class Player
 
   int? teamId;
 
-  _i2.Team? team;
+  _iaks25tn.Team? team;
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Player copyWith({
     int? id,
     String? name,
     int? teamId,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +87,7 @@ abstract class Player
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +98,7 @@ class _PlayerImpl extends Player {
     int? id,
     required String name,
     int? teamId,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -106,7 +108,7 @@ class _PlayerImpl extends Player {
 
   /// Returns a shallow copy of this [Player]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Player copyWith({
     Object? id = _Undefined,
@@ -118,7 +120,7 @@ class _PlayerImpl extends Player {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
     );
   }
 }

@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import '../types.dart' as _i3;
-import '../scopes/scope_server_only_field.dart' as _i4;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../protocol.dart' as _iv35mfmj;
+import '../scopes/scope_server_only_field.dart' as _ijcqyoxk;
+import '../types.dart' as _ih2vh47j;
 
-abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ScopeServerOnlyFieldChild extends _iv35mfmj.ScopeServerOnlyField
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ScopeServerOnlyFieldChild._({
     super.allScope,
     super.nested,
@@ -25,8 +25,8 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
   });
 
   factory ScopeServerOnlyFieldChild({
-    _i3.Types? allScope,
-    _i4.ScopeServerOnlyField? nested,
+    _ih2vh47j.Types? allScope,
+    _ijcqyoxk.ScopeServerOnlyField? nested,
     required String childFoo,
   }) = _ScopeServerOnlyFieldChildImpl;
 
@@ -36,12 +36,12 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
     return ScopeServerOnlyFieldChild(
       allScope: jsonSerialization['allScope'] == null
           ? null
-          : _i5.Protocol().deserialize<_i3.Types>(
+          : _iza9lbb5.Protocol().deserialize<_ih2vh47j.Types>(
               jsonSerialization['allScope'],
             ),
       nested: jsonSerialization['nested'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.ScopeServerOnlyField>(
+          : _iza9lbb5.Protocol().deserialize<_ijcqyoxk.ScopeServerOnlyField>(
               jsonSerialization['nested'],
             ),
       childFoo: jsonSerialization['childFoo'] as String,
@@ -53,7 +53,7 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
   /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope,
     Object? nested,
@@ -81,7 +81,7 @@ abstract class ScopeServerOnlyFieldChild extends _i1.ScopeServerOnlyField
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -89,8 +89,8 @@ class _Undefined {}
 
 class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
   _ScopeServerOnlyFieldChildImpl({
-    _i3.Types? allScope,
-    _i4.ScopeServerOnlyField? nested,
+    _ih2vh47j.Types? allScope,
+    _ijcqyoxk.ScopeServerOnlyField? nested,
     required String childFoo,
   }) : super._(
          allScope: allScope,
@@ -100,7 +100,7 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
 
   /// Returns a shallow copy of this [ScopeServerOnlyFieldChild]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   ScopeServerOnlyFieldChild copyWith({
     Object? allScope = _Undefined,
@@ -108,8 +108,10 @@ class _ScopeServerOnlyFieldChildImpl extends ScopeServerOnlyFieldChild {
     String? childFoo,
   }) {
     return ScopeServerOnlyFieldChild(
-      allScope: allScope is _i3.Types? ? allScope : this.allScope?.copyWith(),
-      nested: nested is _i4.ScopeServerOnlyField?
+      allScope: allScope is _ih2vh47j.Types?
+          ? allScope
+          : this.allScope?.copyWith(),
+      nested: nested is _ijcqyoxk.ScopeServerOnlyField?
           ? nested
           : this.nested?.copyWith(),
       childFoo: childFoo ?? this.childFoo,

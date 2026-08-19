@@ -10,14 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'dart:typed_data' as _i3;
-import 'test_enum.dart' as _i4;
-import 'test_enum_stringified.dart' as _i5;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i6;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
 
-abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class Types
+    implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -53,21 +55,21 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i3.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i2.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i2.Vector? aVector,
-    _i2.HalfVector? aHalfVector,
-    _i2.SparseVector? aSparseVector,
-    _i2.Bit? aBit,
-    _i2.GeographyPoint? aGeographyPoint,
-    _i2.GeographyLineString? aGeographyLineString,
-    _i2.GeographyPolygon? aGeographyPolygon,
-    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i4.TestEnum? anEnum,
-    _i5.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -80,86 +82,90 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i2.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i2.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
+          : _isc.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i2.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
+          : _isc.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       aUri: jsonSerialization['aUri'] == null
           ? null
-          : _i2.UriJsonExtension.fromJson(jsonSerialization['aUri']),
+          : _isc.UriJsonExtension.fromJson(jsonSerialization['aUri']),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i2.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+          : _isc.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
       aVector: jsonSerialization['aVector'] == null
           ? null
-          : _i2.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+          : _isc.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
       aHalfVector: jsonSerialization['aHalfVector'] == null
           ? null
-          : _i2.HalfVectorJsonExtension.fromJson(
+          : _isc.HalfVectorJsonExtension.fromJson(
               jsonSerialization['aHalfVector'],
             ),
       aSparseVector: jsonSerialization['aSparseVector'] == null
           ? null
-          : _i2.SparseVectorJsonExtension.fromJson(
+          : _isc.SparseVectorJsonExtension.fromJson(
               jsonSerialization['aSparseVector'],
             ),
       aBit: jsonSerialization['aBit'] == null
           ? null
-          : _i2.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+          : _isc.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
           ? null
-          : _i2.GeographyPointJsonExtension.fromJson(
+          : _isc.GeographyPointJsonExtension.fromJson(
               jsonSerialization['aGeographyPoint'],
             ),
       aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
           ? null
-          : _i2.GeographyLineStringJsonExtension.fromJson(
+          : _isc.GeographyLineStringJsonExtension.fromJson(
               jsonSerialization['aGeographyLineString'],
             ),
       aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
           ? null
-          : _i2.GeographyPolygonJsonExtension.fromJson(
+          : _isc.GeographyPolygonJsonExtension.fromJson(
               jsonSerialization['aGeographyPolygon'],
             ),
       aGeographyGeometryCollection:
           jsonSerialization['aGeographyGeometryCollection'] == null
           ? null
-          : _i2.GeographyGeometryCollectionJsonExtension.fromJson(
+          : _isc.GeographyGeometryCollectionJsonExtension.fromJson(
               jsonSerialization['aGeographyGeometryCollection'],
             ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
-          : _i4.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
+          : _ionapfu9.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i5.TestEnumStringified.fromJson(
+          : _i7liykk2.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String),
             ),
       aList: jsonSerialization['aList'] == null
           ? null
-          : _i6.Protocol().deserialize<List<int>>(jsonSerialization['aList']),
+          : _i0ntutnq.Protocol().deserialize<List<int>>(
+              jsonSerialization['aList'],
+            ),
       aMap: jsonSerialization['aMap'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<int, int>>(
+          : _i0ntutnq.Protocol().deserialize<Map<int, int>>(
               jsonSerialization['aMap'],
             ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i6.Protocol().deserialize<Set<int>>(jsonSerialization['aSet']),
+          : _i0ntutnq.Protocol().deserialize<Set<int>>(
+              jsonSerialization['aSet'],
+            ),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<(String, {Uri? optionalUri})?>(
+          : _i0ntutnq.Protocol().deserialize<(String, {Uri? optionalUri})?>(
               (jsonSerialization['aRecord'] as Map<String, dynamic>),
             ),
     );
@@ -182,35 +188,35 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   String? aString;
 
-  _i3.ByteData? aByteData;
+  _idt.ByteData? aByteData;
 
   Duration? aDuration;
 
-  _i2.UuidValue? aUuid;
+  _isc.UuidValue? aUuid;
 
   Uri? aUri;
 
   BigInt? aBigInt;
 
-  _i2.Vector? aVector;
+  _isc.Vector? aVector;
 
-  _i2.HalfVector? aHalfVector;
+  _isc.HalfVector? aHalfVector;
 
-  _i2.SparseVector? aSparseVector;
+  _isc.SparseVector? aSparseVector;
 
-  _i2.Bit? aBit;
+  _isc.Bit? aBit;
 
-  _i2.GeographyPoint? aGeographyPoint;
+  _isc.GeographyPoint? aGeographyPoint;
 
-  _i2.GeographyLineString? aGeographyLineString;
+  _isc.GeographyLineString? aGeographyLineString;
 
-  _i2.GeographyPolygon? aGeographyPolygon;
+  _isc.GeographyPolygon? aGeographyPolygon;
 
-  _i2.GeographyGeometryCollection? aGeographyGeometryCollection;
+  _isc.GeographyGeometryCollection? aGeographyGeometryCollection;
 
-  _i4.TestEnum? anEnum;
+  _ionapfu9.TestEnum? anEnum;
 
-  _i5.TestEnumStringified? aStringifiedEnum;
+  _i7liykk2.TestEnumStringified? aStringifiedEnum;
 
   List<int>? aList;
 
@@ -221,11 +227,11 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   (String, {Uri? optionalUri})? aRecord;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Types copyWith({
     int? id,
     int? anInt,
@@ -233,21 +239,21 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i3.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i2.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i2.Vector? aVector,
-    _i2.HalfVector? aHalfVector,
-    _i2.SparseVector? aSparseVector,
-    _i2.Bit? aBit,
-    _i2.GeographyPoint? aGeographyPoint,
-    _i2.GeographyLineString? aGeographyLineString,
-    _i2.GeographyPolygon? aGeographyPolygon,
-    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i4.TestEnum? anEnum,
-    _i5.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -285,7 +291,8 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i6.Protocol().mapRecordToJson(aRecord),
+      if (aRecord != null)
+        'aRecord': _i0ntutnq.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -321,7 +328,8 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i6.Protocol().mapRecordToJson(aRecord),
+      if (aRecord != null)
+        'aRecord': _i0ntutnq.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -330,11 +338,11 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   }
 
   static TypesIncludeList includeList({
-    _i1.WhereExpressionBuilder<TypesTable>? where,
+    _isd.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
   }) {
     return TypesIncludeList._(
@@ -349,7 +357,7 @@ abstract class Types implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -363,21 +371,21 @@ class _TypesImpl extends Types {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i3.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i2.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i2.Vector? aVector,
-    _i2.HalfVector? aHalfVector,
-    _i2.SparseVector? aSparseVector,
-    _i2.Bit? aBit,
-    _i2.GeographyPoint? aGeographyPoint,
-    _i2.GeographyLineString? aGeographyLineString,
-    _i2.GeographyPolygon? aGeographyPolygon,
-    _i2.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i4.TestEnum? anEnum,
-    _i5.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -412,7 +420,7 @@ class _TypesImpl extends Types {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Types copyWith({
     Object? id = _Undefined,
@@ -448,36 +456,36 @@ class _TypesImpl extends Types {
       aDouble: aDouble is double? ? aDouble : this.aDouble,
       aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
       aString: aString is String? ? aString : this.aString,
-      aByteData: aByteData is _i3.ByteData?
+      aByteData: aByteData is _idt.ByteData?
           ? aByteData
           : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
-      aUuid: aUuid is _i2.UuidValue? ? aUuid : this.aUuid,
+      aUuid: aUuid is _isc.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
-      aVector: aVector is _i2.Vector? ? aVector : this.aVector?.clone(),
-      aHalfVector: aHalfVector is _i2.HalfVector?
+      aVector: aVector is _isc.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _isc.HalfVector?
           ? aHalfVector
           : this.aHalfVector?.clone(),
-      aSparseVector: aSparseVector is _i2.SparseVector?
+      aSparseVector: aSparseVector is _isc.SparseVector?
           ? aSparseVector
           : this.aSparseVector?.clone(),
-      aBit: aBit is _i2.Bit? ? aBit : this.aBit?.clone(),
-      aGeographyPoint: aGeographyPoint is _i2.GeographyPoint?
+      aBit: aBit is _isc.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _isc.GeographyPoint?
           ? aGeographyPoint
           : this.aGeographyPoint,
-      aGeographyLineString: aGeographyLineString is _i2.GeographyLineString?
+      aGeographyLineString: aGeographyLineString is _isc.GeographyLineString?
           ? aGeographyLineString
           : this.aGeographyLineString,
-      aGeographyPolygon: aGeographyPolygon is _i2.GeographyPolygon?
+      aGeographyPolygon: aGeographyPolygon is _isc.GeographyPolygon?
           ? aGeographyPolygon
           : this.aGeographyPolygon,
       aGeographyGeometryCollection:
-          aGeographyGeometryCollection is _i2.GeographyGeometryCollection?
+          aGeographyGeometryCollection is _isc.GeographyGeometryCollection?
           ? aGeographyGeometryCollection
           : this.aGeographyGeometryCollection,
-      anEnum: anEnum is _i4.TestEnum? ? anEnum : this.anEnum,
-      aStringifiedEnum: aStringifiedEnum is _i5.TestEnumStringified?
+      anEnum: anEnum is _ionapfu9.TestEnum? ? anEnum : this.anEnum,
+      aStringifiedEnum: aStringifiedEnum is _i7liykk2.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
       aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),
@@ -505,257 +513,261 @@ class _TypesImpl extends Types {
   }
 }
 
-class TypesUpdateTable extends _i1.UpdateTable<TypesTable> {
+class TypesUpdateTable extends _isd.UpdateTable<TypesTable> {
   TypesUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> anInt(int? value) => _i1.ColumnValue(
+  _isd.ColumnValue<int, int> anInt(int? value) => _isd.ColumnValue(
     table.anInt,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> aBool(bool? value) => _i1.ColumnValue(
+  _isd.ColumnValue<bool, bool> aBool(bool? value) => _isd.ColumnValue(
     table.aBool,
     value,
   );
 
-  _i1.ColumnValue<double, double> aDouble(double? value) => _i1.ColumnValue(
+  _isd.ColumnValue<double, double> aDouble(double? value) => _isd.ColumnValue(
     table.aDouble,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> aDateTime(DateTime? value) =>
-      _i1.ColumnValue(
+  _isd.ColumnValue<DateTime, DateTime> aDateTime(DateTime? value) =>
+      _isd.ColumnValue(
         table.aDateTime,
         value,
       );
 
-  _i1.ColumnValue<String, String> aString(String? value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> aString(String? value) => _isd.ColumnValue(
     table.aString,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> aByteData(_i3.ByteData? value) =>
-      _i1.ColumnValue(
-        table.aByteData,
-        value,
-      );
+  _isd.ColumnValue<_idt.ByteData, _idt.ByteData> aByteData(
+    _idt.ByteData? value,
+  ) => _isd.ColumnValue(
+    table.aByteData,
+    value,
+  );
 
-  _i1.ColumnValue<Duration, Duration> aDuration(Duration? value) =>
-      _i1.ColumnValue(
+  _isd.ColumnValue<Duration, Duration> aDuration(Duration? value) =>
+      _isd.ColumnValue(
         table.aDuration,
         value,
       );
 
-  _i1.ColumnValue<_i2.UuidValue, _i2.UuidValue> aUuid(_i2.UuidValue? value) =>
-      _i1.ColumnValue(
-        table.aUuid,
-        value,
-      );
+  _isd.ColumnValue<_isc.UuidValue, _isc.UuidValue> aUuid(
+    _isc.UuidValue? value,
+  ) => _isd.ColumnValue(
+    table.aUuid,
+    value,
+  );
 
-  _i1.ColumnValue<Uri, Uri> aUri(Uri? value) => _i1.ColumnValue(
+  _isd.ColumnValue<Uri, Uri> aUri(Uri? value) => _isd.ColumnValue(
     table.aUri,
     value,
   );
 
-  _i1.ColumnValue<BigInt, BigInt> aBigInt(BigInt? value) => _i1.ColumnValue(
+  _isd.ColumnValue<BigInt, BigInt> aBigInt(BigInt? value) => _isd.ColumnValue(
     table.aBigInt,
     value,
   );
 
-  _i1.ColumnValue<_i2.Vector, _i2.Vector> aVector(_i2.Vector? value) =>
-      _i1.ColumnValue(
+  _isd.ColumnValue<_isc.Vector, _isc.Vector> aVector(_isc.Vector? value) =>
+      _isd.ColumnValue(
         table.aVector,
         value,
       );
 
-  _i1.ColumnValue<_i2.HalfVector, _i2.HalfVector> aHalfVector(
-    _i2.HalfVector? value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_isc.HalfVector, _isc.HalfVector> aHalfVector(
+    _isc.HalfVector? value,
+  ) => _isd.ColumnValue(
     table.aHalfVector,
     value,
   );
 
-  _i1.ColumnValue<_i2.SparseVector, _i2.SparseVector> aSparseVector(
-    _i2.SparseVector? value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_isc.SparseVector, _isc.SparseVector> aSparseVector(
+    _isc.SparseVector? value,
+  ) => _isd.ColumnValue(
     table.aSparseVector,
     value,
   );
 
-  _i1.ColumnValue<_i2.Bit, _i2.Bit> aBit(_i2.Bit? value) => _i1.ColumnValue(
-    table.aBit,
-    value,
-  );
+  _isd.ColumnValue<_isc.Bit, _isc.Bit> aBit(_isc.Bit? value) =>
+      _isd.ColumnValue(
+        table.aBit,
+        value,
+      );
 
-  _i1.ColumnValue<_i2.GeographyPoint, _i2.GeographyPoint> aGeographyPoint(
-    _i2.GeographyPoint? value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_isc.GeographyPoint, _isc.GeographyPoint> aGeographyPoint(
+    _isc.GeographyPoint? value,
+  ) => _isd.ColumnValue(
     table.aGeographyPoint,
     value,
   );
 
-  _i1.ColumnValue<_i2.GeographyLineString, _i2.GeographyLineString>
-  aGeographyLineString(_i2.GeographyLineString? value) => _i1.ColumnValue(
+  _isd.ColumnValue<_isc.GeographyLineString, _isc.GeographyLineString>
+  aGeographyLineString(_isc.GeographyLineString? value) => _isd.ColumnValue(
     table.aGeographyLineString,
     value,
   );
 
-  _i1.ColumnValue<_i2.GeographyPolygon, _i2.GeographyPolygon> aGeographyPolygon(
-    _i2.GeographyPolygon? value,
-  ) => _i1.ColumnValue(
+  _isd.ColumnValue<_isc.GeographyPolygon, _isc.GeographyPolygon>
+  aGeographyPolygon(_isc.GeographyPolygon? value) => _isd.ColumnValue(
     table.aGeographyPolygon,
     value,
   );
 
-  _i1.ColumnValue<
-    _i2.GeographyGeometryCollection,
-    _i2.GeographyGeometryCollection
+  _isd.ColumnValue<
+    _isc.GeographyGeometryCollection,
+    _isc.GeographyGeometryCollection
   >
-  aGeographyGeometryCollection(_i2.GeographyGeometryCollection? value) =>
-      _i1.ColumnValue(
+  aGeographyGeometryCollection(_isc.GeographyGeometryCollection? value) =>
+      _isd.ColumnValue(
         table.aGeographyGeometryCollection,
         value,
       );
 
-  _i1.ColumnValue<_i4.TestEnum, _i4.TestEnum> anEnum(_i4.TestEnum? value) =>
-      _i1.ColumnValue(
-        table.anEnum,
-        value,
-      );
+  _isd.ColumnValue<_ionapfu9.TestEnum, _ionapfu9.TestEnum> anEnum(
+    _ionapfu9.TestEnum? value,
+  ) => _isd.ColumnValue(
+    table.anEnum,
+    value,
+  );
 
-  _i1.ColumnValue<_i5.TestEnumStringified, _i5.TestEnumStringified>
-  aStringifiedEnum(_i5.TestEnumStringified? value) => _i1.ColumnValue(
+  _isd.ColumnValue<_i7liykk2.TestEnumStringified, _i7liykk2.TestEnumStringified>
+  aStringifiedEnum(_i7liykk2.TestEnumStringified? value) => _isd.ColumnValue(
     table.aStringifiedEnum,
     value,
   );
 
-  _i1.ColumnValue<List<int>, List<int>> aList(List<int>? value) =>
-      _i1.ColumnValue(
+  _isd.ColumnValue<List<int>, List<int>> aList(List<int>? value) =>
+      _isd.ColumnValue(
         table.aList,
         value,
       );
 
-  _i1.ColumnValue<Map<int, int>, Map<int, int>> aMap(Map<int, int>? value) =>
-      _i1.ColumnValue(
+  _isd.ColumnValue<Map<int, int>, Map<int, int>> aMap(Map<int, int>? value) =>
+      _isd.ColumnValue(
         table.aMap,
         value,
       );
 
-  _i1.ColumnValue<Set<int>, Set<int>> aSet(Set<int>? value) => _i1.ColumnValue(
-    table.aSet,
-    value,
-  );
+  _isd.ColumnValue<Set<int>, Set<int>> aSet(Set<int>? value) =>
+      _isd.ColumnValue(
+        table.aSet,
+        value,
+      );
 
-  _i1.ColumnValue<(String, {Uri? optionalUri}), Map<String, dynamic>?> aRecord(
+  _isd.ColumnValue<(String, {Uri? optionalUri}), Map<String, dynamic>?> aRecord(
     (String, {Uri? optionalUri})? value,
-  ) => _i1.ColumnValue(
+  ) => _isd.ColumnValue(
     table.aRecord,
-    _i6.Protocol().mapRecordToJson(value),
+    _i0ntutnq.Protocol().mapRecordToJson(value),
   );
 }
 
-class TypesTable extends _i1.Table<int?> {
+class TypesTable extends _isd.Table<int?> {
   TypesTable({super.tableRelation}) : super(tableName: 'types') {
     updateTable = TypesUpdateTable(this);
-    anInt = _i1.ColumnInt(
+    anInt = _isd.ColumnInt(
       'anInt',
       this,
     );
-    aBool = _i1.ColumnBool(
+    aBool = _isd.ColumnBool(
       'aBool',
       this,
     );
-    aDouble = _i1.ColumnDouble(
+    aDouble = _isd.ColumnDouble(
       'aDouble',
       this,
     );
-    aDateTime = _i1.ColumnDateTime(
+    aDateTime = _isd.ColumnDateTime(
       'aDateTime',
       this,
     );
-    aString = _i1.ColumnString(
+    aString = _isd.ColumnString(
       'aString',
       this,
     );
-    aByteData = _i1.ColumnByteData(
+    aByteData = _isd.ColumnByteData(
       'aByteData',
       this,
     );
-    aDuration = _i1.ColumnDuration(
+    aDuration = _isd.ColumnDuration(
       'aDuration',
       this,
     );
-    aUuid = _i1.ColumnUuid(
+    aUuid = _isd.ColumnUuid(
       'aUuid',
       this,
     );
-    aUri = _i1.ColumnUri(
+    aUri = _isd.ColumnUri(
       'aUri',
       this,
     );
-    aBigInt = _i1.ColumnBigInt(
+    aBigInt = _isd.ColumnBigInt(
       'aBigInt',
       this,
     );
-    aVector = _i1.ColumnVector(
+    aVector = _isd.ColumnVector(
       'aVector',
       this,
       dimension: 3,
     );
-    aHalfVector = _i1.ColumnHalfVector(
+    aHalfVector = _isd.ColumnHalfVector(
       'aHalfVector',
       this,
       dimension: 3,
     );
-    aSparseVector = _i1.ColumnSparseVector(
+    aSparseVector = _isd.ColumnSparseVector(
       'aSparseVector',
       this,
       dimension: 3,
     );
-    aBit = _i1.ColumnBit(
+    aBit = _isd.ColumnBit(
       'aBit',
       this,
       dimension: 3,
     );
-    aGeographyPoint = _i1.ColumnGeographyPoint(
+    aGeographyPoint = _isd.ColumnGeographyPoint(
       'aGeographyPoint',
       this,
     );
-    aGeographyLineString = _i1.ColumnGeographyLineString(
+    aGeographyLineString = _isd.ColumnGeographyLineString(
       'aGeographyLineString',
       this,
     );
-    aGeographyPolygon = _i1.ColumnGeographyPolygon(
+    aGeographyPolygon = _isd.ColumnGeographyPolygon(
       'aGeographyPolygon',
       this,
     );
-    aGeographyGeometryCollection = _i1.ColumnGeographyGeometryCollection(
+    aGeographyGeometryCollection = _isd.ColumnGeographyGeometryCollection(
       'aGeographyGeometryCollection',
       this,
     );
-    anEnum = _i1.ColumnEnum(
+    anEnum = _isd.ColumnEnum(
       'anEnum',
       this,
-      _i1.EnumSerialization.byIndex,
+      _isd.EnumSerialization.byIndex,
     );
-    aStringifiedEnum = _i1.ColumnEnum(
+    aStringifiedEnum = _isd.ColumnEnum(
       'aStringifiedEnum',
       this,
-      _i1.EnumSerialization.byName,
+      _isd.EnumSerialization.byName,
     );
-    aList = _i1.ColumnSerializable<List<int>>(
+    aList = _isd.ColumnSerializable<List<int>>(
       'aList',
       this,
     );
-    aMap = _i1.ColumnSerializable<Map<int, int>>(
+    aMap = _isd.ColumnSerializable<Map<int, int>>(
       'aMap',
       this,
     );
-    aSet = _i1.ColumnSerializable<Set<int>>(
+    aSet = _isd.ColumnSerializable<Set<int>>(
       'aSet',
       this,
     );
-    aRecord = _i1.ColumnSerializable<(String, {Uri? optionalUri})>(
+    aRecord = _isd.ColumnSerializable<(String, {Uri? optionalUri})>(
       'aRecord',
       this,
     );
@@ -763,56 +775,57 @@ class TypesTable extends _i1.Table<int?> {
 
   late final TypesUpdateTable updateTable;
 
-  late final _i1.ColumnInt anInt;
+  late final _isd.ColumnInt anInt;
 
-  late final _i1.ColumnBool aBool;
+  late final _isd.ColumnBool aBool;
 
-  late final _i1.ColumnDouble aDouble;
+  late final _isd.ColumnDouble aDouble;
 
-  late final _i1.ColumnDateTime aDateTime;
+  late final _isd.ColumnDateTime aDateTime;
 
-  late final _i1.ColumnString aString;
+  late final _isd.ColumnString aString;
 
-  late final _i1.ColumnByteData aByteData;
+  late final _isd.ColumnByteData aByteData;
 
-  late final _i1.ColumnDuration aDuration;
+  late final _isd.ColumnDuration aDuration;
 
-  late final _i1.ColumnUuid aUuid;
+  late final _isd.ColumnUuid aUuid;
 
-  late final _i1.ColumnUri aUri;
+  late final _isd.ColumnUri aUri;
 
-  late final _i1.ColumnBigInt aBigInt;
+  late final _isd.ColumnBigInt aBigInt;
 
-  late final _i1.ColumnVector aVector;
+  late final _isd.ColumnVector aVector;
 
-  late final _i1.ColumnHalfVector aHalfVector;
+  late final _isd.ColumnHalfVector aHalfVector;
 
-  late final _i1.ColumnSparseVector aSparseVector;
+  late final _isd.ColumnSparseVector aSparseVector;
 
-  late final _i1.ColumnBit aBit;
+  late final _isd.ColumnBit aBit;
 
-  late final _i1.ColumnGeographyPoint aGeographyPoint;
+  late final _isd.ColumnGeographyPoint aGeographyPoint;
 
-  late final _i1.ColumnGeographyLineString aGeographyLineString;
+  late final _isd.ColumnGeographyLineString aGeographyLineString;
 
-  late final _i1.ColumnGeographyPolygon aGeographyPolygon;
+  late final _isd.ColumnGeographyPolygon aGeographyPolygon;
 
-  late final _i1.ColumnGeographyGeometryCollection aGeographyGeometryCollection;
+  late final _isd.ColumnGeographyGeometryCollection
+  aGeographyGeometryCollection;
 
-  late final _i1.ColumnEnum<_i4.TestEnum> anEnum;
+  late final _isd.ColumnEnum<_ionapfu9.TestEnum> anEnum;
 
-  late final _i1.ColumnEnum<_i5.TestEnumStringified> aStringifiedEnum;
+  late final _isd.ColumnEnum<_i7liykk2.TestEnumStringified> aStringifiedEnum;
 
-  late final _i1.ColumnSerializable<List<int>> aList;
+  late final _isd.ColumnSerializable<List<int>> aList;
 
-  late final _i1.ColumnSerializable<Map<int, int>> aMap;
+  late final _isd.ColumnSerializable<Map<int, int>> aMap;
 
-  late final _i1.ColumnSerializable<Set<int>> aSet;
+  late final _isd.ColumnSerializable<Set<int>> aSet;
 
-  late final _i1.ColumnSerializable<(String, {Uri? optionalUri})> aRecord;
+  late final _isd.ColumnSerializable<(String, {Uri? optionalUri})> aRecord;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     anInt,
     aBool,
@@ -841,19 +854,19 @@ class TypesTable extends _i1.Table<int?> {
   ];
 }
 
-class TypesInclude extends _i1.IncludeObject {
+class TypesInclude extends _isd.IncludeObject {
   TypesInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _isd.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Types.t;
+  _isd.Table<int?> get table => Types.t;
 }
 
-class TypesIncludeList extends _i1.IncludeList {
+class TypesIncludeList extends _isd.IncludeList {
   TypesIncludeList._({
-    _i1.WhereExpressionBuilder<TypesTable>? where,
+    _isd.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -864,10 +877,10 @@ class TypesIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Types.t;
+  _isd.Table<int?> get table => Types.t;
 }
 
 class TypesRepository {
@@ -896,15 +909,15 @@ class TypesRepository {
   /// );
   /// ```
   Future<List<Types>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Types>(
       where: where?.call(Types.t),
@@ -936,14 +949,14 @@ class TypesRepository {
   /// );
   /// ```
   Future<Types?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TypesTable>? where,
     int? offset,
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Types>(
       where: where?.call(Types.t),
@@ -958,11 +971,11 @@ class TypesRepository {
 
   /// Finds a single [Types] by its [id] or null if no such row exists.
   Future<Types?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Types>(
       id,
@@ -987,9 +1000,9 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Types> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -1005,9 +1018,9 @@ class TypesRepository {
   ///
   /// The returned [Types] will have its `id` field set.
   Future<Types> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Types row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Types>(
       row,
@@ -1036,12 +1049,12 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Types> rows, {
-    required _i1.ColumnSelections<TypesTable> conflictColumns,
-    _i1.ColumnSelections<TypesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TypesTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<TypesTable> conflictColumns,
+    _isd.ColumnSelections<TypesTable>? updateColumns,
+    _isd.WhereExpressionBuilder<TypesTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Types>(
@@ -1068,12 +1081,12 @@ class TypesRepository {
   ///
   /// The returned [Types] will have its `id` field set.
   Future<Types?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Types row, {
-    required _i1.ColumnSelections<TypesTable> conflictColumns,
-    _i1.ColumnSelections<TypesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TypesTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<TypesTable> conflictColumns,
+    _isd.ColumnSelections<TypesTable>? updateColumns,
+    _isd.WhereExpressionBuilder<TypesTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Types>(
       row,
@@ -1094,10 +1107,10 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Types> rows, {
-    _i1.ColumnSelections<TypesTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<TypesTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Types>(
@@ -1112,10 +1125,10 @@ class TypesRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Types> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Types row, {
-    _i1.ColumnSelections<TypesTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<TypesTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Types>(
       row,
@@ -1127,10 +1140,10 @@ class TypesRepository {
   /// Updates a single [Types] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Types?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<TypesUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<TypesUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Types>(
       id,
@@ -1146,14 +1159,14 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<TypesUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<TypesTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<TypesUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<TypesTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Types>(
@@ -1180,11 +1193,11 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Types> rows, {
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Types>(
@@ -1198,9 +1211,9 @@ class TypesRepository {
 
   /// Deletes a single [Types].
   Future<Types> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Types row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Types>(
       row,
@@ -1217,11 +1230,11 @@ class TypesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Types>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TypesTable> where,
-    _i1.OrderByBuilder<TypesTable>? orderBy,
-    _i1.OrderByListBuilder<TypesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<TypesTable> where,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Types>(
@@ -1236,10 +1249,10 @@ class TypesRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TypesTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TypesTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Types>(
       where: where?.call(Types.t),
@@ -1250,11 +1263,11 @@ class TypesRepository {
 
   /// Acquires row-level locks on [Types] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TypesTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<TypesTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Types>(
       where: where(Types.t),

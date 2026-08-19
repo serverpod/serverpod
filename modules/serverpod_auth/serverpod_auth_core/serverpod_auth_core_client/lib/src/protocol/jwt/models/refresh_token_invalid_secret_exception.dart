@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Exception thrown when a refresh token rotation request has an invalid secret.
 abstract class RefreshTokenInvalidSecretException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   RefreshTokenInvalidSecretException._();
 
   factory RefreshTokenInvalidSecretException() =
@@ -31,7 +31,7 @@ abstract class RefreshTokenInvalidSecretException
 
   /// Returns a shallow copy of this [RefreshTokenInvalidSecretException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RefreshTokenInvalidSecretException copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -59,7 +59,7 @@ class _RefreshTokenInvalidSecretExceptionImpl
 
   /// Returns a shallow copy of this [RefreshTokenInvalidSecretException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RefreshTokenInvalidSecretException copyWith() {
     return RefreshTokenInvalidSecretException();

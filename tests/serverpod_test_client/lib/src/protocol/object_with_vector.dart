@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithVector
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithVector._({
     this.id,
     required this.vector,
@@ -26,33 +26,33 @@ abstract class ObjectWithVector
 
   factory ObjectWithVector({
     int? id,
-    required _i1.Vector vector,
-    _i1.Vector? vectorNullable,
-    required _i1.Vector vectorIndexedHnsw,
-    required _i1.Vector vectorIndexedHnswWithParams,
-    required _i1.Vector vectorIndexedIvfflat,
-    required _i1.Vector vectorIndexedIvfflatWithParams,
+    required _isc.Vector vector,
+    _isc.Vector? vectorNullable,
+    required _isc.Vector vectorIndexedHnsw,
+    required _isc.Vector vectorIndexedHnswWithParams,
+    required _isc.Vector vectorIndexedIvfflat,
+    required _isc.Vector vectorIndexedIvfflatWithParams,
   }) = _ObjectWithVectorImpl;
 
   factory ObjectWithVector.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithVector(
       id: jsonSerialization['id'] as int?,
-      vector: _i1.VectorJsonExtension.fromJson(jsonSerialization['vector']),
+      vector: _isc.VectorJsonExtension.fromJson(jsonSerialization['vector']),
       vectorNullable: jsonSerialization['vectorNullable'] == null
           ? null
-          : _i1.VectorJsonExtension.fromJson(
+          : _isc.VectorJsonExtension.fromJson(
               jsonSerialization['vectorNullable'],
             ),
-      vectorIndexedHnsw: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedHnsw: _isc.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedHnsw'],
       ),
-      vectorIndexedHnswWithParams: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedHnswWithParams: _isc.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedHnswWithParams'],
       ),
-      vectorIndexedIvfflat: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedIvfflat: _isc.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedIvfflat'],
       ),
-      vectorIndexedIvfflatWithParams: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedIvfflatWithParams: _isc.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedIvfflatWithParams'],
       ),
     );
@@ -63,29 +63,29 @@ abstract class ObjectWithVector
   /// the id will be null.
   int? id;
 
-  _i1.Vector vector;
+  _isc.Vector vector;
 
-  _i1.Vector? vectorNullable;
+  _isc.Vector? vectorNullable;
 
-  _i1.Vector vectorIndexedHnsw;
+  _isc.Vector vectorIndexedHnsw;
 
-  _i1.Vector vectorIndexedHnswWithParams;
+  _isc.Vector vectorIndexedHnswWithParams;
 
-  _i1.Vector vectorIndexedIvfflat;
+  _isc.Vector vectorIndexedIvfflat;
 
-  _i1.Vector vectorIndexedIvfflatWithParams;
+  _isc.Vector vectorIndexedIvfflatWithParams;
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithVector copyWith({
     int? id,
-    _i1.Vector? vector,
-    _i1.Vector? vectorNullable,
-    _i1.Vector? vectorIndexedHnsw,
-    _i1.Vector? vectorIndexedHnswWithParams,
-    _i1.Vector? vectorIndexedIvfflat,
-    _i1.Vector? vectorIndexedIvfflatWithParams,
+    _isc.Vector? vector,
+    _isc.Vector? vectorNullable,
+    _isc.Vector? vectorIndexedHnsw,
+    _isc.Vector? vectorIndexedHnswWithParams,
+    _isc.Vector? vectorIndexedIvfflat,
+    _isc.Vector? vectorIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -117,7 +117,7 @@ abstract class ObjectWithVector
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -126,12 +126,12 @@ class _Undefined {}
 class _ObjectWithVectorImpl extends ObjectWithVector {
   _ObjectWithVectorImpl({
     int? id,
-    required _i1.Vector vector,
-    _i1.Vector? vectorNullable,
-    required _i1.Vector vectorIndexedHnsw,
-    required _i1.Vector vectorIndexedHnswWithParams,
-    required _i1.Vector vectorIndexedIvfflat,
-    required _i1.Vector vectorIndexedIvfflatWithParams,
+    required _isc.Vector vector,
+    _isc.Vector? vectorNullable,
+    required _isc.Vector vectorIndexedHnsw,
+    required _isc.Vector vectorIndexedHnswWithParams,
+    required _isc.Vector vectorIndexedIvfflat,
+    required _isc.Vector vectorIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          vector: vector,
@@ -144,21 +144,21 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithVector copyWith({
     Object? id = _Undefined,
-    _i1.Vector? vector,
+    _isc.Vector? vector,
     Object? vectorNullable = _Undefined,
-    _i1.Vector? vectorIndexedHnsw,
-    _i1.Vector? vectorIndexedHnswWithParams,
-    _i1.Vector? vectorIndexedIvfflat,
-    _i1.Vector? vectorIndexedIvfflatWithParams,
+    _isc.Vector? vectorIndexedHnsw,
+    _isc.Vector? vectorIndexedHnswWithParams,
+    _isc.Vector? vectorIndexedIvfflat,
+    _isc.Vector? vectorIndexedIvfflatWithParams,
   }) {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
       vector: vector ?? this.vector.clone(),
-      vectorNullable: vectorNullable is _i1.Vector?
+      vectorNullable: vectorNullable is _isc.Vector?
           ? vectorNullable
           : this.vectorNullable?.clone(),
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),

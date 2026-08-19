@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
-import '../simple_data.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../simple_data.dart' as _ibunj3w2;
 
 abstract class ScopeNoneFields
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ScopeNoneFields._({this.id}) : _name = null, _object = null;
 
   factory ScopeNoneFields({int? id}) = _ScopeNoneFieldsImpl;
@@ -26,7 +26,7 @@ abstract class ScopeNoneFields
       $name: jsonSerialization['name'] as String?,
       $object: jsonSerialization['object'] == null
           ? null
-          : _i2.Protocol().deserialize<_i3.SimpleData>(
+          : _igqrxdcj.Protocol().deserialize<_ibunj3w2.SimpleData>(
               jsonSerialization['object'],
             ),
     );
@@ -41,14 +41,14 @@ abstract class ScopeNoneFields
 
   final String? _name;
 
-  final _i3.SimpleData? _object;
+  final _ibunj3w2.SimpleData? _object;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ScopeNoneFields copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
@@ -73,11 +73,11 @@ abstract class ScopeNoneFields
   }
 
   static ScopeNoneFieldsIncludeList includeList({
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
   }) {
     return ScopeNoneFieldsIncludeList._(
@@ -92,7 +92,7 @@ abstract class ScopeNoneFields
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -103,7 +103,7 @@ class _ScopeNoneFieldsImpl extends ScopeNoneFields {
 
   /// Returns a shallow copy of this [ScopeNoneFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ScopeNoneFields copyWith({Object? id = _Undefined}) {
     return ScopeNoneFieldsImplicit._(
@@ -118,7 +118,7 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   ScopeNoneFieldsImplicit._({
     int? id,
     String? $name,
-    _i3.SimpleData? $object,
+    _ibunj3w2.SimpleData? $object,
   }) : _name = $name,
        _object = $object,
        super(id: id);
@@ -126,7 +126,7 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   factory ScopeNoneFieldsImplicit(
     ScopeNoneFields scopeNoneFields, {
     String? $name,
-    _i3.SimpleData? $object,
+    _ibunj3w2.SimpleData? $object,
   }) {
     return ScopeNoneFieldsImplicit._(
       id: scopeNoneFields.id,
@@ -139,34 +139,34 @@ class ScopeNoneFieldsImplicit extends _ScopeNoneFieldsImpl {
   final String? _name;
 
   @override
-  final _i3.SimpleData? _object;
+  final _ibunj3w2.SimpleData? _object;
 }
 
-class ScopeNoneFieldsUpdateTable extends _i1.UpdateTable<ScopeNoneFieldsTable> {
+class ScopeNoneFieldsUpdateTable extends _is.UpdateTable<ScopeNoneFieldsTable> {
   ScopeNoneFieldsUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> $name(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> $name(String? value) => _is.ColumnValue(
     table.$name,
     value,
   );
 
-  _i1.ColumnValue<_i3.SimpleData, _i3.SimpleData> $object(
-    _i3.SimpleData? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ibunj3w2.SimpleData, _ibunj3w2.SimpleData> $object(
+    _ibunj3w2.SimpleData? value,
+  ) => _is.ColumnValue(
     table.$object,
     value,
   );
 }
 
-class ScopeNoneFieldsTable extends _i1.Table<int?> {
+class ScopeNoneFieldsTable extends _is.Table<int?> {
   ScopeNoneFieldsTable({super.tableRelation})
     : super(tableName: 'scope_none_fields') {
     updateTable = ScopeNoneFieldsUpdateTable(this);
-    $name = _i1.ColumnString(
+    $name = _is.ColumnString(
       'name',
       this,
     );
-    $object = _i1.ColumnSerializable<_i3.SimpleData>(
+    $object = _is.ColumnSerializable<_ibunj3w2.SimpleData>(
       'object',
       this,
     );
@@ -174,34 +174,34 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
 
   late final ScopeNoneFieldsUpdateTable updateTable;
 
-  late final _i1.ColumnString $name;
+  late final _is.ColumnString $name;
 
-  late final _i1.ColumnSerializable<_i3.SimpleData> $object;
+  late final _is.ColumnSerializable<_ibunj3w2.SimpleData> $object;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     $name,
     $object,
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [id];
+  List<_is.Column> get managedColumns => [id];
 }
 
-class ScopeNoneFieldsInclude extends _i1.IncludeObject {
+class ScopeNoneFieldsInclude extends _is.IncludeObject {
   ScopeNoneFieldsInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ScopeNoneFields.t;
+  _is.Table<int?> get table => ScopeNoneFields.t;
 }
 
-class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
+class ScopeNoneFieldsIncludeList extends _is.IncludeList {
   ScopeNoneFieldsIncludeList._({
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -212,10 +212,10 @@ class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ScopeNoneFields.t;
+  _is.Table<int?> get table => ScopeNoneFields.t;
 }
 
 class ScopeNoneFieldsRepository {
@@ -244,15 +244,15 @@ class ScopeNoneFieldsRepository {
   /// );
   /// ```
   Future<List<ScopeNoneFields>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
@@ -284,14 +284,14 @@ class ScopeNoneFieldsRepository {
   /// );
   /// ```
   Future<ScopeNoneFields?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
@@ -306,11 +306,11 @@ class ScopeNoneFieldsRepository {
 
   /// Finds a single [ScopeNoneFields] by its [id] or null if no such row exists.
   Future<ScopeNoneFields?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ScopeNoneFields>(
       id,
@@ -335,9 +335,9 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ScopeNoneFields> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -353,9 +353,9 @@ class ScopeNoneFieldsRepository {
   ///
   /// The returned [ScopeNoneFields] will have its `id` field set.
   Future<ScopeNoneFields> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ScopeNoneFields row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ScopeNoneFields>(
       row,
@@ -384,12 +384,12 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ScopeNoneFields> rows, {
-    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
-    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _is.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ScopeNoneFields>(
@@ -416,12 +416,12 @@ class ScopeNoneFieldsRepository {
   ///
   /// The returned [ScopeNoneFields] will have its `id` field set.
   Future<ScopeNoneFields?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ScopeNoneFields row, {
-    required _i1.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
-    _i1.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ScopeNoneFieldsTable> conflictColumns,
+    _is.ColumnSelections<ScopeNoneFieldsTable>? updateColumns,
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ScopeNoneFields>(
       row,
@@ -442,10 +442,10 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ScopeNoneFields> rows, {
-    _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ScopeNoneFieldsTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ScopeNoneFields>(
@@ -460,10 +460,10 @@ class ScopeNoneFieldsRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ScopeNoneFields> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ScopeNoneFields row, {
-    _i1.ColumnSelections<ScopeNoneFieldsTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ScopeNoneFieldsTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ScopeNoneFields>(
       row,
@@ -475,11 +475,11 @@ class ScopeNoneFieldsRepository {
   /// Updates a single [ScopeNoneFields] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ScopeNoneFields?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+    required _is.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ScopeNoneFields>(
       id,
@@ -495,15 +495,15 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ScopeNoneFieldsUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    required _is.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ScopeNoneFields>(
@@ -530,11 +530,11 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ScopeNoneFields> rows, {
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ScopeNoneFields>(
@@ -548,9 +548,9 @@ class ScopeNoneFieldsRepository {
 
   /// Deletes a single [ScopeNoneFields].
   Future<ScopeNoneFields> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ScopeNoneFields row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ScopeNoneFields>(
       row,
@@ -567,11 +567,11 @@ class ScopeNoneFieldsRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ScopeNoneFields>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
-    _i1.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
-    _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ScopeNoneFields>(
@@ -586,10 +586,10 @@ class ScopeNoneFieldsRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ScopeNoneFields>(
       where: where?.call(ScopeNoneFields.t),
@@ -600,11 +600,11 @@ class ScopeNoneFieldsRepository {
 
   /// Acquires row-level locks on [ScopeNoneFields] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ScopeNoneFieldsTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ScopeNoneFields>(
       where: where(ScopeNoneFields.t),

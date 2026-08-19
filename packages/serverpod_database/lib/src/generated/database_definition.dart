@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Defines the structure of the database used by Serverpod.
 abstract class DatabaseDefinition
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseDefinition._({
     int? schemaVersion,
     this.name,
@@ -29,8 +29,8 @@ abstract class DatabaseDefinition
     int? schemaVersion,
     String? name,
     required String moduleName,
-    required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersionModel> installedModules,
+    required List<_isd.TableDefinition> tables,
+    required List<_isd.DatabaseMigrationVersionModel> installedModules,
     required int migrationApiVersion,
   }) = _DatabaseDefinitionImpl;
 
@@ -39,11 +39,11 @@ abstract class DatabaseDefinition
       schemaVersion: jsonSerialization['schemaVersion'] as int?,
       name: jsonSerialization['name'] as String?,
       moduleName: jsonSerialization['moduleName'] as String,
-      tables: _i2.Protocol().deserialize<List<_i2.TableDefinition>>(
+      tables: _isd.Protocol().deserialize<List<_isd.TableDefinition>>(
         jsonSerialization['tables'],
       ),
-      installedModules: _i2.Protocol()
-          .deserialize<List<_i2.DatabaseMigrationVersionModel>>(
+      installedModules: _isd.Protocol()
+          .deserialize<List<_isd.DatabaseMigrationVersionModel>>(
             jsonSerialization['installedModules'],
           ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
@@ -61,24 +61,24 @@ abstract class DatabaseDefinition
   String moduleName;
 
   /// The tables of the database.
-  List<_i2.TableDefinition> tables;
+  List<_isd.TableDefinition> tables;
 
   /// Modules installed in the database, together with their version. Only
   /// set if known.
-  List<_i2.DatabaseMigrationVersionModel> installedModules;
+  List<_isd.DatabaseMigrationVersionModel> installedModules;
 
   /// The version of the database definition.
   int migrationApiVersion;
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseDefinition copyWith({
     int? schemaVersion,
     String? name,
     String? moduleName,
-    List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersionModel>? installedModules,
+    List<_isd.TableDefinition>? tables,
+    List<_isd.DatabaseMigrationVersionModel>? installedModules,
     int? migrationApiVersion,
   });
   @override
@@ -113,7 +113,7 @@ abstract class DatabaseDefinition
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -124,8 +124,8 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
     int? schemaVersion,
     String? name,
     required String moduleName,
-    required List<_i2.TableDefinition> tables,
-    required List<_i2.DatabaseMigrationVersionModel> installedModules,
+    required List<_isd.TableDefinition> tables,
+    required List<_isd.DatabaseMigrationVersionModel> installedModules,
     required int migrationApiVersion,
   }) : super._(
          schemaVersion: schemaVersion,
@@ -138,14 +138,14 @@ class _DatabaseDefinitionImpl extends DatabaseDefinition {
 
   /// Returns a shallow copy of this [DatabaseDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DatabaseDefinition copyWith({
     int? schemaVersion,
     Object? name = _Undefined,
     String? moduleName,
-    List<_i2.TableDefinition>? tables,
-    List<_i2.DatabaseMigrationVersionModel>? installedModules,
+    List<_isd.TableDefinition>? tables,
+    List<_isd.DatabaseMigrationVersionModel>? installedModules,
     int? migrationApiVersion,
   }) {
     return DatabaseDefinition(

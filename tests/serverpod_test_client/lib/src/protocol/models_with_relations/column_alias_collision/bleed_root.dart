@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/column_alias_collision/bleed_child.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _i2rsfnut;
 
 /// Root model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -28,7 +28,7 @@ import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
 /// The two relations are declared with explicit `field=` foreign keys so the FK
 /// column names stay short (the long names only affect the relation aliases).
 abstract class BleedRoot
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   BleedRoot._({
     this.id,
     required this.name,
@@ -42,9 +42,9 @@ abstract class BleedRoot
     int? id,
     required String name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) = _BleedRootImpl;
 
   factory BleedRoot.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -56,7 +56,7 @@ abstract class BleedRoot
           jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun24'] ==
               null
           ? null
-          : _i3.Protocol().deserialize<_i2.BleedChild>(
+          : _iza9lbb5.Protocol().deserialize<_i2rsfnut.BleedChild>(
               jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun24'],
             ),
       secondChildId: jsonSerialization['secondChildId'] as int?,
@@ -64,7 +64,7 @@ abstract class BleedRoot
           jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun23'] ==
               null
           ? null
-          : _i3.Protocol().deserialize<_i2.BleedChild>(
+          : _iza9lbb5.Protocol().deserialize<_i2rsfnut.BleedChild>(
               jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun23'],
             ),
     );
@@ -79,22 +79,22 @@ abstract class BleedRoot
 
   int? firstChildId;
 
-  _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24;
+  _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24;
 
   int? secondChildId;
 
-  _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23;
+  _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23;
 
   /// Returns a shallow copy of this [BleedRoot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   BleedRoot copyWith({
     int? id,
     String? name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -134,7 +134,7 @@ abstract class BleedRoot
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -145,9 +145,9 @@ class _BleedRootImpl extends BleedRoot {
     int? id,
     required String name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) : super._(
          id: id,
          name: name,
@@ -161,7 +161,7 @@ class _BleedRootImpl extends BleedRoot {
 
   /// Returns a shallow copy of this [BleedRoot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   BleedRoot copyWith({
     Object? id = _Undefined,
@@ -177,14 +177,14 @@ class _BleedRootImpl extends BleedRoot {
       firstChildId: firstChildId is int? ? firstChildId : this.firstChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24
-              is _i2.BleedChild?
+              is _i2rsfnut.BleedChild?
           ? childRelationWithExtremelyLongFieldNameForcingTrun24
           : this.childRelationWithExtremelyLongFieldNameForcingTrun24
                 ?.copyWith(),
       secondChildId: secondChildId is int? ? secondChildId : this.secondChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
           childRelationWithExtremelyLongFieldNameForcingTrun23
-              is _i2.BleedChild?
+              is _i2rsfnut.BleedChild?
           ? childRelationWithExtremelyLongFieldNameForcingTrun23
           : this.childRelationWithExtremelyLongFieldNameForcingTrun23
                 ?.copyWith(),

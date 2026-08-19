@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 class SharedBaseAppException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _iss.SerializableException,
+        _iss.SerializableModel,
+        _iss.ProtocolSerialization {
   SharedBaseAppException({required this.message});
 
   factory SharedBaseAppException.fromJson(
@@ -31,7 +31,7 @@ class SharedBaseAppException
 
   /// Returns a shallow copy of this [SharedBaseAppException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   SharedBaseAppException copyWith({String? message}) {
     return SharedBaseAppException(message: message ?? this.message);
   }

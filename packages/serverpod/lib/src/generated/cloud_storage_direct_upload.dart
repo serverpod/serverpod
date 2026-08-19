@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Connects a table for handling uploading of files.
 abstract class CloudStorageDirectUploadEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   CloudStorageDirectUploadEntry._({
     this.id,
     required this.storageId,
@@ -38,7 +38,7 @@ abstract class CloudStorageDirectUploadEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      expiration: _i1.DateTimeJsonExtension.fromJson(
+      expiration: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiration'],
       ),
       authKey: jsonSerialization['authKey'] as String,
@@ -65,11 +65,11 @@ abstract class CloudStorageDirectUploadEntry
   String authKey;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CloudStorageDirectUploadEntry copyWith({
     int? id,
     String? storageId,
@@ -106,11 +106,11 @@ abstract class CloudStorageDirectUploadEntry
   }
 
   static CloudStorageDirectUploadEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
   }) {
     return CloudStorageDirectUploadEntryIncludeList._(
@@ -125,7 +125,7 @@ abstract class CloudStorageDirectUploadEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -148,7 +148,7 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CloudStorageDirectUploadEntry copyWith({
     Object? id = _Undefined,
@@ -168,48 +168,48 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
 }
 
 class CloudStorageDirectUploadEntryUpdateTable
-    extends _i1.UpdateTable<CloudStorageDirectUploadEntryTable> {
+    extends _is.UpdateTable<CloudStorageDirectUploadEntryTable> {
   CloudStorageDirectUploadEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> storageId(String value) => _is.ColumnValue(
     table.storageId,
     value,
   );
 
-  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> path(String value) => _is.ColumnValue(
     table.path,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
+      _is.ColumnValue(
         table.expiration,
         value,
       );
 
-  _i1.ColumnValue<String, String> authKey(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> authKey(String value) => _is.ColumnValue(
     table.authKey,
     value,
   );
 }
 
-class CloudStorageDirectUploadEntryTable extends _i1.Table<int?> {
+class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
   CloudStorageDirectUploadEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_cloud_storage_direct_upload') {
     updateTable = CloudStorageDirectUploadEntryUpdateTable(this);
-    storageId = _i1.ColumnString(
+    storageId = _is.ColumnString(
       'storageId',
       this,
     );
-    path = _i1.ColumnString(
+    path = _is.ColumnString(
       'path',
       this,
     );
-    expiration = _i1.ColumnDateTime(
+    expiration = _is.ColumnDateTime(
       'expiration',
       this,
     );
-    authKey = _i1.ColumnString(
+    authKey = _is.ColumnString(
       'authKey',
       this,
     );
@@ -218,19 +218,19 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table<int?> {
   late final CloudStorageDirectUploadEntryUpdateTable updateTable;
 
   /// The storageId, typically `public` or `private`.
-  late final _i1.ColumnString storageId;
+  late final _is.ColumnString storageId;
 
   /// The path where the file is stored.
-  late final _i1.ColumnString path;
+  late final _is.ColumnString path;
 
   /// The expiration time of when the file can be uploaded.
-  late final _i1.ColumnDateTime expiration;
+  late final _is.ColumnDateTime expiration;
 
   /// Access key for retrieving a private file.
-  late final _i1.ColumnString authKey;
+  late final _is.ColumnString authKey;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     storageId,
     path,
@@ -239,19 +239,19 @@ class CloudStorageDirectUploadEntryTable extends _i1.Table<int?> {
   ];
 }
 
-class CloudStorageDirectUploadEntryInclude extends _i1.IncludeObject {
+class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
   CloudStorageDirectUploadEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CloudStorageDirectUploadEntry.t;
+  _is.Table<int?> get table => CloudStorageDirectUploadEntry.t;
 }
 
-class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
+class CloudStorageDirectUploadEntryIncludeList extends _is.IncludeList {
   CloudStorageDirectUploadEntryIncludeList._({
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -262,10 +262,10 @@ class CloudStorageDirectUploadEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CloudStorageDirectUploadEntry.t;
+  _is.Table<int?> get table => CloudStorageDirectUploadEntry.t;
 }
 
 class CloudStorageDirectUploadEntryRepository {
@@ -294,15 +294,15 @@ class CloudStorageDirectUploadEntryRepository {
   /// );
   /// ```
   Future<List<CloudStorageDirectUploadEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
@@ -334,14 +334,14 @@ class CloudStorageDirectUploadEntryRepository {
   /// );
   /// ```
   Future<CloudStorageDirectUploadEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
@@ -356,11 +356,11 @@ class CloudStorageDirectUploadEntryRepository {
 
   /// Finds a single [CloudStorageDirectUploadEntry] by its [id] or null if no such row exists.
   Future<CloudStorageDirectUploadEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CloudStorageDirectUploadEntry>(
       id,
@@ -385,9 +385,9 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -403,9 +403,9 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// The returned [CloudStorageDirectUploadEntry] will have its `id` field set.
   Future<CloudStorageDirectUploadEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageDirectUploadEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<CloudStorageDirectUploadEntry>(
       row,
@@ -434,13 +434,13 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
-    required _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>
+    required _is.ColumnSelections<CloudStorageDirectUploadEntryTable>
     conflictColumns,
-    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageDirectUploadEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<CloudStorageDirectUploadEntry>(
@@ -467,13 +467,13 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// The returned [CloudStorageDirectUploadEntry] will have its `id` field set.
   Future<CloudStorageDirectUploadEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageDirectUploadEntry row, {
-    required _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>
+    required _is.ColumnSelections<CloudStorageDirectUploadEntryTable>
     conflictColumns,
-    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageDirectUploadEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CloudStorageDirectUploadEntry>(
       row,
@@ -494,10 +494,10 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
-    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<CloudStorageDirectUploadEntry>(
@@ -512,10 +512,10 @@ class CloudStorageDirectUploadEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CloudStorageDirectUploadEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageDirectUploadEntry row, {
-    _i1.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageDirectUploadEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<CloudStorageDirectUploadEntry>(
       row,
@@ -527,13 +527,13 @@ class CloudStorageDirectUploadEntryRepository {
   /// Updates a single [CloudStorageDirectUploadEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageDirectUploadEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<
+    required _is.ColumnValueListBuilder<
       CloudStorageDirectUploadEntryUpdateTable
     >
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageDirectUploadEntry>(
       id,
@@ -549,18 +549,18 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<
       CloudStorageDirectUploadEntryUpdateTable
     >
     columnValues,
-    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
+    required _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CloudStorageDirectUploadEntry>(
@@ -587,11 +587,11 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageDirectUploadEntry> rows, {
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<CloudStorageDirectUploadEntry>(
@@ -605,9 +605,9 @@ class CloudStorageDirectUploadEntryRepository {
 
   /// Deletes a single [CloudStorageDirectUploadEntry].
   Future<CloudStorageDirectUploadEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageDirectUploadEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<CloudStorageDirectUploadEntry>(
       row,
@@ -624,12 +624,12 @@ class CloudStorageDirectUploadEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageDirectUploadEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
     where,
-    _i1.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CloudStorageDirectUploadEntry>(
@@ -644,10 +644,10 @@ class CloudStorageDirectUploadEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageDirectUploadEntry>(
       where: where?.call(CloudStorageDirectUploadEntry.t),
@@ -658,12 +658,12 @@ class CloudStorageDirectUploadEntryRepository {
 
   /// Acquires row-level locks on [CloudStorageDirectUploadEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CloudStorageDirectUploadEntry>(
       where: where(CloudStorageDirectUploadEntry.t),

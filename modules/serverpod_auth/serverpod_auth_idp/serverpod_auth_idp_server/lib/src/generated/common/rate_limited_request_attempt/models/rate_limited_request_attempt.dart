@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// Database table for tracking rate limited request attempts.
 /// A new entry will be created whenever the request is attempted.
 abstract class RateLimitedRequestAttempt
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   RateLimitedRequestAttempt._({
     this.id,
     required this.domain,
@@ -28,7 +29,7 @@ abstract class RateLimitedRequestAttempt
   }) : attemptedAt = attemptedAt ?? DateTime.now();
 
   factory RateLimitedRequestAttempt({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String domain,
     required String source,
     required String nonce,
@@ -43,19 +44,19 @@ abstract class RateLimitedRequestAttempt
     return RateLimitedRequestAttempt(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       domain: jsonSerialization['domain'] as String,
       source: jsonSerialization['source'] as String,
       nonce: jsonSerialization['nonce'] as String,
       ipAddress: jsonSerialization['ipAddress'] as String?,
       attemptedAt: jsonSerialization['attemptedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['attemptedAt'],
             ),
       extraData: jsonSerialization['extraData'] == null
           ? null
-          : _i2.Protocol().deserialize<Map<String, String>>(
+          : _i99s0abf.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['extraData'],
             ),
     );
@@ -66,7 +67,7 @@ abstract class RateLimitedRequestAttempt
   static const db = RateLimitedRequestAttemptRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   /// The domain of the attempt.
   /// Example: "email", "sms", etc.
@@ -91,13 +92,13 @@ abstract class RateLimitedRequestAttempt
   Map<String, String>? extraData;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [RateLimitedRequestAttempt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RateLimitedRequestAttempt copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? domain,
     String? source,
     String? nonce,
@@ -129,11 +130,11 @@ abstract class RateLimitedRequestAttempt
   }
 
   static RateLimitedRequestAttemptIncludeList includeList({
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
   }) {
     return RateLimitedRequestAttemptIncludeList._(
@@ -148,7 +149,7 @@ abstract class RateLimitedRequestAttempt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -156,7 +157,7 @@ class _Undefined {}
 
 class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
   _RateLimitedRequestAttemptImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String domain,
     required String source,
     required String nonce,
@@ -175,7 +176,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
 
   /// Returns a shallow copy of this [RateLimitedRequestAttempt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RateLimitedRequestAttempt copyWith({
     Object? id = _Undefined,
@@ -187,7 +188,7 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
     Object? extraData = _Undefined,
   }) {
     return RateLimitedRequestAttempt(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       domain: domain ?? this.domain,
       source: source ?? this.source,
       nonce: nonce ?? this.nonce,
@@ -209,68 +210,68 @@ class _RateLimitedRequestAttemptImpl extends RateLimitedRequestAttempt {
 }
 
 class RateLimitedRequestAttemptUpdateTable
-    extends _i1.UpdateTable<RateLimitedRequestAttemptTable> {
+    extends _is.UpdateTable<RateLimitedRequestAttemptTable> {
   RateLimitedRequestAttemptUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> domain(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> domain(String value) => _is.ColumnValue(
     table.domain,
     value,
   );
 
-  _i1.ColumnValue<String, String> source(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> source(String value) => _is.ColumnValue(
     table.source,
     value,
   );
 
-  _i1.ColumnValue<String, String> nonce(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> nonce(String value) => _is.ColumnValue(
     table.nonce,
     value,
   );
 
-  _i1.ColumnValue<String, String> ipAddress(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> ipAddress(String? value) => _is.ColumnValue(
     table.ipAddress,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> attemptedAt(DateTime value) =>
+      _is.ColumnValue(
         table.attemptedAt,
         value,
       );
 
-  _i1.ColumnValue<Map<String, String>, Map<String, String>> extraData(
+  _is.ColumnValue<Map<String, String>, Map<String, String>> extraData(
     Map<String, String>? value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.extraData,
     value,
   );
 }
 
-class RateLimitedRequestAttemptTable extends _i1.Table<_i1.UuidValue?> {
+class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
   RateLimitedRequestAttemptTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_rate_limited_request_attempt') {
     updateTable = RateLimitedRequestAttemptUpdateTable(this);
-    domain = _i1.ColumnString(
+    domain = _is.ColumnString(
       'domain',
       this,
     );
-    source = _i1.ColumnString(
+    source = _is.ColumnString(
       'source',
       this,
     );
-    nonce = _i1.ColumnString(
+    nonce = _is.ColumnString(
       'nonce',
       this,
     );
-    ipAddress = _i1.ColumnString(
+    ipAddress = _is.ColumnString(
       'ipAddress',
       this,
     );
-    attemptedAt = _i1.ColumnDateTime(
+    attemptedAt = _is.ColumnDateTime(
       'attemptedAt',
       this,
     );
-    extraData = _i1.ColumnSerializable<Map<String, String>>(
+    extraData = _is.ColumnSerializable<Map<String, String>>(
       'extraData',
       this,
     );
@@ -280,28 +281,28 @@ class RateLimitedRequestAttemptTable extends _i1.Table<_i1.UuidValue?> {
 
   /// The domain of the attempt.
   /// Example: "email", "sms", etc.
-  late final _i1.ColumnString domain;
+  late final _is.ColumnString domain;
 
   /// The source of the attempt.
   /// Example: "password_reset", "login_attempt", etc.
-  late final _i1.ColumnString source;
+  late final _is.ColumnString source;
 
   /// The unique identifier for the request.
   /// Can be a request ID, a token, an email address, etc.
-  late final _i1.ColumnString nonce;
+  late final _is.ColumnString nonce;
 
   /// The IP address calling the request, in case it is relevant.
   /// Should only be used for logging and auditing purposes.
-  late final _i1.ColumnString ipAddress;
+  late final _is.ColumnString ipAddress;
 
   /// The time of the attempt.
-  late final _i1.ColumnDateTime attemptedAt;
+  late final _is.ColumnDateTime attemptedAt;
 
   /// Additional data to be logged for the attempt.
-  late final _i1.ColumnSerializable<Map<String, String>> extraData;
+  late final _is.ColumnSerializable<Map<String, String>> extraData;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     domain,
     source,
@@ -312,19 +313,19 @@ class RateLimitedRequestAttemptTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class RateLimitedRequestAttemptInclude extends _i1.IncludeObject {
+class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
   RateLimitedRequestAttemptInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => RateLimitedRequestAttempt.t;
+  _is.Table<_is.UuidValue?> get table => RateLimitedRequestAttempt.t;
 }
 
-class RateLimitedRequestAttemptIncludeList extends _i1.IncludeList {
+class RateLimitedRequestAttemptIncludeList extends _is.IncludeList {
   RateLimitedRequestAttemptIncludeList._({
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -335,10 +336,10 @@ class RateLimitedRequestAttemptIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => RateLimitedRequestAttempt.t;
+  _is.Table<_is.UuidValue?> get table => RateLimitedRequestAttempt.t;
 }
 
 class RateLimitedRequestAttemptRepository {
@@ -367,15 +368,15 @@ class RateLimitedRequestAttemptRepository {
   /// );
   /// ```
   Future<List<RateLimitedRequestAttempt>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RateLimitedRequestAttempt>(
       where: where?.call(RateLimitedRequestAttempt.t),
@@ -407,14 +408,14 @@ class RateLimitedRequestAttemptRepository {
   /// );
   /// ```
   Future<RateLimitedRequestAttempt?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? offset,
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RateLimitedRequestAttempt>(
       where: where?.call(RateLimitedRequestAttempt.t),
@@ -429,11 +430,11 @@ class RateLimitedRequestAttemptRepository {
 
   /// Finds a single [RateLimitedRequestAttempt] by its [id] or null if no such row exists.
   Future<RateLimitedRequestAttempt?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RateLimitedRequestAttempt>(
       id,
@@ -458,9 +459,9 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -476,9 +477,9 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// The returned [RateLimitedRequestAttempt] will have its `id` field set.
   Future<RateLimitedRequestAttempt> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RateLimitedRequestAttempt row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<RateLimitedRequestAttempt>(
       row,
@@ -507,13 +508,13 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
-    required _i1.ColumnSelections<RateLimitedRequestAttemptTable>
+    required _is.ColumnSelections<RateLimitedRequestAttemptTable>
     conflictColumns,
-    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<RateLimitedRequestAttempt>(
@@ -540,13 +541,13 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// The returned [RateLimitedRequestAttempt] will have its `id` field set.
   Future<RateLimitedRequestAttempt?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RateLimitedRequestAttempt row, {
-    required _i1.ColumnSelections<RateLimitedRequestAttemptTable>
+    required _is.ColumnSelections<RateLimitedRequestAttemptTable>
     conflictColumns,
-    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RateLimitedRequestAttemptTable>? updateColumns,
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RateLimitedRequestAttempt>(
       row,
@@ -567,10 +568,10 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
-    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<RateLimitedRequestAttempt>(
@@ -585,10 +586,10 @@ class RateLimitedRequestAttemptRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RateLimitedRequestAttempt> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RateLimitedRequestAttempt row, {
-    _i1.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RateLimitedRequestAttemptTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<RateLimitedRequestAttempt>(
       row,
@@ -600,11 +601,11 @@ class RateLimitedRequestAttemptRepository {
   /// Updates a single [RateLimitedRequestAttempt] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RateLimitedRequestAttempt?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<RateLimitedRequestAttempt>(
       id,
@@ -620,15 +621,15 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<RateLimitedRequestAttemptUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
+    required _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RateLimitedRequestAttempt>(
@@ -655,11 +656,11 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RateLimitedRequestAttempt> rows, {
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<RateLimitedRequestAttempt>(
@@ -673,9 +674,9 @@ class RateLimitedRequestAttemptRepository {
 
   /// Deletes a single [RateLimitedRequestAttempt].
   Future<RateLimitedRequestAttempt> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RateLimitedRequestAttempt row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<RateLimitedRequestAttempt>(
       row,
@@ -692,11 +693,11 @@ class RateLimitedRequestAttemptRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RateLimitedRequestAttempt>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
-    _i1.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
-    _i1.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RateLimitedRequestAttempt>(
@@ -711,10 +712,10 @@ class RateLimitedRequestAttemptRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<RateLimitedRequestAttempt>(
       where: where?.call(RateLimitedRequestAttempt.t),
@@ -725,11 +726,11 @@ class RateLimitedRequestAttemptRepository {
 
   /// Acquires row-level locks on [RateLimitedRequestAttempt] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RateLimitedRequestAttempt>(
       where: where(RateLimitedRequestAttempt.t),

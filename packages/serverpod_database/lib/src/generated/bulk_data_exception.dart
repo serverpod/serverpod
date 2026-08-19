@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class BulkDataException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _iss.SerializableException,
+        _iss.SerializableModel,
+        _iss.ProtocolSerialization {
   BulkDataException._({
     required this.message,
     this.query,
@@ -40,7 +40,7 @@ abstract class BulkDataException
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   BulkDataException copyWith({
     String? message,
     String? query,
@@ -82,7 +82,7 @@ class _BulkDataExceptionImpl extends BulkDataException {
 
   /// Returns a shallow copy of this [BulkDataException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   BulkDataException copyWith({
     String? message,

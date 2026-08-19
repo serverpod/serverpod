@@ -10,33 +10,33 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class EnumDefaultModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EnumDefaultModel._({
     this.id,
-    _i2.ByNameEnum? byNameEnumDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i3.ByIndexEnum? byIndexEnumDefaultModel,
-    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModel,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) : byNameEnumDefaultModel =
-           byNameEnumDefaultModel ?? _i2.ByNameEnum.byName1,
+           byNameEnumDefaultModel ?? _iwklobdz.ByNameEnum.byName1,
        byNameEnumDefaultModelNull =
-           byNameEnumDefaultModelNull ?? _i2.ByNameEnum.byName2,
+           byNameEnumDefaultModelNull ?? _iwklobdz.ByNameEnum.byName2,
        byIndexEnumDefaultModel =
-           byIndexEnumDefaultModel ?? _i3.ByIndexEnum.byIndex1,
+           byIndexEnumDefaultModel ?? _ido5z594.ByIndexEnum.byIndex1,
        byIndexEnumDefaultModelNull =
-           byIndexEnumDefaultModelNull ?? _i3.ByIndexEnum.byIndex2;
+           byIndexEnumDefaultModelNull ?? _ido5z594.ByIndexEnum.byIndex2;
 
   factory EnumDefaultModel({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i3.ByIndexEnum? byIndexEnumDefaultModel,
-    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModel,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) = _EnumDefaultModelImpl;
 
   factory EnumDefaultModel.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -45,25 +45,25 @@ abstract class EnumDefaultModel
       byNameEnumDefaultModel:
           jsonSerialization['byNameEnumDefaultModel'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultModel'] as String),
             ),
       byNameEnumDefaultModelNull:
           jsonSerialization['byNameEnumDefaultModelNull'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultModelNull'] as String),
             ),
       byIndexEnumDefaultModel:
           jsonSerialization['byIndexEnumDefaultModel'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefaultModel'] as int),
             ),
       byIndexEnumDefaultModelNull:
           jsonSerialization['byIndexEnumDefaultModelNull'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefaultModelNull'] as int),
             ),
     );
@@ -74,23 +74,23 @@ abstract class EnumDefaultModel
   /// the id will be null.
   int? id;
 
-  _i2.ByNameEnum byNameEnumDefaultModel;
+  _iwklobdz.ByNameEnum byNameEnumDefaultModel;
 
-  _i2.ByNameEnum? byNameEnumDefaultModelNull;
+  _iwklobdz.ByNameEnum? byNameEnumDefaultModelNull;
 
-  _i3.ByIndexEnum byIndexEnumDefaultModel;
+  _ido5z594.ByIndexEnum byIndexEnumDefaultModel;
 
-  _i3.ByIndexEnum? byIndexEnumDefaultModelNull;
+  _ido5z594.ByIndexEnum? byIndexEnumDefaultModelNull;
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EnumDefaultModel copyWith({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i3.ByIndexEnum? byIndexEnumDefaultModel,
-    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModel,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModelNull,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -122,7 +122,7 @@ abstract class EnumDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -131,10 +131,10 @@ class _Undefined {}
 class _EnumDefaultModelImpl extends EnumDefaultModel {
   _EnumDefaultModelImpl({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultModelNull,
-    _i3.ByIndexEnum? byIndexEnumDefaultModel,
-    _i3.ByIndexEnum? byIndexEnumDefaultModelNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModel,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModelNull,
   }) : super._(
          id: id,
          byNameEnumDefaultModel: byNameEnumDefaultModel,
@@ -145,26 +145,27 @@ class _EnumDefaultModelImpl extends EnumDefaultModel {
 
   /// Returns a shallow copy of this [EnumDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EnumDefaultModel copyWith({
     Object? id = _Undefined,
-    _i2.ByNameEnum? byNameEnumDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModel,
     Object? byNameEnumDefaultModelNull = _Undefined,
-    _i3.ByIndexEnum? byIndexEnumDefaultModel,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultModel,
     Object? byIndexEnumDefaultModelNull = _Undefined,
   }) {
     return EnumDefaultModel(
       id: id is int? ? id : this.id,
       byNameEnumDefaultModel:
           byNameEnumDefaultModel ?? this.byNameEnumDefaultModel,
-      byNameEnumDefaultModelNull: byNameEnumDefaultModelNull is _i2.ByNameEnum?
+      byNameEnumDefaultModelNull:
+          byNameEnumDefaultModelNull is _iwklobdz.ByNameEnum?
           ? byNameEnumDefaultModelNull
           : this.byNameEnumDefaultModelNull,
       byIndexEnumDefaultModel:
           byIndexEnumDefaultModel ?? this.byIndexEnumDefaultModel,
       byIndexEnumDefaultModelNull:
-          byIndexEnumDefaultModelNull is _i3.ByIndexEnum?
+          byIndexEnumDefaultModelNull is _ido5z594.ByIndexEnum?
           ? byIndexEnumDefaultModelNull
           : this.byIndexEnumDefaultModelNull,
     );

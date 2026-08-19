@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-class ParentClassWithoutId extends _i1.GrandparentClassWithId
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+class ParentClassWithoutId extends _iv35mfmj.GrandparentClassWithId
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ParentClassWithoutId({
     super.id,
     required super.grandParentField,
@@ -27,7 +27,7 @@ class ParentClassWithoutId extends _i1.GrandparentClassWithId
     return ParentClassWithoutId(
       id: jsonSerialization['id'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
     );
@@ -37,14 +37,14 @@ class ParentClassWithoutId extends _i1.GrandparentClassWithId
 
   /// Returns a shallow copy of this [ParentClassWithoutId]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   ParentClassWithoutId copyWith({
     Object? id = _Undefined,
     String? grandParentField,
     String? parentField,
   }) {
     return ParentClassWithoutId(
-      id: id is _i2.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
     );
@@ -72,7 +72,7 @@ class ParentClassWithoutId extends _i1.GrandparentClassWithId
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 

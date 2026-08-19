@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
-    as _i2;
+    as _isg9n5v0;
 
 /// Legacy-compatible user profile returned to older clients.
 abstract class LegacyUserInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   LegacyUserInfo._({
     this.id,
     required this.userIdentifier,
@@ -48,12 +48,12 @@ abstract class LegacyUserInfo
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      created: _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: _i2.Protocol().deserialize<List<String>>(
+      scopeNames: _isg9n5v0.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+      blocked: _is.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
@@ -86,7 +86,7 @@ abstract class LegacyUserInfo
 
   /// Returns a shallow copy of this [LegacyUserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacyUserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -132,7 +132,7 @@ abstract class LegacyUserInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -163,7 +163,7 @@ class _LegacyUserInfoImpl extends LegacyUserInfo {
 
   /// Returns a shallow copy of this [LegacyUserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacyUserInfo copyWith({
     Object? id = _Undefined,

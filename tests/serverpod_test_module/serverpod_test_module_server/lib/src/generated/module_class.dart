@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_module_server/src/generated/protocol.dart'
-    as _i2;
+    as _ifsekwi3;
 
 abstract class ModuleClass
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ModuleClass._({
     required this.name,
     required this.data,
@@ -34,7 +34,7 @@ abstract class ModuleClass
       data: jsonSerialization['data'] as int,
       record: jsonSerialization['record'] == null
           ? null
-          : _i2.Protocol().deserialize<(bool,)?>(
+          : _ifsekwi3.Protocol().deserialize<(bool,)?>(
               (jsonSerialization['record'] as Map<String, dynamic>),
             ),
     );
@@ -48,7 +48,7 @@ abstract class ModuleClass
 
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ModuleClass copyWith({
     String? name,
     int? data,
@@ -60,7 +60,8 @@ abstract class ModuleClass
       '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
-      if (record != null) 'record': _i2.Protocol().mapRecordToJson(record),
+      if (record != null)
+        'record': _ifsekwi3.Protocol().mapRecordToJson(record),
     };
   }
 
@@ -70,13 +71,14 @@ abstract class ModuleClass
       '__className__': 'serverpod_test_module.ModuleClass',
       'name': name,
       'data': data,
-      if (record != null) 'record': _i2.Protocol().mapRecordToJson(record),
+      if (record != null)
+        'record': _ifsekwi3.Protocol().mapRecordToJson(record),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +97,7 @@ class _ModuleClassImpl extends ModuleClass {
 
   /// Returns a shallow copy of this [ModuleClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ModuleClass copyWith({
     String? name,

@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Defines whether a foreign key constraint is deferrable and, if so, when it
 /// is checked by default.
-enum DeferrableConstraint implements _i1.SerializableModel {
+enum DeferrableConstraint implements _iss.SerializableModel {
   /// The constraint is `DEFERRABLE INITIALLY IMMEDIATE`. It is checked after
   /// each statement by default, but can be deferred until commit within a
   /// transaction (for example with `SET CONSTRAINTS ALL DEFERRED`).

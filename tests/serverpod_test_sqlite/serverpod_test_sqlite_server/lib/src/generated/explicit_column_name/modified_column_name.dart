@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ModifiedColumnName
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ModifiedColumnName._({
     this.id,
     required this.originalColumn,
@@ -46,11 +46,11 @@ abstract class ModifiedColumnName
   String modifiedColumn;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ModifiedColumnName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ModifiedColumnName copyWith({
     int? id,
     String? originalColumn,
@@ -81,11 +81,11 @@ abstract class ModifiedColumnName
   }
 
   static ModifiedColumnNameIncludeList includeList({
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     ModifiedColumnNameInclude? include,
   }) {
     return ModifiedColumnNameIncludeList._(
@@ -100,7 +100,7 @@ abstract class ModifiedColumnName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +119,7 @@ class _ModifiedColumnNameImpl extends ModifiedColumnName {
 
   /// Returns a shallow copy of this [ModifiedColumnName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ModifiedColumnName copyWith({
     Object? id = _Undefined,
@@ -135,31 +135,31 @@ class _ModifiedColumnNameImpl extends ModifiedColumnName {
 }
 
 class ModifiedColumnNameUpdateTable
-    extends _i1.UpdateTable<ModifiedColumnNameTable> {
+    extends _is.UpdateTable<ModifiedColumnNameTable> {
   ModifiedColumnNameUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> originalColumn(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> originalColumn(String value) =>
+      _is.ColumnValue(
         table.originalColumn,
         value,
       );
 
-  _i1.ColumnValue<String, String> modifiedColumn(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> modifiedColumn(String value) =>
+      _is.ColumnValue(
         table.modifiedColumn,
         value,
       );
 }
 
-class ModifiedColumnNameTable extends _i1.Table<int?> {
+class ModifiedColumnNameTable extends _is.Table<int?> {
   ModifiedColumnNameTable({super.tableRelation})
     : super(tableName: 'modified_column_name') {
     updateTable = ModifiedColumnNameUpdateTable(this);
-    originalColumn = _i1.ColumnString(
+    originalColumn = _is.ColumnString(
       'originalColumn',
       this,
     );
-    modifiedColumn = _i1.ColumnString(
+    modifiedColumn = _is.ColumnString(
       'modified_column',
       this,
       fieldName: 'modifiedColumn',
@@ -168,31 +168,31 @@ class ModifiedColumnNameTable extends _i1.Table<int?> {
 
   late final ModifiedColumnNameUpdateTable updateTable;
 
-  late final _i1.ColumnString originalColumn;
+  late final _is.ColumnString originalColumn;
 
-  late final _i1.ColumnString modifiedColumn;
+  late final _is.ColumnString modifiedColumn;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     originalColumn,
     modifiedColumn,
   ];
 }
 
-class ModifiedColumnNameInclude extends _i1.IncludeObject {
+class ModifiedColumnNameInclude extends _is.IncludeObject {
   ModifiedColumnNameInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ModifiedColumnName.t;
+  _is.Table<int?> get table => ModifiedColumnName.t;
 }
 
-class ModifiedColumnNameIncludeList extends _i1.IncludeList {
+class ModifiedColumnNameIncludeList extends _is.IncludeList {
   ModifiedColumnNameIncludeList._({
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -203,10 +203,10 @@ class ModifiedColumnNameIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ModifiedColumnName.t;
+  _is.Table<int?> get table => ModifiedColumnName.t;
 }
 
 class ModifiedColumnNameRepository {
@@ -235,15 +235,15 @@ class ModifiedColumnNameRepository {
   /// );
   /// ```
   Future<List<ModifiedColumnName>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
@@ -275,14 +275,14 @@ class ModifiedColumnNameRepository {
   /// );
   /// ```
   Future<ModifiedColumnName?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
@@ -297,11 +297,11 @@ class ModifiedColumnNameRepository {
 
   /// Finds a single [ModifiedColumnName] by its [id] or null if no such row exists.
   Future<ModifiedColumnName?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ModifiedColumnName>(
       id,
@@ -326,9 +326,9 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModifiedColumnName> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -344,9 +344,9 @@ class ModifiedColumnNameRepository {
   ///
   /// The returned [ModifiedColumnName] will have its `id` field set.
   Future<ModifiedColumnName> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModifiedColumnName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ModifiedColumnName>(
       row,
@@ -375,12 +375,12 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModifiedColumnName> rows, {
-    required _i1.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
-    _i1.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
+    _is.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ModifiedColumnName>(
@@ -407,12 +407,12 @@ class ModifiedColumnNameRepository {
   ///
   /// The returned [ModifiedColumnName] will have its `id` field set.
   Future<ModifiedColumnName?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModifiedColumnName row, {
-    required _i1.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
-    _i1.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ModifiedColumnNameTable> conflictColumns,
+    _is.ColumnSelections<ModifiedColumnNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ModifiedColumnName>(
       row,
@@ -433,10 +433,10 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModifiedColumnName> rows, {
-    _i1.ColumnSelections<ModifiedColumnNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ModifiedColumnNameTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ModifiedColumnName>(
@@ -451,10 +451,10 @@ class ModifiedColumnNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ModifiedColumnName> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModifiedColumnName row, {
-    _i1.ColumnSelections<ModifiedColumnNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ModifiedColumnNameTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ModifiedColumnName>(
       row,
@@ -466,11 +466,11 @@ class ModifiedColumnNameRepository {
   /// Updates a single [ModifiedColumnName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ModifiedColumnName?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
+    required _is.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ModifiedColumnName>(
       id,
@@ -486,15 +486,15 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ModifiedColumnNameUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
+    required _is.WhereExpressionBuilder<ModifiedColumnNameTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ModifiedColumnName>(
@@ -521,11 +521,11 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModifiedColumnName> rows, {
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ModifiedColumnName>(
@@ -539,9 +539,9 @@ class ModifiedColumnNameRepository {
 
   /// Deletes a single [ModifiedColumnName].
   Future<ModifiedColumnName> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModifiedColumnName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ModifiedColumnName>(
       row,
@@ -558,11 +558,11 @@ class ModifiedColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModifiedColumnName>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
-    _i1.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ModifiedColumnNameTable> where,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ModifiedColumnName>(
@@ -577,10 +577,10 @@ class ModifiedColumnNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ModifiedColumnName>(
       where: where?.call(ModifiedColumnName.t),
@@ -591,11 +591,11 @@ class ModifiedColumnNameRepository {
 
   /// Acquires row-level locks on [ModifiedColumnName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ModifiedColumnNameTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ModifiedColumnNameTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ModifiedColumnName>(
       where: where(ModifiedColumnName.t),

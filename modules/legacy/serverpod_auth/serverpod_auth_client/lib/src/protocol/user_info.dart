@@ -10,8 +10,8 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i44s17dh;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
@@ -19,7 +19,7 @@ import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i2;
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
 abstract class UserInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserInfo._({
     this.id,
     required this.userIdentifier,
@@ -51,12 +51,14 @@ abstract class UserInfo
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      created: _isc.DateTimeJsonExtension.fromJson(
+        jsonSerialization['created'],
+      ),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: _i2.Protocol().deserialize<List<String>>(
+      scopeNames: _i44s17dh.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+      blocked: _isc.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
@@ -92,7 +94,7 @@ abstract class UserInfo
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -138,7 +140,7 @@ abstract class UserInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -169,7 +171,7 @@ class _UserInfoImpl extends UserInfo {
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,

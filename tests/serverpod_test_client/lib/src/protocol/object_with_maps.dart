@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'dart:typed_data' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectWithMaps
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithMaps._({
     required this.dataMap,
     required this.intMap,
@@ -36,75 +36,80 @@ abstract class ObjectWithMaps
   });
 
   factory ObjectWithMaps({
-    required Map<String, _i2.SimpleData> dataMap,
+    required Map<String, _i0zisc0t.SimpleData> dataMap,
     required Map<String, int> intMap,
     required Map<String, String> stringMap,
     required Map<String, DateTime> dateTimeMap,
-    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, _idt.ByteData> byteDataMap,
     required Map<String, Duration> durationMap,
-    required Map<String, _i1.UuidValue> uuidMap,
-    required Map<String, _i2.SimpleData?> nullableDataMap,
+    required Map<String, _isc.UuidValue> uuidMap,
+    required Map<String, _i0zisc0t.SimpleData?> nullableDataMap,
     required Map<String, int?> nullableIntMap,
     required Map<String, String?> nullableStringMap,
     required Map<String, DateTime?> nullableDateTimeMap,
-    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, _idt.ByteData?> nullableByteDataMap,
     required Map<String, Duration?> nullableDurationMap,
-    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<String, _isc.UuidValue?> nullableUuidMap,
     required Map<int, int> intIntMap,
   }) = _ObjectWithMapsImpl;
 
   factory ObjectWithMaps.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithMaps(
-      dataMap: _i4.Protocol().deserialize<Map<String, _i2.SimpleData>>(
-        jsonSerialization['dataMap'],
-      ),
-      intMap: _i4.Protocol().deserialize<Map<String, int>>(
+      dataMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _i0zisc0t.SimpleData>>(
+            jsonSerialization['dataMap'],
+          ),
+      intMap: _iza9lbb5.Protocol().deserialize<Map<String, int>>(
         jsonSerialization['intMap'],
       ),
-      stringMap: _i4.Protocol().deserialize<Map<String, String>>(
+      stringMap: _iza9lbb5.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['stringMap'],
       ),
-      dateTimeMap: _i4.Protocol().deserialize<Map<String, DateTime>>(
+      dateTimeMap: _iza9lbb5.Protocol().deserialize<Map<String, DateTime>>(
         jsonSerialization['dateTimeMap'],
       ),
-      byteDataMap: _i4.Protocol().deserialize<Map<String, _i3.ByteData>>(
+      byteDataMap: _iza9lbb5.Protocol().deserialize<Map<String, _idt.ByteData>>(
         jsonSerialization['byteDataMap'],
       ),
-      durationMap: _i4.Protocol().deserialize<Map<String, Duration>>(
+      durationMap: _iza9lbb5.Protocol().deserialize<Map<String, Duration>>(
         jsonSerialization['durationMap'],
       ),
-      uuidMap: _i4.Protocol().deserialize<Map<String, _i1.UuidValue>>(
+      uuidMap: _iza9lbb5.Protocol().deserialize<Map<String, _isc.UuidValue>>(
         jsonSerialization['uuidMap'],
       ),
-      nullableDataMap: _i4.Protocol().deserialize<Map<String, _i2.SimpleData?>>(
-        jsonSerialization['nullableDataMap'],
-      ),
-      nullableIntMap: _i4.Protocol().deserialize<Map<String, int?>>(
+      nullableDataMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _i0zisc0t.SimpleData?>>(
+            jsonSerialization['nullableDataMap'],
+          ),
+      nullableIntMap: _iza9lbb5.Protocol().deserialize<Map<String, int?>>(
         jsonSerialization['nullableIntMap'],
       ),
-      nullableStringMap: _i4.Protocol().deserialize<Map<String, String?>>(
+      nullableStringMap: _iza9lbb5.Protocol().deserialize<Map<String, String?>>(
         jsonSerialization['nullableStringMap'],
       ),
-      nullableDateTimeMap: _i4.Protocol().deserialize<Map<String, DateTime?>>(
-        jsonSerialization['nullableDateTimeMap'],
-      ),
-      nullableByteDataMap: _i4.Protocol()
-          .deserialize<Map<String, _i3.ByteData?>>(
+      nullableDateTimeMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, DateTime?>>(
+            jsonSerialization['nullableDateTimeMap'],
+          ),
+      nullableByteDataMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _idt.ByteData?>>(
             jsonSerialization['nullableByteDataMap'],
           ),
-      nullableDurationMap: _i4.Protocol().deserialize<Map<String, Duration?>>(
-        jsonSerialization['nullableDurationMap'],
-      ),
-      nullableUuidMap: _i4.Protocol().deserialize<Map<String, _i1.UuidValue?>>(
-        jsonSerialization['nullableUuidMap'],
-      ),
-      intIntMap: _i4.Protocol().deserialize<Map<int, int>>(
+      nullableDurationMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, Duration?>>(
+            jsonSerialization['nullableDurationMap'],
+          ),
+      nullableUuidMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _isc.UuidValue?>>(
+            jsonSerialization['nullableUuidMap'],
+          ),
+      intIntMap: _iza9lbb5.Protocol().deserialize<Map<int, int>>(
         jsonSerialization['intIntMap'],
       ),
     );
   }
 
-  Map<String, _i2.SimpleData> dataMap;
+  Map<String, _i0zisc0t.SimpleData> dataMap;
 
   Map<String, int> intMap;
 
@@ -112,13 +117,13 @@ abstract class ObjectWithMaps
 
   Map<String, DateTime> dateTimeMap;
 
-  Map<String, _i3.ByteData> byteDataMap;
+  Map<String, _idt.ByteData> byteDataMap;
 
   Map<String, Duration> durationMap;
 
-  Map<String, _i1.UuidValue> uuidMap;
+  Map<String, _isc.UuidValue> uuidMap;
 
-  Map<String, _i2.SimpleData?> nullableDataMap;
+  Map<String, _i0zisc0t.SimpleData?> nullableDataMap;
 
   Map<String, int?> nullableIntMap;
 
@@ -126,32 +131,32 @@ abstract class ObjectWithMaps
 
   Map<String, DateTime?> nullableDateTimeMap;
 
-  Map<String, _i3.ByteData?> nullableByteDataMap;
+  Map<String, _idt.ByteData?> nullableByteDataMap;
 
   Map<String, Duration?> nullableDurationMap;
 
-  Map<String, _i1.UuidValue?> nullableUuidMap;
+  Map<String, _isc.UuidValue?> nullableUuidMap;
 
   Map<int, int> intIntMap;
 
   /// Returns a shallow copy of this [ObjectWithMaps]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithMaps copyWith({
-    Map<String, _i2.SimpleData>? dataMap,
+    Map<String, _i0zisc0t.SimpleData>? dataMap,
     Map<String, int>? intMap,
     Map<String, String>? stringMap,
     Map<String, DateTime>? dateTimeMap,
-    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, _idt.ByteData>? byteDataMap,
     Map<String, Duration>? durationMap,
-    Map<String, _i1.UuidValue>? uuidMap,
-    Map<String, _i2.SimpleData?>? nullableDataMap,
+    Map<String, _isc.UuidValue>? uuidMap,
+    Map<String, _i0zisc0t.SimpleData?>? nullableDataMap,
     Map<String, int?>? nullableIntMap,
     Map<String, String?>? nullableStringMap,
     Map<String, DateTime?>? nullableDateTimeMap,
-    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, _idt.ByteData?>? nullableByteDataMap,
     Map<String, Duration?>? nullableDurationMap,
-    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<String, _isc.UuidValue?>? nullableUuidMap,
     Map<int, int>? intIntMap,
   });
   @override
@@ -220,26 +225,26 @@ abstract class ObjectWithMaps
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _ObjectWithMapsImpl extends ObjectWithMaps {
   _ObjectWithMapsImpl({
-    required Map<String, _i2.SimpleData> dataMap,
+    required Map<String, _i0zisc0t.SimpleData> dataMap,
     required Map<String, int> intMap,
     required Map<String, String> stringMap,
     required Map<String, DateTime> dateTimeMap,
-    required Map<String, _i3.ByteData> byteDataMap,
+    required Map<String, _idt.ByteData> byteDataMap,
     required Map<String, Duration> durationMap,
-    required Map<String, _i1.UuidValue> uuidMap,
-    required Map<String, _i2.SimpleData?> nullableDataMap,
+    required Map<String, _isc.UuidValue> uuidMap,
+    required Map<String, _i0zisc0t.SimpleData?> nullableDataMap,
     required Map<String, int?> nullableIntMap,
     required Map<String, String?> nullableStringMap,
     required Map<String, DateTime?> nullableDateTimeMap,
-    required Map<String, _i3.ByteData?> nullableByteDataMap,
+    required Map<String, _idt.ByteData?> nullableByteDataMap,
     required Map<String, Duration?> nullableDurationMap,
-    required Map<String, _i1.UuidValue?> nullableUuidMap,
+    required Map<String, _isc.UuidValue?> nullableUuidMap,
     required Map<int, int> intIntMap,
   }) : super._(
          dataMap: dataMap,
@@ -261,23 +266,23 @@ class _ObjectWithMapsImpl extends ObjectWithMaps {
 
   /// Returns a shallow copy of this [ObjectWithMaps]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithMaps copyWith({
-    Map<String, _i2.SimpleData>? dataMap,
+    Map<String, _i0zisc0t.SimpleData>? dataMap,
     Map<String, int>? intMap,
     Map<String, String>? stringMap,
     Map<String, DateTime>? dateTimeMap,
-    Map<String, _i3.ByteData>? byteDataMap,
+    Map<String, _idt.ByteData>? byteDataMap,
     Map<String, Duration>? durationMap,
-    Map<String, _i1.UuidValue>? uuidMap,
-    Map<String, _i2.SimpleData?>? nullableDataMap,
+    Map<String, _isc.UuidValue>? uuidMap,
+    Map<String, _i0zisc0t.SimpleData?>? nullableDataMap,
     Map<String, int?>? nullableIntMap,
     Map<String, String?>? nullableStringMap,
     Map<String, DateTime?>? nullableDateTimeMap,
-    Map<String, _i3.ByteData?>? nullableByteDataMap,
+    Map<String, _idt.ByteData?>? nullableByteDataMap,
     Map<String, Duration?>? nullableDurationMap,
-    Map<String, _i1.UuidValue?>? nullableUuidMap,
+    Map<String, _isc.UuidValue?>? nullableUuidMap,
     Map<int, int>? intIntMap,
   }) {
     return ObjectWithMaps(

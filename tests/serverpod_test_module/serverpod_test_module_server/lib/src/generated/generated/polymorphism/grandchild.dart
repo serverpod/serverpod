@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../../protocol.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../protocol.dart' as _iototaiw;
 
 /// A grandchild class.
-abstract class ModulePolymorphicGrandChild extends _i1.ModulePolymorphicChild
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ModulePolymorphicGrandChild
+    extends _iototaiw.ModulePolymorphicChild
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ModulePolymorphicGrandChild._({
     required super.parent,
     required super.child,
@@ -44,7 +45,7 @@ abstract class ModulePolymorphicGrandChild extends _i1.ModulePolymorphicChild
   /// Returns a shallow copy of this [ModulePolymorphicGrandChild]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ModulePolymorphicGrandChild copyWith({
     String? parent,
     String? child,
@@ -72,7 +73,7 @@ abstract class ModulePolymorphicGrandChild extends _i1.ModulePolymorphicChild
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +90,7 @@ class _ModulePolymorphicGrandChildImpl extends ModulePolymorphicGrandChild {
 
   /// Returns a shallow copy of this [ModulePolymorphicGrandChild]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ModulePolymorphicGrandChild copyWith({
     String? parent,

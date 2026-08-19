@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
 
 /// DTO for transferring authentication user information.
 abstract class AuthUserModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   AuthUserModel._({
     required this.id,
     required this.createdAt,
@@ -24,7 +25,7 @@ abstract class AuthUserModel
   });
 
   factory AuthUserModel({
-    required _i1.UuidValue id,
+    required _is.UuidValue id,
     required DateTime createdAt,
     required Set<String> scopeNames,
     required bool blocked,
@@ -32,18 +33,18 @@ abstract class AuthUserModel
 
   factory AuthUserModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return AuthUserModel(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      createdAt: _i1.DateTimeJsonExtension.fromJson(
+      id: _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      createdAt: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['createdAt'],
       ),
-      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+      blocked: _is.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
-  _i1.UuidValue id;
+  _is.UuidValue id;
 
   /// The time when this user was created.
   DateTime createdAt;
@@ -56,9 +57,9 @@ abstract class AuthUserModel
 
   /// Returns a shallow copy of this [AuthUserModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AuthUserModel copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
@@ -87,13 +88,13 @@ abstract class AuthUserModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _AuthUserModelImpl extends AuthUserModel {
   _AuthUserModelImpl({
-    required _i1.UuidValue id,
+    required _is.UuidValue id,
     required DateTime createdAt,
     required Set<String> scopeNames,
     required bool blocked,
@@ -106,10 +107,10 @@ class _AuthUserModelImpl extends AuthUserModel {
 
   /// Returns a shallow copy of this [AuthUserModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AuthUserModel copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,

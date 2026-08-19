@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class Service
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Service._({
     this.id,
     required this.name,
@@ -46,11 +46,11 @@ abstract class Service
   String? description;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Service]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Service copyWith({
     int? id,
     String? name,
@@ -81,11 +81,11 @@ abstract class Service
   }
 
   static ServiceIncludeList includeList({
-    _i1.WhereExpressionBuilder<ServiceTable>? where,
+    _is.WhereExpressionBuilder<ServiceTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
     ServiceInclude? include,
   }) {
     return ServiceIncludeList._(
@@ -100,7 +100,7 @@ abstract class Service
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +119,7 @@ class _ServiceImpl extends Service {
 
   /// Returns a shallow copy of this [Service]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Service copyWith({
     Object? id = _Undefined,
@@ -134,28 +134,28 @@ class _ServiceImpl extends Service {
   }
 }
 
-class ServiceUpdateTable extends _i1.UpdateTable<ServiceTable> {
+class ServiceUpdateTable extends _is.UpdateTable<ServiceTable> {
   ServiceUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<String, String> description(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> description(String? value) => _is.ColumnValue(
     table.description,
     value,
   );
 }
 
-class ServiceTable extends _i1.Table<int?> {
+class ServiceTable extends _is.Table<int?> {
   ServiceTable({super.tableRelation}) : super(tableName: 'service') {
     updateTable = ServiceUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    description = _i1.ColumnString(
+    description = _is.ColumnString(
       'description',
       this,
     );
@@ -163,31 +163,31 @@ class ServiceTable extends _i1.Table<int?> {
 
   late final ServiceUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnString description;
+  late final _is.ColumnString description;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     description,
   ];
 }
 
-class ServiceInclude extends _i1.IncludeObject {
+class ServiceInclude extends _is.IncludeObject {
   ServiceInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Service.t;
+  _is.Table<int?> get table => Service.t;
 }
 
-class ServiceIncludeList extends _i1.IncludeList {
+class ServiceIncludeList extends _is.IncludeList {
   ServiceIncludeList._({
-    _i1.WhereExpressionBuilder<ServiceTable>? where,
+    _is.WhereExpressionBuilder<ServiceTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -198,10 +198,10 @@ class ServiceIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Service.t;
+  _is.Table<int?> get table => Service.t;
 }
 
 class ServiceRepository {
@@ -230,15 +230,15 @@ class ServiceRepository {
   /// );
   /// ```
   Future<List<Service>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServiceTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Service>(
       where: where?.call(Service.t),
@@ -270,14 +270,14 @@ class ServiceRepository {
   /// );
   /// ```
   Future<Service?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServiceTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Service>(
       where: where?.call(Service.t),
@@ -292,11 +292,11 @@ class ServiceRepository {
 
   /// Finds a single [Service] by its [id] or null if no such row exists.
   Future<Service?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Service>(
       id,
@@ -321,9 +321,9 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Service> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -339,9 +339,9 @@ class ServiceRepository {
   ///
   /// The returned [Service] will have its `id` field set.
   Future<Service> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Service row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Service>(
       row,
@@ -370,12 +370,12 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Service> rows, {
-    required _i1.ColumnSelections<ServiceTable> conflictColumns,
-    _i1.ColumnSelections<ServiceTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServiceTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServiceTable> conflictColumns,
+    _is.ColumnSelections<ServiceTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServiceTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Service>(
@@ -402,12 +402,12 @@ class ServiceRepository {
   ///
   /// The returned [Service] will have its `id` field set.
   Future<Service?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Service row, {
-    required _i1.ColumnSelections<ServiceTable> conflictColumns,
-    _i1.ColumnSelections<ServiceTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServiceTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServiceTable> conflictColumns,
+    _is.ColumnSelections<ServiceTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServiceTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Service>(
       row,
@@ -428,10 +428,10 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Service> rows, {
-    _i1.ColumnSelections<ServiceTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServiceTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Service>(
@@ -446,10 +446,10 @@ class ServiceRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Service> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Service row, {
-    _i1.ColumnSelections<ServiceTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServiceTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Service>(
       row,
@@ -461,10 +461,10 @@ class ServiceRepository {
   /// Updates a single [Service] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Service?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ServiceUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ServiceUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Service>(
       id,
@@ -480,14 +480,14 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ServiceUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ServiceTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ServiceUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ServiceTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Service>(
@@ -514,11 +514,11 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Service> rows, {
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Service>(
@@ -532,9 +532,9 @@ class ServiceRepository {
 
   /// Deletes a single [Service].
   Future<Service> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Service row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Service>(
       row,
@@ -551,11 +551,11 @@ class ServiceRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Service>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServiceTable> where,
-    _i1.OrderByBuilder<ServiceTable>? orderBy,
-    _i1.OrderByListBuilder<ServiceTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServiceTable> where,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Service>(
@@ -570,10 +570,10 @@ class ServiceRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServiceTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Service>(
       where: where?.call(Service.t),
@@ -584,11 +584,11 @@ class ServiceRepository {
 
   /// Acquires row-level locks on [Service] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServiceTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServiceTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Service>(
       where: where(Service.t),

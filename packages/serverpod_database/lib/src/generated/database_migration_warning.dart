@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class DatabaseMigrationWarning
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseMigrationWarning._({
     required this.type,
     required this.message,
@@ -24,7 +24,7 @@ abstract class DatabaseMigrationWarning
   });
 
   factory DatabaseMigrationWarning({
-    required _i2.DatabaseMigrationWarningType type,
+    required _isd.DatabaseMigrationWarningType type,
     required String message,
     required String table,
     required List<String> columns,
@@ -35,21 +35,21 @@ abstract class DatabaseMigrationWarning
     Map<String, dynamic> jsonSerialization,
   ) {
     return DatabaseMigrationWarning(
-      type: _i2.DatabaseMigrationWarningType.fromJson(
+      type: _isd.DatabaseMigrationWarningType.fromJson(
         (jsonSerialization['type'] as String),
       ),
       message: jsonSerialization['message'] as String,
       table: jsonSerialization['table'] as String,
-      columns: _i2.Protocol().deserialize<List<String>>(
+      columns: _isd.Protocol().deserialize<List<String>>(
         jsonSerialization['columns'],
       ),
-      destructive: _i1.BoolJsonExtension.fromJson(
+      destructive: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['destrucive'],
       ),
     );
   }
 
-  _i2.DatabaseMigrationWarningType type;
+  _isd.DatabaseMigrationWarningType type;
 
   String message;
 
@@ -61,9 +61,9 @@ abstract class DatabaseMigrationWarning
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseMigrationWarning copyWith({
-    _i2.DatabaseMigrationWarningType? type,
+    _isd.DatabaseMigrationWarningType? type,
     String? message,
     String? table,
     List<String>? columns,
@@ -95,13 +95,13 @@ abstract class DatabaseMigrationWarning
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
 class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
   _DatabaseMigrationWarningImpl({
-    required _i2.DatabaseMigrationWarningType type,
+    required _isd.DatabaseMigrationWarningType type,
     required String message,
     required String table,
     required List<String> columns,
@@ -116,10 +116,10 @@ class _DatabaseMigrationWarningImpl extends DatabaseMigrationWarning {
 
   /// Returns a shallow copy of this [DatabaseMigrationWarning]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DatabaseMigrationWarning copyWith({
-    _i2.DatabaseMigrationWarningType? type,
+    _isd.DatabaseMigrationWarningType? type,
     String? message,
     String? table,
     List<String>? columns,

@@ -10,7 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Child model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -20,7 +20,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _i1;
 /// alias of one relation's `id` collides with the other relation's
 /// `bleedingText`, bleeding the string into the int field on deserialization.
 abstract class BleedChild
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   BleedChild._({
     this.id,
     this.bleedingText,
@@ -47,7 +47,7 @@ abstract class BleedChild
 
   /// Returns a shallow copy of this [BleedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   BleedChild copyWith({
     int? id,
     String? bleedingText,
@@ -72,7 +72,7 @@ abstract class BleedChild
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _BleedChildImpl extends BleedChild {
 
   /// Returns a shallow copy of this [BleedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   BleedChild copyWith({
     Object? id = _Undefined,

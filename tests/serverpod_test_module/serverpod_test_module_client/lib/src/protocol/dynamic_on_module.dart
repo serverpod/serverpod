@@ -10,11 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_module_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_module_client/src/protocol/protocol.dart'
+    as _i8rw208t;
 
 abstract class DynamicOnModule
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DynamicOnModule._({
     required this.name,
     required this.data,
@@ -28,7 +29,7 @@ abstract class DynamicOnModule
   factory DynamicOnModule.fromJson(Map<String, dynamic> jsonSerialization) {
     return DynamicOnModule(
       name: jsonSerialization['name'] as String,
-      data: _i2.Protocol().deserializeDynamicFieldValue(
+      data: _i8rw208t.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['data'],
       ),
     );
@@ -40,7 +41,7 @@ abstract class DynamicOnModule
 
   /// Returns a shallow copy of this [DynamicOnModule]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DynamicOnModule copyWith({
     String? name,
     dynamic data,
@@ -50,7 +51,7 @@ abstract class DynamicOnModule
     return {
       '__className__': 'serverpod_test_module.DynamicOnModule',
       'name': name,
-      'data': _i2.Protocol().dynamicFieldToJson(data),
+      'data': _i8rw208t.Protocol().dynamicFieldToJson(data),
     };
   }
 
@@ -59,7 +60,7 @@ abstract class DynamicOnModule
     return {
       '__className__': 'serverpod_test_module.DynamicOnModule',
       'name': name,
-      'data': _i2.Protocol().dynamicFieldToJson(
+      'data': _i8rw208t.Protocol().dynamicFieldToJson(
         data,
         forProtocol: true,
       ),
@@ -68,7 +69,7 @@ abstract class DynamicOnModule
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -85,7 +86,7 @@ class _DynamicOnModuleImpl extends DynamicOnModule {
 
   /// Returns a shallow copy of this [DynamicOnModule]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DynamicOnModule copyWith({
     String? name,

@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class ExceptionWithData
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   ExceptionWithData._({
     required this.message,
     required this.creationDate,
@@ -35,10 +35,10 @@ abstract class ExceptionWithData
   factory ExceptionWithData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ExceptionWithData(
       message: jsonSerialization['message'] as String,
-      creationDate: _i1.DateTimeJsonExtension.fromJson(
+      creationDate: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['creationDate'],
       ),
-      errorFields: _i2.Protocol().deserialize<List<String>>(
+      errorFields: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['errorFields'],
       ),
       someNullableField: jsonSerialization['someNullableField'] as int?,
@@ -55,7 +55,7 @@ abstract class ExceptionWithData
 
   /// Returns a shallow copy of this [ExceptionWithData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ExceptionWithData copyWith({
     String? message,
     DateTime? creationDate,
@@ -107,7 +107,7 @@ class _ExceptionWithDataImpl extends ExceptionWithData {
 
   /// Returns a shallow copy of this [ExceptionWithData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ExceptionWithData copyWith({
     String? message,

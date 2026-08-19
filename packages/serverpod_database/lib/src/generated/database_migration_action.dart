@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class DatabaseMigrationAction
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseMigrationAction._({
     required this.type,
     this.deleteTable,
@@ -23,49 +23,49 @@ abstract class DatabaseMigrationAction
   });
 
   factory DatabaseMigrationAction({
-    required _i2.DatabaseMigrationActionType type,
+    required _isd.DatabaseMigrationActionType type,
     String? deleteTable,
-    _i2.TableMigration? alterTable,
-    _i2.TableDefinition? createTable,
+    _isd.TableMigration? alterTable,
+    _isd.TableDefinition? createTable,
   }) = _DatabaseMigrationActionImpl;
 
   factory DatabaseMigrationAction.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return DatabaseMigrationAction(
-      type: _i2.DatabaseMigrationActionType.fromJson(
+      type: _isd.DatabaseMigrationActionType.fromJson(
         (jsonSerialization['type'] as String),
       ),
       deleteTable: jsonSerialization['deleteTable'] as String?,
       alterTable: jsonSerialization['alterTable'] == null
           ? null
-          : _i2.Protocol().deserialize<_i2.TableMigration>(
+          : _isd.Protocol().deserialize<_isd.TableMigration>(
               jsonSerialization['alterTable'],
             ),
       createTable: jsonSerialization['createTable'] == null
           ? null
-          : _i2.Protocol().deserialize<_i2.TableDefinition>(
+          : _isd.Protocol().deserialize<_isd.TableDefinition>(
               jsonSerialization['createTable'],
             ),
     );
   }
 
-  _i2.DatabaseMigrationActionType type;
+  _isd.DatabaseMigrationActionType type;
 
   String? deleteTable;
 
-  _i2.TableMigration? alterTable;
+  _isd.TableMigration? alterTable;
 
-  _i2.TableDefinition? createTable;
+  _isd.TableDefinition? createTable;
 
   /// Returns a shallow copy of this [DatabaseMigrationAction]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseMigrationAction copyWith({
-    _i2.DatabaseMigrationActionType? type,
+    _isd.DatabaseMigrationActionType? type,
     String? deleteTable,
-    _i2.TableMigration? alterTable,
-    _i2.TableDefinition? createTable,
+    _isd.TableMigration? alterTable,
+    _isd.TableDefinition? createTable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,7 +91,7 @@ abstract class DatabaseMigrationAction
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -99,10 +99,10 @@ class _Undefined {}
 
 class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
   _DatabaseMigrationActionImpl({
-    required _i2.DatabaseMigrationActionType type,
+    required _isd.DatabaseMigrationActionType type,
     String? deleteTable,
-    _i2.TableMigration? alterTable,
-    _i2.TableDefinition? createTable,
+    _isd.TableMigration? alterTable,
+    _isd.TableDefinition? createTable,
   }) : super._(
          type: type,
          deleteTable: deleteTable,
@@ -112,10 +112,10 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
 
   /// Returns a shallow copy of this [DatabaseMigrationAction]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DatabaseMigrationAction copyWith({
-    _i2.DatabaseMigrationActionType? type,
+    _isd.DatabaseMigrationActionType? type,
     Object? deleteTable = _Undefined,
     Object? alterTable = _Undefined,
     Object? createTable = _Undefined,
@@ -123,10 +123,10 @@ class _DatabaseMigrationActionImpl extends DatabaseMigrationAction {
     return DatabaseMigrationAction(
       type: type ?? this.type,
       deleteTable: deleteTable is String? ? deleteTable : this.deleteTable,
-      alterTable: alterTable is _i2.TableMigration?
+      alterTable: alterTable is _isd.TableMigration?
           ? alterTable
           : this.alterTable?.copyWith(),
-      createTable: createTable is _i2.TableDefinition?
+      createTable: createTable is _isd.TableDefinition?
           ? createTable
           : this.createTable?.copyWith(),
     );

@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// User settings.
 abstract class UserSettingsConfig
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,
@@ -33,19 +33,19 @@ abstract class UserSettingsConfig
 
   factory UserSettingsConfig.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserSettingsConfig(
-      canSeeUserName: _i1.BoolJsonExtension.fromJson(
+      canSeeUserName: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['canSeeUserName'],
       ),
-      canSeeFullName: _i1.BoolJsonExtension.fromJson(
+      canSeeFullName: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['canSeeFullName'],
       ),
-      canEditUserName: _i1.BoolJsonExtension.fromJson(
+      canEditUserName: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['canEditUserName'],
       ),
-      canEditFullName: _i1.BoolJsonExtension.fromJson(
+      canEditFullName: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['canEditFullName'],
       ),
-      canEditUserImage: _i1.BoolJsonExtension.fromJson(
+      canEditUserImage: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['canEditUserImage'],
       ),
     );
@@ -68,7 +68,7 @@ abstract class UserSettingsConfig
 
   /// Returns a shallow copy of this [UserSettingsConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
@@ -102,7 +102,7 @@ abstract class UserSettingsConfig
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -123,7 +123,7 @@ class _UserSettingsConfigImpl extends UserSettingsConfig {
 
   /// Returns a shallow copy of this [UserSettingsConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserSettingsConfig copyWith({
     bool? canSeeUserName,

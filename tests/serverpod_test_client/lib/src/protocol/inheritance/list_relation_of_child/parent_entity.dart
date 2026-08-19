@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../inheritance/list_relation_of_child/child_entity.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../inheritance/list_relation_of_child/child_entity.dart'
+    as _i41rqetj;
 
 abstract class ParentEntity
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ParentEntity._({
     this.id,
     this.children,
@@ -23,7 +24,7 @@ abstract class ParentEntity
 
   factory ParentEntity({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   }) = _ParentEntityImpl;
 
   factory ParentEntity.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -31,7 +32,7 @@ abstract class ParentEntity
       id: jsonSerialization['id'] as int?,
       children: jsonSerialization['children'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ChildEntity>>(
+          : _iza9lbb5.Protocol().deserialize<List<_i41rqetj.ChildEntity>>(
               jsonSerialization['children'],
             ),
     );
@@ -42,14 +43,14 @@ abstract class ParentEntity
   /// the id will be null.
   int? id;
 
-  List<_i2.ChildEntity>? children;
+  List<_i41rqetj.ChildEntity>? children;
 
   /// Returns a shallow copy of this [ParentEntity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ParentEntity copyWith({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -73,7 +74,7 @@ abstract class ParentEntity
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -82,7 +83,7 @@ class _Undefined {}
 class _ParentEntityImpl extends ParentEntity {
   _ParentEntityImpl({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   }) : super._(
          id: id,
          children: children,
@@ -90,7 +91,7 @@ class _ParentEntityImpl extends ParentEntity {
 
   /// Returns a shallow copy of this [ParentEntity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ParentEntity copyWith({
     Object? id = _Undefined,
@@ -98,7 +99,7 @@ class _ParentEntityImpl extends ParentEntity {
   }) {
     return ParentEntity(
       id: id is int? ? id : this.id,
-      children: children is List<_i2.ChildEntity>?
+      children: children is List<_i41rqetj.ChildEntity>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
     );

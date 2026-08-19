@@ -10,28 +10,28 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
+import 'dart:async' as _ida;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 import 'package:serverpod_test_module_client/src/protocol/module_class.dart'
-    as _i3;
-import 'package:serverpod_test_module_client/src/protocol/module_streaming_class.dart'
-    as _i4;
+    as _iai9jyhu;
 import 'package:serverpod_test_module_client/src/protocol/module_feature/models/my_feature_model.dart'
-    as _i5;
+    as _i0ikjrwq;
+import 'package:serverpod_test_module_client/src/protocol/module_streaming_class.dart'
+    as _ie8x2k8p;
 
 /// An abstract endpoint with a virtual method.
 ///
 /// Uses same name and path than the endpoint on `serverpod_test_server` to
 /// enure classes are not being matched by name only.
 /// {@category Endpoint}
-abstract class EndpointAbstractBase extends _i1.EndpointRef {
-  EndpointAbstractBase(_i1.EndpointCaller caller) : super(caller);
+abstract class EndpointAbstractBase extends _isc.EndpointRef {
+  EndpointAbstractBase(_isc.EndpointCaller caller) : super(caller);
 
   /// This is a virtual method that must be overriden.
-  _i2.Future<String> virtualMethod();
+  _ida.Future<String> virtualMethod();
 
   /// This body should not be present in the generated abstract class.
-  _i2.Future<String> abstractBaseMethod();
+  _ida.Future<String> abstractBaseMethod();
 }
 
 /// A concrete endpoint that extends the abstract endpoint.
@@ -40,20 +40,20 @@ abstract class EndpointAbstractBase extends _i1.EndpointRef {
 /// enure classes are not being matched by name only.
 /// {@category Endpoint}
 class EndpointConcreteBase extends EndpointAbstractBase {
-  EndpointConcreteBase(_i1.EndpointCaller caller) : super(caller);
+  EndpointConcreteBase(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.concreteBase';
 
   @override
-  _i2.Future<String> virtualMethod() => caller.callServerEndpoint<String>(
+  _ida.Future<String> virtualMethod() => caller.callServerEndpoint<String>(
     'serverpod_test_module.concreteBase',
     'virtualMethod',
     {},
   );
 
   /// A concrete method that should be present in the generated class.
-  _i2.Future<String> concreteMethod() => caller.callServerEndpoint<String>(
+  _ida.Future<String> concreteMethod() => caller.callServerEndpoint<String>(
     'serverpod_test_module.concreteBase',
     'concreteMethod',
     {},
@@ -61,7 +61,7 @@ class EndpointConcreteBase extends EndpointAbstractBase {
 
   /// This body should not be present in the generated abstract class.
   @override
-  _i2.Future<String> abstractBaseMethod() => caller.callServerEndpoint<String>(
+  _ida.Future<String> abstractBaseMethod() => caller.callServerEndpoint<String>(
     'serverpod_test_module.concreteBase',
     'abstractBaseMethod',
     {},
@@ -69,39 +69,40 @@ class EndpointConcreteBase extends EndpointAbstractBase {
 }
 
 /// {@category Endpoint}
-class EndpointModule extends _i1.EndpointRef {
-  EndpointModule(_i1.EndpointCaller caller) : super(caller);
+class EndpointModule extends _isc.EndpointRef {
+  EndpointModule(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.module';
 
-  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
+  _ida.Future<String> hello(String name) => caller.callServerEndpoint<String>(
     'serverpod_test_module.module',
     'hello',
     {'name': name},
   );
 
-  _i2.Future<_i3.ModuleClass> modifyModuleObject(_i3.ModuleClass object) =>
-      caller.callServerEndpoint<_i3.ModuleClass>(
-        'serverpod_test_module.module',
-        'modifyModuleObject',
-        {'object': object},
-      );
+  _ida.Future<_iai9jyhu.ModuleClass> modifyModuleObject(
+    _iai9jyhu.ModuleClass object,
+  ) => caller.callServerEndpoint<_iai9jyhu.ModuleClass>(
+    'serverpod_test_module.module',
+    'modifyModuleObject',
+    {'object': object},
+  );
 }
 
 /// {@category Endpoint}
-class EndpointRecordStreaming extends _i1.EndpointRef {
-  EndpointRecordStreaming(_i1.EndpointCaller caller) : super(caller);
+class EndpointRecordStreaming extends _isc.EndpointRef {
+  EndpointRecordStreaming(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.recordStreaming';
 
-  _i2.Stream<(int?, _i4.ModuleStreamingClass?)> streamModuleClass(
-    _i2.Stream<(int?, _i4.ModuleStreamingClass?)> values,
+  _ida.Stream<(int?, _ie8x2k8p.ModuleStreamingClass?)> streamModuleClass(
+    _ida.Stream<(int?, _ie8x2k8p.ModuleStreamingClass?)> values,
   ) =>
       caller.callStreamingServerEndpoint<
-        _i2.Stream<(int?, _i4.ModuleStreamingClass?)>,
-        (int?, _i4.ModuleStreamingClass?)
+        _ida.Stream<(int?, _ie8x2k8p.ModuleStreamingClass?)>,
+        (int?, _ie8x2k8p.ModuleStreamingClass?)
       >(
         'serverpod_test_module.recordStreaming',
         'streamModuleClass',
@@ -111,22 +112,22 @@ class EndpointRecordStreaming extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointStreaming extends _i1.EndpointRef {
-  EndpointStreaming(_i1.EndpointCaller caller) : super(caller);
+class EndpointStreaming extends _isc.EndpointRef {
+  EndpointStreaming(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.streaming';
 
-  _i2.Stream<int> intEchoStream(_i2.Stream<int> stream) =>
-      caller.callStreamingServerEndpoint<_i2.Stream<int>, int>(
+  _ida.Stream<int> intEchoStream(_ida.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_ida.Stream<int>, int>(
         'serverpod_test_module.streaming',
         'intEchoStream',
         {},
         {'stream': stream},
       );
 
-  _i2.Future<int> simpleInputReturnStream(_i2.Stream<int> stream) =>
-      caller.callStreamingServerEndpoint<_i2.Future<int>, int>(
+  _ida.Future<int> simpleInputReturnStream(_ida.Stream<int> stream) =>
+      caller.callStreamingServerEndpoint<_ida.Future<int>, int>(
         'serverpod_test_module.streaming',
         'simpleInputReturnStream',
         {},
@@ -136,21 +137,21 @@ class EndpointStreaming extends _i1.EndpointRef {
 
 /// An endpoint class with all methods marked as unauthenticated.
 /// {@category Endpoint}
-class EndpointUnauthenticated extends _i1.EndpointRef {
-  EndpointUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+class EndpointUnauthenticated extends _isc.EndpointRef {
+  EndpointUnauthenticated(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.unauthenticated';
 
-  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
     'serverpod_test_module.unauthenticated',
     'unauthenticatedMethod',
     {},
     authenticated: false,
   );
 
-  _i2.Stream<bool> unauthenticatedStream() =>
-      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+  _ida.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<bool>, bool>(
         'serverpod_test_module.unauthenticated',
         'unauthenticatedStream',
         {},
@@ -161,21 +162,21 @@ class EndpointUnauthenticated extends _i1.EndpointRef {
 
 /// An endpoint with only one method marked as unauthenticated.
 /// {@category Endpoint}
-class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
-  EndpointPartiallyUnauthenticated(_i1.EndpointCaller caller) : super(caller);
+class EndpointPartiallyUnauthenticated extends _isc.EndpointRef {
+  EndpointPartiallyUnauthenticated(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.partiallyUnauthenticated';
 
-  _i2.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> unauthenticatedMethod() => caller.callServerEndpoint<bool>(
     'serverpod_test_module.partiallyUnauthenticated',
     'unauthenticatedMethod',
     {},
     authenticated: false,
   );
 
-  _i2.Stream<bool> unauthenticatedStream() =>
-      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+  _ida.Stream<bool> unauthenticatedStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<bool>, bool>(
         'serverpod_test_module.partiallyUnauthenticated',
         'unauthenticatedStream',
         {},
@@ -183,14 +184,14 @@ class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
         authenticated: false,
       );
 
-  _i2.Future<bool> authenticatedMethod() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> authenticatedMethod() => caller.callServerEndpoint<bool>(
     'serverpod_test_module.partiallyUnauthenticated',
     'authenticatedMethod',
     {},
   );
 
-  _i2.Stream<bool> authenticatedStream() =>
-      caller.callStreamingServerEndpoint<_i2.Stream<bool>, bool>(
+  _ida.Stream<bool> authenticatedStream() =>
+      caller.callStreamingServerEndpoint<_ida.Stream<bool>, bool>(
         'serverpod_test_module.partiallyUnauthenticated',
         'authenticatedStream',
         {},
@@ -199,28 +200,28 @@ class EndpointPartiallyUnauthenticated extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointMyModuleFeature extends _i1.EndpointRef {
-  EndpointMyModuleFeature(_i1.EndpointCaller caller) : super(caller);
+class EndpointMyModuleFeature extends _isc.EndpointRef {
+  EndpointMyModuleFeature(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'serverpod_test_module.myModuleFeature';
 
-  _i2.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
+  _ida.Future<String> myFeatureMethod() => caller.callServerEndpoint<String>(
     'serverpod_test_module.myModuleFeature',
     'myFeatureMethod',
     {},
   );
 
-  _i2.Future<_i5.MyModuleFeatureModel> myFeatureModel() =>
-      caller.callServerEndpoint<_i5.MyModuleFeatureModel>(
+  _ida.Future<_i0ikjrwq.MyModuleFeatureModel> myFeatureModel() =>
+      caller.callServerEndpoint<_i0ikjrwq.MyModuleFeatureModel>(
         'serverpod_test_module.myModuleFeature',
         'myFeatureModel',
         {},
       );
 }
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {
+class Caller extends _isc.ModuleEndpointCaller {
+  Caller(_isc.ServerpodClientShared client) : super(client) {
     concreteBase = EndpointConcreteBase(this);
     module = EndpointModule(this);
     recordStreaming = EndpointRecordStreaming(this);
@@ -245,7 +246,7 @@ class Caller extends _i1.ModuleEndpointCaller {
   late final EndpointMyModuleFeature myModuleFeature;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'serverpod_test_module.concreteBase': concreteBase,
     'serverpod_test_module.module': module,
     'serverpod_test_module.recordStreaming': recordStreaming,

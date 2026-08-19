@@ -10,14 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
-abstract class SharedExtendedAppException extends _i1.SharedBaseAppException
+abstract class SharedExtendedAppException
+    extends _ilwf0zl1.SharedBaseAppException
     implements
-        _i2.SerializableException,
-        _i2.SerializableModel,
-        _i2.ProtocolSerialization {
+        _iss.SerializableException,
+        _iss.SerializableModel,
+        _iss.ProtocolSerialization {
   SharedExtendedAppException._({
     required super.message,
     required this.detail,
@@ -42,7 +43,7 @@ abstract class SharedExtendedAppException extends _i1.SharedBaseAppException
   /// Returns a shallow copy of this [SharedExtendedAppException]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_iss.useResult
   SharedExtendedAppException copyWith({
     String? message,
     String? detail,
@@ -82,7 +83,7 @@ class _SharedExtendedAppExceptionImpl extends SharedExtendedAppException {
 
   /// Returns a shallow copy of this [SharedExtendedAppException]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedExtendedAppException copyWith({
     String? message,

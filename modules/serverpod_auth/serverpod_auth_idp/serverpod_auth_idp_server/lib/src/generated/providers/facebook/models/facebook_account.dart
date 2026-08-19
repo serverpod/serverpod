@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured Facebook account to be used for logins.\
 abstract class FacebookAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   FacebookAccount._({
     this.id,
     required this.authUserId,
@@ -32,9 +33,9 @@ abstract class FacebookAccount
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory FacebookAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     required String userIdentifier,
     String? email,
@@ -47,18 +48,18 @@ abstract class FacebookAccount
     return FacebookAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
       email: jsonSerialization['email'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
@@ -72,12 +73,12 @@ abstract class FacebookAccount
   static const db = FacebookAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The time when this authentication was created.
   DateTime createdAt;
@@ -107,15 +108,15 @@ abstract class FacebookAccount
   String? lastName;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [FacebookAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   FacebookAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     String? userIdentifier,
     String? email,
@@ -144,16 +145,16 @@ abstract class FacebookAccount
     return {};
   }
 
-  static FacebookAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static FacebookAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return FacebookAccountInclude._(authUser: authUser);
   }
 
   static FacebookAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     FacebookAccountInclude? include,
   }) {
     return FacebookAccountIncludeList._(
@@ -168,7 +169,7 @@ abstract class FacebookAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -176,9 +177,9 @@ class _Undefined {}
 
 class _FacebookAccountImpl extends FacebookAccount {
   _FacebookAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     required String userIdentifier,
     String? email,
@@ -199,11 +200,11 @@ class _FacebookAccountImpl extends FacebookAccount {
 
   /// Returns a shallow copy of this [FacebookAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   FacebookAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     DateTime? createdAt,
     String? userIdentifier,
@@ -213,9 +214,9 @@ class _FacebookAccountImpl extends FacebookAccount {
     Object? lastName = _Undefined,
   }) {
     return FacebookAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
@@ -228,78 +229,78 @@ class _FacebookAccountImpl extends FacebookAccount {
   }
 }
 
-class FacebookAccountUpdateTable extends _i1.UpdateTable<FacebookAccountTable> {
+class FacebookAccountUpdateTable extends _is.UpdateTable<FacebookAccountTable> {
   FacebookAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> fullName(String? value) => _is.ColumnValue(
     table.fullName,
     value,
   );
 
-  _i1.ColumnValue<String, String> firstName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> firstName(String? value) => _is.ColumnValue(
     table.firstName,
     value,
   );
 
-  _i1.ColumnValue<String, String> lastName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> lastName(String? value) => _is.ColumnValue(
     table.lastName,
     value,
   );
 }
 
-class FacebookAccountTable extends _i1.Table<_i1.UuidValue?> {
+class FacebookAccountTable extends _is.Table<_is.UuidValue?> {
   FacebookAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_facebook_account') {
     updateTable = FacebookAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    fullName = _i1.ColumnString(
+    fullName = _is.ColumnString(
       'fullName',
       this,
     );
-    firstName = _i1.ColumnString(
+    firstName = _is.ColumnString(
       'firstName',
       this,
     );
-    lastName = _i1.ColumnString(
+    lastName = _is.ColumnString(
       'lastName',
       this,
     );
@@ -307,16 +308,16 @@ class FacebookAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final FacebookAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The Facebook-provided user identifier (Facebook User ID).
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
   /// The verified email of the user, as received from Facebook.
   ///
@@ -326,34 +327,34 @@ class FacebookAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// Stored in lower-case.
   ///
   /// This may be null if the user hasn't granted email permission.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The user's full name from Facebook.
   ///
   /// Combined first and last name as provided by Facebook.
-  late final _i1.ColumnString fullName;
+  late final _is.ColumnString fullName;
 
   /// The user's first name from Facebook.
-  late final _i1.ColumnString firstName;
+  late final _is.ColumnString firstName;
 
   /// The user's last name from Facebook.
-  late final _i1.ColumnString lastName;
+  late final _is.ColumnString lastName;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: FacebookAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     createdAt,
@@ -365,7 +366,7 @@ class FacebookAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -373,23 +374,23 @@ class FacebookAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class FacebookAccountInclude extends _i1.IncludeObject {
-  FacebookAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class FacebookAccountInclude extends _is.IncludeObject {
+  FacebookAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => FacebookAccount.t;
+  _is.Table<_is.UuidValue?> get table => FacebookAccount.t;
 }
 
-class FacebookAccountIncludeList extends _i1.IncludeList {
+class FacebookAccountIncludeList extends _is.IncludeList {
   FacebookAccountIncludeList._({
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -400,10 +401,10 @@ class FacebookAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => FacebookAccount.t;
+  _is.Table<_is.UuidValue?> get table => FacebookAccount.t;
 }
 
 class FacebookAccountRepository {
@@ -434,16 +435,16 @@ class FacebookAccountRepository {
   /// );
   /// ```
   Future<List<FacebookAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
     FacebookAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
@@ -476,15 +477,15 @@ class FacebookAccountRepository {
   /// );
   /// ```
   Future<FacebookAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
     FacebookAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
@@ -500,12 +501,12 @@ class FacebookAccountRepository {
 
   /// Finds a single [FacebookAccount] by its [id] or null if no such row exists.
   Future<FacebookAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     FacebookAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<FacebookAccount>(
       id,
@@ -531,9 +532,9 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FacebookAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -549,9 +550,9 @@ class FacebookAccountRepository {
   ///
   /// The returned [FacebookAccount] will have its `id` field set.
   Future<FacebookAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FacebookAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<FacebookAccount>(
       row,
@@ -580,12 +581,12 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FacebookAccount> rows, {
-    required _i1.ColumnSelections<FacebookAccountTable> conflictColumns,
-    _i1.ColumnSelections<FacebookAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FacebookAccountTable> conflictColumns,
+    _is.ColumnSelections<FacebookAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<FacebookAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<FacebookAccount>(
@@ -612,12 +613,12 @@ class FacebookAccountRepository {
   ///
   /// The returned [FacebookAccount] will have its `id` field set.
   Future<FacebookAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FacebookAccount row, {
-    required _i1.ColumnSelections<FacebookAccountTable> conflictColumns,
-    _i1.ColumnSelections<FacebookAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<FacebookAccountTable> conflictColumns,
+    _is.ColumnSelections<FacebookAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<FacebookAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<FacebookAccount>(
       row,
@@ -638,10 +639,10 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FacebookAccount> rows, {
-    _i1.ColumnSelections<FacebookAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FacebookAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<FacebookAccount>(
@@ -656,10 +657,10 @@ class FacebookAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<FacebookAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FacebookAccount row, {
-    _i1.ColumnSelections<FacebookAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<FacebookAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<FacebookAccount>(
       row,
@@ -671,11 +672,11 @@ class FacebookAccountRepository {
   /// Updates a single [FacebookAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<FacebookAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<FacebookAccountUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<FacebookAccountUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<FacebookAccount>(
       id,
@@ -691,15 +692,15 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<FacebookAccountUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<FacebookAccountUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
+    required _is.WhereExpressionBuilder<FacebookAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<FacebookAccount>(
@@ -726,11 +727,11 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<FacebookAccount> rows, {
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<FacebookAccount>(
@@ -744,9 +745,9 @@ class FacebookAccountRepository {
 
   /// Deletes a single [FacebookAccount].
   Future<FacebookAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FacebookAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<FacebookAccount>(
       row,
@@ -763,11 +764,11 @@ class FacebookAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<FacebookAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
-    _i1.OrderByBuilder<FacebookAccountTable>? orderBy,
-    _i1.OrderByListBuilder<FacebookAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FacebookAccountTable> where,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<FacebookAccount>(
@@ -782,10 +783,10 @@ class FacebookAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<FacebookAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<FacebookAccount>(
       where: where?.call(FacebookAccount.t),
@@ -796,11 +797,11 @@ class FacebookAccountRepository {
 
   /// Acquires row-level locks on [FacebookAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<FacebookAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<FacebookAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<FacebookAccount>(
       where: where(FacebookAccount.t),
@@ -817,10 +818,10 @@ class FacebookAccountAttachRowRepository {
   /// Creates a relation between the given [FacebookAccount] and [AuthUser]
   /// by setting the [FacebookAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     FacebookAccount facebookAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (facebookAccount.id == null) {
       throw ArgumentError.notNull('facebookAccount.id');
