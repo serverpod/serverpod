@@ -247,8 +247,9 @@ void main() {
   );
 
   test(
-    'Given an open method stream command with an auth mode when building '
-    'websocket message from string then the auth mode is preserved.',
+    'Given an open method stream command with an auth mode, '
+    'when building websocket message from string, '
+    'then the auth mode is preserved.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(
         endpoint: 'endpoint',
@@ -274,8 +275,9 @@ void main() {
   );
 
   test(
-    'Given an open method stream command without an auth mode when building '
-    'websocket message from string then the auth mode is null.',
+    'Given an open method stream command without an auth mode, '
+    'when building websocket message from string, '
+    'then the auth mode is null.',
     () {
       var message = OpenMethodStreamCommand.buildMessage(
         endpoint: 'endpoint',

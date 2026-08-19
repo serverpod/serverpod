@@ -348,8 +348,7 @@ void main() {
   );
 
   group(
-    'Given a JwtAuthKeyProvider in cookie mode on a platform without '
-    'cross-tab locks',
+    'Given a JwtAuthKeyProvider in cookie mode on a platform without cross-tab locks',
     () {
       setUp(() {
         provider = JwtAuthKeyProvider(
@@ -364,8 +363,8 @@ void main() {
       });
 
       test(
-        'when forcing a refresh then it throws a StateError before calling '
-        'the server.',
+        'when forcing a refresh '
+        'then it throws a StateError before calling the server.',
         () async {
           await expectLater(
             provider.refreshAuthKey(force: true),

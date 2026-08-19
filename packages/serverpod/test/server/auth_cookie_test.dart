@@ -5,11 +5,11 @@ import 'package:serverpod_shared/serverpod_shared.dart'
 import 'package:test/test.dart';
 
 void main() {
-  group('Given a default WebAuthCookieConfig', () {
+  group('Given a default WebAuthCookieConfig,', () {
     var config = const WebAuthCookieConfig();
 
-    test('when building a set-cookie header then it is HttpOnly and Secure '
-        'with the configured defaults.', () {
+    test('when building a set-cookie header, '
+        'then it is HttpOnly and Secure with the configured defaults.', () {
       var cookie = config.buildSetCookieHeader('abc123', maxAgeSeconds: 3600);
 
       expect(cookie.name, WebAuthCookieConfig.defaultName);
@@ -23,7 +23,8 @@ void main() {
     });
 
     test(
-      'when building a refresh set-cookie header then it uses the refresh name.',
+      'when building a refresh set-cookie header, '
+      'then it uses the refresh name.',
       () {
         var cookie = config.buildSetRefreshCookieHeader(
           'refresh123',
@@ -41,21 +42,22 @@ void main() {
       },
     );
 
-    test('when no maxAge is given then it is a session cookie.', () {
+    test('when no maxAge is given, '
+        'then it is a session cookie.', () {
       var cookie = config.buildSetCookieHeader('abc123');
       expect(cookie.maxAge, isNull);
     });
 
-    test('when building a clear-cookie header then value is empty and '
-        'maxAge is 0.', () {
+    test('when building a clear-cookie header, '
+        'then value is empty and maxAge is 0.', () {
       var cookie = config.buildClearCookieHeader();
       expect(cookie.value, '');
       expect(cookie.maxAge, 0);
       expect(cookie.httpOnly, isTrue);
     });
 
-    test('when building a refresh clear-cookie header then value is empty and '
-        'maxAge is 0.', () {
+    test('when building a refresh clear-cookie header, '
+        'then value is empty and maxAge is 0.', () {
       var cookie = config.buildClearRefreshCookieHeader();
       expect(cookie.name, '${WebAuthCookieConfig.defaultName}_refresh');
       expect(cookie.value, '');
@@ -64,8 +66,8 @@ void main() {
     });
 
     test(
-      'when a path override is given then set and clear refresh cookies use '
-      'it instead of the configured path.',
+      'when a path override is given, '
+      'then set and clear refresh cookies use it instead of the configured path.',
       () {
         var setCookie = config.buildSetRefreshCookieHeader(
           'refresh123',
@@ -82,7 +84,8 @@ void main() {
   });
 
   test(
-    'Given a SameSite mapping when each CookieSameSite is built '
+    'Given a SameSite mapping, '
+    'when each CookieSameSite is built, '
     'then it maps to the relic value.',
     () {
       SetCookie build(CookieSameSite s) =>
@@ -133,7 +136,8 @@ void main() {
   });
 
   test(
-    'Given a malformed cookie path when building a header '
+    'Given a malformed cookie path, '
+    'when building a header, '
     'then a clear ArgumentError is thrown.',
     () {
       expect(
@@ -144,7 +148,8 @@ void main() {
   );
 
   test(
-    'Given a non-default config when built '
+    'Given a non-default config, '
+    'when built, '
     'then secure/path/name are taken from the config.',
     () {
       var cookie = const WebAuthCookieConfig(

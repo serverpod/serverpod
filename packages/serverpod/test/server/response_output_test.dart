@@ -4,7 +4,8 @@ import 'package:test/test.dart';
 
 void main() {
   test(
-    'Given nothing queued when applying response output '
+    'Given nothing queued, '
+    'when applying response output, '
     'then the response is unchanged.',
     () {
       var response = Response.ok();
@@ -18,7 +19,8 @@ void main() {
   );
 
   test(
-    'Given a queued cookie when applying response output '
+    'Given a queued cookie, '
+    'when applying response output, '
     'then a Set-Cookie is set.',
     () {
       var result = applyResponseOutput(
@@ -45,7 +47,8 @@ void main() {
   );
 
   test(
-    'Given multiple queued cookies when applying response output '
+    'Given multiple queued cookies, '
+    'when applying response output, '
     'then each gets its own Set-Cookie.',
     () {
       var result = applyResponseOutput(
@@ -65,7 +68,8 @@ void main() {
   );
 
   test(
-    'Given a queued header when applying response output '
+    'Given a queued header, '
+    'when applying response output, '
     'then the header is set.',
     () {
       var result = applyResponseOutput(
