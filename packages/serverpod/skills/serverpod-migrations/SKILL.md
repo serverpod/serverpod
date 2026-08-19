@@ -47,14 +47,14 @@ A migration directory holds `migration.sql`, `definition.sql` and the `definitio
 - Adding a data transformation, so existing rows are migrated along with the schema.
 - Turning a destructive change into a non-destructive one, by reaching the same end state through intermediate steps — for example add the new column, backfill it from the old one, then drop the old column, instead of dropping and recreating.
 
-Never edit the other files in the directory. `definition.sql` is the full schema, and `definition.json` / `definition_project.json` / `migration.json` are what the next `serverpod create-migration` diffs against, so changing them corrupts every migration created afterwards.
+Never edit the other files in the directory. `definition.sql` is the full schema, and the `*.json` files are what the next `serverpod create-migration` diffs against, so changing them corrupts every migration created afterwards.
 
 Two rules follow from how migrations are applied:
 
 - A database that has no migrations installed is created from the latest `definition.sql` alone and never runs `migration.sql`. An existing database applies each newer `migration.sql` in order. So the schema an edited `migration.sql` ends up with must stay identical to `definition.sql`, and data transformations in it only affect databases that upgrade through that version.
 - Editing a migration that has already been applied does nothing to the databases that ran it. Create a new migration for those.
 
-On the client side (models with `database: client`), the same applies to the migration SQL inside the version's `migration.dart`; its definition SQL and JSON files are equally off limits.
+On the client side (models with `database: client` or `database: all`), the same applies to the migration SQL inside the version's `migration.dart`; its definition SQL and JSON files are equally off limits.
 
 ## Repair migrations
 
