@@ -10,8 +10,8 @@ import 'web_locks_cross_tab_lock.dart';
 /// Handles communication with the server.
 /// This is the concrete implementation using the http library
 /// (for Flutter web).
-class ServerpodClientRequestDelegateImpl
-    extends ServerpodClientRequestDelegate {
+class ServerpodClientRequestDelegateImpl extends ServerpodClientRequestDelegate
+    with CookieAuthTransport {
   /// The timeout for the connection and the requests.
   final Duration connectionTimeout;
 
@@ -36,9 +36,19 @@ class ServerpodClientRequestDelegateImpl
   @override
   bool get supportsCookieAuth => _httpClient is BrowserClient;
 
+  bool _authRefreshCrossTabLockCreated = false;
+  CrossTabLock? _authRefreshCrossTabLock;
+
   @override
-  CrossTabLock? createCrossTabLock(String name) =>
-      WebLocksCrossTabLock.isSupported ? WebLocksCrossTabLock(name) : null;
+  CrossTabLock? get authRefreshCrossTabLock {
+    if (!_authRefreshCrossTabLockCreated) {
+      _authRefreshCrossTabLockCreated = true;
+      _authRefreshCrossTabLock = WebLocksCrossTabLock.isSupported
+          ? WebLocksCrossTabLock(authRefreshCrossTabLockName)
+          : null;
+    }
+    return _authRefreshCrossTabLock;
+  }
 
   @override
   set cookieAuth(bool value) {

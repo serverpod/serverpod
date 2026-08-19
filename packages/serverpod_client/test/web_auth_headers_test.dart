@@ -44,7 +44,14 @@ void main() {
   );
 }
 
-class _MinimalDelegate extends ServerpodClientRequestDelegate {
+class _MinimalDelegate extends ServerpodClientRequestDelegate
+    with CookieAuthTransport {
+  @override
+  bool get supportsCookieAuth => true;
+
+  @override
+  CrossTabLock? get authRefreshCrossTabLock => null;
+
   @override
   Future<String> serverRequest<T>(
     Uri url, {

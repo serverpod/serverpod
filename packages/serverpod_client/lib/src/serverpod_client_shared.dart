@@ -13,6 +13,8 @@ import 'serverpod_client_io.dart'
     if (dart.library.js_interop) 'serverpod_client_browser.dart'
     if (dart.library.io) 'serverpod_client_io.dart';
 
+part 'cookie_auth.dart';
+
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -52,33 +54,6 @@ abstract class ServerpodClientRequestDelegate {
     String? authenticationValue,
     bool authenticated = true,
   });
-
-  /// Whether the transport can carry an `HttpOnly` auth cookie.
-  bool get supportsCookieAuth => false;
-
-  /// Whether requests should use browser-managed cookie auth transport.
-  bool cookieAuth = false;
-
-  /// The browser-visible base path of the server, declared to the server on
-  /// cookie-auth requests (via [webBasePathHeaderName]) so it can scope the
-  /// refresh cookie `Path` correctly behind a prefix-stripping reverse proxy.
-  /// Derived from the client's host; `/` when the server is at the root.
-  String cookieAuthBasePath = '/';
-
-  /// Creates a lock with the given [name] shared across browser tabs of the
-  /// same origin, or null when the platform has no cross-tab coordination.
-  CrossTabLock? createCrossTabLock(String name) => null;
-
-  /// The cookie-auth request headers for a call with the given [authenticated]
-  /// intent: the [webAuthModeHeaderName] marker and the declared base path,
-  /// or empty when [cookieAuth] is disabled.
-  Map<String, String> webAuthHeaders({required bool authenticated}) => {
-    if (cookieAuth)
-      webAuthModeHeaderName: authenticated
-          ? webAuthModeCookie
-          : webAuthModeCookieTransport,
-    if (cookieAuth) webBasePathHeaderName: cookieAuthBasePath,
-  };
 
   /// Closes the connection to the server.
   /// This delegate should not be used after calling this.
@@ -173,52 +148,6 @@ abstract class ServerpodClientShared extends EndpointCaller {
   /// unauthenticated.
   ClientAuthKeyProvider? authKeyProvider;
 
-  /// Whether the client should use browser-managed cookie auth transport.
-  ///
-  /// Set this immediately after constructing the client, before making any
-  /// calls. Cookie auth is only supported by browser clients.
-  bool get cookieAuth => _requestDelegate.cookieAuth;
-
-  set cookieAuth(bool value) {
-    if (value && !_requestDelegate.supportsCookieAuth) {
-      throw UnsupportedError(
-        'Cookie-based web auth is only supported by browser clients. '
-        'The dart:io client cannot store or resend HttpOnly cookies, and a '
-        'custom httpClientOverride must be a BrowserClient so credentialed '
-        'requests can be enabled on it. '
-        'Set cookieAuth only on web clients, immediately after constructing '
-        'the client and before making any calls.',
-      );
-    }
-    _requestDelegate.cookieAuth = value;
-    _requestDelegate.cookieAuthBasePath = _hostBasePath;
-  }
-
-  /// The path component of [host] without a trailing slash (`/` at the root),
-  /// i.e. the browser-visible base path under which the server's endpoints
-  /// live.
-  String get _hostBasePath {
-    var path = Uri.parse(host).path.replaceFirst(RegExp(r'/+$'), '');
-    return path.isEmpty ? '/' : path;
-  }
-
-  bool _authRefreshCrossTabLockCreated = false;
-  CrossTabLock? _authRefreshCrossTabLock;
-
-  /// A lock serializing authentication refreshes against this server across
-  /// browser tabs, or null when the platform has no cross-tab coordination.
-  /// The lock name is derived from the host origin and base path and carries
-  /// no secrets.
-  CrossTabLock? get authRefreshCrossTabLock {
-    if (!_authRefreshCrossTabLockCreated) {
-      _authRefreshCrossTabLockCreated = true;
-      _authRefreshCrossTabLock = _requestDelegate.createCrossTabLock(
-        'serverpod-auth-refresh:${Uri.parse(host).origin}$_hostBasePath',
-      );
-    }
-    return _authRefreshCrossTabLock;
-  }
-
   /// Creates a new ServerpodClientShared.
   ServerpodClientShared(
     String host,
@@ -244,6 +173,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
       securityContext: securityContext,
       httpClientOverride: httpClientOverride,
     );
+    var delegate = _requestDelegate;
+    if (delegate is CookieAuthTransport) {
+      var basePath = _basePathOf(this.host);
+      delegate.cookieAuthBasePath = basePath;
+      delegate.authRefreshCrossTabLockName =
+          'serverpod-auth-refresh:${Uri.parse(this.host).origin}$basePath';
+    }
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
@@ -316,9 +252,8 @@ abstract class ServerpodClientShared extends EndpointCaller {
     );
 
     try {
-      var provider = authKeyProvider;
       var authenticationValue = authenticated
-          ? await provider?.authHeaderValue
+          ? await authKeyProvider?.authHeaderValue
           : null;
       var body = formatArgs(args);
       var url = method.isEmpty

@@ -1,6 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'package:serverpod_client/serverpod_client.dart';
 
+export 'package:serverpod_client/serverpod_client.dart'
+    show ServerpodClientCookieAuth;
+
 /// Test serialization manager used in tests.
 class TestSerializationManager extends SerializationManager {}
 
