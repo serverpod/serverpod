@@ -1,5 +1,6 @@
-import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:serverpod/src/cloud_storage/upload_description.dart';
 
 import '../server/session.dart';
 
@@ -12,7 +13,7 @@ import '../server/session.dart';
 /// server. All methods in this class should throw an CloudStorageException if
 /// the method fails.
 abstract class CloudStorage {
-  /// Identifies the storage. You can used multiple types cloud storages in a
+  /// Identifies the storage. You can use multiple cloud storage types in a
   /// single Serverpod.
   String storageId;
 
@@ -32,21 +33,36 @@ abstract class CloudStorage {
     required ByteData byteData,
     DateTime? expiration,
     bool verified = true,
+    CloudStorageOptions options = const CloudStorageOptions(),
   });
 
-  /// Retrieves a file from the cloud storage or null if no such file exists.
-  /// If the files are public, the may also be accessible through a web
-  /// interface.
-  Future<ByteData?> retrieveFile({
+  /// Retrieves a file from the cloud storage.
+  ///
+  /// Throws a [CloudStorageFileNotFoundException] if no file exists at [path].
+  Future<ByteData> retrieveFile({
     required Session session,
     required String path,
   });
 
-  /// Returns a public link to a file in the storage. If the file isn't public
-  /// or if no such file exists, null is returned.
-  Future<Uri?> getPublicUrl({
+  /// Returns a public link to a file in the storage.
+  ///
+  /// Throws a [CloudStorageFileNotFoundException] if no file exists at [path].
+  /// Throws a [CloudStorageUnsupportedOperationException] if this storage does not
+  /// provide public URLs.
+  Future<Uri> getPublicUrl({
     required Session session,
     required String path,
+  });
+
+  /// Returns a temporary link to a file in the storage with an [expiration] time.
+  ///
+  /// Throws a [CloudStorageFileNotFoundException] if no file exists at [path].
+  /// Throws a [CloudStorageUnsupportedOperationException] if this storage does not
+  /// provide temporary URLs.
+  Future<Uri> getTemporaryUrl({
+    required Session session,
+    required String path,
+    Duration expiration = const Duration(minutes: 10),
   });
 
   /// Returns true if the file exists.
@@ -66,10 +82,14 @@ abstract class CloudStorage {
   /// within the specified duration. After the file has been sent, the
   /// [verifyDirectFileUpload] method should be called. If the file upload
   /// hasn't been confirmed before the URL expires, the file will be deleted.
-  Future<String?> createDirectFileUploadDescription({
+  ///
+  /// Throws a [CloudStorageUnsupportedOperationException] if this storage does not
+  /// support direct file uploads.
+  Future<UploadDescription> createDirectFileUploadDescription({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
+    Duration expiration = const Duration(minutes: 10),
+    CloudStorageOptions options = const CloudStorageOptions(),
     int maxFileSize = 10 * 1024 * 1024,
   });
 
@@ -94,52 +114,13 @@ final class CloudStorageOptions {
   /// given path.
   final bool preventOverwrite;
 
+  /// Metadata attached to the upload.
+  final Map<String, String> metadata;
+
   /// Creates a new [CloudStorageOptions].
   const CloudStorageOptions({
     this.contentLength,
     this.preventOverwrite = false,
+    this.metadata = const {},
   });
-}
-
-/// Mixin for [CloudStorage] implementations that support extended options.
-///
-/// Implementations that mix this in will have their extended methods called
-/// by [StorageAccess] when callers provide [CloudStorageOptions].
-///
-/// Storage implementations that don't mix this in will simply have the
-/// options ignored — the base [CloudStorage] methods are called instead.
-mixin CloudStorageWithOptions on CloudStorage {
-  /// Like [CloudStorage.storeFile] but with additional [options].
-  Future<void> storeFileWithOptions({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-    required CloudStorageOptions options,
-  });
-
-  /// Like [CloudStorage.createDirectFileUploadDescription] but with
-  /// additional [options].
-  Future<String?> createDirectFileUploadDescriptionWithOptions({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    required CloudStorageOptions options,
-  });
-}
-
-/// Exception thrown by [CloudStorage].
-class CloudStorageException extends IOException {
-  /// Description of the exception.
-  String message;
-
-  /// Creates a new exception.
-  CloudStorageException(this.message) : super();
-
-  @override
-  String toString() {
-    return 'CloudStorageException: $message';
-  }
 }
