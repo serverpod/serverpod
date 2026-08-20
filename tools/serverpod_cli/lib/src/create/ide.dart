@@ -42,7 +42,8 @@ enum TemplateIde {
     replacements: [
       Replacement(slotName: '"mcpServers":', replacement: '"servers":'),
     ],
-  );
+  ),
+  ;
 
   const TemplateIde({
     required this.filePath,
