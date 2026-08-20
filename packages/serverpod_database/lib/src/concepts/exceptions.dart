@@ -99,12 +99,13 @@ class DatabaseForeignKeyViolationException extends DatabaseQueryException {
 
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
 /// reports one or more rows that violate foreign key constraints.
-final class SqliteForeignKeyViolationException implements DatabaseException {
-  /// Creates a new [SqliteForeignKeyViolationException].
+final class SqliteMigrationForeignKeyViolationException
+    implements DatabaseException {
+  /// Creates a new [SqliteMigrationForeignKeyViolationException].
   ///
   /// Each map is a row from `PRAGMA foreign_key_check` (typically `table`,
   /// `rowid`, `parent`, `fkid`).
-  SqliteForeignKeyViolationException(this.violations)
+  SqliteMigrationForeignKeyViolationException(this.violations)
     : message = _formatMessage(violations);
 
   /// Rows returned by `PRAGMA foreign_key_check`.
@@ -129,5 +130,5 @@ final class SqliteForeignKeyViolationException implements DatabaseException {
   }
 
   @override
-  String toString() => 'SqliteForeignKeyViolationException: $message';
+  String toString() => 'SqliteMigrationForeignKeyViolationException: $message';
 }
