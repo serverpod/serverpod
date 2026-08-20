@@ -16,7 +16,7 @@ import '../test_utils/test_web_socket_server.dart';
 class TestSerializationManager extends SerializationManager {}
 
 void main() {
-  group('Given a client with an auth key provider', () {
+  group('Given a client with an authenticated auth key provider', () {
     late TestServerpodClient client;
     late Future<void> Function() closeServer;
     late List<Uri> requestUrls;
@@ -69,10 +69,8 @@ void main() {
       await closeServer();
     });
 
-    test(
-      'when opening a method stream '
-      'then the connection URL carries no credentials.',
-      () async {
+    group('when opening a method stream', () {
+      setUp(() async {
         client.callStreamingServerEndpoint<Stream<String>, String>(
           'test',
           'method',
@@ -80,29 +78,22 @@ void main() {
           {},
         );
         await openCommandReceived.future;
+      });
 
+      test('then the connection URL carries no credentials.', () {
         expect(requestUrls.single.queryParameters, isEmpty);
         expect(requestUrls.single.toString(), isNot(contains('secret-token')));
-      },
-    );
+      });
 
-    test(
-      'when opening a method stream '
-      'then the authentication is carried in-band in the open command.',
-      () async {
-        client.callStreamingServerEndpoint<Stream<String>, String>(
-          'test',
-          'method',
-          {},
-          {},
-        );
-        await openCommandReceived.future;
-
-        expect(
-          receivedOpenCommands.single.authentication,
-          wrapAsBearerAuthHeaderValue('secret-token'),
-        );
-      },
-    );
+      test(
+        'then the authentication is carried in-band in the open command.',
+        () {
+          expect(
+            receivedOpenCommands.single.authentication,
+            wrapAsBearerAuthHeaderValue('secret-token'),
+          );
+        },
+      );
+    });
   });
 }

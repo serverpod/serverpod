@@ -68,44 +68,46 @@ void main() {
     },
   );
 
-  group('Given a preflight response with an explicit allowed headers list', () {
-    test(
-      'when the cookie-auth headers are missing '
-      'then they are appended to the list.',
-      () {
-        final base = Headers.build(
-          (mh) => mh.accessControlAllowHeaders =
-              AccessControlAllowHeadersHeader.headers(['content-type']),
-        );
+  test(
+    'Given a preflight response with an explicit allowed headers list '
+    'missing the cookie-auth headers '
+    'when ensuring the cookie-auth headers '
+    'then they are appended to the list.',
+    () {
+      final base = Headers.build(
+        (mh) => mh.accessControlAllowHeaders =
+            AccessControlAllowHeadersHeader.headers(['content-type']),
+      );
 
-        final headers = _apply(base);
+      final headers = _apply(base);
 
-        expect(
-          headers.accessControlAllowHeaders?.headers,
-          containsAll(['content-type', ...cookieAuthRequestHeaders]),
-        );
-      },
-    );
+      expect(
+        headers.accessControlAllowHeaders?.headers,
+        containsAll(['content-type', ...cookieAuthRequestHeaders]),
+      );
+    },
+  );
 
-    test(
-      'when the cookie-auth headers are already present '
-      'then the list is unchanged.',
-      () {
-        final base = Headers.build(
-          (mh) => mh.accessControlAllowHeaders =
-              AccessControlAllowHeadersHeader.headers([
-                'content-type',
-                ...cookieAuthRequestHeaders,
-              ]),
-        );
+  test(
+    'Given a preflight response with an explicit allowed headers list '
+    'already containing the cookie-auth headers '
+    'when ensuring the cookie-auth headers '
+    'then the list is unchanged.',
+    () {
+      final base = Headers.build(
+        (mh) => mh.accessControlAllowHeaders =
+            AccessControlAllowHeadersHeader.headers([
+              'content-type',
+              ...cookieAuthRequestHeaders,
+            ]),
+      );
 
-        final headers = _apply(base);
+      final headers = _apply(base);
 
-        expect(headers.accessControlAllowHeaders?.headers, [
-          'content-type',
-          ...cookieAuthRequestHeaders,
-        ]);
-      },
-    );
-  });
+      expect(headers.accessControlAllowHeaders?.headers, [
+        'content-type',
+        ...cookieAuthRequestHeaders,
+      ]);
+    },
+  );
 }

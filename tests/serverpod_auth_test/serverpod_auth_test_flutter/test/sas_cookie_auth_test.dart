@@ -11,52 +11,48 @@ const _authModeHeader = 'x-serverpod-auth-mode';
 const _authCookieName = 'serverpod_auth';
 
 void main() {
-  group('Given an SAS sign-in request in cookie mode', () {
-    late String userId;
+  test(
+    'Given a cookie-mode request '
+    'when creating a session '
+    'then the token is moved from the body to an HttpOnly cookie.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createSasToken',
+        args: {'authUserId': userId},
+        headers: {_authModeHeader: 'cookie-transport'},
+      );
 
-    setUp(() async {
-      userId = await _createTestUser();
-    });
+      expect(response.statusCode, 200);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      expect(body['token'], isEmpty);
 
-    test(
-      'when creating a session '
-      'then the token is moved from the body to an HttpOnly cookie.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createSasToken',
-          args: {'authUserId': userId},
-          headers: {_authModeHeader: 'cookie-transport'},
-        );
+      final header = response.headers['set-cookie']!;
+      expect(header, startsWith('$_authCookieName='));
+      expect(header.toLowerCase(), contains('httponly'));
+      expect(header.toLowerCase(), contains('path=/'));
+    },
+  );
 
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['token'], isEmpty);
+  test(
+    'Given a request without the cookie marker '
+    'when creating a session '
+    'then the token stays in the body and no cookie is set.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createSasToken',
+        args: {'authUserId': userId},
+      );
 
-        final header = response.headers['set-cookie']!;
-        expect(header, startsWith('$_authCookieName='));
-        expect(header.toLowerCase(), contains('httponly'));
-        expect(header.toLowerCase(), contains('path=/'));
-      },
-    );
-
-    test(
-      'when creating a session without the cookie marker '
-      'then the token stays in the body and no cookie is set.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createSasToken',
-          args: {'authUserId': userId},
-        );
-
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['token'], isNotEmpty);
-        expect(response.headers['set-cookie'], isNull);
-      },
-    );
-  });
+      expect(response.statusCode, 200);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      expect(body['token'], isNotEmpty);
+      expect(response.headers['set-cookie'], isNull);
+    },
+  );
 
   group('Given an authenticated SAS caller in cookie mode', () {
     late String callerId;

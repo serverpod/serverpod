@@ -16,95 +16,95 @@ const _basePathHeader = 'x-serverpod-base-path';
 const _refreshCookieName = 'serverpod_auth_refresh';
 
 void main() {
-  group('Given a JWT sign-in request in cookie mode', () {
-    late String userId;
+  test(
+    'Given a cookie-mode request '
+    'when creating a JWT token '
+    'then the refresh token is moved from the body to a path-scoped '
+    'HttpOnly cookie.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createJwtToken',
+        args: {'authUserId': userId},
+        headers: {_authModeHeader: 'cookie-transport'},
+      );
 
-    setUp(() async {
-      userId = await _createTestUser();
-    });
+      expect(response.statusCode, 200);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      expect(body['token'], isNotEmpty);
+      expect(body['refreshToken'], isNull);
 
-    test(
-      'when creating a JWT token '
-      'then the refresh token is moved from the body to a path-scoped '
-      'HttpOnly cookie.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createJwtToken',
-          args: {'authUserId': userId},
-          headers: {_authModeHeader: 'cookie-transport'},
-        );
+      final cookie = _parseSetCookie(response);
+      expect(cookie.name, _refreshCookieName);
+      expect(cookie.value, isNotEmpty);
+      expect(cookie.attributes['path'], '/jwtRefresh');
+      expect(cookie.attributes, contains('httponly'));
+      expect(int.parse(cookie.attributes['max-age']!), greaterThan(0));
+    },
+  );
 
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['token'], isNotEmpty);
-        expect(body['refreshToken'], isNull);
+  test(
+    'Given a cookie-mode request with a declared base path '
+    'when creating a JWT token '
+    'then the refresh cookie path includes the prefix.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createJwtToken',
+        args: {'authUserId': userId},
+        headers: {
+          _authModeHeader: 'cookie-transport',
+          _basePathHeader: '/api',
+        },
+      );
 
-        final cookie = _parseSetCookie(response);
-        expect(cookie.name, _refreshCookieName);
-        expect(cookie.value, isNotEmpty);
-        expect(cookie.attributes['path'], '/jwtRefresh');
-        expect(cookie.attributes, contains('httponly'));
-        expect(int.parse(cookie.attributes['max-age']!), greaterThan(0));
-      },
-    );
+      expect(response.statusCode, 200);
+      expect(_parseSetCookie(response).attributes['path'], '/api/jwtRefresh');
+    },
+  );
 
-    test(
-      'when creating a JWT token with a declared base path '
-      'then the refresh cookie path includes the prefix.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createJwtToken',
-          args: {'authUserId': userId},
-          headers: {
-            _authModeHeader: 'cookie-transport',
-            _basePathHeader: '/api',
-          },
-        );
+  test(
+    'Given a cookie-mode request with a malformed declared base path '
+    'when creating a JWT token '
+    'then the refresh cookie path falls back to the configured path.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createJwtToken',
+        args: {'authUserId': userId},
+        headers: {
+          _authModeHeader: 'cookie-transport',
+          _basePathHeader: 'api',
+        },
+      );
 
-        expect(response.statusCode, 200);
-        expect(_parseSetCookie(response).attributes['path'], '/api/jwtRefresh');
-      },
-    );
+      expect(response.statusCode, 200);
+      expect(_parseSetCookie(response).attributes['path'], '/jwtRefresh');
+    },
+  );
 
-    test(
-      'when creating a JWT token with a malformed declared base path '
-      'then the refresh cookie path falls back to the configured path.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createJwtToken',
-          args: {'authUserId': userId},
-          headers: {
-            _authModeHeader: 'cookie-transport',
-            _basePathHeader: 'api',
-          },
-        );
+  test(
+    'Given a request without the cookie marker '
+    'when creating a JWT token '
+    'then the tokens stay in the body and no cookie is set.',
+    () async {
+      final userId = await _createTestUser();
+      final response = await _call(
+        'authTest',
+        'createJwtToken',
+        args: {'authUserId': userId},
+      );
 
-        expect(response.statusCode, 200);
-        expect(_parseSetCookie(response).attributes['path'], '/jwtRefresh');
-      },
-    );
-
-    test(
-      'when creating a JWT token without the cookie marker '
-      'then the tokens stay in the body and no cookie is set.',
-      () async {
-        final response = await _call(
-          'authTest',
-          'createJwtToken',
-          args: {'authUserId': userId},
-        );
-
-        expect(response.statusCode, 200);
-        final body = jsonDecode(response.body) as Map<String, dynamic>;
-        expect(body['token'], isNotEmpty);
-        expect(body['refreshToken'], isNotEmpty);
-        expect(response.headers['set-cookie'], isNull);
-      },
-    );
-  });
+      expect(response.statusCode, 200);
+      final body = jsonDecode(response.body) as Map<String, dynamic>;
+      expect(body['token'], isNotEmpty);
+      expect(body['refreshToken'], isNotEmpty);
+      expect(response.headers['set-cookie'], isNull);
+    },
+  );
 
   group('Given an authenticated caller in cookie mode', () {
     late String callerId;

@@ -2014,8 +2014,7 @@ websocketPingInterval: 0
     },
   );
 
-  group('Given allowedOrigins configuration', () {
-    var apiServerConfig = '''
+  const originsApiServerConfig = '''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -2023,210 +2022,230 @@ apiServer:
   publicScheme: http
 ''';
 
-    test(
-      'when not set then allowedOrigins defaults to null.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml(apiServerConfig),
-        );
-
-        expect(config.allowedOrigins, isNull);
-      },
-    );
-
-    test(
-      'when set as a YAML list then allowedOrigins is parsed.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins:
-  - https://app.example.com
-  - https://admin.example.com
-'''),
-        );
-
-        expect(
-          config.allowedOrigins,
-          equals(['https://app.example.com', 'https://admin.example.com']),
-        );
-      },
-    );
-
-    test(
-      'when set as a comma-separated string then allowedOrigins is '
-      'parsed and trimmed.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins: "https://app.example.com, https://admin.example.com"
-'''),
-        );
-
-        expect(
-          config.allowedOrigins,
-          equals(['https://app.example.com', 'https://admin.example.com']),
-        );
-      },
-    );
-
-    test(
-      'when set via environment variable then it overrides the config and is '
-      'parsed as a comma-separated list.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins:
-  - https://ignored.example.com
-'''),
-          environment: {
-            'SERVERPOD_ALLOWED_ORIGINS':
-                'https://app.example.com,https://admin.example.com',
-          },
-        );
-
-        expect(
-          config.allowedOrigins,
-          equals(['https://app.example.com', 'https://admin.example.com']),
-        );
-      },
-    );
-
-    test(
-      'when set to an empty list then allowedOrigins is null '
-      '(no restriction).',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins: []
-'''),
-        );
-
-        expect(config.allowedOrigins, isNull);
-      },
-    );
-
-    test(
-      'when the environment variable is an empty string then allowedOrigins '
-      'is null (no restriction), not a deny-all list.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml(apiServerConfig),
-          environment: {'SERVERPOD_ALLOWED_ORIGINS': ''},
-        );
-
-        expect(config.allowedOrigins, isNull);
-      },
-    );
-
-    test(
-      'when the environment variable is an empty string '
-      'then a configured allow-list is kept (the blank env var does not override it).',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins:
-  - https://app.example.com
-'''),
-          environment: {'SERVERPOD_ALLOWED_ORIGINS': ''},
-        );
-
-        expect(config.allowedOrigins, equals(['https://app.example.com']));
-      },
-    );
-
-    test(
-      'when set with a trailing comma '
-      'then the blank entry is dropped.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins: "https://app.example.com,"
-'''),
-        );
-
-        expect(config.allowedOrigins, equals(['https://app.example.com']));
-      },
-    );
-
-    test(
-      'when set with a trailing slash '
-      'then the entry still matches the browser Origin.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml('''
-$apiServerConfig
-allowedOrigins: "https://app.example.com/"
-'''),
-        );
-
-        expect(config.allowedOrigins, equals(['https://app.example.com']));
-      },
-    );
-  });
-
-  group('Given authCookie configuration', () {
-    // authCookie requires allowedOrigins, so the base config includes it.
-    var apiServerConfig = '''
-apiServer:
-  port: 8080
-  publicHost: localhost
-  publicPort: 8080
-  publicScheme: http
-allowedOrigins:
-  - https://app.example.com
-''';
-
-    test('when not set then authCookie is null.', () {
+  test(
+    'Given no allowedOrigins configuration '
+    'when loading the config '
+    'then allowedOrigins is null.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
-        loadYaml(apiServerConfig),
+        loadYaml(originsApiServerConfig),
       );
 
-      expect(config.authCookie, isNull);
-    });
+      expect(config.allowedOrigins, isNull);
+    },
+  );
 
-    test('when set as a YAML section then all fields are parsed.', () {
+  test(
+    'Given allowedOrigins set as a YAML list '
+    'when loading the config '
+    'then it is parsed.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
         loadYaml('''
-$apiServerConfig
+$originsApiServerConfig
+allowedOrigins:
+  - https://app.example.com
+  - https://admin.example.com
+'''),
+      );
+
+      expect(
+        config.allowedOrigins,
+        equals(['https://app.example.com', 'https://admin.example.com']),
+      );
+    },
+  );
+
+  test(
+    'Given allowedOrigins set as a comma-separated string '
+    'when loading the config '
+    'then it is parsed and trimmed.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins: "https://app.example.com, https://admin.example.com"
+'''),
+      );
+
+      expect(
+        config.allowedOrigins,
+        equals(['https://app.example.com', 'https://admin.example.com']),
+      );
+    },
+  );
+
+  test(
+    'Given allowedOrigins set in both YAML and the environment variable '
+    'when loading the config '
+    'then the environment variable overrides and is parsed as a '
+    'comma-separated list.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins:
+  - https://ignored.example.com
+'''),
+        environment: {
+          'SERVERPOD_ALLOWED_ORIGINS':
+              'https://app.example.com,https://admin.example.com',
+        },
+      );
+
+      expect(
+        config.allowedOrigins,
+        equals(['https://app.example.com', 'https://admin.example.com']),
+      );
+    },
+  );
+
+  test(
+    'Given allowedOrigins set to an empty list '
+    'when loading the config '
+    'then allowedOrigins is null (no restriction).',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins: []
+'''),
+      );
+
+      expect(config.allowedOrigins, isNull);
+    },
+  );
+
+  test(
+    'Given an empty allowedOrigins environment variable '
+    'when loading the config '
+    'then allowedOrigins is null (no restriction), not a deny-all list.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(originsApiServerConfig),
+        environment: {'SERVERPOD_ALLOWED_ORIGINS': ''},
+      );
+
+      expect(config.allowedOrigins, isNull);
+    },
+  );
+
+  test(
+    'Given an empty allowedOrigins environment variable and a configured '
+    'allow-list '
+    'when loading the config '
+    'then the allow-list is kept (the blank env var does not override it).',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins:
+  - https://app.example.com
+'''),
+        environment: {'SERVERPOD_ALLOWED_ORIGINS': ''},
+      );
+
+      expect(config.allowedOrigins, equals(['https://app.example.com']));
+    },
+  );
+
+  test(
+    'Given allowedOrigins with a trailing comma '
+    'when loading the config '
+    'then the blank entry is dropped.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins: "https://app.example.com,"
+'''),
+      );
+
+      expect(config.allowedOrigins, equals(['https://app.example.com']));
+    },
+  );
+
+  test(
+    'Given allowedOrigins with a trailing slash '
+    'when loading the config '
+    'then the entry still matches the browser Origin.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$originsApiServerConfig
+allowedOrigins: "https://app.example.com/"
+'''),
+      );
+
+      expect(config.allowedOrigins, equals(['https://app.example.com']));
+    },
+  );
+
+  // authCookie requires allowedOrigins, so the base config includes it.
+  const authCookieApiServerConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+allowedOrigins:
+  - https://app.example.com
+''';
+
+  test(
+    'Given no authCookie configuration '
+    'when loading the config '
+    'then authCookie is null.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(authCookieApiServerConfig),
+      );
+
+      expect(config.authCookie, isNull);
+    },
+  );
+
+  test(
+    'Given an authCookie YAML section with all fields '
+    'when loading the config '
+    'then all fields are parsed.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml('''
+$authCookieApiServerConfig
 authCookie:
   name: my_auth
   refreshName: my_auth_refresh
@@ -2244,15 +2263,20 @@ authCookie:
       expect(cookie.path, '/app');
       expect(cookie.secure, isFalse);
       expect(cookie.sameSite, CookieSameSite.strict);
-    });
+    },
+  );
 
-    test('when only some fields are set then the rest use defaults.', () {
+  test(
+    'Given an authCookie section with only some fields '
+    'when loading the config '
+    'then the rest use defaults.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
         loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   domain: .example.com
 '''),
@@ -2265,15 +2289,20 @@ authCookie:
       expect(cookie.path, '/');
       expect(cookie.secure, isTrue);
       expect(cookie.sameSite, CookieSameSite.lax);
-    });
+    },
+  );
 
-    test('when only name is set then refreshName is derived from it.', () {
+  test(
+    'Given an authCookie section with only a name '
+    'when loading the config '
+    'then refreshName is derived from it.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
         loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   name: custom_auth
 '''),
@@ -2281,14 +2310,19 @@ authCookie:
 
       expect(config.authCookie!.name, 'custom_auth');
       expect(config.authCookie!.refreshName, 'custom_auth_refresh');
-    });
+    },
+  );
 
-    test('when set via environment variables then they are parsed.', () {
+  test(
+    'Given authCookie environment variables '
+    'when loading the config '
+    'then they are parsed.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
-        loadYaml(apiServerConfig),
+        loadYaml(authCookieApiServerConfig),
         environment: {
           'SERVERPOD_AUTH_COOKIE_NAME': 'env_auth',
           'SERVERPOD_AUTH_COOKIE_REFRESH_NAME': 'env_refresh',
@@ -2302,63 +2336,80 @@ authCookie:
       expect(cookie.refreshName, 'env_refresh');
       expect(cookie.secure, isFalse);
       expect(cookie.sameSite, CookieSameSite.strict);
-    });
+    },
+  );
 
-    test('when secure is a quoted string then it is parsed as a bool.', () {
+  test(
+    'Given an authCookie secure flag as a quoted string '
+    'when loading the config '
+    'then it is parsed as a bool.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
         loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   secure: "false"
 '''),
       );
 
       expect(config.authCookie!.secure, isFalse);
-    });
+    },
+  );
 
-    test(
-      'when secure is a capitalized bool-string in an env var '
-      'then it is parsed case-insensitively.',
-      () {
-        var config = ServerpodConfig.loadFromMap(
-          runMode,
-          serverId,
-          passwords,
-          loadYaml(apiServerConfig),
-          environment: {'SERVERPOD_AUTH_COOKIE_SECURE': 'TRUE'},
-        );
+  test(
+    'Given a capitalized bool-string in the authCookie secure environment '
+    'variable '
+    'when loading the config '
+    'then it is parsed case-insensitively.',
+    () {
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(authCookieApiServerConfig),
+        environment: {'SERVERPOD_AUTH_COOKIE_SECURE': 'TRUE'},
+      );
 
-        expect(config.authCookie!.secure, isTrue);
-      },
-    );
+      expect(config.authCookie!.secure, isTrue);
+    },
+  );
 
-    test('when secure is not a boolean then it throws.', () {
+  test(
+    'Given a non-boolean authCookie secure value '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   secure: maybe
 '''),
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when sameSite is none but secure is false then it throws.', () {
+  test(
+    'Given authCookie sameSite none without secure '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   sameSite: none
   secure: false
@@ -2366,33 +2417,41 @@ authCookie:
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when sameSite is invalid then it throws.', () {
+  test(
+    'Given an invalid authCookie sameSite value '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   sameSite: sometimes
 '''),
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test(
-      'when authCookie is set but allowedOrigins is not then it throws.',
-      () {
-        expect(
-          () => ServerpodConfig.loadFromMap(
-            runMode,
-            serverId,
-            passwords,
-            loadYaml('''
+  test(
+    'Given authCookie set without allowedOrigins '
+    'when loading the config '
+    'then it throws.',
+    () {
+      expect(
+        () => ServerpodConfig.loadFromMap(
+          runMode,
+          serverId,
+          passwords,
+          loadYaml('''
 apiServer:
   port: 8080
   publicHost: localhost
@@ -2401,19 +2460,23 @@ apiServer:
 authCookie:
   name: my_auth
 '''),
-          ),
-          throwsArgumentError,
-        );
-      },
-    );
+        ),
+        throwsArgumentError,
+      );
+    },
+  );
 
-    test('when an attribute is set in both YAML and env then env wins.', () {
+  test(
+    'Given an authCookie attribute set in both YAML and the environment '
+    'when loading the config '
+    'then the environment wins.',
+    () {
       var config = ServerpodConfig.loadFromMap(
         runMode,
         serverId,
         passwords,
         loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   name: yaml_auth
   refreshName: yaml_refresh
@@ -2426,16 +2489,21 @@ authCookie:
 
       expect(config.authCookie!.name, 'env_auth');
       expect(config.authCookie!.refreshName, 'env_refresh');
-    });
+    },
+  );
 
-    test('when refreshName matches name then it throws.', () {
+  test(
+    'Given an authCookie refreshName matching the name '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   name: same_auth
   refreshName: same_auth
@@ -2443,70 +2511,90 @@ authCookie:
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when refreshName is not a valid cookie name then it throws.', () {
+  test(
+    'Given an authCookie refreshName that is not a valid cookie name '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   refreshName: "bad refresh"
 '''),
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when sameSite is not a string then it throws.', () {
+  test(
+    'Given a non-string authCookie sameSite value '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   sameSite: true
 '''),
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when domain carries a scheme or port then it throws.', () {
+  test(
+    'Given an authCookie domain carrying a scheme or port '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   domain: "https://example.com:8443"
 '''),
         ),
         throwsArgumentError,
       );
-    });
+    },
+  );
 
-    test('when path contains ";" then it throws.', () {
+  test(
+    'Given an authCookie path containing ";" '
+    'when loading the config '
+    'then it throws.',
+    () {
       expect(
         () => ServerpodConfig.loadFromMap(
           runMode,
           serverId,
           passwords,
           loadYaml('''
-$apiServerConfig
+$authCookieApiServerConfig
 authCookie:
   path: "/a;b"
 '''),
         ),
         throwsArgumentError,
       );
-    });
-  });
+    },
+  );
 }
