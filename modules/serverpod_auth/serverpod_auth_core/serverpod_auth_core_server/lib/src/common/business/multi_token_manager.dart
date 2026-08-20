@@ -33,8 +33,6 @@ class MultiTokenManager extends TokenManager {
     ];
   }
 
-  // Delegates to the primary manager's createToken: the policy check and
-  // cookie delivery run once, in this manager's inherited issueToken.
   @override
   Future<AuthSuccess> createToken(
     final Session session, {

@@ -7,11 +7,11 @@ import 'jwt_refresh_endpoint.dart';
 
 /// Endpoint for testing authentication.
 class AuthTestEndpoint extends Endpoint {
-  late final ServerSideSessions _serverSideSessions =
-      AuthServices.getTokenManager<ServerSideSessionsTokenManager>()
-          .serverSideSessions;
+  late final ServerSideSessionsTokenManager _serverSideSessions =
+      AuthServices.getTokenManager<ServerSideSessionsTokenManager>();
 
-  late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
+  late final JwtTokenManager _jwt =
+      AuthServices.getTokenManager<JwtTokenManager>();
 
   /// Creates a new test user.
   Future<UuidValue> createTestUser(final Session session) async {
@@ -25,20 +25,19 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthServices.getTokenManager<ServerSideSessionsTokenManager>()
-        .issueToken(
-          session,
-          authUserId: authUserId,
-          method: 'test',
-          scopes: {},
-        );
+    return _serverSideSessions.issueToken(
+      session,
+      authUserId: authUserId,
+      method: 'test',
+      scopes: {},
+    );
   }
 
   Future<void> deleteSasTokens(
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await _serverSideSessions.revokeAllSessions(
+    await _serverSideSessions.serverSideSessions.revokeAllSessions(
       session,
       authUserId: authUserId,
     );
@@ -49,7 +48,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    return AuthServices.getTokenManager<JwtTokenManager>().issueToken(
+    return _jwt.issueToken(
       session,
       authUserId: authUserId,
       method: 'test',
@@ -62,7 +61,7 @@ class AuthTestEndpoint extends Endpoint {
     final Session session,
     final UuidValue authUserId,
   ) async {
-    await jwt.revokeAllRefreshTokens(
+    await _jwt.jwt.revokeAllRefreshTokens(
       session,
       authUserId: authUserId,
     );
@@ -83,7 +82,7 @@ class AuthTestEndpoint extends Endpoint {
       );
     }
 
-    return jwt.revokeRefreshToken(
+    return _jwt.jwt.revokeRefreshToken(
       session,
       refreshTokenId: authInfo.serverSideSessionId,
     );
