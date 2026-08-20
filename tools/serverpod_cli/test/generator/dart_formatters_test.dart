@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
@@ -10,6 +9,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:test/test.dart';
 
 import '../test_util/builders/generator_config_builder.dart';
+import '../test_util/mock_std.dart';
 
 void main() {
   late Directory tempDirectory;
@@ -175,17 +175,24 @@ formatter:
           .withServerPackageDirectoryPathParts(p.split(serverDirectory.path))
           .build();
 
-      // Stands in for the real stderr, which the TUI owns.
-      final outerStderr = _RecordingStdout();
+      // Stand in for the real stdout and stderr, which the TUI owns.
+      final outerStderr = MockStdout();
+      final outerStdout = MockStdout();
       await IOOverrides.runZoned(
         () => GeneratedDartFormatters.resolve(config),
         stderr: () => outerStderr,
+        stdout: () => outerStdout,
       );
 
       expect(
-        outerStderr.text,
+        outerStderr.output,
         isEmpty,
         reason: 'dart_style must not write to stderr itself.',
+      );
+      expect(
+        outerStdout.output,
+        isEmpty,
+        reason: 'dart_style must not write to stdout itself.',
       );
       expect(
         logger.warnings.single,
@@ -362,54 +369,4 @@ class _WarningCapturingLogger extends VoidLogger {
   void warning(String message, {bool newParagraph = false, LogType? type}) {
     warnings.add(message);
   }
-}
-
-/// A [Stdout] that records everything written to it in memory.
-class _RecordingStdout implements Stdout {
-  final StringBuffer _buffer = StringBuffer();
-
-  String get text => _buffer.toString();
-
-  @override
-  Encoding encoding = utf8;
-
-  @override
-  void write(Object? object) => _buffer.write(object);
-
-  @override
-  void writeln([Object? object = '']) => _buffer.writeln(object);
-
-  @override
-  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
-      _buffer.writeAll(objects, separator);
-
-  @override
-  void writeCharCode(int charCode) => _buffer.writeCharCode(charCode);
-
-  @override
-  void add(List<int> data) => _buffer.write(encoding.decode(data));
-
-  @override
-  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
-
-  @override
-  Future<void> flush() async {}
-
-  @override
-  Future<void> close() async {}
-
-  @override
-  Future<void> get done => Future.value();
-
-  @override
-  IOSink get nonBlocking => this;
-
-  @override
-  bool get hasTerminal => false;
-
-  @override
-  bool get supportsAnsiEscapes => false;
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

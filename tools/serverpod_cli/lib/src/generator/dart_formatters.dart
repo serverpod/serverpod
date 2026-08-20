@@ -39,26 +39,25 @@ final class GeneratedDartFormatters {
   /// `dart_style` reports problems with a target package's
   /// `analysis_options.yaml` by writing to `stderr` itself, which corrupts the
   /// TUI. Those writes are captured and re-emitted through the logger instead.
+  ///
+  /// Anything written to `stdout` is captured the same way
+  /// but logged as debug output.
   static Future<void> resolve(GeneratorConfig config) async {
     final formatterStderr = _BufferedStdout();
+    final formatterStdout = _BufferedStdout();
 
     await IOOverrides.runZoned(
       () => _resolve(config),
       stderr: () => formatterStderr,
-      stdout: () => formatterStderr,
+      stdout: () => formatterStdout,
     );
 
-    // Output directories in the same package share an `analysis_options.yaml`,
-    // so a problem with it is reported once per directory. Report each distinct
-    // line once, as a single warning, keeping multi-line messages intact.
-    final warnings = <String>{};
-    for (final line in const LineSplitter().convert(formatterStderr.text)) {
-      if (line.trim().isEmpty) continue;
-      warnings.add(line);
+    if (formatterStdout.text.trim().isNotEmpty) {
+      log.debug(formatterStdout.text);
     }
 
-    if (warnings.isNotEmpty) {
-      log.warning(warnings.join('\n'));
+    if (formatterStderr.text.trim().isNotEmpty) {
+      log.warning(formatterStderr.text);
     }
   }
 
@@ -167,11 +166,12 @@ Future<bool> _directoryExists(Directory directory) async {
 
 /// A [Stdout] that buffers everything written to it in memory.
 ///
-/// Installed over `stderr` with [IOOverrides.runZoned] so that direct writes
-/// from within `dart_style` can be routed through the logger. The top-level
-/// `stderr` in `dart:io` resolves [IOOverrides.current] on every access, and
-/// the overrides are zone scoped, so the buffer stays in effect across the
-/// `await`s inside the library.
+/// Installed over `stdout` and `stderr` with [IOOverrides.runZoned] so that
+/// direct writes from within `dart_style` can be routed through the logger
+/// rather than corrupting the TUI. The top-level `stdout` and `stderr` in
+/// `dart:io` resolve [IOOverrides.current] on every access, and the overrides
+/// are zone scoped, so the buffers stay in effect across the `await`s inside
+/// the library.
 class _BufferedStdout implements Stdout {
   final StringBuffer _buffer = StringBuffer();
 
