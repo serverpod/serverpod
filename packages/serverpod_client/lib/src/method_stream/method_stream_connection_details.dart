@@ -22,6 +22,11 @@ class MethodStreamConnectionDetails {
   /// The authentication key provider.
   final ClientAuthKeyProvider? authKeyProvider;
 
+  /// The web auth mode declared on the open-stream command:
+  /// [webAuthModeCookie] to permit authenticating the stream from the
+  /// handshake auth cookie, null otherwise.
+  final String? webAuthMode;
+
   /// Creates a new [MethodStreamConnectionDetails].
   MethodStreamConnectionDetails({
     required this.endpoint,
@@ -30,5 +35,6 @@ class MethodStreamConnectionDetails {
     required this.parameterStreams,
     required this.outputController,
     required this.authKeyProvider,
+    this.webAuthMode,
   });
 }

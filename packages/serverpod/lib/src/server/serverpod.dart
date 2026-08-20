@@ -402,6 +402,11 @@ class Serverpod {
         'Accept',
         'User-Agent',
         'X-Requested-With',
+        // Cookie-auth web clients send these on every request; they must be
+        // allow-listed here or a cross-origin preflight blocks the request
+        // before the cookie flow can run.
+        webAuthModeHeaderName,
+        webBasePathHeaderName,
       ],
     );
   });

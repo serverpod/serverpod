@@ -560,8 +560,8 @@ class Endpoints extends _i1.EndpointDispatch {
           params: {
             'refreshToken': _i1.ParameterDescription(
               name: 'refreshToken',
-              type: _i1.getType<String>(),
-              nullable: false,
+              type: _i1.getType<String?>(),
+              nullable: true,
             ),
           },
           call:

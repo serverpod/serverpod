@@ -221,12 +221,14 @@ class ServerSideSessions {
       transaction: transaction,
     );
 
+    final token = buildServerSideSessionToken(
+      secret: secret,
+      serverSideSessionId: serverSideSession.id!,
+    );
+
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildServerSideSessionToken(
-        secret: secret,
-        serverSideSessionId: serverSideSession.id!,
-      ),
+      token: token,
       tokenExpiresAt: effectiveExpiresAt,
       authUserId: authUserId,
       scopeNames: scopeNames,

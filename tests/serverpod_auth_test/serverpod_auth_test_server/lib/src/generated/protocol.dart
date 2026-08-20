@@ -367,6 +367,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i1.getType<_i11.UserData?>()) {
       return (data != null ? _i11.UserData.fromJson(data) : null) as T;
     }
+    if (t == List<String?>) {
+      return (data as List).map((e) => deserialize<String?>(e)).toList() as T;
+    }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }

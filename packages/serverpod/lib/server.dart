@@ -20,6 +20,8 @@ export 'src/server/run_mode.dart';
 export 'src/server/server.dart' hide ServerInternalMethods;
 export 'src/server/serverpod.dart' hide ServerpodInternalMethods;
 export 'src/server/session.dart' hide SessionInternalMethods;
+export 'src/server/auth_cookie.dart'
+    show WebAuthCookieBuilder, WebAuthCookieSession;
 export 'src/config/security_context_config.dart' show SecurityContextConfig;
 export 'src/redis/controller.dart';
 

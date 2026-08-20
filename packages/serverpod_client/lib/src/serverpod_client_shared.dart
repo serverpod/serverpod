@@ -13,6 +13,8 @@ import 'serverpod_client_io.dart'
     if (dart.library.js_interop) 'serverpod_client_browser.dart'
     if (dart.library.io) 'serverpod_client_io.dart';
 
+part 'cookie_auth.dart';
+
 /// A callback with no parameters or return value.
 typedef VoidCallback = void Function();
 
@@ -42,10 +44,15 @@ class MethodCallContext {
 /// is available.
 abstract class ServerpodClientRequestDelegate {
   /// Performs the actual request to the server and returns the response data.
+  ///
+  /// [authenticated] is the per-call authentication intent (false for
+  /// `@unauthenticatedClientCall` methods); in cookie auth mode it selects
+  /// between the [webAuthModeCookie] and [webAuthModeCookieTransport] markers.
   Future<String> serverRequest<T>(
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   });
 
   /// Closes the connection to the server.
@@ -166,6 +173,13 @@ abstract class ServerpodClientShared extends EndpointCaller {
       securityContext: securityContext,
       httpClientOverride: httpClientOverride,
     );
+    var delegate = _requestDelegate;
+    if (delegate is CookieAuthTransport) {
+      var basePath = _basePathOf(this.host);
+      delegate.cookieAuthBasePath = basePath;
+      delegate.authRefreshCrossTabLockName =
+          'serverpod-auth-refresh:${Uri.parse(this.host).origin}$basePath';
+    }
     disconnectStreamsOnLostInternetConnection ??= false;
     _disconnectMethodStreamsOnLostInternetConnection =
         disconnectStreamsOnLostInternetConnection;
@@ -250,6 +264,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
         url,
         body: body,
         authenticationValue: authenticationValue,
+        authenticated: authenticated,
       );
 
       T result;
@@ -282,6 +297,7 @@ abstract class ServerpodClientShared extends EndpointCaller {
       parameterStreams: streams,
       outputController: StreamController<G>(),
       authKeyProvider: authenticated ? authKeyProvider : null,
+      webAuthMode: cookieAuth && authenticated ? webAuthModeCookie : null,
     );
 
     _methodStreamManager.openMethodStream(connectionDetails).catchError((e, _) {

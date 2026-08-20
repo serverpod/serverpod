@@ -8,11 +8,11 @@ import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:test/test.dart';
 
-class TestTokenIssuer implements TokenIssuer {
+class TestTokenIssuer extends TokenIssuer {
   const TestTokenIssuer();
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,

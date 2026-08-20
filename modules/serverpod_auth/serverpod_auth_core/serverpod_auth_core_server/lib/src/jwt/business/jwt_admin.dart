@@ -120,10 +120,37 @@ class JwtAdmin {
       throw RefreshTokenMalformedServerException();
     }
 
+    if (transaction != null) {
+      return _rotateLockedRefreshToken(session, refreshTokenData, transaction);
+    }
+
+    // The reuse-revocation delete must survive the rotation failure, so
+    // failures are returned from the transaction (committing the delete) and
+    // thrown afterwards.
+    final Object outcome = await session.db.transaction((final tx) async {
+      try {
+        return await _rotateLockedRefreshToken(session, refreshTokenData, tx);
+      } on RefreshTokenServerException catch (e) {
+        return e;
+      }
+    });
+    if (outcome is TokenPair) return outcome;
+    throw outcome as RefreshTokenServerException;
+  }
+
+  /// Rotates the refresh token under a `FOR UPDATE` row lock, so concurrent
+  /// rotations of the same token serialize and only the first one can match
+  /// the current rotating secret.
+  Future<TokenPair> _rotateLockedRefreshToken(
+    final Session session,
+    final RefreshTokenStringData refreshTokenData,
+    final Transaction transaction,
+  ) async {
     var refreshTokenRow = await RefreshToken.db.findById(
       session,
       refreshTokenData.id,
       transaction: transaction,
+      lockMode: LockMode.forUpdate,
     );
 
     if (refreshTokenRow == null ||
