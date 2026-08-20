@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:clock/clock.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
@@ -19,9 +21,11 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// Defaults to header mode (no cookie).
     bool Function()? usesCookieAuth,
 
-    /// Returns the lock serializing refreshes across browser tabs. Required
-    /// in cookie mode, where concurrent tab refreshes of the shared refresh
-    /// cookie would trip the server's reuse revocation.
+    /// Returns the lock serializing refreshes across browser tabs, used in
+    /// cookie mode where concurrent tab refreshes of the shared refresh
+    /// cookie could trip the server's reuse revocation. When null (no Web
+    /// Locks support, e.g. an insecure context), refreshes run
+    /// uncoordinated and the race is logged instead.
     CrossTabLock? Function()? getCrossTabRefreshLock,
 
     /// Optional function to invalidate the cached authentication info before
@@ -151,6 +155,20 @@ class _CookieJwtRefreshDelegate extends _JwtRefreshDelegate {
 
   bool _refreshUnauthorized = false;
   AuthSuccess? _unauthorizedAuthInfo;
+  bool _warnedMissingCrossTabLock = false;
+
+  void _warnMissingCrossTabLock() {
+    if (_warnedMissingCrossTabLock) return;
+    _warnedMissingCrossTabLock = true;
+    developer.log(
+      'Cookie-based JWT refresh is running without cross-tab coordination: '
+      'the Web Locks API is unavailable (typically an insecure http:// '
+      'origin). Concurrent refreshes from multiple tabs may race and sign '
+      'the user out.',
+      name: 'serverpod_auth',
+      level: 900,
+    );
+  }
 
   _CookieJwtRefreshDelegate({
     required super.getAuthInfo,
@@ -188,18 +206,14 @@ class _CookieJwtRefreshDelegate extends _JwtRefreshDelegate {
 
     // The refresh cookie is shared between tabs and its secret is
     // single-use, so an uncoordinated concurrent refresh from another tab
-    // would be treated as credential reuse and revoke the session.
+    // may be treated as credential reuse and revoke the session. Without
+    // cross-tab locks (the Web Locks API needs a secure context) the race
+    // is accepted and logged instead of failing every refresh.
     final crossTabLock = getCrossTabRefreshLock();
-    if (crossTabLock == null) {
-      throw StateError(
-        'Cookie-based JWT auth requires cross-tab refresh coordination, '
-        'but the platform does not support it (the browser is missing the '
-        'Web Locks API).',
-      );
-    }
-    final result = await crossTabLock.synchronize(
-      () => _refresh(refreshToken: null),
-    );
+    if (crossTabLock == null) _warnMissingCrossTabLock();
+    final result = crossTabLock == null
+        ? await _refresh(refreshToken: null)
+        : await crossTabLock.synchronize(() => _refresh(refreshToken: null));
     if (result == RefreshAuthKeyResult.failedUnauthorized) {
       _refreshUnauthorized = true;
       _unauthorizedAuthInfo = currentAuthInfo;

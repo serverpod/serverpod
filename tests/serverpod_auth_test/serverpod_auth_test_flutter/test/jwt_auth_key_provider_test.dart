@@ -364,13 +364,14 @@ void main() {
 
       test(
         'when forcing a refresh '
-        'then it throws a StateError before calling the server.',
+        'then it refreshes uncoordinated instead of throwing.',
         () async {
-          await expectLater(
-            provider.refreshAuthKey(force: true),
-            throwsA(isA<StateError>()),
-          );
-          expect(refreshEndpoint.callCount, 0);
+          // No cookie jar on this platform, so the uncoordinated refresh
+          // reaches the server and fails to present a refresh cookie.
+          final result = await provider.refreshAuthKey(force: true);
+
+          expect(refreshEndpoint.callCount, 1);
+          expect(result, RefreshAuthKeyResult.failedUnauthorized);
         },
       );
     },
