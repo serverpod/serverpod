@@ -1649,14 +1649,19 @@ class _TransactionCancelledException<R> implements Exception {
 
 DatabaseQueryException _queryExceptionFromSqliteException(Object e) {
   if (e is! SqliteException) {
-    int? code;
-    if ([
+    var isLocked = [
       'recursive lock',
       'LockError',
-    ].any((s) => e.toString().contains(s))) {
-      code = 6;
+    ].any((s) => e.toString().contains(s));
+
+    if (isLocked) {
+      return SqliteDatabaseLockedException(
+        e.toString(),
+        code: SqliteErrorCode.objectInUse,
+      );
     }
-    return DatabaseQueryException(e.toString(), code: code.toString());
+
+    return DatabaseQueryException(e.toString());
   }
 
   var code = e.extendedResultCode;
@@ -1669,6 +1674,7 @@ DatabaseQueryException _queryExceptionFromSqliteException(Object e) {
     SqliteErrorCode.uniqueViolation => DatabaseUniqueViolationException.new,
     SqliteErrorCode.foreignKeyViolation =>
       DatabaseForeignKeyViolationException.new,
+    SqliteErrorCode.objectInUse => SqliteDatabaseLockedException.new,
     _ => DatabaseQueryException.new,
   };
 

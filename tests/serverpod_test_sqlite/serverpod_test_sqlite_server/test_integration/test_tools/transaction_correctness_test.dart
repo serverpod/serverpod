@@ -297,7 +297,7 @@ void main() {
           await expectLater(
             future,
             throwsA(
-              isA<DatabaseQueryException>().having(
+              isA<SqliteDatabaseLockedException>().having(
                 (e) => e.code,
                 'code',
                 SqliteErrorCode.objectInUse,

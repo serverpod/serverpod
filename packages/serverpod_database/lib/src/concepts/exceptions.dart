@@ -97,6 +97,24 @@ class DatabaseForeignKeyViolationException extends DatabaseQueryException {
   });
 }
 
+/// Exception thrown when a query cannot acquire a lock on the SQLite database.
+///
+/// This typically happens when transactions run concurrently, or when a query
+/// is executed without passing the transaction of an already active transaction.
+class SqliteDatabaseLockedException extends DatabaseQueryException {
+  /// Creates a new [SqliteDatabaseLockedException].
+  SqliteDatabaseLockedException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
+}
+
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
 /// reports one or more rows that violate foreign key constraints.
 final class SqliteMigrationForeignKeyViolationException
