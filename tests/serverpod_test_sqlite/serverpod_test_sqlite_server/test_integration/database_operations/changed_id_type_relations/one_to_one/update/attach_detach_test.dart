@@ -125,7 +125,7 @@ void main() async {
         } catch (e) {
           expect(
             e,
-            isA<DatabaseExecutionException>().having(
+            isA<DatabaseUnexpectedResultException>().having(
               (e) => e.message,
               'message',
               contains('no rows updated'),
@@ -163,7 +163,7 @@ void main() async {
         } catch (e) {
           expect(
             e,
-            isA<DatabaseExecutionException>().having(
+            isA<DatabaseUnexpectedResultException>().having(
               (e) => e.message,
               'message',
               contains('no rows updated'),
@@ -306,7 +306,7 @@ void main() async {
         } catch (e) {
           expect(
             e,
-            isA<DatabaseExecutionException>().having(
+            isA<DatabaseUnexpectedResultException>().having(
               (e) => e.message,
               'message',
               contains('no rows updated'),
