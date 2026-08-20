@@ -30,6 +30,8 @@ export 'package:serverpod/src/util/migrate_session_logs.dart';
 
 // Cloud storage
 export 'package:serverpod/src/cloud_storage/cloud_storage.dart';
+export 'package:serverpod/src/cloud_storage/cloud_storage_exception.dart';
+export 'package:serverpod/src/cloud_storage/upload_description.dart';
 export 'package:serverpod/src/cloud_storage/database_cloud_storage.dart';
 
 // Cache
