@@ -358,7 +358,13 @@ void main() {
 
       expect(
         () async => await UniqueData.db.delete(session, inserted),
-        throwsA(isA<DatabaseForeignKeyViolationException>()),
+        throwsA(
+          isA<DatabaseForeignKeyViolationException>().having(
+            (e) => e.code,
+            'code',
+            SqliteErrorCode.foreignKeyViolation,
+          ),
+        ),
       );
 
       var first = await UniqueData.db.findById(session, inserted.first.id!);

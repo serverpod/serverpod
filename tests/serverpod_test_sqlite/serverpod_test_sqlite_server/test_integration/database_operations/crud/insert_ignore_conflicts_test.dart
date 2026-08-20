@@ -97,7 +97,13 @@ void main() async {
             session,
             [UniqueData(number: 2, email: 'existing@serverpod.dev')],
           ),
-          throwsA(isA<DatabaseUniqueViolationException>()),
+          throwsA(
+            isA<DatabaseUniqueViolationException>().having(
+              (e) => e.code,
+              'code',
+              SqliteErrorCode.uniqueViolation,
+            ),
+          ),
         );
       },
     );

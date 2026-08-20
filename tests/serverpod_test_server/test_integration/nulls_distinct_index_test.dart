@@ -68,7 +68,13 @@ void main() {
 
         await expectLater(
           duplicateInsert,
-          throwsA(isA<DatabaseUniqueViolationException>()),
+          throwsA(
+            isA<DatabaseUniqueViolationException>().having(
+              (error) => error.code,
+              'code',
+              PgErrorCode.uniqueViolation,
+            ),
+          ),
         );
       },
     );
@@ -127,7 +133,13 @@ void main() {
 
         await expectLater(
           duplicateInsert,
-          throwsA(isA<DatabaseUniqueViolationException>()),
+          throwsA(
+            isA<DatabaseUniqueViolationException>().having(
+              (error) => error.code,
+              'code',
+              PgErrorCode.uniqueViolation,
+            ),
+          ),
         );
       },
     );

@@ -38,7 +38,13 @@ void main() {
 
         expect(
           UniqueData.db.insert(session, data),
-          throwsA(isA<DatabaseUniqueViolationException>()),
+          throwsA(
+            isA<DatabaseUniqueViolationException>().having(
+              (e) => e.code,
+              'code',
+              SqliteErrorCode.uniqueViolation,
+            ),
+          ),
         );
 
         var first = await UniqueData.db.findFirstRow(

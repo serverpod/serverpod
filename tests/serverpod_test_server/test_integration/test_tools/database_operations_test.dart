@@ -461,7 +461,13 @@ void main() {
         test('then a DatabaseUniqueViolationException is thrown', () async {
           await expectLater(
             failingInsert,
-            throwsA(isA<DatabaseUniqueViolationException>()),
+            throwsA(
+              isA<DatabaseUniqueViolationException>().having(
+                (e) => e.code,
+                'code',
+                PgErrorCode.uniqueViolation,
+              ),
+            ),
           );
         });
 
