@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/serverpod_auth_server.dart';
 import 'package:test/test.dart';
 
@@ -31,7 +32,8 @@ void main() async {
   });
 
   withServerpod('Given an existing user ', (sessionBuilder, _) {
-    final session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
 
     const userName = 'user-change';
     const email = 'user.change@serverpod.dev';
@@ -162,7 +164,8 @@ void main() async {
   });
 
   withServerpod('Given create account request ', (sessionBuilder, _) async {
-    var session = sessionBuilder.build();
+    late Session session;
+    setUp(() => session = sessionBuilder.build());
     var userName = 'test';
     var email = 'test@serverpod.dev';
 

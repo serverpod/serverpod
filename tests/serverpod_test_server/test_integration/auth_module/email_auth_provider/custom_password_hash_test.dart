@@ -1,3 +1,4 @@
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_server/module.dart';
 import 'package:test/test.dart';
 
@@ -29,7 +30,8 @@ void main() async {
   withServerpod(
     'Given a custom non-hashing password hash generator and a create account request',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -66,7 +68,8 @@ void main() async {
   withServerpod(
     'Given a custom always true password hash validator and a created user',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test8@serverpod.dev';
       var password = 'password';
@@ -97,7 +100,8 @@ void main() async {
   withServerpod(
     'Given custom hash generator and a stored legacy password in the database',
     (sessionBuilder, _) {
-      var session = sessionBuilder.build();
+      late Session session;
+      setUp(() => session = sessionBuilder.build());
       var userName = 'test';
       var email = 'test@serverpod.dev';
       var password = 'hunter2';
