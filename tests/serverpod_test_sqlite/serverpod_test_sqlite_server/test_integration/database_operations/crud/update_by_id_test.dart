@@ -413,7 +413,7 @@ void main() {
           expect(
             updated,
             throwsA(
-              isA<DatabaseExecutionException>().having(
+              isA<DatabaseUnexpectedResultException>().having(
                 (e) => e.message,
                 'message',
                 contains('no rows updated'),

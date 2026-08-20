@@ -10,10 +10,10 @@ class DatabaseException implements Exception {
   String toString() => '$runtimeType: $message';
 }
 
-/// Exception thrown when an error occurs during the execution of a database operation.
-class DatabaseExecutionException extends DatabaseException {
-  /// Creates a new [DatabaseExecutionException].
-  DatabaseExecutionException(super.message);
+/// Exception thrown when the result of a database operation is unexpected.
+class DatabaseUnexpectedResultException extends DatabaseException {
+  /// Creates a new [DatabaseUnexpectedResultException].
+  DatabaseUnexpectedResultException(super.message);
 }
 
 /// Exception thrown when an exception occurs during a database query.

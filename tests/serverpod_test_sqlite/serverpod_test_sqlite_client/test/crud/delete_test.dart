@@ -18,7 +18,7 @@ void main() {
             SimpleData(id: 1, num: 1),
           ),
           throwsA(
-            isA<DatabaseExecutionException>().having(
+            isA<DatabaseUnexpectedResultException>().having(
               (e) => e.message,
               'message',
               contains('no rows deleted'),
