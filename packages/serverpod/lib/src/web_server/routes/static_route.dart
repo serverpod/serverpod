@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
 
 const _staticCacheControlEnvironmentVariable =
     'SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL';
 
 /// Route for serving static assets.
 class StaticRoute extends Route {
-  static CacheControlHeader? _defaultFactory(
-    Request ctx,
-    FileInfo fileInfo,
-  ) => null;
-
   /// Returns a [CacheControlHeader] with private and no-cache.
   static CacheControlFactory privateNoCache() =>
       (_, _) => CacheControlHeader(privateCache: true, noCache: true);
@@ -61,7 +57,11 @@ class StaticRoute extends Route {
         root,
         cacheBustingConfig: cacheBustingConfig,
         cacheControl:
-            cacheControlFactory ?? _cacheControlFactoryFromEnvironment(),
+            cacheControlFactory ??
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
+              fallback: noCacheControl,
+            ),
       ).asHandler,
       tailMatch: true,
       host: host,
@@ -94,7 +94,8 @@ class StaticRoute extends Route {
         cacheBustingConfig: config,
         cacheControl:
             cacheControlFactory ??
-            _cacheControlFactoryFromEnvironment(
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
               fallback: StaticRoute.publicImmutable(
                 maxAge: const Duration(days: 365),
               ),
@@ -126,22 +127,15 @@ class StaticRoute extends Route {
       StaticHandler.file(
         file,
         cacheControl:
-            cacheControlFactory ?? _cacheControlFactoryFromEnvironment(),
+            cacheControlFactory ??
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
+              fallback: noCacheControl,
+            ),
       ).asHandler,
       tailMatch: false,
       host: host,
     );
-  }
-
-  static CacheControlFactory _cacheControlFactoryFromEnvironment({
-    CacheControlFactory? fallback,
-  }) {
-    final cacheControl =
-        Platform.environment[_staticCacheControlEnvironmentVariable];
-    if (cacheControl == null) return fallback ?? _defaultFactory;
-
-    final parsedCacheControl = CacheControlHeader.parseStrict([cacheControl]);
-    return (_, _) => parsedCacheControl;
   }
 
   @override

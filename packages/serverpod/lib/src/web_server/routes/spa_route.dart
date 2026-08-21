@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
+
+const _spaCacheControlEnvironmentVariable =
+    'SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL';
 
 /// Route for serving Single Page Applications (SPAs) with fallback support.
 ///
@@ -16,6 +20,18 @@ import 'package:serverpod/serverpod.dart';
 ///   ),
 /// );
 /// ```
+///
+/// ## About caching
+///
+/// Unless `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` is set, all files are served
+/// without a `Cache-Control` header, leaving caching behavior to client side
+/// heuristics. Both the files in [directory] and the [fallback] file use the
+/// same headers, so set the environment variable only when the app shell can
+/// safely be cached, for example when the SPA build embeds content hashes in
+/// its asset URLs and the `max-age` is short enough for deploys to roll out.
+///
+/// The `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable used by
+/// [StaticRoute] does not apply to this route.
 class SpaRoute extends Route {
   /// The directory containing static files
   final Directory directory;
@@ -23,8 +39,12 @@ class SpaRoute extends Route {
   /// The fallback file (typically [directory]/index.html)
   final File fallback;
 
-  /// Cache control factory for static files
-  final CacheControlFactory? cacheControlFactory;
+  /// Cache control factory for the static files and the [fallback] file.
+  ///
+  /// Defaults to the value of `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL`, or to
+  /// leaving caching behavior to client side heuristics when the environment
+  /// variable is not set.
+  final CacheControlFactory cacheControlFactory;
 
   /// Cache busting configuration for static files
   final CacheBustingConfig? cacheBustingConfig;
@@ -38,15 +58,24 @@ class SpaRoute extends Route {
   /// Cache behavior can be customized using [cacheControlFactory] for static
   /// asset headers and [cacheBustingConfig] for cache busting support.
   ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` environment variable.
+  ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   SpaRoute(
     this.directory, {
     required this.fallback,
-    this.cacheControlFactory,
+    CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
     super.host,
-  }) : super(methods: {Method.get, Method.head});
+  }) : cacheControlFactory =
+           cacheControlFactory ??
+           cacheControlFactoryFromEnvironment(
+             _spaCacheControlEnvironmentVariable,
+             fallback: noCacheControl,
+           ),
+       super(methods: {Method.get, Method.head});
 
   @override
   void injectIn(RelicRouter router) {

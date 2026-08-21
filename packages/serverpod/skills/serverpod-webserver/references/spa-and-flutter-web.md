@@ -19,6 +19,12 @@ pod.webServer.addRoute(
 
 Serves static files when they exist; falls back to index.html for unmatched paths so client-side routing (React Router, Vue Router, etc.) works.
 
+### Default caching
+
+- **All files, including the fallback**: served without a `Cache-Control` header, leaving caching to the browser.
+
+Set `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` to serve every file, including the app shell, with a given header, or pass `cacheControlFactory` to take precedence over it. `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` does not apply to `SpaRoute`.
+
 For custom fallback logic, use `FallbackMiddleware` directly:
 
 ```dart
