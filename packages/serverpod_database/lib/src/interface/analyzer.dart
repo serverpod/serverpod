@@ -68,9 +68,15 @@ abstract class DatabaseAnalyzer {
           ),
       ];
     } catch (e) {
-      // Ignore if the table does not exist.
+      if (isUndefinedTableError(e, tableName: 'serverpod_migrations')) {
+        log.warning(
+          'The serverpod_migrations table is missing. '
+          'Have you applied the database migrations?',
+        );
+        return [];
+      }
       log.error('Failed to get installed migrations', error: e);
-      return [];
+      rethrow;
     }
   }
 }

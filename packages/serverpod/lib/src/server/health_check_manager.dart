@@ -30,6 +30,10 @@ class HealthCheckManager {
 
   DateTime? _lastHealthCheckTime;
 
+  /// Upper bound for waiting on an in-flight check. A stuck query must not
+  /// block SIGINT past the integration suite's 10s termination timeout.
+  static const _stopTimeout = Duration(seconds: 5);
+
   /// Creates a new [HealthCheckManager].
   HealthCheckManager(
     this._pod,
@@ -62,6 +66,9 @@ class HealthCheckManager {
       log.warning(
         'CPU and memory usage metrics are not supported on Windows.',
       );
+      if (_pod.config.role == ServerpodRole.maintenance) {
+        onCompleted();
+      }
       return;
     }
 
@@ -74,14 +81,33 @@ class HealthCheckManager {
       );
     }
 
-    _scheduleNextCheck();
+    // Maintenance is a one-shot: run now instead of waiting up to [interval]
+    // for the next aligned slot. Spawn tests otherwise miss the 120s exit
+    // wait after a cold embedded-Postgres start. Bound the check so a stuck
+    // query cannot keep the process alive until the suite times out.
+    if (_pod.config.role == ServerpodRole.maintenance) {
+      try {
+        await _performHealthCheck().timeout(const Duration(seconds: 15));
+      } on TimeoutException {
+        onCompleted();
+      }
+    } else {
+      _scheduleNextCheck();
+    }
   }
 
   /// Stops the health check manager.
   Future<void> stop() async {
     _running = false;
     _timer?.cancel();
-    await _pendingHealthCheck?.future;
+    final pending = _pendingHealthCheck;
+    if (pending == null) return;
+    try {
+      await pending.future.timeout(_stopTimeout);
+    } catch (_) {
+      // Already reported in [_performHealthCheck], or the check outlived
+      // shutdown. Do not fail (or hang) SIGINT because of it.
+    }
   }
 
   Future<void> _performHealthCheck() async {
@@ -90,16 +116,21 @@ class HealthCheckManager {
 
     try {
       await _innerPerformHealthCheck();
-      completer.complete();
     } catch (e, stackTrace) {
+      // Maintenance completion throws [ExitException] to stop the process.
+      // Swallow it here so `start()` can finish and `main()` can return;
+      // rethrowing races `_exitAfterFlush` against unread stdout on a pipe.
       if (!(e is ExitException && e.exitCode == 0)) {
-        _reportException(
+        _pod.reportFrameworkException(
           e,
           stackTrace,
           message: 'Error in health check',
         );
       }
-      completer.completeError(e, stackTrace);
+    } finally {
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
     }
   }
 
@@ -109,6 +140,8 @@ class HealthCheckManager {
   /// operations to allow the database to sleep and reduce resource usage. In
   /// maintenance mode, always perform health checks regardless of activity.
   bool get _shouldPerformDatabaseOperations {
+    if (!_pod.healthDatabaseReady) return false;
+
     if (_pod.config.role == ServerpodRole.maintenance) return true;
 
     final lastDatabaseOperationTime = _pod.lastDatabaseOperationTime;
@@ -205,7 +238,7 @@ class HealthCheckManager {
           'UPDATE serverpod_session_log SET "isOpen" = FALSE WHERE "isOpen" = TRUE AND "touched" < $threeMinutesAgo';
       await session.db.unsafeQuery(closeQuery);
     } catch (e, stackTrace) {
-      _reportException(
+      _pod.reportFrameworkException(
         e,
         stackTrace,
         message: 'Failed to cleanup closed sessions',
@@ -248,7 +281,7 @@ class HealthCheckManager {
         );
       }
     } catch (e, stackTrace) {
-      _reportException(
+      _pod.reportFrameworkException(
         e,
         stackTrace,
         message: 'Failed to optimize health check data',
@@ -433,28 +466,6 @@ class HealthCheckManager {
     );
 
     return true;
-  }
-
-  void _reportException(
-    Object e,
-    StackTrace stackTrace, {
-    String? message,
-  }) {
-    log.error(
-      message ?? 'Unhandled exception',
-      error: e,
-      stackTrace: stackTrace,
-    );
-
-    _pod.internalSubmitEvent(
-      ExceptionEvent(e, stackTrace, message: message),
-      space: OriginSpace.framework,
-      context: DiagnosticEventContext(
-        serverId: _pod.serverId,
-        serverRunMode: _pod.config.role.name,
-        serverName: '',
-      ),
-    );
   }
 
   Duration _timeUntilNextInterval() {

@@ -254,6 +254,7 @@ class InsightsEndpoint extends Endpoint {
         runMode: session.serverpod.runMode,
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
+        onIntegrityCheck: session.serverpod.applyDatabaseIntegrityGates,
       );
     });
   }
@@ -398,8 +399,10 @@ Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
   try {
     return await DatabaseMigrationVersion.db.find(session);
   } catch (e) {
-    // Ignore if the table does not exist.
+    if (isUndefinedTableError(e, tableName: 'serverpod_migrations')) {
+      return [];
+    }
     log.error('Failed to get installed migrations', error: e);
-    return [];
+    rethrow;
   }
 }

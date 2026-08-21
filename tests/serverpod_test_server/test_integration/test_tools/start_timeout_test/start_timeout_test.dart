@@ -9,7 +9,7 @@ import 'package:test/test.dart';
 
 void main() async {
   test(
-    'Given that withServerpod can not find the database and has a timeout set to 0 seconds '
+    'Given that withServerpod can not find the database and has a timeout set to 1 millisecond '
     'when running the test '
     'then should timeout immediately',
     () async {
@@ -17,9 +17,9 @@ void main() async {
 
       expect(result.exitCode, 1);
       expect(
-        result.stdout,
+        _combinedOutput(result),
         contains(
-          'Serverpod did not start within the timeout of 0:00:00.000000',
+          'Serverpod did not start within the timeout of ${const Duration(milliseconds: 1)}',
         ),
       );
     },
@@ -39,7 +39,7 @@ void main() async {
 
       expect(result.exitCode, 1);
       expect(
-        result.stdout,
+        _combinedOutput(result),
         contains('Failed to set up the test database'),
       );
       // Each group's database is created up front, so an unreachable database
@@ -51,7 +51,7 @@ void main() async {
   );
 
   test(
-    'Given that withServerpod can find the database and has a timeout set to 4 seconds '
+    'Given that withServerpod can find the database and has a timeout set to 30 seconds '
     'when running the test '
     'then should pass',
     () async {
@@ -59,9 +59,13 @@ void main() async {
 
       expect(result.exitCode, 0);
     },
+    timeout: Timeout(Duration(minutes: 2)),
     tags: [defaultIntegrationTestTag],
   );
 }
+
+String _combinedOutput(ProcessResult result) =>
+    '${result.stdout}${result.stderr}';
 
 Future<ProcessResult> runTest(String testFile, {bool embeddedDatabase = true}) {
   // When the suite runs against an embedded PostgreSQL, SERVERPOD_DATABASE_DATA_PATH

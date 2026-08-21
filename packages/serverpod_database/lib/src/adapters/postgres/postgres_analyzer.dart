@@ -38,35 +38,34 @@ AND NOT EXISTS (
 ''',
     );
 
-    return await Future.wait(
-      tableSchemas.map((tableSchema) async {
-        var schemaName = tableSchema.first;
-        var tableName = tableSchema.last;
-
-        var columns = getColumnDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
-
-        var foreignKeys = getForeignKeyDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
-
-        var indexes = getIndexDefinitions(
-          schemaName: schemaName,
-          tableName: tableName,
-        );
-
-        return TableDefinition(
+    // Analyze one table at a time. Opening columns/FKs/indexes for every
+    // table via [Future.wait] queues hundreds of pool checkouts (the test
+    // server schema has 100+ tables) and can stall startup under a small
+    // `maxConnectionCount`.
+    final tables = <TableDefinition>[];
+    for (final tableSchema in tableSchemas) {
+      var schemaName = tableSchema.first;
+      var tableName = tableSchema.last;
+      tables.add(
+        TableDefinition(
           name: tableName,
           schema: schemaName,
-          columns: await columns,
-          foreignKeys: await foreignKeys,
-          indexes: await indexes,
-        );
-      }),
-    );
+          columns: await getColumnDefinitions(
+            schemaName: schemaName,
+            tableName: tableName,
+          ),
+          foreignKeys: await getForeignKeyDefinitions(
+            schemaName: schemaName,
+            tableName: tableName,
+          ),
+          indexes: await getIndexDefinitions(
+            schemaName: schemaName,
+            tableName: tableName,
+          ),
+        ),
+      );
+    }
+    return tables;
   }
 
   @override

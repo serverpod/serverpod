@@ -11,14 +11,19 @@ import '../../serverpod_database.dart';
 /// verify with no migration application.
 ///
 /// Throws if applying a migration fails (e.g. bad SQL, locking issues).
-/// The [MigrationsApplyResult.databaseMatchesTargetState] indicates whether
-/// verification was successful and the database matches the target state.
+/// Integrity-check failures are logged and returned as
+/// [MigrationsApplyResult.databaseMatchesTargetState] `false`; they do not
+/// throw, so a completed apply is not rolled back by a later analyze error.
+///
+/// [onIntegrityCheck] is invoked with the live-vs-target comparison so
+/// callers can gate DB-backed loops on missing framework tables.
 Future<MigrationsApplyResult> applyMigrationsAndVerify({
   required DatabaseSession session,
   required Directory projectDirectory,
   required String runMode,
   required bool applyRepairMigration,
   required bool applyMigrations,
+  void Function(DatabaseIntegrityCheck check)? onIntegrityCheck,
 }) async {
   final manager = MigrationManager.fromDirectory(
     projectDirectory,
@@ -50,15 +55,33 @@ Future<MigrationsApplyResult> applyMigrationsAndVerify({
     }
   }
 
-  final databaseMatchesTargetState =
-      await MigrationManager.verifyDatabaseIntegrity(session);
-  if (!databaseMatchesTargetState) {
+  DatabaseIntegrityCheck integrity;
+  try {
+    integrity = await MigrationManager.verifyDatabaseIntegrity(session);
+  } catch (e, stackTrace) {
+    // Connection loss during analyze must not look like "every table is
+    // missing" (that would skip future-call/health writes). It also must
+    // not fail `--apply-migrations` after SQL has already been applied.
+    try {
+      log.error(
+        'Failed to verify database integrity',
+        error: e,
+        stackTrace: stackTrace,
+      );
+    } catch (_) {}
+    integrity = DatabaseIntegrityCheck(
+      warnings: ['Failed to verify database integrity: $e'],
+      missingTables: const {},
+    );
+  }
+  onIntegrityCheck?.call(integrity);
+  if (!integrity.matchesTarget) {
     log.warning('Database does not match target state.');
   }
 
   return MigrationsApplyResult(
     migrationsApplied: migrationsApplied,
     repairMigrationApplied: repairMigrationApplied,
-    databaseMatchesTargetState: databaseMatchesTargetState,
+    databaseMatchesTargetState: integrity.matchesTarget,
   );
 }

@@ -77,8 +77,17 @@ class Serverpod {
 
   void _writeLifecycleMessage(String message) {
     if (_shouldPrintLifecycleMessages) {
-      log.info(message);
+      // Do not flush here: an in-flight [stdout.flush] (addStream) makes the
+      // next [writeln] throw `StreamSink is bound to a stream` on pipes.
+      stdout.writeln(message);
     }
+  }
+
+  Future<void> _flushLifecycleStdout() async {
+    if (!_shouldPrintLifecycleMessages) return;
+    try {
+      await stdout.flush().timeout(const Duration(milliseconds: 200));
+    } catch (_) {}
   }
 
   /// The last created [Serverpod]. In most cases the [Serverpod] is a singleton
@@ -496,17 +505,29 @@ class Serverpod {
     }
   }
 
-  /// Drains the framework log chain and flushes the OS-level stdio
-  /// buffers (not drained by [exit] on non-terminal pipes), then exits.
-  void _exitAfterFlush(int code, {String? message}) {
+  /// Flushes stdio (not drained by [exit] on non-terminal pipes), optionally
+  /// drains the log chain, then exits.
+  ///
+  /// Stdio is flushed first so a lifecycle line is visible even if log
+  /// writers later block the isolate ([Future.timeout] cannot fire then).
+  void _exitAfterFlush(
+    int code, {
+    String? message,
+    bool drainLogs = true,
+  }) {
     () async {
       if (message != null && message.isNotEmpty) {
         log.error(message);
       }
       try {
-        await _drainLogging();
-        await (stdout.flush(), stderr.flush()).wait;
+        await stdout.flush().timeout(const Duration(milliseconds: 200));
+        await stderr.flush().timeout(const Duration(milliseconds: 200));
       } catch (_) {}
+      if (drainLogs) {
+        try {
+          await _drainLogging().timeout(const Duration(milliseconds: 500));
+        } catch (_) {}
+      }
       exit(code);
     }();
   }
@@ -621,6 +642,32 @@ class Serverpod {
     );
   }
 
+  /// When `SERVERPOD_TEST_READY_FILE` is set, write it after interrupt
+  /// handlers are registered. Handlers are installed after the database
+  /// pool has started: native FFI during embedded-Postgres launch does not
+  /// deliver SIGINT to Dart, and a watcher installed before that call can
+  /// miss signals afterwards.
+  void _notifyTestReady() {
+    final path = Platform.environment['SERVERPOD_TEST_READY_FILE']?.trim();
+    if (path == null || path.isEmpty) return;
+    try {
+      File(path).writeAsStringSync('ready');
+    } catch (_) {}
+  }
+
+  Future<void> _installInterruptHandlers() async {
+    await _sigintSubscription?.cancel();
+    _sigintSubscription = ProcessSignal.sigint.watch().listen(
+      _onInterruptSignal,
+    );
+    await _sigtermSubscription?.cancel();
+    if (!Platform.isWindows) {
+      _sigtermSubscription = ProcessSignal.sigterm.watch().listen(
+        _onShutdownSignal,
+      );
+    }
+  }
+
   void _innerInitializeServerpod() {
     _instance = this;
     _internalSerializationManager = internal.Protocol();
@@ -705,6 +752,7 @@ class Serverpod {
         diagnosticsService: ServerpodFutureCallDiagnosticsService(server),
         internalSession: internalSession,
         logSession: _internalLoggingSession,
+        skipDatabaseWork: () => !_futureCallTableReady,
         sessionProvider: (String futureCallName) => FutureCallSession(
           server: server,
           futureCallName: futureCallName,
@@ -746,6 +794,28 @@ class Serverpod {
 
   int _exitCode = 0;
 
+  bool _shuttingDown = false;
+
+  /// Process-signal watchers keep the isolate alive. Linux in-process tests
+  /// start with [start] `runInGuardedZone: false` and must not watch SIGINT.
+  /// Windows in-process tests still watch: the health-check manager does not
+  /// schedule a timer there. Spawned `bin/main.dart` uses the default guarded
+  /// start and always receives SIGINT.
+  bool _watchProcessSignals = true;
+
+  StreamSubscription<ProcessSignal>? _sigintSubscription;
+  StreamSubscription<ProcessSignal>? _sigtermSubscription;
+
+  bool _runtimeSettingsTableReady = true;
+  bool _futureCallTableReady = true;
+  bool _healthTablesReady = true;
+  bool _sessionLogTableReady = true;
+
+  String? _lastOperationalEventKey;
+
+  /// Whether framework health tables exist so health checks can persist metrics.
+  bool get healthDatabaseReady => _healthTablesReady;
+
   /// Starts the Serverpod and all [Server]s that it manages.
   ///
   /// If [runInGuardedZone] is set to true (the default),
@@ -757,6 +827,13 @@ class Serverpod {
   /// An [ExitException] will be thrown if the start up sequence fails.
   Future<void> start({bool runInGuardedZone = true}) async {
     _startedTime = DateTime.now().toUtc();
+    _shuttingDown = false;
+    _exitCode = 0;
+    _interruptSignalSent = false;
+    // Linux in-process tests must not watch SIGINT: the subscription keeps
+    // the isolate alive after tearDown. Windows does not schedule health-check
+    // timers, so the watcher is still required there to keep the isolate up.
+    _watchProcessSignals = runInGuardedZone || Platform.isWindows;
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
@@ -785,6 +862,9 @@ class Serverpod {
   }
 
   Future<void> _unguardedStart() async {
+    // Flush constructor lifecycle lines before any further stdout writes.
+    await _flushLifecycleStdout();
+
     // Register cloud store endpoint if we're using the database cloud store
     var hasDatabaseStorage = storage.entries.any(
       (storage) => storage.value is DatabaseCloudStorage,
@@ -794,6 +874,57 @@ class Serverpod {
       CloudStoragePublicEndpoint().register(this);
     }
 
+    final applyingMigrations =
+        config.applyMigrations || config.applyRepairMigration;
+    final connectMaxAttempts = config.role == ServerpodRole.maintenance
+        ? 6
+        : null;
+    final servesHttp =
+        config.role == ServerpodRole.monolith ||
+        config.role == ServerpodRole.serverless;
+    // `--apply-migrations` must migrate before traffic is accepted. A
+    // verify-only start (typical production / the lifecycle suite) binds
+    // HTTP first so embedded-postgres attach, connect retries, or a slow
+    // analyze cannot miss the 90s readiness wait.
+    final bindBeforeDatabase = servesHttp && !applyingMigrations;
+
+    Future<void> bindHttpServers() async {
+      var serversStarted = true;
+
+      if (_watchProcessSignals) {
+        await _installInterruptHandlers();
+      }
+
+      // Bind the API (and web) port before Insights. Lifecycle tests and
+      // probes hit :8080; a slow or failed Insights bind on :8081 must not
+      // delay that socket.
+      serversStarted &= await _startUserFacingServers();
+
+      if (Features.enableInsights) {
+        serversStarted &=
+            await _insightsServer?.start(
+              authenticationHandler: serviceAuthenticationHandler,
+            ) ??
+            true;
+      }
+
+      if (!serversStarted) {
+        throw ExitException(
+          1,
+          'Failed to start the Serverpod servers, see logs for details.',
+        );
+      }
+
+      _writeLifecycleMessage(
+        'SERVERPOD servers started, time: ${DateTime.now().toUtc()}',
+      );
+      await _flushLifecycleStdout();
+    }
+
+    if (bindBeforeDatabase) {
+      await bindHttpServers();
+    }
+
     // Ensure the database pool manager has started.
     // The call to start() is necessary in case this method is being invoked
     // after a shutdown. Otherwise, the pool manager won't be started again.
@@ -801,33 +932,42 @@ class Serverpod {
       _databasePoolManager?.start();
       await _databasePoolManager?.started;
     } on EmbeddedPostgresStartupException catch (error, stackTrace) {
-      log.error(
-        error.message,
-        stackTrace: error.includeStackTrace ? stackTrace : null,
+      _reportException(
+        error,
+        stackTrace,
+        message: error.message,
+        includeStackTrace: error.includeStackTrace,
+        submitEvent: error.includeStackTrace,
       );
       throw ExitException(1);
     }
 
+    // Re-install after embedded-Postgres FFI. A watcher created before
+    // `startOrAttachEmbeddedPostgres` does not receive SIGINT afterwards.
+    if (servesHttp && _watchProcessSignals) {
+      await _installInterruptHandlers();
+    }
+    if (servesHttp) {
+      _notifyTestReady();
+    }
+
     if (Features.enableMigrations) {
-      int? maxAttempts = config.role == ServerpodRole.maintenance ? 6 : null;
-      try {
-        await _connectToDatabase(
-          session: internalSession,
-          maxAttempts: maxAttempts,
+      if (applyingMigrations) {
+        await _connectOrExit(maxAttempts: connectMaxAttempts);
+        await _applyMigrations(
+          applyRepairMigration: config.applyRepairMigration,
+          applyMigrations: config.applyMigrations,
         );
-      } catch (e, stackTrace) {
-        const message = 'Failed to connect to the database.';
-        _reportException(e, stackTrace, message: message);
-        throw ExitException(1, '$message: $e');
+
+        if (config.role == ServerpodRole.maintenance &&
+            (!_futureCallTableReady || !_healthTablesReady)) {
+          _exitCode = 1;
+          throw ExitException(1);
+        }
+
+        await _loadRuntimeSettings();
       }
-
-      await _applyMigrations(
-        applyRepairMigration: config.applyRepairMigration,
-        applyMigrations: config.applyMigrations,
-      );
-
-      await _loadRuntimeSettings();
-    } else if (config.applyMigrations || config.applyRepairMigration) {
+    } else if (applyingMigrations) {
       log.warning(
         'Migrations are disabled in this project, skipping applying migration(s).',
       );
@@ -860,35 +1000,18 @@ class Serverpod {
       _internalLogVerbose('Redis is disabled, skipping.');
     }
 
-    // Start servers.
-    if (config.role == ServerpodRole.monolith ||
-        config.role == ServerpodRole.serverless) {
-      var serversStarted = true;
+    if (servesHttp && !bindBeforeDatabase) {
+      await bindHttpServers();
+    }
 
-      ProcessSignal.sigint.watch().listen(_onInterruptSignal);
-      if (!Platform.isWindows) {
-        ProcessSignal.sigterm.watch().listen(_onShutdownSignal);
-      }
-
-      // Serverpod Insights.
-      if (Features.enableInsights) {
-        serversStarted &=
-            await _insightsServer?.start(
-              authenticationHandler: serviceAuthenticationHandler,
-            ) ??
-            true;
-      }
-
-      serversStarted &= await _startUserFacingServers();
-
-      if (!serversStarted) {
-        throw ExitException(
-          1,
-          'Failed to start the Serverpod servers, see logs for details.',
-        );
-      }
-
-      _internalLogVerbose('All servers started.');
+    if (Features.enableMigrations && !applyingMigrations) {
+      await _connectOrExit(maxAttempts: connectMaxAttempts);
+      await _loadRuntimeSettings();
+      _updateLogSettings(_runtimeSettings);
+      await _applyMigrations(
+        applyRepairMigration: false,
+        applyMigrations: false,
+      );
     }
 
     if (_futureCallManager != null) {
@@ -902,10 +1025,8 @@ class Serverpod {
     // Start maintenance tasks. If we are running in maintenance mode, we
     // will only run the maintenance tasks once. If we are applying migrations
     // no other maintenance tasks will be run.
-    var appliedMigrations =
-        (config.applyMigrations || config.applyRepairMigration);
     if (config.role == ServerpodRole.monolith ||
-        (config.role == ServerpodRole.maintenance && !appliedMigrations)) {
+        (config.role == ServerpodRole.maintenance && !applyingMigrations)) {
       _internalLogVerbose('Starting maintenance tasks.');
 
       // Start future calls
@@ -926,11 +1047,15 @@ class Serverpod {
       // Start health check manager
       _completedHealthChecks = _healthCheckManager == null;
       await _healthCheckManager?.start();
+      // No managers (e.g. `--no-database` maintenance) must still exit.
+      _checkMaintenanceTasksCompletion();
     }
 
-    _internalLogVerbose('Serverpod start complete.');
+    _writeLifecycleMessage(
+      'SERVERPOD start complete, time: ${DateTime.now().toUtc()}',
+    );
 
-    if (config.role == ServerpodRole.maintenance && appliedMigrations) {
+    if (config.role == ServerpodRole.maintenance && applyingMigrations) {
       _internalLogVerbose('Finished applying database migrations.');
       throw ExitException(_exitCode);
     }
@@ -944,7 +1069,8 @@ class Serverpod {
           'instead.',
         );
       } else {
-        if (config.sessionLogs.cleanupInterval != null) {
+        if (config.sessionLogs.cleanupInterval != null &&
+            _sessionLogTableReady) {
           _logCleanupManager = LogCleanupManager(config.sessionLogs);
         }
       }
@@ -967,8 +1093,14 @@ class Serverpod {
         runMode: runMode,
         applyRepairMigration: applyRepairMigration,
         applyMigrations: applyMigrations,
+        onIntegrityCheck: applyDatabaseIntegrityGates,
       );
+    } on MigrationLoadException catch (e, stackTrace) {
+      _exitCode = 1;
+      const message = 'Failed to apply database migrations.';
+      _reportException(e, stackTrace, message: message);
     } catch (e, stackTrace) {
+      _exitCode = 1;
       const message = 'Failed to apply database migrations.';
       _reportException(e, stackTrace, message: message);
     }
@@ -980,6 +1112,10 @@ class Serverpod {
   }
 
   Future<void> _loadRuntimeSettings() async {
+    if (!_runtimeSettingsTableReady) {
+      return;
+    }
+
     _internalLogVerbose('Loading runtime settings.');
 
     internal.RuntimeSettings? runtimeSettings;
@@ -1011,6 +1147,25 @@ class Serverpod {
     } else {
       _runtimeSettings = runtimeSettings;
       _internalLogVerbose('Runtime settings loaded.');
+    }
+  }
+
+  /// Updates which framework tables are available after an integrity check.
+  ///
+  /// Missing framework tables skip the corresponding DB-backed loops until
+  /// a later successful verify (for example Insights `applyMigrations`).
+  void applyDatabaseIntegrityGates(DatabaseIntegrityCheck check) {
+    _runtimeSettingsTableReady = !check.runtimeSettingsTableMissing;
+    _futureCallTableReady = !check.futureCallTableMissing;
+    _healthTablesReady = !check.healthTablesMissing;
+    _sessionLogTableReady = !check.sessionLogTableMissing;
+
+    final writer = _loggingSetup.databaseWriter;
+    if (writer == null) return;
+    if (_sessionLogTableReady) {
+      writer.attach(_internalSession);
+    } else {
+      writer.detach();
     }
   }
 
@@ -1065,10 +1220,14 @@ class Serverpod {
   }
 
   void _checkMaintenanceTasksCompletion() {
+    if (config.role != ServerpodRole.maintenance) return;
     if (_completedFutureCalls && _completedHealthChecks) {
       _writeLifecycleMessage('All maintenance tasks completed. Exiting.');
-      // This will exit the process in maintenance mode (and only that mode) after future calls and health checks are done.
-      throw ExitException(_exitCode);
+      // Do not throw [ExitException]: health-check code swallows it, and the
+      // embedded-Postgres pool then keeps the isolate alive. Do not drain
+      // log writers here — they can block the isolate while the pool is
+      // still up. Flush the lifecycle line so spawn tests see it on a pipe.
+      _exitAfterFlush(_exitCode, drainLogs: false);
     }
   }
 
@@ -1234,89 +1393,136 @@ class Serverpod {
     _writeLifecycleMessage(
       'SERVERPOD initiating shutdown, time: ${DateTime.now().toUtc()}',
     );
+    _shuttingDown = true;
+    await _flushLifecycleStdout();
 
     Object? shutdownError;
 
-    await _requestReceivingShutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(
-          error,
-          stack,
-          message: 'Error in request receiving shutdown "$id"',
-        );
-      },
-    );
-
-    await experimental._shutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(error, stack, message: 'Error in shutdown task "$id"');
-      },
-    );
-
-    await _internalServicesShutdownTasks.executeTasks(
-      onTaskError: (error, stack, id) {
-        shutdownError = error;
-        _reportException(
-          error,
-          stack,
-          message: 'Error in service shutdown "$id"',
-        );
-      },
-    );
-
-    // Drain the database log writer before tearing the pool down so its
-    // in-flight close rows reach the database instead of racing pool.stop().
-    // Dispose is idempotent; if the caller owns the log setup and later
-    // closes it, the duplicate dispose is a no-op.
-    try {
-      final dbWriter = _loggingSetup.databaseWriter;
-      if (dbWriter != null) {
-        sessionLogWriter.remove(dbWriter);
-        await dbWriter.dispose();
-      }
-    } catch (e, stackTrace) {
-      shutdownError = e;
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error draining database log writer',
+    Future<void> teardown() async {
+      await _requestReceivingShutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in request receiving shutdown "$id"',
+          );
+        },
       );
+
+      await experimental._shutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in shutdown task "$id"',
+          );
+        },
+      );
+
+      await _internalServicesShutdownTasks.executeTasks(
+        onTaskError: (error, stack, id) {
+          shutdownError = error;
+          _reportException(
+            error,
+            stack,
+            message: 'Error in service shutdown "$id"',
+          );
+        },
+      );
+
+      // Drain the database log writer before tearing the pool down so its
+      // in-flight close rows reach the database instead of racing pool.stop().
+      // Dispose is idempotent; if the caller owns the log setup and later
+      // closes it, the duplicate dispose is a no-op.
+      try {
+        final dbWriter = _loggingSetup.databaseWriter;
+        if (dbWriter != null) {
+          sessionLogWriter.remove(dbWriter);
+          await dbWriter.dispose();
+        }
+      } catch (e, stackTrace) {
+        shutdownError = e;
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error draining database log writer',
+        );
+      }
+
+      // This needs to be closed last as it is used by the other services.
+      try {
+        await _databasePoolManager?.stop().timeout(
+          const Duration(seconds: 5),
+        );
+      } on TimeoutException {
+        // Do not block SIGINT or test tearDown if pool close is stuck.
+      } catch (e, stackTrace) {
+        shutdownError = e;
+        _reportException(
+          e,
+          stackTrace,
+          message: 'Error in database pool manager shutdown',
+        );
+      }
     }
 
-    // This needs to be closed last as it is used by the other services.
+    // Relic close, session close, or an in-flight schema analyze must not
+    // block SIGINT past the spawn tests' 10s exit wait.
     try {
-      await _databasePoolManager?.stop();
-    } catch (e, stackTrace) {
-      shutdownError = e;
-      _reportException(
-        e,
-        stackTrace,
-        message: 'Error in database pool manager shutdown',
-      );
+      await teardown().timeout(const Duration(seconds: 8));
+    } on TimeoutException {
+      // Fall through and still emit "shutdown completed" + exit.
     }
 
     _writeLifecycleMessage(
       'SERVERPOD shutdown completed, time: ${DateTime.now().toUtc()}',
     );
+    await _flushLifecycleStdout();
 
-    await _drainLogging();
+    // Do not cancel signal subscriptions when this shutdown was invoked from
+    // the SIGINT/SIGTERM listener: `Subscription.cancel()` waits for the
+    // listener to finish, which deadlocks and leaves SIGINT tests hanging.
+    // The process is about to [exit] anyway. In-process tests
+    // (`exitProcess: false`) must drop the handlers so the test VM does not
+    // keep watching SIGINT.
+    if (!exitProcess) {
+      await _sigintSubscription?.cancel();
+      _sigintSubscription = null;
+      await _sigtermSubscription?.cancel();
+      _sigtermSubscription = null;
+    }
+
+    try {
+      await _drainLogging().timeout(const Duration(milliseconds: 500));
+    } catch (_) {}
 
     if (exitProcess) {
       // On non-terminals (docker pipes, redirects) stdout is
       // block-buffered and [exit] does not drain it, so flush
       // explicitly before exiting.
-      await stdout.flush().catchError((_) {});
-      await stderr.flush().catchError((_) {});
+      try {
+        await stdout.flush().timeout(const Duration(milliseconds: 200));
+      } catch (_) {}
+      try {
+        await stderr.flush().timeout(const Duration(milliseconds: 200));
+      } catch (_) {}
 
       // SIGTERM -> 0 (graceful), SIGINT and others -> 128 + signalNumber.
+      // Signal-initiated shutdown keeps that conventional code even when a
+      // cleanup task logged an error — otherwise SIGINT becomes exit 1 and
+      // looks like a crash.
       final conventionalExitCode = switch (signalNumber) {
         15 => 0, // SIGTERM
         null => 0,
         _ => 128 + signalNumber,
       };
-      exit(shutdownError != null ? 1 : conventionalExitCode);
+      exit(
+        signalNumber != null || shutdownError == null
+            ? conventionalExitCode
+            : 1,
+      );
     }
 
     if (shutdownError != null) {
@@ -1349,22 +1555,59 @@ class Serverpod {
     Object e,
     StackTrace stackTrace, {
     String? message,
+    bool? includeStackTrace,
+    bool submitEvent = true,
   }) {
-    log.error(
-      message ?? 'Unhandled exception',
-      error: e,
-      stackTrace: stackTrace,
-    );
+    try {
+      final includeStack = includeStackTrace ?? shouldIncludeConsoleStack(e);
+      final operational = !includeStack;
+      final key = operational ? operationalDedupeKey(e) : null;
+      final isRepeat = operational && key == _lastOperationalEventKey;
 
-    internalSubmitEvent(
-      ExceptionEvent(e, stackTrace, message: message),
-      space: OriginSpace.framework,
-      context: DiagnosticEventContext(
-        serverId: serverId,
-        serverRunMode: runMode,
-        serverName: '',
-      ),
-    );
+      if (!isRepeat) {
+        log.error(
+          message ?? 'Unhandled exception',
+          error: exceptionEventException(e),
+          stackTrace: includeStack ? stackTrace : null,
+        );
+      }
+
+      if (submitEvent && !isRepeat) {
+        if (operational) {
+          _lastOperationalEventKey = key;
+        }
+        internalSubmitEvent(
+          ExceptionEvent(
+            exceptionEventException(e),
+            stackTrace,
+            message: message,
+          ),
+          space: OriginSpace.framework,
+          context: DiagnosticEventContext(
+            serverId: serverId,
+            serverRunMode: runMode,
+            serverName: '',
+          ),
+        );
+      }
+    } catch (_) {
+      // Reporting must not abort startup retries or turn SIGINT into exit 1.
+    }
+  }
+
+  Future<void> _connectOrExit({int? maxAttempts}) async {
+    try {
+      await _connectToDatabase(
+        session: internalSession,
+        maxAttempts: maxAttempts,
+      );
+    } on DatabaseConnectException {
+      throw ExitException(1);
+    } catch (e, stackTrace) {
+      const message = 'Failed to connect to the database.';
+      _reportException(e, stackTrace, message: message);
+      throw ExitException(1, '$message: $e');
+    }
   }
 
   /// Establishes a connection to the database. This method will retry
@@ -1373,53 +1616,97 @@ class Serverpod {
     required Session session,
     int? maxAttempts,
   }) async {
-    bool printedDatabaseConnectionError = false;
-    int attempts = 0;
+    var printedDatabaseConnectionError = false;
+    String? lastKey;
+    var attempts = 0;
     while (true) {
+      if (_shuttingDown) {
+        throw DatabaseConnectException(
+          cause: StateError('Serverpod is shutting down.'),
+          message:
+              'Database connect aborted because Serverpod is shutting down.',
+        );
+      }
       attempts++;
       try {
         await session.db.testConnection();
+        lastKey = null;
+        _lastOperationalEventKey = null;
         return session;
       } catch (e, stackTrace) {
-        if ((e is DatabaseQueryException) &&
-            e.code == PgErrorCode.invalidPassword) {
-          const passwordAuthFailedMessage =
-              'Failed to connect to the database. Password authentication failed.\n'
-              'If you are running PostgreSQL through the provided docker-compose.yaml, make sure that the password '
-              'in your passwords.yaml and the password used in the setup of the database match (check the '
-              'docker-compose.yaml).\n\n'
-              'If you are currently starting a new project and previously had a project with the same name, '
-              'the passwords will not match (each project has a randomly generated password), so you need to '
-              'delete the storage of the old project.\n\n'
-              'If you are using the included docker compose file, you can run `docker compose down -v` to '
-              'remove any volumes and start over. This will remove all data in the database. So be careful '
-              'if you are using this.';
+        final wrapped = wrapConnectFailure(e);
+        try {
+          final key = operationalDedupeKey(wrapped);
+          if (key != lastKey) {
+            lastKey = key;
+            _reportException(
+              wrapped,
+              stackTrace,
+              message: _connectFailureMessage(wrapped),
+            );
+            if (!printedDatabaseConnectionError) {
+              log.warning('Database configuration: ${config.database}');
+              printedDatabaseConnectionError = true;
+            }
+          }
+        } catch (_) {}
 
-          _reportException(
-            e,
-            stackTrace,
-            message: passwordAuthFailedMessage,
-          );
-        } else {
-          const message = 'Failed to connect to the database.';
-          _reportException(e, stackTrace, message: message);
+        if (_shuttingDown || (maxAttempts != null && attempts >= maxAttempts)) {
+          Error.throwWithStackTrace(wrapped, stackTrace);
         }
 
-        log.warning('Retrying to connect to the database in 10 seconds.');
-        if (!printedDatabaseConnectionError) {
-          log.warning('Database configuration: ${config.database}');
-          printedDatabaseConnectionError = true;
+        try {
+          log.warning('Retrying to connect to the database in 10 seconds.');
+        } catch (_) {}
+        const retryDelay = Duration(seconds: 10);
+        const slice = Duration(milliseconds: 200);
+        var waited = Duration.zero;
+        while (waited < retryDelay) {
+          if (_shuttingDown) {
+            throw DatabaseConnectException(
+              cause: StateError('Serverpod is shutting down.'),
+              message:
+                  'Database connect aborted because Serverpod is shutting down.',
+            );
+          }
+          await Future.delayed(slice);
+          waited += slice;
         }
-
-        if (maxAttempts != null && attempts >= maxAttempts) {
-          throw TimeoutException(
-            'Failed to connect to the database after $maxAttempts attempts.',
-          );
-        }
-
-        await Future.delayed(const Duration(seconds: 10));
       }
     }
+  }
+
+  String _connectFailureMessage(DatabaseConnectException error) {
+    final sqlState = error.sqlState;
+    final cause = error.cause;
+    if (sqlState == PgErrorCode.invalidPassword ||
+        sqlState == PgErrorCode.invalidAuthorizationSpecification) {
+      return 'Failed to connect to the database. Password authentication failed. '
+          'Check that passwords.yaml matches the database role and that pg_hba.conf allows the connection.';
+    }
+    if (sqlState == PgErrorCode.invalidCatalogName) {
+      return 'Failed to connect to the database. Database "${config.database?.name}" does not exist.';
+    }
+    if (sqlState == PgErrorCode.invalidSchemaName) {
+      return 'Failed to connect to the database. The configured schema does not exist.';
+    }
+    if (sqlState == PgErrorCode.tooManyConnections) {
+      return 'Failed to connect to the database. Too many connections. '
+          'Reduce connection retries or raise max_connections.';
+    }
+    if (sqlState == PgErrorCode.cannotConnectNow ||
+        sqlState == PgErrorCode.adminShutdown ||
+        sqlState == PgErrorCode.crashShutdown ||
+        sqlState == PgErrorCode.databaseDropped) {
+      return 'Failed to connect to the database. Postgres is restarting or unavailable.';
+    }
+    if (cause is HandshakeException || cause is TlsException) {
+      return 'Failed to connect to the database. TLS/SSL handshake failed. Check requireSsl.';
+    }
+    if (cause is FileSystemException) {
+      return 'Failed to connect to the database. Could not open the Unix socket path.';
+    }
+    return 'Failed to connect to the database. Check that Postgres is running and that host, port, and credentials are correct.';
   }
 
   bool _isValidSecret(String? secret) {
@@ -1556,6 +1843,25 @@ extension ServerpodInternalMethods on Serverpod {
       event,
       space: space,
       context: context,
+    );
+  }
+
+  /// Logs and submits a framework exception. Console stacks are omitted for
+  /// operational errors. Repeat operational events with the same key are
+  /// suppressed.
+  void reportFrameworkException(
+    Object error,
+    StackTrace stackTrace, {
+    String? message,
+    bool? includeStackTrace,
+    bool submitEvent = true,
+  }) {
+    _reportException(
+      error,
+      stackTrace,
+      message: message,
+      includeStackTrace: includeStackTrace,
+      submitEvent: submitEvent,
     );
   }
 }

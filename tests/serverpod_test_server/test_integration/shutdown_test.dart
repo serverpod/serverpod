@@ -1,45 +1,25 @@
 // ignore_for_file: dead_code
 
-@Timeout(Duration(minutes: 1))
+@Timeout(Duration(minutes: 2))
 // Note, this test shall run non-concurrently,
 // which means the test tag 'integration' is not used.
-import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart';
-import 'package:serverpod_shared/process_io.dart';
 import 'package:test/test.dart';
+
+import 'test_util/spawned_server_process.dart';
 
 void main() {
   const signalDelay = Duration(seconds: 2);
   const terminationTimeout = Duration(seconds: 10);
   const verbose = false;
 
-  setUpAll(() async {
-    // Migrate the main config database once
-    final result = await Process.run(dartExecutablePath, [
-      'run',
-      'bin/main.dart',
-      '--mode=test',
-      '--role',
-      'maintenance',
-      '--apply-migrations',
-    ]);
-    if (result.exitCode != 0) {
-      throw StateError(
-        'Pre-migrating the config database failed: ${result.stderr}',
-      );
-    }
-  });
-
   test('Given a serverpod server with db '
       'when run in maintenance mode '
       'then it automatically exits with exit code 0', () async {
-    final processOutput = await startProcess(
-      'dart',
+    final processOutput = await startSpawnedServer(
       [
-        'bin/main.dart',
         '--mode=test',
         '--role',
         'maintenance',
@@ -62,16 +42,17 @@ void main() {
       ]),
     );
 
-    var exitCode = await processOutput.process.exitCode;
+    var exitCode = await processOutput.process.exitCode.timeout(
+      terminationTimeout,
+    );
     expect(exitCode, 0);
   }, timeout: const Timeout(Duration(seconds: 120)));
 
   group('Given a running serverpod server', () {
     test('when it is sent SIGINT '
         'then it exits with exit code 130', () async {
-      final processOutput = await startProcess(
-        'dart',
-        ['bin/main.dart', '--mode=test'],
+      final processOutput = await startSpawnedServer(
+        ['--mode=test'],
         environment: {
           'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
         },
@@ -80,7 +61,7 @@ void main() {
 
       await expectLater(
         processOutput.outQueue,
-        emitsThrough(contains('SERVERPOD initialized')),
+        emitsThrough(contains('SERVERPOD start complete')),
       );
 
       await Future.delayed(signalDelay);
@@ -108,9 +89,8 @@ void main() {
       'when it is sent SIGTERM '
       'then it exits with exit code 0',
       () async {
-        final processOutput = await startProcess(
-          'dart',
-          ['bin/main.dart', '--mode=test'],
+        final processOutput = await startSpawnedServer(
+          ['--mode=test'],
           environment: {
             'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
           },
@@ -119,7 +99,7 @@ void main() {
 
         await expectLater(
           processOutput.outQueue,
-          emitsThrough(contains('SERVERPOD initialized')),
+          emitsThrough(contains('SERVERPOD start complete')),
         );
 
         await Future.delayed(signalDelay);
@@ -150,9 +130,8 @@ void main() {
     test('with shutdown test auditor enabled '
         'when it is sent SIGINT '
         'then it exits with exit code 1', () async {
-      final processOutput = await startProcess(
-        'dart',
-        ['bin/main.dart', '--mode=test'],
+      final processOutput = await startSpawnedServer(
+        ['--mode=test'],
         environment: {
           '_SERVERPOD_SHUTDOWN_TEST_AUDITOR': '2',
           'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
@@ -162,7 +141,7 @@ void main() {
 
       await expectLater(
         processOutput.outQueue,
-        emitsThrough(contains('SERVERPOD initialized')),
+        emitsThrough(contains('SERVERPOD start complete')),
       );
 
       await Future.delayed(signalDelay);
@@ -196,9 +175,8 @@ void main() {
     test('with an ongoing http request '
         'when it is sent SIGINT '
         'then it exits with exit code 130', () async {
-      final processOutput = await startProcess(
-        'dart',
-        ['bin/main.dart', '--mode=test'],
+      final processOutput = await startSpawnedServer(
+        ['--mode=test'],
         environment: {
           'SERVERPOD_SILENCE_LIFECYCLE_MESSAGES': '0',
         },
@@ -207,7 +185,7 @@ void main() {
 
       await expectLater(
         processOutput.outQueue,
-        emitsThrough(contains('SERVERPOD initialized')),
+        emitsThrough(contains('SERVERPOD start complete')),
       );
 
       await Future.delayed(Duration(seconds: 5));
@@ -242,78 +220,4 @@ void main() {
       expect(exitCode, 130);
     }, skip: 'Dart HTTP server does not support this graceful shutdown');
   });
-}
-
-typedef ProcessOutput = ({
-  Process process,
-  Stream<String> outQueue,
-  Stream<String> errQueue,
-});
-
-Stream<String> _streamTransformer(
-  Stream<List<int>> stream, {
-  bool verbose = false,
-  String? prefix,
-}) {
-  final startOfLine = prefix != null ? '$prefix: ' : '';
-  return stream
-      .transform(const Utf8Decoder())
-      .transform(const LineSplitter())
-      .map((line) {
-        if (verbose) print('$startOfLine$line');
-        return line;
-      })
-      .asBroadcastStream(
-        onCancel: (controller) {
-          if (verbose) print('<pausing ${prefix ?? ''} stream>');
-          controller.pause();
-        },
-        onListen: (controller) async {
-          if (controller.isPaused) {
-            if (verbose) print('<resuming ${prefix ?? ''} stream>');
-            controller.resume();
-          }
-        },
-      );
-}
-
-Future<ProcessOutput> startProcess(
-  String executable,
-  List<String> arguments, {
-  Map<String, String>? environment,
-  bool verbose = false,
-}) async {
-  final process = await Process.start(
-    // Spawn the real SDK binary (resolved through version-manager shims like
-    // puro/fvm): shell shims do not forward the signals these tests send, so
-    // the exit-code assertions would time out and leak the spawned server.
-    executable == 'dart' ? dartExecutablePath : executable,
-    arguments,
-    environment: environment,
-  );
-  final outQueue = _streamTransformer(
-    process.stdout,
-    prefix: 'stdout',
-    verbose: verbose,
-  );
-  final errQueue = _streamTransformer(
-    process.stderr,
-    prefix: 'stderr',
-    verbose: verbose,
-  );
-
-  // ensure output is drained and process is killed when test is done
-  addTearDown(() {
-    if (verbose) print('<process teardown>');
-    outQueue.listen((s) {}, cancelOnError: true);
-    errQueue.listen((s) {}, cancelOnError: true);
-
-    process.kill(ProcessSignal.sigkill);
-  });
-
-  return (
-    process: process,
-    outQueue: outQueue,
-    errQueue: errQueue,
-  );
 }
