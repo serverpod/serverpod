@@ -453,6 +453,11 @@ extension PostgresDatabaseMigrationPgSqlGenerator on DatabaseMigration {
       foreignKeyActions += action.foreignRelationToSql();
     }
 
+    foreignKeyActions += _sqlRestoreInboundForeignKeys(
+      actions,
+      databaseDefinition,
+    );
+
     // Append all foreign key operations at the end
     out += foreignKeyActions;
 
@@ -654,6 +659,61 @@ extension PostgresColumnMigrationPgSqlGenerator on ColumnMigration {
 
     return out;
   }
+}
+
+/// Returns the SQL that restores foreign key constraints which other tables
+/// declare against a table that is dropped and recreated by this migration.
+///
+/// `DROP TABLE ... CASCADE` also drops the foreign key constraints that other
+/// tables have into the dropped table. The recreated table only brings back its
+/// own outbound foreign keys, so the inbound ones have to be re-added
+/// explicitly, or the database would silently diverge from the definition.
+///
+/// A constraint is skipped when its table is (re)created by this migration, or
+/// when an alter table action already adds it back, since those actions emit it
+/// themselves.
+String _sqlRestoreInboundForeignKeys(
+  List<DatabaseMigrationAction> actions,
+  DatabaseDefinition databaseDefinition,
+) {
+  var createdTables = <String>{
+    for (var action in actions)
+      if (action.createTable case var table?) table.name,
+  };
+  var recreatedTables = <String>{
+    for (var action in actions) ?action.deleteTable,
+  }.intersection(createdTables);
+  if (recreatedTables.isEmpty) return '';
+
+  var alteredForeignKeys = <String>{
+    for (var action in actions)
+      if (action.alterTable case var table?)
+        for (var key in table.addForeignKeys)
+          '${table.name}.${key.constraintName}',
+  };
+
+  var out = '';
+  for (var table in databaseDefinition.tables) {
+    if (table.managed == false) continue;
+    // Tables created by this migration already declare all their foreign keys.
+    if (createdTables.contains(table.name)) continue;
+
+    for (var foreignKey in table.foreignKeys) {
+      if (!recreatedTables.contains(foreignKey.referenceTable)) continue;
+      // The constraint is already re-added by an alter table action.
+      var key = '${table.name}.${foreignKey.constraintName}';
+      if (alteredForeignKeys.contains(key)) continue;
+
+      out += foreignKey.toPgSql(tableName: table.name);
+    }
+  }
+
+  if (out.isEmpty) return out;
+
+  return '--\n'
+      '-- ACTION RESTORE FOREIGN KEY\n'
+      '--\n'
+      '$out';
 }
 
 String _sqlStoreMigrationVersion({
