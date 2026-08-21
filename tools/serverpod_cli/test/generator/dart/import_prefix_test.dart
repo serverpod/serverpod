@@ -127,10 +127,15 @@ void main() {
   group('Given a reference to a fixnum implementation library,', () {
     // package:fixnum 1.2.0 moved its implementation into platform specific
     // libraries under src/ that must not be imported directly.
-    late var allocator = StableImportAllocator();
-    late var allocated = allocator.allocate(
-      const Reference('Int64', 'package:fixnum/src/int64.dart'),
-    );
+    late StableImportAllocator allocator;
+    late String allocated;
+
+    setUp(() {
+      allocator = StableImportAllocator();
+      allocated = allocator.allocate(
+        const Reference('Int64', 'package:fixnum/src/int64.dart'),
+      );
+    });
 
     test(
       'when allocating a reference, '
@@ -377,6 +382,19 @@ void main() {
     });
 
     test(
+      'when allocating a reference to an import it collected, '
+      'then the reference is aliased with the prefix it was assigned.',
+      () {
+        expect(
+          allocator.allocate(
+            const Reference('Example', 'package:example/example.dart'),
+          ),
+          '${importPrefixFor('package:example/example.dart')}.Example',
+        );
+      },
+    );
+
+    test(
       'when allocating a reference to an import it never collected, '
       'then the import that would be left out is reported.',
       () {
@@ -391,19 +409,6 @@ void main() {
               contains('package:example/late.dart'),
             ),
           ),
-        );
-      },
-    );
-
-    test(
-      'when allocating a reference to an import it collected, '
-      'then the reference is aliased with the prefix it was assigned.',
-      () {
-        expect(
-          allocator.allocate(
-            const Reference('Example', 'package:example/example.dart'),
-          ),
-          '${importPrefixFor('package:example/example.dart')}.Example',
         );
       },
     );

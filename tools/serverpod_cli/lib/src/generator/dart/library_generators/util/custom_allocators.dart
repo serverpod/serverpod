@@ -26,6 +26,9 @@ const _doNotPrefix = {'dart:core'};
 /// [_canonicalizeUrl] runs for every reference the generators emit.
 final _canonicalUrls = <String, String>{};
 
+/// Maps a referenced import URL to the URL that should be imported.
+typedef UrlResolver = String Function(String url);
+
 /// Rewrites URLs that cannot be imported as referenced.
 ///
 /// Some URLs a reference can carry are not importable — `package:fixnum` 1.2.0
@@ -177,11 +180,10 @@ abstract interface class AssigningAllocator implements Allocator {
 /// import directive and the prefix in the code beside it agree by
 /// construction.
 class _PrefixRegistry {
-  _PrefixRegistry({String Function(String url)? resolveUrl})
-    : _resolveUrl = resolveUrl;
+  _PrefixRegistry({UrlResolver? resolveUrl}) : _resolveUrl = resolveUrl;
 
   /// See [StableImportAllocator.new].
-  final String Function(String url)? _resolveUrl;
+  final UrlResolver? _resolveUrl;
 
   final Set<String> _urls = {};
 
@@ -303,7 +305,7 @@ class _PrefixRegistry {
 class StableImportAllocator implements AssigningAllocator {
   final _PrefixRegistry _registry;
 
-  StableImportAllocator({String Function(String url)? resolveUrl})
+  StableImportAllocator({UrlResolver? resolveUrl})
     : _registry = _PrefixRegistry(resolveUrl: resolveUrl);
 
   @override
@@ -332,7 +334,7 @@ class ImportCollector {
   final _PrefixRegistry _registry;
   final String basePath;
 
-  ImportCollector(this.basePath, {String Function(String url)? resolveUrl})
+  ImportCollector(this.basePath, {UrlResolver? resolveUrl})
     : _registry = _PrefixRegistry(resolveUrl: resolveUrl);
 
   /// See [AssigningAllocator.assignPrefixes].

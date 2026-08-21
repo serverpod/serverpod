@@ -34,7 +34,7 @@ class ModelAllocatorContext {
   factory ModelAllocatorContext.build(
     List<SerializableModelDefinition> models,
     GeneratorConfig config, {
-    String Function(String url)? resolveUrl,
+    UrlResolver? resolveUrl,
   }) {
     var entries = <ModelAllocatorEntry>[];
 
