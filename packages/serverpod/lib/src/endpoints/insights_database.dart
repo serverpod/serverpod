@@ -35,7 +35,7 @@ abstract class InsightsDatabaseEndpoint extends Endpoint {
     Filter? filter,
   }) async {
     try {
-      return DatabaseBulkData.exportTableData(
+      return await DatabaseBulkData.exportTableData(
         database: session.db,
         table: table,
         lastId: startingId,
