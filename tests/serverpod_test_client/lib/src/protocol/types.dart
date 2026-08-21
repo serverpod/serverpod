@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'test_enum.dart' as _i3;
-import 'test_enum_stringified.dart' as _i4;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
 
 abstract class Types
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Types._({
     this.id,
     this.anInt,
@@ -53,21 +53,21 @@ abstract class Types
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i1.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i1.Vector? aVector,
-    _i1.HalfVector? aHalfVector,
-    _i1.SparseVector? aSparseVector,
-    _i1.Bit? aBit,
-    _i1.GeographyPoint? aGeographyPoint,
-    _i1.GeographyLineString? aGeographyLineString,
-    _i1.GeographyPolygon? aGeographyPolygon,
-    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i3.TestEnum? anEnum,
-    _i4.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -80,86 +80,90 @@ abstract class Types
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i1.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
+          : _isc.ByteDataJsonExtension.fromJson(jsonSerialization['aByteData']),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
+          : _isc.DurationJsonExtension.fromJson(jsonSerialization['aDuration']),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['aUuid']),
       aUri: jsonSerialization['aUri'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['aUri']),
+          : _isc.UriJsonExtension.fromJson(jsonSerialization['aUri']),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
+          : _isc.BigIntJsonExtension.fromJson(jsonSerialization['aBigInt']),
       aVector: jsonSerialization['aVector'] == null
           ? null
-          : _i1.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
+          : _isc.VectorJsonExtension.fromJson(jsonSerialization['aVector']),
       aHalfVector: jsonSerialization['aHalfVector'] == null
           ? null
-          : _i1.HalfVectorJsonExtension.fromJson(
+          : _isc.HalfVectorJsonExtension.fromJson(
               jsonSerialization['aHalfVector'],
             ),
       aSparseVector: jsonSerialization['aSparseVector'] == null
           ? null
-          : _i1.SparseVectorJsonExtension.fromJson(
+          : _isc.SparseVectorJsonExtension.fromJson(
               jsonSerialization['aSparseVector'],
             ),
       aBit: jsonSerialization['aBit'] == null
           ? null
-          : _i1.BitJsonExtension.fromJson(jsonSerialization['aBit']),
+          : _isc.BitJsonExtension.fromJson(jsonSerialization['aBit']),
       aGeographyPoint: jsonSerialization['aGeographyPoint'] == null
           ? null
-          : _i1.GeographyPointJsonExtension.fromJson(
+          : _isc.GeographyPointJsonExtension.fromJson(
               jsonSerialization['aGeographyPoint'],
             ),
       aGeographyLineString: jsonSerialization['aGeographyLineString'] == null
           ? null
-          : _i1.GeographyLineStringJsonExtension.fromJson(
+          : _isc.GeographyLineStringJsonExtension.fromJson(
               jsonSerialization['aGeographyLineString'],
             ),
       aGeographyPolygon: jsonSerialization['aGeographyPolygon'] == null
           ? null
-          : _i1.GeographyPolygonJsonExtension.fromJson(
+          : _isc.GeographyPolygonJsonExtension.fromJson(
               jsonSerialization['aGeographyPolygon'],
             ),
       aGeographyGeometryCollection:
           jsonSerialization['aGeographyGeometryCollection'] == null
           ? null
-          : _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+          : _isc.GeographyGeometryCollectionJsonExtension.fromJson(
               jsonSerialization['aGeographyGeometryCollection'],
             ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
-          : _i3.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
+          : _ionapfu9.TestEnum.fromJson((jsonSerialization['anEnum'] as int)),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i4.TestEnumStringified.fromJson(
+          : _i7liykk2.TestEnumStringified.fromJson(
               (jsonSerialization['aStringifiedEnum'] as String),
             ),
       aList: jsonSerialization['aList'] == null
           ? null
-          : _i5.Protocol().deserialize<List<int>>(jsonSerialization['aList']),
+          : _iza9lbb5.Protocol().deserialize<List<int>>(
+              jsonSerialization['aList'],
+            ),
       aMap: jsonSerialization['aMap'] == null
           ? null
-          : _i5.Protocol().deserialize<Map<int, int>>(
+          : _iza9lbb5.Protocol().deserialize<Map<int, int>>(
               jsonSerialization['aMap'],
             ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i5.Protocol().deserialize<Set<int>>(jsonSerialization['aSet']),
+          : _iza9lbb5.Protocol().deserialize<Set<int>>(
+              jsonSerialization['aSet'],
+            ),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
-          : _i5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
+          : _iza9lbb5.Protocol().deserialize<(String, {Uri? optionalUri})?>(
               (jsonSerialization['aRecord'] as Map<String, dynamic>),
             ),
     );
@@ -180,35 +184,35 @@ abstract class Types
 
   String? aString;
 
-  _i2.ByteData? aByteData;
+  _idt.ByteData? aByteData;
 
   Duration? aDuration;
 
-  _i1.UuidValue? aUuid;
+  _isc.UuidValue? aUuid;
 
   Uri? aUri;
 
   BigInt? aBigInt;
 
-  _i1.Vector? aVector;
+  _isc.Vector? aVector;
 
-  _i1.HalfVector? aHalfVector;
+  _isc.HalfVector? aHalfVector;
 
-  _i1.SparseVector? aSparseVector;
+  _isc.SparseVector? aSparseVector;
 
-  _i1.Bit? aBit;
+  _isc.Bit? aBit;
 
-  _i1.GeographyPoint? aGeographyPoint;
+  _isc.GeographyPoint? aGeographyPoint;
 
-  _i1.GeographyLineString? aGeographyLineString;
+  _isc.GeographyLineString? aGeographyLineString;
 
-  _i1.GeographyPolygon? aGeographyPolygon;
+  _isc.GeographyPolygon? aGeographyPolygon;
 
-  _i1.GeographyGeometryCollection? aGeographyGeometryCollection;
+  _isc.GeographyGeometryCollection? aGeographyGeometryCollection;
 
-  _i3.TestEnum? anEnum;
+  _ionapfu9.TestEnum? anEnum;
 
-  _i4.TestEnumStringified? aStringifiedEnum;
+  _i7liykk2.TestEnumStringified? aStringifiedEnum;
 
   List<int>? aList;
 
@@ -220,7 +224,7 @@ abstract class Types
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Types copyWith({
     int? id,
     int? anInt,
@@ -228,21 +232,21 @@ abstract class Types
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i1.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i1.Vector? aVector,
-    _i1.HalfVector? aHalfVector,
-    _i1.SparseVector? aSparseVector,
-    _i1.Bit? aBit,
-    _i1.GeographyPoint? aGeographyPoint,
-    _i1.GeographyLineString? aGeographyLineString,
-    _i1.GeographyPolygon? aGeographyPolygon,
-    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i3.TestEnum? anEnum,
-    _i4.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -280,7 +284,8 @@ abstract class Types
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
+      if (aRecord != null)
+        'aRecord': _iza9lbb5.Protocol().mapRecordToJson(aRecord),
     };
   }
 
@@ -316,13 +321,14 @@ abstract class Types
       if (aList != null) 'aList': aList?.toJson(),
       if (aMap != null) 'aMap': aMap?.toJson(),
       if (aSet != null) 'aSet': aSet?.toJson(),
-      if (aRecord != null) 'aRecord': _i5.Protocol().mapRecordToJson(aRecord),
+      if (aRecord != null)
+        'aRecord': _iza9lbb5.Protocol().mapRecordToJson(aRecord),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -336,21 +342,21 @@ class _TypesImpl extends Types {
     double? aDouble,
     DateTime? aDateTime,
     String? aString,
-    _i2.ByteData? aByteData,
+    _idt.ByteData? aByteData,
     Duration? aDuration,
-    _i1.UuidValue? aUuid,
+    _isc.UuidValue? aUuid,
     Uri? aUri,
     BigInt? aBigInt,
-    _i1.Vector? aVector,
-    _i1.HalfVector? aHalfVector,
-    _i1.SparseVector? aSparseVector,
-    _i1.Bit? aBit,
-    _i1.GeographyPoint? aGeographyPoint,
-    _i1.GeographyLineString? aGeographyLineString,
-    _i1.GeographyPolygon? aGeographyPolygon,
-    _i1.GeographyGeometryCollection? aGeographyGeometryCollection,
-    _i3.TestEnum? anEnum,
-    _i4.TestEnumStringified? aStringifiedEnum,
+    _isc.Vector? aVector,
+    _isc.HalfVector? aHalfVector,
+    _isc.SparseVector? aSparseVector,
+    _isc.Bit? aBit,
+    _isc.GeographyPoint? aGeographyPoint,
+    _isc.GeographyLineString? aGeographyLineString,
+    _isc.GeographyPolygon? aGeographyPolygon,
+    _isc.GeographyGeometryCollection? aGeographyGeometryCollection,
+    _ionapfu9.TestEnum? anEnum,
+    _i7liykk2.TestEnumStringified? aStringifiedEnum,
     List<int>? aList,
     Map<int, int>? aMap,
     Set<int>? aSet,
@@ -385,7 +391,7 @@ class _TypesImpl extends Types {
 
   /// Returns a shallow copy of this [Types]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Types copyWith({
     Object? id = _Undefined,
@@ -421,36 +427,36 @@ class _TypesImpl extends Types {
       aDouble: aDouble is double? ? aDouble : this.aDouble,
       aDateTime: aDateTime is DateTime? ? aDateTime : this.aDateTime,
       aString: aString is String? ? aString : this.aString,
-      aByteData: aByteData is _i2.ByteData?
+      aByteData: aByteData is _idt.ByteData?
           ? aByteData
           : this.aByteData?.clone(),
       aDuration: aDuration is Duration? ? aDuration : this.aDuration,
-      aUuid: aUuid is _i1.UuidValue? ? aUuid : this.aUuid,
+      aUuid: aUuid is _isc.UuidValue? ? aUuid : this.aUuid,
       aUri: aUri is Uri? ? aUri : this.aUri,
       aBigInt: aBigInt is BigInt? ? aBigInt : this.aBigInt,
-      aVector: aVector is _i1.Vector? ? aVector : this.aVector?.clone(),
-      aHalfVector: aHalfVector is _i1.HalfVector?
+      aVector: aVector is _isc.Vector? ? aVector : this.aVector?.clone(),
+      aHalfVector: aHalfVector is _isc.HalfVector?
           ? aHalfVector
           : this.aHalfVector?.clone(),
-      aSparseVector: aSparseVector is _i1.SparseVector?
+      aSparseVector: aSparseVector is _isc.SparseVector?
           ? aSparseVector
           : this.aSparseVector?.clone(),
-      aBit: aBit is _i1.Bit? ? aBit : this.aBit?.clone(),
-      aGeographyPoint: aGeographyPoint is _i1.GeographyPoint?
+      aBit: aBit is _isc.Bit? ? aBit : this.aBit?.clone(),
+      aGeographyPoint: aGeographyPoint is _isc.GeographyPoint?
           ? aGeographyPoint
           : this.aGeographyPoint,
-      aGeographyLineString: aGeographyLineString is _i1.GeographyLineString?
+      aGeographyLineString: aGeographyLineString is _isc.GeographyLineString?
           ? aGeographyLineString
           : this.aGeographyLineString,
-      aGeographyPolygon: aGeographyPolygon is _i1.GeographyPolygon?
+      aGeographyPolygon: aGeographyPolygon is _isc.GeographyPolygon?
           ? aGeographyPolygon
           : this.aGeographyPolygon,
       aGeographyGeometryCollection:
-          aGeographyGeometryCollection is _i1.GeographyGeometryCollection?
+          aGeographyGeometryCollection is _isc.GeographyGeometryCollection?
           ? aGeographyGeometryCollection
           : this.aGeographyGeometryCollection,
-      anEnum: anEnum is _i3.TestEnum? ? anEnum : this.anEnum,
-      aStringifiedEnum: aStringifiedEnum is _i4.TestEnumStringified?
+      anEnum: anEnum is _ionapfu9.TestEnum? ? anEnum : this.anEnum,
+      aStringifiedEnum: aStringifiedEnum is _i7liykk2.TestEnumStringified?
           ? aStringifiedEnum
           : this.aStringifiedEnum,
       aList: aList is List<int>? ? aList : this.aList?.map((e0) => e0).toList(),

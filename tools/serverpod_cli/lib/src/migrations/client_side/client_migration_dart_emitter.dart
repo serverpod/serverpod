@@ -184,7 +184,6 @@ const _createMigrationFileHeader = '''
 /// Merging: resolve registry conflicts the same as migration_registry.txt.
 ''';
 
-final _emitter = DartEmitter(
-  useNullSafetySyntax: true,
-  allocator: Allocator.simplePrefixing(),
-);
+// Every reference emitted here is a bare symbol covered by the imports the
+// file header writes by hand, so nothing needs allocating.
+final _emitter = DartEmitter(useNullSafetySyntax: true);

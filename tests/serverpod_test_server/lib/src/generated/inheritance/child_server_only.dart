@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../protocol.dart' as _iv35mfmj;
 
-abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ServerOnlyChildClass extends _iv35mfmj.NonServerOnlyParentClass
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ServerOnlyChildClass._({
     required super.parentField,
     required this.childField,
@@ -39,7 +39,7 @@ abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
   /// Returns a shallow copy of this [ServerOnlyChildClass]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ServerOnlyChildClass copyWith({
     String? parentField,
     String? childField,
@@ -60,7 +60,7 @@ abstract class ServerOnlyChildClass extends _i1.NonServerOnlyParentClass
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -75,7 +75,7 @@ class _ServerOnlyChildClassImpl extends ServerOnlyChildClass {
 
   /// Returns a shallow copy of this [ServerOnlyChildClass]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ServerOnlyChildClass copyWith({
     String? parentField,

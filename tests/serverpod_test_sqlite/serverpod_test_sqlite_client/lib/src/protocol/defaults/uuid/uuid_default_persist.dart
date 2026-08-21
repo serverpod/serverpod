@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UuidDefaultPersist
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UuidDefaultPersist._({
     this.id,
     this.uuidDefaultPersistRandom,
@@ -23,9 +23,9 @@ abstract class UuidDefaultPersist
 
   factory UuidDefaultPersist({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _isc.UuidValue? uuidDefaultPersistRandom,
+    _isc.UuidValue? uuidDefaultPersistRandomV7,
+    _isc.UuidValue? uuidDefaultPersistStr,
   }) = _UuidDefaultPersistImpl;
 
   factory UuidDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,18 +34,18 @@ abstract class UuidDefaultPersist
       uuidDefaultPersistRandom:
           jsonSerialization['uuidDefaultPersistRandom'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistRandom'],
             ),
       uuidDefaultPersistRandomV7:
           jsonSerialization['uuidDefaultPersistRandomV7'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistRandomV7'],
             ),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistStr'],
             ),
     );
@@ -56,20 +56,20 @@ abstract class UuidDefaultPersist
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue? uuidDefaultPersistRandom;
+  _isc.UuidValue? uuidDefaultPersistRandom;
 
-  _i1.UuidValue? uuidDefaultPersistRandomV7;
+  _isc.UuidValue? uuidDefaultPersistRandomV7;
 
-  _i1.UuidValue? uuidDefaultPersistStr;
+  _isc.UuidValue? uuidDefaultPersistStr;
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UuidDefaultPersist copyWith({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _isc.UuidValue? uuidDefaultPersistRandom,
+    _isc.UuidValue? uuidDefaultPersistRandomV7,
+    _isc.UuidValue? uuidDefaultPersistStr,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,7 +101,7 @@ abstract class UuidDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,9 +110,9 @@ class _Undefined {}
 class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   _UuidDefaultPersistImpl({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _isc.UuidValue? uuidDefaultPersistRandom,
+    _isc.UuidValue? uuidDefaultPersistRandomV7,
+    _isc.UuidValue? uuidDefaultPersistStr,
   }) : super._(
          id: id,
          uuidDefaultPersistRandom: uuidDefaultPersistRandom,
@@ -122,7 +122,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
@@ -132,13 +132,13 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }) {
     return UuidDefaultPersist(
       id: id is int? ? id : this.id,
-      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _i1.UuidValue?
+      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _isc.UuidValue?
           ? uuidDefaultPersistRandom
           : this.uuidDefaultPersistRandom,
-      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _i1.UuidValue?
+      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _isc.UuidValue?
           ? uuidDefaultPersistRandomV7
           : this.uuidDefaultPersistRandomV7,
-      uuidDefaultPersistStr: uuidDefaultPersistStr is _i1.UuidValue?
+      uuidDefaultPersistStr: uuidDefaultPersistStr is _isc.UuidValue?
           ? uuidDefaultPersistStr
           : this.uuidDefaultPersistStr,
     );

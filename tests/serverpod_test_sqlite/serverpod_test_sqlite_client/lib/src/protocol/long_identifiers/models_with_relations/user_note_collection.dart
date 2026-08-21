@@ -10,12 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../long_identifiers/models_with_relations/user_note.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../long_identifiers/models_with_relations/user_note.dart'
+    as _ia9r0qbl;
 
 abstract class UserNoteCollection
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserNoteCollection._({
     this.id,
     required this.name,
@@ -25,7 +27,7 @@ abstract class UserNoteCollection
   factory UserNoteCollection({
     int? id,
     required String name,
-    List<_i2.UserNote>? userNotesPropertyName,
+    List<_ia9r0qbl.UserNote>? userNotesPropertyName,
   }) = _UserNoteCollectionImpl;
 
   factory UserNoteCollection.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +36,7 @@ abstract class UserNoteCollection
       name: jsonSerialization['name'] as String,
       userNotesPropertyName: jsonSerialization['userNotesPropertyName'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.UserNote>>(
+          : _i0ntutnq.Protocol().deserialize<List<_ia9r0qbl.UserNote>>(
               jsonSerialization['userNotesPropertyName'],
             ),
     );
@@ -47,15 +49,15 @@ abstract class UserNoteCollection
 
   String name;
 
-  List<_i2.UserNote>? userNotesPropertyName;
+  List<_ia9r0qbl.UserNote>? userNotesPropertyName;
 
   /// Returns a shallow copy of this [UserNoteCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserNoteCollection copyWith({
     int? id,
     String? name,
-    List<_i2.UserNote>? userNotesPropertyName,
+    List<_ia9r0qbl.UserNote>? userNotesPropertyName,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +87,7 @@ abstract class UserNoteCollection
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +97,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
   _UserNoteCollectionImpl({
     int? id,
     required String name,
-    List<_i2.UserNote>? userNotesPropertyName,
+    List<_ia9r0qbl.UserNote>? userNotesPropertyName,
   }) : super._(
          id: id,
          name: name,
@@ -104,7 +106,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
 
   /// Returns a shallow copy of this [UserNoteCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserNoteCollection copyWith({
     Object? id = _Undefined,
@@ -114,7 +116,7 @@ class _UserNoteCollectionImpl extends UserNoteCollection {
     return UserNoteCollection(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      userNotesPropertyName: userNotesPropertyName is List<_i2.UserNote>?
+      userNotesPropertyName: userNotesPropertyName is List<_ia9r0qbl.UserNote>?
           ? userNotesPropertyName
           : this.userNotesPropertyName?.map((e0) => e0.copyWith()).toList(),
     );

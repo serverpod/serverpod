@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../changed_id_type/self.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../changed_id_type/self.dart' as _iqjmn1nu;
 
 abstract class ChangedIdTypeSelf
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ChangedIdTypeSelf._({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required this.name,
     this.previous,
     this.nextId,
@@ -25,83 +25,83 @@ abstract class ChangedIdTypeSelf
     this.parentId,
     this.parent,
     this.children,
-  }) : id = id ?? const _i1.Uuid().v4obj();
+  }) : id = id ?? const _isc.Uuid().v4obj();
 
   factory ChangedIdTypeSelf({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
-    _i2.ChangedIdTypeSelf? previous,
-    _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
-    _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _iqjmn1nu.ChangedIdTypeSelf? previous,
+    _isc.UuidValue? nextId,
+    _iqjmn1nu.ChangedIdTypeSelf? next,
+    _isc.UuidValue? parentId,
+    _iqjmn1nu.ChangedIdTypeSelf? parent,
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children,
   }) = _ChangedIdTypeSelfImpl;
 
   factory ChangedIdTypeSelf.fromJson(Map<String, dynamic> jsonSerialization) {
     return ChangedIdTypeSelf(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+          : _iza9lbb5.Protocol().deserialize<_iqjmn1nu.ChangedIdTypeSelf>(
               jsonSerialization['previous'],
             ),
       nextId: jsonSerialization['nextId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['nextId']),
       next: jsonSerialization['next'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+          : _iza9lbb5.Protocol().deserialize<_iqjmn1nu.ChangedIdTypeSelf>(
               jsonSerialization['next'],
             ),
       parentId: jsonSerialization['parentId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['parentId']),
       parent: jsonSerialization['parent'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ChangedIdTypeSelf>(
+          : _iza9lbb5.Protocol().deserialize<_iqjmn1nu.ChangedIdTypeSelf>(
               jsonSerialization['parent'],
             ),
       children: jsonSerialization['children'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ChangedIdTypeSelf>>(
+          : _iza9lbb5.Protocol().deserialize<List<_iqjmn1nu.ChangedIdTypeSelf>>(
               jsonSerialization['children'],
             ),
     );
   }
 
   /// The id of the object.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
   String name;
 
-  _i2.ChangedIdTypeSelf? previous;
+  _iqjmn1nu.ChangedIdTypeSelf? previous;
 
-  _i1.UuidValue? nextId;
+  _isc.UuidValue? nextId;
 
-  _i2.ChangedIdTypeSelf? next;
+  _iqjmn1nu.ChangedIdTypeSelf? next;
 
-  _i1.UuidValue? parentId;
+  _isc.UuidValue? parentId;
 
-  _i2.ChangedIdTypeSelf? parent;
+  _iqjmn1nu.ChangedIdTypeSelf? parent;
 
-  List<_i2.ChangedIdTypeSelf>? children;
+  List<_iqjmn1nu.ChangedIdTypeSelf>? children;
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ChangedIdTypeSelf copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     String? name,
-    _i2.ChangedIdTypeSelf? previous,
-    _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
-    _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _iqjmn1nu.ChangedIdTypeSelf? previous,
+    _isc.UuidValue? nextId,
+    _iqjmn1nu.ChangedIdTypeSelf? next,
+    _isc.UuidValue? parentId,
+    _iqjmn1nu.ChangedIdTypeSelf? parent,
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -137,7 +137,7 @@ abstract class ChangedIdTypeSelf
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -145,14 +145,14 @@ class _Undefined {}
 
 class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
   _ChangedIdTypeSelfImpl({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
-    _i2.ChangedIdTypeSelf? previous,
-    _i1.UuidValue? nextId,
-    _i2.ChangedIdTypeSelf? next,
-    _i1.UuidValue? parentId,
-    _i2.ChangedIdTypeSelf? parent,
-    List<_i2.ChangedIdTypeSelf>? children,
+    _iqjmn1nu.ChangedIdTypeSelf? previous,
+    _isc.UuidValue? nextId,
+    _iqjmn1nu.ChangedIdTypeSelf? next,
+    _isc.UuidValue? parentId,
+    _iqjmn1nu.ChangedIdTypeSelf? parent,
+    List<_iqjmn1nu.ChangedIdTypeSelf>? children,
   }) : super._(
          id: id,
          name: name,
@@ -166,7 +166,7 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
 
   /// Returns a shallow copy of this [ChangedIdTypeSelf]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ChangedIdTypeSelf copyWith({
     Object? id = _Undefined,
@@ -179,18 +179,18 @@ class _ChangedIdTypeSelfImpl extends ChangedIdTypeSelf {
     Object? children = _Undefined,
   }) {
     return ChangedIdTypeSelf(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      previous: previous is _i2.ChangedIdTypeSelf?
+      previous: previous is _iqjmn1nu.ChangedIdTypeSelf?
           ? previous
           : this.previous?.copyWith(),
-      nextId: nextId is _i1.UuidValue? ? nextId : this.nextId,
-      next: next is _i2.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
-      parentId: parentId is _i1.UuidValue? ? parentId : this.parentId,
-      parent: parent is _i2.ChangedIdTypeSelf?
+      nextId: nextId is _isc.UuidValue? ? nextId : this.nextId,
+      next: next is _iqjmn1nu.ChangedIdTypeSelf? ? next : this.next?.copyWith(),
+      parentId: parentId is _isc.UuidValue? ? parentId : this.parentId,
+      parent: parent is _iqjmn1nu.ChangedIdTypeSelf?
           ? parent
           : this.parent?.copyWith(),
-      children: children is List<_i2.ChangedIdTypeSelf>?
+      children: children is List<_iqjmn1nu.ChangedIdTypeSelf>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
     );

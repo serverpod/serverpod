@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/one_to_one/town.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/one_to_one/town.dart' as _i59ly1gg;
 
 abstract class Company
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Company._({
     this.id,
     required this.name,
@@ -27,7 +27,7 @@ abstract class Company
     int? id,
     required String name,
     required int townId,
-    _i2.Town? town,
+    _i59ly1gg.Town? town,
   }) = _CompanyImpl;
 
   factory Company.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,9 @@ abstract class Company
       townId: jsonSerialization['townId'] as int,
       town: jsonSerialization['town'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Town>(jsonSerialization['town']),
+          : _iza9lbb5.Protocol().deserialize<_i59ly1gg.Town>(
+              jsonSerialization['town'],
+            ),
     );
   }
 
@@ -50,16 +52,16 @@ abstract class Company
 
   int townId;
 
-  _i2.Town? town;
+  _i59ly1gg.Town? town;
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Company copyWith({
     int? id,
     String? name,
     int? townId,
-    _i2.Town? town,
+    _i59ly1gg.Town? town,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +87,7 @@ abstract class Company
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +98,7 @@ class _CompanyImpl extends Company {
     int? id,
     required String name,
     required int townId,
-    _i2.Town? town,
+    _i59ly1gg.Town? town,
   }) : super._(
          id: id,
          name: name,
@@ -106,7 +108,7 @@ class _CompanyImpl extends Company {
 
   /// Returns a shallow copy of this [Company]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Company copyWith({
     Object? id = _Undefined,
@@ -118,7 +120,7 @@ class _CompanyImpl extends Company {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       townId: townId ?? this.townId,
-      town: town is _i2.Town? ? town : this.town?.copyWith(),
+      town: town is _i59ly1gg.Town? ? town : this.town?.copyWith(),
     );
   }
 }

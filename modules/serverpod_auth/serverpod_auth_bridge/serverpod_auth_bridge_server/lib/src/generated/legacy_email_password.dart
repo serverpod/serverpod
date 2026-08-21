@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
-    as _i3;
+    as _isg9n5v0;
+import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
+    as _iais;
 
 abstract class LegacyEmailPassword
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   LegacyEmailPassword._({
     this.id,
     required this.emailAccountId,
@@ -27,9 +27,9 @@ abstract class LegacyEmailPassword
   });
 
   factory LegacyEmailPassword({
-    _i1.UuidValue? id,
-    required _i1.UuidValue emailAccountId,
-    _i2.EmailAccount? emailAccount,
+    _is.UuidValue? id,
+    required _is.UuidValue emailAccountId,
+    _iais.EmailAccount? emailAccount,
     required String hash,
   }) = _LegacyEmailPasswordImpl;
 
@@ -37,13 +37,13 @@ abstract class LegacyEmailPassword
     return LegacyEmailPassword(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      emailAccountId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      emailAccountId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['emailAccountId'],
       ),
       emailAccount: jsonSerialization['emailAccount'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.EmailAccount>(
+          : _isg9n5v0.Protocol().deserialize<_iais.EmailAccount>(
               jsonSerialization['emailAccount'],
             ),
       hash: jsonSerialization['hash'] as String,
@@ -55,12 +55,12 @@ abstract class LegacyEmailPassword
   static const db = LegacyEmailPasswordRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue emailAccountId;
+  _is.UuidValue emailAccountId;
 
   /// The [EmailAccount] this password could log in.
-  _i2.EmailAccount? emailAccount;
+  _iais.EmailAccount? emailAccount;
 
   /// The hashed password of the user.
   ///
@@ -68,15 +68,15 @@ abstract class LegacyEmailPassword
   String hash;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [LegacyEmailPassword]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacyEmailPassword copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? emailAccountId,
-    _i2.EmailAccount? emailAccount,
+    _is.UuidValue? id,
+    _is.UuidValue? emailAccountId,
+    _iais.EmailAccount? emailAccount,
     String? hash,
   });
   @override
@@ -96,17 +96,17 @@ abstract class LegacyEmailPassword
   }
 
   static LegacyEmailPasswordInclude include({
-    _i2.EmailAccountInclude? emailAccount,
+    _iais.EmailAccountInclude? emailAccount,
   }) {
     return LegacyEmailPasswordInclude._(emailAccount: emailAccount);
   }
 
   static LegacyEmailPasswordIncludeList includeList({
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     LegacyEmailPasswordInclude? include,
   }) {
     return LegacyEmailPasswordIncludeList._(
@@ -121,7 +121,7 @@ abstract class LegacyEmailPassword
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -129,9 +129,9 @@ class _Undefined {}
 
 class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
   _LegacyEmailPasswordImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue emailAccountId,
-    _i2.EmailAccount? emailAccount,
+    _is.UuidValue? id,
+    required _is.UuidValue emailAccountId,
+    _iais.EmailAccount? emailAccount,
     required String hash,
   }) : super._(
          id: id,
@@ -142,18 +142,18 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
 
   /// Returns a shallow copy of this [LegacyEmailPassword]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacyEmailPassword copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? emailAccountId,
+    _is.UuidValue? emailAccountId,
     Object? emailAccount = _Undefined,
     String? hash,
   }) {
     return LegacyEmailPassword(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       emailAccountId: emailAccountId ?? this.emailAccountId,
-      emailAccount: emailAccount is _i2.EmailAccount?
+      emailAccount: emailAccount is _iais.EmailAccount?
           ? emailAccount
           : this.emailAccount?.copyWith(),
       hash: hash ?? this.hash,
@@ -162,31 +162,31 @@ class _LegacyEmailPasswordImpl extends LegacyEmailPassword {
 }
 
 class LegacyEmailPasswordUpdateTable
-    extends _i1.UpdateTable<LegacyEmailPasswordTable> {
+    extends _is.UpdateTable<LegacyEmailPasswordTable> {
   LegacyEmailPasswordUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> emailAccountId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> emailAccountId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.emailAccountId,
     value,
   );
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hash(String value) => _is.ColumnValue(
     table.hash,
     value,
   );
 }
 
-class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
+class LegacyEmailPasswordTable extends _is.Table<_is.UuidValue?> {
   LegacyEmailPasswordTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_bridge_email_password') {
     updateTable = LegacyEmailPasswordUpdateTable(this);
-    emailAccountId = _i1.ColumnUuid(
+    emailAccountId = _is.ColumnUuid(
       'emailAccountId',
       this,
     );
-    hash = _i1.ColumnString(
+    hash = _is.ColumnString(
       'hash',
       this,
     );
@@ -194,38 +194,38 @@ class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
 
   late final LegacyEmailPasswordUpdateTable updateTable;
 
-  late final _i1.ColumnUuid emailAccountId;
+  late final _is.ColumnUuid emailAccountId;
 
   /// The [EmailAccount] this password could log in.
-  _i2.EmailAccountTable? _emailAccount;
+  _iais.EmailAccountTable? _emailAccount;
 
   /// The hashed password of the user.
   ///
   /// As stored by the legacy `serverpod_auth`'s `EmailAuth` model.
-  late final _i1.ColumnString hash;
+  late final _is.ColumnString hash;
 
-  _i2.EmailAccountTable get emailAccount {
+  _iais.EmailAccountTable get emailAccount {
     if (_emailAccount != null) return _emailAccount!;
-    _emailAccount = _i1.createRelationTable(
+    _emailAccount = _is.createRelationTable(
       relationFieldName: 'emailAccount',
       field: LegacyEmailPassword.t.emailAccountId,
-      foreignField: _i2.EmailAccount.t.id,
+      foreignField: _iais.EmailAccount.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EmailAccountTable(tableRelation: foreignTableRelation),
+          _iais.EmailAccountTable(tableRelation: foreignTableRelation),
     );
     return _emailAccount!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     emailAccountId,
     hash,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'emailAccount') {
       return emailAccount;
     }
@@ -233,23 +233,23 @@ class LegacyEmailPasswordTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class LegacyEmailPasswordInclude extends _i1.IncludeObject {
-  LegacyEmailPasswordInclude._({_i2.EmailAccountInclude? emailAccount}) {
+class LegacyEmailPasswordInclude extends _is.IncludeObject {
+  LegacyEmailPasswordInclude._({_iais.EmailAccountInclude? emailAccount}) {
     _emailAccount = emailAccount;
   }
 
-  _i2.EmailAccountInclude? _emailAccount;
+  _iais.EmailAccountInclude? _emailAccount;
 
   @override
-  Map<String, _i1.Include?> get includes => {'emailAccount': _emailAccount};
+  Map<String, _is.Include?> get includes => {'emailAccount': _emailAccount};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => LegacyEmailPassword.t;
+  _is.Table<_is.UuidValue?> get table => LegacyEmailPassword.t;
 }
 
-class LegacyEmailPasswordIncludeList extends _i1.IncludeList {
+class LegacyEmailPasswordIncludeList extends _is.IncludeList {
   LegacyEmailPasswordIncludeList._({
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -260,10 +260,10 @@ class LegacyEmailPasswordIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => LegacyEmailPassword.t;
+  _is.Table<_is.UuidValue?> get table => LegacyEmailPassword.t;
 }
 
 class LegacyEmailPasswordRepository {
@@ -294,16 +294,16 @@ class LegacyEmailPasswordRepository {
   /// );
   /// ```
   Future<List<LegacyEmailPassword>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
     LegacyEmailPasswordInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacyEmailPassword>(
       where: where?.call(LegacyEmailPassword.t),
@@ -336,15 +336,15 @@ class LegacyEmailPasswordRepository {
   /// );
   /// ```
   Future<LegacyEmailPassword?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? offset,
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
     LegacyEmailPasswordInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacyEmailPassword>(
       where: where?.call(LegacyEmailPassword.t),
@@ -360,12 +360,12 @@ class LegacyEmailPasswordRepository {
 
   /// Finds a single [LegacyEmailPassword] by its [id] or null if no such row exists.
   Future<LegacyEmailPassword?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     LegacyEmailPasswordInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LegacyEmailPassword>(
       id,
@@ -391,9 +391,9 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -409,9 +409,9 @@ class LegacyEmailPasswordRepository {
   ///
   /// The returned [LegacyEmailPassword] will have its `id` field set.
   Future<LegacyEmailPassword> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyEmailPassword row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<LegacyEmailPassword>(
       row,
@@ -440,12 +440,12 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
-    required _i1.ColumnSelections<LegacyEmailPasswordTable> conflictColumns,
-    _i1.ColumnSelections<LegacyEmailPasswordTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LegacyEmailPasswordTable> conflictColumns,
+    _is.ColumnSelections<LegacyEmailPasswordTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<LegacyEmailPassword>(
@@ -472,12 +472,12 @@ class LegacyEmailPasswordRepository {
   ///
   /// The returned [LegacyEmailPassword] will have its `id` field set.
   Future<LegacyEmailPassword?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyEmailPassword row, {
-    required _i1.ColumnSelections<LegacyEmailPasswordTable> conflictColumns,
-    _i1.ColumnSelections<LegacyEmailPasswordTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LegacyEmailPasswordTable> conflictColumns,
+    _is.ColumnSelections<LegacyEmailPasswordTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<LegacyEmailPassword>(
       row,
@@ -498,10 +498,10 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
-    _i1.ColumnSelections<LegacyEmailPasswordTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyEmailPasswordTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<LegacyEmailPassword>(
@@ -516,10 +516,10 @@ class LegacyEmailPasswordRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LegacyEmailPassword> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyEmailPassword row, {
-    _i1.ColumnSelections<LegacyEmailPasswordTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacyEmailPasswordTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<LegacyEmailPassword>(
       row,
@@ -531,11 +531,11 @@ class LegacyEmailPasswordRepository {
   /// Updates a single [LegacyEmailPassword] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LegacyEmailPassword?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacyEmailPassword>(
       id,
@@ -551,15 +551,15 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<LegacyEmailPasswordUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    required _is.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacyEmailPassword>(
@@ -586,11 +586,11 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacyEmailPassword> rows, {
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<LegacyEmailPassword>(
@@ -604,9 +604,9 @@ class LegacyEmailPasswordRepository {
 
   /// Deletes a single [LegacyEmailPassword].
   Future<LegacyEmailPassword> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyEmailPassword row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<LegacyEmailPassword>(
       row,
@@ -623,11 +623,11 @@ class LegacyEmailPasswordRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacyEmailPassword>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
-    _i1.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
-    _i1.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacyEmailPassword>(
@@ -642,10 +642,10 @@ class LegacyEmailPasswordRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacyEmailPassword>(
       where: where?.call(LegacyEmailPassword.t),
@@ -656,11 +656,11 @@ class LegacyEmailPasswordRepository {
 
   /// Acquires row-level locks on [LegacyEmailPassword] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacyEmailPasswordTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacyEmailPassword>(
       where: where(LegacyEmailPassword.t),
@@ -677,10 +677,10 @@ class LegacyEmailPasswordAttachRowRepository {
   /// Creates a relation between the given [LegacyEmailPassword] and [EmailAccount]
   /// by setting the [LegacyEmailPassword]'s foreign key `emailAccountId` to refer to the [EmailAccount].
   Future<void> emailAccount(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacyEmailPassword legacyEmailPassword,
-    _i2.EmailAccount emailAccount, {
-    _i1.Transaction? transaction,
+    _iais.EmailAccount emailAccount, {
+    _is.Transaction? transaction,
   }) async {
     if (legacyEmailPassword.id == null) {
       throw ArgumentError.notNull('legacyEmailPassword.id');

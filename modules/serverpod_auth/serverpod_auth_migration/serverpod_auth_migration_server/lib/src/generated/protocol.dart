@@ -11,83 +11,83 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
-    as _i3;
+    as _iabs;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i4;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i5;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i6;
-import 'migrated_user.dart' as _i7;
+    as _iais;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
+import 'migrated_user.dart' as _ihfhx5lx;
 export 'migrated_user.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [
-    _i2.TableDefinition(
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    _isp.TableDefinition(
       name: 'serverpod_auth_migration_migrated_user',
       dartName: 'MigratedUser',
       schema: 'public',
       module: 'serverpod_auth_migration',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _isp.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'oldUserId',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _isp.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'newAuthUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_migration_migrated_user_fk_0',
           columns: ['oldUserId'],
           referenceTable: 'serverpod_user_info',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_migration_migrated_user_fk_1',
           columns: ['newAuthUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_migration_migrated_user_old',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'oldUserId',
             ),
           ],
@@ -95,12 +95,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
           isUnique: true,
           isPrimary: false,
         ),
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_migration_migrated_user_new',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'newAuthUserId',
             ),
           ],
@@ -111,15 +111,15 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    ..._i3.Protocol.targetTableDefinitions,
-    ..._i4.Protocol.targetTableDefinitions,
-    ..._i5.Protocol.targetTableDefinitions,
-    ..._i6.Protocol.targetTableDefinitions,
+    ..._iabs.Protocol.targetTableDefinitions,
+    ..._iacs.Protocol.targetTableDefinitions,
+    ..._iais.Protocol.targetTableDefinitions,
+    ..._i1n3uhu0.Protocol.targetTableDefinitions,
   ];
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _is.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -153,33 +153,33 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i7.MigratedUser) {
-      return _i7.MigratedUser.fromJson(data) as T;
+    if (t == _ihfhx5lx.MigratedUser) {
+      return _ihfhx5lx.MigratedUser.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i7.MigratedUser?>()) {
-      return (data != null ? _i7.MigratedUser.fromJson(data) : null) as T;
+    if (t == _is.getType<_ihfhx5lx.MigratedUser?>()) {
+      return (data != null ? _ihfhx5lx.MigratedUser.fromJson(data) : null) as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iabs.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacs.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iais.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i6.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _i1n3uhu0.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i7.MigratedUser => 'MigratedUser',
+      _ihfhx5lx.MigratedUser => 'MigratedUser',
       _ => null,
     };
   }
@@ -197,10 +197,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i7.MigratedUser():
+      case _ihfhx5lx.MigratedUser():
         return 'MigratedUser';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -214,11 +214,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'MigratedUser') {
-      return deserialize<_i7.MigratedUser>(data['data']);
+      return deserialize<_ihfhx5lx.MigratedUser>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -241,8 +241,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _is.SerializationManager.toEncodableForProtocol(wrapped)
+          : _is.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -283,46 +283,46 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _iabs.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i4.Protocol().getTableForType(t);
+      var table = _iacs.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i5.Protocol().getTableForType(t);
+      var table = _iais.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i6.Protocol().getTableForType(t);
+      var table = _i1n3uhu0.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i7.MigratedUser:
-        return _i7.MigratedUser.t;
+      case _ihfhx5lx.MigratedUser:
+        return _ihfhx5lx.MigratedUser.t;
     }
     return null;
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -338,16 +338,16 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iabs.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iacs.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i5.Protocol().mapRecordToJson(record);
+      return _iais.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i6.Protocol().mapRecordToJson(record);
+      return _i1n3uhu0.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

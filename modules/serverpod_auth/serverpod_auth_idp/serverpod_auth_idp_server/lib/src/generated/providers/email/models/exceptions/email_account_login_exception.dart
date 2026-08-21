@@ -10,9 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import '../../../../providers/email/models/exceptions/email_account_login_exception_reason.dart'
-    as _i2;
+    as _icxb3c96;
 
 /// Exception to be thrown if the login via email/password fails.
 ///
@@ -20,32 +20,32 @@ import '../../../../providers/email/models/exceptions/email_account_login_except
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountLoginException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   EmailAccountLoginException._({required this.reason});
 
   factory EmailAccountLoginException({
-    required _i2.EmailAccountLoginExceptionReason reason,
+    required _icxb3c96.EmailAccountLoginExceptionReason reason,
   }) = _EmailAccountLoginExceptionImpl;
 
   factory EmailAccountLoginException.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return EmailAccountLoginException(
-      reason: _i2.EmailAccountLoginExceptionReason.fromJson(
+      reason: _icxb3c96.EmailAccountLoginExceptionReason.fromJson(
         (jsonSerialization['reason'] as String),
       ),
     );
   }
 
-  _i2.EmailAccountLoginExceptionReason reason;
+  _icxb3c96.EmailAccountLoginExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountLoginException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAccountLoginException copyWith({
-    _i2.EmailAccountLoginExceptionReason? reason,
+    _icxb3c96.EmailAccountLoginExceptionReason? reason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,15 +71,15 @@ abstract class EmailAccountLoginException
 
 class _EmailAccountLoginExceptionImpl extends EmailAccountLoginException {
   _EmailAccountLoginExceptionImpl({
-    required _i2.EmailAccountLoginExceptionReason reason,
+    required _icxb3c96.EmailAccountLoginExceptionReason reason,
   }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountLoginException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAccountLoginException copyWith({
-    _i2.EmailAccountLoginExceptionReason? reason,
+    _icxb3c96.EmailAccountLoginExceptionReason? reason,
   }) {
     return EmailAccountLoginException(reason: reason ?? this.reason);
   }

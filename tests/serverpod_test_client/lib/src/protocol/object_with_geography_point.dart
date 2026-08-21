@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithGeographyPoint
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithGeographyPoint._({
     this.id,
     required this.point,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyPoint
 
   factory ObjectWithGeographyPoint({
     int? id,
-    required _i1.GeographyPoint point,
-    required _i1.GeographyPoint pointIndexedGist,
-    required _i1.GeographyPoint pointIndexedSpgist,
+    required _isc.GeographyPoint point,
+    required _isc.GeographyPoint pointIndexedGist,
+    required _isc.GeographyPoint pointIndexedSpgist,
   }) = _ObjectWithGeographyPointImpl;
 
   factory ObjectWithGeographyPoint.fromJson(
@@ -33,13 +33,13 @@ abstract class ObjectWithGeographyPoint
   ) {
     return ObjectWithGeographyPoint(
       id: jsonSerialization['id'] as int?,
-      point: _i1.GeographyPointJsonExtension.fromJson(
+      point: _isc.GeographyPointJsonExtension.fromJson(
         jsonSerialization['point'],
       ),
-      pointIndexedGist: _i1.GeographyPointJsonExtension.fromJson(
+      pointIndexedGist: _isc.GeographyPointJsonExtension.fromJson(
         jsonSerialization['pointIndexedGist'],
       ),
-      pointIndexedSpgist: _i1.GeographyPointJsonExtension.fromJson(
+      pointIndexedSpgist: _isc.GeographyPointJsonExtension.fromJson(
         jsonSerialization['pointIndexedSpgist'],
       ),
     );
@@ -50,20 +50,20 @@ abstract class ObjectWithGeographyPoint
   /// the id will be null.
   int? id;
 
-  _i1.GeographyPoint point;
+  _isc.GeographyPoint point;
 
-  _i1.GeographyPoint pointIndexedGist;
+  _isc.GeographyPoint pointIndexedGist;
 
-  _i1.GeographyPoint pointIndexedSpgist;
+  _isc.GeographyPoint pointIndexedSpgist;
 
   /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithGeographyPoint copyWith({
     int? id,
-    _i1.GeographyPoint? point,
-    _i1.GeographyPoint? pointIndexedGist,
-    _i1.GeographyPoint? pointIndexedSpgist,
+    _isc.GeographyPoint? point,
+    _isc.GeographyPoint? pointIndexedGist,
+    _isc.GeographyPoint? pointIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,7 +89,7 @@ abstract class ObjectWithGeographyPoint
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,9 +98,9 @@ class _Undefined {}
 class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
   _ObjectWithGeographyPointImpl({
     int? id,
-    required _i1.GeographyPoint point,
-    required _i1.GeographyPoint pointIndexedGist,
-    required _i1.GeographyPoint pointIndexedSpgist,
+    required _isc.GeographyPoint point,
+    required _isc.GeographyPoint pointIndexedGist,
+    required _isc.GeographyPoint pointIndexedSpgist,
   }) : super._(
          id: id,
          point: point,
@@ -110,13 +110,13 @@ class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
 
   /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithGeographyPoint copyWith({
     Object? id = _Undefined,
-    _i1.GeographyPoint? point,
-    _i1.GeographyPoint? pointIndexedGist,
-    _i1.GeographyPoint? pointIndexedSpgist,
+    _isc.GeographyPoint? point,
+    _isc.GeographyPoint? pointIndexedGist,
+    _isc.GeographyPoint? pointIndexedSpgist,
   }) {
     return ObjectWithGeographyPoint(
       id: id is int? ? id : this.id,

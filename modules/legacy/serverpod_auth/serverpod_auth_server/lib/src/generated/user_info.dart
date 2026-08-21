@@ -10,8 +10,8 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i4k4nnr6;
 
 /// Information about a user. The [UserInfo] should only be shared with the user
 /// itself as it may contain sensitive information, such as the users email.
@@ -19,7 +19,7 @@ import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
 /// [UserInfoPublic] instead. You can retrieve a [UserInfoPublic] through the
 /// toPublic() method.
 abstract class UserInfo
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UserInfo._({
     this.id,
     required this.userIdentifier,
@@ -51,12 +51,12 @@ abstract class UserInfo
       userName: jsonSerialization['userName'] as String?,
       fullName: jsonSerialization['fullName'] as String?,
       email: jsonSerialization['email'] as String?,
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      created: _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       imageUrl: jsonSerialization['imageUrl'] as String?,
-      scopeNames: _i2.Protocol().deserialize<List<String>>(
+      scopeNames: _i4k4nnr6.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
-      blocked: _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+      blocked: _is.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
@@ -93,11 +93,11 @@ abstract class UserInfo
   bool blocked;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserInfo copyWith({
     int? id,
     String? userIdentifier,
@@ -146,11 +146,11 @@ abstract class UserInfo
   }
 
   static UserInfoIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
     UserInfoInclude? include,
   }) {
     return UserInfoIncludeList._(
@@ -165,7 +165,7 @@ abstract class UserInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -196,7 +196,7 @@ class _UserInfoImpl extends UserInfo {
 
   /// Returns a shallow copy of this [UserInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserInfo copyWith({
     Object? id = _Undefined,
@@ -223,86 +223,86 @@ class _UserInfoImpl extends UserInfo {
   }
 }
 
-class UserInfoUpdateTable extends _i1.UpdateTable<UserInfoTable> {
+class UserInfoUpdateTable extends _is.UpdateTable<UserInfoTable> {
   UserInfoUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 
-  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userName(String? value) => _is.ColumnValue(
     table.userName,
     value,
   );
 
-  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> fullName(String? value) => _is.ColumnValue(
     table.fullName,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _is.ColumnValue(
         table.created,
         value,
       );
 
-  _i1.ColumnValue<String, String> imageUrl(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> imageUrl(String? value) => _is.ColumnValue(
     table.imageUrl,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> blocked(bool value) => _is.ColumnValue(
     table.blocked,
     value,
   );
 }
 
-class UserInfoTable extends _i1.Table<int?> {
+class UserInfoTable extends _is.Table<int?> {
   UserInfoTable({super.tableRelation})
     : super(tableName: 'serverpod_user_info') {
     updateTable = UserInfoUpdateTable(this);
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
-    userName = _i1.ColumnString(
+    userName = _is.ColumnString(
       'userName',
       this,
     );
-    fullName = _i1.ColumnString(
+    fullName = _is.ColumnString(
       'fullName',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    created = _i1.ColumnDateTime(
+    created = _is.ColumnDateTime(
       'created',
       this,
     );
-    imageUrl = _i1.ColumnString(
+    imageUrl = _is.ColumnString(
       'imageUrl',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<List<String>>(
+    scopeNames = _is.ColumnSerializable<List<String>>(
       'scopeNames',
       this,
     );
-    blocked = _i1.ColumnBool(
+    blocked = _is.ColumnBool(
       'blocked',
       this,
     );
@@ -312,31 +312,31 @@ class UserInfoTable extends _i1.Table<int?> {
 
   /// Unique identifier of the user, may contain different information depending
   /// on how the user was created.
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
   /// The first name of the user or the user's nickname.
-  late final _i1.ColumnString userName;
+  late final _is.ColumnString userName;
 
   /// The full name of the user.
-  late final _i1.ColumnString fullName;
+  late final _is.ColumnString fullName;
 
   /// The email of the user.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The time when this user was created.
-  late final _i1.ColumnDateTime created;
+  late final _is.ColumnDateTime created;
 
   /// A URL to the user's avatar.
-  late final _i1.ColumnString imageUrl;
+  late final _is.ColumnString imageUrl;
 
   /// List of scopes that this user can access.
-  late final _i1.ColumnSerializable<List<String>> scopeNames;
+  late final _is.ColumnSerializable<List<String>> scopeNames;
 
   /// True if the user is blocked from signing in.
-  late final _i1.ColumnBool blocked;
+  late final _is.ColumnBool blocked;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userIdentifier,
     userName,
@@ -349,19 +349,19 @@ class UserInfoTable extends _i1.Table<int?> {
   ];
 }
 
-class UserInfoInclude extends _i1.IncludeObject {
+class UserInfoInclude extends _is.IncludeObject {
   UserInfoInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => UserInfo.t;
+  _is.Table<int?> get table => UserInfo.t;
 }
 
-class UserInfoIncludeList extends _i1.IncludeList {
+class UserInfoIncludeList extends _is.IncludeList {
   UserInfoIncludeList._({
-    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -372,10 +372,10 @@ class UserInfoIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UserInfo.t;
+  _is.Table<int?> get table => UserInfo.t;
 }
 
 class UserInfoRepository {
@@ -404,15 +404,15 @@ class UserInfoRepository {
   /// );
   /// ```
   Future<List<UserInfo>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserInfo>(
       where: where?.call(UserInfo.t),
@@ -444,14 +444,14 @@ class UserInfoRepository {
   /// );
   /// ```
   Future<UserInfo?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserInfo>(
       where: where?.call(UserInfo.t),
@@ -466,11 +466,11 @@ class UserInfoRepository {
 
   /// Finds a single [UserInfo] by its [id] or null if no such row exists.
   Future<UserInfo?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserInfo>(
       id,
@@ -495,9 +495,9 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserInfo> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -513,9 +513,9 @@ class UserInfoRepository {
   ///
   /// The returned [UserInfo] will have its `id` field set.
   Future<UserInfo> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserInfo>(
       row,
@@ -544,12 +544,12 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserInfo> rows, {
-    required _i1.ColumnSelections<UserInfoTable> conflictColumns,
-    _i1.ColumnSelections<UserInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserInfoTable> conflictColumns,
+    _is.ColumnSelections<UserInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserInfoTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UserInfo>(
@@ -576,12 +576,12 @@ class UserInfoRepository {
   ///
   /// The returned [UserInfo] will have its `id` field set.
   Future<UserInfo?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserInfo row, {
-    required _i1.ColumnSelections<UserInfoTable> conflictColumns,
-    _i1.ColumnSelections<UserInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserInfoTable> conflictColumns,
+    _is.ColumnSelections<UserInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserInfoTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserInfo>(
       row,
@@ -602,10 +602,10 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserInfo> rows, {
-    _i1.ColumnSelections<UserInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserInfoTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UserInfo>(
@@ -620,10 +620,10 @@ class UserInfoRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserInfo> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserInfo row, {
-    _i1.ColumnSelections<UserInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserInfoTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UserInfo>(
       row,
@@ -635,10 +635,10 @@ class UserInfoRepository {
   /// Updates a single [UserInfo] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserInfo?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UserInfo>(
       id,
@@ -654,14 +654,14 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<UserInfoTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UserInfoUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<UserInfoTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserInfo>(
@@ -688,11 +688,11 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserInfo> rows, {
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UserInfo>(
@@ -706,9 +706,9 @@ class UserInfoRepository {
 
   /// Deletes a single [UserInfo].
   Future<UserInfo> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UserInfo>(
       row,
@@ -725,11 +725,11 @@ class UserInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserInfo>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserInfoTable> where,
-    _i1.OrderByBuilder<UserInfoTable>? orderBy,
-    _i1.OrderByListBuilder<UserInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserInfoTable> where,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserInfo>(
@@ -744,10 +744,10 @@ class UserInfoRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UserInfo>(
       where: where?.call(UserInfo.t),
@@ -758,11 +758,11 @@ class UserInfoRepository {
 
   /// Acquires row-level locks on [UserInfo] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserInfoTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserInfoTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserInfo>(
       where: where(UserInfo.t),

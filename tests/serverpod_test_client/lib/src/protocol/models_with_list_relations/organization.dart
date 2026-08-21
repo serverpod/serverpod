@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../models_with_list_relations/person.dart' as _i2;
-import '../models_with_list_relations/city.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../models_with_list_relations/city.dart' as _i64066zp;
+import '../models_with_list_relations/person.dart' as _ijqkgw0m;
 
 abstract class Organization
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Organization._({
     this.id,
     required this.name,
@@ -28,9 +28,9 @@ abstract class Organization
   factory Organization({
     int? id,
     required String name,
-    List<_i2.Person>? people,
+    List<_ijqkgw0m.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i64066zp.City? city,
   }) = _OrganizationImpl;
 
   factory Organization.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,13 +39,15 @@ abstract class Organization
       name: jsonSerialization['name'] as String,
       people: jsonSerialization['people'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.Person>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ijqkgw0m.Person>>(
               jsonSerialization['people'],
             ),
       cityId: jsonSerialization['cityId'] as int?,
       city: jsonSerialization['city'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.City>(jsonSerialization['city']),
+          : _iza9lbb5.Protocol().deserialize<_i64066zp.City>(
+              jsonSerialization['city'],
+            ),
     );
   }
 
@@ -56,21 +58,21 @@ abstract class Organization
 
   String name;
 
-  List<_i2.Person>? people;
+  List<_ijqkgw0m.Person>? people;
 
   int? cityId;
 
-  _i3.City? city;
+  _i64066zp.City? city;
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Organization copyWith({
     int? id,
     String? name,
-    List<_i2.Person>? people,
+    List<_ijqkgw0m.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i64066zp.City? city,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +102,7 @@ abstract class Organization
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,9 +112,9 @@ class _OrganizationImpl extends Organization {
   _OrganizationImpl({
     int? id,
     required String name,
-    List<_i2.Person>? people,
+    List<_ijqkgw0m.Person>? people,
     int? cityId,
-    _i3.City? city,
+    _i64066zp.City? city,
   }) : super._(
          id: id,
          name: name,
@@ -123,7 +125,7 @@ class _OrganizationImpl extends Organization {
 
   /// Returns a shallow copy of this [Organization]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Organization copyWith({
     Object? id = _Undefined,
@@ -135,11 +137,11 @@ class _OrganizationImpl extends Organization {
     return Organization(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      people: people is List<_i2.Person>?
+      people: people is List<_ijqkgw0m.Person>?
           ? people
           : this.people?.map((e0) => e0.copyWith()).toList(),
       cityId: cityId is int? ? cityId : this.cityId,
-      city: city is _i3.City? ? city : this.city?.copyWith(),
+      city: city is _i64066zp.City? ? city : this.city?.copyWith(),
     );
   }
 }

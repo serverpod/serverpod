@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Bindings to a future call claim entry in the database.
 abstract class FutureCallClaimEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   FutureCallClaimEntry._({
     this.id,
     this.futureCallId,
@@ -33,7 +33,7 @@ abstract class FutureCallClaimEntry
     return FutureCallClaimEntry(
       id: jsonSerialization['id'] as int?,
       futureCallId: jsonSerialization['futureCallId'] as int?,
-      lastHeartbeatTime: _i1.DateTimeJsonExtension.fromJson(
+      lastHeartbeatTime: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastHeartbeatTime'],
       ),
     );
@@ -53,7 +53,7 @@ abstract class FutureCallClaimEntry
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   FutureCallClaimEntry copyWith({
     int? id,
     int? futureCallId,
@@ -81,7 +81,7 @@ abstract class FutureCallClaimEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -100,7 +100,7 @@ class _FutureCallClaimEntryImpl extends FutureCallClaimEntry {
 
   /// Returns a shallow copy of this [FutureCallClaimEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   FutureCallClaimEntry copyWith({
     Object? id = _Undefined,

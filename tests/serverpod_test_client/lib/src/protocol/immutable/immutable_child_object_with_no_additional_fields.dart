@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-@_i1.immutable
+@_isc.immutable
 abstract class ImmutableChildObjectWithNoAdditionalFields
-    extends _i2.ImmutableObject
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    extends _iv35mfmj.ImmutableObject
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   const ImmutableChildObjectWithNoAdditionalFields._({required super.variable});
 
   const factory ImmutableChildObjectWithNoAdditionalFields({
@@ -34,7 +34,7 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
   /// Returns a shallow copy of this [ImmutableChildObjectWithNoAdditionalFields]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i1.useResult
+  @_isc.useResult
   ImmutableChildObjectWithNoAdditionalFields copyWith({String? variable});
   @override
   bool operator ==(Object other) {
@@ -77,7 +77,7 @@ abstract class ImmutableChildObjectWithNoAdditionalFields
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _ImmutableChildObjectWithNoAdditionalFieldsImpl
 
   /// Returns a shallow copy of this [ImmutableChildObjectWithNoAdditionalFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ImmutableChildObjectWithNoAdditionalFields copyWith({String? variable}) {
     return ImmutableChildObjectWithNoAdditionalFields(

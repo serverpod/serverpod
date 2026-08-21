@@ -11,15 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'log_entry.dart' as _i2;
-import 'query_log_entry.dart' as _i3;
-import 'message_log_entry.dart' as _i4;
-import 'package:serverpod/src/generated/protocol.dart' as _i5;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'log_entry.dart' as _iv7ld46g;
+import 'message_log_entry.dart' as _iky1nb92;
+import 'query_log_entry.dart' as _inqjskye;
 
 /// Log entry for a session.
 abstract class SessionLogEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   SessionLogEntry._({
     this.id,
     required this.serverId,
@@ -57,16 +57,16 @@ abstract class SessionLogEntry
     String? userId,
     bool? isOpen,
     required DateTime touched,
-    List<_i2.LogEntry>? logs,
-    List<_i3.QueryLogEntry>? queries,
-    List<_i4.MessageLogEntry>? messages,
+    List<_iv7ld46g.LogEntry>? logs,
+    List<_inqjskye.QueryLogEntry>? queries,
+    List<_iky1nb92.MessageLogEntry>? messages,
   }) = _SessionLogEntryImpl;
 
   factory SessionLogEntry.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogEntry(
       id: jsonSerialization['id'] as int?,
       serverId: jsonSerialization['serverId'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      time: _is.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
@@ -74,28 +74,28 @@ abstract class SessionLogEntry
       numQueries: jsonSerialization['numQueries'] as int?,
       slow: jsonSerialization['slow'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+          : _is.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
       authenticatedUserId: jsonSerialization['authenticatedUserId'] as int?,
       userId: jsonSerialization['userId'] as String?,
       isOpen: jsonSerialization['isOpen'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['isOpen']),
-      touched: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
+          : _is.BoolJsonExtension.fromJson(jsonSerialization['isOpen']),
+      touched: _is.DateTimeJsonExtension.fromJson(jsonSerialization['touched']),
       logs: jsonSerialization['logs'] == null
           ? null
-          : _i5.Protocol().deserialize<List<_i2.LogEntry>>(
+          : _ic00rqxb.Protocol().deserialize<List<_iv7ld46g.LogEntry>>(
               jsonSerialization['logs'],
             ),
       queries: jsonSerialization['queries'] == null
           ? null
-          : _i5.Protocol().deserialize<List<_i3.QueryLogEntry>>(
+          : _ic00rqxb.Protocol().deserialize<List<_inqjskye.QueryLogEntry>>(
               jsonSerialization['queries'],
             ),
       messages: jsonSerialization['messages'] == null
           ? null
-          : _i5.Protocol().deserialize<List<_i4.MessageLogEntry>>(
+          : _ic00rqxb.Protocol().deserialize<List<_iky1nb92.MessageLogEntry>>(
               jsonSerialization['messages'],
             ),
     );
@@ -155,20 +155,20 @@ abstract class SessionLogEntry
   DateTime touched;
 
   /// Application log lines for this session.
-  List<_i2.LogEntry>? logs;
+  List<_iv7ld46g.LogEntry>? logs;
 
   /// Query log lines for this session.
-  List<_i3.QueryLogEntry>? queries;
+  List<_inqjskye.QueryLogEntry>? queries;
 
   /// Streaming message log lines for this session.
-  List<_i4.MessageLogEntry>? messages;
+  List<_iky1nb92.MessageLogEntry>? messages;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SessionLogEntry copyWith({
     int? id,
     String? serverId,
@@ -185,9 +185,9 @@ abstract class SessionLogEntry
     String? userId,
     bool? isOpen,
     DateTime? touched,
-    List<_i2.LogEntry>? logs,
-    List<_i3.QueryLogEntry>? queries,
-    List<_i4.MessageLogEntry>? messages,
+    List<_iv7ld46g.LogEntry>? logs,
+    List<_inqjskye.QueryLogEntry>? queries,
+    List<_iky1nb92.MessageLogEntry>? messages,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -245,9 +245,9 @@ abstract class SessionLogEntry
   }
 
   static SessionLogEntryInclude include({
-    _i2.LogEntryIncludeList? logs,
-    _i3.QueryLogEntryIncludeList? queries,
-    _i4.MessageLogEntryIncludeList? messages,
+    _iv7ld46g.LogEntryIncludeList? logs,
+    _inqjskye.QueryLogEntryIncludeList? queries,
+    _iky1nb92.MessageLogEntryIncludeList? messages,
   }) {
     return SessionLogEntryInclude._(
       logs: logs,
@@ -257,11 +257,11 @@ abstract class SessionLogEntry
   }
 
   static SessionLogEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
   }) {
     return SessionLogEntryIncludeList._(
@@ -276,7 +276,7 @@ abstract class SessionLogEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -299,9 +299,9 @@ class _SessionLogEntryImpl extends SessionLogEntry {
     String? userId,
     bool? isOpen,
     required DateTime touched,
-    List<_i2.LogEntry>? logs,
-    List<_i3.QueryLogEntry>? queries,
-    List<_i4.MessageLogEntry>? messages,
+    List<_iv7ld46g.LogEntry>? logs,
+    List<_inqjskye.QueryLogEntry>? queries,
+    List<_iky1nb92.MessageLogEntry>? messages,
   }) : super._(
          id: id,
          serverId: serverId,
@@ -325,7 +325,7 @@ class _SessionLogEntryImpl extends SessionLogEntry {
 
   /// Returns a shallow copy of this [SessionLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SessionLogEntry copyWith({
     Object? id = _Undefined,
@@ -365,151 +365,151 @@ class _SessionLogEntryImpl extends SessionLogEntry {
       userId: userId is String? ? userId : this.userId,
       isOpen: isOpen is bool? ? isOpen : this.isOpen,
       touched: touched ?? this.touched,
-      logs: logs is List<_i2.LogEntry>?
+      logs: logs is List<_iv7ld46g.LogEntry>?
           ? logs
           : this.logs?.map((e0) => e0.copyWith()).toList(),
-      queries: queries is List<_i3.QueryLogEntry>?
+      queries: queries is List<_inqjskye.QueryLogEntry>?
           ? queries
           : this.queries?.map((e0) => e0.copyWith()).toList(),
-      messages: messages is List<_i4.MessageLogEntry>?
+      messages: messages is List<_iky1nb92.MessageLogEntry>?
           ? messages
           : this.messages?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class SessionLogEntryUpdateTable extends _i1.UpdateTable<SessionLogEntryTable> {
+class SessionLogEntryUpdateTable extends _is.UpdateTable<SessionLogEntryTable> {
   SessionLogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> time(DateTime value) => _is.ColumnValue(
     table.time,
     value,
   );
 
-  _i1.ColumnValue<String, String> module(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> module(String? value) => _is.ColumnValue(
     table.module,
     value,
   );
 
-  _i1.ColumnValue<String, String> endpoint(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> endpoint(String? value) => _is.ColumnValue(
     table.endpoint,
     value,
   );
 
-  _i1.ColumnValue<String, String> method(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String? value) => _is.ColumnValue(
     table.method,
     value,
   );
 
-  _i1.ColumnValue<double, double> duration(double? value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> duration(double? value) => _is.ColumnValue(
     table.duration,
     value,
   );
 
-  _i1.ColumnValue<int, int> numQueries(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> numQueries(int? value) => _is.ColumnValue(
     table.numQueries,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> slow(bool? value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> slow(bool? value) => _is.ColumnValue(
     table.slow,
     value,
   );
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> error(String? value) => _is.ColumnValue(
     table.error,
     value,
   );
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> stackTrace(String? value) => _is.ColumnValue(
     table.stackTrace,
     value,
   );
 
-  _i1.ColumnValue<int, int> authenticatedUserId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> authenticatedUserId(int? value) => _is.ColumnValue(
     table.authenticatedUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userId(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userId(String? value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> isOpen(bool? value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> isOpen(bool? value) => _is.ColumnValue(
     table.isOpen,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> touched(DateTime value) =>
+      _is.ColumnValue(
         table.touched,
         value,
       );
 }
 
-class SessionLogEntryTable extends _i1.Table<int?> {
+class SessionLogEntryTable extends _is.Table<int?> {
   SessionLogEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_session_log') {
     updateTable = SessionLogEntryUpdateTable(this);
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    time = _i1.ColumnDateTime(
+    time = _is.ColumnDateTime(
       'time',
       this,
     );
-    module = _i1.ColumnString(
+    module = _is.ColumnString(
       'module',
       this,
     );
-    endpoint = _i1.ColumnString(
+    endpoint = _is.ColumnString(
       'endpoint',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
-    duration = _i1.ColumnDouble(
+    duration = _is.ColumnDouble(
       'duration',
       this,
     );
-    numQueries = _i1.ColumnInt(
+    numQueries = _is.ColumnInt(
       'numQueries',
       this,
     );
-    slow = _i1.ColumnBool(
+    slow = _is.ColumnBool(
       'slow',
       this,
     );
-    error = _i1.ColumnString(
+    error = _is.ColumnString(
       'error',
       this,
     );
-    stackTrace = _i1.ColumnString(
+    stackTrace = _is.ColumnString(
       'stackTrace',
       this,
     );
-    authenticatedUserId = _i1.ColumnInt(
+    authenticatedUserId = _is.ColumnInt(
       'authenticatedUserId',
       this,
     );
-    userId = _i1.ColumnString(
+    userId = _is.ColumnString(
       'userId',
       this,
     );
-    isOpen = _i1.ColumnBool(
+    isOpen = _is.ColumnBool(
       'isOpen',
       this,
     );
-    touched = _i1.ColumnDateTime(
+    touched = _is.ColumnDateTime(
       'touched',
       this,
     );
@@ -518,159 +518,159 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   late final SessionLogEntryUpdateTable updateTable;
 
   /// The id of the server that handled this session.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// The starting time of this session.
-  late final _i1.ColumnDateTime time;
+  late final _is.ColumnDateTime time;
 
   /// The module this session is associated with, if any.
-  late final _i1.ColumnString module;
+  late final _is.ColumnString module;
 
   /// The endpoint this session is associated with, if any.
-  late final _i1.ColumnString endpoint;
+  late final _is.ColumnString endpoint;
 
   /// The method this session is associated with, if any.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
   /// The running time of this session, in seconds. May be null if the session
   /// is still active.
-  late final _i1.ColumnDouble duration;
+  late final _is.ColumnDouble duration;
 
   /// The number of queries performed during this session.
-  late final _i1.ColumnInt numQueries;
+  late final _is.ColumnInt numQueries;
 
   /// True if this session was slow to complete.
-  late final _i1.ColumnBool slow;
+  late final _is.ColumnBool slow;
 
   /// If the session ends with an exception, the error field will be set.
-  late final _i1.ColumnString error;
+  late final _is.ColumnString error;
 
   /// If the session ends with an exception, a stack trace will be set.
-  late final _i1.ColumnString stackTrace;
+  late final _is.ColumnString stackTrace;
 
   /// Deprecated. Use userId instead.
-  late final _i1.ColumnInt authenticatedUserId;
+  late final _is.ColumnInt authenticatedUserId;
 
   /// The id of an authenticated user associated with this session. The user id
   /// is only set if it has been requested during the session. This means that
   /// it can be null, even though the session was performed by an authenticated
   /// user.
-  late final _i1.ColumnString userId;
+  late final _is.ColumnString userId;
 
   /// True if the session is still open.
-  late final _i1.ColumnBool isOpen;
+  late final _is.ColumnBool isOpen;
 
   /// Timestamp of the last time this record was modified.
-  late final _i1.ColumnDateTime touched;
+  late final _is.ColumnDateTime touched;
 
   /// Application log lines for this session.
-  _i2.LogEntryTable? ___logs;
+  _iv7ld46g.LogEntryTable? ___logs;
 
   /// Application log lines for this session.
-  _i1.ManyRelation<_i2.LogEntryTable>? _logs;
+  _is.ManyRelation<_iv7ld46g.LogEntryTable>? _logs;
 
   /// Query log lines for this session.
-  _i3.QueryLogEntryTable? ___queries;
+  _inqjskye.QueryLogEntryTable? ___queries;
 
   /// Query log lines for this session.
-  _i1.ManyRelation<_i3.QueryLogEntryTable>? _queries;
+  _is.ManyRelation<_inqjskye.QueryLogEntryTable>? _queries;
 
   /// Streaming message log lines for this session.
-  _i4.MessageLogEntryTable? ___messages;
+  _iky1nb92.MessageLogEntryTable? ___messages;
 
   /// Streaming message log lines for this session.
-  _i1.ManyRelation<_i4.MessageLogEntryTable>? _messages;
+  _is.ManyRelation<_iky1nb92.MessageLogEntryTable>? _messages;
 
-  _i2.LogEntryTable get __logs {
+  _iv7ld46g.LogEntryTable get __logs {
     if (___logs != null) return ___logs!;
-    ___logs = _i1.createRelationTable(
+    ___logs = _is.createRelationTable(
       relationFieldName: '__logs',
       field: SessionLogEntry.t.id,
-      foreignField: _i2.LogEntry.t.sessionLogId,
+      foreignField: _iv7ld46g.LogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.LogEntryTable(tableRelation: foreignTableRelation),
+          _iv7ld46g.LogEntryTable(tableRelation: foreignTableRelation),
     );
     return ___logs!;
   }
 
-  _i3.QueryLogEntryTable get __queries {
+  _inqjskye.QueryLogEntryTable get __queries {
     if (___queries != null) return ___queries!;
-    ___queries = _i1.createRelationTable(
+    ___queries = _is.createRelationTable(
       relationFieldName: '__queries',
       field: SessionLogEntry.t.id,
-      foreignField: _i3.QueryLogEntry.t.sessionLogId,
+      foreignField: _inqjskye.QueryLogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.QueryLogEntryTable(tableRelation: foreignTableRelation),
+          _inqjskye.QueryLogEntryTable(tableRelation: foreignTableRelation),
     );
     return ___queries!;
   }
 
-  _i4.MessageLogEntryTable get __messages {
+  _iky1nb92.MessageLogEntryTable get __messages {
     if (___messages != null) return ___messages!;
-    ___messages = _i1.createRelationTable(
+    ___messages = _is.createRelationTable(
       relationFieldName: '__messages',
       field: SessionLogEntry.t.id,
-      foreignField: _i4.MessageLogEntry.t.sessionLogId,
+      foreignField: _iky1nb92.MessageLogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i4.MessageLogEntryTable(tableRelation: foreignTableRelation),
+          _iky1nb92.MessageLogEntryTable(tableRelation: foreignTableRelation),
     );
     return ___messages!;
   }
 
-  _i1.ManyRelation<_i2.LogEntryTable> get logs {
+  _is.ManyRelation<_iv7ld46g.LogEntryTable> get logs {
     if (_logs != null) return _logs!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'logs',
       field: SessionLogEntry.t.id,
-      foreignField: _i2.LogEntry.t.sessionLogId,
+      foreignField: _iv7ld46g.LogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.LogEntryTable(tableRelation: foreignTableRelation),
+          _iv7ld46g.LogEntryTable(tableRelation: foreignTableRelation),
     );
-    _logs = _i1.ManyRelation<_i2.LogEntryTable>(
+    _logs = _is.ManyRelation<_iv7ld46g.LogEntryTable>(
       tableWithRelations: relationTable,
-      table: _i2.LogEntryTable(
+      table: _iv7ld46g.LogEntryTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
     return _logs!;
   }
 
-  _i1.ManyRelation<_i3.QueryLogEntryTable> get queries {
+  _is.ManyRelation<_inqjskye.QueryLogEntryTable> get queries {
     if (_queries != null) return _queries!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'queries',
       field: SessionLogEntry.t.id,
-      foreignField: _i3.QueryLogEntry.t.sessionLogId,
+      foreignField: _inqjskye.QueryLogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.QueryLogEntryTable(tableRelation: foreignTableRelation),
+          _inqjskye.QueryLogEntryTable(tableRelation: foreignTableRelation),
     );
-    _queries = _i1.ManyRelation<_i3.QueryLogEntryTable>(
+    _queries = _is.ManyRelation<_inqjskye.QueryLogEntryTable>(
       tableWithRelations: relationTable,
-      table: _i3.QueryLogEntryTable(
+      table: _inqjskye.QueryLogEntryTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
     return _queries!;
   }
 
-  _i1.ManyRelation<_i4.MessageLogEntryTable> get messages {
+  _is.ManyRelation<_iky1nb92.MessageLogEntryTable> get messages {
     if (_messages != null) return _messages!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'messages',
       field: SessionLogEntry.t.id,
-      foreignField: _i4.MessageLogEntry.t.sessionLogId,
+      foreignField: _iky1nb92.MessageLogEntry.t.sessionLogId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i4.MessageLogEntryTable(tableRelation: foreignTableRelation),
+          _iky1nb92.MessageLogEntryTable(tableRelation: foreignTableRelation),
     );
-    _messages = _i1.ManyRelation<_i4.MessageLogEntryTable>(
+    _messages = _is.ManyRelation<_iky1nb92.MessageLogEntryTable>(
       tableWithRelations: relationTable,
-      table: _i4.MessageLogEntryTable(
+      table: _iky1nb92.MessageLogEntryTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -678,7 +678,7 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     serverId,
     time,
@@ -697,7 +697,7 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'logs') {
       return __logs;
     }
@@ -711,37 +711,37 @@ class SessionLogEntryTable extends _i1.Table<int?> {
   }
 }
 
-class SessionLogEntryInclude extends _i1.IncludeObject {
+class SessionLogEntryInclude extends _is.IncludeObject {
   SessionLogEntryInclude._({
-    _i2.LogEntryIncludeList? logs,
-    _i3.QueryLogEntryIncludeList? queries,
-    _i4.MessageLogEntryIncludeList? messages,
+    _iv7ld46g.LogEntryIncludeList? logs,
+    _inqjskye.QueryLogEntryIncludeList? queries,
+    _iky1nb92.MessageLogEntryIncludeList? messages,
   }) {
     _logs = logs;
     _queries = queries;
     _messages = messages;
   }
 
-  _i2.LogEntryIncludeList? _logs;
+  _iv7ld46g.LogEntryIncludeList? _logs;
 
-  _i3.QueryLogEntryIncludeList? _queries;
+  _inqjskye.QueryLogEntryIncludeList? _queries;
 
-  _i4.MessageLogEntryIncludeList? _messages;
+  _iky1nb92.MessageLogEntryIncludeList? _messages;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'logs': _logs,
     'queries': _queries,
     'messages': _messages,
   };
 
   @override
-  _i1.Table<int?> get table => SessionLogEntry.t;
+  _is.Table<int?> get table => SessionLogEntry.t;
 }
 
-class SessionLogEntryIncludeList extends _i1.IncludeList {
+class SessionLogEntryIncludeList extends _is.IncludeList {
   SessionLogEntryIncludeList._({
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -752,10 +752,10 @@ class SessionLogEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SessionLogEntry.t;
+  _is.Table<int?> get table => SessionLogEntry.t;
 }
 
 class SessionLogEntryRepository {
@@ -788,16 +788,16 @@ class SessionLogEntryRepository {
   /// );
   /// ```
   Future<List<SessionLogEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     SessionLogEntryInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
@@ -830,15 +830,15 @@ class SessionLogEntryRepository {
   /// );
   /// ```
   Future<SessionLogEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     SessionLogEntryInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
@@ -854,12 +854,12 @@ class SessionLogEntryRepository {
 
   /// Finds a single [SessionLogEntry] by its [id] or null if no such row exists.
   Future<SessionLogEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     SessionLogEntryInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SessionLogEntry>(
       id,
@@ -885,9 +885,9 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionLogEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -903,9 +903,9 @@ class SessionLogEntryRepository {
   ///
   /// The returned [SessionLogEntry] will have its `id` field set.
   Future<SessionLogEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SessionLogEntry>(
       row,
@@ -934,12 +934,12 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionLogEntry> rows, {
-    required _i1.ColumnSelections<SessionLogEntryTable> conflictColumns,
-    _i1.ColumnSelections<SessionLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SessionLogEntryTable> conflictColumns,
+    _is.ColumnSelections<SessionLogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SessionLogEntry>(
@@ -966,12 +966,12 @@ class SessionLogEntryRepository {
   ///
   /// The returned [SessionLogEntry] will have its `id` field set.
   Future<SessionLogEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry row, {
-    required _i1.ColumnSelections<SessionLogEntryTable> conflictColumns,
-    _i1.ColumnSelections<SessionLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SessionLogEntryTable> conflictColumns,
+    _is.ColumnSelections<SessionLogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SessionLogEntry>(
       row,
@@ -992,10 +992,10 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionLogEntry> rows, {
-    _i1.ColumnSelections<SessionLogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SessionLogEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SessionLogEntry>(
@@ -1010,10 +1010,10 @@ class SessionLogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SessionLogEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry row, {
-    _i1.ColumnSelections<SessionLogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SessionLogEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SessionLogEntry>(
       row,
@@ -1025,11 +1025,11 @@ class SessionLogEntryRepository {
   /// Updates a single [SessionLogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SessionLogEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+    required _is.ColumnValueListBuilder<SessionLogEntryUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SessionLogEntry>(
       id,
@@ -1045,15 +1045,15 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SessionLogEntryUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SessionLogEntryUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
+    required _is.WhereExpressionBuilder<SessionLogEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SessionLogEntry>(
@@ -1080,11 +1080,11 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionLogEntry> rows, {
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SessionLogEntry>(
@@ -1098,9 +1098,9 @@ class SessionLogEntryRepository {
 
   /// Deletes a single [SessionLogEntry].
   Future<SessionLogEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SessionLogEntry>(
       row,
@@ -1117,11 +1117,11 @@ class SessionLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionLogEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
-    _i1.OrderByBuilder<SessionLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<SessionLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SessionLogEntryTable> where,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SessionLogEntry>(
@@ -1136,10 +1136,10 @@ class SessionLogEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SessionLogEntry>(
       where: where?.call(SessionLogEntry.t),
@@ -1150,11 +1150,11 @@ class SessionLogEntryRepository {
 
   /// Acquires row-level locks on [SessionLogEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SessionLogEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SessionLogEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SessionLogEntry>(
       where: where(SessionLogEntry.t),
@@ -1171,10 +1171,10 @@ class SessionLogEntryAttachRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [LogEntry]s
   /// by setting each [LogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> logs(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    List<_i2.LogEntry> logEntry, {
-    _i1.Transaction? transaction,
+    List<_iv7ld46g.LogEntry> logEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (logEntry.any((e) => e.id == null)) {
       throw ArgumentError.notNull('logEntry.id');
@@ -1186,9 +1186,9 @@ class SessionLogEntryAttachRepository {
     var $logEntry = logEntry
         .map((e) => e.copyWith(sessionLogId: sessionLogEntry.id))
         .toList();
-    await session.db.update<_i2.LogEntry>(
+    await session.db.update<_iv7ld46g.LogEntry>(
       $logEntry,
-      columns: [_i2.LogEntry.t.sessionLogId],
+      columns: [_iv7ld46g.LogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }
@@ -1196,10 +1196,10 @@ class SessionLogEntryAttachRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [QueryLogEntry]s
   /// by setting each [QueryLogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> queries(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    List<_i3.QueryLogEntry> queryLogEntry, {
-    _i1.Transaction? transaction,
+    List<_inqjskye.QueryLogEntry> queryLogEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (queryLogEntry.any((e) => e.id == null)) {
       throw ArgumentError.notNull('queryLogEntry.id');
@@ -1211,9 +1211,9 @@ class SessionLogEntryAttachRepository {
     var $queryLogEntry = queryLogEntry
         .map((e) => e.copyWith(sessionLogId: sessionLogEntry.id))
         .toList();
-    await session.db.update<_i3.QueryLogEntry>(
+    await session.db.update<_inqjskye.QueryLogEntry>(
       $queryLogEntry,
-      columns: [_i3.QueryLogEntry.t.sessionLogId],
+      columns: [_inqjskye.QueryLogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }
@@ -1221,10 +1221,10 @@ class SessionLogEntryAttachRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [MessageLogEntry]s
   /// by setting each [MessageLogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> messages(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    List<_i4.MessageLogEntry> messageLogEntry, {
-    _i1.Transaction? transaction,
+    List<_iky1nb92.MessageLogEntry> messageLogEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (messageLogEntry.any((e) => e.id == null)) {
       throw ArgumentError.notNull('messageLogEntry.id');
@@ -1236,9 +1236,9 @@ class SessionLogEntryAttachRepository {
     var $messageLogEntry = messageLogEntry
         .map((e) => e.copyWith(sessionLogId: sessionLogEntry.id))
         .toList();
-    await session.db.update<_i4.MessageLogEntry>(
+    await session.db.update<_iky1nb92.MessageLogEntry>(
       $messageLogEntry,
-      columns: [_i4.MessageLogEntry.t.sessionLogId],
+      columns: [_iky1nb92.MessageLogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }
@@ -1250,10 +1250,10 @@ class SessionLogEntryAttachRowRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [LogEntry]
   /// by setting the [LogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> logs(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    _i2.LogEntry logEntry, {
-    _i1.Transaction? transaction,
+    _iv7ld46g.LogEntry logEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (logEntry.id == null) {
       throw ArgumentError.notNull('logEntry.id');
@@ -1263,9 +1263,9 @@ class SessionLogEntryAttachRowRepository {
     }
 
     var $logEntry = logEntry.copyWith(sessionLogId: sessionLogEntry.id);
-    await session.db.updateRow<_i2.LogEntry>(
+    await session.db.updateRow<_iv7ld46g.LogEntry>(
       $logEntry,
-      columns: [_i2.LogEntry.t.sessionLogId],
+      columns: [_iv7ld46g.LogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }
@@ -1273,10 +1273,10 @@ class SessionLogEntryAttachRowRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [QueryLogEntry]
   /// by setting the [QueryLogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> queries(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    _i3.QueryLogEntry queryLogEntry, {
-    _i1.Transaction? transaction,
+    _inqjskye.QueryLogEntry queryLogEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (queryLogEntry.id == null) {
       throw ArgumentError.notNull('queryLogEntry.id');
@@ -1288,9 +1288,9 @@ class SessionLogEntryAttachRowRepository {
     var $queryLogEntry = queryLogEntry.copyWith(
       sessionLogId: sessionLogEntry.id,
     );
-    await session.db.updateRow<_i3.QueryLogEntry>(
+    await session.db.updateRow<_inqjskye.QueryLogEntry>(
       $queryLogEntry,
-      columns: [_i3.QueryLogEntry.t.sessionLogId],
+      columns: [_inqjskye.QueryLogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }
@@ -1298,10 +1298,10 @@ class SessionLogEntryAttachRowRepository {
   /// Creates a relation between this [SessionLogEntry] and the given [MessageLogEntry]
   /// by setting the [MessageLogEntry]'s foreign key `sessionLogId` to refer to this [SessionLogEntry].
   Future<void> messages(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionLogEntry sessionLogEntry,
-    _i4.MessageLogEntry messageLogEntry, {
-    _i1.Transaction? transaction,
+    _iky1nb92.MessageLogEntry messageLogEntry, {
+    _is.Transaction? transaction,
   }) async {
     if (messageLogEntry.id == null) {
       throw ArgumentError.notNull('messageLogEntry.id');
@@ -1313,9 +1313,9 @@ class SessionLogEntryAttachRowRepository {
     var $messageLogEntry = messageLogEntry.copyWith(
       sessionLogId: sessionLogEntry.id,
     );
-    await session.db.updateRow<_i4.MessageLogEntry>(
+    await session.db.updateRow<_iky1nb92.MessageLogEntry>(
       $messageLogEntry,
-      columns: [_i4.MessageLogEntry.t.sessionLogId],
+      columns: [_iky1nb92.MessageLogEntry.t.sessionLogId],
       transaction: transaction,
     );
   }

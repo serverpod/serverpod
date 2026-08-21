@@ -11,19 +11,19 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test/serverpod_test.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
-import 'dart:io' as _i3;
-import 'dart:async' as _i4;
-import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_info.dart'
-    as _i5;
+import 'dart:async' as _ida;
+import 'dart:io' as _idi;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_authentication_response.dart'
-    as _i6;
+    as _idxhp84w;
+import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_info.dart'
+    as _ia46v2xn;
 import 'package:serverpod_auth_bridge_server/src/generated/legacy_user_settings_config.dart'
-    as _i7;
-import 'dart:typed_data' as _i8;
+    as _ipfxzc5n;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i9;
+    as _iacs;
+import 'package:serverpod_test/serverpod_test.dart' as _ist;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart';
 import 'package:serverpod_auth_bridge_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -108,27 +108,27 @@ export 'package:serverpod_test/serverpod_test_public_exports.dart';
 /// isolate's cwd is not the server package root (e.g. running tests from a
 /// workspace parent directory) so config and migrations are still loaded
 /// from the right place.
-@_i1.isTestGroup
+@_ist.isTestGroup
 void withServerpod(
   String testGroupName,
-  _i1.TestClosure<TestEndpoints> testClosure, {
+  _ist.TestClosure<TestEndpoints> testClosure, {
   bool? applyMigrations,
-  _i2.ServerpodConfig Function(_i2.ServerpodConfig)? configOverride,
-  _i2.DatabaseInterceptor? databaseInterceptor,
+  _is.ServerpodConfig Function(_is.ServerpodConfig)? configOverride,
+  _is.DatabaseInterceptor? databaseInterceptor,
   bool? enableSessionLogging,
-  _i2.ExperimentalFeatures? experimentalFeatures,
-  _i1.RollbackDatabase? rollbackDatabase,
+  _is.ExperimentalFeatures? experimentalFeatures,
+  _ist.RollbackDatabase? rollbackDatabase,
   String? runMode,
-  _i2.RuntimeParametersListBuilder? runtimeParametersBuilder,
-  _i3.Directory? serverDirectory,
-  _i2.ServerpodLoggingMode? serverpodLoggingMode,
+  _is.RuntimeParametersListBuilder? runtimeParametersBuilder,
+  _idi.Directory? serverDirectory,
+  _is.ServerpodLoggingMode? serverpodLoggingMode,
   Duration? serverpodStartTimeout,
   List<String>? testGroupTagsOverride,
-  _i1.TestServerOutputMode? testServerOutputMode,
+  _ist.TestServerOutputMode? testServerOutputMode,
 }) {
-  _i1.buildWithServerpod<_InternalTestEndpoints>(
+  _ist.buildWithServerpod<_InternalTestEndpoints>(
     testGroupName,
-    _i1.TestServerpod(
+    _ist.TestServerpod(
       testEndpoints: _InternalTestEndpoints(),
       endpoints: Endpoints(),
       serializationManager: Protocol(),
@@ -164,11 +164,11 @@ class TestEndpoints {
 }
 
 class _InternalTestEndpoints extends TestEndpoints
-    implements _i1.InternalTestEndpoints {
+    implements _ist.InternalTestEndpoints {
   @override
   void initialize(
-    _i2.SerializationManager serializationManager,
-    _i2.EndpointDispatch endpoints,
+    _is.SerializationManager serializationManager,
+    _is.EndpointDispatch endpoints,
   ) {
     legacyAdmin = _LegacyAdminEndpoint(
       endpoints,
@@ -199,17 +199,17 @@ class _LegacyAdminEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i5.LegacyUserInfo?> getUserInfo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ia46v2xn.LegacyUserInfo?> getUserInfo(
+    _ist.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyAdmin',
             method: 'getUserInfo',
           );
@@ -218,7 +218,7 @@ class _LegacyAdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyAdmin',
           methodName: 'getUserInfo',
-          parameters: _i1.testObjectToJson({'userId': userId}),
+          parameters: _ist.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -226,7 +226,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.LegacyUserInfo?>);
+                as _ida.Future<_ia46v2xn.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -234,13 +234,13 @@ class _LegacyAdminEndpoint {
     });
   }
 
-  _i4.Future<void> blockUser(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> blockUser(
+    _ist.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyAdmin',
             method: 'blockUser',
           );
@@ -249,7 +249,7 @@ class _LegacyAdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyAdmin',
           methodName: 'blockUser',
-          parameters: _i1.testObjectToJson({'userId': userId}),
+          parameters: _ist.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -257,7 +257,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -265,13 +265,13 @@ class _LegacyAdminEndpoint {
     });
   }
 
-  _i4.Future<void> unblockUser(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> unblockUser(
+    _ist.TestSessionBuilder sessionBuilder,
     int userId,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyAdmin',
             method: 'unblockUser',
           );
@@ -280,7 +280,7 @@ class _LegacyAdminEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyAdmin',
           methodName: 'unblockUser',
-          parameters: _i1.testObjectToJson({'userId': userId}),
+          parameters: _ist.testObjectToJson({'userId': userId}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -288,7 +288,7 @@ class _LegacyAdminEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -303,18 +303,18 @@ class _LegacyEmailEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i6.LegacyAuthenticationResponse> authenticate(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_idxhp84w.LegacyAuthenticationResponse> authenticate(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
     String password,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'authenticate',
           );
@@ -323,7 +323,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'authenticate',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'email': email,
             'password': password,
           }),
@@ -334,7 +334,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i6.LegacyAuthenticationResponse>);
+                as _ida.Future<_idxhp84w.LegacyAuthenticationResponse>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -342,15 +342,15 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i4.Future<bool> createAccountRequest(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> createAccountRequest(
+    _ist.TestSessionBuilder sessionBuilder,
     String userName,
     String email,
     String password,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'createAccountRequest',
           );
@@ -359,7 +359,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'createAccountRequest',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'userName': userName,
             'email': email,
             'password': password,
@@ -371,7 +371,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -379,14 +379,14 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i4.Future<_i5.LegacyUserInfo?> createAccount(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ia46v2xn.LegacyUserInfo?> createAccount(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
     String verificationCode,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'createAccount',
           );
@@ -395,7 +395,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'createAccount',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'email': email,
             'verificationCode': verificationCode,
           }),
@@ -406,7 +406,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.LegacyUserInfo?>);
+                as _ida.Future<_ia46v2xn.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -414,14 +414,14 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i4.Future<bool> changePassword(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> changePassword(
+    _ist.TestSessionBuilder sessionBuilder,
     String oldPassword,
     String newPassword,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'changePassword',
           );
@@ -430,7 +430,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'changePassword',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'oldPassword': oldPassword,
             'newPassword': newPassword,
           }),
@@ -441,7 +441,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -449,13 +449,13 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i4.Future<bool> initiatePasswordReset(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> initiatePasswordReset(
+    _ist.TestSessionBuilder sessionBuilder,
     String email,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'initiatePasswordReset',
           );
@@ -464,7 +464,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'initiatePasswordReset',
-          parameters: _i1.testObjectToJson({'email': email}),
+          parameters: _ist.testObjectToJson({'email': email}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -472,7 +472,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -480,14 +480,14 @@ class _LegacyEmailEndpoint {
     });
   }
 
-  _i4.Future<bool> resetPassword(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> resetPassword(
+    _ist.TestSessionBuilder sessionBuilder,
     String verificationCode,
     String password,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyEmail',
             method: 'resetPassword',
           );
@@ -496,7 +496,7 @@ class _LegacyEmailEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyEmail',
           methodName: 'resetPassword',
-          parameters: _i1.testObjectToJson({
+          parameters: _ist.testObjectToJson({
             'verificationCode': verificationCode,
             'password': password,
           }),
@@ -507,7 +507,7 @@ class _LegacyEmailEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -522,14 +522,14 @@ class _LegacyStatusEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> isSignedIn(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<bool> isSignedIn(_ist.TestSessionBuilder sessionBuilder) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyStatus',
             method: 'isSignedIn',
           );
@@ -538,7 +538,7 @@ class _LegacyStatusEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyStatus',
           methodName: 'isSignedIn',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -546,7 +546,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -554,10 +554,12 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i4.Future<void> signOutDevice(_i1.TestSessionBuilder sessionBuilder) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+  _ida.Future<void> signOutDevice(
+    _ist.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyStatus',
             method: 'signOutDevice',
           );
@@ -566,7 +568,7 @@ class _LegacyStatusEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyStatus',
           methodName: 'signOutDevice',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -574,7 +576,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -582,12 +584,12 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i4.Future<void> signOutAllDevices(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<void> signOutAllDevices(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyStatus',
             method: 'signOutAllDevices',
           );
@@ -596,7 +598,7 @@ class _LegacyStatusEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyStatus',
           methodName: 'signOutAllDevices',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -604,7 +606,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<void>);
+                as _ida.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -612,12 +614,12 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i4.Future<_i5.LegacyUserInfo?> getUserInfo(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ia46v2xn.LegacyUserInfo?> getUserInfo(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyStatus',
             method: 'getUserInfo',
           );
@@ -626,7 +628,7 @@ class _LegacyStatusEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyStatus',
           methodName: 'getUserInfo',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -634,7 +636,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i5.LegacyUserInfo?>);
+                as _ida.Future<_ia46v2xn.LegacyUserInfo?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -642,12 +644,12 @@ class _LegacyStatusEndpoint {
     });
   }
 
-  _i4.Future<_i7.LegacyUserSettingsConfig> getUserSettingsConfig(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<_ipfxzc5n.LegacyUserSettingsConfig> getUserSettingsConfig(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyStatus',
             method: 'getUserSettingsConfig',
           );
@@ -656,7 +658,7 @@ class _LegacyStatusEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyStatus',
           methodName: 'getUserSettingsConfig',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -664,7 +666,7 @@ class _LegacyStatusEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i7.LegacyUserSettingsConfig>);
+                as _ida.Future<_ipfxzc5n.LegacyUserSettingsConfig>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -679,16 +681,16 @@ class _LegacyUserEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<bool> removeUserImage(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> removeUserImage(
+    _ist.TestSessionBuilder sessionBuilder,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyUser',
             method: 'removeUserImage',
           );
@@ -697,7 +699,7 @@ class _LegacyUserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyUser',
           methodName: 'removeUserImage',
-          parameters: _i1.testObjectToJson({}),
+          parameters: _ist.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -705,7 +707,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -713,13 +715,13 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i4.Future<bool> setUserImage(
-    _i1.TestSessionBuilder sessionBuilder,
-    _i8.ByteData image,
+  _ida.Future<bool> setUserImage(
+    _ist.TestSessionBuilder sessionBuilder,
+    _idt.ByteData image,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyUser',
             method: 'setUserImage',
           );
@@ -728,7 +730,7 @@ class _LegacyUserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyUser',
           methodName: 'setUserImage',
-          parameters: _i1.testObjectToJson({'image': image}),
+          parameters: _ist.testObjectToJson({'image': image}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -736,7 +738,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -744,13 +746,13 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i4.Future<bool> changeUserName(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> changeUserName(
+    _ist.TestSessionBuilder sessionBuilder,
     String userName,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyUser',
             method: 'changeUserName',
           );
@@ -759,7 +761,7 @@ class _LegacyUserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyUser',
           methodName: 'changeUserName',
-          parameters: _i1.testObjectToJson({'userName': userName}),
+          parameters: _ist.testObjectToJson({'userName': userName}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -767,7 +769,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -775,13 +777,13 @@ class _LegacyUserEndpoint {
     });
   }
 
-  _i4.Future<bool> changeFullName(
-    _i1.TestSessionBuilder sessionBuilder,
+  _ida.Future<bool> changeFullName(
+    _ist.TestSessionBuilder sessionBuilder,
     String fullName,
   ) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'legacyUser',
             method: 'changeFullName',
           );
@@ -790,7 +792,7 @@ class _LegacyUserEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'legacyUser',
           methodName: 'changeFullName',
-          parameters: _i1.testObjectToJson({'fullName': fullName}),
+          parameters: _ist.testObjectToJson({'fullName': fullName}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -798,7 +800,7 @@ class _LegacyUserEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<bool>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -813,17 +815,17 @@ class _SessionMigrationEndpoint {
     this._serializationManager,
   );
 
-  final _i2.EndpointDispatch _endpointDispatch;
+  final _is.EndpointDispatch _endpointDispatch;
 
-  final _i2.SerializationManager _serializationManager;
+  final _is.SerializationManager _serializationManager;
 
-  _i4.Future<_i9.AuthSuccess?> convertSession(
-    _i1.TestSessionBuilder sessionBuilder, {
+  _ida.Future<_iacs.AuthSuccess?> convertSession(
+    _ist.TestSessionBuilder sessionBuilder, {
     required String sessionKey,
   }) async {
-    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
       var _localUniqueSession =
-          (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'sessionMigration',
             method: 'convertSession',
           );
@@ -832,7 +834,7 @@ class _SessionMigrationEndpoint {
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'sessionMigration',
           methodName: 'convertSession',
-          parameters: _i1.testObjectToJson({'sessionKey': sessionKey}),
+          parameters: _ist.testObjectToJson({'sessionKey': sessionKey}),
           serializationManager: _serializationManager,
         );
         var _localReturnValue =
@@ -840,7 +842,7 @@ class _SessionMigrationEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _i4.Future<_i9.AuthSuccess?>);
+                as _ida.Future<_iacs.AuthSuccess?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

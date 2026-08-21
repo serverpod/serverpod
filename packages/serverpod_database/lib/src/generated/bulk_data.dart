@@ -10,39 +10,39 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class BulkData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   BulkData._({
     required this.tableDefinition,
     required this.data,
   });
 
   factory BulkData({
-    required _i2.TableDefinition tableDefinition,
+    required _isd.TableDefinition tableDefinition,
     required String data,
   }) = _BulkDataImpl;
 
   factory BulkData.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkData(
-      tableDefinition: _i2.Protocol().deserialize<_i2.TableDefinition>(
+      tableDefinition: _isd.Protocol().deserialize<_isd.TableDefinition>(
         jsonSerialization['tableDefinition'],
       ),
       data: jsonSerialization['data'] as String,
     );
   }
 
-  _i2.TableDefinition tableDefinition;
+  _isd.TableDefinition tableDefinition;
 
   String data;
 
   /// Returns a shallow copy of this [BulkData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   BulkData copyWith({
-    _i2.TableDefinition? tableDefinition,
+    _isd.TableDefinition? tableDefinition,
     String? data,
   });
   @override
@@ -65,13 +65,13 @@ abstract class BulkData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
 class _BulkDataImpl extends BulkData {
   _BulkDataImpl({
-    required _i2.TableDefinition tableDefinition,
+    required _isd.TableDefinition tableDefinition,
     required String data,
   }) : super._(
          tableDefinition: tableDefinition,
@@ -80,10 +80,10 @@ class _BulkDataImpl extends BulkData {
 
   /// Returns a shallow copy of this [BulkData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   BulkData copyWith({
-    _i2.TableDefinition? tableDefinition,
+    _isd.TableDefinition? tableDefinition,
     String? data,
   }) {
     return BulkData(

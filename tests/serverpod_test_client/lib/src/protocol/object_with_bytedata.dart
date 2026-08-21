@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithByteData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithByteData._({
     this.id,
     required this.byteData,
@@ -22,13 +22,13 @@ abstract class ObjectWithByteData
 
   factory ObjectWithByteData({
     int? id,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
   }) = _ObjectWithByteDataImpl;
 
   factory ObjectWithByteData.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithByteData(
       id: jsonSerialization['id'] as int?,
-      byteData: _i1.ByteDataJsonExtension.fromJson(
+      byteData: _isc.ByteDataJsonExtension.fromJson(
         jsonSerialization['byteData'],
       ),
     );
@@ -39,14 +39,14 @@ abstract class ObjectWithByteData
   /// the id will be null.
   int? id;
 
-  _i2.ByteData byteData;
+  _idt.ByteData byteData;
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithByteData copyWith({
     int? id,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -68,7 +68,7 @@ abstract class ObjectWithByteData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -77,7 +77,7 @@ class _Undefined {}
 class _ObjectWithByteDataImpl extends ObjectWithByteData {
   _ObjectWithByteDataImpl({
     int? id,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
   }) : super._(
          id: id,
          byteData: byteData,
@@ -85,11 +85,11 @@ class _ObjectWithByteDataImpl extends ObjectWithByteData {
 
   /// Returns a shallow copy of this [ObjectWithByteData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithByteData copyWith({
     Object? id = _Undefined,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
   }) {
     return ObjectWithByteData(
       id: id is int? ? id : this.id,

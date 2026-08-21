@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ChildClassWithoutId._({
     this.id,
     required super.grandParentField,
@@ -23,7 +23,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   });
 
   factory ChildClassWithoutId({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     required String grandParentField,
     required String parentField,
     required String childField,
@@ -33,7 +33,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
     return ChildClassWithoutId(
       id: jsonSerialization['id'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       grandParentField: jsonSerialization['grandParentField'] as String,
       parentField: jsonSerialization['parentField'] as String,
       childField: jsonSerialization['childField'] as String,
@@ -43,14 +43,14 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i2.UuidValue? id;
+  _isc.UuidValue? id;
 
   String childField;
 
   /// Returns a shallow copy of this [ChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   ChildClassWithoutId copyWith({
     Object? id,
     String? grandParentField,
@@ -81,7 +81,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _Undefined {}
 
 class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
   _ChildClassWithoutIdImpl({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     required String grandParentField,
     required String parentField,
     required String childField,
@@ -102,7 +102,7 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
 
   /// Returns a shallow copy of this [ChildClassWithoutId]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   ChildClassWithoutId copyWith({
     Object? id = _Undefined,
@@ -111,7 +111,7 @@ class _ChildClassWithoutIdImpl extends ChildClassWithoutId {
     String? childField,
   }) {
     return ChildClassWithoutId(
-      id: id is _i2.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       grandParentField: grandParentField ?? this.grandParentField,
       parentField: parentField ?? this.parentField,
       childField: childField ?? this.childField,

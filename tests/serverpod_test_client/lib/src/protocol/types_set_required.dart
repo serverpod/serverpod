@@ -10,18 +10,20 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class TypesSetRequired
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TypesSetRequired._({required this.anInt});
 
   factory TypesSetRequired({required Set<int> anInt}) = _TypesSetRequiredImpl;
 
   factory TypesSetRequired.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesSetRequired(
-      anInt: _i2.Protocol().deserialize<Set<int>>(jsonSerialization['anInt']),
+      anInt: _iza9lbb5.Protocol().deserialize<Set<int>>(
+        jsonSerialization['anInt'],
+      ),
     );
   }
 
@@ -29,7 +31,7 @@ abstract class TypesSetRequired
 
   /// Returns a shallow copy of this [TypesSetRequired]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TypesSetRequired copyWith({Set<int>? anInt});
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +51,7 @@ abstract class TypesSetRequired
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -58,7 +60,7 @@ class _TypesSetRequiredImpl extends TypesSetRequired {
 
   /// Returns a shallow copy of this [TypesSetRequired]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TypesSetRequired copyWith({Set<int>? anInt}) {
     return TypesSetRequired(anInt: anInt ?? this.anInt.map((e0) => e0).toSet());

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/many_to_many/member.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _iubhvl5a;
 
 abstract class Blocking
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -28,9 +28,9 @@ abstract class Blocking
   factory Blocking({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   }) = _BlockingImpl;
 
   factory Blocking.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,13 +39,13 @@ abstract class Blocking
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _iza9lbb5.Protocol().deserialize<_iubhvl5a.Member>(
               jsonSerialization['blocked'],
             ),
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _iza9lbb5.Protocol().deserialize<_iubhvl5a.Member>(
               jsonSerialization['blockedBy'],
             ),
     );
@@ -58,21 +58,21 @@ abstract class Blocking
 
   int blockedId;
 
-  _i2.Member? blocked;
+  _iubhvl5a.Member? blocked;
 
   int blockedById;
 
-  _i2.Member? blockedBy;
+  _iubhvl5a.Member? blockedBy;
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     int? blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +100,7 @@ abstract class Blocking
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,9 +110,9 @@ class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   }) : super._(
          id: id,
          blockedId: blockedId,
@@ -123,7 +123,7 @@ class _BlockingImpl extends Blocking {
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,
@@ -135,9 +135,11 @@ class _BlockingImpl extends Blocking {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
+      blocked: blocked is _iubhvl5a.Member?
+          ? blocked
+          : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _i2.Member?
+      blockedBy: blockedBy is _iubhvl5a.Member?
           ? blockedBy
           : this.blockedBy?.copyWith(),
     );

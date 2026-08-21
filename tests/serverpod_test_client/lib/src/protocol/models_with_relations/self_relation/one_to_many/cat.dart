@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _iayhscrz;
 
-abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
+abstract class Cat
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Cat._({
     this.id,
     required this.name,
@@ -28,8 +29,8 @@ abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
     int? id,
     required String name,
     int? motherId,
-    _i2.Cat? mother,
-    List<_i2.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   }) = _CatImpl;
 
   factory Cat.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,10 +40,12 @@ abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
       motherId: jsonSerialization['motherId'] as int?,
       mother: jsonSerialization['mother'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Cat>(jsonSerialization['mother']),
+          : _iza9lbb5.Protocol().deserialize<_iayhscrz.Cat>(
+              jsonSerialization['mother'],
+            ),
       kittens: jsonSerialization['kittens'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Cat>>(
+          : _iza9lbb5.Protocol().deserialize<List<_iayhscrz.Cat>>(
               jsonSerialization['kittens'],
             ),
     );
@@ -57,19 +60,19 @@ abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
 
   int? motherId;
 
-  _i2.Cat? mother;
+  _iayhscrz.Cat? mother;
 
-  List<_i2.Cat>? kittens;
+  List<_iayhscrz.Cat>? kittens;
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Cat copyWith({
     int? id,
     String? name,
     int? motherId,
-    _i2.Cat? mother,
-    List<_i2.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -99,7 +102,7 @@ abstract class Cat implements _i1.SerializableModel, _i1.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,8 +113,8 @@ class _CatImpl extends Cat {
     int? id,
     required String name,
     int? motherId,
-    _i2.Cat? mother,
-    List<_i2.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   }) : super._(
          id: id,
          name: name,
@@ -122,7 +125,7 @@ class _CatImpl extends Cat {
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Cat copyWith({
     Object? id = _Undefined,
@@ -135,8 +138,8 @@ class _CatImpl extends Cat {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _i2.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i2.Cat>?
+      mother: mother is _iayhscrz.Cat? ? mother : this.mother?.copyWith(),
+      kittens: kittens is List<_iayhscrz.Cat>?
           ? kittens
           : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );

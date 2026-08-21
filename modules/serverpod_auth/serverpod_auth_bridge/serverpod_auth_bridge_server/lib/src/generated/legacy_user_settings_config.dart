@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Feature flags describing legacy user-settings capabilities.
 abstract class LegacyUserSettingsConfig
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   LegacyUserSettingsConfig._({
     required this.canSeeUserName,
     required this.canSeeFullName,
@@ -35,19 +35,19 @@ abstract class LegacyUserSettingsConfig
     Map<String, dynamic> jsonSerialization,
   ) {
     return LegacyUserSettingsConfig(
-      canSeeUserName: _i1.BoolJsonExtension.fromJson(
+      canSeeUserName: _is.BoolJsonExtension.fromJson(
         jsonSerialization['canSeeUserName'],
       ),
-      canSeeFullName: _i1.BoolJsonExtension.fromJson(
+      canSeeFullName: _is.BoolJsonExtension.fromJson(
         jsonSerialization['canSeeFullName'],
       ),
-      canEditUserName: _i1.BoolJsonExtension.fromJson(
+      canEditUserName: _is.BoolJsonExtension.fromJson(
         jsonSerialization['canEditUserName'],
       ),
-      canEditFullName: _i1.BoolJsonExtension.fromJson(
+      canEditFullName: _is.BoolJsonExtension.fromJson(
         jsonSerialization['canEditFullName'],
       ),
-      canEditUserImage: _i1.BoolJsonExtension.fromJson(
+      canEditUserImage: _is.BoolJsonExtension.fromJson(
         jsonSerialization['canEditUserImage'],
       ),
     );
@@ -70,7 +70,7 @@ abstract class LegacyUserSettingsConfig
 
   /// Returns a shallow copy of this [LegacyUserSettingsConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacyUserSettingsConfig copyWith({
     bool? canSeeUserName,
     bool? canSeeFullName,
@@ -104,7 +104,7 @@ abstract class LegacyUserSettingsConfig
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -125,7 +125,7 @@ class _LegacyUserSettingsConfigImpl extends LegacyUserSettingsConfig {
 
   /// Returns a shallow copy of this [LegacyUserSettingsConfig]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacyUserSettingsConfig copyWith({
     bool? canSeeUserName,

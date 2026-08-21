@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../../explicit_column_name/relations/one_to_one/service.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../../explicit_column_name/relations/one_to_one/service.dart'
+    as _iml73r3x;
 
 abstract class Contractor
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Contractor._({
     this.id,
     required this.name,
@@ -27,7 +28,7 @@ abstract class Contractor
     int? id,
     required String name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   }) = _ContractorImpl;
 
   factory Contractor.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class Contractor
       serviceIdField: jsonSerialization['serviceIdField'] as int?,
       service: jsonSerialization['service'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Service>(
+          : _iza9lbb5.Protocol().deserialize<_iml73r3x.Service>(
               jsonSerialization['service'],
             ),
     );
@@ -52,16 +53,16 @@ abstract class Contractor
 
   int? serviceIdField;
 
-  _i2.Service? service;
+  _iml73r3x.Service? service;
 
   /// Returns a shallow copy of this [Contractor]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Contractor copyWith({
     int? id,
     String? name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +88,7 @@ abstract class Contractor
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +99,7 @@ class _ContractorImpl extends Contractor {
     int? id,
     required String name,
     int? serviceIdField,
-    _i2.Service? service,
+    _iml73r3x.Service? service,
   }) : super._(
          id: id,
          name: name,
@@ -108,7 +109,7 @@ class _ContractorImpl extends Contractor {
 
   /// Returns a shallow copy of this [Contractor]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Contractor copyWith({
     Object? id = _Undefined,
@@ -122,7 +123,9 @@ class _ContractorImpl extends Contractor {
       serviceIdField: serviceIdField is int?
           ? serviceIdField
           : this.serviceIdField,
-      service: service is _i2.Service? ? service : this.service?.copyWith(),
+      service: service is _iml73r3x.Service?
+          ? service
+          : this.service?.copyWith(),
     );
   }
 }

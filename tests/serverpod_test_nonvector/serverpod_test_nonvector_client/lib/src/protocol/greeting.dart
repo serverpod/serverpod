@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// A greeting message which can be sent to or from the server.
 abstract class Greeting
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Greeting._({
     this.id,
     required this.message,
@@ -34,7 +34,7 @@ abstract class Greeting
       id: jsonSerialization['id'] as int?,
       message: jsonSerialization['message'] as String,
       author: jsonSerialization['author'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
     );
@@ -56,7 +56,7 @@ abstract class Greeting
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Greeting copyWith({
     int? id,
     String? message,
@@ -87,7 +87,7 @@ abstract class Greeting
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,7 +108,7 @@ class _GreetingImpl extends Greeting {
 
   /// Returns a shallow copy of this [Greeting]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Greeting copyWith({
     Object? id = _Undefined,

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Defines how a foreign key should be matched.
-enum ForeignKeyMatchType implements _i1.SerializableModel {
+enum ForeignKeyMatchType implements _iss.SerializableModel {
   /// [full] will not allow one column of a multicolumn foreign key
   /// to be null unless all foreign key columns are null.
   full,

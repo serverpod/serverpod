@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _iegdvue1;
 
 abstract class UserNoteCollectionWithALongName
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserNoteCollectionWithALongName._({
     this.id,
     required this.name,
@@ -26,7 +26,7 @@ abstract class UserNoteCollectionWithALongName
   factory UserNoteCollectionWithALongName({
     int? id,
     required String name,
-    List<_i2.UserNoteWithALongName>? notes,
+    List<_iegdvue1.UserNoteWithALongName>? notes,
   }) = _UserNoteCollectionWithALongNameImpl;
 
   factory UserNoteCollectionWithALongName.fromJson(
@@ -37,9 +37,10 @@ abstract class UserNoteCollectionWithALongName
       name: jsonSerialization['name'] as String,
       notes: jsonSerialization['notes'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.UserNoteWithALongName>>(
-              jsonSerialization['notes'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_iegdvue1.UserNoteWithALongName>>(
+                  jsonSerialization['notes'],
+                ),
     );
   }
 
@@ -50,15 +51,15 @@ abstract class UserNoteCollectionWithALongName
 
   String name;
 
-  List<_i2.UserNoteWithALongName>? notes;
+  List<_iegdvue1.UserNoteWithALongName>? notes;
 
   /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserNoteCollectionWithALongName copyWith({
     int? id,
     String? name,
-    List<_i2.UserNoteWithALongName>? notes,
+    List<_iegdvue1.UserNoteWithALongName>? notes,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +84,7 @@ abstract class UserNoteCollectionWithALongName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -94,7 +95,7 @@ class _UserNoteCollectionWithALongNameImpl
   _UserNoteCollectionWithALongNameImpl({
     int? id,
     required String name,
-    List<_i2.UserNoteWithALongName>? notes,
+    List<_iegdvue1.UserNoteWithALongName>? notes,
   }) : super._(
          id: id,
          name: name,
@@ -103,7 +104,7 @@ class _UserNoteCollectionWithALongNameImpl
 
   /// Returns a shallow copy of this [UserNoteCollectionWithALongName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserNoteCollectionWithALongName copyWith({
     Object? id = _Undefined,
@@ -113,7 +114,7 @@ class _UserNoteCollectionWithALongNameImpl
     return UserNoteCollectionWithALongName(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      notes: notes is List<_i2.UserNoteWithALongName>?
+      notes: notes is List<_iegdvue1.UserNoteWithALongName>?
           ? notes
           : this.notes?.map((e0) => e0.copyWith()).toList(),
     );

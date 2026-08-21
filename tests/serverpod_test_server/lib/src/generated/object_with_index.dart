@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithIndex
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithIndex._({
     this.id,
     required this.indexed,
@@ -46,11 +46,11 @@ abstract class ObjectWithIndex
   int indexed2;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithIndex copyWith({
     int? id,
     int? indexed,
@@ -81,11 +81,11 @@ abstract class ObjectWithIndex
   }
 
   static ObjectWithIndexIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     ObjectWithIndexInclude? include,
   }) {
     return ObjectWithIndexIncludeList._(
@@ -100,7 +100,7 @@ abstract class ObjectWithIndex
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +119,7 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
 
   /// Returns a shallow copy of this [ObjectWithIndex]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithIndex copyWith({
     Object? id = _Undefined,
@@ -134,29 +134,29 @@ class _ObjectWithIndexImpl extends ObjectWithIndex {
   }
 }
 
-class ObjectWithIndexUpdateTable extends _i1.UpdateTable<ObjectWithIndexTable> {
+class ObjectWithIndexUpdateTable extends _is.UpdateTable<ObjectWithIndexTable> {
   ObjectWithIndexUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> indexed(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> indexed(int value) => _is.ColumnValue(
     table.indexed,
     value,
   );
 
-  _i1.ColumnValue<int, int> indexed2(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> indexed2(int value) => _is.ColumnValue(
     table.indexed2,
     value,
   );
 }
 
-class ObjectWithIndexTable extends _i1.Table<int?> {
+class ObjectWithIndexTable extends _is.Table<int?> {
   ObjectWithIndexTable({super.tableRelation})
     : super(tableName: 'object_with_index') {
     updateTable = ObjectWithIndexUpdateTable(this);
-    indexed = _i1.ColumnInt(
+    indexed = _is.ColumnInt(
       'indexed',
       this,
     );
-    indexed2 = _i1.ColumnInt(
+    indexed2 = _is.ColumnInt(
       'indexed2',
       this,
     );
@@ -164,31 +164,31 @@ class ObjectWithIndexTable extends _i1.Table<int?> {
 
   late final ObjectWithIndexUpdateTable updateTable;
 
-  late final _i1.ColumnInt indexed;
+  late final _is.ColumnInt indexed;
 
-  late final _i1.ColumnInt indexed2;
+  late final _is.ColumnInt indexed2;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     indexed,
     indexed2,
   ];
 }
 
-class ObjectWithIndexInclude extends _i1.IncludeObject {
+class ObjectWithIndexInclude extends _is.IncludeObject {
   ObjectWithIndexInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithIndex.t;
+  _is.Table<int?> get table => ObjectWithIndex.t;
 }
 
-class ObjectWithIndexIncludeList extends _i1.IncludeList {
+class ObjectWithIndexIncludeList extends _is.IncludeList {
   ObjectWithIndexIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -199,10 +199,10 @@ class ObjectWithIndexIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithIndex.t;
+  _is.Table<int?> get table => ObjectWithIndex.t;
 }
 
 class ObjectWithIndexRepository {
@@ -231,15 +231,15 @@ class ObjectWithIndexRepository {
   /// );
   /// ```
   Future<List<ObjectWithIndex>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
@@ -271,14 +271,14 @@ class ObjectWithIndexRepository {
   /// );
   /// ```
   Future<ObjectWithIndex?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
@@ -293,11 +293,11 @@ class ObjectWithIndexRepository {
 
   /// Finds a single [ObjectWithIndex] by its [id] or null if no such row exists.
   Future<ObjectWithIndex?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithIndex>(
       id,
@@ -322,9 +322,9 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithIndex> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -340,9 +340,9 @@ class ObjectWithIndexRepository {
   ///
   /// The returned [ObjectWithIndex] will have its `id` field set.
   Future<ObjectWithIndex> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithIndex row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithIndex>(
       row,
@@ -371,12 +371,12 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithIndex> rows, {
-    required _i1.ColumnSelections<ObjectWithIndexTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithIndexTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithIndexTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithIndexTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithIndex>(
@@ -403,12 +403,12 @@ class ObjectWithIndexRepository {
   ///
   /// The returned [ObjectWithIndex] will have its `id` field set.
   Future<ObjectWithIndex?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithIndex row, {
-    required _i1.ColumnSelections<ObjectWithIndexTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithIndexTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithIndexTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithIndexTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithIndex>(
       row,
@@ -429,10 +429,10 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithIndex> rows, {
-    _i1.ColumnSelections<ObjectWithIndexTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithIndexTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithIndex>(
@@ -447,10 +447,10 @@ class ObjectWithIndexRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithIndex> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithIndex row, {
-    _i1.ColumnSelections<ObjectWithIndexTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithIndexTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithIndex>(
       row,
@@ -462,11 +462,11 @@ class ObjectWithIndexRepository {
   /// Updates a single [ObjectWithIndex] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithIndex?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithIndex>(
       id,
@@ -482,15 +482,15 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithIndexUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithIndexTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithIndex>(
@@ -517,11 +517,11 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithIndex> rows, {
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithIndex>(
@@ -535,9 +535,9 @@ class ObjectWithIndexRepository {
 
   /// Deletes a single [ObjectWithIndex].
   Future<ObjectWithIndex> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithIndex row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithIndex>(
       row,
@@ -554,11 +554,11 @@ class ObjectWithIndexRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithIndex>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
-    _i1.OrderByBuilder<ObjectWithIndexTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    _is.OrderByBuilder<ObjectWithIndexTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithIndex>(
@@ -573,10 +573,10 @@ class ObjectWithIndexRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithIndex>(
       where: where?.call(ObjectWithIndex.t),
@@ -587,11 +587,11 @@ class ObjectWithIndexRepository {
 
   /// Acquires row-level locks on [ObjectWithIndex] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithIndexTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithIndexTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithIndex>(
       where: where(ObjectWithIndex.t),

@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
 
 /// DTO for transferring server-side session information between server and client.
 abstract class ServerSideSessionInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ServerSideSessionInfo._({
     required this.id,
     required this.authUserId,
@@ -28,8 +29,8 @@ abstract class ServerSideSessionInfo
   });
 
   factory ServerSideSessionInfo({
-    required _i1.UuidValue id,
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue id,
+    required _is.UuidValue authUserId,
     required Set<String> scopeNames,
     required DateTime created,
     required DateTime lastUsed,
@@ -42,33 +43,33 @@ abstract class ServerSideSessionInfo
     Map<String, dynamic> jsonSerialization,
   ) {
     return ServerSideSessionInfo(
-      id: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      id: _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
-      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
-      created: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
-      lastUsed: _i1.DateTimeJsonExtension.fromJson(
+      created: _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+      lastUsed: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['lastUsed'],
       ),
       expiresAt: jsonSerialization['expiresAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
       expireAfterUnusedFor: jsonSerialization['expireAfterUnusedFor'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['expireAfterUnusedFor'],
             ),
       method: jsonSerialization['method'] as String,
     );
   }
 
-  _i1.UuidValue id;
+  _is.UuidValue id;
 
   /// The [AuthUser] this session belongs to.
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The scopes this session provides access to.
   ///
@@ -100,10 +101,10 @@ abstract class ServerSideSessionInfo
 
   /// Returns a shallow copy of this [ServerSideSessionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerSideSessionInfo copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,
@@ -145,7 +146,7 @@ abstract class ServerSideSessionInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -153,8 +154,8 @@ class _Undefined {}
 
 class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
   _ServerSideSessionInfoImpl({
-    required _i1.UuidValue id,
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue id,
+    required _is.UuidValue authUserId,
     required Set<String> scopeNames,
     required DateTime created,
     required DateTime lastUsed,
@@ -174,11 +175,11 @@ class _ServerSideSessionInfoImpl extends ServerSideSessionInfo {
 
   /// Returns a shallow copy of this [ServerSideSessionInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerSideSessionInfo copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
     Set<String>? scopeNames,
     DateTime? created,
     DateTime? lastUsed,

@@ -11,13 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../common/secret_challenge/models/secret_challenge.dart' as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
+import '../../../common/secret_challenge/models/secret_challenge.dart'
+    as _i7k1fa50;
 
 /// Pending email account registration.
 abstract class EmailAccountRequest
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   EmailAccountRequest._({
     this.id,
     DateTime? createdAt,
@@ -29,42 +31,42 @@ abstract class EmailAccountRequest
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccountRequest({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     required String email,
-    required _i1.UuidValue challengeId,
-    _i2.SecretChallenge? challenge,
-    _i1.UuidValue? createAccountChallengeId,
-    _i2.SecretChallenge? createAccountChallenge,
+    required _is.UuidValue challengeId,
+    _i7k1fa50.SecretChallenge? challenge,
+    _is.UuidValue? createAccountChallengeId,
+    _i7k1fa50.SecretChallenge? createAccountChallenge,
   }) = _EmailAccountRequestImpl;
 
   factory EmailAccountRequest.fromJson(Map<String, dynamic> jsonSerialization) {
     return EmailAccountRequest(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String,
-      challengeId: _i1.UuidValueJsonExtension.fromJson(
+      challengeId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['challengeId'],
       ),
       challenge: jsonSerialization['challenge'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
+          : _i99s0abf.Protocol().deserialize<_i7k1fa50.SecretChallenge>(
               jsonSerialization['challenge'],
             ),
       createAccountChallengeId:
           jsonSerialization['createAccountChallengeId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['createAccountChallengeId'],
             ),
       createAccountChallenge:
           jsonSerialization['createAccountChallenge'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SecretChallenge>(
+          : _i99s0abf.Protocol().deserialize<_i7k1fa50.SecretChallenge>(
               jsonSerialization['createAccountChallenge'],
             ),
     );
@@ -75,7 +77,7 @@ abstract class EmailAccountRequest
   static const db = EmailAccountRequestRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   /// The time when this authentication was created.
   DateTime createdAt;
@@ -85,31 +87,31 @@ abstract class EmailAccountRequest
   /// Stored in lower-case.
   String email;
 
-  _i1.UuidValue challengeId;
+  _is.UuidValue challengeId;
 
   /// The associated challenge for this request
-  _i2.SecretChallenge? challenge;
+  _i7k1fa50.SecretChallenge? challenge;
 
-  _i1.UuidValue? createAccountChallengeId;
+  _is.UuidValue? createAccountChallengeId;
 
   /// Used to complete the account creation.
   /// This will be set after the account creation challenge has been validated.
-  _i2.SecretChallenge? createAccountChallenge;
+  _i7k1fa50.SecretChallenge? createAccountChallenge;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [EmailAccountRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAccountRequest copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     String? email,
-    _i1.UuidValue? challengeId,
-    _i2.SecretChallenge? challenge,
-    _i1.UuidValue? createAccountChallengeId,
-    _i2.SecretChallenge? createAccountChallenge,
+    _is.UuidValue? challengeId,
+    _i7k1fa50.SecretChallenge? challenge,
+    _is.UuidValue? createAccountChallengeId,
+    _i7k1fa50.SecretChallenge? createAccountChallenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -133,8 +135,8 @@ abstract class EmailAccountRequest
   }
 
   static EmailAccountRequestInclude include({
-    _i2.SecretChallengeInclude? challenge,
-    _i2.SecretChallengeInclude? createAccountChallenge,
+    _i7k1fa50.SecretChallengeInclude? challenge,
+    _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
   }) {
     return EmailAccountRequestInclude._(
       challenge: challenge,
@@ -143,11 +145,11 @@ abstract class EmailAccountRequest
   }
 
   static EmailAccountRequestIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     EmailAccountRequestInclude? include,
   }) {
     return EmailAccountRequestIncludeList._(
@@ -162,7 +164,7 @@ abstract class EmailAccountRequest
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -170,13 +172,13 @@ class _Undefined {}
 
 class _EmailAccountRequestImpl extends EmailAccountRequest {
   _EmailAccountRequestImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     required String email,
-    required _i1.UuidValue challengeId,
-    _i2.SecretChallenge? challenge,
-    _i1.UuidValue? createAccountChallengeId,
-    _i2.SecretChallenge? createAccountChallenge,
+    required _is.UuidValue challengeId,
+    _i7k1fa50.SecretChallenge? challenge,
+    _is.UuidValue? createAccountChallengeId,
+    _i7k1fa50.SecretChallenge? createAccountChallenge,
   }) : super._(
          id: id,
          createdAt: createdAt,
@@ -189,29 +191,30 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
 
   /// Returns a shallow copy of this [EmailAccountRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAccountRequest copyWith({
     Object? id = _Undefined,
     DateTime? createdAt,
     String? email,
-    _i1.UuidValue? challengeId,
+    _is.UuidValue? challengeId,
     Object? challenge = _Undefined,
     Object? createAccountChallengeId = _Undefined,
     Object? createAccountChallenge = _Undefined,
   }) {
     return EmailAccountRequest(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       email: email ?? this.email,
       challengeId: challengeId ?? this.challengeId,
-      challenge: challenge is _i2.SecretChallenge?
+      challenge: challenge is _i7k1fa50.SecretChallenge?
           ? challenge
           : this.challenge?.copyWith(),
-      createAccountChallengeId: createAccountChallengeId is _i1.UuidValue?
+      createAccountChallengeId: createAccountChallengeId is _is.UuidValue?
           ? createAccountChallengeId
           : this.createAccountChallengeId,
-      createAccountChallenge: createAccountChallenge is _i2.SecretChallenge?
+      createAccountChallenge:
+          createAccountChallenge is _i7k1fa50.SecretChallenge?
           ? createAccountChallenge
           : this.createAccountChallenge?.copyWith(),
     );
@@ -219,53 +222,53 @@ class _EmailAccountRequestImpl extends EmailAccountRequest {
 }
 
 class EmailAccountRequestUpdateTable
-    extends _i1.UpdateTable<EmailAccountRequestTable> {
+    extends _is.UpdateTable<EmailAccountRequestTable> {
   EmailAccountRequestUpdateTable(super.table);
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> challengeId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> challengeId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.challengeId,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> createAccountChallengeId(
-    _i1.UuidValue? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> createAccountChallengeId(
+    _is.UuidValue? value,
+  ) => _is.ColumnValue(
     table.createAccountChallengeId,
     value,
   );
 }
 
-class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
+class EmailAccountRequestTable extends _is.Table<_is.UuidValue?> {
   EmailAccountRequestTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_email_account_request') {
     updateTable = EmailAccountRequestUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    challengeId = _i1.ColumnUuid(
+    challengeId = _is.ColumnUuid(
       'challengeId',
       this,
     );
-    createAccountChallengeId = _i1.ColumnUuid(
+    createAccountChallengeId = _is.ColumnUuid(
       'createAccountChallengeId',
       this,
     );
@@ -274,52 +277,52 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   late final EmailAccountRequestUpdateTable updateTable;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The email of the user.
   ///
   /// Stored in lower-case.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
-  late final _i1.ColumnUuid challengeId;
+  late final _is.ColumnUuid challengeId;
 
   /// The associated challenge for this request
-  _i2.SecretChallengeTable? _challenge;
+  _i7k1fa50.SecretChallengeTable? _challenge;
 
-  late final _i1.ColumnUuid createAccountChallengeId;
+  late final _is.ColumnUuid createAccountChallengeId;
 
   /// Used to complete the account creation.
   /// This will be set after the account creation challenge has been validated.
-  _i2.SecretChallengeTable? _createAccountChallenge;
+  _i7k1fa50.SecretChallengeTable? _createAccountChallenge;
 
-  _i2.SecretChallengeTable get challenge {
+  _i7k1fa50.SecretChallengeTable get challenge {
     if (_challenge != null) return _challenge!;
-    _challenge = _i1.createRelationTable(
+    _challenge = _is.createRelationTable(
       relationFieldName: 'challenge',
       field: EmailAccountRequest.t.challengeId,
-      foreignField: _i2.SecretChallenge.t.id,
+      foreignField: _i7k1fa50.SecretChallenge.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.SecretChallengeTable(tableRelation: foreignTableRelation),
+          _i7k1fa50.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _challenge!;
   }
 
-  _i2.SecretChallengeTable get createAccountChallenge {
+  _i7k1fa50.SecretChallengeTable get createAccountChallenge {
     if (_createAccountChallenge != null) return _createAccountChallenge!;
-    _createAccountChallenge = _i1.createRelationTable(
+    _createAccountChallenge = _is.createRelationTable(
       relationFieldName: 'createAccountChallenge',
       field: EmailAccountRequest.t.createAccountChallengeId,
-      foreignField: _i2.SecretChallenge.t.id,
+      foreignField: _i7k1fa50.SecretChallenge.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.SecretChallengeTable(tableRelation: foreignTableRelation),
+          _i7k1fa50.SecretChallengeTable(tableRelation: foreignTableRelation),
     );
     return _createAccountChallenge!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     createdAt,
     email,
@@ -328,7 +331,7 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'challenge') {
       return challenge;
     }
@@ -339,32 +342,32 @@ class EmailAccountRequestTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class EmailAccountRequestInclude extends _i1.IncludeObject {
+class EmailAccountRequestInclude extends _is.IncludeObject {
   EmailAccountRequestInclude._({
-    _i2.SecretChallengeInclude? challenge,
-    _i2.SecretChallengeInclude? createAccountChallenge,
+    _i7k1fa50.SecretChallengeInclude? challenge,
+    _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
   }) {
     _challenge = challenge;
     _createAccountChallenge = createAccountChallenge;
   }
 
-  _i2.SecretChallengeInclude? _challenge;
+  _i7k1fa50.SecretChallengeInclude? _challenge;
 
-  _i2.SecretChallengeInclude? _createAccountChallenge;
+  _i7k1fa50.SecretChallengeInclude? _createAccountChallenge;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'challenge': _challenge,
     'createAccountChallenge': _createAccountChallenge,
   };
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountRequest.t;
+  _is.Table<_is.UuidValue?> get table => EmailAccountRequest.t;
 }
 
-class EmailAccountRequestIncludeList extends _i1.IncludeList {
+class EmailAccountRequestIncludeList extends _is.IncludeList {
   EmailAccountRequestIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -375,10 +378,10 @@ class EmailAccountRequestIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccountRequest.t;
+  _is.Table<_is.UuidValue?> get table => EmailAccountRequest.t;
 }
 
 class EmailAccountRequestRepository {
@@ -411,16 +414,16 @@ class EmailAccountRequestRepository {
   /// );
   /// ```
   Future<List<EmailAccountRequest>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -453,15 +456,15 @@ class EmailAccountRequestRepository {
   /// );
   /// ```
   Future<EmailAccountRequest?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -477,12 +480,12 @@ class EmailAccountRequestRepository {
 
   /// Finds a single [EmailAccountRequest] by its [id] or null if no such row exists.
   Future<EmailAccountRequest?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     EmailAccountRequestInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailAccountRequest>(
       id,
@@ -508,9 +511,9 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccountRequest> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -526,9 +529,9 @@ class EmailAccountRequestRepository {
   ///
   /// The returned [EmailAccountRequest] will have its `id` field set.
   Future<EmailAccountRequest> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailAccountRequest>(
       row,
@@ -557,12 +560,12 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccountRequest> rows, {
-    required _i1.ColumnSelections<EmailAccountRequestTable> conflictColumns,
-    _i1.ColumnSelections<EmailAccountRequestTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAccountRequestTable> conflictColumns,
+    _is.ColumnSelections<EmailAccountRequestTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailAccountRequest>(
@@ -589,12 +592,12 @@ class EmailAccountRequestRepository {
   ///
   /// The returned [EmailAccountRequest] will have its `id` field set.
   Future<EmailAccountRequest?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest row, {
-    required _i1.ColumnSelections<EmailAccountRequestTable> conflictColumns,
-    _i1.ColumnSelections<EmailAccountRequestTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAccountRequestTable> conflictColumns,
+    _is.ColumnSelections<EmailAccountRequestTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailAccountRequest>(
       row,
@@ -615,10 +618,10 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccountRequest> rows, {
-    _i1.ColumnSelections<EmailAccountRequestTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAccountRequestTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailAccountRequest>(
@@ -633,10 +636,10 @@ class EmailAccountRequestRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailAccountRequest> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest row, {
-    _i1.ColumnSelections<EmailAccountRequestTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAccountRequestTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailAccountRequest>(
       row,
@@ -648,11 +651,11 @@ class EmailAccountRequestRepository {
   /// Updates a single [EmailAccountRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccountRequest?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccountRequest>(
       id,
@@ -668,15 +671,15 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailAccountRequestUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
+    required _is.WhereExpressionBuilder<EmailAccountRequestTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccountRequest>(
@@ -703,11 +706,11 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccountRequest> rows, {
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailAccountRequest>(
@@ -721,9 +724,9 @@ class EmailAccountRequestRepository {
 
   /// Deletes a single [EmailAccountRequest].
   Future<EmailAccountRequest> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailAccountRequest>(
       row,
@@ -740,11 +743,11 @@ class EmailAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccountRequest>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
-    _i1.OrderByBuilder<EmailAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAccountRequestTable> where,
+    _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccountRequest>(
@@ -759,10 +762,10 @@ class EmailAccountRequestRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccountRequest>(
       where: where?.call(EmailAccountRequest.t),
@@ -773,11 +776,11 @@ class EmailAccountRequestRepository {
 
   /// Acquires row-level locks on [EmailAccountRequest] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAccountRequestTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAccountRequestTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccountRequest>(
       where: where(EmailAccountRequest.t),
@@ -794,10 +797,10 @@ class EmailAccountRequestAttachRowRepository {
   /// Creates a relation between the given [EmailAccountRequest] and [SecretChallenge]
   /// by setting the [EmailAccountRequest]'s foreign key `challengeId` to refer to the [SecretChallenge].
   Future<void> challenge(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest emailAccountRequest,
-    _i2.SecretChallenge challenge, {
-    _i1.Transaction? transaction,
+    _i7k1fa50.SecretChallenge challenge, {
+    _is.Transaction? transaction,
   }) async {
     if (emailAccountRequest.id == null) {
       throw ArgumentError.notNull('emailAccountRequest.id');
@@ -819,10 +822,10 @@ class EmailAccountRequestAttachRowRepository {
   /// Creates a relation between the given [EmailAccountRequest] and [SecretChallenge]
   /// by setting the [EmailAccountRequest]'s foreign key `createAccountChallengeId` to refer to the [SecretChallenge].
   Future<void> createAccountChallenge(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest emailAccountRequest,
-    _i2.SecretChallenge createAccountChallenge, {
-    _i1.Transaction? transaction,
+    _i7k1fa50.SecretChallenge createAccountChallenge, {
+    _is.Transaction? transaction,
   }) async {
     if (emailAccountRequest.id == null) {
       throw ArgumentError.notNull('emailAccountRequest.id');
@@ -851,9 +854,9 @@ class EmailAccountRequestDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> createAccountChallenge(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccountRequest emailAccountRequest, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (emailAccountRequest.id == null) {
       throw ArgumentError.notNull('emailAccountRequest.id');

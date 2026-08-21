@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithGeographyGeometryCollection
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithGeographyGeometryCollection._({
     this.id,
     required this.geometryCollection,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyGeometryCollection
 
   factory ObjectWithGeographyGeometryCollection({
     int? id,
-    required _i1.GeographyGeometryCollection geometryCollection,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedGist,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist,
+    required _isc.GeographyGeometryCollection geometryCollection,
+    required _isc.GeographyGeometryCollection geometryCollectionIndexedGist,
+    required _isc.GeographyGeometryCollection geometryCollectionIndexedSpgist,
   }) = _ObjectWithGeographyGeometryCollectionImpl;
 
   factory ObjectWithGeographyGeometryCollection.fromJson(
@@ -33,15 +33,16 @@ abstract class ObjectWithGeographyGeometryCollection
   ) {
     return ObjectWithGeographyGeometryCollection(
       id: jsonSerialization['id'] as int?,
-      geometryCollection: _i1.GeographyGeometryCollectionJsonExtension.fromJson(
-        jsonSerialization['geometryCollection'],
-      ),
+      geometryCollection:
+          _isc.GeographyGeometryCollectionJsonExtension.fromJson(
+            jsonSerialization['geometryCollection'],
+          ),
       geometryCollectionIndexedGist:
-          _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+          _isc.GeographyGeometryCollectionJsonExtension.fromJson(
             jsonSerialization['geometryCollectionIndexedGist'],
           ),
       geometryCollectionIndexedSpgist:
-          _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+          _isc.GeographyGeometryCollectionJsonExtension.fromJson(
             jsonSerialization['geometryCollectionIndexedSpgist'],
           ),
     );
@@ -52,20 +53,20 @@ abstract class ObjectWithGeographyGeometryCollection
   /// the id will be null.
   int? id;
 
-  _i1.GeographyGeometryCollection geometryCollection;
+  _isc.GeographyGeometryCollection geometryCollection;
 
-  _i1.GeographyGeometryCollection geometryCollectionIndexedGist;
+  _isc.GeographyGeometryCollection geometryCollectionIndexedGist;
 
-  _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist;
+  _isc.GeographyGeometryCollection geometryCollectionIndexedSpgist;
 
   /// Returns a shallow copy of this [ObjectWithGeographyGeometryCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithGeographyGeometryCollection copyWith({
     int? id,
-    _i1.GeographyGeometryCollection? geometryCollection,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedGist,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
+    _isc.GeographyGeometryCollection? geometryCollection,
+    _isc.GeographyGeometryCollection? geometryCollectionIndexedGist,
+    _isc.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,7 +94,7 @@ abstract class ObjectWithGeographyGeometryCollection
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -103,9 +104,9 @@ class _ObjectWithGeographyGeometryCollectionImpl
     extends ObjectWithGeographyGeometryCollection {
   _ObjectWithGeographyGeometryCollectionImpl({
     int? id,
-    required _i1.GeographyGeometryCollection geometryCollection,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedGist,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist,
+    required _isc.GeographyGeometryCollection geometryCollection,
+    required _isc.GeographyGeometryCollection geometryCollectionIndexedGist,
+    required _isc.GeographyGeometryCollection geometryCollectionIndexedSpgist,
   }) : super._(
          id: id,
          geometryCollection: geometryCollection,
@@ -115,13 +116,13 @@ class _ObjectWithGeographyGeometryCollectionImpl
 
   /// Returns a shallow copy of this [ObjectWithGeographyGeometryCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithGeographyGeometryCollection copyWith({
     Object? id = _Undefined,
-    _i1.GeographyGeometryCollection? geometryCollection,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedGist,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
+    _isc.GeographyGeometryCollection? geometryCollection,
+    _isc.GeographyGeometryCollection? geometryCollectionIndexedGist,
+    _isc.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
   }) {
     return ObjectWithGeographyGeometryCollection(
       id: id is int? ? id : this.id,

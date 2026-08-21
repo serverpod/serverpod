@@ -10,15 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
 
 /// Core database entity representing a user in the authentication system.
 ///
 /// This class is meant to be used only to interact with the database. To transfer
 /// user data, use the [AuthUserModel] DTO.
 abstract class AuthUser
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   AuthUser._({
     this.id,
     DateTime? createdAt,
@@ -28,7 +29,7 @@ abstract class AuthUser
        blocked = blocked ?? false;
 
   factory AuthUser({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
@@ -38,16 +39,16 @@ abstract class AuthUser
     return AuthUser(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+          : _is.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
@@ -56,7 +57,7 @@ abstract class AuthUser
   static const db = AuthUserRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   /// The time when this user was created.
   DateTime createdAt;
@@ -68,13 +69,13 @@ abstract class AuthUser
   bool blocked;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AuthUser copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
@@ -106,11 +107,11 @@ abstract class AuthUser
   }
 
   static AuthUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<AuthUserTable>? where,
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
     AuthUserInclude? include,
   }) {
     return AuthUserIncludeList._(
@@ -125,7 +126,7 @@ abstract class AuthUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -133,7 +134,7 @@ class _Undefined {}
 
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
@@ -146,7 +147,7 @@ class _AuthUserImpl extends AuthUser {
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AuthUser copyWith({
     Object? id = _Undefined,
@@ -155,7 +156,7 @@ class _AuthUserImpl extends AuthUser {
     bool? blocked,
   }) {
     return AuthUser(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,
@@ -163,40 +164,40 @@ class _AuthUserImpl extends AuthUser {
   }
 }
 
-class AuthUserUpdateTable extends _i1.UpdateTable<AuthUserTable> {
+class AuthUserUpdateTable extends _is.UpdateTable<AuthUserTable> {
   AuthUserUpdateTable(super.table);
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> blocked(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> blocked(bool value) => _is.ColumnValue(
     table.blocked,
     value,
   );
 }
 
-class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
+class AuthUserTable extends _is.Table<_is.UuidValue?> {
   AuthUserTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_core_user') {
     updateTable = AuthUserUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
+    scopeNames = _is.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
-    blocked = _i1.ColumnBool(
+    blocked = _is.ColumnBool(
       'blocked',
       this,
     );
@@ -205,16 +206,16 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   late final AuthUserUpdateTable updateTable;
 
   /// The time when this user was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// Set of scopes that this user can access.
-  late final _i1.ColumnSerializable<Set<String>> scopeNames;
+  late final _is.ColumnSerializable<Set<String>> scopeNames;
 
   /// If `true` the user will be blocked from signing in.
-  late final _i1.ColumnBool blocked;
+  late final _is.ColumnBool blocked;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     createdAt,
     scopeNames,
@@ -222,19 +223,19 @@ class AuthUserTable extends _i1.Table<_i1.UuidValue?> {
   ];
 }
 
-class AuthUserInclude extends _i1.IncludeObject {
+class AuthUserInclude extends _is.IncludeObject {
   AuthUserInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => AuthUser.t;
+  _is.Table<_is.UuidValue?> get table => AuthUser.t;
 }
 
-class AuthUserIncludeList extends _i1.IncludeList {
+class AuthUserIncludeList extends _is.IncludeList {
   AuthUserIncludeList._({
-    _i1.WhereExpressionBuilder<AuthUserTable>? where,
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -245,10 +246,10 @@ class AuthUserIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => AuthUser.t;
+  _is.Table<_is.UuidValue?> get table => AuthUser.t;
 }
 
 class AuthUserRepository {
@@ -277,15 +278,15 @@ class AuthUserRepository {
   /// );
   /// ```
   Future<List<AuthUser>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AuthUser>(
       where: where?.call(AuthUser.t),
@@ -317,14 +318,14 @@ class AuthUserRepository {
   /// );
   /// ```
   Future<AuthUser?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AuthUser>(
       where: where?.call(AuthUser.t),
@@ -339,11 +340,11 @@ class AuthUserRepository {
 
   /// Finds a single [AuthUser] by its [id] or null if no such row exists.
   Future<AuthUser?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<AuthUser>(
       id,
@@ -368,9 +369,9 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthUser> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -386,9 +387,9 @@ class AuthUserRepository {
   ///
   /// The returned [AuthUser] will have its `id` field set.
   Future<AuthUser> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<AuthUser>(
       row,
@@ -417,12 +418,12 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthUser> rows, {
-    required _i1.ColumnSelections<AuthUserTable> conflictColumns,
-    _i1.ColumnSelections<AuthUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AuthUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<AuthUserTable> conflictColumns,
+    _is.ColumnSelections<AuthUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<AuthUserTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<AuthUser>(
@@ -449,12 +450,12 @@ class AuthUserRepository {
   ///
   /// The returned [AuthUser] will have its `id` field set.
   Future<AuthUser?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthUser row, {
-    required _i1.ColumnSelections<AuthUserTable> conflictColumns,
-    _i1.ColumnSelections<AuthUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AuthUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<AuthUserTable> conflictColumns,
+    _is.ColumnSelections<AuthUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<AuthUserTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<AuthUser>(
       row,
@@ -475,10 +476,10 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthUser> rows, {
-    _i1.ColumnSelections<AuthUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<AuthUserTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<AuthUser>(
@@ -493,10 +494,10 @@ class AuthUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<AuthUser> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthUser row, {
-    _i1.ColumnSelections<AuthUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<AuthUserTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<AuthUser>(
       row,
@@ -508,10 +509,10 @@ class AuthUserRepository {
   /// Updates a single [AuthUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AuthUser?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthUser>(
       id,
@@ -527,14 +528,14 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<AuthUserTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<AuthUserUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<AuthUserTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AuthUser>(
@@ -561,11 +562,11 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthUser> rows, {
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<AuthUser>(
@@ -579,9 +580,9 @@ class AuthUserRepository {
 
   /// Deletes a single [AuthUser].
   Future<AuthUser> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<AuthUser>(
       row,
@@ -598,11 +599,11 @@ class AuthUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthUser>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<AuthUserTable> where,
-    _i1.OrderByBuilder<AuthUserTable>? orderBy,
-    _i1.OrderByListBuilder<AuthUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<AuthUserTable> where,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AuthUser>(
@@ -617,10 +618,10 @@ class AuthUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<AuthUser>(
       where: where?.call(AuthUser.t),
@@ -631,11 +632,11 @@ class AuthUserRepository {
 
   /// Acquires row-level locks on [AuthUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<AuthUserTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<AuthUserTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AuthUser>(
       where: where(AuthUser.t),

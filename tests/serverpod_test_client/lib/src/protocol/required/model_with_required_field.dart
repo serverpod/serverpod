@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ModelWithRequiredField
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ModelWithRequiredField._({
     this.id,
     required this.name,
@@ -52,7 +52,7 @@ abstract class ModelWithRequiredField
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ModelWithRequiredField copyWith({
     int? id,
     String? name,
@@ -83,7 +83,7 @@ abstract class ModelWithRequiredField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -104,7 +104,7 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ModelWithRequiredField copyWith({
     Object? id = _Undefined,

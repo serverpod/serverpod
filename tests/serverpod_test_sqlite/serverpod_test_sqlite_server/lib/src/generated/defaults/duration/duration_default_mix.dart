@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DurationDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DurationDefaultMix._({
     this.id,
     Duration? durationDefaultAndDefaultModel,
@@ -60,19 +60,19 @@ abstract class DurationDefaultMix
       durationDefaultAndDefaultModel:
           jsonSerialization['durationDefaultAndDefaultModel'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultAndDefaultModel'],
             ),
       durationDefaultAndDefaultPersist:
           jsonSerialization['durationDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultAndDefaultPersist'],
             ),
       durationDefaultModelAndDefaultPersist:
           jsonSerialization['durationDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultModelAndDefaultPersist'],
             ),
     );
@@ -92,11 +92,11 @@ abstract class DurationDefaultMix
   Duration durationDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DurationDefaultMix copyWith({
     int? id,
     Duration? durationDefaultAndDefaultModel,
@@ -134,11 +134,11 @@ abstract class DurationDefaultMix
   }
 
   static DurationDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     DurationDefaultMixInclude? include,
   }) {
     return DurationDefaultMixIncludeList._(
@@ -153,7 +153,7 @@ abstract class DurationDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -175,7 +175,7 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DurationDefaultMix copyWith({
     Object? id = _Undefined,
@@ -198,46 +198,46 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
 }
 
 class DurationDefaultMixUpdateTable
-    extends _i1.UpdateTable<DurationDefaultMixTable> {
+    extends _is.UpdateTable<DurationDefaultMixTable> {
   DurationDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
+  _is.ColumnValue<Duration, Duration> durationDefaultAndDefaultModel(
     Duration value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.durationDefaultAndDefaultModel,
     value,
   );
 
-  _i1.ColumnValue<Duration, Duration> durationDefaultAndDefaultPersist(
+  _is.ColumnValue<Duration, Duration> durationDefaultAndDefaultPersist(
     Duration value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.durationDefaultAndDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<Duration, Duration> durationDefaultModelAndDefaultPersist(
+  _is.ColumnValue<Duration, Duration> durationDefaultModelAndDefaultPersist(
     Duration value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.durationDefaultModelAndDefaultPersist,
     value,
   );
 }
 
-class DurationDefaultMixTable extends _i1.Table<int?> {
+class DurationDefaultMixTable extends _is.Table<int?> {
   DurationDefaultMixTable({super.tableRelation})
     : super(tableName: 'duration_default_mix') {
     updateTable = DurationDefaultMixUpdateTable(this);
-    durationDefaultAndDefaultModel = _i1.ColumnDuration(
+    durationDefaultAndDefaultModel = _is.ColumnDuration(
       'durationDefaultAndDefaultModel',
       this,
       hasDefault: true,
     );
-    durationDefaultAndDefaultPersist = _i1.ColumnDuration(
+    durationDefaultAndDefaultPersist = _is.ColumnDuration(
       'durationDefaultAndDefaultPersist',
       this,
       hasDefault: true,
     );
-    durationDefaultModelAndDefaultPersist = _i1.ColumnDuration(
+    durationDefaultModelAndDefaultPersist = _is.ColumnDuration(
       'durationDefaultModelAndDefaultPersist',
       this,
       hasDefault: true,
@@ -246,14 +246,14 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
 
   late final DurationDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnDuration durationDefaultAndDefaultModel;
+  late final _is.ColumnDuration durationDefaultAndDefaultModel;
 
-  late final _i1.ColumnDuration durationDefaultAndDefaultPersist;
+  late final _is.ColumnDuration durationDefaultAndDefaultPersist;
 
-  late final _i1.ColumnDuration durationDefaultModelAndDefaultPersist;
+  late final _is.ColumnDuration durationDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     durationDefaultAndDefaultModel,
     durationDefaultAndDefaultPersist,
@@ -261,19 +261,19 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class DurationDefaultMixInclude extends _i1.IncludeObject {
+class DurationDefaultMixInclude extends _is.IncludeObject {
   DurationDefaultMixInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DurationDefaultMix.t;
+  _is.Table<int?> get table => DurationDefaultMix.t;
 }
 
-class DurationDefaultMixIncludeList extends _i1.IncludeList {
+class DurationDefaultMixIncludeList extends _is.IncludeList {
   DurationDefaultMixIncludeList._({
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -284,10 +284,10 @@ class DurationDefaultMixIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DurationDefaultMix.t;
+  _is.Table<int?> get table => DurationDefaultMix.t;
 }
 
 class DurationDefaultMixRepository {
@@ -316,15 +316,15 @@ class DurationDefaultMixRepository {
   /// );
   /// ```
   Future<List<DurationDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
@@ -356,14 +356,14 @@ class DurationDefaultMixRepository {
   /// );
   /// ```
   Future<DurationDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
@@ -378,11 +378,11 @@ class DurationDefaultMixRepository {
 
   /// Finds a single [DurationDefaultMix] by its [id] or null if no such row exists.
   Future<DurationDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DurationDefaultMix>(
       id,
@@ -407,9 +407,9 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -425,9 +425,9 @@ class DurationDefaultMixRepository {
   ///
   /// The returned [DurationDefaultMix] will have its `id` field set.
   Future<DurationDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DurationDefaultMix>(
       row,
@@ -456,12 +456,12 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefaultMix> rows, {
-    required _i1.ColumnSelections<DurationDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<DurationDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DurationDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<DurationDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DurationDefaultMix>(
@@ -488,12 +488,12 @@ class DurationDefaultMixRepository {
   ///
   /// The returned [DurationDefaultMix] will have its `id` field set.
   Future<DurationDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefaultMix row, {
-    required _i1.ColumnSelections<DurationDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<DurationDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DurationDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<DurationDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DurationDefaultMix>(
       row,
@@ -514,10 +514,10 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefaultMix> rows, {
-    _i1.ColumnSelections<DurationDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DurationDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DurationDefaultMix>(
@@ -532,10 +532,10 @@ class DurationDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DurationDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefaultMix row, {
-    _i1.ColumnSelections<DurationDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DurationDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DurationDefaultMix>(
       row,
@@ -547,11 +547,11 @@ class DurationDefaultMixRepository {
   /// Updates a single [DurationDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DurationDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+    required _is.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DurationDefaultMix>(
       id,
@@ -567,15 +567,15 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DurationDefaultMixUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    required _is.WhereExpressionBuilder<DurationDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DurationDefaultMix>(
@@ -602,11 +602,11 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DurationDefaultMix> rows, {
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DurationDefaultMix>(
@@ -620,9 +620,9 @@ class DurationDefaultMixRepository {
 
   /// Deletes a single [DurationDefaultMix].
   Future<DurationDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DurationDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DurationDefaultMix>(
       row,
@@ -639,11 +639,11 @@ class DurationDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DurationDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
-    _i1.OrderByBuilder<DurationDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DurationDefaultMix>(
@@ -658,10 +658,10 @@ class DurationDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DurationDefaultMix>(
       where: where?.call(DurationDefaultMix.t),
@@ -672,11 +672,11 @@ class DurationDefaultMixRepository {
 
   /// Acquires row-level locks on [DurationDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DurationDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DurationDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DurationDefaultMix>(
       where: where(DurationDefaultMix.t),

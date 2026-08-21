@@ -11,12 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
 
-abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class Arena
+    implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -26,7 +28,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   factory Arena({
     int? id,
     required String name,
-    _i3.Team? team,
+    _iaks25tn.Team? team,
   }) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +37,9 @@ abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Team>(jsonSerialization['team']),
+          : _i0ntutnq.Protocol().deserialize<_iaks25tn.Team>(
+              jsonSerialization['team'],
+            ),
     );
   }
 
@@ -48,18 +52,18 @@ abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   String name;
 
-  _i3.Team? team;
+  _iaks25tn.Team? team;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Arena copyWith({
     int? id,
     String? name,
-    _i3.Team? team,
+    _iaks25tn.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,16 +85,16 @@ abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     };
   }
 
-  static ArenaInclude include({_i3.TeamInclude? team}) {
+  static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
     return ArenaInclude._(team: team);
   }
 
   static ArenaIncludeList includeList({
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
   }) {
     return ArenaIncludeList._(
@@ -105,7 +109,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -115,7 +119,7 @@ class _ArenaImpl extends Arena {
   _ArenaImpl({
     int? id,
     required String name,
-    _i3.Team? team,
+    _iaks25tn.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -124,7 +128,7 @@ class _ArenaImpl extends Arena {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,
@@ -134,24 +138,24 @@ class _ArenaImpl extends Arena {
     return Arena(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      team: team is _i3.Team? ? team : this.team?.copyWith(),
+      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
     );
   }
 }
 
-class ArenaUpdateTable extends _i1.UpdateTable<ArenaTable> {
+class ArenaUpdateTable extends _isd.UpdateTable<ArenaTable> {
   ArenaUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 }
 
-class ArenaTable extends _i1.Table<int?> {
+class ArenaTable extends _isd.Table<int?> {
   ArenaTable({super.tableRelation}) : super(tableName: 'arena') {
     updateTable = ArenaUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
@@ -159,31 +163,31 @@ class ArenaTable extends _i1.Table<int?> {
 
   late final ArenaUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  _i3.TeamTable? _team;
+  _iaks25tn.TeamTable? _team;
 
-  _i3.TeamTable get team {
+  _iaks25tn.TeamTable get team {
     if (_team != null) return _team!;
-    _team = _i1.createRelationTable(
+    _team = _isd.createRelationTable(
       relationFieldName: 'team',
       field: Arena.t.id,
-      foreignField: _i3.Team.t.arenaId,
+      foreignField: _iaks25tn.Team.t.arenaId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.TeamTable(tableRelation: foreignTableRelation),
+          _iaks25tn.TeamTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _isd.Table? getRelationTable(String relationField) {
     if (relationField == 'team') {
       return team;
     }
@@ -191,23 +195,23 @@ class ArenaTable extends _i1.Table<int?> {
   }
 }
 
-class ArenaInclude extends _i1.IncludeObject {
-  ArenaInclude._({_i3.TeamInclude? team}) {
+class ArenaInclude extends _isd.IncludeObject {
+  ArenaInclude._({_iaks25tn.TeamInclude? team}) {
     _team = team;
   }
 
-  _i3.TeamInclude? _team;
+  _iaks25tn.TeamInclude? _team;
 
   @override
-  Map<String, _i1.Include?> get includes => {'team': _team};
+  Map<String, _isd.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table<int?> get table => Arena.t;
+  _isd.Table<int?> get table => Arena.t;
 }
 
-class ArenaIncludeList extends _i1.IncludeList {
+class ArenaIncludeList extends _isd.IncludeList {
   ArenaIncludeList._({
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -218,10 +222,10 @@ class ArenaIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Arena.t;
+  _isd.Table<int?> get table => Arena.t;
 }
 
 class ArenaRepository {
@@ -254,16 +258,16 @@ class ArenaRepository {
   /// );
   /// ```
   Future<List<Arena>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.Transaction? transaction,
     ArenaInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Arena>(
       where: where?.call(Arena.t),
@@ -296,15 +300,15 @@ class ArenaRepository {
   /// );
   /// ```
   Future<Arena?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.Transaction? transaction,
     ArenaInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Arena>(
       where: where?.call(Arena.t),
@@ -320,12 +324,12 @@ class ArenaRepository {
 
   /// Finds a single [Arena] by its [id] or null if no such row exists.
   Future<Arena?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     ArenaInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Arena>(
       id,
@@ -351,9 +355,9 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Arena> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -369,9 +373,9 @@ class ArenaRepository {
   ///
   /// The returned [Arena] will have its `id` field set.
   Future<Arena> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Arena>(
       row,
@@ -400,12 +404,12 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Arena> rows, {
-    required _i1.ColumnSelections<ArenaTable> conflictColumns,
-    _i1.ColumnSelections<ArenaTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ArenaTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<ArenaTable> conflictColumns,
+    _isd.ColumnSelections<ArenaTable>? updateColumns,
+    _isd.WhereExpressionBuilder<ArenaTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Arena>(
@@ -432,12 +436,12 @@ class ArenaRepository {
   ///
   /// The returned [Arena] will have its `id` field set.
   Future<Arena?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena row, {
-    required _i1.ColumnSelections<ArenaTable> conflictColumns,
-    _i1.ColumnSelections<ArenaTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ArenaTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<ArenaTable> conflictColumns,
+    _isd.ColumnSelections<ArenaTable>? updateColumns,
+    _isd.WhereExpressionBuilder<ArenaTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Arena>(
       row,
@@ -458,10 +462,10 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Arena> rows, {
-    _i1.ColumnSelections<ArenaTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<ArenaTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Arena>(
@@ -476,10 +480,10 @@ class ArenaRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Arena> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena row, {
-    _i1.ColumnSelections<ArenaTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<ArenaTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Arena>(
       row,
@@ -491,10 +495,10 @@ class ArenaRepository {
   /// Updates a single [Arena] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Arena?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Arena>(
       id,
@@ -510,14 +514,14 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ArenaTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<ArenaUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<ArenaTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Arena>(
@@ -544,11 +548,11 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Arena> rows, {
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Arena>(
@@ -562,9 +566,9 @@ class ArenaRepository {
 
   /// Deletes a single [Arena].
   Future<Arena> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Arena>(
       row,
@@ -581,11 +585,11 @@ class ArenaRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Arena>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ArenaTable> where,
-    _i1.OrderByBuilder<ArenaTable>? orderBy,
-    _i1.OrderByListBuilder<ArenaTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<ArenaTable> where,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Arena>(
@@ -600,10 +604,10 @@ class ArenaRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ArenaTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Arena>(
       where: where?.call(Arena.t),
@@ -614,11 +618,11 @@ class ArenaRepository {
 
   /// Acquires row-level locks on [Arena] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ArenaTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<ArenaTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Arena>(
       where: where(Arena.t),
@@ -635,10 +639,10 @@ class ArenaAttachRowRepository {
   /// Creates a relation between the given [Arena] and [Team]
   /// by setting the [Arena]'s foreign key `id` to refer to the [Team].
   Future<void> team(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena arena,
-    _i3.Team team, {
-    _i1.Transaction? transaction,
+    _iaks25tn.Team team, {
+    _isd.Transaction? transaction,
   }) async {
     if (team.id == null) {
       throw ArgumentError.notNull('team.id');
@@ -648,9 +652,9 @@ class ArenaAttachRowRepository {
     }
 
     var $team = team.copyWith(arenaId: arena.id);
-    await session.db.updateRow<_i3.Team>(
+    await session.db.updateRow<_iaks25tn.Team>(
       $team,
-      columns: [_i3.Team.t.arenaId],
+      columns: [_iaks25tn.Team.t.arenaId],
       transaction: transaction,
     );
   }
@@ -665,9 +669,9 @@ class ArenaDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> team(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Arena arena, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     var $team = arena.team;
 
@@ -682,9 +686,9 @@ class ArenaDetachRowRepository {
     }
 
     var $$team = $team.copyWith(arenaId: null);
-    await session.db.updateRow<_i3.Team>(
+    await session.db.updateRow<_iaks25tn.Team>(
       $$team,
-      columns: [_i3.Team.t.arenaId],
+      columns: [_iaks25tn.Team.t.arenaId],
       transaction: transaction,
     );
   }

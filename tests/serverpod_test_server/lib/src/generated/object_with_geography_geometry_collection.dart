@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithGeographyGeometryCollection
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithGeographyGeometryCollection._({
     this.id,
     required this.geometryCollection,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyGeometryCollection
 
   factory ObjectWithGeographyGeometryCollection({
     int? id,
-    required _i1.GeographyGeometryCollection geometryCollection,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedGist,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist,
+    required _is.GeographyGeometryCollection geometryCollection,
+    required _is.GeographyGeometryCollection geometryCollectionIndexedGist,
+    required _is.GeographyGeometryCollection geometryCollectionIndexedSpgist,
   }) = _ObjectWithGeographyGeometryCollectionImpl;
 
   factory ObjectWithGeographyGeometryCollection.fromJson(
@@ -33,15 +33,15 @@ abstract class ObjectWithGeographyGeometryCollection
   ) {
     return ObjectWithGeographyGeometryCollection(
       id: jsonSerialization['id'] as int?,
-      geometryCollection: _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+      geometryCollection: _is.GeographyGeometryCollectionJsonExtension.fromJson(
         jsonSerialization['geometryCollection'],
       ),
       geometryCollectionIndexedGist:
-          _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+          _is.GeographyGeometryCollectionJsonExtension.fromJson(
             jsonSerialization['geometryCollectionIndexedGist'],
           ),
       geometryCollectionIndexedSpgist:
-          _i1.GeographyGeometryCollectionJsonExtension.fromJson(
+          _is.GeographyGeometryCollectionJsonExtension.fromJson(
             jsonSerialization['geometryCollectionIndexedSpgist'],
           ),
     );
@@ -54,23 +54,23 @@ abstract class ObjectWithGeographyGeometryCollection
   @override
   int? id;
 
-  _i1.GeographyGeometryCollection geometryCollection;
+  _is.GeographyGeometryCollection geometryCollection;
 
-  _i1.GeographyGeometryCollection geometryCollectionIndexedGist;
+  _is.GeographyGeometryCollection geometryCollectionIndexedGist;
 
-  _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist;
+  _is.GeographyGeometryCollection geometryCollectionIndexedSpgist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithGeographyGeometryCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithGeographyGeometryCollection copyWith({
     int? id,
-    _i1.GeographyGeometryCollection? geometryCollection,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedGist,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
+    _is.GeographyGeometryCollection? geometryCollection,
+    _is.GeographyGeometryCollection? geometryCollectionIndexedGist,
+    _is.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -101,12 +101,12 @@ abstract class ObjectWithGeographyGeometryCollection
   }
 
   static ObjectWithGeographyGeometryCollectionIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     ObjectWithGeographyGeometryCollectionInclude? include,
   }) {
@@ -122,7 +122,7 @@ abstract class ObjectWithGeographyGeometryCollection
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -132,9 +132,9 @@ class _ObjectWithGeographyGeometryCollectionImpl
     extends ObjectWithGeographyGeometryCollection {
   _ObjectWithGeographyGeometryCollectionImpl({
     int? id,
-    required _i1.GeographyGeometryCollection geometryCollection,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedGist,
-    required _i1.GeographyGeometryCollection geometryCollectionIndexedSpgist,
+    required _is.GeographyGeometryCollection geometryCollection,
+    required _is.GeographyGeometryCollection geometryCollectionIndexedGist,
+    required _is.GeographyGeometryCollection geometryCollectionIndexedSpgist,
   }) : super._(
          id: id,
          geometryCollection: geometryCollection,
@@ -144,13 +144,13 @@ class _ObjectWithGeographyGeometryCollectionImpl
 
   /// Returns a shallow copy of this [ObjectWithGeographyGeometryCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithGeographyGeometryCollection copyWith({
     Object? id = _Undefined,
-    _i1.GeographyGeometryCollection? geometryCollection,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedGist,
-    _i1.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
+    _is.GeographyGeometryCollection? geometryCollection,
+    _is.GeographyGeometryCollection? geometryCollectionIndexedGist,
+    _is.GeographyGeometryCollection? geometryCollectionIndexedSpgist,
   }) {
     return ObjectWithGeographyGeometryCollection(
       id: id is int? ? id : this.id,
@@ -165,52 +165,52 @@ class _ObjectWithGeographyGeometryCollectionImpl
 }
 
 class ObjectWithGeographyGeometryCollectionUpdateTable
-    extends _i1.UpdateTable<ObjectWithGeographyGeometryCollectionTable> {
+    extends _is.UpdateTable<ObjectWithGeographyGeometryCollectionTable> {
   ObjectWithGeographyGeometryCollectionUpdateTable(super.table);
 
-  _i1.ColumnValue<
-    _i1.GeographyGeometryCollection,
-    _i1.GeographyGeometryCollection
+  _is.ColumnValue<
+    _is.GeographyGeometryCollection,
+    _is.GeographyGeometryCollection
   >
-  geometryCollection(_i1.GeographyGeometryCollection value) => _i1.ColumnValue(
+  geometryCollection(_is.GeographyGeometryCollection value) => _is.ColumnValue(
     table.geometryCollection,
     value,
   );
 
-  _i1.ColumnValue<
-    _i1.GeographyGeometryCollection,
-    _i1.GeographyGeometryCollection
+  _is.ColumnValue<
+    _is.GeographyGeometryCollection,
+    _is.GeographyGeometryCollection
   >
-  geometryCollectionIndexedGist(_i1.GeographyGeometryCollection value) =>
-      _i1.ColumnValue(
+  geometryCollectionIndexedGist(_is.GeographyGeometryCollection value) =>
+      _is.ColumnValue(
         table.geometryCollectionIndexedGist,
         value,
       );
 
-  _i1.ColumnValue<
-    _i1.GeographyGeometryCollection,
-    _i1.GeographyGeometryCollection
+  _is.ColumnValue<
+    _is.GeographyGeometryCollection,
+    _is.GeographyGeometryCollection
   >
-  geometryCollectionIndexedSpgist(_i1.GeographyGeometryCollection value) =>
-      _i1.ColumnValue(
+  geometryCollectionIndexedSpgist(_is.GeographyGeometryCollection value) =>
+      _is.ColumnValue(
         table.geometryCollectionIndexedSpgist,
         value,
       );
 }
 
-class ObjectWithGeographyGeometryCollectionTable extends _i1.Table<int?> {
+class ObjectWithGeographyGeometryCollectionTable extends _is.Table<int?> {
   ObjectWithGeographyGeometryCollectionTable({super.tableRelation})
     : super(tableName: 'object_with_geography_geometry_collection') {
     updateTable = ObjectWithGeographyGeometryCollectionUpdateTable(this);
-    geometryCollection = _i1.ColumnGeographyGeometryCollection(
+    geometryCollection = _is.ColumnGeographyGeometryCollection(
       'geometryCollection',
       this,
     );
-    geometryCollectionIndexedGist = _i1.ColumnGeographyGeometryCollection(
+    geometryCollectionIndexedGist = _is.ColumnGeographyGeometryCollection(
       'geometryCollectionIndexedGist',
       this,
     );
-    geometryCollectionIndexedSpgist = _i1.ColumnGeographyGeometryCollection(
+    geometryCollectionIndexedSpgist = _is.ColumnGeographyGeometryCollection(
       'geometryCollectionIndexedSpgist',
       this,
     );
@@ -218,16 +218,16 @@ class ObjectWithGeographyGeometryCollectionTable extends _i1.Table<int?> {
 
   late final ObjectWithGeographyGeometryCollectionUpdateTable updateTable;
 
-  late final _i1.ColumnGeographyGeometryCollection geometryCollection;
+  late final _is.ColumnGeographyGeometryCollection geometryCollection;
 
-  late final _i1.ColumnGeographyGeometryCollection
+  late final _is.ColumnGeographyGeometryCollection
   geometryCollectionIndexedGist;
 
-  late final _i1.ColumnGeographyGeometryCollection
+  late final _is.ColumnGeographyGeometryCollection
   geometryCollectionIndexedSpgist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     geometryCollection,
     geometryCollectionIndexedGist,
@@ -235,19 +235,19 @@ class ObjectWithGeographyGeometryCollectionTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyGeometryCollectionInclude extends _i1.IncludeObject {
+class ObjectWithGeographyGeometryCollectionInclude extends _is.IncludeObject {
   ObjectWithGeographyGeometryCollectionInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyGeometryCollection.t;
+  _is.Table<int?> get table => ObjectWithGeographyGeometryCollection.t;
 }
 
-class ObjectWithGeographyGeometryCollectionIncludeList extends _i1.IncludeList {
+class ObjectWithGeographyGeometryCollectionIncludeList extends _is.IncludeList {
   ObjectWithGeographyGeometryCollectionIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     super.limit,
     super.offset,
@@ -259,10 +259,10 @@ class ObjectWithGeographyGeometryCollectionIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyGeometryCollection.t;
+  _is.Table<int?> get table => ObjectWithGeographyGeometryCollection.t;
 }
 
 class ObjectWithGeographyGeometryCollectionRepository {
@@ -291,17 +291,17 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// );
   /// ```
   Future<List<ObjectWithGeographyGeometryCollection>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyGeometryCollection>(
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
@@ -333,16 +333,16 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// );
   /// ```
   Future<ObjectWithGeographyGeometryCollection?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyGeometryCollection>(
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
@@ -357,11 +357,11 @@ class ObjectWithGeographyGeometryCollectionRepository {
 
   /// Finds a single [ObjectWithGeographyGeometryCollection] by its [id] or null if no such row exists.
   Future<ObjectWithGeographyGeometryCollection?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithGeographyGeometryCollection>(
       id,
@@ -386,9 +386,9 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyGeometryCollection> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -404,9 +404,9 @@ class ObjectWithGeographyGeometryCollectionRepository {
   ///
   /// The returned [ObjectWithGeographyGeometryCollection] will have its `id` field set.
   Future<ObjectWithGeographyGeometryCollection> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyGeometryCollection row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithGeographyGeometryCollection>(
       row,
@@ -435,15 +435,15 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyGeometryCollection> rows, {
-    required _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
+    required _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
+    _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
     updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     updateWhere,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithGeographyGeometryCollection>(
@@ -472,15 +472,15 @@ class ObjectWithGeographyGeometryCollectionRepository {
   ///
   /// The returned [ObjectWithGeographyGeometryCollection] will have its `id` field set.
   Future<ObjectWithGeographyGeometryCollection?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyGeometryCollection row, {
-    required _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
+    required _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
+    _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>?
     updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     updateWhere,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithGeographyGeometryCollection>(
       row,
@@ -503,10 +503,10 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyGeometryCollection> rows, {
-    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithGeographyGeometryCollection>(
@@ -521,10 +521,10 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithGeographyGeometryCollection> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyGeometryCollection row, {
-    _i1.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyGeometryCollectionTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithGeographyGeometryCollection>(
       row,
@@ -536,13 +536,13 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// Updates a single [ObjectWithGeographyGeometryCollection] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithGeographyGeometryCollection?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<
+    required _is.ColumnValueListBuilder<
       ObjectWithGeographyGeometryCollectionUpdateTable
     >
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithGeographyGeometryCollection>(
       id,
@@ -560,21 +560,21 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<
       ObjectWithGeographyGeometryCollectionUpdateTable
     >
     columnValues,
-    required _i1.WhereExpressionBuilder<
+    required _is.WhereExpressionBuilder<
       ObjectWithGeographyGeometryCollectionTable
     >
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyGeometryCollection>(
@@ -603,12 +603,12 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyGeometryCollection> rows, {
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithGeographyGeometryCollection>(
@@ -622,9 +622,9 @@ class ObjectWithGeographyGeometryCollectionRepository {
 
   /// Deletes a single [ObjectWithGeographyGeometryCollection].
   Future<ObjectWithGeographyGeometryCollection> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyGeometryCollection row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithGeographyGeometryCollection>(
       row,
@@ -641,15 +641,15 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyGeometryCollection>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<
       ObjectWithGeographyGeometryCollectionTable
     >
     where,
-    _i1.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyGeometryCollection>(
@@ -664,11 +664,11 @@ class ObjectWithGeographyGeometryCollectionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyGeometryCollection>(
       where: where?.call(ObjectWithGeographyGeometryCollection.t),
@@ -679,14 +679,14 @@ class ObjectWithGeographyGeometryCollectionRepository {
 
   /// Acquires row-level locks on [ObjectWithGeographyGeometryCollection] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<
       ObjectWithGeographyGeometryCollectionTable
     >
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyGeometryCollection>(
       where: where(ObjectWithGeographyGeometryCollection.t),

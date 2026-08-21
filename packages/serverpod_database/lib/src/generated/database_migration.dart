@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class DatabaseMigration
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseMigration._({
     required this.actions,
     required this.warnings,
@@ -22,35 +22,36 @@ abstract class DatabaseMigration
   });
 
   factory DatabaseMigration({
-    required List<_i2.DatabaseMigrationAction> actions,
-    required List<_i2.DatabaseMigrationWarning> warnings,
+    required List<_isd.DatabaseMigrationAction> actions,
+    required List<_isd.DatabaseMigrationWarning> warnings,
     required int migrationApiVersion,
   }) = _DatabaseMigrationImpl;
 
   factory DatabaseMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseMigration(
-      actions: _i2.Protocol().deserialize<List<_i2.DatabaseMigrationAction>>(
+      actions: _isd.Protocol().deserialize<List<_isd.DatabaseMigrationAction>>(
         jsonSerialization['actions'],
       ),
-      warnings: _i2.Protocol().deserialize<List<_i2.DatabaseMigrationWarning>>(
-        jsonSerialization['warnings'],
-      ),
+      warnings: _isd.Protocol()
+          .deserialize<List<_isd.DatabaseMigrationWarning>>(
+            jsonSerialization['warnings'],
+          ),
       migrationApiVersion: jsonSerialization['migrationApiVersion'] as int,
     );
   }
 
-  List<_i2.DatabaseMigrationAction> actions;
+  List<_isd.DatabaseMigrationAction> actions;
 
-  List<_i2.DatabaseMigrationWarning> warnings;
+  List<_isd.DatabaseMigrationWarning> warnings;
 
   int migrationApiVersion;
 
   /// Returns a shallow copy of this [DatabaseMigration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseMigration copyWith({
-    List<_i2.DatabaseMigrationAction>? actions,
-    List<_i2.DatabaseMigrationWarning>? warnings,
+    List<_isd.DatabaseMigrationAction>? actions,
+    List<_isd.DatabaseMigrationWarning>? warnings,
     int? migrationApiVersion,
   });
   @override
@@ -75,14 +76,14 @@ abstract class DatabaseMigration
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
 class _DatabaseMigrationImpl extends DatabaseMigration {
   _DatabaseMigrationImpl({
-    required List<_i2.DatabaseMigrationAction> actions,
-    required List<_i2.DatabaseMigrationWarning> warnings,
+    required List<_isd.DatabaseMigrationAction> actions,
+    required List<_isd.DatabaseMigrationWarning> warnings,
     required int migrationApiVersion,
   }) : super._(
          actions: actions,
@@ -92,11 +93,11 @@ class _DatabaseMigrationImpl extends DatabaseMigration {
 
   /// Returns a shallow copy of this [DatabaseMigration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DatabaseMigration copyWith({
-    List<_i2.DatabaseMigrationAction>? actions,
-    List<_i2.DatabaseMigrationWarning>? warnings,
+    List<_isd.DatabaseMigrationAction>? actions,
+    List<_isd.DatabaseMigrationWarning>? warnings,
     int? migrationApiVersion,
   }) {
     return DatabaseMigration(

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _iv5rlvod;
 
 abstract class Member
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Member._({
     this.id,
     required this.name,
@@ -27,8 +27,8 @@ abstract class Member
   factory Member({
     int? id,
     required String name,
-    List<_i2.Blocking>? blocking,
-    List<_i2.Blocking>? blockedBy,
+    List<_iv5rlvod.Blocking>? blocking,
+    List<_iv5rlvod.Blocking>? blockedBy,
   }) = _MemberImpl;
 
   factory Member.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,12 +37,12 @@ abstract class Member
       name: jsonSerialization['name'] as String,
       blocking: jsonSerialization['blocking'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Blocking>>(
+          : _iza9lbb5.Protocol().deserialize<List<_iv5rlvod.Blocking>>(
               jsonSerialization['blocking'],
             ),
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Blocking>>(
+          : _iza9lbb5.Protocol().deserialize<List<_iv5rlvod.Blocking>>(
               jsonSerialization['blockedBy'],
             ),
     );
@@ -55,18 +55,18 @@ abstract class Member
 
   String name;
 
-  List<_i2.Blocking>? blocking;
+  List<_iv5rlvod.Blocking>? blocking;
 
-  List<_i2.Blocking>? blockedBy;
+  List<_iv5rlvod.Blocking>? blockedBy;
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Member copyWith({
     int? id,
     String? name,
-    List<_i2.Blocking>? blocking,
-    List<_i2.Blocking>? blockedBy,
+    List<_iv5rlvod.Blocking>? blocking,
+    List<_iv5rlvod.Blocking>? blockedBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,7 +98,7 @@ abstract class Member
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,8 +108,8 @@ class _MemberImpl extends Member {
   _MemberImpl({
     int? id,
     required String name,
-    List<_i2.Blocking>? blocking,
-    List<_i2.Blocking>? blockedBy,
+    List<_iv5rlvod.Blocking>? blocking,
+    List<_iv5rlvod.Blocking>? blockedBy,
   }) : super._(
          id: id,
          name: name,
@@ -119,7 +119,7 @@ class _MemberImpl extends Member {
 
   /// Returns a shallow copy of this [Member]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Member copyWith({
     Object? id = _Undefined,
@@ -130,10 +130,10 @@ class _MemberImpl extends Member {
     return Member(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      blocking: blocking is List<_i2.Blocking>?
+      blocking: blocking is List<_iv5rlvod.Blocking>?
           ? blocking
           : this.blocking?.map((e0) => e0.copyWith()).toList(),
-      blockedBy: blockedBy is List<_i2.Blocking>?
+      blockedBy: blockedBy is List<_iv5rlvod.Blocking>?
           ? blockedBy
           : this.blockedBy?.map((e0) => e0.copyWith()).toList(),
     );

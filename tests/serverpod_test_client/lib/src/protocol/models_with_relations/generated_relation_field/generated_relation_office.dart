@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _ipeijyfj;
 
 abstract class GeneratedRelationOffice
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   GeneratedRelationOffice._({
     this.id,
     required this.address,
@@ -28,7 +28,7 @@ abstract class GeneratedRelationOffice
     int? id,
     required String address,
     required int customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
   }) = _GeneratedRelationOfficeImpl;
 
   factory GeneratedRelationOffice.fromJson(
@@ -40,9 +40,10 @@ abstract class GeneratedRelationOffice
       customCompanyId: jsonSerialization['customCompanyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.GeneratedRelationCompany>(
-              jsonSerialization['company'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<_ipeijyfj.GeneratedRelationCompany>(
+                  jsonSerialization['company'],
+                ),
     );
   }
 
@@ -56,16 +57,16 @@ abstract class GeneratedRelationOffice
   /// The foreign key of the [company] relation.
   int customCompanyId;
 
-  _i2.GeneratedRelationCompany? company;
+  _ipeijyfj.GeneratedRelationCompany? company;
 
   /// Returns a shallow copy of this [GeneratedRelationOffice]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   GeneratedRelationOffice copyWith({
     int? id,
     String? address,
     int? customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,7 +92,7 @@ abstract class GeneratedRelationOffice
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -102,7 +103,7 @@ class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
     int? id,
     required String address,
     required int customCompanyId,
-    _i2.GeneratedRelationCompany? company,
+    _ipeijyfj.GeneratedRelationCompany? company,
   }) : super._(
          id: id,
          address: address,
@@ -112,7 +113,7 @@ class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
 
   /// Returns a shallow copy of this [GeneratedRelationOffice]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   GeneratedRelationOffice copyWith({
     Object? id = _Undefined,
@@ -124,7 +125,7 @@ class _GeneratedRelationOfficeImpl extends GeneratedRelationOffice {
       id: id is int? ? id : this.id,
       address: address ?? this.address,
       customCompanyId: customCompanyId ?? this.customCompanyId,
-      company: company is _i2.GeneratedRelationCompany?
+      company: company is _ipeijyfj.GeneratedRelationCompany?
           ? company
           : this.company?.copyWith(),
     );

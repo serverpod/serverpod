@@ -10,32 +10,34 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'log_entry.dart' as _i2;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_service_client/src/protocol/protocol.dart'
+    as _ian793c4;
+import 'log_entry.dart' as _iv7ld46g;
 
 /// A list of log entries, used to return logging data.
 abstract class LogResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   LogResult._({required this.entries});
 
-  factory LogResult({required List<_i2.LogEntry> entries}) = _LogResultImpl;
+  factory LogResult({required List<_iv7ld46g.LogEntry> entries}) =
+      _LogResultImpl;
 
   factory LogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogResult(
-      entries: _i3.Protocol().deserialize<List<_i2.LogEntry>>(
+      entries: _ian793c4.Protocol().deserialize<List<_iv7ld46g.LogEntry>>(
         jsonSerialization['entries'],
       ),
     );
   }
 
   /// The log entries in this result.
-  List<_i2.LogEntry> entries;
+  List<_iv7ld46g.LogEntry> entries;
 
   /// Returns a shallow copy of this [LogResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  LogResult copyWith({List<_i2.LogEntry>? entries});
+  @_isc.useResult
+  LogResult copyWith({List<_iv7ld46g.LogEntry>? entries});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -54,19 +56,19 @@ abstract class LogResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _LogResultImpl extends LogResult {
-  _LogResultImpl({required List<_i2.LogEntry> entries})
+  _LogResultImpl({required List<_iv7ld46g.LogEntry> entries})
     : super._(entries: entries);
 
   /// Returns a shallow copy of this [LogResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
-  LogResult copyWith({List<_i2.LogEntry>? entries}) {
+  LogResult copyWith({List<_iv7ld46g.LogEntry>? entries}) {
     return LogResult(
       entries: entries ?? this.entries.map((e0) => e0.copyWith()).toList(),
     );

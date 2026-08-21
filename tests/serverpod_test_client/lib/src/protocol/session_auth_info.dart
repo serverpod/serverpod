@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class SessionAuthInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SessionAuthInfo._({
     required this.isAuthenticated,
     this.userId,
@@ -31,11 +31,11 @@ abstract class SessionAuthInfo
 
   factory SessionAuthInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionAuthInfo(
-      isAuthenticated: _i1.BoolJsonExtension.fromJson(
+      isAuthenticated: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['isAuthenticated'],
       ),
       userId: jsonSerialization['userId'] as String?,
-      scopes: _i2.Protocol().deserialize<List<String>>(
+      scopes: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['scopes'],
       ),
       authId: jsonSerialization['authId'] as String?,
@@ -52,7 +52,7 @@ abstract class SessionAuthInfo
 
   /// Returns a shallow copy of this [SessionAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SessionAuthInfo copyWith({
     bool? isAuthenticated,
     String? userId,
@@ -83,7 +83,7 @@ abstract class SessionAuthInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -104,7 +104,7 @@ class _SessionAuthInfoImpl extends SessionAuthInfo {
 
   /// Returns a shallow copy of this [SessionAuthInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SessionAuthInfo copyWith({
     bool? isAuthenticated,

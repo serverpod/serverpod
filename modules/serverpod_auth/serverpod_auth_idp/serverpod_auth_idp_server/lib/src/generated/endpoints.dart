@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
+    as _iacs;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    modules['serverpod_auth_core'] = _i2.Endpoints()
+  void initializeEndpoints(_is.Server server) {
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
       ..initializeEndpoints(server);
   }
 }

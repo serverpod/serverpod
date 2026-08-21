@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_server/src/generated/protocol.dart' as _i4k4nnr6;
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   AuthKey._({
     this.id,
     required this.userId,
@@ -40,7 +40,7 @@ abstract class AuthKey
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: _i2.Protocol().deserialize<List<String>>(
+      scopeNames: _i4k4nnr6.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
       method: jsonSerialization['method'] as String,
@@ -71,11 +71,11 @@ abstract class AuthKey
   String method;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   AuthKey copyWith({
     int? id,
     int? userId,
@@ -115,11 +115,11 @@ abstract class AuthKey
   }
 
   static AuthKeyIncludeList includeList({
-    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
   }) {
     return AuthKeyIncludeList._(
@@ -134,7 +134,7 @@ abstract class AuthKey
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -159,7 +159,7 @@ class _AuthKeyImpl extends AuthKey {
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   AuthKey copyWith({
     Object? id = _Undefined,
@@ -180,47 +180,47 @@ class _AuthKeyImpl extends AuthKey {
   }
 }
 
-class AuthKeyUpdateTable extends _i1.UpdateTable<AuthKeyTable> {
+class AuthKeyUpdateTable extends _is.UpdateTable<AuthKeyTable> {
   AuthKeyUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hash(String value) => _is.ColumnValue(
     table.hash,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<List<String>, List<String>> scopeNames(List<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String value) => _is.ColumnValue(
     table.method,
     value,
   );
 }
 
-class AuthKeyTable extends _i1.Table<int?> {
+class AuthKeyTable extends _is.Table<int?> {
   AuthKeyTable({super.tableRelation}) : super(tableName: 'serverpod_auth_key') {
     updateTable = AuthKeyUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _is.ColumnInt(
       'userId',
       this,
     );
-    hash = _i1.ColumnString(
+    hash = _is.ColumnString(
       'hash',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<List<String>>(
+    scopeNames = _is.ColumnSerializable<List<String>>(
       'scopeNames',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
@@ -229,20 +229,20 @@ class AuthKeyTable extends _i1.Table<int?> {
   late final AuthKeyUpdateTable updateTable;
 
   /// The id of the user to provide access to.
-  late final _i1.ColumnInt userId;
+  late final _is.ColumnInt userId;
 
   /// The hashed version of the key.
-  late final _i1.ColumnString hash;
+  late final _is.ColumnString hash;
 
   /// The scopes this key provides access to.
-  late final _i1.ColumnSerializable<List<String>> scopeNames;
+  late final _is.ColumnSerializable<List<String>> scopeNames;
 
   /// The method of signing in this key was generated through. This can be email
   /// or different social logins.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userId,
     hash,
@@ -251,19 +251,19 @@ class AuthKeyTable extends _i1.Table<int?> {
   ];
 }
 
-class AuthKeyInclude extends _i1.IncludeObject {
+class AuthKeyInclude extends _is.IncludeObject {
   AuthKeyInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => AuthKey.t;
+  _is.Table<int?> get table => AuthKey.t;
 }
 
-class AuthKeyIncludeList extends _i1.IncludeList {
+class AuthKeyIncludeList extends _is.IncludeList {
   AuthKeyIncludeList._({
-    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -274,10 +274,10 @@ class AuthKeyIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => AuthKey.t;
+  _is.Table<int?> get table => AuthKey.t;
 }
 
 class AuthKeyRepository {
@@ -306,15 +306,15 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<List<AuthKey>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<AuthKey>(
       where: where?.call(AuthKey.t),
@@ -346,14 +346,14 @@ class AuthKeyRepository {
   /// );
   /// ```
   Future<AuthKey?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
     int? offset,
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<AuthKey>(
       where: where?.call(AuthKey.t),
@@ -368,11 +368,11 @@ class AuthKeyRepository {
 
   /// Finds a single [AuthKey] by its [id] or null if no such row exists.
   Future<AuthKey?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<AuthKey>(
       id,
@@ -397,9 +397,9 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthKey> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -415,9 +415,9 @@ class AuthKeyRepository {
   ///
   /// The returned [AuthKey] will have its `id` field set.
   Future<AuthKey> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthKey row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<AuthKey>(
       row,
@@ -446,12 +446,12 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthKey> rows, {
-    required _i1.ColumnSelections<AuthKeyTable> conflictColumns,
-    _i1.ColumnSelections<AuthKeyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<AuthKeyTable> conflictColumns,
+    _is.ColumnSelections<AuthKeyTable>? updateColumns,
+    _is.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<AuthKey>(
@@ -478,12 +478,12 @@ class AuthKeyRepository {
   ///
   /// The returned [AuthKey] will have its `id` field set.
   Future<AuthKey?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthKey row, {
-    required _i1.ColumnSelections<AuthKeyTable> conflictColumns,
-    _i1.ColumnSelections<AuthKeyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<AuthKeyTable> conflictColumns,
+    _is.ColumnSelections<AuthKeyTable>? updateColumns,
+    _is.WhereExpressionBuilder<AuthKeyTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<AuthKey>(
       row,
@@ -504,10 +504,10 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthKey> rows, {
-    _i1.ColumnSelections<AuthKeyTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<AuthKeyTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<AuthKey>(
@@ -522,10 +522,10 @@ class AuthKeyRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<AuthKey> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthKey row, {
-    _i1.ColumnSelections<AuthKeyTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<AuthKeyTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<AuthKey>(
       row,
@@ -537,10 +537,10 @@ class AuthKeyRepository {
   /// Updates a single [AuthKey] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<AuthKey?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<AuthKey>(
       id,
@@ -556,14 +556,14 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<AuthKeyUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<AuthKeyTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<AuthKey>(
@@ -590,11 +590,11 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<AuthKey> rows, {
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<AuthKey>(
@@ -608,9 +608,9 @@ class AuthKeyRepository {
 
   /// Deletes a single [AuthKey].
   Future<AuthKey> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     AuthKey row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<AuthKey>(
       row,
@@ -627,11 +627,11 @@ class AuthKeyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<AuthKey>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
-    _i1.OrderByBuilder<AuthKeyTable>? orderBy,
-    _i1.OrderByListBuilder<AuthKeyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<AuthKeyTable> where,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<AuthKey>(
@@ -646,10 +646,10 @@ class AuthKeyRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<AuthKeyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<AuthKey>(
       where: where?.call(AuthKey.t),
@@ -660,11 +660,11 @@ class AuthKeyRepository {
 
   /// Acquires row-level locks on [AuthKey] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<AuthKeyTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<AuthKeyTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<AuthKey>(
       where: where(AuthKey.t),

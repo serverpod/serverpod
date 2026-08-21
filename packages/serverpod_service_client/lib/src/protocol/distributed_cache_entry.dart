@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// An entry in the distributed cache.
 abstract class DistributedCacheEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DistributedCacheEntry._({required this.data});
 
   factory DistributedCacheEntry({required String data}) =
@@ -31,7 +31,7 @@ abstract class DistributedCacheEntry
 
   /// Returns a shallow copy of this [DistributedCacheEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DistributedCacheEntry copyWith({String? data});
   @override
   Map<String, dynamic> toJson() {
@@ -51,7 +51,7 @@ abstract class DistributedCacheEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -60,7 +60,7 @@ class _DistributedCacheEntryImpl extends DistributedCacheEntry {
 
   /// Returns a shallow copy of this [DistributedCacheEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DistributedCacheEntry copyWith({String? data}) {
     return DistributedCacheEntry(data: data ?? this.data);

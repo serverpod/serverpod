@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'test_enum.dart' as _i3;
-import 'test_enum_stringified.dart' as _i4;
-import 'simple_data.dart' as _i5;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i6;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'simple_data.dart' as _i0zisc0t;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
 
 abstract class TypesRecord
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TypesRecord._({
     this.anInt,
     this.aBool,
@@ -48,23 +48,25 @@ abstract class TypesRecord
     (double,)? aDouble,
     (DateTime,)? aDateTime,
     (String,)? aString,
-    (_i2.ByteData,)? aByteData,
+    (_idt.ByteData,)? aByteData,
     (Duration,)? aDuration,
-    (_i1.UuidValue,)? aUuid,
+    (_is.UuidValue,)? aUuid,
     (Uri,)? aUri,
     (BigInt,)? aBigInt,
-    (_i3.TestEnum,)? anEnum,
-    (_i4.TestEnumStringified,)? aStringifiedEnum,
+    (_ionapfu9.TestEnum,)? anEnum,
+    (_i7liykk2.TestEnumStringified,)? aStringifiedEnum,
     (List<int>,)? aList,
     (Map<int, int>,)? aMap,
     (Set<int>,)? aSet,
-    (_i5.SimpleData,)? aSimpleData,
-    ({_i5.SimpleData namedModel})? aNamedModel,
-    (_i5.SimpleData, {_i5.SimpleData namedModel})? aPositionalAndNamedModel,
+    (_i0zisc0t.SimpleData,)? aSimpleData,
+    ({_i0zisc0t.SimpleData namedModel})? aNamedModel,
+    (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
+    aPositionalAndNamedModel,
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
-      (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+      (List<(_i0zisc0t.SimpleData,)>,), {
+      (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
+      namedNestedRecord,
     })?
     aNestedContainers,
   }) = _TypesRecordImpl;
@@ -73,108 +75,111 @@ abstract class TypesRecord
     return TypesRecord(
       anInt: jsonSerialization['anInt'] == null
           ? null
-          : _i6.Protocol().deserialize<(int,)?>(
+          : _igqrxdcj.Protocol().deserialize<(int,)?>(
               (jsonSerialization['anInt'] as Map<String, dynamic>),
             ),
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i6.Protocol().deserialize<(bool,)?>(
+          : _igqrxdcj.Protocol().deserialize<(bool,)?>(
               (jsonSerialization['aBool'] as Map<String, dynamic>),
             ),
       aDouble: jsonSerialization['aDouble'] == null
           ? null
-          : _i6.Protocol().deserialize<(double,)?>(
+          : _igqrxdcj.Protocol().deserialize<(double,)?>(
               (jsonSerialization['aDouble'] as Map<String, dynamic>),
             ),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i6.Protocol().deserialize<(DateTime,)?>(
+          : _igqrxdcj.Protocol().deserialize<(DateTime,)?>(
               (jsonSerialization['aDateTime'] as Map<String, dynamic>),
             ),
       aString: jsonSerialization['aString'] == null
           ? null
-          : _i6.Protocol().deserialize<(String,)?>(
+          : _igqrxdcj.Protocol().deserialize<(String,)?>(
               (jsonSerialization['aString'] as Map<String, dynamic>),
             ),
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i6.Protocol().deserialize<(_i2.ByteData,)?>(
+          : _igqrxdcj.Protocol().deserialize<(_idt.ByteData,)?>(
               (jsonSerialization['aByteData'] as Map<String, dynamic>),
             ),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i6.Protocol().deserialize<(Duration,)?>(
+          : _igqrxdcj.Protocol().deserialize<(Duration,)?>(
               (jsonSerialization['aDuration'] as Map<String, dynamic>),
             ),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i6.Protocol().deserialize<(_i1.UuidValue,)?>(
+          : _igqrxdcj.Protocol().deserialize<(_is.UuidValue,)?>(
               (jsonSerialization['aUuid'] as Map<String, dynamic>),
             ),
       aUri: jsonSerialization['aUri'] == null
           ? null
-          : _i6.Protocol().deserialize<(Uri,)?>(
+          : _igqrxdcj.Protocol().deserialize<(Uri,)?>(
               (jsonSerialization['aUri'] as Map<String, dynamic>),
             ),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i6.Protocol().deserialize<(BigInt,)?>(
+          : _igqrxdcj.Protocol().deserialize<(BigInt,)?>(
               (jsonSerialization['aBigInt'] as Map<String, dynamic>),
             ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<(_i3.TestEnum,)?>(
+          : _igqrxdcj.Protocol().deserialize<(_ionapfu9.TestEnum,)?>(
               (jsonSerialization['anEnum'] as Map<String, dynamic>),
             ),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<(_i4.TestEnumStringified,)?>(
+          : _igqrxdcj.Protocol().deserialize<(_i7liykk2.TestEnumStringified,)?>(
               (jsonSerialization['aStringifiedEnum'] as Map<String, dynamic>),
             ),
       aList: jsonSerialization['aList'] == null
           ? null
-          : _i6.Protocol().deserialize<(List<int>,)?>(
+          : _igqrxdcj.Protocol().deserialize<(List<int>,)?>(
               (jsonSerialization['aList'] as Map<String, dynamic>),
             ),
       aMap: jsonSerialization['aMap'] == null
           ? null
-          : _i6.Protocol().deserialize<(Map<int, int>,)?>(
+          : _igqrxdcj.Protocol().deserialize<(Map<int, int>,)?>(
               (jsonSerialization['aMap'] as Map<String, dynamic>),
             ),
       aSet: jsonSerialization['aSet'] == null
           ? null
-          : _i6.Protocol().deserialize<(Set<int>,)?>(
+          : _igqrxdcj.Protocol().deserialize<(Set<int>,)?>(
               (jsonSerialization['aSet'] as Map<String, dynamic>),
             ),
       aSimpleData: jsonSerialization['aSimpleData'] == null
           ? null
-          : _i6.Protocol().deserialize<(_i5.SimpleData,)?>(
+          : _igqrxdcj.Protocol().deserialize<(_i0zisc0t.SimpleData,)?>(
               (jsonSerialization['aSimpleData'] as Map<String, dynamic>),
             ),
       aNamedModel: jsonSerialization['aNamedModel'] == null
           ? null
-          : _i6.Protocol().deserialize<({_i5.SimpleData namedModel})?>(
-              (jsonSerialization['aNamedModel'] as Map<String, dynamic>),
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<({_i0zisc0t.SimpleData namedModel})?>(
+                  (jsonSerialization['aNamedModel'] as Map<String, dynamic>),
+                ),
       aPositionalAndNamedModel:
           jsonSerialization['aPositionalAndNamedModel'] == null
           ? null
-          : _i6.Protocol()
-                .deserialize<(_i5.SimpleData, {_i5.SimpleData namedModel})?>(
-                  (jsonSerialization['aPositionalAndNamedModel']
-                      as Map<String, dynamic>),
-                ),
+          : _igqrxdcj.Protocol().deserialize<
+              (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
+            >(
+              (jsonSerialization['aPositionalAndNamedModel']
+                  as Map<String, dynamic>),
+            ),
       aNestedRecord: jsonSerialization['aNestedRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<
+          : _igqrxdcj.Protocol().deserialize<
               ((int, String), {(int, String) namedNestedRecord})?
             >((jsonSerialization['aNestedRecord'] as Map<String, dynamic>)),
       aNestedContainers: jsonSerialization['aNestedContainers'] == null
           ? null
-          : _i6.Protocol().deserialize<
+          : _igqrxdcj.Protocol().deserialize<
               (
-                (List<(_i5.SimpleData,)>,), {
-                (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+                (List<(_i0zisc0t.SimpleData,)>,), {
+                (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
+                namedNestedRecord,
               })?
             >((jsonSerialization['aNestedContainers'] as Map<String, dynamic>)),
     );
@@ -190,19 +195,19 @@ abstract class TypesRecord
 
   (String,)? aString;
 
-  (_i2.ByteData,)? aByteData;
+  (_idt.ByteData,)? aByteData;
 
   (Duration,)? aDuration;
 
-  (_i1.UuidValue,)? aUuid;
+  (_is.UuidValue,)? aUuid;
 
   (Uri,)? aUri;
 
   (BigInt,)? aBigInt;
 
-  (_i3.TestEnum,)? anEnum;
+  (_ionapfu9.TestEnum,)? anEnum;
 
-  (_i4.TestEnumStringified,)? aStringifiedEnum;
+  (_i7liykk2.TestEnumStringified,)? aStringifiedEnum;
 
   (List<int>,)? aList;
 
@@ -210,46 +215,49 @@ abstract class TypesRecord
 
   (Set<int>,)? aSet;
 
-  (_i5.SimpleData,)? aSimpleData;
+  (_i0zisc0t.SimpleData,)? aSimpleData;
 
-  ({_i5.SimpleData namedModel})? aNamedModel;
+  ({_i0zisc0t.SimpleData namedModel})? aNamedModel;
 
-  (_i5.SimpleData, {_i5.SimpleData namedModel})? aPositionalAndNamedModel;
+  (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
+  aPositionalAndNamedModel;
 
   ((int, String), {(int, String) namedNestedRecord})? aNestedRecord;
 
   (
-    (List<(_i5.SimpleData,)>,), {
-    (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+    (List<(_i0zisc0t.SimpleData,)>,), {
+    (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>) namedNestedRecord,
   })?
   aNestedContainers;
 
   /// Returns a shallow copy of this [TypesRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TypesRecord copyWith({
     (int,)? anInt,
     (bool,)? aBool,
     (double,)? aDouble,
     (DateTime,)? aDateTime,
     (String,)? aString,
-    (_i2.ByteData,)? aByteData,
+    (_idt.ByteData,)? aByteData,
     (Duration,)? aDuration,
-    (_i1.UuidValue,)? aUuid,
+    (_is.UuidValue,)? aUuid,
     (Uri,)? aUri,
     (BigInt,)? aBigInt,
-    (_i3.TestEnum,)? anEnum,
-    (_i4.TestEnumStringified,)? aStringifiedEnum,
+    (_ionapfu9.TestEnum,)? anEnum,
+    (_i7liykk2.TestEnumStringified,)? aStringifiedEnum,
     (List<int>,)? aList,
     (Map<int, int>,)? aMap,
     (Set<int>,)? aSet,
-    (_i5.SimpleData,)? aSimpleData,
-    ({_i5.SimpleData namedModel})? aNamedModel,
-    (_i5.SimpleData, {_i5.SimpleData namedModel})? aPositionalAndNamedModel,
+    (_i0zisc0t.SimpleData,)? aSimpleData,
+    ({_i0zisc0t.SimpleData namedModel})? aNamedModel,
+    (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
+    aPositionalAndNamedModel,
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
-      (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+      (List<(_i0zisc0t.SimpleData,)>,), {
+      (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
+      namedNestedRecord,
     })?
     aNestedContainers,
   });
@@ -257,37 +265,45 @@ abstract class TypesRecord
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'TypesRecord',
-      if (anInt != null) 'anInt': _i6.Protocol().mapRecordToJson(anInt),
-      if (aBool != null) 'aBool': _i6.Protocol().mapRecordToJson(aBool),
-      if (aDouble != null) 'aDouble': _i6.Protocol().mapRecordToJson(aDouble),
+      if (anInt != null) 'anInt': _igqrxdcj.Protocol().mapRecordToJson(anInt),
+      if (aBool != null) 'aBool': _igqrxdcj.Protocol().mapRecordToJson(aBool),
+      if (aDouble != null)
+        'aDouble': _igqrxdcj.Protocol().mapRecordToJson(aDouble),
       if (aDateTime != null)
-        'aDateTime': _i6.Protocol().mapRecordToJson(aDateTime),
-      if (aString != null) 'aString': _i6.Protocol().mapRecordToJson(aString),
+        'aDateTime': _igqrxdcj.Protocol().mapRecordToJson(aDateTime),
+      if (aString != null)
+        'aString': _igqrxdcj.Protocol().mapRecordToJson(aString),
       if (aByteData != null)
-        'aByteData': _i6.Protocol().mapRecordToJson(aByteData),
+        'aByteData': _igqrxdcj.Protocol().mapRecordToJson(aByteData),
       if (aDuration != null)
-        'aDuration': _i6.Protocol().mapRecordToJson(aDuration),
-      if (aUuid != null) 'aUuid': _i6.Protocol().mapRecordToJson(aUuid),
-      if (aUri != null) 'aUri': _i6.Protocol().mapRecordToJson(aUri),
-      if (aBigInt != null) 'aBigInt': _i6.Protocol().mapRecordToJson(aBigInt),
-      if (anEnum != null) 'anEnum': _i6.Protocol().mapRecordToJson(anEnum),
+        'aDuration': _igqrxdcj.Protocol().mapRecordToJson(aDuration),
+      if (aUuid != null) 'aUuid': _igqrxdcj.Protocol().mapRecordToJson(aUuid),
+      if (aUri != null) 'aUri': _igqrxdcj.Protocol().mapRecordToJson(aUri),
+      if (aBigInt != null)
+        'aBigInt': _igqrxdcj.Protocol().mapRecordToJson(aBigInt),
+      if (anEnum != null)
+        'anEnum': _igqrxdcj.Protocol().mapRecordToJson(anEnum),
       if (aStringifiedEnum != null)
-        'aStringifiedEnum': _i6.Protocol().mapRecordToJson(aStringifiedEnum),
-      if (aList != null) 'aList': _i6.Protocol().mapRecordToJson(aList),
-      if (aMap != null) 'aMap': _i6.Protocol().mapRecordToJson(aMap),
-      if (aSet != null) 'aSet': _i6.Protocol().mapRecordToJson(aSet),
+        'aStringifiedEnum': _igqrxdcj.Protocol().mapRecordToJson(
+          aStringifiedEnum,
+        ),
+      if (aList != null) 'aList': _igqrxdcj.Protocol().mapRecordToJson(aList),
+      if (aMap != null) 'aMap': _igqrxdcj.Protocol().mapRecordToJson(aMap),
+      if (aSet != null) 'aSet': _igqrxdcj.Protocol().mapRecordToJson(aSet),
       if (aSimpleData != null)
-        'aSimpleData': _i6.Protocol().mapRecordToJson(aSimpleData),
+        'aSimpleData': _igqrxdcj.Protocol().mapRecordToJson(aSimpleData),
       if (aNamedModel != null)
-        'aNamedModel': _i6.Protocol().mapRecordToJson(aNamedModel),
+        'aNamedModel': _igqrxdcj.Protocol().mapRecordToJson(aNamedModel),
       if (aPositionalAndNamedModel != null)
-        'aPositionalAndNamedModel': _i6.Protocol().mapRecordToJson(
+        'aPositionalAndNamedModel': _igqrxdcj.Protocol().mapRecordToJson(
           aPositionalAndNamedModel,
         ),
       if (aNestedRecord != null)
-        'aNestedRecord': _i6.Protocol().mapRecordToJson(aNestedRecord),
+        'aNestedRecord': _igqrxdcj.Protocol().mapRecordToJson(aNestedRecord),
       if (aNestedContainers != null)
-        'aNestedContainers': _i6.Protocol().mapRecordToJson(aNestedContainers),
+        'aNestedContainers': _igqrxdcj.Protocol().mapRecordToJson(
+          aNestedContainers,
+        ),
     };
   }
 
@@ -295,43 +311,51 @@ abstract class TypesRecord
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'TypesRecord',
-      if (anInt != null) 'anInt': _i6.Protocol().mapRecordToJson(anInt),
-      if (aBool != null) 'aBool': _i6.Protocol().mapRecordToJson(aBool),
-      if (aDouble != null) 'aDouble': _i6.Protocol().mapRecordToJson(aDouble),
+      if (anInt != null) 'anInt': _igqrxdcj.Protocol().mapRecordToJson(anInt),
+      if (aBool != null) 'aBool': _igqrxdcj.Protocol().mapRecordToJson(aBool),
+      if (aDouble != null)
+        'aDouble': _igqrxdcj.Protocol().mapRecordToJson(aDouble),
       if (aDateTime != null)
-        'aDateTime': _i6.Protocol().mapRecordToJson(aDateTime),
-      if (aString != null) 'aString': _i6.Protocol().mapRecordToJson(aString),
+        'aDateTime': _igqrxdcj.Protocol().mapRecordToJson(aDateTime),
+      if (aString != null)
+        'aString': _igqrxdcj.Protocol().mapRecordToJson(aString),
       if (aByteData != null)
-        'aByteData': _i6.Protocol().mapRecordToJson(aByteData),
+        'aByteData': _igqrxdcj.Protocol().mapRecordToJson(aByteData),
       if (aDuration != null)
-        'aDuration': _i6.Protocol().mapRecordToJson(aDuration),
-      if (aUuid != null) 'aUuid': _i6.Protocol().mapRecordToJson(aUuid),
-      if (aUri != null) 'aUri': _i6.Protocol().mapRecordToJson(aUri),
-      if (aBigInt != null) 'aBigInt': _i6.Protocol().mapRecordToJson(aBigInt),
-      if (anEnum != null) 'anEnum': _i6.Protocol().mapRecordToJson(anEnum),
+        'aDuration': _igqrxdcj.Protocol().mapRecordToJson(aDuration),
+      if (aUuid != null) 'aUuid': _igqrxdcj.Protocol().mapRecordToJson(aUuid),
+      if (aUri != null) 'aUri': _igqrxdcj.Protocol().mapRecordToJson(aUri),
+      if (aBigInt != null)
+        'aBigInt': _igqrxdcj.Protocol().mapRecordToJson(aBigInt),
+      if (anEnum != null)
+        'anEnum': _igqrxdcj.Protocol().mapRecordToJson(anEnum),
       if (aStringifiedEnum != null)
-        'aStringifiedEnum': _i6.Protocol().mapRecordToJson(aStringifiedEnum),
-      if (aList != null) 'aList': _i6.Protocol().mapRecordToJson(aList),
-      if (aMap != null) 'aMap': _i6.Protocol().mapRecordToJson(aMap),
-      if (aSet != null) 'aSet': _i6.Protocol().mapRecordToJson(aSet),
+        'aStringifiedEnum': _igqrxdcj.Protocol().mapRecordToJson(
+          aStringifiedEnum,
+        ),
+      if (aList != null) 'aList': _igqrxdcj.Protocol().mapRecordToJson(aList),
+      if (aMap != null) 'aMap': _igqrxdcj.Protocol().mapRecordToJson(aMap),
+      if (aSet != null) 'aSet': _igqrxdcj.Protocol().mapRecordToJson(aSet),
       if (aSimpleData != null)
-        'aSimpleData': _i6.Protocol().mapRecordToJson(aSimpleData),
+        'aSimpleData': _igqrxdcj.Protocol().mapRecordToJson(aSimpleData),
       if (aNamedModel != null)
-        'aNamedModel': _i6.Protocol().mapRecordToJson(aNamedModel),
+        'aNamedModel': _igqrxdcj.Protocol().mapRecordToJson(aNamedModel),
       if (aPositionalAndNamedModel != null)
-        'aPositionalAndNamedModel': _i6.Protocol().mapRecordToJson(
+        'aPositionalAndNamedModel': _igqrxdcj.Protocol().mapRecordToJson(
           aPositionalAndNamedModel,
         ),
       if (aNestedRecord != null)
-        'aNestedRecord': _i6.Protocol().mapRecordToJson(aNestedRecord),
+        'aNestedRecord': _igqrxdcj.Protocol().mapRecordToJson(aNestedRecord),
       if (aNestedContainers != null)
-        'aNestedContainers': _i6.Protocol().mapRecordToJson(aNestedContainers),
+        'aNestedContainers': _igqrxdcj.Protocol().mapRecordToJson(
+          aNestedContainers,
+        ),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -344,23 +368,25 @@ class _TypesRecordImpl extends TypesRecord {
     (double,)? aDouble,
     (DateTime,)? aDateTime,
     (String,)? aString,
-    (_i2.ByteData,)? aByteData,
+    (_idt.ByteData,)? aByteData,
     (Duration,)? aDuration,
-    (_i1.UuidValue,)? aUuid,
+    (_is.UuidValue,)? aUuid,
     (Uri,)? aUri,
     (BigInt,)? aBigInt,
-    (_i3.TestEnum,)? anEnum,
-    (_i4.TestEnumStringified,)? aStringifiedEnum,
+    (_ionapfu9.TestEnum,)? anEnum,
+    (_i7liykk2.TestEnumStringified,)? aStringifiedEnum,
     (List<int>,)? aList,
     (Map<int, int>,)? aMap,
     (Set<int>,)? aSet,
-    (_i5.SimpleData,)? aSimpleData,
-    ({_i5.SimpleData namedModel})? aNamedModel,
-    (_i5.SimpleData, {_i5.SimpleData namedModel})? aPositionalAndNamedModel,
+    (_i0zisc0t.SimpleData,)? aSimpleData,
+    ({_i0zisc0t.SimpleData namedModel})? aNamedModel,
+    (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
+    aPositionalAndNamedModel,
     ((int, String), {(int, String) namedNestedRecord})? aNestedRecord,
     (
-      (List<(_i5.SimpleData,)>,), {
-      (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+      (List<(_i0zisc0t.SimpleData,)>,), {
+      (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
+      namedNestedRecord,
     })?
     aNestedContainers,
   }) : super._(
@@ -388,7 +414,7 @@ class _TypesRecordImpl extends TypesRecord {
 
   /// Returns a shallow copy of this [TypesRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TypesRecord copyWith({
     Object? anInt = _Undefined,
@@ -438,7 +464,7 @@ class _TypesRecordImpl extends TypesRecord {
           : this.aString == null
           ? null
           : (this.aString!.$1,),
-      aByteData: aByteData is (_i2.ByteData,)?
+      aByteData: aByteData is (_idt.ByteData,)?
           ? aByteData
           : this.aByteData == null
           ? null
@@ -448,7 +474,7 @@ class _TypesRecordImpl extends TypesRecord {
           : this.aDuration == null
           ? null
           : (this.aDuration!.$1,),
-      aUuid: aUuid is (_i1.UuidValue,)?
+      aUuid: aUuid is (_is.UuidValue,)?
           ? aUuid
           : this.aUuid == null
           ? null
@@ -463,12 +489,12 @@ class _TypesRecordImpl extends TypesRecord {
           : this.aBigInt == null
           ? null
           : (this.aBigInt!.$1,),
-      anEnum: anEnum is (_i3.TestEnum,)?
+      anEnum: anEnum is (_ionapfu9.TestEnum,)?
           ? anEnum
           : this.anEnum == null
           ? null
           : (this.anEnum!.$1,),
-      aStringifiedEnum: aStringifiedEnum is (_i4.TestEnumStringified,)?
+      aStringifiedEnum: aStringifiedEnum is (_i7liykk2.TestEnumStringified,)?
           ? aStringifiedEnum
           : this.aStringifiedEnum == null
           ? null
@@ -498,12 +524,12 @@ class _TypesRecordImpl extends TypesRecord {
           : this.aSet == null
           ? null
           : (this.aSet!.$1.map((e1) => e1).toSet(),),
-      aSimpleData: aSimpleData is (_i5.SimpleData,)?
+      aSimpleData: aSimpleData is (_i0zisc0t.SimpleData,)?
           ? aSimpleData
           : this.aSimpleData == null
           ? null
           : (this.aSimpleData!.$1.copyWith(),),
-      aNamedModel: aNamedModel is ({_i5.SimpleData namedModel})?
+      aNamedModel: aNamedModel is ({_i0zisc0t.SimpleData namedModel})?
           ? aNamedModel
           : this.aNamedModel == null
           ? null
@@ -512,7 +538,7 @@ class _TypesRecordImpl extends TypesRecord {
             ),
       aPositionalAndNamedModel:
           aPositionalAndNamedModel
-              is (_i5.SimpleData, {_i5.SimpleData namedModel})?
+              is (_i0zisc0t.SimpleData, {_i0zisc0t.SimpleData namedModel})?
           ? aPositionalAndNamedModel
           : this.aPositionalAndNamedModel == null
           ? null
@@ -538,8 +564,9 @@ class _TypesRecordImpl extends TypesRecord {
       aNestedContainers:
           aNestedContainers
               is (
-                (List<(_i5.SimpleData,)>,), {
-                (_i5.SimpleData, Map<String, _i5.SimpleData>) namedNestedRecord,
+                (List<(_i0zisc0t.SimpleData,)>,), {
+                (_i0zisc0t.SimpleData, Map<String, _i0zisc0t.SimpleData>)
+                namedNestedRecord,
               })?
           ? aNestedContainers
           : this.aNestedContainers == null

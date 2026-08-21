@@ -11,11 +11,11 @@
 
 part of 'sealed_app_exception.dart';
 
-abstract class NotFoundException extends _i1.SealedAppException
+abstract class NotFoundException extends _iototaiw.SealedAppException
     implements
-        _i2.SerializableException,
-        _i2.SerializableModel,
-        _i2.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   NotFoundException._({
     required super.message,
     required this.code,
@@ -38,7 +38,7 @@ abstract class NotFoundException extends _i1.SealedAppException
   /// Returns a shallow copy of this [NotFoundException]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   NotFoundException copyWith({
     String? message,
     int? code,
@@ -78,7 +78,7 @@ class _NotFoundExceptionImpl extends NotFoundException {
 
   /// Returns a shallow copy of this [NotFoundException]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   NotFoundException copyWith({
     String? message,

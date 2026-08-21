@@ -3,6 +3,7 @@ import 'package:analyzer/dart/ast/ast.dart';
 import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -42,15 +43,44 @@ abstract class CodeGenerator {
 }
 
 extension GenerateCode on Library {
+  /// Emits this library into [allocator] and throws the result away.
+  ///
+  /// Import prefixes are assigned from the complete set of imports a library
+  /// needs rather than as references arrive, so the allocator has to see the
+  /// whole library before [AssigningAllocator.assignPrefixes] is called. For a
+  /// library split into part files, every part is collected into the shared
+  /// allocator before any of them is generated.
+  ///
+  /// Emitting is around one percent of the cost of a generation run, the parse
+  /// and the formatting in [generateCode] being the expensive parts, so
+  /// collecting this way is cheaper than it looks.
+  void collectImports(AssigningAllocator allocator) {
+    accept(DartEmitter(useNullSafetySyntax: true, allocator: allocator));
+  }
+
+  /// Emits and formats this library.
+  ///
+  /// Pass an [allocator] that has already been through [collectImports],
+  /// along with every other library sharing it. Without one, this collects
+  /// itself into a fresh allocator, which is all a library that stands alone
+  /// needs.
+  ///
+  /// Assigning the prefixes is done here either way, and is idempotent, so
+  /// the members of a sealed hierarchy settle theirs on the first of them to
+  /// be generated.
   String generateCode({
-    Allocator? allocator,
+    AssigningAllocator? allocator,
     DartFormatter? formatter,
   }) {
+    var assigned = allocator ?? StableImportAllocator();
+    if (allocator == null) collectImports(assigned);
+    assigned.assignPrefixes();
+
     var code = _addTrailingCommasToEnums(
       accept(
         DartEmitter(
           useNullSafetySyntax: true,
-          allocator: allocator ?? Allocator.simplePrefixing(),
+          allocator: assigned,
         ),
       ).toString(),
     );

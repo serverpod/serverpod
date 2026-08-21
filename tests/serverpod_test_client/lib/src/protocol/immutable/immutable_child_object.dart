@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-@_i1.immutable
-abstract class ImmutableChildObject extends _i2.ImmutableObject
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+@_isc.immutable
+abstract class ImmutableChildObject extends _iv35mfmj.ImmutableObject
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   const ImmutableChildObject._({
     required super.variable,
     required this.childVariable,
@@ -40,7 +40,7 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
   /// Returns a shallow copy of this [ImmutableChildObject]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i1.useResult
+  @_isc.useResult
   ImmutableChildObject copyWith({
     String? variable,
     String? childVariable,
@@ -94,7 +94,7 @@ abstract class ImmutableChildObject extends _i2.ImmutableObject
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -109,7 +109,7 @@ class _ImmutableChildObjectImpl extends ImmutableChildObject {
 
   /// Returns a shallow copy of this [ImmutableChildObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ImmutableChildObject copyWith({
     String? variable,

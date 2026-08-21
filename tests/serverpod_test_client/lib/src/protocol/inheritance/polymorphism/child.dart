@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../protocol.dart' as _iototaiw;
 
 /// A child class.
-class PolymorphicChild extends _i1.PolymorphicParent
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+class PolymorphicChild extends _iototaiw.PolymorphicParent
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   PolymorphicChild({
     required super.parent,
     required this.child,
@@ -33,7 +33,7 @@ class PolymorphicChild extends _i1.PolymorphicParent
 
   /// Returns a shallow copy of this [PolymorphicChild]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   PolymorphicChild copyWith({
     String? parent,
     String? child,
@@ -64,6 +64,6 @@ class PolymorphicChild extends _i1.PolymorphicParent
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }

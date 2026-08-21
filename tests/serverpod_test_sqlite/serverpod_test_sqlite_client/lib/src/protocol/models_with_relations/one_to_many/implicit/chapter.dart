@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 
 abstract class Chapter
-    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+    implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Chapter._({
     this.id,
     required this.title,
@@ -45,11 +45,11 @@ abstract class Chapter
   final int? _bookChaptersBookId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Chapter copyWith({
     int? id,
     String? title,
@@ -79,11 +79,11 @@ abstract class Chapter
   }
 
   static ChapterIncludeList includeList({
-    _i1.WhereExpressionBuilder<ChapterTable>? where,
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
   }) {
     return ChapterIncludeList._(
@@ -98,7 +98,7 @@ abstract class Chapter
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -115,7 +115,7 @@ class _ChapterImpl extends Chapter {
 
   /// Returns a shallow copy of this [Chapter]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Chapter copyWith({
     Object? id = _Undefined,
@@ -155,28 +155,29 @@ class ChapterImplicit extends _ChapterImpl {
   final int? _bookChaptersBookId;
 }
 
-class ChapterUpdateTable extends _i1.UpdateTable<ChapterTable> {
+class ChapterUpdateTable extends _isd.UpdateTable<ChapterTable> {
   ChapterUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> title(String value) => _isd.ColumnValue(
     table.title,
     value,
   );
 
-  _i1.ColumnValue<int, int> $_bookChaptersBookId(int? value) => _i1.ColumnValue(
-    table.$_bookChaptersBookId,
-    value,
-  );
+  _isd.ColumnValue<int, int> $_bookChaptersBookId(int? value) =>
+      _isd.ColumnValue(
+        table.$_bookChaptersBookId,
+        value,
+      );
 }
 
-class ChapterTable extends _i1.Table<int?> {
+class ChapterTable extends _isd.Table<int?> {
   ChapterTable({super.tableRelation}) : super(tableName: 'chapter') {
     updateTable = ChapterUpdateTable(this);
-    title = _i1.ColumnString(
+    title = _isd.ColumnString(
       'title',
       this,
     );
-    $_bookChaptersBookId = _i1.ColumnInt(
+    $_bookChaptersBookId = _isd.ColumnInt(
       '_bookChaptersBookId',
       this,
     );
@@ -184,37 +185,37 @@ class ChapterTable extends _i1.Table<int?> {
 
   late final ChapterUpdateTable updateTable;
 
-  late final _i1.ColumnString title;
+  late final _isd.ColumnString title;
 
-  late final _i1.ColumnInt $_bookChaptersBookId;
+  late final _isd.ColumnInt $_bookChaptersBookId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     title,
     $_bookChaptersBookId,
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [
+  List<_isd.Column> get managedColumns => [
     id,
     title,
   ];
 }
 
-class ChapterInclude extends _i1.IncludeObject {
+class ChapterInclude extends _isd.IncludeObject {
   ChapterInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _isd.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => Chapter.t;
+  _isd.Table<int?> get table => Chapter.t;
 }
 
-class ChapterIncludeList extends _i1.IncludeList {
+class ChapterIncludeList extends _isd.IncludeList {
   ChapterIncludeList._({
-    _i1.WhereExpressionBuilder<ChapterTable>? where,
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -225,10 +226,10 @@ class ChapterIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Chapter.t;
+  _isd.Table<int?> get table => Chapter.t;
 }
 
 class ChapterRepository {
@@ -257,15 +258,15 @@ class ChapterRepository {
   /// );
   /// ```
   Future<List<Chapter>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChapterTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Chapter>(
       where: where?.call(Chapter.t),
@@ -297,14 +298,14 @@ class ChapterRepository {
   /// );
   /// ```
   Future<Chapter?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChapterTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Chapter>(
       where: where?.call(Chapter.t),
@@ -319,11 +320,11 @@ class ChapterRepository {
 
   /// Finds a single [Chapter] by its [id] or null if no such row exists.
   Future<Chapter?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.Transaction? transaction,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Chapter>(
       id,
@@ -348,9 +349,9 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Chapter> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -366,9 +367,9 @@ class ChapterRepository {
   ///
   /// The returned [Chapter] will have its `id` field set.
   Future<Chapter> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Chapter row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Chapter>(
       row,
@@ -397,12 +398,12 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Chapter> rows, {
-    required _i1.ColumnSelections<ChapterTable> conflictColumns,
-    _i1.ColumnSelections<ChapterTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChapterTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<ChapterTable> conflictColumns,
+    _isd.ColumnSelections<ChapterTable>? updateColumns,
+    _isd.WhereExpressionBuilder<ChapterTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Chapter>(
@@ -429,12 +430,12 @@ class ChapterRepository {
   ///
   /// The returned [Chapter] will have its `id` field set.
   Future<Chapter?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Chapter row, {
-    required _i1.ColumnSelections<ChapterTable> conflictColumns,
-    _i1.ColumnSelections<ChapterTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ChapterTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<ChapterTable> conflictColumns,
+    _isd.ColumnSelections<ChapterTable>? updateColumns,
+    _isd.WhereExpressionBuilder<ChapterTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Chapter>(
       row,
@@ -455,10 +456,10 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Chapter> rows, {
-    _i1.ColumnSelections<ChapterTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<ChapterTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Chapter>(
@@ -473,10 +474,10 @@ class ChapterRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Chapter> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Chapter row, {
-    _i1.ColumnSelections<ChapterTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<ChapterTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Chapter>(
       row,
@@ -488,10 +489,10 @@ class ChapterRepository {
   /// Updates a single [Chapter] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Chapter?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Chapter>(
       id,
@@ -507,14 +508,14 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ChapterTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<ChapterUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<ChapterTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Chapter>(
@@ -541,11 +542,11 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Chapter> rows, {
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Chapter>(
@@ -559,9 +560,9 @@ class ChapterRepository {
 
   /// Deletes a single [Chapter].
   Future<Chapter> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Chapter row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Chapter>(
       row,
@@ -578,11 +579,11 @@ class ChapterRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Chapter>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ChapterTable> where,
-    _i1.OrderByBuilder<ChapterTable>? orderBy,
-    _i1.OrderByListBuilder<ChapterTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<ChapterTable> where,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Chapter>(
@@ -597,10 +598,10 @@ class ChapterRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ChapterTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Chapter>(
       where: where?.call(Chapter.t),
@@ -611,11 +612,11 @@ class ChapterRepository {
 
   /// Acquires row-level locks on [Chapter] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ChapterTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<ChapterTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Chapter>(
       where: where(Chapter.t),

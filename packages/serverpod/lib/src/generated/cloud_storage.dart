@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -32,7 +32,7 @@ abstract class CloudStorageEntry
     required String path,
     required DateTime addedTime,
     DateTime? expiration,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
     required bool verified,
   }) = _CloudStorageEntryImpl;
 
@@ -41,16 +41,16 @@ abstract class CloudStorageEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime: _i1.DateTimeJsonExtension.fromJson(
+      addedTime: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['addedTime'],
       ),
       expiration: jsonSerialization['expiration'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData: _i1.ByteDataJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
+      byteData: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['byteData'],
       ),
-      verified: _i1.BoolJsonExtension.fromJson(jsonSerialization['verified']),
+      verified: _is.BoolJsonExtension.fromJson(jsonSerialization['verified']),
     );
   }
 
@@ -74,24 +74,24 @@ abstract class CloudStorageEntry
   DateTime? expiration;
 
   /// The actual data of the uploaded file.
-  _i2.ByteData byteData;
+  _idt.ByteData byteData;
 
   /// True if the file has been verified as uploaded.
   bool verified;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
     String? path,
     DateTime? addedTime,
     DateTime? expiration,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
     bool? verified,
   });
   @override
@@ -127,11 +127,11 @@ abstract class CloudStorageEntry
   }
 
   static CloudStorageEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
   }) {
     return CloudStorageEntryIncludeList._(
@@ -146,7 +146,7 @@ abstract class CloudStorageEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -159,7 +159,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required String path,
     required DateTime addedTime,
     DateTime? expiration,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
     required bool verified,
   }) : super._(
          id: id,
@@ -173,7 +173,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,
@@ -181,7 +181,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     String? path,
     DateTime? addedTime,
     Object? expiration = _Undefined,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
     bool? verified,
   }) {
     return CloudStorageEntry(
@@ -197,68 +197,68 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
 }
 
 class CloudStorageEntryUpdateTable
-    extends _i1.UpdateTable<CloudStorageEntryTable> {
+    extends _is.UpdateTable<CloudStorageEntryTable> {
   CloudStorageEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> storageId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> storageId(String value) => _is.ColumnValue(
     table.storageId,
     value,
   );
 
-  _i1.ColumnValue<String, String> path(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> path(String value) => _is.ColumnValue(
     table.path,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> addedTime(DateTime value) =>
+      _is.ColumnValue(
         table.addedTime,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiration(DateTime? value) =>
+      _is.ColumnValue(
         table.expiration,
         value,
       );
 
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> byteData(_i2.ByteData value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> byteData(_idt.ByteData value) =>
+      _is.ColumnValue(
         table.byteData,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> verified(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> verified(bool value) => _is.ColumnValue(
     table.verified,
     value,
   );
 }
 
-class CloudStorageEntryTable extends _i1.Table<int?> {
+class CloudStorageEntryTable extends _is.Table<int?> {
   CloudStorageEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_cloud_storage') {
     updateTable = CloudStorageEntryUpdateTable(this);
-    storageId = _i1.ColumnString(
+    storageId = _is.ColumnString(
       'storageId',
       this,
     );
-    path = _i1.ColumnString(
+    path = _is.ColumnString(
       'path',
       this,
     );
-    addedTime = _i1.ColumnDateTime(
+    addedTime = _is.ColumnDateTime(
       'addedTime',
       this,
     );
-    expiration = _i1.ColumnDateTime(
+    expiration = _is.ColumnDateTime(
       'expiration',
       this,
     );
-    byteData = _i1.ColumnByteData(
+    byteData = _is.ColumnByteData(
       'byteData',
       this,
     );
-    verified = _i1.ColumnBool(
+    verified = _is.ColumnBool(
       'verified',
       this,
     );
@@ -267,25 +267,25 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
   late final CloudStorageEntryUpdateTable updateTable;
 
   /// The storageId, typically `public` or `private`.
-  late final _i1.ColumnString storageId;
+  late final _is.ColumnString storageId;
 
   /// The path where the file is stored.
-  late final _i1.ColumnString path;
+  late final _is.ColumnString path;
 
   /// The time when the file was added.
-  late final _i1.ColumnDateTime addedTime;
+  late final _is.ColumnDateTime addedTime;
 
   /// The time at which the file expires and can be deleted.
-  late final _i1.ColumnDateTime expiration;
+  late final _is.ColumnDateTime expiration;
 
   /// The actual data of the uploaded file.
-  late final _i1.ColumnByteData byteData;
+  late final _is.ColumnByteData byteData;
 
   /// True if the file has been verified as uploaded.
-  late final _i1.ColumnBool verified;
+  late final _is.ColumnBool verified;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     storageId,
     path,
@@ -296,19 +296,19 @@ class CloudStorageEntryTable extends _i1.Table<int?> {
   ];
 }
 
-class CloudStorageEntryInclude extends _i1.IncludeObject {
+class CloudStorageEntryInclude extends _is.IncludeObject {
   CloudStorageEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => CloudStorageEntry.t;
+  _is.Table<int?> get table => CloudStorageEntry.t;
 }
 
-class CloudStorageEntryIncludeList extends _i1.IncludeList {
+class CloudStorageEntryIncludeList extends _is.IncludeList {
   CloudStorageEntryIncludeList._({
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -319,10 +319,10 @@ class CloudStorageEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => CloudStorageEntry.t;
+  _is.Table<int?> get table => CloudStorageEntry.t;
 }
 
 class CloudStorageEntryRepository {
@@ -351,15 +351,15 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<List<CloudStorageEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
@@ -391,14 +391,14 @@ class CloudStorageEntryRepository {
   /// );
   /// ```
   Future<CloudStorageEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
@@ -413,11 +413,11 @@ class CloudStorageEntryRepository {
 
   /// Finds a single [CloudStorageEntry] by its [id] or null if no such row exists.
   Future<CloudStorageEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CloudStorageEntry>(
       id,
@@ -442,9 +442,9 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -460,9 +460,9 @@ class CloudStorageEntryRepository {
   ///
   /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<CloudStorageEntry>(
       row,
@@ -491,12 +491,12 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageEntry> rows, {
-    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
-    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _is.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<CloudStorageEntry>(
@@ -523,12 +523,12 @@ class CloudStorageEntryRepository {
   ///
   /// The returned [CloudStorageEntry] will have its `id` field set.
   Future<CloudStorageEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageEntry row, {
-    required _i1.ColumnSelections<CloudStorageEntryTable> conflictColumns,
-    _i1.ColumnSelections<CloudStorageEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CloudStorageEntryTable> conflictColumns,
+    _is.ColumnSelections<CloudStorageEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CloudStorageEntry>(
       row,
@@ -549,10 +549,10 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageEntry> rows, {
-    _i1.ColumnSelections<CloudStorageEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<CloudStorageEntry>(
@@ -567,10 +567,10 @@ class CloudStorageEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CloudStorageEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageEntry row, {
-    _i1.ColumnSelections<CloudStorageEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CloudStorageEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<CloudStorageEntry>(
       row,
@@ -582,11 +582,11 @@ class CloudStorageEntryRepository {
   /// Updates a single [CloudStorageEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CloudStorageEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+    required _is.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<CloudStorageEntry>(
       id,
@@ -602,15 +602,15 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<CloudStorageEntryUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
+    required _is.WhereExpressionBuilder<CloudStorageEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CloudStorageEntry>(
@@ -637,11 +637,11 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CloudStorageEntry> rows, {
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<CloudStorageEntry>(
@@ -655,9 +655,9 @@ class CloudStorageEntryRepository {
 
   /// Deletes a single [CloudStorageEntry].
   Future<CloudStorageEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CloudStorageEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<CloudStorageEntry>(
       row,
@@ -674,11 +674,11 @@ class CloudStorageEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CloudStorageEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
-    _i1.OrderByBuilder<CloudStorageEntryTable>? orderBy,
-    _i1.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CloudStorageEntryTable> where,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CloudStorageEntry>(
@@ -693,10 +693,10 @@ class CloudStorageEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<CloudStorageEntry>(
       where: where?.call(CloudStorageEntry.t),
@@ -707,11 +707,11 @@ class CloudStorageEntryRepository {
 
   /// Acquires row-level locks on [CloudStorageEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CloudStorageEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CloudStorageEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CloudStorageEntry>(
       where: where(CloudStorageEntry.t),

@@ -116,7 +116,7 @@ void main() {
           modelFile,
           matches(
             r'abstract class ExampleHelloModel\n'
-            r'    implements _i\d.SerializableModel, _i\d.ProtocolSerialization \{\n'
+            r'    implements _i[a-z0-9]+.SerializableModel, _i[a-z0-9]+.ProtocolSerialization \{\n'
             r'  ExampleHelloModel._\(\{\n'
             r'    required this.name,\n'
             r'    required this.age,\n'
@@ -138,7 +138,7 @@ void main() {
             r'    String name,\n'
             r'    int age,\n'
             r'  \) \{\n'
-            r'    var object = _i\d.ExampleHelloModel\(\n'
+            r'    var object = _i[a-z0-9]+.ExampleHelloModel\(\n'
             r'      name: name,\n'
             r'      age: age,\n'
             r'    \);\n'

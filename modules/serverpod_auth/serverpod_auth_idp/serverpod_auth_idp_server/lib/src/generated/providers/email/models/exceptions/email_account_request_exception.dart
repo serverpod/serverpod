@@ -10,9 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import '../../../../providers/email/models/exceptions/email_account_request_exception_reason.dart'
-    as _i2;
+    as _ikfzibqo;
 
 /// Exception to be thrown if email account creation request fails.
 ///
@@ -20,32 +20,32 @@ import '../../../../providers/email/models/exceptions/email_account_request_exce
 /// credentials, or whether the client has been blocked outright.
 abstract class EmailAccountRequestException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   EmailAccountRequestException._({required this.reason});
 
   factory EmailAccountRequestException({
-    required _i2.EmailAccountRequestExceptionReason reason,
+    required _ikfzibqo.EmailAccountRequestExceptionReason reason,
   }) = _EmailAccountRequestExceptionImpl;
 
   factory EmailAccountRequestException.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return EmailAccountRequestException(
-      reason: _i2.EmailAccountRequestExceptionReason.fromJson(
+      reason: _ikfzibqo.EmailAccountRequestExceptionReason.fromJson(
         (jsonSerialization['reason'] as String),
       ),
     );
   }
 
-  _i2.EmailAccountRequestExceptionReason reason;
+  _ikfzibqo.EmailAccountRequestExceptionReason reason;
 
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAccountRequestException copyWith({
-    _i2.EmailAccountRequestExceptionReason? reason,
+    _ikfzibqo.EmailAccountRequestExceptionReason? reason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -71,15 +71,15 @@ abstract class EmailAccountRequestException
 
 class _EmailAccountRequestExceptionImpl extends EmailAccountRequestException {
   _EmailAccountRequestExceptionImpl({
-    required _i2.EmailAccountRequestExceptionReason reason,
+    required _ikfzibqo.EmailAccountRequestExceptionReason reason,
   }) : super._(reason: reason);
 
   /// Returns a shallow copy of this [EmailAccountRequestException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAccountRequestException copyWith({
-    _i2.EmailAccountRequestExceptionReason? reason,
+    _ikfzibqo.EmailAccountRequestExceptionReason? reason,
   }) {
     return EmailAccountRequestException(reason: reason ?? this.reason);
   }

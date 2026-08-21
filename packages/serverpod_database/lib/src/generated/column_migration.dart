@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class ColumnMigration
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   ColumnMigration._({
     required this.columnName,
     this.newColumnName,
@@ -32,26 +32,26 @@ abstract class ColumnMigration
     required bool removeNullable,
     required bool changeDefault,
     String? newDefault,
-    _i2.ColumnType? newType,
+    _isd.ColumnType? newType,
   }) = _ColumnMigrationImpl;
 
   factory ColumnMigration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ColumnMigration(
       columnName: jsonSerialization['columnName'] as String,
       newColumnName: jsonSerialization['newColumnName'] as String?,
-      addNullable: _i1.BoolJsonExtension.fromJson(
+      addNullable: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['addNullable'],
       ),
-      removeNullable: _i1.BoolJsonExtension.fromJson(
+      removeNullable: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['removeNullable'],
       ),
-      changeDefault: _i1.BoolJsonExtension.fromJson(
+      changeDefault: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['changeDefault'],
       ),
       newDefault: jsonSerialization['newDefault'] as String?,
       newType: jsonSerialization['newType'] == null
           ? null
-          : _i2.ColumnType.fromJson((jsonSerialization['newType'] as int)),
+          : _isd.ColumnType.fromJson((jsonSerialization['newType'] as int)),
     );
   }
 
@@ -67,11 +67,11 @@ abstract class ColumnMigration
 
   String? newDefault;
 
-  _i2.ColumnType? newType;
+  _isd.ColumnType? newType;
 
   /// Returns a shallow copy of this [ColumnMigration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   ColumnMigration copyWith({
     String? columnName,
     String? newColumnName,
@@ -79,7 +79,7 @@ abstract class ColumnMigration
     bool? removeNullable,
     bool? changeDefault,
     String? newDefault,
-    _i2.ColumnType? newType,
+    _isd.ColumnType? newType,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -111,7 +111,7 @@ abstract class ColumnMigration
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -125,7 +125,7 @@ class _ColumnMigrationImpl extends ColumnMigration {
     required bool removeNullable,
     required bool changeDefault,
     String? newDefault,
-    _i2.ColumnType? newType,
+    _isd.ColumnType? newType,
   }) : super._(
          columnName: columnName,
          newColumnName: newColumnName,
@@ -138,7 +138,7 @@ class _ColumnMigrationImpl extends ColumnMigration {
 
   /// Returns a shallow copy of this [ColumnMigration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   ColumnMigration copyWith({
     String? columnName,
@@ -158,7 +158,7 @@ class _ColumnMigrationImpl extends ColumnMigration {
       removeNullable: removeNullable ?? this.removeNullable,
       changeDefault: changeDefault ?? this.changeDefault,
       newDefault: newDefault is String? ? newDefault : this.newDefault,
-      newType: newType is _i2.ColumnType? ? newType : this.newType,
+      newType: newType is _isd.ColumnType? ? newType : this.newType,
     );
   }
 }

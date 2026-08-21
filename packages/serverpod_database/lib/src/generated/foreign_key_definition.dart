@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Represents a foreign key.
 abstract class ForeignKeyDefinition
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   ForeignKeyDefinition._({
     required this.constraintName,
     required this.columns,
@@ -34,10 +34,10 @@ abstract class ForeignKeyDefinition
     required String referenceTable,
     required String referenceTableSchema,
     required List<String> referenceColumns,
-    _i2.ForeignKeyAction? onUpdate,
-    _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
-    _i2.DeferrableConstraint? deferrable,
+    _isd.ForeignKeyAction? onUpdate,
+    _isd.ForeignKeyAction? onDelete,
+    _isd.ForeignKeyMatchType? matchType,
+    _isd.DeferrableConstraint? deferrable,
   }) = _ForeignKeyDefinitionImpl;
 
   factory ForeignKeyDefinition.fromJson(
@@ -45,32 +45,32 @@ abstract class ForeignKeyDefinition
   ) {
     return ForeignKeyDefinition(
       constraintName: jsonSerialization['constraintName'] as String,
-      columns: _i2.Protocol().deserialize<List<String>>(
+      columns: _isd.Protocol().deserialize<List<String>>(
         jsonSerialization['columns'],
       ),
       referenceTable: jsonSerialization['referenceTable'] as String,
       referenceTableSchema: jsonSerialization['referenceTableSchema'] as String,
-      referenceColumns: _i2.Protocol().deserialize<List<String>>(
+      referenceColumns: _isd.Protocol().deserialize<List<String>>(
         jsonSerialization['referenceColumns'],
       ),
       onUpdate: jsonSerialization['onUpdate'] == null
           ? null
-          : _i2.ForeignKeyAction.fromJson(
+          : _isd.ForeignKeyAction.fromJson(
               (jsonSerialization['onUpdate'] as int),
             ),
       onDelete: jsonSerialization['onDelete'] == null
           ? null
-          : _i2.ForeignKeyAction.fromJson(
+          : _isd.ForeignKeyAction.fromJson(
               (jsonSerialization['onDelete'] as int),
             ),
       matchType: jsonSerialization['matchType'] == null
           ? null
-          : _i2.ForeignKeyMatchType.fromJson(
+          : _isd.ForeignKeyMatchType.fromJson(
               (jsonSerialization['matchType'] as int),
             ),
       deferrable: jsonSerialization['deferrable'] == null
           ? null
-          : _i2.DeferrableConstraint.fromJson(
+          : _isd.DeferrableConstraint.fromJson(
               (jsonSerialization['deferrable'] as String),
             ),
     );
@@ -92,31 +92,31 @@ abstract class ForeignKeyDefinition
   List<String> referenceColumns;
 
   /// The action, when the referred row is updated.
-  _i2.ForeignKeyAction? onUpdate;
+  _isd.ForeignKeyAction? onUpdate;
 
   /// The action, when the referred row is deleted.
-  _i2.ForeignKeyAction? onDelete;
+  _isd.ForeignKeyAction? onDelete;
 
   /// The match type of the foreign key
-  _i2.ForeignKeyMatchType? matchType;
+  _isd.ForeignKeyMatchType? matchType;
 
   /// Whether the constraint is deferrable and when it is checked by default.
   /// Null means the constraint is not deferrable.
-  _i2.DeferrableConstraint? deferrable;
+  _isd.DeferrableConstraint? deferrable;
 
   /// Returns a shallow copy of this [ForeignKeyDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   ForeignKeyDefinition copyWith({
     String? constraintName,
     List<String>? columns,
     String? referenceTable,
     String? referenceTableSchema,
     List<String>? referenceColumns,
-    _i2.ForeignKeyAction? onUpdate,
-    _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
-    _i2.DeferrableConstraint? deferrable,
+    _isd.ForeignKeyAction? onUpdate,
+    _isd.ForeignKeyAction? onDelete,
+    _isd.ForeignKeyMatchType? matchType,
+    _isd.DeferrableConstraint? deferrable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -152,7 +152,7 @@ abstract class ForeignKeyDefinition
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -165,10 +165,10 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
     required String referenceTable,
     required String referenceTableSchema,
     required List<String> referenceColumns,
-    _i2.ForeignKeyAction? onUpdate,
-    _i2.ForeignKeyAction? onDelete,
-    _i2.ForeignKeyMatchType? matchType,
-    _i2.DeferrableConstraint? deferrable,
+    _isd.ForeignKeyAction? onUpdate,
+    _isd.ForeignKeyAction? onDelete,
+    _isd.ForeignKeyMatchType? matchType,
+    _isd.DeferrableConstraint? deferrable,
   }) : super._(
          constraintName: constraintName,
          columns: columns,
@@ -183,7 +183,7 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
 
   /// Returns a shallow copy of this [ForeignKeyDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   ForeignKeyDefinition copyWith({
     String? constraintName,
@@ -203,12 +203,12 @@ class _ForeignKeyDefinitionImpl extends ForeignKeyDefinition {
       referenceTableSchema: referenceTableSchema ?? this.referenceTableSchema,
       referenceColumns:
           referenceColumns ?? this.referenceColumns.map((e0) => e0).toList(),
-      onUpdate: onUpdate is _i2.ForeignKeyAction? ? onUpdate : this.onUpdate,
-      onDelete: onDelete is _i2.ForeignKeyAction? ? onDelete : this.onDelete,
-      matchType: matchType is _i2.ForeignKeyMatchType?
+      onUpdate: onUpdate is _isd.ForeignKeyAction? ? onUpdate : this.onUpdate,
+      onDelete: onDelete is _isd.ForeignKeyAction? ? onDelete : this.onDelete,
+      matchType: matchType is _isd.ForeignKeyMatchType?
           ? matchType
           : this.matchType,
-      deferrable: deferrable is _i2.DeferrableConstraint?
+      deferrable: deferrable is _isd.DeferrableConstraint?
           ? deferrable
           : this.deferrable,
     );

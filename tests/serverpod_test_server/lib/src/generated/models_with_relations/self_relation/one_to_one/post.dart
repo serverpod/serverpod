@@ -11,12 +11,12 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
-    as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+    as _ittc76ec;
 
-abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Post._({
     this.id,
     required this.content,
@@ -28,9 +28,9 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   factory Post({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   }) = _PostImpl;
 
   factory Post.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,11 +39,15 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
       content: jsonSerialization['content'] as String,
       previous: jsonSerialization['previous'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['previous']),
+          : _igqrxdcj.Protocol().deserialize<_ittc76ec.Post>(
+              jsonSerialization['previous'],
+            ),
       nextId: jsonSerialization['nextId'] as int?,
       next: jsonSerialization['next'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Post>(jsonSerialization['next']),
+          : _igqrxdcj.Protocol().deserialize<_ittc76ec.Post>(
+              jsonSerialization['next'],
+            ),
     );
   }
 
@@ -56,24 +60,24 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   String content;
 
-  _i2.Post? previous;
+  _ittc76ec.Post? previous;
 
   int? nextId;
 
-  _i2.Post? next;
+  _ittc76ec.Post? next;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Post copyWith({
     int? id,
     String? content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,8 +104,8 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static PostInclude include({
-    _i2.PostInclude? previous,
-    _i2.PostInclude? next,
+    _ittc76ec.PostInclude? previous,
+    _ittc76ec.PostInclude? next,
   }) {
     return PostInclude._(
       previous: previous,
@@ -110,11 +114,11 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static PostIncludeList includeList({
-    _i1.WhereExpressionBuilder<PostTable>? where,
+    _is.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
   }) {
     return PostIncludeList._(
@@ -129,7 +133,7 @@ abstract class Post implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -139,9 +143,9 @@ class _PostImpl extends Post {
   _PostImpl({
     int? id,
     required String content,
-    _i2.Post? previous,
+    _ittc76ec.Post? previous,
     int? nextId,
-    _i2.Post? next,
+    _ittc76ec.Post? next,
   }) : super._(
          id: id,
          content: content,
@@ -152,7 +156,7 @@ class _PostImpl extends Post {
 
   /// Returns a shallow copy of this [Post]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Post copyWith({
     Object? id = _Undefined,
@@ -164,35 +168,37 @@ class _PostImpl extends Post {
     return Post(
       id: id is int? ? id : this.id,
       content: content ?? this.content,
-      previous: previous is _i2.Post? ? previous : this.previous?.copyWith(),
+      previous: previous is _ittc76ec.Post?
+          ? previous
+          : this.previous?.copyWith(),
       nextId: nextId is int? ? nextId : this.nextId,
-      next: next is _i2.Post? ? next : this.next?.copyWith(),
+      next: next is _ittc76ec.Post? ? next : this.next?.copyWith(),
     );
   }
 }
 
-class PostUpdateTable extends _i1.UpdateTable<PostTable> {
+class PostUpdateTable extends _is.UpdateTable<PostTable> {
   PostUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> content(String value) => _is.ColumnValue(
     table.content,
     value,
   );
 
-  _i1.ColumnValue<int, int> nextId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> nextId(int? value) => _is.ColumnValue(
     table.nextId,
     value,
   );
 }
 
-class PostTable extends _i1.Table<int?> {
+class PostTable extends _is.Table<int?> {
   PostTable({super.tableRelation}) : super(tableName: 'post') {
     updateTable = PostUpdateTable(this);
-    content = _i1.ColumnString(
+    content = _is.ColumnString(
       'content',
       this,
     );
-    nextId = _i1.ColumnInt(
+    nextId = _is.ColumnInt(
       'nextId',
       this,
     );
@@ -200,49 +206,49 @@ class PostTable extends _i1.Table<int?> {
 
   late final PostUpdateTable updateTable;
 
-  late final _i1.ColumnString content;
+  late final _is.ColumnString content;
 
-  _i2.PostTable? _previous;
+  _ittc76ec.PostTable? _previous;
 
-  late final _i1.ColumnInt nextId;
+  late final _is.ColumnInt nextId;
 
-  _i2.PostTable? _next;
+  _ittc76ec.PostTable? _next;
 
-  _i2.PostTable get previous {
+  _ittc76ec.PostTable get previous {
     if (_previous != null) return _previous!;
-    _previous = _i1.createRelationTable(
+    _previous = _is.createRelationTable(
       relationFieldName: 'previous',
       field: Post.t.id,
-      foreignField: _i2.Post.t.nextId,
+      foreignField: _ittc76ec.Post.t.nextId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+          _ittc76ec.PostTable(tableRelation: foreignTableRelation),
     );
     return _previous!;
   }
 
-  _i2.PostTable get next {
+  _ittc76ec.PostTable get next {
     if (_next != null) return _next!;
-    _next = _i1.createRelationTable(
+    _next = _is.createRelationTable(
       relationFieldName: 'next',
       field: Post.t.nextId,
-      foreignField: _i2.Post.t.id,
+      foreignField: _ittc76ec.Post.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.PostTable(tableRelation: foreignTableRelation),
+          _ittc76ec.PostTable(tableRelation: foreignTableRelation),
     );
     return _next!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     content,
     nextId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'previous') {
       return previous;
     }
@@ -253,32 +259,32 @@ class PostTable extends _i1.Table<int?> {
   }
 }
 
-class PostInclude extends _i1.IncludeObject {
+class PostInclude extends _is.IncludeObject {
   PostInclude._({
-    _i2.PostInclude? previous,
-    _i2.PostInclude? next,
+    _ittc76ec.PostInclude? previous,
+    _ittc76ec.PostInclude? next,
   }) {
     _previous = previous;
     _next = next;
   }
 
-  _i2.PostInclude? _previous;
+  _ittc76ec.PostInclude? _previous;
 
-  _i2.PostInclude? _next;
+  _ittc76ec.PostInclude? _next;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'previous': _previous,
     'next': _next,
   };
 
   @override
-  _i1.Table<int?> get table => Post.t;
+  _is.Table<int?> get table => Post.t;
 }
 
-class PostIncludeList extends _i1.IncludeList {
+class PostIncludeList extends _is.IncludeList {
   PostIncludeList._({
-    _i1.WhereExpressionBuilder<PostTable>? where,
+    _is.WhereExpressionBuilder<PostTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -289,10 +295,10 @@ class PostIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Post.t;
+  _is.Table<int?> get table => Post.t;
 }
 
 class PostRepository {
@@ -325,16 +331,16 @@ class PostRepository {
   /// );
   /// ```
   Future<List<Post>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PostTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
+    _is.Transaction? transaction,
     PostInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Post>(
       where: where?.call(Post.t),
@@ -367,15 +373,15 @@ class PostRepository {
   /// );
   /// ```
   Future<Post?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PostTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
+    _is.Transaction? transaction,
     PostInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Post>(
       where: where?.call(Post.t),
@@ -391,12 +397,12 @@ class PostRepository {
 
   /// Finds a single [Post] by its [id] or null if no such row exists.
   Future<Post?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     PostInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Post>(
       id,
@@ -422,9 +428,9 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Post> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -440,9 +446,9 @@ class PostRepository {
   ///
   /// The returned [Post] will have its `id` field set.
   Future<Post> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Post>(
       row,
@@ -471,12 +477,12 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Post> rows, {
-    required _i1.ColumnSelections<PostTable> conflictColumns,
-    _i1.ColumnSelections<PostTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PostTable> conflictColumns,
+    _is.ColumnSelections<PostTable>? updateColumns,
+    _is.WhereExpressionBuilder<PostTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Post>(
@@ -503,12 +509,12 @@ class PostRepository {
   ///
   /// The returned [Post] will have its `id` field set.
   Future<Post?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post row, {
-    required _i1.ColumnSelections<PostTable> conflictColumns,
-    _i1.ColumnSelections<PostTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PostTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PostTable> conflictColumns,
+    _is.ColumnSelections<PostTable>? updateColumns,
+    _is.WhereExpressionBuilder<PostTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Post>(
       row,
@@ -529,10 +535,10 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Post> rows, {
-    _i1.ColumnSelections<PostTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PostTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Post>(
@@ -547,10 +553,10 @@ class PostRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Post> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post row, {
-    _i1.ColumnSelections<PostTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PostTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Post>(
       row,
@@ -562,10 +568,10 @@ class PostRepository {
   /// Updates a single [Post] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Post?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<PostUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Post>(
       id,
@@ -581,14 +587,14 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PostUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<PostTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PostUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<PostTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Post>(
@@ -615,11 +621,11 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Post> rows, {
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Post>(
@@ -633,9 +639,9 @@ class PostRepository {
 
   /// Deletes a single [Post].
   Future<Post> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Post>(
       row,
@@ -652,11 +658,11 @@ class PostRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Post>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PostTable> where,
-    _i1.OrderByBuilder<PostTable>? orderBy,
-    _i1.OrderByListBuilder<PostTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PostTable> where,
+    _is.OrderByBuilder<PostTable>? orderBy,
+    _is.OrderByListBuilder<PostTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Post>(
@@ -671,10 +677,10 @@ class PostRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PostTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PostTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Post>(
       where: where?.call(Post.t),
@@ -685,11 +691,11 @@ class PostRepository {
 
   /// Acquires row-level locks on [Post] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PostTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PostTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Post>(
       where: where(Post.t),
@@ -706,10 +712,10 @@ class PostAttachRowRepository {
   /// Creates a relation between the given [Post] and [Post]
   /// by setting the [Post]'s foreign key `id` to refer to the [Post].
   Future<void> previous(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post post,
-    _i2.Post previous, {
-    _i1.Transaction? transaction,
+    _ittc76ec.Post previous, {
+    _is.Transaction? transaction,
   }) async {
     if (previous.id == null) {
       throw ArgumentError.notNull('previous.id');
@@ -719,9 +725,9 @@ class PostAttachRowRepository {
     }
 
     var $previous = previous.copyWith(nextId: post.id);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<_ittc76ec.Post>(
       $previous,
-      columns: [_i2.Post.t.nextId],
+      columns: [_ittc76ec.Post.t.nextId],
       transaction: transaction,
     );
   }
@@ -729,10 +735,10 @@ class PostAttachRowRepository {
   /// Creates a relation between the given [Post] and [Post]
   /// by setting the [Post]'s foreign key `nextId` to refer to the [Post].
   Future<void> next(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post post,
-    _i2.Post next, {
-    _i1.Transaction? transaction,
+    _ittc76ec.Post next, {
+    _is.Transaction? transaction,
   }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');
@@ -759,9 +765,9 @@ class PostDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> previous(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post post, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     var $previous = post.previous;
 
@@ -776,9 +782,9 @@ class PostDetachRowRepository {
     }
 
     var $$previous = $previous.copyWith(nextId: null);
-    await session.db.updateRow<_i2.Post>(
+    await session.db.updateRow<_ittc76ec.Post>(
       $$previous,
-      columns: [_i2.Post.t.nextId],
+      columns: [_ittc76ec.Post.t.nextId],
       transaction: transaction,
     );
   }
@@ -789,9 +795,9 @@ class PostDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> next(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Post post, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (post.id == null) {
       throw ArgumentError.notNull('post.id');

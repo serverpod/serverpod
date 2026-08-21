@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../profile/models/user_profile.dart' as _i2;
-import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
+    as _ifwxqeej;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../profile/models/user_profile.dart' as _ixqiikps;
 
 /// Database entity for storing user profile image information.
 abstract class UserProfileImage
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserProfileImage._({
     this.id,
     required this.userProfileId,
@@ -28,9 +29,9 @@ abstract class UserProfileImage
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfileImage({
-    _i1.UuidValue? id,
-    required _i1.UuidValue userProfileId,
-    _i2.UserProfile? userProfile,
+    _isc.UuidValue? id,
+    required _isc.UuidValue userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     required String storageId,
     required String path,
@@ -41,33 +42,33 @@ abstract class UserProfileImage
     return UserProfileImage(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      userProfileId: _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      userProfileId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['userProfileId'],
       ),
       userProfile: jsonSerialization['userProfile'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UserProfile>(
+          : _ifwxqeej.Protocol().deserialize<_ixqiikps.UserProfile>(
               jsonSerialization['userProfile'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      url: _i1.UriJsonExtension.fromJson(jsonSerialization['url']),
+      url: _isc.UriJsonExtension.fromJson(jsonSerialization['url']),
     );
   }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
-  _i1.UuidValue userProfileId;
+  _isc.UuidValue userProfileId;
 
   /// The [UserProfile] this image belongs to.
-  _i2.UserProfile? userProfile;
+  _ixqiikps.UserProfile? userProfile;
 
   /// The time when this profile image was created.
   DateTime createdAt;
@@ -83,11 +84,11 @@ abstract class UserProfileImage
 
   /// Returns a shallow copy of this [UserProfileImage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserProfileImage copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? userProfileId,
-    _i2.UserProfile? userProfile,
+    _isc.UuidValue? id,
+    _isc.UuidValue? userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     String? storageId,
     String? path,
@@ -123,7 +124,7 @@ abstract class UserProfileImage
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -131,9 +132,9 @@ class _Undefined {}
 
 class _UserProfileImageImpl extends UserProfileImage {
   _UserProfileImageImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue userProfileId,
-    _i2.UserProfile? userProfile,
+    _isc.UuidValue? id,
+    required _isc.UuidValue userProfileId,
+    _ixqiikps.UserProfile? userProfile,
     DateTime? createdAt,
     required String storageId,
     required String path,
@@ -150,11 +151,11 @@ class _UserProfileImageImpl extends UserProfileImage {
 
   /// Returns a shallow copy of this [UserProfileImage]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserProfileImage copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? userProfileId,
+    _isc.UuidValue? userProfileId,
     Object? userProfile = _Undefined,
     DateTime? createdAt,
     String? storageId,
@@ -162,9 +163,9 @@ class _UserProfileImageImpl extends UserProfileImage {
     Uri? url,
   }) {
     return UserProfileImage(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       userProfileId: userProfileId ?? this.userProfileId,
-      userProfile: userProfile is _i2.UserProfile?
+      userProfile: userProfile is _ixqiikps.UserProfile?
           ? userProfile
           : this.userProfile?.copyWith(),
       createdAt: createdAt ?? this.createdAt,

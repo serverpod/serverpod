@@ -36,7 +36,7 @@ void main() {
       test('then generated enum implements SerializableModel', () {
         expect(
           codeMap[expectedFileName],
-          contains('enum Example implements _i1.SerializableModel {'),
+          contains('enum Example implements _is.SerializableModel {'),
         );
       });
 

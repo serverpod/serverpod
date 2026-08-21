@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'simple_data.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i3;
+    as _i08l111i;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectWithJsonb
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithJsonb._({
     this.id,
     required this.notJsonb,
@@ -35,7 +35,7 @@ abstract class ObjectWithJsonb
     required List<String> notJsonb,
     required List<String> jsonb,
     required Map<String, String> jsonbMap,
-    required _i2.SimpleData jsonbObject,
+    required _i0zisc0t.SimpleData jsonbObject,
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
@@ -46,33 +46,33 @@ abstract class ObjectWithJsonb
   factory ObjectWithJsonb.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithJsonb(
       id: jsonSerialization['id'] as int?,
-      notJsonb: _i3.Protocol().deserialize<List<String>>(
+      notJsonb: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['notJsonb'],
       ),
-      jsonb: _i3.Protocol().deserialize<List<String>>(
+      jsonb: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonb'],
       ),
-      jsonbMap: _i3.Protocol().deserialize<Map<String, String>>(
+      jsonbMap: _i08l111i.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['jsonbMap'],
       ),
-      jsonbObject: _i3.Protocol().deserialize<_i2.SimpleData>(
+      jsonbObject: _i08l111i.Protocol().deserialize<_i0zisc0t.SimpleData>(
         jsonSerialization['jsonbObject'],
       ),
-      jsonbIndexed: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexed: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexed'],
       ),
-      jsonbIndexedGin: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedGin: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGin'],
       ),
-      jsonbIndexedGinJsonbPath: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedGinJsonbPath: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGinJsonbPath'],
       ),
-      jsonbIndexedImplicitGin: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedImplicitGin: _i08l111i.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedImplicitGin'],
       ),
       nullableJsonb: jsonSerialization['nullableJsonb'] == null
           ? null
-          : _i3.Protocol().deserialize<List<String>>(
+          : _i08l111i.Protocol().deserialize<List<String>>(
               jsonSerialization['nullableJsonb'],
             ),
     );
@@ -91,7 +91,7 @@ abstract class ObjectWithJsonb
 
   Map<String, String> jsonbMap;
 
-  _i2.SimpleData jsonbObject;
+  _i0zisc0t.SimpleData jsonbObject;
 
   List<String> jsonbIndexed;
 
@@ -104,17 +104,17 @@ abstract class ObjectWithJsonb
   List<String>? nullableJsonb;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithJsonb copyWith({
     int? id,
     List<String>? notJsonb,
     List<String>? jsonb,
     Map<String, String>? jsonbMap,
-    _i2.SimpleData? jsonbObject,
+    _i0zisc0t.SimpleData? jsonbObject,
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
@@ -160,11 +160,11 @@ abstract class ObjectWithJsonb
   }
 
   static ObjectWithJsonbIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
     ObjectWithJsonbInclude? include,
   }) {
     return ObjectWithJsonbIncludeList._(
@@ -179,7 +179,7 @@ abstract class ObjectWithJsonb
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -191,7 +191,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     required List<String> notJsonb,
     required List<String> jsonb,
     required Map<String, String> jsonbMap,
-    required _i2.SimpleData jsonbObject,
+    required _i0zisc0t.SimpleData jsonbObject,
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
@@ -212,14 +212,14 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithJsonb copyWith({
     Object? id = _Undefined,
     List<String>? notJsonb,
     List<String>? jsonb,
     Map<String, String>? jsonbMap,
-    _i2.SimpleData? jsonbObject,
+    _i0zisc0t.SimpleData? jsonbObject,
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
@@ -258,108 +258,108 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
   }
 }
 
-class ObjectWithJsonbUpdateTable extends _i1.UpdateTable<ObjectWithJsonbTable> {
+class ObjectWithJsonbUpdateTable extends _is.UpdateTable<ObjectWithJsonbTable> {
   ObjectWithJsonbUpdateTable(super.table);
 
-  _i1.ColumnValue<List<String>, List<String>> notJsonb(List<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<List<String>, List<String>> notJsonb(List<String> value) =>
+      _is.ColumnValue(
         table.notJsonb,
         value,
       );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonb(List<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<List<String>, List<String>> jsonb(List<String> value) =>
+      _is.ColumnValue(
         table.jsonb,
         value,
       );
 
-  _i1.ColumnValue<Map<String, String>, Map<String, String>> jsonbMap(
+  _is.ColumnValue<Map<String, String>, Map<String, String>> jsonbMap(
     Map<String, String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.jsonbMap,
     value,
   );
 
-  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> jsonbObject(
-    _i2.SimpleData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i0zisc0t.SimpleData, _i0zisc0t.SimpleData> jsonbObject(
+    _i0zisc0t.SimpleData value,
+  ) => _is.ColumnValue(
     table.jsonbObject,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonbIndexed(
+  _is.ColumnValue<List<String>, List<String>> jsonbIndexed(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.jsonbIndexed,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonbIndexedGin(
+  _is.ColumnValue<List<String>, List<String>> jsonbIndexedGin(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.jsonbIndexedGin,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonbIndexedGinJsonbPath(
+  _is.ColumnValue<List<String>, List<String>> jsonbIndexedGinJsonbPath(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.jsonbIndexedGinJsonbPath,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> jsonbIndexedImplicitGin(
+  _is.ColumnValue<List<String>, List<String>> jsonbIndexedImplicitGin(
     List<String> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.jsonbIndexedImplicitGin,
     value,
   );
 
-  _i1.ColumnValue<List<String>, List<String>> nullableJsonb(
+  _is.ColumnValue<List<String>, List<String>> nullableJsonb(
     List<String>? value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.nullableJsonb,
     value,
   );
 }
 
-class ObjectWithJsonbTable extends _i1.Table<int?> {
+class ObjectWithJsonbTable extends _is.Table<int?> {
   ObjectWithJsonbTable({super.tableRelation})
     : super(tableName: 'object_with_jsonb') {
     updateTable = ObjectWithJsonbUpdateTable(this);
-    notJsonb = _i1.ColumnSerializable<List<String>>(
+    notJsonb = _is.ColumnSerializable<List<String>>(
       'notJsonb',
       this,
     );
-    jsonb = _i1.ColumnStructured<List<String>>(
+    jsonb = _is.ColumnStructured<List<String>>(
       'jsonb',
       this,
     );
-    jsonbMap = _i1.ColumnStructured<Map<String, String>>(
+    jsonbMap = _is.ColumnStructured<Map<String, String>>(
       'jsonbMap',
       this,
     );
-    jsonbObject = _i1.ColumnStructured<_i2.SimpleData>(
+    jsonbObject = _is.ColumnStructured<_i0zisc0t.SimpleData>(
       'jsonbObject',
       this,
     );
-    jsonbIndexed = _i1.ColumnStructured<List<String>>(
+    jsonbIndexed = _is.ColumnStructured<List<String>>(
       'jsonbIndexed',
       this,
     );
-    jsonbIndexedGin = _i1.ColumnStructured<List<String>>(
+    jsonbIndexedGin = _is.ColumnStructured<List<String>>(
       'jsonbIndexedGin',
       this,
     );
-    jsonbIndexedGinJsonbPath = _i1.ColumnStructured<List<String>>(
+    jsonbIndexedGinJsonbPath = _is.ColumnStructured<List<String>>(
       'jsonbIndexedGinJsonbPath',
       this,
     );
-    jsonbIndexedImplicitGin = _i1.ColumnStructured<List<String>>(
+    jsonbIndexedImplicitGin = _is.ColumnStructured<List<String>>(
       'jsonbIndexedImplicitGin',
       this,
     );
-    nullableJsonb = _i1.ColumnStructured<List<String>>(
+    nullableJsonb = _is.ColumnStructured<List<String>>(
       'nullableJsonb',
       this,
     );
@@ -367,26 +367,26 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
 
   late final ObjectWithJsonbUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<List<String>> notJsonb;
+  late final _is.ColumnSerializable<List<String>> notJsonb;
 
-  late final _i1.ColumnStructured<List<String>> jsonb;
+  late final _is.ColumnStructured<List<String>> jsonb;
 
-  late final _i1.ColumnStructured<Map<String, String>> jsonbMap;
+  late final _is.ColumnStructured<Map<String, String>> jsonbMap;
 
-  late final _i1.ColumnStructured<_i2.SimpleData> jsonbObject;
+  late final _is.ColumnStructured<_i0zisc0t.SimpleData> jsonbObject;
 
-  late final _i1.ColumnStructured<List<String>> jsonbIndexed;
+  late final _is.ColumnStructured<List<String>> jsonbIndexed;
 
-  late final _i1.ColumnStructured<List<String>> jsonbIndexedGin;
+  late final _is.ColumnStructured<List<String>> jsonbIndexedGin;
 
-  late final _i1.ColumnStructured<List<String>> jsonbIndexedGinJsonbPath;
+  late final _is.ColumnStructured<List<String>> jsonbIndexedGinJsonbPath;
 
-  late final _i1.ColumnStructured<List<String>> jsonbIndexedImplicitGin;
+  late final _is.ColumnStructured<List<String>> jsonbIndexedImplicitGin;
 
-  late final _i1.ColumnStructured<List<String>> nullableJsonb;
+  late final _is.ColumnStructured<List<String>> nullableJsonb;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     notJsonb,
     jsonb,
@@ -400,19 +400,19 @@ class ObjectWithJsonbTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithJsonbInclude extends _i1.IncludeObject {
+class ObjectWithJsonbInclude extends _is.IncludeObject {
   ObjectWithJsonbInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithJsonb.t;
+  _is.Table<int?> get table => ObjectWithJsonb.t;
 }
 
-class ObjectWithJsonbIncludeList extends _i1.IncludeList {
+class ObjectWithJsonbIncludeList extends _is.IncludeList {
   ObjectWithJsonbIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -423,10 +423,10 @@ class ObjectWithJsonbIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithJsonb.t;
+  _is.Table<int?> get table => ObjectWithJsonb.t;
 }
 
 class ObjectWithJsonbRepository {
@@ -455,15 +455,15 @@ class ObjectWithJsonbRepository {
   /// );
   /// ```
   Future<List<ObjectWithJsonb>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithJsonb>(
       where: where?.call(ObjectWithJsonb.t),
@@ -495,14 +495,14 @@ class ObjectWithJsonbRepository {
   /// );
   /// ```
   Future<ObjectWithJsonb?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithJsonb>(
       where: where?.call(ObjectWithJsonb.t),
@@ -517,11 +517,11 @@ class ObjectWithJsonbRepository {
 
   /// Finds a single [ObjectWithJsonb] by its [id] or null if no such row exists.
   Future<ObjectWithJsonb?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithJsonb>(
       id,
@@ -546,9 +546,9 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -564,9 +564,9 @@ class ObjectWithJsonbRepository {
   ///
   /// The returned [ObjectWithJsonb] will have its `id` field set.
   Future<ObjectWithJsonb> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithJsonb row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithJsonb>(
       row,
@@ -595,12 +595,12 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
-    required _i1.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithJsonb>(
@@ -627,12 +627,12 @@ class ObjectWithJsonbRepository {
   ///
   /// The returned [ObjectWithJsonb] will have its `id` field set.
   Future<ObjectWithJsonb?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithJsonb row, {
-    required _i1.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithJsonbTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithJsonbTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithJsonb>(
       row,
@@ -653,10 +653,10 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
-    _i1.ColumnSelections<ObjectWithJsonbTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithJsonbTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithJsonb>(
@@ -671,10 +671,10 @@ class ObjectWithJsonbRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithJsonb> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithJsonb row, {
-    _i1.ColumnSelections<ObjectWithJsonbTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithJsonbTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithJsonb>(
       row,
@@ -686,11 +686,11 @@ class ObjectWithJsonbRepository {
   /// Updates a single [ObjectWithJsonb] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithJsonb?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithJsonbUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithJsonbUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithJsonb>(
       id,
@@ -706,15 +706,15 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithJsonbUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithJsonbUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithJsonbTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithJsonbTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithJsonb>(
@@ -741,11 +741,11 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithJsonb> rows, {
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithJsonb>(
@@ -759,9 +759,9 @@ class ObjectWithJsonbRepository {
 
   /// Deletes a single [ObjectWithJsonb].
   Future<ObjectWithJsonb> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithJsonb row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithJsonb>(
       row,
@@ -778,11 +778,11 @@ class ObjectWithJsonbRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithJsonb>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithJsonbTable> where,
-    _i1.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithJsonbTable> where,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithJsonb>(
@@ -797,10 +797,10 @@ class ObjectWithJsonbRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithJsonb>(
       where: where?.call(ObjectWithJsonb.t),
@@ -811,11 +811,11 @@ class ObjectWithJsonbRepository {
 
   /// Acquires row-level locks on [ObjectWithJsonb] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithJsonbTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithJsonbTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithJsonb>(
       where: where(ObjectWithJsonb.t),

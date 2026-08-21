@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'test_enum.dart' as _i3;
-import 'test_enum_stringified.dart' as _i4;
-import 'types.dart' as _i5;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i6;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
+import 'types.dart' as _iwxwszsz;
 
 abstract class TypesMap
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TypesMap._({
     this.anIntKey,
     this.aBoolKey,
@@ -62,32 +62,32 @@ abstract class TypesMap
     Map<double, String>? aDoubleKey,
     Map<DateTime, String>? aDateTimeKey,
     Map<String, String>? aStringKey,
-    Map<_i2.ByteData, String>? aByteDataKey,
+    Map<_idt.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
-    Map<_i1.UuidValue, String>? aUuidKey,
+    Map<_is.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
     Map<BigInt, String>? aBigIntKey,
-    Map<_i3.TestEnum, String>? anEnumKey,
-    Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
-    Map<_i5.Types, String>? anObjectKey,
-    Map<Map<_i5.Types, String>, String>? aMapKey,
-    Map<List<_i5.Types>, String>? aListKey,
+    Map<_ionapfu9.TestEnum, String>? anEnumKey,
+    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey,
+    Map<_iwxwszsz.Types, String>? anObjectKey,
+    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey,
+    Map<List<_iwxwszsz.Types>, String>? aListKey,
     Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
     Map<String, DateTime>? aDateTimeValue,
     Map<String, String>? aStringValue,
-    Map<String, _i2.ByteData>? aByteDataValue,
+    Map<String, _idt.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
-    Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, _is.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
     Map<String, BigInt>? aBigIntValue,
-    Map<String, _i3.TestEnum>? anEnumValue,
-    Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
-    Map<String, _i5.Types>? anObjectValue,
-    Map<String, Map<String, _i5.Types>>? aMapValue,
-    Map<String, List<_i5.Types>>? aListValue,
+    Map<String, _ionapfu9.TestEnum>? anEnumValue,
+    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue,
+    Map<String, _iwxwszsz.Types>? anObjectValue,
+    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue,
+    Map<String, List<_iwxwszsz.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
     Map<String, (String,)?>? aNullableRecordValue,
     Map<(String,)?, String>? aNullableRecordKey,
@@ -97,172 +97,178 @@ abstract class TypesMap
     return TypesMap(
       anIntKey: jsonSerialization['anIntKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<int, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<int, String>>(
               jsonSerialization['anIntKey'],
             ),
       aBoolKey: jsonSerialization['aBoolKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<bool, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<bool, String>>(
               jsonSerialization['aBoolKey'],
             ),
       aDoubleKey: jsonSerialization['aDoubleKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<double, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<double, String>>(
               jsonSerialization['aDoubleKey'],
             ),
       aDateTimeKey: jsonSerialization['aDateTimeKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<DateTime, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<DateTime, String>>(
               jsonSerialization['aDateTimeKey'],
             ),
       aStringKey: jsonSerialization['aStringKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['aStringKey'],
             ),
       aByteDataKey: jsonSerialization['aByteDataKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<_i2.ByteData, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<_idt.ByteData, String>>(
               jsonSerialization['aByteDataKey'],
             ),
       aDurationKey: jsonSerialization['aDurationKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<Duration, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<Duration, String>>(
               jsonSerialization['aDurationKey'],
             ),
       aUuidKey: jsonSerialization['aUuidKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<_i1.UuidValue, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<_is.UuidValue, String>>(
               jsonSerialization['aUuidKey'],
             ),
       aUriKey: jsonSerialization['aUriKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<Uri, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<Uri, String>>(
               jsonSerialization['aUriKey'],
             ),
       aBigIntKey: jsonSerialization['aBigIntKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<BigInt, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<BigInt, String>>(
               jsonSerialization['aBigIntKey'],
             ),
       anEnumKey: jsonSerialization['anEnumKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<_i3.TestEnum, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<_ionapfu9.TestEnum, String>>(
               jsonSerialization['anEnumKey'],
             ),
       aStringifiedEnumKey: jsonSerialization['aStringifiedEnumKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<_i4.TestEnumStringified, String>>(
-              jsonSerialization['aStringifiedEnumKey'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<_i7liykk2.TestEnumStringified, String>>(
+                  jsonSerialization['aStringifiedEnumKey'],
+                ),
       anObjectKey: jsonSerialization['anObjectKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<_i5.Types, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<_iwxwszsz.Types, String>>(
               jsonSerialization['anObjectKey'],
             ),
       aMapKey: jsonSerialization['aMapKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<Map<_i5.Types, String>, String>>(
-              jsonSerialization['aMapKey'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<Map<_iwxwszsz.Types, String>, String>>(
+                  jsonSerialization['aMapKey'],
+                ),
       aListKey: jsonSerialization['aListKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<List<_i5.Types>, String>>(
-              jsonSerialization['aListKey'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<List<_iwxwszsz.Types>, String>>(
+                  jsonSerialization['aListKey'],
+                ),
       aRecordKey: jsonSerialization['aRecordKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<(String,), String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<(String,), String>>(
               jsonSerialization['aRecordKey'],
             ),
       anIntValue: jsonSerialization['anIntValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, int>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, int>>(
               jsonSerialization['anIntValue'],
             ),
       aBoolValue: jsonSerialization['aBoolValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, bool>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, bool>>(
               jsonSerialization['aBoolValue'],
             ),
       aDoubleValue: jsonSerialization['aDoubleValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, double>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, double>>(
               jsonSerialization['aDoubleValue'],
             ),
       aDateTimeValue: jsonSerialization['aDateTimeValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, DateTime>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, DateTime>>(
               jsonSerialization['aDateTimeValue'],
             ),
       aStringValue: jsonSerialization['aStringValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['aStringValue'],
             ),
       aByteDataValue: jsonSerialization['aByteDataValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, _i2.ByteData>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, _idt.ByteData>>(
               jsonSerialization['aByteDataValue'],
             ),
       aDurationValue: jsonSerialization['aDurationValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, Duration>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, Duration>>(
               jsonSerialization['aDurationValue'],
             ),
       aUuidValue: jsonSerialization['aUuidValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, _i1.UuidValue>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, _is.UuidValue>>(
               jsonSerialization['aUuidValue'],
             ),
       aUriValue: jsonSerialization['aUriValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, Uri>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, Uri>>(
               jsonSerialization['aUriValue'],
             ),
       aBigIntValue: jsonSerialization['aBigIntValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, BigInt>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, BigInt>>(
               jsonSerialization['aBigIntValue'],
             ),
       anEnumValue: jsonSerialization['anEnumValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, _i3.TestEnum>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, _ionapfu9.TestEnum>>(
               jsonSerialization['anEnumValue'],
             ),
       aStringifiedEnumValue: jsonSerialization['aStringifiedEnumValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, _i4.TestEnumStringified>>(
-              jsonSerialization['aStringifiedEnumValue'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, _i7liykk2.TestEnumStringified>>(
+                  jsonSerialization['aStringifiedEnumValue'],
+                ),
       anObjectValue: jsonSerialization['anObjectValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, _i5.Types>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, _iwxwszsz.Types>>(
               jsonSerialization['anObjectValue'],
             ),
       aMapValue: jsonSerialization['aMapValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, Map<String, _i5.Types>>>(
-              jsonSerialization['aMapValue'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, Map<String, _iwxwszsz.Types>>>(
+                  jsonSerialization['aMapValue'],
+                ),
       aListValue: jsonSerialization['aListValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, List<_i5.Types>>>(
-              jsonSerialization['aListValue'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, List<_iwxwszsz.Types>>>(
+                  jsonSerialization['aListValue'],
+                ),
       aRecordValue: jsonSerialization['aRecordValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, (String,)>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, (String,)>>(
               jsonSerialization['aRecordValue'],
             ),
       aNullableRecordValue: jsonSerialization['aNullableRecordValue'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<String, (String,)?>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, (String,)?>>(
               jsonSerialization['aNullableRecordValue'],
             ),
       aNullableRecordKey: jsonSerialization['aNullableRecordKey'] == null
           ? null
-          : _i6.Protocol().deserialize<Map<(String,)?, String>>(
+          : _igqrxdcj.Protocol().deserialize<Map<(String,)?, String>>(
               jsonSerialization['aNullableRecordKey'],
             ),
     );
@@ -278,25 +284,25 @@ abstract class TypesMap
 
   Map<String, String>? aStringKey;
 
-  Map<_i2.ByteData, String>? aByteDataKey;
+  Map<_idt.ByteData, String>? aByteDataKey;
 
   Map<Duration, String>? aDurationKey;
 
-  Map<_i1.UuidValue, String>? aUuidKey;
+  Map<_is.UuidValue, String>? aUuidKey;
 
   Map<Uri, String>? aUriKey;
 
   Map<BigInt, String>? aBigIntKey;
 
-  Map<_i3.TestEnum, String>? anEnumKey;
+  Map<_ionapfu9.TestEnum, String>? anEnumKey;
 
-  Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey;
+  Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey;
 
-  Map<_i5.Types, String>? anObjectKey;
+  Map<_iwxwszsz.Types, String>? anObjectKey;
 
-  Map<Map<_i5.Types, String>, String>? aMapKey;
+  Map<Map<_iwxwszsz.Types, String>, String>? aMapKey;
 
-  Map<List<_i5.Types>, String>? aListKey;
+  Map<List<_iwxwszsz.Types>, String>? aListKey;
 
   Map<(String,), String>? aRecordKey;
 
@@ -310,25 +316,25 @@ abstract class TypesMap
 
   Map<String, String>? aStringValue;
 
-  Map<String, _i2.ByteData>? aByteDataValue;
+  Map<String, _idt.ByteData>? aByteDataValue;
 
   Map<String, Duration>? aDurationValue;
 
-  Map<String, _i1.UuidValue>? aUuidValue;
+  Map<String, _is.UuidValue>? aUuidValue;
 
   Map<String, Uri>? aUriValue;
 
   Map<String, BigInt>? aBigIntValue;
 
-  Map<String, _i3.TestEnum>? anEnumValue;
+  Map<String, _ionapfu9.TestEnum>? anEnumValue;
 
-  Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue;
+  Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue;
 
-  Map<String, _i5.Types>? anObjectValue;
+  Map<String, _iwxwszsz.Types>? anObjectValue;
 
-  Map<String, Map<String, _i5.Types>>? aMapValue;
+  Map<String, Map<String, _iwxwszsz.Types>>? aMapValue;
 
-  Map<String, List<_i5.Types>>? aListValue;
+  Map<String, List<_iwxwszsz.Types>>? aListValue;
 
   Map<String, (String,)>? aRecordValue;
 
@@ -338,39 +344,39 @@ abstract class TypesMap
 
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TypesMap copyWith({
     Map<int, String>? anIntKey,
     Map<bool, String>? aBoolKey,
     Map<double, String>? aDoubleKey,
     Map<DateTime, String>? aDateTimeKey,
     Map<String, String>? aStringKey,
-    Map<_i2.ByteData, String>? aByteDataKey,
+    Map<_idt.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
-    Map<_i1.UuidValue, String>? aUuidKey,
+    Map<_is.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
     Map<BigInt, String>? aBigIntKey,
-    Map<_i3.TestEnum, String>? anEnumKey,
-    Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
-    Map<_i5.Types, String>? anObjectKey,
-    Map<Map<_i5.Types, String>, String>? aMapKey,
-    Map<List<_i5.Types>, String>? aListKey,
+    Map<_ionapfu9.TestEnum, String>? anEnumKey,
+    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey,
+    Map<_iwxwszsz.Types, String>? anObjectKey,
+    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey,
+    Map<List<_iwxwszsz.Types>, String>? aListKey,
     Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
     Map<String, DateTime>? aDateTimeValue,
     Map<String, String>? aStringValue,
-    Map<String, _i2.ByteData>? aByteDataValue,
+    Map<String, _idt.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
-    Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, _is.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
     Map<String, BigInt>? aBigIntValue,
-    Map<String, _i3.TestEnum>? anEnumValue,
-    Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
-    Map<String, _i5.Types>? anObjectValue,
-    Map<String, Map<String, _i5.Types>>? aMapValue,
-    Map<String, List<_i5.Types>>? aListValue,
+    Map<String, _ionapfu9.TestEnum>? anEnumValue,
+    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue,
+    Map<String, _iwxwszsz.Types>? anObjectValue,
+    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue,
+    Map<String, List<_iwxwszsz.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
     Map<String, (String,)?>? aNullableRecordValue,
     Map<(String,)?, String>? aNullableRecordKey,
@@ -412,7 +418,7 @@ abstract class TypesMap
           keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJson()),
         ),
       if (aRecordKey != null)
-        'aRecordKey': _i6.Protocol().mapContainerToJson(aRecordKey!),
+        'aRecordKey': _igqrxdcj.Protocol().mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -452,13 +458,13 @@ abstract class TypesMap
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
       if (aRecordValue != null)
-        'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),
+        'aRecordValue': _igqrxdcj.Protocol().mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue': _i6.Protocol().mapContainerToJson(
+        'aNullableRecordValue': _igqrxdcj.Protocol().mapContainerToJson(
           aNullableRecordValue!,
         ),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey': _i6.Protocol().mapContainerToJson(
+        'aNullableRecordKey': _igqrxdcj.Protocol().mapContainerToJson(
           aNullableRecordKey!,
         ),
     };
@@ -503,7 +509,7 @@ abstract class TypesMap
           keyToJson: (k) => k.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecordKey != null)
-        'aRecordKey': _i6.Protocol().mapContainerToJson(aRecordKey!),
+        'aRecordKey': _igqrxdcj.Protocol().mapContainerToJson(aRecordKey!),
       if (anIntValue != null) 'anIntValue': anIntValue?.toJson(),
       if (aBoolValue != null) 'aBoolValue': aBoolValue?.toJson(),
       if (aDoubleValue != null) 'aDoubleValue': aDoubleValue?.toJson(),
@@ -547,13 +553,13 @@ abstract class TypesMap
               v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecordValue != null)
-        'aRecordValue': _i6.Protocol().mapContainerToJson(aRecordValue!),
+        'aRecordValue': _igqrxdcj.Protocol().mapContainerToJson(aRecordValue!),
       if (aNullableRecordValue != null)
-        'aNullableRecordValue': _i6.Protocol().mapContainerToJson(
+        'aNullableRecordValue': _igqrxdcj.Protocol().mapContainerToJson(
           aNullableRecordValue!,
         ),
       if (aNullableRecordKey != null)
-        'aNullableRecordKey': _i6.Protocol().mapContainerToJson(
+        'aNullableRecordKey': _igqrxdcj.Protocol().mapContainerToJson(
           aNullableRecordKey!,
         ),
     };
@@ -561,7 +567,7 @@ abstract class TypesMap
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -574,32 +580,32 @@ class _TypesMapImpl extends TypesMap {
     Map<double, String>? aDoubleKey,
     Map<DateTime, String>? aDateTimeKey,
     Map<String, String>? aStringKey,
-    Map<_i2.ByteData, String>? aByteDataKey,
+    Map<_idt.ByteData, String>? aByteDataKey,
     Map<Duration, String>? aDurationKey,
-    Map<_i1.UuidValue, String>? aUuidKey,
+    Map<_is.UuidValue, String>? aUuidKey,
     Map<Uri, String>? aUriKey,
     Map<BigInt, String>? aBigIntKey,
-    Map<_i3.TestEnum, String>? anEnumKey,
-    Map<_i4.TestEnumStringified, String>? aStringifiedEnumKey,
-    Map<_i5.Types, String>? anObjectKey,
-    Map<Map<_i5.Types, String>, String>? aMapKey,
-    Map<List<_i5.Types>, String>? aListKey,
+    Map<_ionapfu9.TestEnum, String>? anEnumKey,
+    Map<_i7liykk2.TestEnumStringified, String>? aStringifiedEnumKey,
+    Map<_iwxwszsz.Types, String>? anObjectKey,
+    Map<Map<_iwxwszsz.Types, String>, String>? aMapKey,
+    Map<List<_iwxwszsz.Types>, String>? aListKey,
     Map<(String,), String>? aRecordKey,
     Map<String, int>? anIntValue,
     Map<String, bool>? aBoolValue,
     Map<String, double>? aDoubleValue,
     Map<String, DateTime>? aDateTimeValue,
     Map<String, String>? aStringValue,
-    Map<String, _i2.ByteData>? aByteDataValue,
+    Map<String, _idt.ByteData>? aByteDataValue,
     Map<String, Duration>? aDurationValue,
-    Map<String, _i1.UuidValue>? aUuidValue,
+    Map<String, _is.UuidValue>? aUuidValue,
     Map<String, Uri>? aUriValue,
     Map<String, BigInt>? aBigIntValue,
-    Map<String, _i3.TestEnum>? anEnumValue,
-    Map<String, _i4.TestEnumStringified>? aStringifiedEnumValue,
-    Map<String, _i5.Types>? anObjectValue,
-    Map<String, Map<String, _i5.Types>>? aMapValue,
-    Map<String, List<_i5.Types>>? aListValue,
+    Map<String, _ionapfu9.TestEnum>? anEnumValue,
+    Map<String, _i7liykk2.TestEnumStringified>? aStringifiedEnumValue,
+    Map<String, _iwxwszsz.Types>? anObjectValue,
+    Map<String, Map<String, _iwxwszsz.Types>>? aMapValue,
+    Map<String, List<_iwxwszsz.Types>>? aListValue,
     Map<String, (String,)>? aRecordValue,
     Map<String, (String,)?>? aNullableRecordValue,
     Map<(String,)?, String>? aNullableRecordKey,
@@ -642,7 +648,7 @@ class _TypesMapImpl extends TypesMap {
 
   /// Returns a shallow copy of this [TypesMap]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TypesMap copyWith({
     Object? anIntKey = _Undefined,
@@ -736,7 +742,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aByteDataKey: aByteDataKey is Map<_i2.ByteData, String>?
+      aByteDataKey: aByteDataKey is Map<_idt.ByteData, String>?
           ? aByteDataKey
           : this.aByteDataKey?.map(
               (
@@ -758,7 +764,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aUuidKey: aUuidKey is Map<_i1.UuidValue, String>?
+      aUuidKey: aUuidKey is Map<_is.UuidValue, String>?
           ? aUuidKey
           : this.aUuidKey?.map(
               (
@@ -791,7 +797,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      anEnumKey: anEnumKey is Map<_i3.TestEnum, String>?
+      anEnumKey: anEnumKey is Map<_ionapfu9.TestEnum, String>?
           ? anEnumKey
           : this.anEnumKey?.map(
               (
@@ -803,7 +809,7 @@ class _TypesMapImpl extends TypesMap {
               ),
             ),
       aStringifiedEnumKey:
-          aStringifiedEnumKey is Map<_i4.TestEnumStringified, String>?
+          aStringifiedEnumKey is Map<_i7liykk2.TestEnumStringified, String>?
           ? aStringifiedEnumKey
           : this.aStringifiedEnumKey?.map(
               (
@@ -814,7 +820,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      anObjectKey: anObjectKey is Map<_i5.Types, String>?
+      anObjectKey: anObjectKey is Map<_iwxwszsz.Types, String>?
           ? anObjectKey
           : this.anObjectKey?.map(
               (
@@ -825,7 +831,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aMapKey: aMapKey is Map<Map<_i5.Types, String>, String>?
+      aMapKey: aMapKey is Map<Map<_iwxwszsz.Types, String>, String>?
           ? aMapKey
           : this.aMapKey?.map(
               (
@@ -844,7 +850,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aListKey: aListKey is Map<List<_i5.Types>, String>?
+      aListKey: aListKey is Map<List<_iwxwszsz.Types>, String>?
           ? aListKey
           : this.aListKey?.map(
               (
@@ -921,7 +927,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aByteDataValue: aByteDataValue is Map<String, _i2.ByteData>?
+      aByteDataValue: aByteDataValue is Map<String, _idt.ByteData>?
           ? aByteDataValue
           : this.aByteDataValue?.map(
               (
@@ -943,7 +949,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      aUuidValue: aUuidValue is Map<String, _i1.UuidValue>?
+      aUuidValue: aUuidValue is Map<String, _is.UuidValue>?
           ? aUuidValue
           : this.aUuidValue?.map(
               (
@@ -976,7 +982,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      anEnumValue: anEnumValue is Map<String, _i3.TestEnum>?
+      anEnumValue: anEnumValue is Map<String, _ionapfu9.TestEnum>?
           ? anEnumValue
           : this.anEnumValue?.map(
               (
@@ -988,7 +994,7 @@ class _TypesMapImpl extends TypesMap {
               ),
             ),
       aStringifiedEnumValue:
-          aStringifiedEnumValue is Map<String, _i4.TestEnumStringified>?
+          aStringifiedEnumValue is Map<String, _i7liykk2.TestEnumStringified>?
           ? aStringifiedEnumValue
           : this.aStringifiedEnumValue?.map(
               (
@@ -999,7 +1005,7 @@ class _TypesMapImpl extends TypesMap {
                 value0,
               ),
             ),
-      anObjectValue: anObjectValue is Map<String, _i5.Types>?
+      anObjectValue: anObjectValue is Map<String, _iwxwszsz.Types>?
           ? anObjectValue
           : this.anObjectValue?.map(
               (
@@ -1010,7 +1016,7 @@ class _TypesMapImpl extends TypesMap {
                 value0.copyWith(),
               ),
             ),
-      aMapValue: aMapValue is Map<String, Map<String, _i5.Types>>?
+      aMapValue: aMapValue is Map<String, Map<String, _iwxwszsz.Types>>?
           ? aMapValue
           : this.aMapValue?.map(
               (
@@ -1029,7 +1035,7 @@ class _TypesMapImpl extends TypesMap {
                 ),
               ),
             ),
-      aListValue: aListValue is Map<String, List<_i5.Types>>?
+      aListValue: aListValue is Map<String, List<_iwxwszsz.Types>>?
           ? aListValue
           : this.aListValue?.map(
               (

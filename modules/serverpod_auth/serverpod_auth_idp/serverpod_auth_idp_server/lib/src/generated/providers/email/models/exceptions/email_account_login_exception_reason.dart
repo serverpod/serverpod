@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// The reason for why the authentication via email credentials was rejected.
-enum EmailAccountLoginExceptionReason implements _i1.SerializableModel {
+enum EmailAccountLoginExceptionReason implements _is.SerializableModel {
   /// The credentials are either wrong or the email address is not known.
   invalidCredentials,
 

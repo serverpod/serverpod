@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// The reason for why the password reset request was rejected.
-enum EmailAccountPasswordResetExceptionReason implements _i1.SerializableModel {
+enum EmailAccountPasswordResetExceptionReason implements _is.SerializableModel {
   /// Exception to be thrown when attempting to complete a valid password reset
   /// request that has already expired.
   expired,
