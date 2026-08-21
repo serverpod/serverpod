@@ -12,8 +12,8 @@ environment:
   sdk: '^3.10.3'
 
 dependencies:
-  serverpod_client: 4.0.0-beta.3
-  serverpod_database: 4.0.0-beta.3
+  serverpod_client: 4.0.0-beta.4
+  serverpod_database: 4.0.0-beta.4
   serverpod_test_shared_module_shared:
     path: ../serverpod_test_shared_module_shared
 
