@@ -13,6 +13,10 @@ Serves all files under the prefix. Automatic content-type detection, ETag, and L
 
 ## Cache control
 
+Unless `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` is set, caching is left to
+the browser. An explicit `cacheControlFactory` takes precedence over the
+environment variable.
+
 ```dart
 pod.webServer.addRoute(
   StaticRoute.directory(Directory('web/static'),

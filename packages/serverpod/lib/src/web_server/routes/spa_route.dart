@@ -55,7 +55,10 @@ class SpaRoute extends Route {
     subRouter.use(
       '/',
       FallbackMiddleware(
-        fallback: StaticRoute.file(fallback),
+        fallback: StaticRoute.file(
+          fallback,
+          cacheControlFactory: cacheControlFactory,
+        ),
         on: (response) => response.statusCode == 404,
       ).call,
     );
@@ -63,7 +66,7 @@ class SpaRoute extends Route {
     StaticRoute.directory(
       directory,
       cacheBustingConfig: cacheBustingConfig,
-      cacheControlFactory: cacheControlFactory ?? (_, _) => null,
+      cacheControlFactory: cacheControlFactory,
     ).injectIn(subRouter);
 
     router.attach('/', subRouter);
