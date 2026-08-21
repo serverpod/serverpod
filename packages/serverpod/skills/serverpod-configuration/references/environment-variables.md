@@ -19,7 +19,7 @@ Reference for the [Serverpod Configuration](../SKILL.md) skill. Environment vari
 | Web | `SERVERPOD_WEB_SERVER_PORT` | webServer.port |
 | | `SERVERPOD_WEB_SERVER_PUBLIC_HOST`, `_PORT`, `_SCHEME` | webServer.* |
 | | `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` | StaticRoute Cache-Control when no Dart factory is set |
-| | `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` | SpaRoute Cache-Control when no Dart factory is set |
+| | `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` | SpaRoute asset Cache-Control when no Dart factory is set (never the fallback) |
 | | `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` | FlutterRoute Cache-Control when no Dart factory is set |
 | Database | `SERVERPOD_DATABASE_DIALECT` | database.dialect (postgres\|sqlite) |
 | | `SERVERPOD_DATABASE_HOST` | database.host |

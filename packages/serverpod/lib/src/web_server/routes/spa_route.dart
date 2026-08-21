@@ -23,12 +23,16 @@ const _spaCacheControlEnvironmentVariable =
 ///
 /// ## About caching
 ///
-/// Unless `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` is set, all files are served
-/// without a `Cache-Control` header, leaving caching behavior to client side
-/// heuristics. Both the files in [directory] and the [fallback] file use the
-/// same headers, so set the environment variable only when the app shell can
-/// safely be cached, for example when the SPA build embeds content hashes in
-/// its asset URLs and the `max-age` is short enough for deploys to roll out.
+/// The [fallback] file is always served without a `Cache-Control` header when
+/// it answers a client side route, leaving caching behavior to client side
+/// heuristics. Caching the app shell would serve a stale application after a
+/// deploy, so neither [cacheControlFactory] nor the environment variable below
+/// applies to it.
+///
+/// The files in [directory] are served without a `Cache-Control` header as
+/// well, unless `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` is set. Set it when
+/// the SPA build embeds content hashes in its asset URLs, so that assets can
+/// safely be cached for a long time.
 ///
 /// The `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable used by
 /// [StaticRoute] does not apply to this route.
@@ -39,11 +43,12 @@ class SpaRoute extends Route {
   /// The fallback file (typically [directory]/index.html)
   final File fallback;
 
-  /// Cache control factory for the static files and the [fallback] file.
+  /// Cache control factory for the files in [directory].
   ///
   /// Defaults to the value of `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL`, or to
   /// leaving caching behavior to client side heuristics when the environment
-  /// variable is not set.
+  /// variable is not set. It never applies to the [fallback] file, which is
+  /// always served without a `Cache-Control` header.
   final CacheControlFactory cacheControlFactory;
 
   /// Cache busting configuration for static files
@@ -55,8 +60,10 @@ class SpaRoute extends Route {
   /// files. The [fallback] parameter is the file served when requested files
   /// don't exist, enabling client-side routing.
   ///
-  /// Cache behavior can be customized using [cacheControlFactory] for static
-  /// asset headers and [cacheBustingConfig] for cache busting support.
+  /// Cache behavior can be customized using [cacheControlFactory] for the
+  /// headers of the files in [directory] and [cacheBustingConfig] for cache
+  /// busting support. The [fallback] file is always served without a
+  /// `Cache-Control` header.
   ///
   /// An explicit [cacheControlFactory] takes precedence over the value of the
   /// `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` environment variable.
@@ -86,7 +93,7 @@ class SpaRoute extends Route {
       FallbackMiddleware(
         fallback: StaticRoute.file(
           fallback,
-          cacheControlFactory: cacheControlFactory,
+          cacheControlFactory: noCacheControl,
         ),
         on: (response) => response.statusCode == 404,
       ).call,

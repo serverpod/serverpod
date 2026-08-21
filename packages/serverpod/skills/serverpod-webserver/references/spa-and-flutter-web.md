@@ -21,9 +21,10 @@ Serves static files when they exist; falls back to index.html for unmatched path
 
 ### Default caching
 
-- **All files, including the fallback**: served without a `Cache-Control` header, leaving caching to the browser.
+- **The fallback file answering a client side route**: always served without a `Cache-Control` header, so a deploy never leaves a stale app shell cached.
+- **All other files**: served without a `Cache-Control` header, leaving caching to the browser.
 
-Set `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` to serve every file, including the app shell, with a given header, or pass `cacheControlFactory` to take precedence over it. `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` does not apply to `SpaRoute`.
+Set `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` to serve the files in the directory with a given header, or pass `cacheControlFactory` to take precedence over it. Neither applies to the fallback file. `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` does not apply to `SpaRoute`.
 
 For custom fallback logic, use `FallbackMiddleware` directly:
 

@@ -252,7 +252,7 @@ void main() {
   const spaFallbackTestName =
       'Given a SpaRoute without a Dart factory and a SPA cache control environment variable, '
       'when a client side route is requested, '
-      'then the environment cache control is applied.';
+      'then no cache control is applied.';
   test(spaFallbackTestName, () async {
     if (await _rerunWithCacheControlEnvironment(
       testName: spaFallbackTestName,
@@ -271,8 +271,7 @@ void main() {
     final response = await server.get('/client/side/route');
 
     expect(response.statusCode, 200);
-    expect(response.headers['cache-control'], contains('public'));
-    expect(response.headers['cache-control'], contains('max-age=120'));
+    expect(response.headers['cache-control'], isNull);
   });
 
   const spaDartFactoryTestName =
@@ -387,6 +386,30 @@ void main() {
       await server.start();
 
       final response = await server.get('/test.txt');
+
+      expect(response.statusCode, 200);
+      expect(response.headers['cache-control'], isNull);
+    },
+  );
+
+  test(
+    'Given a SpaRoute with a Dart factory and no cache control environment variable, '
+    'when a client side route is requested, '
+    'then no cache control is applied.',
+    () async {
+      final server = await _createFileServer();
+      server.pod.webServer.addRoute(
+        SpaRoute(
+          server.directory,
+          fallback: server.file('index.html'),
+          cacheControlFactory: StaticRoute.publicImmutable(
+            maxAge: const Duration(days: 365),
+          ),
+        ),
+      );
+      await server.start();
+
+      final response = await server.get('/client/side/route');
 
       expect(response.statusCode, 200);
       expect(response.headers['cache-control'], isNull);
