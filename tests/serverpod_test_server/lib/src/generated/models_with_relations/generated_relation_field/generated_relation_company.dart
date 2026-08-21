@@ -17,6 +17,7 @@ import '../../models_with_relations/generated_relation_field/generated_relation_
 import '../../models_with_relations/generated_relation_field/generated_relation_employee.dart'
     as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class GeneratedRelationCompany
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -108,7 +109,7 @@ abstract class GeneratedRelationCompany
     _i2.GeneratedRelationOfficeInclude? office,
     _i3.GeneratedRelationEmployeeIncludeList? employees,
   }) {
-    return GeneratedRelationCompanyInclude._(
+    return GeneratedRelationCompanyInclude.internal_(
       office: office,
       employees: employees,
     );
@@ -122,7 +123,7 @@ abstract class GeneratedRelationCompany
     _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
     GeneratedRelationCompanyInclude? include,
   }) {
-    return GeneratedRelationCompanyIncludeList._(
+    return GeneratedRelationCompanyIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -272,9 +273,11 @@ class GeneratedRelationCompanyTable extends _i1.Table<int?> {
 }
 
 class GeneratedRelationCompanyInclude extends _i1.IncludeObject {
-  GeneratedRelationCompanyInclude._({
+  @_i5.internal
+  GeneratedRelationCompanyInclude.internal_({
     _i2.GeneratedRelationOfficeInclude? office,
     _i3.GeneratedRelationEmployeeIncludeList? employees,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _office = office;
     _employees = employees;
@@ -283,6 +286,8 @@ class GeneratedRelationCompanyInclude extends _i1.IncludeObject {
   _i2.GeneratedRelationOfficeInclude? _office;
 
   _i3.GeneratedRelationEmployeeIncludeList? _employees;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -295,16 +300,20 @@ class GeneratedRelationCompanyInclude extends _i1.IncludeObject {
 }
 
 class GeneratedRelationCompanyIncludeList extends _i1.IncludeList {
-  GeneratedRelationCompanyIncludeList._({
+  @_i5.internal
+  GeneratedRelationCompanyIncludeList.internal_({
     _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationCompany.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

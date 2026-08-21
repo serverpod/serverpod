@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UuidDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -134,7 +135,7 @@ abstract class UuidDefault
   }
 
   static UuidDefaultInclude include() {
-    return UuidDefaultInclude._();
+    return UuidDefaultInclude.internal_();
   }
 
   static UuidDefaultIncludeList includeList({
@@ -145,7 +146,7 @@ abstract class UuidDefault
     _i1.OrderByListBuilder<UuidDefaultTable>? orderByList,
     UuidDefaultInclude? include,
   }) {
-    return UuidDefaultIncludeList._(
+    return UuidDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -300,7 +301,10 @@ class UuidDefaultTable extends _i1.Table<int?> {
 }
 
 class UuidDefaultInclude extends _i1.IncludeObject {
-  UuidDefaultInclude._();
+  @_i2.internal
+  UuidDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -310,16 +314,20 @@ class UuidDefaultInclude extends _i1.IncludeObject {
 }
 
 class UuidDefaultIncludeList extends _i1.IncludeList {
-  UuidDefaultIncludeList._({
+  @_i2.internal
+  UuidDefaultIncludeList.internal_({
     _i1.WhereExpressionBuilder<UuidDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefault.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

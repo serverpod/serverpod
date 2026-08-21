@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../changed_id_type/self.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ChangedIdTypeSelf
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -149,7 +150,7 @@ abstract class ChangedIdTypeSelf
     _i2.ChangedIdTypeSelfInclude? parent,
     _i2.ChangedIdTypeSelfIncludeList? children,
   }) {
-    return ChangedIdTypeSelfInclude._(
+    return ChangedIdTypeSelfInclude.internal_(
       previous: previous,
       next: next,
       parent: parent,
@@ -165,7 +166,7 @@ abstract class ChangedIdTypeSelf
     _i1.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
   }) {
-    return ChangedIdTypeSelfIncludeList._(
+    return ChangedIdTypeSelfIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -394,11 +395,13 @@ class ChangedIdTypeSelfTable extends _i1.Table<_i1.UuidValue?> {
 }
 
 class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
-  ChangedIdTypeSelfInclude._({
+  @_i4.internal
+  ChangedIdTypeSelfInclude.internal_({
     _i2.ChangedIdTypeSelfInclude? previous,
     _i2.ChangedIdTypeSelfInclude? next,
     _i2.ChangedIdTypeSelfInclude? parent,
     _i2.ChangedIdTypeSelfIncludeList? children,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -414,6 +417,8 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
 
   _i2.ChangedIdTypeSelfIncludeList? _children;
 
+  final List<_i1.Column>? selectedColumns;
+
   @override
   Map<String, _i1.Include?> get includes => {
     'previous': _previous,
@@ -427,16 +432,20 @@ class ChangedIdTypeSelfInclude extends _i1.IncludeObject {
 }
 
 class ChangedIdTypeSelfIncludeList extends _i1.IncludeList {
-  ChangedIdTypeSelfIncludeList._({
+  @_i4.internal
+  ChangedIdTypeSelfIncludeList.internal_({
     _i1.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChangedIdTypeSelf.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

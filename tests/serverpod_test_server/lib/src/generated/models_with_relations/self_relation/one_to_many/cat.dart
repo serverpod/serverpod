@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Cat._({
@@ -107,7 +108,7 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.CatInclude? mother,
     _i2.CatIncludeList? kittens,
   }) {
-    return CatInclude._(
+    return CatInclude.internal_(
       mother: mother,
       kittens: kittens,
     );
@@ -121,7 +122,7 @@ abstract class Cat implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
   }) {
-    return CatIncludeList._(
+    return CatIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -281,9 +282,11 @@ class CatTable extends _i1.Table<int?> {
 }
 
 class CatInclude extends _i1.IncludeObject {
-  CatInclude._({
+  @_i4.internal
+  CatInclude.internal_({
     _i2.CatInclude? mother,
     _i2.CatIncludeList? kittens,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _mother = mother;
     _kittens = kittens;
@@ -292,6 +295,8 @@ class CatInclude extends _i1.IncludeObject {
   _i2.CatInclude? _mother;
 
   _i2.CatIncludeList? _kittens;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -304,16 +309,20 @@ class CatInclude extends _i1.IncludeObject {
 }
 
 class CatIncludeList extends _i1.IncludeList {
-  CatIncludeList._({
+  @_i4.internal
+  CatIncludeList.internal_({
     _i1.WhereExpressionBuilder<CatTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Cat.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

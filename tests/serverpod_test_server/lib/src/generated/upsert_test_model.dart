@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UpsertTestModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -85,7 +86,7 @@ abstract class UpsertTestModel
   }
 
   static UpsertTestModelInclude include() {
-    return UpsertTestModelInclude._();
+    return UpsertTestModelInclude.internal_();
   }
 
   static UpsertTestModelIncludeList includeList({
@@ -96,7 +97,7 @@ abstract class UpsertTestModel
     _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
   }) {
-    return UpsertTestModelIncludeList._(
+    return UpsertTestModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -201,7 +202,10 @@ class UpsertTestModelTable extends _i1.Table<int?> {
 }
 
 class UpsertTestModelInclude extends _i1.IncludeObject {
-  UpsertTestModelInclude._();
+  @_i2.internal
+  UpsertTestModelInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -211,16 +215,20 @@ class UpsertTestModelInclude extends _i1.IncludeObject {
 }
 
 class UpsertTestModelIncludeList extends _i1.IncludeList {
-  UpsertTestModelIncludeList._({
+  @_i2.internal
+  UpsertTestModelIncludeList.internal_({
     _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UpsertTestModel.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

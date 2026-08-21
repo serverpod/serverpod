@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class TownInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class TownInt
   }
 
   static TownIntInclude include({_i2.CitizenIntInclude? mayor}) {
-    return TownIntInclude._(mayor: mayor);
+    return TownIntInclude.internal_(mayor: mayor);
   }
 
   static TownIntIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class TownInt
     _i1.OrderByListBuilder<TownIntTable>? orderByList,
     TownIntInclude? include,
   }) {
-    return TownIntIncludeList._(
+    return TownIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,11 +219,17 @@ class TownIntTable extends _i1.Table<int?> {
 }
 
 class TownIntInclude extends _i1.IncludeObject {
-  TownIntInclude._({_i2.CitizenIntInclude? mayor}) {
+  @_i4.internal
+  TownIntInclude.internal_({
+    _i2.CitizenIntInclude? mayor,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _mayor = mayor;
   }
 
   _i2.CitizenIntInclude? _mayor;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'mayor': _mayor};
@@ -232,16 +239,20 @@ class TownIntInclude extends _i1.IncludeObject {
 }
 
 class TownIntIncludeList extends _i1.IncludeList {
-  TownIntIncludeList._({
+  @_i4.internal
+  TownIntIncludeList.internal_({
     _i1.WhereExpressionBuilder<TownIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(TownInt.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

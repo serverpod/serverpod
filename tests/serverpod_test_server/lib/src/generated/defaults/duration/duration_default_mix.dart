@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DurationDefaultMix
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -130,7 +131,7 @@ abstract class DurationDefaultMix
   }
 
   static DurationDefaultMixInclude include() {
-    return DurationDefaultMixInclude._();
+    return DurationDefaultMixInclude.internal_();
   }
 
   static DurationDefaultMixIncludeList includeList({
@@ -141,7 +142,7 @@ abstract class DurationDefaultMix
     _i1.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     DurationDefaultMixInclude? include,
   }) {
-    return DurationDefaultMixIncludeList._(
+    return DurationDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -262,7 +263,12 @@ class DurationDefaultMixTable extends _i1.Table<int?> {
 }
 
 class DurationDefaultMixInclude extends _i1.IncludeObject {
-  DurationDefaultMixInclude._();
+  @_i2.internal
+  DurationDefaultMixInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -272,16 +278,20 @@ class DurationDefaultMixInclude extends _i1.IncludeObject {
 }
 
 class DurationDefaultMixIncludeList extends _i1.IncludeList {
-  DurationDefaultMixIncludeList._({
+  @_i2.internal
+  DurationDefaultMixIncludeList.internal_({
     _i1.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultMix.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

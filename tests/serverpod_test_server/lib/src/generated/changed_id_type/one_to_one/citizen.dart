@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/address.dart' as _i2;
 import '../../changed_id_type/one_to_one/company.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class CitizenInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -135,7 +136,7 @@ abstract class CitizenInt
     _i3.CompanyUuidInclude? company,
     _i3.CompanyUuidInclude? oldCompany,
   }) {
-    return CitizenIntInclude._(
+    return CitizenIntInclude.internal_(
       address: address,
       company: company,
       oldCompany: oldCompany,
@@ -150,7 +151,7 @@ abstract class CitizenInt
     _i1.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
   }) {
-    return CitizenIntIncludeList._(
+    return CitizenIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -333,10 +334,12 @@ class CitizenIntTable extends _i1.Table<int?> {
 }
 
 class CitizenIntInclude extends _i1.IncludeObject {
-  CitizenIntInclude._({
+  @_i5.internal
+  CitizenIntInclude.internal_({
     _i2.AddressUuidInclude? address,
     _i3.CompanyUuidInclude? company,
     _i3.CompanyUuidInclude? oldCompany,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _address = address;
     _company = company;
@@ -348,6 +351,8 @@ class CitizenIntInclude extends _i1.IncludeObject {
   _i3.CompanyUuidInclude? _company;
 
   _i3.CompanyUuidInclude? _oldCompany;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -361,16 +366,20 @@ class CitizenIntInclude extends _i1.IncludeObject {
 }
 
 class CitizenIntIncludeList extends _i1.IncludeList {
-  CitizenIntIncludeList._({
+  @_i5.internal
+  CitizenIntIncludeList.internal_({
     _i1.WhereExpressionBuilder<CitizenIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(CitizenInt.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UniqueDataWithNonPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -87,7 +88,7 @@ abstract class UniqueDataWithNonPersist
   }
 
   static UniqueDataWithNonPersistInclude include() {
-    return UniqueDataWithNonPersistInclude._();
+    return UniqueDataWithNonPersistInclude.internal_();
   }
 
   static UniqueDataWithNonPersistIncludeList includeList({
@@ -98,7 +99,7 @@ abstract class UniqueDataWithNonPersist
     _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
   }) {
-    return UniqueDataWithNonPersistIncludeList._(
+    return UniqueDataWithNonPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +193,12 @@ class UniqueDataWithNonPersistTable extends _i1.Table<int?> {
 }
 
 class UniqueDataWithNonPersistInclude extends _i1.IncludeObject {
-  UniqueDataWithNonPersistInclude._();
+  @_i2.internal
+  UniqueDataWithNonPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -202,16 +208,20 @@ class UniqueDataWithNonPersistInclude extends _i1.IncludeObject {
 }
 
 class UniqueDataWithNonPersistIncludeList extends _i1.IncludeList {
-  UniqueDataWithNonPersistIncludeList._({
+  @_i2.internal
+  UniqueDataWithNonPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UniqueDataWithNonPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

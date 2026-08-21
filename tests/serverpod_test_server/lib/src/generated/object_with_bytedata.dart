@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'dart:typed_data' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 abstract class ObjectWithByteData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -72,7 +73,7 @@ abstract class ObjectWithByteData
   }
 
   static ObjectWithByteDataInclude include() {
-    return ObjectWithByteDataInclude._();
+    return ObjectWithByteDataInclude.internal_();
   }
 
   static ObjectWithByteDataIncludeList includeList({
@@ -83,7 +84,7 @@ abstract class ObjectWithByteData
     _i1.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
   }) {
-    return ObjectWithByteDataIncludeList._(
+    return ObjectWithByteDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -158,7 +159,12 @@ class ObjectWithByteDataTable extends _i1.Table<int?> {
 }
 
 class ObjectWithByteDataInclude extends _i1.IncludeObject {
-  ObjectWithByteDataInclude._();
+  @_i3.internal
+  ObjectWithByteDataInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -168,16 +174,20 @@ class ObjectWithByteDataInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithByteDataIncludeList extends _i1.IncludeList {
-  ObjectWithByteDataIncludeList._({
+  @_i3.internal
+  ObjectWithByteDataIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithByteData.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithSparseVector
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -109,7 +110,7 @@ abstract class ObjectWithSparseVector
   }
 
   static ObjectWithSparseVectorInclude include() {
-    return ObjectWithSparseVectorInclude._();
+    return ObjectWithSparseVectorInclude.internal_();
   }
 
   static ObjectWithSparseVectorIncludeList includeList({
@@ -120,7 +121,7 @@ abstract class ObjectWithSparseVector
     _i1.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     ObjectWithSparseVectorInclude? include,
   }) {
-    return ObjectWithSparseVectorIncludeList._(
+    return ObjectWithSparseVectorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -258,7 +259,12 @@ class ObjectWithSparseVectorTable extends _i1.Table<int?> {
 }
 
 class ObjectWithSparseVectorInclude extends _i1.IncludeObject {
-  ObjectWithSparseVectorInclude._();
+  @_i2.internal
+  ObjectWithSparseVectorInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -268,16 +274,20 @@ class ObjectWithSparseVectorInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithSparseVectorIncludeList extends _i1.IncludeList {
-  ObjectWithSparseVectorIncludeList._({
+  @_i2.internal
+  ObjectWithSparseVectorIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSparseVector.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

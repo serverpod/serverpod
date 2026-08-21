@@ -52,6 +52,7 @@ class ModelParser {
             required List<String>? classDocumentation,
           }) {
             var indexes = _parseIndexes(documentContents, fields);
+            var projections = _parseProjections(documentContents);
 
             return ModelClassDefinition(
               className: className,
@@ -66,6 +67,7 @@ class ModelParser {
               fileName: outFileName,
               fields: fields,
               indexes: indexes,
+              projections: projections,
               subDirParts: protocolSource.subDirPathParts,
               documentation: classDocumentation,
               serverOnly: serverOnly,
@@ -676,6 +678,77 @@ class ModelParser {
     if (parent is String) return parent;
 
     return null;
+  }
+
+  static List<SerializableModelProjectionDefinition> _parseProjections(
+    YamlMap documentContents,
+  ) {
+    var projectionsNode = documentContents.nodes[Keyword.projections];
+    if (projectionsNode is! YamlMap) return [];
+
+    var explicitProjections = projectionsNode.nodes.entries
+        .map((node) {
+          var keyScalar = node.key;
+          var nodeDocument = node.value;
+          if (keyScalar is! YamlScalar) return null;
+          if (nodeDocument is! YamlMap) return null;
+
+          var projectionName = keyScalar.value;
+          if (projectionName is! String) return null;
+
+          var selectNode = nodeDocument.nodes[Keyword.select];
+          var excludeNode = nodeDocument.nodes[Keyword.exclude];
+
+          var isExclude = false;
+          YamlList? fieldsNode;
+
+          if (selectNode is YamlList) {
+            fieldsNode = selectNode;
+          } else if (excludeNode is YamlList) {
+            fieldsNode = excludeNode;
+            isExclude = true;
+          } else {
+            return null;
+          }
+
+          var projectionFields = fieldsNode.nodes
+              .map((n) {
+                var value = n.value;
+                if (value is String) {
+                  var parts = value.split('->');
+                  if (parts.length == 2) {
+                    return ProjectionFieldDefinition(
+                      name: parts[0].trim(),
+                      projectedType: parts[1].trim(),
+                    );
+                  }
+                  return ProjectionFieldDefinition(name: value.trim());
+                } else if (value is YamlMap && value.nodes.length == 1) {
+                  var entry = value.nodes.entries.first;
+                  var key = entry.key.value;
+                  var val = entry.value.value;
+                  if (key is String && val is String) {
+                    return ProjectionFieldDefinition(
+                      name: key.trim(),
+                      projectedType: val.trim(),
+                    );
+                  }
+                }
+                return null;
+              })
+              .whereType<ProjectionFieldDefinition>()
+              .toList();
+
+          return SerializableModelProjectionDefinition(
+            name: projectionName,
+            fields: projectionFields,
+            isExclude: isExclude,
+          );
+        })
+        .whereType<SerializableModelProjectionDefinition>()
+        .toList();
+
+    return explicitProjections;
   }
 
   static List<SerializableModelIndexDefinition> _parseIndexes(

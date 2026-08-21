@@ -15,6 +15,7 @@ import 'dart:typed_data' as _i2;
 import 'test_enum.dart' as _i3;
 import 'test_enum_stringified.dart' as _i4;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i5;
+import 'package:meta/meta.dart' as _i6;
 
 abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Types._({
@@ -325,7 +326,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static TypesInclude include() {
-    return TypesInclude._();
+    return TypesInclude.internal_();
   }
 
   static TypesIncludeList includeList({
@@ -336,7 +337,7 @@ abstract class Types implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
   }) {
-    return TypesIncludeList._(
+    return TypesIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -841,7 +842,10 @@ class TypesTable extends _i1.Table<int?> {
 }
 
 class TypesInclude extends _i1.IncludeObject {
-  TypesInclude._();
+  @_i6.internal
+  TypesInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -851,16 +855,20 @@ class TypesInclude extends _i1.IncludeObject {
 }
 
 class TypesIncludeList extends _i1.IncludeList {
-  TypesIncludeList._({
+  @_i6.internal
+  TypesIncludeList.internal_({
     _i1.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Types.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

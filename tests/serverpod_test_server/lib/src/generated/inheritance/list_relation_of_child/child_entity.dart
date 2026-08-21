@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 abstract class ChildEntity extends _i1.BaseEntity
     implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
@@ -84,7 +85,7 @@ abstract class ChildEntity extends _i1.BaseEntity
   }
 
   static ChildEntityInclude include() {
-    return ChildEntityInclude._();
+    return ChildEntityInclude.internal_();
   }
 
   static ChildEntityIncludeList includeList({
@@ -95,7 +96,7 @@ abstract class ChildEntity extends _i1.BaseEntity
     _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
   }) {
-    return ChildEntityIncludeList._(
+    return ChildEntityIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -236,7 +237,10 @@ class ChildEntityTable extends _i2.Table<int?> {
 }
 
 class ChildEntityInclude extends _i2.IncludeObject {
-  ChildEntityInclude._();
+  @_i3.internal
+  ChildEntityInclude.internal_({List<_i2.Column>? this.selectedColumns}) {}
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => {};
@@ -246,16 +250,20 @@ class ChildEntityInclude extends _i2.IncludeObject {
 }
 
 class ChildEntityIncludeList extends _i2.IncludeList {
-  ChildEntityIncludeList._({
+  @_i3.internal
+  ChildEntityIncludeList.internal_({
     _i2.WhereExpressionBuilder<ChildEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i2.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChildEntity.t);
   }
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => include?.includes ?? {};

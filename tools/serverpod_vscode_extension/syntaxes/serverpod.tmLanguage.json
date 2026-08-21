@@ -54,7 +54,7 @@
       ]
     },
     "fields": {
-      "begin": "(fields|properties)(:)(\\s*$)",
+      "begin": "(fields|properties|select|exclude)(:)(\\s*$)",
       "beginCaptures": {
         "1": {
           "name": "entity.name.tag.yaml"
@@ -98,6 +98,10 @@
         {
           "name": "keyword.operator.assignment.yaml",
           "match": "="
+        },
+        {
+          "name": "keyword.operator.projection.yaml",
+          "match": "->"
         },
         {
           "name": "punctuation.separator.comma.yaml",

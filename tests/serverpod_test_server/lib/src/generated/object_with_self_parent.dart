@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithSelfParent
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -71,7 +72,7 @@ abstract class ObjectWithSelfParent
   }
 
   static ObjectWithSelfParentInclude include() {
-    return ObjectWithSelfParentInclude._();
+    return ObjectWithSelfParentInclude.internal_();
   }
 
   static ObjectWithSelfParentIncludeList includeList({
@@ -82,7 +83,7 @@ abstract class ObjectWithSelfParent
     _i1.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     ObjectWithSelfParentInclude? include,
   }) {
-    return ObjectWithSelfParentIncludeList._(
+    return ObjectWithSelfParentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -156,7 +157,12 @@ class ObjectWithSelfParentTable extends _i1.Table<int?> {
 }
 
 class ObjectWithSelfParentInclude extends _i1.IncludeObject {
-  ObjectWithSelfParentInclude._();
+  @_i2.internal
+  ObjectWithSelfParentInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -166,16 +172,20 @@ class ObjectWithSelfParentInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithSelfParentIncludeList extends _i1.IncludeList {
-  ObjectWithSelfParentIncludeList._({
+  @_i2.internal
+  ObjectWithSelfParentIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSelfParent.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

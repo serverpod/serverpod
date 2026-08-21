@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithHalfVector
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -131,7 +132,7 @@ abstract class ObjectWithHalfVector
   }
 
   static ObjectWithHalfVectorInclude include() {
-    return ObjectWithHalfVectorInclude._();
+    return ObjectWithHalfVectorInclude.internal_();
   }
 
   static ObjectWithHalfVectorIncludeList includeList({
@@ -142,7 +143,7 @@ abstract class ObjectWithHalfVector
     _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     ObjectWithHalfVectorInclude? include,
   }) {
-    return ObjectWithHalfVectorIncludeList._(
+    return ObjectWithHalfVectorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -320,7 +321,12 @@ class ObjectWithHalfVectorTable extends _i1.Table<int?> {
 }
 
 class ObjectWithHalfVectorInclude extends _i1.IncludeObject {
-  ObjectWithHalfVectorInclude._();
+  @_i2.internal
+  ObjectWithHalfVectorInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -330,16 +336,20 @@ class ObjectWithHalfVectorInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithHalfVectorIncludeList extends _i1.IncludeList {
-  ObjectWithHalfVectorIncludeList._({
+  @_i2.internal
+  ObjectWithHalfVectorIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithHalfVector.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -17,6 +17,7 @@ import '../../long_identifiers/deep_includes/person_with_long_table_name.dart'
 import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
     as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class OrganizationWithLongTableName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -114,7 +115,7 @@ abstract class OrganizationWithLongTableName
     _i2.PersonWithLongTableNameIncludeList? people,
     _i3.CityWithLongTableNameInclude? city,
   }) {
-    return OrganizationWithLongTableNameInclude._(
+    return OrganizationWithLongTableNameInclude.internal_(
       people: people,
       city: city,
     );
@@ -128,7 +129,7 @@ abstract class OrganizationWithLongTableName
     _i1.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
     OrganizationWithLongTableNameInclude? include,
   }) {
-    return OrganizationWithLongTableNameIncludeList._(
+    return OrganizationWithLongTableNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -292,9 +293,11 @@ class OrganizationWithLongTableNameTable extends _i1.Table<int?> {
 }
 
 class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
-  OrganizationWithLongTableNameInclude._({
+  @_i5.internal
+  OrganizationWithLongTableNameInclude.internal_({
     _i2.PersonWithLongTableNameIncludeList? people,
     _i3.CityWithLongTableNameInclude? city,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _people = people;
     _city = city;
@@ -303,6 +306,8 @@ class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
   _i2.PersonWithLongTableNameIncludeList? _people;
 
   _i3.CityWithLongTableNameInclude? _city;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -315,16 +320,20 @@ class OrganizationWithLongTableNameInclude extends _i1.IncludeObject {
 }
 
 class OrganizationWithLongTableNameIncludeList extends _i1.IncludeList {
-  OrganizationWithLongTableNameIncludeList._({
+  @_i5.internal
+  OrganizationWithLongTableNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(OrganizationWithLongTableName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

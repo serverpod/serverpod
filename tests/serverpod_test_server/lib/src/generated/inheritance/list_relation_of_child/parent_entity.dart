@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../inheritance/list_relation_of_child/child_entity.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ParentEntity
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -78,7 +79,7 @@ abstract class ParentEntity
   }
 
   static ParentEntityInclude include({_i2.ChildEntityIncludeList? children}) {
-    return ParentEntityInclude._(children: children);
+    return ParentEntityInclude.internal_(children: children);
   }
 
   static ParentEntityIncludeList includeList({
@@ -89,7 +90,7 @@ abstract class ParentEntity
     _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
   }) {
-    return ParentEntityIncludeList._(
+    return ParentEntityIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -193,11 +194,17 @@ class ParentEntityTable extends _i1.Table<int?> {
 }
 
 class ParentEntityInclude extends _i1.IncludeObject {
-  ParentEntityInclude._({_i2.ChildEntityIncludeList? children}) {
+  @_i4.internal
+  ParentEntityInclude.internal_({
+    _i2.ChildEntityIncludeList? children,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _children = children;
   }
 
   _i2.ChildEntityIncludeList? _children;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'children': _children};
@@ -207,16 +214,20 @@ class ParentEntityInclude extends _i1.IncludeObject {
 }
 
 class ParentEntityIncludeList extends _i1.IncludeList {
-  ParentEntityIncludeList._({
+  @_i4.internal
+  ParentEntityIncludeList.internal_({
     _i1.WhereExpressionBuilder<ParentEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ParentEntity.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

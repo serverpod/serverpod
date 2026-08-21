@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 @_i1.immutable
 abstract class ImmutableObjectWithTable
@@ -101,7 +102,7 @@ abstract class ImmutableObjectWithTable
   }
 
   static ImmutableObjectWithTableInclude include() {
-    return ImmutableObjectWithTableInclude._();
+    return ImmutableObjectWithTableInclude.internal_();
   }
 
   static ImmutableObjectWithTableIncludeList includeList({
@@ -112,7 +113,7 @@ abstract class ImmutableObjectWithTable
     _i1.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     ImmutableObjectWithTableInclude? include,
   }) {
-    return ImmutableObjectWithTableIncludeList._(
+    return ImmutableObjectWithTableIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +187,12 @@ class ImmutableObjectWithTableTable extends _i1.Table<int?> {
 }
 
 class ImmutableObjectWithTableInclude extends _i1.IncludeObject {
-  ImmutableObjectWithTableInclude._();
+  @_i2.internal
+  ImmutableObjectWithTableInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -196,16 +202,20 @@ class ImmutableObjectWithTableInclude extends _i1.IncludeObject {
 }
 
 class ImmutableObjectWithTableIncludeList extends _i1.IncludeList {
-  ImmutableObjectWithTableIncludeList._({
+  @_i2.internal
+  ImmutableObjectWithTableIncludeList.internal_({
     _i1.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ImmutableObjectWithTable.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

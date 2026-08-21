@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithUuid
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -81,7 +82,7 @@ abstract class ObjectWithUuid
   }
 
   static ObjectWithUuidInclude include() {
-    return ObjectWithUuidInclude._();
+    return ObjectWithUuidInclude.internal_();
   }
 
   static ObjectWithUuidIncludeList includeList({
@@ -92,7 +93,7 @@ abstract class ObjectWithUuid
     _i1.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
   }) {
-    return ObjectWithUuidIncludeList._(
+    return ObjectWithUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +187,10 @@ class ObjectWithUuidTable extends _i1.Table<int?> {
 }
 
 class ObjectWithUuidInclude extends _i1.IncludeObject {
-  ObjectWithUuidInclude._();
+  @_i2.internal
+  ObjectWithUuidInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -196,16 +200,20 @@ class ObjectWithUuidInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithUuidIncludeList extends _i1.IncludeList {
-  ObjectWithUuidIncludeList._({
+  @_i2.internal
+  ObjectWithUuidIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithUuid.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

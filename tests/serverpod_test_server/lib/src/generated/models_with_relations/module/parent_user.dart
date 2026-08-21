@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ParentUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -77,7 +78,7 @@ abstract class ParentUser
   }
 
   static ParentUserInclude include() {
-    return ParentUserInclude._();
+    return ParentUserInclude.internal_();
   }
 
   static ParentUserIncludeList includeList({
@@ -88,7 +89,7 @@ abstract class ParentUser
     _i1.OrderByListBuilder<ParentUserTable>? orderByList,
     ParentUserInclude? include,
   }) {
-    return ParentUserIncludeList._(
+    return ParentUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -176,7 +177,10 @@ class ParentUserTable extends _i1.Table<int?> {
 }
 
 class ParentUserInclude extends _i1.IncludeObject {
-  ParentUserInclude._();
+  @_i2.internal
+  ParentUserInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -186,16 +190,20 @@ class ParentUserInclude extends _i1.IncludeObject {
 }
 
 class ParentUserIncludeList extends _i1.IncludeList {
-  ParentUserIncludeList._({
+  @_i2.internal
+  ParentUserIncludeList.internal_({
     _i1.WhereExpressionBuilder<ParentUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ParentUser.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

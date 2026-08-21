@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
     implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
@@ -79,7 +80,7 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
   }
 
   static ChildClassExplicitColumnInclude include() {
-    return ChildClassExplicitColumnInclude._();
+    return ChildClassExplicitColumnInclude.internal_();
   }
 
   static ChildClassExplicitColumnIncludeList includeList({
@@ -90,7 +91,7 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
     _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
   }) {
-    return ChildClassExplicitColumnIncludeList._(
+    return ChildClassExplicitColumnIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,7 +184,12 @@ class ChildClassExplicitColumnTable extends _i2.Table<int?> {
 }
 
 class ChildClassExplicitColumnInclude extends _i2.IncludeObject {
-  ChildClassExplicitColumnInclude._();
+  @_i3.internal
+  ChildClassExplicitColumnInclude.internal_({
+    List<_i2.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => {};
@@ -193,16 +199,20 @@ class ChildClassExplicitColumnInclude extends _i2.IncludeObject {
 }
 
 class ChildClassExplicitColumnIncludeList extends _i2.IncludeList {
-  ChildClassExplicitColumnIncludeList._({
+  @_i3.internal
+  ChildClassExplicitColumnIncludeList.internal_({
     _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i2.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassExplicitColumn.t);
   }
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => include?.includes ?? {};

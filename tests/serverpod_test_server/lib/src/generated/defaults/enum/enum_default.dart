@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class EnumDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -120,7 +121,7 @@ abstract class EnumDefault
   }
 
   static EnumDefaultInclude include() {
-    return EnumDefaultInclude._();
+    return EnumDefaultInclude.internal_();
   }
 
   static EnumDefaultIncludeList includeList({
@@ -131,7 +132,7 @@ abstract class EnumDefault
     _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
     EnumDefaultInclude? include,
   }) {
-    return EnumDefaultIncludeList._(
+    return EnumDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -271,7 +272,10 @@ class EnumDefaultTable extends _i1.Table<int?> {
 }
 
 class EnumDefaultInclude extends _i1.IncludeObject {
-  EnumDefaultInclude._();
+  @_i4.internal
+  EnumDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -281,16 +285,20 @@ class EnumDefaultInclude extends _i1.IncludeObject {
 }
 
 class EnumDefaultIncludeList extends _i1.IncludeList {
-  EnumDefaultIncludeList._({
+  @_i4.internal
+  EnumDefaultIncludeList.internal_({
     _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefault.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

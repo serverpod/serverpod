@@ -15,6 +15,7 @@ import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
 import '../inheritance/child_with_inherited_id.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     implements _i2.TableRow<_i2.UuidValue>, _i2.ProtocolSerialization {
@@ -110,7 +111,7 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
   static ChildWithInheritedIdInclude include({
     _i3.ChildWithInheritedIdInclude? parent,
   }) {
-    return ChildWithInheritedIdInclude._(parent: parent);
+    return ChildWithInheritedIdInclude.internal_(parent: parent);
   }
 
   static ChildWithInheritedIdIncludeList includeList({
@@ -121,7 +122,7 @@ abstract class ChildWithInheritedId extends _i1.ParentWithChangedId
     _i2.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     ChildWithInheritedIdInclude? include,
   }) {
-    return ChildWithInheritedIdIncludeList._(
+    return ChildWithInheritedIdIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -276,11 +277,17 @@ class ChildWithInheritedIdTable extends _i2.Table<_i2.UuidValue> {
 }
 
 class ChildWithInheritedIdInclude extends _i2.IncludeObject {
-  ChildWithInheritedIdInclude._({_i3.ChildWithInheritedIdInclude? parent}) {
+  @_i5.internal
+  ChildWithInheritedIdInclude.internal_({
+    _i3.ChildWithInheritedIdInclude? parent,
+    List<_i2.Column>? this.selectedColumns,
+  }) {
     _parent = parent;
   }
 
   _i3.ChildWithInheritedIdInclude? _parent;
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => {'parent': _parent};
@@ -290,16 +297,20 @@ class ChildWithInheritedIdInclude extends _i2.IncludeObject {
 }
 
 class ChildWithInheritedIdIncludeList extends _i2.IncludeList {
-  ChildWithInheritedIdIncludeList._({
+  @_i5.internal
+  ChildWithInheritedIdIncludeList.internal_({
     _i2.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i2.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChildWithInheritedId.t);
   }
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => include?.includes ?? {};

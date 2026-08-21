@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DateTimeDefaultMix
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -112,7 +113,7 @@ abstract class DateTimeDefaultMix
   }
 
   static DateTimeDefaultMixInclude include() {
-    return DateTimeDefaultMixInclude._();
+    return DateTimeDefaultMixInclude.internal_();
   }
 
   static DateTimeDefaultMixIncludeList includeList({
@@ -123,7 +124,7 @@ abstract class DateTimeDefaultMix
     _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     DateTimeDefaultMixInclude? include,
   }) {
-    return DateTimeDefaultMixIncludeList._(
+    return DateTimeDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,7 +245,12 @@ class DateTimeDefaultMixTable extends _i1.Table<int?> {
 }
 
 class DateTimeDefaultMixInclude extends _i1.IncludeObject {
-  DateTimeDefaultMixInclude._();
+  @_i2.internal
+  DateTimeDefaultMixInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -254,16 +260,20 @@ class DateTimeDefaultMixInclude extends _i1.IncludeObject {
 }
 
 class DateTimeDefaultMixIncludeList extends _i1.IncludeList {
-  DateTimeDefaultMixIncludeList._({
+  @_i2.internal
+  DateTimeDefaultMixIncludeList.internal_({
     _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultMix.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

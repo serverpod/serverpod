@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class EmptyModelRelationItem
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -79,7 +80,7 @@ abstract class EmptyModelRelationItem
   }
 
   static EmptyModelRelationItemInclude include() {
-    return EmptyModelRelationItemInclude._();
+    return EmptyModelRelationItemInclude.internal_();
   }
 
   static EmptyModelRelationItemIncludeList includeList({
@@ -90,7 +91,7 @@ abstract class EmptyModelRelationItem
     _i1.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
   }) {
-    return EmptyModelRelationItemIncludeList._(
+    return EmptyModelRelationItemIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +215,12 @@ class EmptyModelRelationItemTable extends _i1.Table<int?> {
 }
 
 class EmptyModelRelationItemInclude extends _i1.IncludeObject {
-  EmptyModelRelationItemInclude._();
+  @_i2.internal
+  EmptyModelRelationItemInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -224,16 +230,20 @@ class EmptyModelRelationItemInclude extends _i1.IncludeObject {
 }
 
 class EmptyModelRelationItemIncludeList extends _i1.IncludeList {
-  EmptyModelRelationItemIncludeList._({
+  @_i2.internal
+  EmptyModelRelationItemIncludeList.internal_({
     _i1.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EmptyModelRelationItem.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

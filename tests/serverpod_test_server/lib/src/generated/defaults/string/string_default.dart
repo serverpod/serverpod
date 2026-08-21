@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class StringDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -78,7 +79,7 @@ abstract class StringDefault
   }
 
   static StringDefaultInclude include() {
-    return StringDefaultInclude._();
+    return StringDefaultInclude.internal_();
   }
 
   static StringDefaultIncludeList includeList({
@@ -89,7 +90,7 @@ abstract class StringDefault
     _i1.OrderByListBuilder<StringDefaultTable>? orderByList,
     StringDefaultInclude? include,
   }) {
-    return StringDefaultIncludeList._(
+    return StringDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -184,7 +185,10 @@ class StringDefaultTable extends _i1.Table<int?> {
 }
 
 class StringDefaultInclude extends _i1.IncludeObject {
-  StringDefaultInclude._();
+  @_i2.internal
+  StringDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -194,16 +198,20 @@ class StringDefaultInclude extends _i1.IncludeObject {
 }
 
 class StringDefaultIncludeList extends _i1.IncludeList {
-  StringDefaultIncludeList._({
+  @_i2.internal
+  StringDefaultIncludeList.internal_({
     _i1.WhereExpressionBuilder<StringDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(StringDefault.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

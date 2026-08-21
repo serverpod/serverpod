@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 /// Just some simple data.
 abstract class SimpleData
@@ -73,7 +74,7 @@ abstract class SimpleData
   }
 
   static SimpleDataInclude include() {
-    return SimpleDataInclude._();
+    return SimpleDataInclude.internal_();
   }
 
   static SimpleDataIncludeList includeList({
@@ -84,7 +85,7 @@ abstract class SimpleData
     _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
   }) {
-    return SimpleDataIncludeList._(
+    return SimpleDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -159,7 +160,10 @@ class SimpleDataTable extends _i1.Table<int?> {
 }
 
 class SimpleDataInclude extends _i1.IncludeObject {
-  SimpleDataInclude._();
+  @_i2.internal
+  SimpleDataInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -169,16 +173,20 @@ class SimpleDataInclude extends _i1.IncludeObject {
 }
 
 class SimpleDataIncludeList extends _i1.IncludeList {
-  SimpleDataIncludeList._({
+  @_i2.internal
+  SimpleDataIncludeList.internal_({
     _i1.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SimpleData.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

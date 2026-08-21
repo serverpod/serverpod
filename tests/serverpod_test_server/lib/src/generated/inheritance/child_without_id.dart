@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
     implements _i2.TableRow<_i2.UuidValue?>, _i2.ProtocolSerialization {
@@ -85,7 +86,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
   }
 
   static ChildClassWithoutIdInclude include() {
-    return ChildClassWithoutIdInclude._();
+    return ChildClassWithoutIdInclude.internal_();
   }
 
   static ChildClassWithoutIdIncludeList includeList({
@@ -96,7 +97,7 @@ abstract class ChildClassWithoutId extends _i1.ParentClassWithoutId
     _i2.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     ChildClassWithoutIdInclude? include,
   }) {
-    return ChildClassWithoutIdIncludeList._(
+    return ChildClassWithoutIdIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -203,7 +204,12 @@ class ChildClassWithoutIdTable extends _i2.Table<_i2.UuidValue?> {
 }
 
 class ChildClassWithoutIdInclude extends _i2.IncludeObject {
-  ChildClassWithoutIdInclude._();
+  @_i3.internal
+  ChildClassWithoutIdInclude.internal_({
+    List<_i2.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => {};
@@ -213,16 +219,20 @@ class ChildClassWithoutIdInclude extends _i2.IncludeObject {
 }
 
 class ChildClassWithoutIdIncludeList extends _i2.IncludeList {
-  ChildClassWithoutIdIncludeList._({
+  @_i3.internal
+  ChildClassWithoutIdIncludeList.internal_({
     _i2.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i2.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassWithoutId.t);
   }
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => include?.includes ?? {};

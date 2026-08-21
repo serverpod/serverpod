@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class BigIntDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -78,7 +79,7 @@ abstract class BigIntDefaultPersist
   }
 
   static BigIntDefaultPersistInclude include() {
-    return BigIntDefaultPersistInclude._();
+    return BigIntDefaultPersistInclude.internal_();
   }
 
   static BigIntDefaultPersistIncludeList includeList({
@@ -89,7 +90,7 @@ abstract class BigIntDefaultPersist
     _i1.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
     BigIntDefaultPersistInclude? include,
   }) {
-    return BigIntDefaultPersistIncludeList._(
+    return BigIntDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -167,7 +168,12 @@ class BigIntDefaultPersistTable extends _i1.Table<int?> {
 }
 
 class BigIntDefaultPersistInclude extends _i1.IncludeObject {
-  BigIntDefaultPersistInclude._();
+  @_i2.internal
+  BigIntDefaultPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -177,16 +183,20 @@ class BigIntDefaultPersistInclude extends _i1.IncludeObject {
 }
 
 class BigIntDefaultPersistIncludeList extends _i1.IncludeList {
-  BigIntDefaultPersistIncludeList._({
+  @_i2.internal
+  BigIntDefaultPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<BigIntDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefaultPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

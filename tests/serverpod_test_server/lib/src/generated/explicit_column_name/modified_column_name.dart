@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ModifiedColumnName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -77,7 +78,7 @@ abstract class ModifiedColumnName
   }
 
   static ModifiedColumnNameInclude include() {
-    return ModifiedColumnNameInclude._();
+    return ModifiedColumnNameInclude.internal_();
   }
 
   static ModifiedColumnNameIncludeList includeList({
@@ -88,7 +89,7 @@ abstract class ModifiedColumnName
     _i1.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     ModifiedColumnNameInclude? include,
   }) {
-    return ModifiedColumnNameIncludeList._(
+    return ModifiedColumnNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -181,7 +182,12 @@ class ModifiedColumnNameTable extends _i1.Table<int?> {
 }
 
 class ModifiedColumnNameInclude extends _i1.IncludeObject {
-  ModifiedColumnNameInclude._();
+  @_i2.internal
+  ModifiedColumnNameInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -191,16 +197,20 @@ class ModifiedColumnNameInclude extends _i1.IncludeObject {
 }
 
 class ModifiedColumnNameIncludeList extends _i1.IncludeList {
-  ModifiedColumnNameIncludeList._({
+  @_i2.internal
+  ModifiedColumnNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ModifiedColumnName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

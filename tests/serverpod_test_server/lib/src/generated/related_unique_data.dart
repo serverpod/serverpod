@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'unique_data.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class RelatedUniqueData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class RelatedUniqueData
   }
 
   static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
-    return RelatedUniqueDataInclude._(uniqueData: uniqueData);
+    return RelatedUniqueDataInclude.internal_(uniqueData: uniqueData);
   }
 
   static RelatedUniqueDataIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class RelatedUniqueData
     _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
   }) {
-    return RelatedUniqueDataIncludeList._(
+    return RelatedUniqueDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,11 +223,17 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 }
 
 class RelatedUniqueDataInclude extends _i1.IncludeObject {
-  RelatedUniqueDataInclude._({_i2.UniqueDataInclude? uniqueData}) {
+  @_i4.internal
+  RelatedUniqueDataInclude.internal_({
+    _i2.UniqueDataInclude? uniqueData,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _uniqueData = uniqueData;
   }
 
   _i2.UniqueDataInclude? _uniqueData;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
@@ -236,16 +243,20 @@ class RelatedUniqueDataInclude extends _i1.IncludeObject {
 }
 
 class RelatedUniqueDataIncludeList extends _i1.IncludeList {
-  RelatedUniqueDataIncludeList._({
+  @_i4.internal
+  RelatedUniqueDataIncludeList.internal_({
     _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(RelatedUniqueData.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

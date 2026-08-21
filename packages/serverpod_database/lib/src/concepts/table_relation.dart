@@ -113,6 +113,11 @@ class TableRelation {
     );
   }
 
+  /// The foreign field column.
+  Column get foreignColumn {
+    return _tableRelationEntries.last.foreignField;
+  }
+
   /// Create a new [TableRelation] with only one entry for the last table
   /// relation.
   TableRelation get lastRelation {

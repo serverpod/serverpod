@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 /// Just some simple data.
 abstract class SimpleDateTime
@@ -73,7 +74,7 @@ abstract class SimpleDateTime
   }
 
   static SimpleDateTimeInclude include() {
-    return SimpleDateTimeInclude._();
+    return SimpleDateTimeInclude.internal_();
   }
 
   static SimpleDateTimeIncludeList includeList({
@@ -84,7 +85,7 @@ abstract class SimpleDateTime
     _i1.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
   }) {
-    return SimpleDateTimeIncludeList._(
+    return SimpleDateTimeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -159,7 +160,10 @@ class SimpleDateTimeTable extends _i1.Table<int?> {
 }
 
 class SimpleDateTimeInclude extends _i1.IncludeObject {
-  SimpleDateTimeInclude._();
+  @_i2.internal
+  SimpleDateTimeInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -169,16 +173,20 @@ class SimpleDateTimeInclude extends _i1.IncludeObject {
 }
 
 class SimpleDateTimeIncludeList extends _i1.IncludeList {
-  SimpleDateTimeIncludeList._({
+  @_i2.internal
+  SimpleDateTimeIncludeList.internal_({
     _i1.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SimpleDateTime.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

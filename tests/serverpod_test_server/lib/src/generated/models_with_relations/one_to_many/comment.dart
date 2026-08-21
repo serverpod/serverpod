@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Comment
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -90,7 +91,7 @@ abstract class Comment
   }
 
   static CommentInclude include({_i2.OrderInclude? order}) {
-    return CommentInclude._(order: order);
+    return CommentInclude.internal_(order: order);
   }
 
   static CommentIncludeList includeList({
@@ -101,7 +102,7 @@ abstract class Comment
     _i1.OrderByListBuilder<CommentTable>? orderByList,
     CommentInclude? include,
   }) {
-    return CommentIncludeList._(
+    return CommentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,11 +217,17 @@ class CommentTable extends _i1.Table<int?> {
 }
 
 class CommentInclude extends _i1.IncludeObject {
-  CommentInclude._({_i2.OrderInclude? order}) {
+  @_i4.internal
+  CommentInclude.internal_({
+    _i2.OrderInclude? order,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _order = order;
   }
 
   _i2.OrderInclude? _order;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'order': _order};
@@ -230,16 +237,20 @@ class CommentInclude extends _i1.IncludeObject {
 }
 
 class CommentIncludeList extends _i1.IncludeList {
-  CommentIncludeList._({
+  @_i4.internal
+  CommentIncludeList.internal_({
     _i1.WhereExpressionBuilder<CommentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Comment.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

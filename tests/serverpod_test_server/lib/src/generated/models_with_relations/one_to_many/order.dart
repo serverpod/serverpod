@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/customer.dart' as _i2;
 import '../../models_with_relations/one_to_many/comment.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Order._({
@@ -109,7 +110,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.CustomerInclude? customer,
     _i3.CommentIncludeList? comments,
   }) {
-    return OrderInclude._(
+    return OrderInclude.internal_(
       customer: customer,
       comments: comments,
     );
@@ -123,7 +124,7 @@ abstract class Order implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
   }) {
-    return OrderIncludeList._(
+    return OrderIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -285,9 +286,11 @@ class OrderTable extends _i1.Table<int?> {
 }
 
 class OrderInclude extends _i1.IncludeObject {
-  OrderInclude._({
+  @_i5.internal
+  OrderInclude.internal_({
     _i2.CustomerInclude? customer,
     _i3.CommentIncludeList? comments,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _customer = customer;
     _comments = comments;
@@ -296,6 +299,8 @@ class OrderInclude extends _i1.IncludeObject {
   _i2.CustomerInclude? _customer;
 
   _i3.CommentIncludeList? _comments;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -308,16 +313,20 @@ class OrderInclude extends _i1.IncludeObject {
 }
 
 class OrderIncludeList extends _i1.IncludeList {
-  OrderIncludeList._({
+  @_i5.internal
+  OrderIncludeList.internal_({
     _i1.WhereExpressionBuilder<OrderTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Order.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

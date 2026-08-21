@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Arena._({
@@ -81,7 +82,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static ArenaInclude include({_i2.TeamInclude? team}) {
-    return ArenaInclude._(team: team);
+    return ArenaInclude.internal_(team: team);
   }
 
   static ArenaIncludeList includeList({
@@ -92,7 +93,7 @@ abstract class Arena implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
   }) {
-    return ArenaIncludeList._(
+    return ArenaIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -191,11 +192,17 @@ class ArenaTable extends _i1.Table<int?> {
 }
 
 class ArenaInclude extends _i1.IncludeObject {
-  ArenaInclude._({_i2.TeamInclude? team}) {
+  @_i4.internal
+  ArenaInclude.internal_({
+    _i2.TeamInclude? team,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _i2.TeamInclude? _team;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -205,16 +212,20 @@ class ArenaInclude extends _i1.IncludeObject {
 }
 
 class ArenaIncludeList extends _i1.IncludeList {
-  ArenaIncludeList._({
+  @_i4.internal
+  ArenaIncludeList.internal_({
     _i1.WhereExpressionBuilder<ArenaTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Arena.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

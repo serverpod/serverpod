@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DeferrableRelationInitiallyDeferred
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -71,7 +72,7 @@ abstract class DeferrableRelationInitiallyDeferred
   }
 
   static DeferrableRelationInitiallyDeferredInclude include() {
-    return DeferrableRelationInitiallyDeferredInclude._();
+    return DeferrableRelationInitiallyDeferredInclude.internal_();
   }
 
   static DeferrableRelationInitiallyDeferredIncludeList includeList({
@@ -83,7 +84,7 @@ abstract class DeferrableRelationInitiallyDeferred
     orderByList,
     DeferrableRelationInitiallyDeferredInclude? include,
   }) {
-    return DeferrableRelationInitiallyDeferredIncludeList._(
+    return DeferrableRelationInitiallyDeferredIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -158,7 +159,12 @@ class DeferrableRelationInitiallyDeferredTable extends _i1.Table<int?> {
 }
 
 class DeferrableRelationInitiallyDeferredInclude extends _i1.IncludeObject {
-  DeferrableRelationInitiallyDeferredInclude._();
+  @_i2.internal
+  DeferrableRelationInitiallyDeferredInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -168,16 +174,20 @@ class DeferrableRelationInitiallyDeferredInclude extends _i1.IncludeObject {
 }
 
 class DeferrableRelationInitiallyDeferredIncludeList extends _i1.IncludeList {
-  DeferrableRelationInitiallyDeferredIncludeList._({
+  @_i2.internal
+  DeferrableRelationInitiallyDeferredIncludeList.internal_({
     _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

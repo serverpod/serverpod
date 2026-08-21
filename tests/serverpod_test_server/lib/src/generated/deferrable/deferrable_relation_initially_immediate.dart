@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DeferrableRelationInitiallyImmediate
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -71,7 +72,7 @@ abstract class DeferrableRelationInitiallyImmediate
   }
 
   static DeferrableRelationInitiallyImmediateInclude include() {
-    return DeferrableRelationInitiallyImmediateInclude._();
+    return DeferrableRelationInitiallyImmediateInclude.internal_();
   }
 
   static DeferrableRelationInitiallyImmediateIncludeList includeList({
@@ -84,7 +85,7 @@ abstract class DeferrableRelationInitiallyImmediate
     orderByList,
     DeferrableRelationInitiallyImmediateInclude? include,
   }) {
-    return DeferrableRelationInitiallyImmediateIncludeList._(
+    return DeferrableRelationInitiallyImmediateIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -159,7 +160,12 @@ class DeferrableRelationInitiallyImmediateTable extends _i1.Table<int?> {
 }
 
 class DeferrableRelationInitiallyImmediateInclude extends _i1.IncludeObject {
-  DeferrableRelationInitiallyImmediateInclude._();
+  @_i2.internal
+  DeferrableRelationInitiallyImmediateInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -169,7 +175,8 @@ class DeferrableRelationInitiallyImmediateInclude extends _i1.IncludeObject {
 }
 
 class DeferrableRelationInitiallyImmediateIncludeList extends _i1.IncludeList {
-  DeferrableRelationInitiallyImmediateIncludeList._({
+  @_i2.internal
+  DeferrableRelationInitiallyImmediateIncludeList.internal_({
     _i1.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
     where,
     super.limit,
@@ -177,9 +184,12 @@ class DeferrableRelationInitiallyImmediateIncludeList extends _i1.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationInitiallyImmediate.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

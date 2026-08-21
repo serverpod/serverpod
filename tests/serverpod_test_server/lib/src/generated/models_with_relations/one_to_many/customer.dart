@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Customer
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -86,7 +87,7 @@ abstract class Customer
   }
 
   static CustomerInclude include({_i2.OrderIncludeList? orders}) {
-    return CustomerInclude._(orders: orders);
+    return CustomerInclude.internal_(orders: orders);
   }
 
   static CustomerIncludeList includeList({
@@ -97,7 +98,7 @@ abstract class Customer
     _i1.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
-    return CustomerIncludeList._(
+    return CustomerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,11 +220,17 @@ class CustomerTable extends _i1.Table<int?> {
 }
 
 class CustomerInclude extends _i1.IncludeObject {
-  CustomerInclude._({_i2.OrderIncludeList? orders}) {
+  @_i4.internal
+  CustomerInclude.internal_({
+    _i2.OrderIncludeList? orders,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _orders = orders;
   }
 
   _i2.OrderIncludeList? _orders;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'orders': _orders};
@@ -233,16 +240,20 @@ class CustomerInclude extends _i1.IncludeObject {
 }
 
 class CustomerIncludeList extends _i1.IncludeList {
-  CustomerIncludeList._({
+  @_i4.internal
+  CustomerIncludeList.internal_({
     _i1.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Customer.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

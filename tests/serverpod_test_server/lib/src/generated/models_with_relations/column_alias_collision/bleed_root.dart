@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/column_alias_collision/bleed_child.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 /// Root model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -142,7 +143,7 @@ abstract class BleedRoot
     _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) {
-    return BleedRootInclude._(
+    return BleedRootInclude.internal_(
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
@@ -158,7 +159,7 @@ abstract class BleedRoot
     _i1.OrderByListBuilder<BleedRootTable>? orderByList,
     BleedRootInclude? include,
   }) {
-    return BleedRootIncludeList._(
+    return BleedRootIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -331,9 +332,11 @@ class BleedRootTable extends _i1.Table<int?> {
 }
 
 class BleedRootInclude extends _i1.IncludeObject {
-  BleedRootInclude._({
+  @_i4.internal
+  BleedRootInclude.internal_({
     _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _childRelationWithExtremelyLongFieldNameForcingTrun24 =
         childRelationWithExtremelyLongFieldNameForcingTrun24;
@@ -344,6 +347,8 @@ class BleedRootInclude extends _i1.IncludeObject {
   _i2.BleedChildInclude? _childRelationWithExtremelyLongFieldNameForcingTrun24;
 
   _i2.BleedChildInclude? _childRelationWithExtremelyLongFieldNameForcingTrun23;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -358,16 +363,20 @@ class BleedRootInclude extends _i1.IncludeObject {
 }
 
 class BleedRootIncludeList extends _i1.IncludeList {
-  BleedRootIncludeList._({
+  @_i4.internal
+  BleedRootIncludeList.internal_({
     _i1.WhereExpressionBuilder<BleedRootTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BleedRoot.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

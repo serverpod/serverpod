@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UserNoteWithALongName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -80,7 +81,7 @@ abstract class UserNoteWithALongName
   }
 
   static UserNoteWithALongNameInclude include() {
-    return UserNoteWithALongNameInclude._();
+    return UserNoteWithALongNameInclude.internal_();
   }
 
   static UserNoteWithALongNameIncludeList includeList({
@@ -91,7 +92,7 @@ abstract class UserNoteWithALongName
     _i1.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
   }) {
-    return UserNoteWithALongNameIncludeList._(
+    return UserNoteWithALongNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,7 +219,12 @@ class UserNoteWithALongNameTable extends _i1.Table<int?> {
 }
 
 class UserNoteWithALongNameInclude extends _i1.IncludeObject {
-  UserNoteWithALongNameInclude._();
+  @_i2.internal
+  UserNoteWithALongNameInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -228,16 +234,20 @@ class UserNoteWithALongNameInclude extends _i1.IncludeObject {
 }
 
 class UserNoteWithALongNameIncludeList extends _i1.IncludeList {
-  UserNoteWithALongNameIncludeList._({
+  @_i2.internal
+  UserNoteWithALongNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteWithALongName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

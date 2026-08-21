@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class PlayerUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class PlayerUuid
   }
 
   static PlayerUuidInclude include({_i2.TeamIntInclude? team}) {
-    return PlayerUuidInclude._(team: team);
+    return PlayerUuidInclude.internal_(team: team);
   }
 
   static PlayerUuidIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class PlayerUuid
     _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
   }) {
-    return PlayerUuidIncludeList._(
+    return PlayerUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,11 +219,17 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
 }
 
 class PlayerUuidInclude extends _i1.IncludeObject {
-  PlayerUuidInclude._({_i2.TeamIntInclude? team}) {
+  @_i4.internal
+  PlayerUuidInclude.internal_({
+    _i2.TeamIntInclude? team,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _i2.TeamIntInclude? _team;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -232,16 +239,20 @@ class PlayerUuidInclude extends _i1.IncludeObject {
 }
 
 class PlayerUuidIncludeList extends _i1.IncludeList {
-  PlayerUuidIncludeList._({
+  @_i4.internal
+  PlayerUuidIncludeList.internal_({
     _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(PlayerUuid.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

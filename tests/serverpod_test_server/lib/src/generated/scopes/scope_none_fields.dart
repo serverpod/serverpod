@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
 import '../simple_data.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ScopeNoneFields
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -69,7 +70,7 @@ abstract class ScopeNoneFields
   }
 
   static ScopeNoneFieldsInclude include() {
-    return ScopeNoneFieldsInclude._();
+    return ScopeNoneFieldsInclude.internal_();
   }
 
   static ScopeNoneFieldsIncludeList includeList({
@@ -80,7 +81,7 @@ abstract class ScopeNoneFields
     _i1.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
   }) {
-    return ScopeNoneFieldsIncludeList._(
+    return ScopeNoneFieldsIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,7 +191,10 @@ class ScopeNoneFieldsTable extends _i1.Table<int?> {
 }
 
 class ScopeNoneFieldsInclude extends _i1.IncludeObject {
-  ScopeNoneFieldsInclude._();
+  @_i4.internal
+  ScopeNoneFieldsInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -200,16 +204,20 @@ class ScopeNoneFieldsInclude extends _i1.IncludeObject {
 }
 
 class ScopeNoneFieldsIncludeList extends _i1.IncludeList {
-  ScopeNoneFieldsIncludeList._({
+  @_i4.internal
+  ScopeNoneFieldsIncludeList.internal_({
     _i1.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ScopeNoneFields.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

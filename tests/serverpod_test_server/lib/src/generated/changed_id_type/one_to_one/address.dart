@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class AddressUuid
     implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
@@ -94,7 +95,7 @@ abstract class AddressUuid
   }
 
   static AddressUuidInclude include({_i2.CitizenIntInclude? inhabitant}) {
-    return AddressUuidInclude._(inhabitant: inhabitant);
+    return AddressUuidInclude.internal_(inhabitant: inhabitant);
   }
 
   static AddressUuidIncludeList includeList({
@@ -105,7 +106,7 @@ abstract class AddressUuid
     _i1.OrderByListBuilder<AddressUuidTable>? orderByList,
     AddressUuidInclude? include,
   }) {
-    return AddressUuidIncludeList._(
+    return AddressUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,11 +223,17 @@ class AddressUuidTable extends _i1.Table<_i1.UuidValue> {
 }
 
 class AddressUuidInclude extends _i1.IncludeObject {
-  AddressUuidInclude._({_i2.CitizenIntInclude? inhabitant}) {
+  @_i4.internal
+  AddressUuidInclude.internal_({
+    _i2.CitizenIntInclude? inhabitant,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _inhabitant = inhabitant;
   }
 
   _i2.CitizenIntInclude? _inhabitant;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
@@ -236,16 +243,20 @@ class AddressUuidInclude extends _i1.IncludeObject {
 }
 
 class AddressUuidIncludeList extends _i1.IncludeList {
-  AddressUuidIncludeList._({
+  @_i4.internal
+  AddressUuidIncludeList.internal_({
     _i1.WhereExpressionBuilder<AddressUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(AddressUuid.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

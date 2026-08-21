@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithIndex
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -77,7 +78,7 @@ abstract class ObjectWithIndex
   }
 
   static ObjectWithIndexInclude include() {
-    return ObjectWithIndexInclude._();
+    return ObjectWithIndexInclude.internal_();
   }
 
   static ObjectWithIndexIncludeList includeList({
@@ -88,7 +89,7 @@ abstract class ObjectWithIndex
     _i1.OrderByListBuilder<ObjectWithIndexTable>? orderByList,
     ObjectWithIndexInclude? include,
   }) {
-    return ObjectWithIndexIncludeList._(
+    return ObjectWithIndexIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -177,7 +178,10 @@ class ObjectWithIndexTable extends _i1.Table<int?> {
 }
 
 class ObjectWithIndexInclude extends _i1.IncludeObject {
-  ObjectWithIndexInclude._();
+  @_i2.internal
+  ObjectWithIndexInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -187,16 +191,20 @@ class ObjectWithIndexInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithIndexIncludeList extends _i1.IncludeList {
-  ObjectWithIndexIncludeList._({
+  @_i2.internal
+  ObjectWithIndexIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithIndexTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithIndex.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

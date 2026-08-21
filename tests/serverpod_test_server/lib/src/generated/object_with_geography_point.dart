@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithGeographyPoint
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -93,7 +94,7 @@ abstract class ObjectWithGeographyPoint
   }
 
   static ObjectWithGeographyPointInclude include() {
-    return ObjectWithGeographyPointInclude._();
+    return ObjectWithGeographyPointInclude.internal_();
   }
 
   static ObjectWithGeographyPointIncludeList includeList({
@@ -104,7 +105,7 @@ abstract class ObjectWithGeographyPoint
     _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     ObjectWithGeographyPointInclude? include,
   }) {
-    return ObjectWithGeographyPointIncludeList._(
+    return ObjectWithGeographyPointIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +217,12 @@ class ObjectWithGeographyPointTable extends _i1.Table<int?> {
 }
 
 class ObjectWithGeographyPointInclude extends _i1.IncludeObject {
-  ObjectWithGeographyPointInclude._();
+  @_i2.internal
+  ObjectWithGeographyPointInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -226,16 +232,20 @@ class ObjectWithGeographyPointInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithGeographyPointIncludeList extends _i1.IncludeList {
-  ObjectWithGeographyPointIncludeList._({
+  @_i2.internal
+  ObjectWithGeographyPointIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyPoint.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

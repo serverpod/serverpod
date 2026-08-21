@@ -97,6 +97,75 @@ class BuildRepositoryClass {
     });
   }
 
+  Class buildModelProjectionRepositoryClass(
+    String className,
+    String baseClassName,
+    List<SerializableModelFieldDefinition> fields,
+    ClassDefinition classDefinition,
+    TypeReference idTypeReference,
+  ) {
+    var relationFields = fields.where(
+      (field) =>
+          field.relation is ObjectRelationDefinition ||
+          field.relation is ListRelationDefinition,
+    );
+    return Class((classBuilder) {
+      classBuilder
+        ..name = '${className}Repository'
+        ..constructors.add(
+          Constructor((constructorBuilder) {
+            constructorBuilder
+              ..name = '_'
+              ..constant = true;
+          }),
+        )
+        ..methods.addAll([
+          Method(
+            (m) => m
+              ..name = '_stripClassName'
+              ..returns = refer('Map<String, dynamic>')
+              ..requiredParameters.add(
+                Parameter(
+                  (p) => p
+                    ..name = 'map'
+                    ..type = refer('Map<String, dynamic>'),
+                ),
+              )
+              ..body = const Code('''
+var result = <String, dynamic>{};
+for (var entry in map.entries) {
+  if (entry.key == '__className__') continue;
+  if (entry.value is Map<String, dynamic>) {
+    result[entry.key] = _stripClassName(entry.value as Map<String, dynamic>);
+  } else if (entry.value is List) {
+    result[entry.key] = (entry.value as List).map((e) => e is Map<String, dynamic> ? _stripClassName(e) : e).toList();
+  } else {
+    result[entry.key] = entry.value;
+  }
+}
+return result;
+'''),
+          ),
+          _buildFindMethod(
+            className,
+            relationFields,
+            baseClassName: baseClassName,
+          ),
+          _buildFindFirstRow(
+            className,
+            relationFields,
+            baseClassName: baseClassName,
+          ),
+          _buildFindByIdMethod(
+            className,
+            relationFields,
+            idTypeReference,
+            baseClassName: baseClassName,
+          ),
+        ]);
+    });
+  }
+
   Class buildModelAttachRepositoryClass(
     String className,
     List<SerializableModelFieldDefinition> fields,
@@ -251,12 +320,14 @@ class BuildRepositoryClass {
 
   Method _buildFindMethod(
     String className,
-    Iterable<SerializableModelFieldDefinition> objectRelationFields,
-  ) {
+    Iterable<SerializableModelFieldDefinition> objectRelationFields, {
+    String? baseClassName,
+  }) {
+    var tableClassName = baseClassName ?? className;
     return Method(
       (m) => m
         ..docs.add('''
-/// Returns a list of [$className]s matching the given query parameters.
+/// Returns a list of [$tableClassName]s matching the given query parameters.
 ///
 /// Use [where] to specify which items to include in the return value.
 /// If none is specified, all items will be returned.
@@ -305,7 +376,7 @@ class BuildRepositoryClass {
           Parameter(
             (p) => p
               ..type = typeWhereExpressionBuilder(
-                className,
+                tableClassName,
                 serverCode,
               )
               ..name = 'where'
@@ -333,7 +404,7 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = typeOrderByBuilder(className, serverCode)
+              ..type = typeOrderByBuilder(tableClassName, serverCode)
               ..name = 'orderBy'
               ..named = true,
           ),
@@ -354,13 +425,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
-          if (objectRelationFields.isNotEmpty)
+          if (baseClassName == null && objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${tableClassName}Include',
                 )
                 ..name = 'include'
                 ..named = true,
@@ -389,46 +460,109 @@ class BuildRepositoryClass {
           ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('find')
-            .call(
-              [],
-              {
-                'where': refer('where').nullSafeProperty('call').call(
-                  [refer(className).property('t')],
-                ),
-                'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                  [refer(className).property('t')],
-                ),
-                'orderByList': refer('orderByList')
-                    .nullSafeProperty('call')
+        ..body = (baseClassName != null)
+            ? Block.of([
+                const Code('// ignore: invalid_use_of_internal_member'),
+                refer('session')
+                    .property('db')
+                    .property('findAsJson')
                     .call(
+                      [],
+                      {
+                        'where': refer('where').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'orderByList': refer('orderByList').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'limit': refer('limit'),
+                        'offset': refer('offset'),
+                        'transaction': refer('transaction'),
+                        'include': refer(className).property('include').call([]),
+                        'lockMode': refer('lockMode'),
+                        'lockBehavior': refer('lockBehavior'),
+                      },
+                      [refer(tableClassName)],
+                    )
+                    .awaited
+                    .property('then')
+                    .call([
+                      Method(
+                        (m) => m
+                          ..requiredParameters.add(
+                            Parameter((p) => p..name = 'rows'),
+                          )
+                          ..lambda = true
+                          ..body = refer('rows')
+                              .property('map')
+                              .call([
+                                Method(
+                                  (m) => m
+                                    ..requiredParameters.add(
+                                      Parameter((p) => p..name = 'e'),
+                                    )
+                                    ..lambda = true
+                                    ..body = refer(className)
+                                        .property('fromJson')
+                                        .call([
+                                          refer('e'),
+                                        ])
+                                        .code,
+                                ).closure,
+                              ])
+                              .property('toList')
+                              .call([])
+                              .code,
+                      ).closure,
+                    ])
+                    .returned
+                    .statement,
+              ])
+            : refer('session')
+                .property('db')
+                .property('find')
+                .call(
+                  [],
+                  {
+                    'where': refer('where').nullSafeProperty('call').call(
                       [refer(className).property('t')],
                     ),
-                'limit': refer('limit'),
-                'offset': refer('offset'),
-                'transaction': refer('transaction'),
-                if (objectRelationFields.isNotEmpty)
-                  'include': refer('include'),
-                'lockMode': refer('lockMode'),
-                'lockBehavior': refer('lockBehavior'),
-              },
-              [refer(className)],
-            )
-            .returned
-            .statement,
+                    'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                      [refer(className).property('t')],
+                    ),
+                    'orderByList': refer('orderByList')
+                        .nullSafeProperty('call')
+                        .call(
+                          [refer(className).property('t')],
+                        ),
+                    'limit': refer('limit'),
+                    'offset': refer('offset'),
+                    'transaction': refer('transaction'),
+                    if (objectRelationFields.isNotEmpty)
+                      'include': refer('include'),
+                    'lockMode': refer('lockMode'),
+                    'lockBehavior': refer('lockBehavior'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement,
     );
   }
 
   Method _buildFindFirstRow(
     String className,
-    Iterable<SerializableModelFieldDefinition> objectRelationFields,
-  ) {
+    Iterable<SerializableModelFieldDefinition> objectRelationFields, {
+    String? baseClassName,
+  }) {
+    var tableClassName = baseClassName ?? className;
     return Method(
       (m) => m
         ..docs.add('''
-/// Returns the first matching [$className] matching the given query parameters.
+/// Returns the first matching [$tableClassName] matching the given query parameters.
 ///
 /// Use [where] to specify which items to include in the return value.
 /// If none is specified, all items will be returned.
@@ -468,7 +602,7 @@ class BuildRepositoryClass {
           Parameter(
             (p) => p
               ..type = typeWhereExpressionBuilder(
-                className,
+                tableClassName,
                 serverCode,
               )
               ..name = 'where'
@@ -486,7 +620,7 @@ class BuildRepositoryClass {
           ),
           Parameter(
             (p) => p
-              ..type = typeOrderByBuilder(className, serverCode)
+              ..type = typeOrderByBuilder(tableClassName, serverCode)
               ..name = 'orderBy'
               ..named = true,
           ),
@@ -507,13 +641,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
-          if (objectRelationFields.isNotEmpty)
+          if (baseClassName == null && objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${tableClassName}Include',
                 )
                 ..name = 'include'
                 ..named = true,
@@ -542,46 +676,97 @@ class BuildRepositoryClass {
           ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('findFirstRow')
-            .call(
-              [],
-              {
-                'where': refer('where').nullSafeProperty('call').call(
-                  [refer(className).property('t')],
-                ),
-                'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                  [refer(className).property('t')],
-                ),
-                'orderByList': refer('orderByList')
-                    .nullSafeProperty('call')
+        ..body = (baseClassName != null)
+            ? Block.of([
+                const Code('// ignore: invalid_use_of_internal_member'),
+                refer('session')
+                    .property('db')
+                    .property('findFirstRowAsJson')
                     .call(
+                      [],
+                      {
+                        'where': refer('where').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'orderByList': refer('orderByList').nullSafeProperty('call').call(
+                          [refer(tableClassName).property('t')],
+                        ),
+                        'offset': refer('offset'),
+                        'transaction': refer('transaction'),
+                        'include': refer(className).property('include').call([]),
+                        'lockMode': refer('lockMode'),
+                        'lockBehavior': refer('lockBehavior'),
+                      },
+                      [refer(tableClassName)],
+                    )
+                    .awaited
+                    .property('then')
+                    .call([
+                      Method(
+                        (m) => m
+                          ..requiredParameters.add(
+                            Parameter((p) => p..name = 'e'),
+                          )
+                          ..lambda = true
+                          ..body = refer('e')
+                              .equalTo(literalNull)
+                              .conditional(
+                                literalNull,
+                                refer(className).property('fromJson').call([
+                                  refer('e'),
+                                ]),
+                              )
+                              .code,
+                      ).closure,
+                    ])
+                    .returned
+                    .statement,
+              ])
+            : refer('session')
+                .property('db')
+                .property('findFirstRow')
+                .call(
+                  [],
+                  {
+                    'where': refer('where').nullSafeProperty('call').call(
                       [refer(className).property('t')],
                     ),
-                'offset': refer('offset'),
-                'transaction': refer('transaction'),
-                if (objectRelationFields.isNotEmpty)
-                  'include': refer('include'),
-                'lockMode': refer('lockMode'),
-                'lockBehavior': refer('lockBehavior'),
-              },
-              [refer(className)],
-            )
-            .returned
-            .statement,
+                    'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                      [refer(className).property('t')],
+                    ),
+                    'orderByList': refer('orderByList')
+                        .nullSafeProperty('call')
+                        .call(
+                          [refer(className).property('t')],
+                        ),
+                    'offset': refer('offset'),
+                    'transaction': refer('transaction'),
+                    if (objectRelationFields.isNotEmpty)
+                      'include': refer('include'),
+                    'lockMode': refer('lockMode'),
+                    'lockBehavior': refer('lockBehavior'),
+                  },
+                  [refer(className)],
+                )
+                .returned
+                .statement,
     );
   }
 
   Method _buildFindByIdMethod(
     String className,
     Iterable<SerializableModelFieldDefinition> objectRelationFields,
-    TypeReference idTypeReference,
-  ) {
+    TypeReference idTypeReference, {
+    String? baseClassName,
+  }) {
+    var tableClassName = baseClassName ?? className;
     return Method(
       (m) => m
         ..docs.add(
-          '/// Finds a single [$className] by its [id] or null if no such row exists.',
+          '/// Finds a single [$tableClassName] by its [id] or null if no such row exists.',
         )
         ..name = 'findById'
         ..returns = TypeReference(
@@ -619,13 +804,13 @@ class BuildRepositoryClass {
               ..name = 'transaction'
               ..named = true,
           ),
-          if (objectRelationFields.isNotEmpty)
+          if (baseClassName == null && objectRelationFields.isNotEmpty)
             Parameter(
               (p) => p
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${tableClassName}Include',
                 )
                 ..name = 'include'
                 ..named = true,
@@ -654,22 +839,63 @@ class BuildRepositoryClass {
           ),
         ])
         ..modifier = MethodModifier.async
-        ..body = refer('session')
-            .property('db')
-            .property('findById')
-            .call(
-              [refer('id')],
-              {
-                'transaction': refer('transaction'),
-                if (objectRelationFields.isNotEmpty)
-                  'include': refer('include'),
-                'lockMode': refer('lockMode'),
-                'lockBehavior': refer('lockBehavior'),
-              },
-              [refer(className)],
-            )
-            .returned
-            .statement,
+        ..body = (baseClassName != null)
+            ? Block.of([
+                const Code('// ignore: invalid_use_of_internal_member'),
+                refer('session')
+                    .property('db')
+                    .property('findByIdAsJson')
+                    .call(
+                      [refer('id')],
+                      {
+                        'transaction': refer('transaction'),
+                        'include': refer(
+                          className,
+                        ).property('include').call([]),
+                        'lockMode': refer('lockMode'),
+                        'lockBehavior': refer('lockBehavior'),
+                      },
+                      [refer(tableClassName)],
+                    )
+                    .awaited
+                    .property('then')
+                    .call([
+                      Method(
+                        (m) => m
+                          ..requiredParameters.add(
+                            Parameter((p) => p..name = 'e'),
+                          )
+                          ..lambda = true
+                          ..body = refer('e')
+                              .equalTo(literalNull)
+                              .conditional(
+                                literalNull,
+                                refer(className).property('fromJson').call([
+                                  refer('e'),
+                                ]),
+                              )
+                              .code,
+                      ).closure,
+                    ])
+                    .returned
+                    .statement,
+              ])
+            : refer('session')
+                  .property('db')
+                  .property('findById')
+                  .call(
+                    [refer('id')],
+                    {
+                      'transaction': refer('transaction'),
+                      if (objectRelationFields.isNotEmpty)
+                        'include': refer('include'),
+                      'lockMode': refer('lockMode'),
+                      'lockBehavior': refer('lockBehavior'),
+                    },
+                    [refer(className)],
+                  )
+                  .returned
+                  .statement,
     );
   }
 

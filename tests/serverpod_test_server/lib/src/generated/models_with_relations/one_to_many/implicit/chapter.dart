@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class Chapter
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -74,7 +75,7 @@ abstract class Chapter
   }
 
   static ChapterInclude include() {
-    return ChapterInclude._();
+    return ChapterInclude.internal_();
   }
 
   static ChapterIncludeList includeList({
@@ -85,7 +86,7 @@ abstract class Chapter
     _i1.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
   }) {
-    return ChapterIncludeList._(
+    return ChapterIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -202,7 +203,10 @@ class ChapterTable extends _i1.Table<int?> {
 }
 
 class ChapterInclude extends _i1.IncludeObject {
-  ChapterInclude._();
+  @_i2.internal
+  ChapterInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -212,16 +216,20 @@ class ChapterInclude extends _i1.IncludeObject {
 }
 
 class ChapterIncludeList extends _i1.IncludeList {
-  ChapterIncludeList._({
+  @_i2.internal
+  ChapterIncludeList.internal_({
     _i1.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Chapter.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -13,6 +13,7 @@
 import 'package:serverpod_database/serverpod_database.dart' as _i1;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class SharedTableRecord
     implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
@@ -102,7 +103,7 @@ abstract class SharedTableRecord
   }
 
   static SharedTableRecordInclude include() {
-    return SharedTableRecordInclude._();
+    return SharedTableRecordInclude.internal_();
   }
 
   static SharedTableRecordIncludeList includeList({
@@ -113,7 +114,7 @@ abstract class SharedTableRecord
     _i1.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
   }) {
-    return SharedTableRecordIncludeList._(
+    return SharedTableRecordIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -243,7 +244,12 @@ class SharedTableRecordTable extends _i1.Table<int?> {
 }
 
 class SharedTableRecordInclude extends _i1.IncludeObject {
-  SharedTableRecordInclude._();
+  @_i4.internal
+  SharedTableRecordInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -253,16 +259,20 @@ class SharedTableRecordInclude extends _i1.IncludeObject {
 }
 
 class SharedTableRecordIncludeList extends _i1.IncludeList {
-  SharedTableRecordIncludeList._({
+  @_i4.internal
+  SharedTableRecordIncludeList.internal_({
     _i1.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SharedTableRecord.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

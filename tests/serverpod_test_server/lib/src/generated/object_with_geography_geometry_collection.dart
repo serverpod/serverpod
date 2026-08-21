@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithGeographyGeometryCollection
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -97,7 +98,7 @@ abstract class ObjectWithGeographyGeometryCollection
   }
 
   static ObjectWithGeographyGeometryCollectionInclude include() {
-    return ObjectWithGeographyGeometryCollectionInclude._();
+    return ObjectWithGeographyGeometryCollectionInclude.internal_();
   }
 
   static ObjectWithGeographyGeometryCollectionIncludeList includeList({
@@ -110,7 +111,7 @@ abstract class ObjectWithGeographyGeometryCollection
     orderByList,
     ObjectWithGeographyGeometryCollectionInclude? include,
   }) {
-    return ObjectWithGeographyGeometryCollectionIncludeList._(
+    return ObjectWithGeographyGeometryCollectionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -236,7 +237,12 @@ class ObjectWithGeographyGeometryCollectionTable extends _i1.Table<int?> {
 }
 
 class ObjectWithGeographyGeometryCollectionInclude extends _i1.IncludeObject {
-  ObjectWithGeographyGeometryCollectionInclude._();
+  @_i2.internal
+  ObjectWithGeographyGeometryCollectionInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -246,7 +252,8 @@ class ObjectWithGeographyGeometryCollectionInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithGeographyGeometryCollectionIncludeList extends _i1.IncludeList {
-  ObjectWithGeographyGeometryCollectionIncludeList._({
+  @_i2.internal
+  ObjectWithGeographyGeometryCollectionIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     super.limit,
@@ -254,9 +261,12 @@ class ObjectWithGeographyGeometryCollectionIncludeList extends _i1.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyGeometryCollection.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

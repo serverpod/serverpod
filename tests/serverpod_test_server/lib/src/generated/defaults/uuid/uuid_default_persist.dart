@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UuidDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -105,7 +106,7 @@ abstract class UuidDefaultPersist
   }
 
   static UuidDefaultPersistInclude include() {
-    return UuidDefaultPersistInclude._();
+    return UuidDefaultPersistInclude.internal_();
   }
 
   static UuidDefaultPersistIncludeList includeList({
@@ -116,7 +117,7 @@ abstract class UuidDefaultPersist
     _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     UuidDefaultPersistInclude? include,
   }) {
-    return UuidDefaultPersistIncludeList._(
+    return UuidDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -237,7 +238,12 @@ class UuidDefaultPersistTable extends _i1.Table<int?> {
 }
 
 class UuidDefaultPersistInclude extends _i1.IncludeObject {
-  UuidDefaultPersistInclude._();
+  @_i2.internal
+  UuidDefaultPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -247,16 +253,20 @@ class UuidDefaultPersistInclude extends _i1.IncludeObject {
 }
 
 class UuidDefaultPersistIncludeList extends _i1.IncludeList {
-  UuidDefaultPersistIncludeList._({
+  @_i2.internal
+  UuidDefaultPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefaultPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

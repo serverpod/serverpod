@@ -121,6 +121,97 @@ class PostgresDatabaseConnection
   }
 
   @override
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Include? include,
+    Transaction? transaction,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'findAsJson');
+    var orderByCols = _resolveOrderBy(orderByList, orderBy);
+
+    var query = SelectQueryBuilder(table: table)
+        .withSelectFields(table.columns)
+        .withWhere(where)
+        .withOrderBy(orderByCols)
+        .withLimit(limit)
+        .withOffset(offset)
+        .withInclude(include)
+        .withLockMode(lockMode, lockBehavior)
+        .build();
+
+    return _mappedQueryAsJson(
+      session,
+      query,
+      table: table,
+      timeoutInSeconds: 60,
+      transaction: transaction,
+      include: include,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    _getTableOrAssert<T>(session, operation: 'findFirstRowAsJson');
+    var rows = await findAsJson<T>(
+      session,
+      where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      limit: 1,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+
+    if (rows.isEmpty) return null;
+
+    return rows.first;
+  }
+
+  @override
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
+    DatabaseSession session,
+    Object id, {
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    var table = _getTableOrAssert<T>(session, operation: 'findByIdAsJson');
+    var rows = await findAsJson<T>(
+      session,
+      where: ColumnInt('id', table).equals(id as int),
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+
+    if (rows.isEmpty) return null;
+
+    return rows.first;
+  }
+
+  @override
   Future<void> lockRows<T extends TableRow>(
     DatabaseSession session, {
     required Expression where,
@@ -796,6 +887,28 @@ class PostgresDatabaseConnection
     required Transaction? transaction,
     Include? include,
   }) async {
+    var mappedRows = await _mappedQueryAsJson(
+      session,
+      query,
+      table: table,
+      timeoutInSeconds: timeoutInSeconds,
+      transaction: transaction,
+      include: include,
+    );
+
+    return mappedRows
+        .map(poolManager.serializationManager.deserialize<T>)
+        .toList();
+  }
+
+  Future<List<Map<String, dynamic>>> _mappedQueryAsJson(
+    DatabaseSession session,
+    String query, {
+    required Table table,
+    int? timeoutInSeconds,
+    required Transaction? transaction,
+    Include? include,
+  }) async {
     var result = await _mappedResultsQuery(
       session,
       query,
@@ -823,7 +936,7 @@ class PostgresDatabaseConnection
             aliasResolver: aliasResolver,
           ),
         )
-        .map(poolManager.serializationManager.deserialize<T>)
+        .whereType<Map<String, dynamic>>()
         .toList();
   }
 

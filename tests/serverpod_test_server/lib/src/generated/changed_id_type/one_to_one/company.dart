@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_one/town.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class CompanyUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class CompanyUuid
   }
 
   static CompanyUuidInclude include({_i2.TownIntInclude? town}) {
-    return CompanyUuidInclude._(town: town);
+    return CompanyUuidInclude.internal_(town: town);
   }
 
   static CompanyUuidIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class CompanyUuid
     _i1.OrderByListBuilder<CompanyUuidTable>? orderByList,
     CompanyUuidInclude? include,
   }) {
-    return CompanyUuidIncludeList._(
+    return CompanyUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,11 +219,17 @@ class CompanyUuidTable extends _i1.Table<_i1.UuidValue?> {
 }
 
 class CompanyUuidInclude extends _i1.IncludeObject {
-  CompanyUuidInclude._({_i2.TownIntInclude? town}) {
+  @_i4.internal
+  CompanyUuidInclude.internal_({
+    _i2.TownIntInclude? town,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _town = town;
   }
 
   _i2.TownIntInclude? _town;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'town': _town};
@@ -232,16 +239,20 @@ class CompanyUuidInclude extends _i1.IncludeObject {
 }
 
 class CompanyUuidIncludeList extends _i1.IncludeList {
-  CompanyUuidIncludeList._({
+  @_i4.internal
+  CompanyUuidIncludeList.internal_({
     _i1.WhereExpressionBuilder<CompanyUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(CompanyUuid.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

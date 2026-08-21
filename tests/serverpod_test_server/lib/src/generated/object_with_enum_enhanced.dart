@@ -14,6 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum_enhanced.dart' as _i2;
 import 'test_enum_enhanced_by_name.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class ObjectWithEnumEnhanced
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -130,7 +131,7 @@ abstract class ObjectWithEnumEnhanced
   }
 
   static ObjectWithEnumEnhancedInclude include() {
-    return ObjectWithEnumEnhancedInclude._();
+    return ObjectWithEnumEnhancedInclude.internal_();
   }
 
   static ObjectWithEnumEnhancedIncludeList includeList({
@@ -141,7 +142,7 @@ abstract class ObjectWithEnumEnhanced
     _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     ObjectWithEnumEnhancedInclude? include,
   }) {
-    return ObjectWithEnumEnhancedIncludeList._(
+    return ObjectWithEnumEnhancedIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -315,7 +316,12 @@ class ObjectWithEnumEnhancedTable extends _i1.Table<int?> {
 }
 
 class ObjectWithEnumEnhancedInclude extends _i1.IncludeObject {
-  ObjectWithEnumEnhancedInclude._();
+  @_i5.internal
+  ObjectWithEnumEnhancedInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -325,16 +331,20 @@ class ObjectWithEnumEnhancedInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithEnumEnhancedIncludeList extends _i1.IncludeList {
-  ObjectWithEnumEnhancedIncludeList._({
+  @_i5.internal
+  ObjectWithEnumEnhancedIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithEnumEnhanced.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

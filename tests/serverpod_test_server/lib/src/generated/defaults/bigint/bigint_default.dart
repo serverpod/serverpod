@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class BigIntDefault
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -90,7 +91,7 @@ abstract class BigIntDefault
   }
 
   static BigIntDefaultInclude include() {
-    return BigIntDefaultInclude._();
+    return BigIntDefaultInclude.internal_();
   }
 
   static BigIntDefaultIncludeList includeList({
@@ -101,7 +102,7 @@ abstract class BigIntDefault
     _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     BigIntDefaultInclude? include,
   }) {
-    return BigIntDefaultIncludeList._(
+    return BigIntDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -196,7 +197,10 @@ class BigIntDefaultTable extends _i1.Table<int?> {
 }
 
 class BigIntDefaultInclude extends _i1.IncludeObject {
-  BigIntDefaultInclude._();
+  @_i2.internal
+  BigIntDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -206,16 +210,20 @@ class BigIntDefaultInclude extends _i1.IncludeObject {
 }
 
 class BigIntDefaultIncludeList extends _i1.IncludeList {
-  BigIntDefaultIncludeList._({
+  @_i2.internal
+  BigIntDefaultIncludeList.internal_({
     _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefault.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

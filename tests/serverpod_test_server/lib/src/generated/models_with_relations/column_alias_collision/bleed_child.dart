@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 /// Child model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -76,7 +77,7 @@ abstract class BleedChild
   }
 
   static BleedChildInclude include() {
-    return BleedChildInclude._();
+    return BleedChildInclude.internal_();
   }
 
   static BleedChildIncludeList includeList({
@@ -87,7 +88,7 @@ abstract class BleedChild
     _i1.OrderByListBuilder<BleedChildTable>? orderByList,
     BleedChildInclude? include,
   }) {
-    return BleedChildIncludeList._(
+    return BleedChildIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -160,7 +161,10 @@ class BleedChildTable extends _i1.Table<int?> {
 }
 
 class BleedChildInclude extends _i1.IncludeObject {
-  BleedChildInclude._();
+  @_i2.internal
+  BleedChildInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -170,16 +174,20 @@ class BleedChildInclude extends _i1.IncludeObject {
 }
 
 class BleedChildIncludeList extends _i1.IncludeList {
-  BleedChildIncludeList._({
+  @_i2.internal
+  BleedChildIncludeList.internal_({
     _i1.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BleedChild.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

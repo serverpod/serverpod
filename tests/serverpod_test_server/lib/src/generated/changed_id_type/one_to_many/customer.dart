@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/one_to_many/order.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class CustomerInt
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -86,7 +87,7 @@ abstract class CustomerInt
   }
 
   static CustomerIntInclude include({_i2.OrderUuidIncludeList? orders}) {
-    return CustomerIntInclude._(orders: orders);
+    return CustomerIntInclude.internal_(orders: orders);
   }
 
   static CustomerIntIncludeList includeList({
@@ -97,7 +98,7 @@ abstract class CustomerInt
     _i1.OrderByListBuilder<CustomerIntTable>? orderByList,
     CustomerIntInclude? include,
   }) {
-    return CustomerIntIncludeList._(
+    return CustomerIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,11 +220,17 @@ class CustomerIntTable extends _i1.Table<int?> {
 }
 
 class CustomerIntInclude extends _i1.IncludeObject {
-  CustomerIntInclude._({_i2.OrderUuidIncludeList? orders}) {
+  @_i4.internal
+  CustomerIntInclude.internal_({
+    _i2.OrderUuidIncludeList? orders,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _orders = orders;
   }
 
   _i2.OrderUuidIncludeList? _orders;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'orders': _orders};
@@ -233,16 +240,20 @@ class CustomerIntInclude extends _i1.IncludeObject {
 }
 
 class CustomerIntIncludeList extends _i1.IncludeList {
-  CustomerIntIncludeList._({
+  @_i4.internal
+  CustomerIntIncludeList.internal_({
     _i1.WhereExpressionBuilder<CustomerIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(CustomerInt.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

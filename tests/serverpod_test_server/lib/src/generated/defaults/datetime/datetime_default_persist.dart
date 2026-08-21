@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DateTimeDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -93,7 +94,7 @@ abstract class DateTimeDefaultPersist
   }
 
   static DateTimeDefaultPersistInclude include() {
-    return DateTimeDefaultPersistInclude._();
+    return DateTimeDefaultPersistInclude.internal_();
   }
 
   static DateTimeDefaultPersistIncludeList includeList({
@@ -104,7 +105,7 @@ abstract class DateTimeDefaultPersist
     _i1.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
   }) {
-    return DateTimeDefaultPersistIncludeList._(
+    return DateTimeDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,7 +205,12 @@ class DateTimeDefaultPersistTable extends _i1.Table<int?> {
 }
 
 class DateTimeDefaultPersistInclude extends _i1.IncludeObject {
-  DateTimeDefaultPersistInclude._();
+  @_i2.internal
+  DateTimeDefaultPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -214,16 +220,20 @@ class DateTimeDefaultPersistInclude extends _i1.IncludeObject {
 }
 
 class DateTimeDefaultPersistIncludeList extends _i1.IncludeList {
-  DateTimeDefaultPersistIncludeList._({
+  @_i2.internal
+  DateTimeDefaultPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

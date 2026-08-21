@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class UserNoteCollection
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class UserNoteCollection
   static UserNoteCollectionInclude include({
     _i2.UserNoteIncludeList? userNotesPropertyName,
   }) {
-    return UserNoteCollectionInclude._(
+    return UserNoteCollectionInclude.internal_(
       userNotesPropertyName: userNotesPropertyName,
     );
   }
@@ -105,7 +106,7 @@ abstract class UserNoteCollection
     _i1.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     UserNoteCollectionInclude? include,
   }) {
-    return UserNoteCollectionIncludeList._(
+    return UserNoteCollectionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -235,13 +236,17 @@ class UserNoteCollectionTable extends _i1.Table<int?> {
 }
 
 class UserNoteCollectionInclude extends _i1.IncludeObject {
-  UserNoteCollectionInclude._({
+  @_i4.internal
+  UserNoteCollectionInclude.internal_({
     _i2.UserNoteIncludeList? userNotesPropertyName,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _userNotesPropertyName = userNotesPropertyName;
   }
 
   _i2.UserNoteIncludeList? _userNotesPropertyName;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -253,16 +258,20 @@ class UserNoteCollectionInclude extends _i1.IncludeObject {
 }
 
 class UserNoteCollectionIncludeList extends _i1.IncludeList {
-  UserNoteCollectionIncludeList._({
+  @_i4.internal
+  UserNoteCollectionIncludeList.internal_({
     _i1.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteCollection.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

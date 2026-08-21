@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class UserNote
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -78,7 +79,7 @@ abstract class UserNote
   }
 
   static UserNoteInclude include() {
-    return UserNoteInclude._();
+    return UserNoteInclude.internal_();
   }
 
   static UserNoteIncludeList includeList({
@@ -89,7 +90,7 @@ abstract class UserNote
     _i1.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
   }) {
-    return UserNoteIncludeList._(
+    return UserNoteIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -213,7 +214,10 @@ class UserNoteTable extends _i1.Table<int?> {
 }
 
 class UserNoteInclude extends _i1.IncludeObject {
-  UserNoteInclude._();
+  @_i2.internal
+  UserNoteInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -223,16 +227,20 @@ class UserNoteInclude extends _i1.IncludeObject {
 }
 
 class UserNoteIncludeList extends _i1.IncludeList {
-  UserNoteIncludeList._({
+  @_i2.internal
+  UserNoteIncludeList.internal_({
     _i1.WhereExpressionBuilder<UserNoteTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UserNote.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

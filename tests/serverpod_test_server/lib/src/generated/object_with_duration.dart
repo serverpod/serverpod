@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithDuration
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -71,7 +72,7 @@ abstract class ObjectWithDuration
   }
 
   static ObjectWithDurationInclude include() {
-    return ObjectWithDurationInclude._();
+    return ObjectWithDurationInclude.internal_();
   }
 
   static ObjectWithDurationIncludeList includeList({
@@ -82,7 +83,7 @@ abstract class ObjectWithDuration
     _i1.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
   }) {
-    return ObjectWithDurationIncludeList._(
+    return ObjectWithDurationIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -157,7 +158,12 @@ class ObjectWithDurationTable extends _i1.Table<int?> {
 }
 
 class ObjectWithDurationInclude extends _i1.IncludeObject {
-  ObjectWithDurationInclude._();
+  @_i2.internal
+  ObjectWithDurationInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -167,16 +173,20 @@ class ObjectWithDurationInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithDurationIncludeList extends _i1.IncludeList {
-  ObjectWithDurationIncludeList._({
+  @_i2.internal
+  ObjectWithDurationIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithDuration.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

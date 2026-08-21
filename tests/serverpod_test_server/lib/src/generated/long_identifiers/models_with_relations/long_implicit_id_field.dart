@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class LongImplicitIdField
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -78,7 +79,7 @@ abstract class LongImplicitIdField
   }
 
   static LongImplicitIdFieldInclude include() {
-    return LongImplicitIdFieldInclude._();
+    return LongImplicitIdFieldInclude.internal_();
   }
 
   static LongImplicitIdFieldIncludeList includeList({
@@ -89,7 +90,7 @@ abstract class LongImplicitIdField
     _i1.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     LongImplicitIdFieldInclude? include,
   }) {
-    return LongImplicitIdFieldIncludeList._(
+    return LongImplicitIdFieldIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +217,12 @@ class LongImplicitIdFieldTable extends _i1.Table<int?> {
 }
 
 class LongImplicitIdFieldInclude extends _i1.IncludeObject {
-  LongImplicitIdFieldInclude._();
+  @_i2.internal
+  LongImplicitIdFieldInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -226,16 +232,20 @@ class LongImplicitIdFieldInclude extends _i1.IncludeObject {
 }
 
 class LongImplicitIdFieldIncludeList extends _i1.IncludeList {
-  LongImplicitIdFieldIncludeList._({
+  @_i2.internal
+  LongImplicitIdFieldIncludeList.internal_({
     _i1.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(LongImplicitIdField.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

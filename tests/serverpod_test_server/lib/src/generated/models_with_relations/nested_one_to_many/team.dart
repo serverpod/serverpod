@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
 import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Team._({
@@ -107,7 +108,7 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.ArenaInclude? arena,
     _i3.PlayerIncludeList? players,
   }) {
-    return TeamInclude._(
+    return TeamInclude.internal_(
       arena: arena,
       players: players,
     );
@@ -121,7 +122,7 @@ abstract class Team implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<TeamTable>? orderByList,
     TeamInclude? include,
   }) {
-    return TeamIncludeList._(
+    return TeamIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -281,9 +282,11 @@ class TeamTable extends _i1.Table<int?> {
 }
 
 class TeamInclude extends _i1.IncludeObject {
-  TeamInclude._({
+  @_i5.internal
+  TeamInclude.internal_({
     _i2.ArenaInclude? arena,
     _i3.PlayerIncludeList? players,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _arena = arena;
     _players = players;
@@ -292,6 +295,8 @@ class TeamInclude extends _i1.IncludeObject {
   _i2.ArenaInclude? _arena;
 
   _i3.PlayerIncludeList? _players;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -304,16 +309,20 @@ class TeamInclude extends _i1.IncludeObject {
 }
 
 class TeamIncludeList extends _i1.IncludeList {
-  TeamIncludeList._({
+  @_i5.internal
+  TeamIncludeList.internal_({
     _i1.WhereExpressionBuilder<TeamTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Team.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

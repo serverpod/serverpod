@@ -14,6 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
 import 'shared_model_subclass.dart' as _i3;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:meta/meta.dart' as _i5;
 
 abstract class SharedModelContainer
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -378,7 +379,7 @@ abstract class SharedModelContainer
   }
 
   static SharedModelContainerInclude include() {
-    return SharedModelContainerInclude._();
+    return SharedModelContainerInclude.internal_();
   }
 
   static SharedModelContainerIncludeList includeList({
@@ -389,7 +390,7 @@ abstract class SharedModelContainer
     _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
   }) {
-    return SharedModelContainerIncludeList._(
+    return SharedModelContainerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -917,7 +918,12 @@ class SharedModelContainerTable extends _i1.Table<int?> {
 }
 
 class SharedModelContainerInclude extends _i1.IncludeObject {
-  SharedModelContainerInclude._();
+  @_i5.internal
+  SharedModelContainerInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -927,16 +933,20 @@ class SharedModelContainerInclude extends _i1.IncludeObject {
 }
 
 class SharedModelContainerIncludeList extends _i1.IncludeList {
-  SharedModelContainerIncludeList._({
+  @_i5.internal
+  SharedModelContainerIncludeList.internal_({
     _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SharedModelContainer.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

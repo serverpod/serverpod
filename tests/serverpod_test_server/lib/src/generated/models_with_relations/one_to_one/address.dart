@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/one_to_one/citizen.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Address
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class Address
   }
 
   static AddressInclude include({_i2.CitizenInclude? inhabitant}) {
-    return AddressInclude._(inhabitant: inhabitant);
+    return AddressInclude.internal_(inhabitant: inhabitant);
   }
 
   static AddressIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class Address
     _i1.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
   }) {
-    return AddressIncludeList._(
+    return AddressIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -220,11 +221,17 @@ class AddressTable extends _i1.Table<int?> {
 }
 
 class AddressInclude extends _i1.IncludeObject {
-  AddressInclude._({_i2.CitizenInclude? inhabitant}) {
+  @_i4.internal
+  AddressInclude.internal_({
+    _i2.CitizenInclude? inhabitant,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _inhabitant = inhabitant;
   }
 
   _i2.CitizenInclude? _inhabitant;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'inhabitant': _inhabitant};
@@ -234,16 +241,20 @@ class AddressInclude extends _i1.IncludeObject {
 }
 
 class AddressIncludeList extends _i1.IncludeList {
-  AddressIncludeList._({
+  @_i4.internal
+  AddressIncludeList.internal_({
     _i1.WhereExpressionBuilder<AddressTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Address.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ObjectWithObject
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -212,7 +213,7 @@ abstract class ObjectWithObject
   }
 
   static ObjectWithObjectInclude include() {
-    return ObjectWithObjectInclude._();
+    return ObjectWithObjectInclude.internal_();
   }
 
   static ObjectWithObjectIncludeList includeList({
@@ -223,7 +224,7 @@ abstract class ObjectWithObject
     _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
   }) {
-    return ObjectWithObjectIncludeList._(
+    return ObjectWithObjectIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -517,7 +518,10 @@ class ObjectWithObjectTable extends _i1.Table<int?> {
 }
 
 class ObjectWithObjectInclude extends _i1.IncludeObject {
-  ObjectWithObjectInclude._();
+  @_i4.internal
+  ObjectWithObjectInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -527,16 +531,20 @@ class ObjectWithObjectInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithObjectIncludeList extends _i1.IncludeList {
-  ObjectWithObjectIncludeList._({
+  @_i4.internal
+  ObjectWithObjectIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithObject.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

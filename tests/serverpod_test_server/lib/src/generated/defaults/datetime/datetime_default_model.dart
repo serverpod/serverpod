@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DateTimeDefaultModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -110,7 +111,7 @@ abstract class DateTimeDefaultModel
   }
 
   static DateTimeDefaultModelInclude include() {
-    return DateTimeDefaultModelInclude._();
+    return DateTimeDefaultModelInclude.internal_();
   }
 
   static DateTimeDefaultModelIncludeList includeList({
@@ -121,7 +122,7 @@ abstract class DateTimeDefaultModel
     _i1.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     DateTimeDefaultModelInclude? include,
   }) {
-    return DateTimeDefaultModelIncludeList._(
+    return DateTimeDefaultModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -235,7 +236,12 @@ class DateTimeDefaultModelTable extends _i1.Table<int?> {
 }
 
 class DateTimeDefaultModelInclude extends _i1.IncludeObject {
-  DateTimeDefaultModelInclude._();
+  @_i2.internal
+  DateTimeDefaultModelInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -245,16 +251,20 @@ class DateTimeDefaultModelInclude extends _i1.IncludeObject {
 }
 
 class DateTimeDefaultModelIncludeList extends _i1.IncludeList {
-  DateTimeDefaultModelIncludeList._({
+  @_i2.internal
+  DateTimeDefaultModelIncludeList.internal_({
     _i1.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultModel.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

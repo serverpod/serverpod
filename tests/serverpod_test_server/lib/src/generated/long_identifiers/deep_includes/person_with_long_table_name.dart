@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class PersonWithLongTableName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -107,7 +108,7 @@ abstract class PersonWithLongTableName
   static PersonWithLongTableNameInclude include({
     _i2.OrganizationWithLongTableNameInclude? organization,
   }) {
-    return PersonWithLongTableNameInclude._(organization: organization);
+    return PersonWithLongTableNameInclude.internal_(organization: organization);
   }
 
   static PersonWithLongTableNameIncludeList includeList({
@@ -118,7 +119,7 @@ abstract class PersonWithLongTableName
     _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     PersonWithLongTableNameInclude? include,
   }) {
-    return PersonWithLongTableNameIncludeList._(
+    return PersonWithLongTableNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -301,13 +302,17 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
 }
 
 class PersonWithLongTableNameInclude extends _i1.IncludeObject {
-  PersonWithLongTableNameInclude._({
+  @_i4.internal
+  PersonWithLongTableNameInclude.internal_({
     _i2.OrganizationWithLongTableNameInclude? organization,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _organization = organization;
   }
 
   _i2.OrganizationWithLongTableNameInclude? _organization;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'organization': _organization};
@@ -317,16 +322,20 @@ class PersonWithLongTableNameInclude extends _i1.IncludeObject {
 }
 
 class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
-  PersonWithLongTableNameIncludeList._({
+  @_i4.internal
+  PersonWithLongTableNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(PersonWithLongTableName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

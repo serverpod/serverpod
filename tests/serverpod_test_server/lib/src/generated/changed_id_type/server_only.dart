@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ServerOnlyChangedIdFieldClass
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -57,7 +58,7 @@ abstract class ServerOnlyChangedIdFieldClass
   }
 
   static ServerOnlyChangedIdFieldClassInclude include() {
-    return ServerOnlyChangedIdFieldClassInclude._();
+    return ServerOnlyChangedIdFieldClassInclude.internal_();
   }
 
   static ServerOnlyChangedIdFieldClassIncludeList includeList({
@@ -68,7 +69,7 @@ abstract class ServerOnlyChangedIdFieldClass
     _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
   }) {
-    return ServerOnlyChangedIdFieldClassIncludeList._(
+    return ServerOnlyChangedIdFieldClassIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -118,7 +119,12 @@ class ServerOnlyChangedIdFieldClassTable extends _i1.Table<_i1.UuidValue?> {
 }
 
 class ServerOnlyChangedIdFieldClassInclude extends _i1.IncludeObject {
-  ServerOnlyChangedIdFieldClassInclude._();
+  @_i2.internal
+  ServerOnlyChangedIdFieldClassInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -128,16 +134,20 @@ class ServerOnlyChangedIdFieldClassInclude extends _i1.IncludeObject {
 }
 
 class ServerOnlyChangedIdFieldClassIncludeList extends _i1.IncludeList {
-  ServerOnlyChangedIdFieldClassIncludeList._({
+  @_i2.internal
+  ServerOnlyChangedIdFieldClassIncludeList.internal_({
     _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

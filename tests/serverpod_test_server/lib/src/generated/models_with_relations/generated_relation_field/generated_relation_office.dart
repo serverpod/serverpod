@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class GeneratedRelationOffice
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -98,7 +99,7 @@ abstract class GeneratedRelationOffice
   static GeneratedRelationOfficeInclude include({
     _i2.GeneratedRelationCompanyInclude? company,
   }) {
-    return GeneratedRelationOfficeInclude._(company: company);
+    return GeneratedRelationOfficeInclude.internal_(company: company);
   }
 
   static GeneratedRelationOfficeIncludeList includeList({
@@ -109,7 +110,7 @@ abstract class GeneratedRelationOffice
     _i1.OrderByListBuilder<GeneratedRelationOfficeTable>? orderByList,
     GeneratedRelationOfficeInclude? include,
   }) {
-    return GeneratedRelationOfficeIncludeList._(
+    return GeneratedRelationOfficeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,13 +231,17 @@ class GeneratedRelationOfficeTable extends _i1.Table<int?> {
 }
 
 class GeneratedRelationOfficeInclude extends _i1.IncludeObject {
-  GeneratedRelationOfficeInclude._({
+  @_i4.internal
+  GeneratedRelationOfficeInclude.internal_({
     _i2.GeneratedRelationCompanyInclude? company,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _company = company;
   }
 
   _i2.GeneratedRelationCompanyInclude? _company;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'company': _company};
@@ -246,16 +251,20 @@ class GeneratedRelationOfficeInclude extends _i1.IncludeObject {
 }
 
 class GeneratedRelationOfficeIncludeList extends _i1.IncludeList {
-  GeneratedRelationOfficeIncludeList._({
+  @_i4.internal
+  GeneratedRelationOfficeIncludeList.internal_({
     _i1.WhereExpressionBuilder<GeneratedRelationOfficeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationOffice.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

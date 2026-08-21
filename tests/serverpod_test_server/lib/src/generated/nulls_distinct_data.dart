@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class NullsDistinctData
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -95,7 +96,7 @@ abstract class NullsDistinctData
   }
 
   static NullsDistinctDataInclude include() {
-    return NullsDistinctDataInclude._();
+    return NullsDistinctDataInclude.internal_();
   }
 
   static NullsDistinctDataIncludeList includeList({
@@ -106,7 +107,7 @@ abstract class NullsDistinctData
     _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
     NullsDistinctDataInclude? include,
   }) {
-    return NullsDistinctDataIncludeList._(
+    return NullsDistinctDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,7 +231,12 @@ class NullsDistinctDataTable extends _i1.Table<int?> {
 }
 
 class NullsDistinctDataInclude extends _i1.IncludeObject {
-  NullsDistinctDataInclude._();
+  @_i2.internal
+  NullsDistinctDataInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -240,16 +246,20 @@ class NullsDistinctDataInclude extends _i1.IncludeObject {
 }
 
 class NullsDistinctDataIncludeList extends _i1.IncludeList {
-  NullsDistinctDataIncludeList._({
+  @_i2.internal
+  NullsDistinctDataIncludeList.internal_({
     _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(NullsDistinctData.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

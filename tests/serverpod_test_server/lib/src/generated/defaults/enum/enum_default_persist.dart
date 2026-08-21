@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
 import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class EnumDefaultPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -93,7 +94,7 @@ abstract class EnumDefaultPersist
   }
 
   static EnumDefaultPersistInclude include() {
-    return EnumDefaultPersistInclude._();
+    return EnumDefaultPersistInclude.internal_();
   }
 
   static EnumDefaultPersistIncludeList includeList({
@@ -104,7 +105,7 @@ abstract class EnumDefaultPersist
     _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     EnumDefaultPersistInclude? include,
   }) {
-    return EnumDefaultPersistIncludeList._(
+    return EnumDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -206,7 +207,12 @@ class EnumDefaultPersistTable extends _i1.Table<int?> {
 }
 
 class EnumDefaultPersistInclude extends _i1.IncludeObject {
-  EnumDefaultPersistInclude._();
+  @_i4.internal
+  EnumDefaultPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -216,16 +222,20 @@ class EnumDefaultPersistInclude extends _i1.IncludeObject {
 }
 
 class EnumDefaultPersistIncludeList extends _i1.IncludeList {
-  EnumDefaultPersistIncludeList._({
+  @_i4.internal
+  EnumDefaultPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

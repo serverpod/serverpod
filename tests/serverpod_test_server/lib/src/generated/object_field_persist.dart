@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'simple_data.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ObjectFieldPersist
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -91,7 +92,7 @@ abstract class ObjectFieldPersist
   }
 
   static ObjectFieldPersistInclude include() {
-    return ObjectFieldPersistInclude._();
+    return ObjectFieldPersistInclude.internal_();
   }
 
   static ObjectFieldPersistIncludeList includeList({
@@ -102,7 +103,7 @@ abstract class ObjectFieldPersist
     _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
   }) {
-    return ObjectFieldPersistIncludeList._(
+    return ObjectFieldPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -184,7 +185,12 @@ class ObjectFieldPersistTable extends _i1.Table<int?> {
 }
 
 class ObjectFieldPersistInclude extends _i1.IncludeObject {
-  ObjectFieldPersistInclude._();
+  @_i4.internal
+  ObjectFieldPersistInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -194,16 +200,20 @@ class ObjectFieldPersistInclude extends _i1.IncludeObject {
 }
 
 class ObjectFieldPersistIncludeList extends _i1.IncludeList {
-  ObjectFieldPersistIncludeList._({
+  @_i4.internal
+  ObjectFieldPersistIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectFieldPersist.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

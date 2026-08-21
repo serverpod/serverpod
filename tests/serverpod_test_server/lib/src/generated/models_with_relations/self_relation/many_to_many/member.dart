@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Member._({
@@ -105,7 +106,7 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i2.BlockingIncludeList? blocking,
     _i2.BlockingIncludeList? blockedBy,
   }) {
-    return MemberInclude._(
+    return MemberInclude.internal_(
       blocking: blocking,
       blockedBy: blockedBy,
     );
@@ -119,7 +120,7 @@ abstract class Member implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<MemberTable>? orderByList,
     MemberInclude? include,
   }) {
-    return MemberIncludeList._(
+    return MemberIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -286,9 +287,11 @@ class MemberTable extends _i1.Table<int?> {
 }
 
 class MemberInclude extends _i1.IncludeObject {
-  MemberInclude._({
+  @_i4.internal
+  MemberInclude.internal_({
     _i2.BlockingIncludeList? blocking,
     _i2.BlockingIncludeList? blockedBy,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _blocking = blocking;
     _blockedBy = blockedBy;
@@ -297,6 +300,8 @@ class MemberInclude extends _i1.IncludeObject {
   _i2.BlockingIncludeList? _blocking;
 
   _i2.BlockingIncludeList? _blockedBy;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -309,16 +314,20 @@ class MemberInclude extends _i1.IncludeObject {
 }
 
 class MemberIncludeList extends _i1.IncludeList {
-  MemberIncludeList._({
+  @_i4.internal
+  MemberIncludeList.internal_({
     _i1.WhereExpressionBuilder<MemberTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Member.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

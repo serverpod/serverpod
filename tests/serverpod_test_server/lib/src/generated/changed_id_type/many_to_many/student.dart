@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class StudentUuid
     implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class StudentUuid
   static StudentUuidInclude include({
     _i2.EnrollmentIntIncludeList? enrollments,
   }) {
-    return StudentUuidInclude._(enrollments: enrollments);
+    return StudentUuidInclude.internal_(enrollments: enrollments);
   }
 
   static StudentUuidIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class StudentUuid
     _i1.OrderByListBuilder<StudentUuidTable>? orderByList,
     StudentUuidInclude? include,
   }) {
-    return StudentUuidIncludeList._(
+    return StudentUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -225,11 +226,17 @@ class StudentUuidTable extends _i1.Table<_i1.UuidValue?> {
 }
 
 class StudentUuidInclude extends _i1.IncludeObject {
-  StudentUuidInclude._({_i2.EnrollmentIntIncludeList? enrollments}) {
+  @_i4.internal
+  StudentUuidInclude.internal_({
+    _i2.EnrollmentIntIncludeList? enrollments,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _enrollments = enrollments;
   }
 
   _i2.EnrollmentIntIncludeList? _enrollments;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
@@ -239,16 +246,20 @@ class StudentUuidInclude extends _i1.IncludeObject {
 }
 
 class StudentUuidIncludeList extends _i1.IncludeList {
-  StudentUuidIncludeList._({
+  @_i4.internal
+  StudentUuidIncludeList.internal_({
     _i1.WhereExpressionBuilder<StudentUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(StudentUuid.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

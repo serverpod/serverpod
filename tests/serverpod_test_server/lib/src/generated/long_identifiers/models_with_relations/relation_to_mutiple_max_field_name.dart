@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class RelationToMultipleMaxFieldName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -94,7 +95,7 @@ abstract class RelationToMultipleMaxFieldName
   static RelationToMultipleMaxFieldNameInclude include({
     _i2.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
   }) {
-    return RelationToMultipleMaxFieldNameInclude._(
+    return RelationToMultipleMaxFieldNameInclude.internal_(
       multipleMaxFieldNames: multipleMaxFieldNames,
     );
   }
@@ -107,7 +108,7 @@ abstract class RelationToMultipleMaxFieldName
     _i1.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     RelationToMultipleMaxFieldNameInclude? include,
   }) {
-    return RelationToMultipleMaxFieldNameIncludeList._(
+    return RelationToMultipleMaxFieldNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -239,13 +240,17 @@ class RelationToMultipleMaxFieldNameTable extends _i1.Table<int?> {
 }
 
 class RelationToMultipleMaxFieldNameInclude extends _i1.IncludeObject {
-  RelationToMultipleMaxFieldNameInclude._({
+  @_i4.internal
+  RelationToMultipleMaxFieldNameInclude.internal_({
     _i2.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _multipleMaxFieldNames = multipleMaxFieldNames;
   }
 
   _i2.MultipleMaxFieldNameIncludeList? _multipleMaxFieldNames;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {
@@ -257,16 +262,20 @@ class RelationToMultipleMaxFieldNameInclude extends _i1.IncludeObject {
 }
 
 class RelationToMultipleMaxFieldNameIncludeList extends _i1.IncludeList {
-  RelationToMultipleMaxFieldNameIncludeList._({
+  @_i4.internal
+  RelationToMultipleMaxFieldNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(RelationToMultipleMaxFieldName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

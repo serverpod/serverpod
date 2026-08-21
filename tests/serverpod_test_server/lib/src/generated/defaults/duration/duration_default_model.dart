@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DurationDefaultModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -107,7 +108,7 @@ abstract class DurationDefaultModel
   }
 
   static DurationDefaultModelInclude include() {
-    return DurationDefaultModelInclude._();
+    return DurationDefaultModelInclude.internal_();
   }
 
   static DurationDefaultModelIncludeList includeList({
@@ -118,7 +119,7 @@ abstract class DurationDefaultModel
     _i1.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     DurationDefaultModelInclude? include,
   }) {
-    return DurationDefaultModelIncludeList._(
+    return DurationDefaultModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -213,7 +214,12 @@ class DurationDefaultModelTable extends _i1.Table<int?> {
 }
 
 class DurationDefaultModelInclude extends _i1.IncludeObject {
-  DurationDefaultModelInclude._();
+  @_i2.internal
+  DurationDefaultModelInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -223,16 +229,20 @@ class DurationDefaultModelInclude extends _i1.IncludeObject {
 }
 
 class DurationDefaultModelIncludeList extends _i1.IncludeList {
-  DurationDefaultModelIncludeList._({
+  @_i2.internal
+  DurationDefaultModelIncludeList.internal_({
     _i1.WhereExpressionBuilder<DurationDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultModel.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

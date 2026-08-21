@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Book._({
@@ -86,7 +87,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static BookInclude include({_i2.ChapterIncludeList? chapters}) {
-    return BookInclude._(chapters: chapters);
+    return BookInclude.internal_(chapters: chapters);
   }
 
   static BookIncludeList includeList({
@@ -97,7 +98,7 @@ abstract class Book implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
   }) {
-    return BookIncludeList._(
+    return BookIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,11 +220,17 @@ class BookTable extends _i1.Table<int?> {
 }
 
 class BookInclude extends _i1.IncludeObject {
-  BookInclude._({_i2.ChapterIncludeList? chapters}) {
+  @_i4.internal
+  BookInclude.internal_({
+    _i2.ChapterIncludeList? chapters,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _chapters = chapters;
   }
 
   _i2.ChapterIncludeList? _chapters;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'chapters': _chapters};
@@ -233,16 +240,20 @@ class BookInclude extends _i1.IncludeObject {
 }
 
 class BookIncludeList extends _i1.IncludeList {
-  BookIncludeList._({
+  @_i4.internal
+  BookIncludeList.internal_({
     _i1.WhereExpressionBuilder<BookTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Book.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

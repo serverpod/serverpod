@@ -13,6 +13,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'test_enum.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ObjectWithEnum
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -119,7 +120,7 @@ abstract class ObjectWithEnum
   }
 
   static ObjectWithEnumInclude include() {
-    return ObjectWithEnumInclude._();
+    return ObjectWithEnumInclude.internal_();
   }
 
   static ObjectWithEnumIncludeList includeList({
@@ -130,7 +131,7 @@ abstract class ObjectWithEnum
     _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     ObjectWithEnumInclude? include,
   }) {
-    return ObjectWithEnumIncludeList._(
+    return ObjectWithEnumIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -282,7 +283,10 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
 }
 
 class ObjectWithEnumInclude extends _i1.IncludeObject {
-  ObjectWithEnumInclude._();
+  @_i4.internal
+  ObjectWithEnumInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -292,16 +296,20 @@ class ObjectWithEnumInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithEnumIncludeList extends _i1.IncludeList {
-  ObjectWithEnumIncludeList._({
+  @_i4.internal
+  ObjectWithEnumIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithEnum.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

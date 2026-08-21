@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import '../protocol.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 class ParentClass extends _i1.GrandparentClass
     implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
@@ -77,7 +78,7 @@ class ParentClass extends _i1.GrandparentClass
   }
 
   static ParentClassInclude include() {
-    return ParentClassInclude._();
+    return ParentClassInclude.internal_();
   }
 
   static ParentClassIncludeList includeList({
@@ -88,7 +89,7 @@ class ParentClass extends _i1.GrandparentClass
     _i2.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
   }) {
-    return ParentClassIncludeList._(
+    return ParentClassIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -150,7 +151,10 @@ class ParentClassTable extends _i2.Table<int?> {
 }
 
 class ParentClassInclude extends _i2.IncludeObject {
-  ParentClassInclude._();
+  @_i3.internal
+  ParentClassInclude.internal_({List<_i2.Column>? this.selectedColumns}) {}
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => {};
@@ -160,16 +164,20 @@ class ParentClassInclude extends _i2.IncludeObject {
 }
 
 class ParentClassIncludeList extends _i2.IncludeList {
-  ParentClassIncludeList._({
+  @_i3.internal
+  ParentClassIncludeList.internal_({
     _i2.WhereExpressionBuilder<ParentClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i2.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ParentClass.t);
   }
+
+  final List<_i2.Column>? selectedColumns;
 
   @override
   Map<String, _i2.Include?> get includes => include?.includes ?? {};

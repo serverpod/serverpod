@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class Player implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   Player._({
@@ -89,7 +90,7 @@ abstract class Player implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
   }
 
   static PlayerInclude include({_i2.TeamInclude? team}) {
-    return PlayerInclude._(team: team);
+    return PlayerInclude.internal_(team: team);
   }
 
   static PlayerIncludeList includeList({
@@ -100,7 +101,7 @@ abstract class Player implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
     _i1.OrderByListBuilder<PlayerTable>? orderByList,
     PlayerInclude? include,
   }) {
-    return PlayerIncludeList._(
+    return PlayerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -215,11 +216,17 @@ class PlayerTable extends _i1.Table<int?> {
 }
 
 class PlayerInclude extends _i1.IncludeObject {
-  PlayerInclude._({_i2.TeamInclude? team}) {
+  @_i4.internal
+  PlayerInclude.internal_({
+    _i2.TeamInclude? team,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _i2.TeamInclude? _team;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'team': _team};
@@ -229,16 +236,20 @@ class PlayerInclude extends _i1.IncludeObject {
 }
 
 class PlayerIncludeList extends _i1.IncludeList {
-  PlayerIncludeList._({
+  @_i4.internal
+  PlayerIncludeList.internal_({
     _i1.WhereExpressionBuilder<PlayerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Player.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

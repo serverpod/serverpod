@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class MaxFieldName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -74,7 +75,7 @@ abstract class MaxFieldName
   }
 
   static MaxFieldNameInclude include() {
-    return MaxFieldNameInclude._();
+    return MaxFieldNameInclude.internal_();
   }
 
   static MaxFieldNameIncludeList includeList({
@@ -85,7 +86,7 @@ abstract class MaxFieldName
     _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     MaxFieldNameInclude? include,
   }) {
-    return MaxFieldNameIncludeList._(
+    return MaxFieldNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -166,7 +167,10 @@ class MaxFieldNameTable extends _i1.Table<int?> {
 }
 
 class MaxFieldNameInclude extends _i1.IncludeObject {
-  MaxFieldNameInclude._();
+  @_i2.internal
+  MaxFieldNameInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -176,16 +180,20 @@ class MaxFieldNameInclude extends _i1.IncludeObject {
 }
 
 class MaxFieldNameIncludeList extends _i1.IncludeList {
-  MaxFieldNameIncludeList._({
+  @_i2.internal
+  MaxFieldNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(MaxFieldName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

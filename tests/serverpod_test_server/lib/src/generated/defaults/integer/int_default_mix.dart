@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class IntDefaultMix
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -91,7 +92,7 @@ abstract class IntDefaultMix
   }
 
   static IntDefaultMixInclude include() {
-    return IntDefaultMixInclude._();
+    return IntDefaultMixInclude.internal_();
   }
 
   static IntDefaultMixIncludeList includeList({
@@ -102,7 +103,7 @@ abstract class IntDefaultMix
     _i1.OrderByListBuilder<IntDefaultMixTable>? orderByList,
     IntDefaultMixInclude? include,
   }) {
-    return IntDefaultMixIncludeList._(
+    return IntDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -217,7 +218,10 @@ class IntDefaultMixTable extends _i1.Table<int?> {
 }
 
 class IntDefaultMixInclude extends _i1.IncludeObject {
-  IntDefaultMixInclude._();
+  @_i2.internal
+  IntDefaultMixInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -227,16 +231,20 @@ class IntDefaultMixInclude extends _i1.IncludeObject {
 }
 
 class IntDefaultMixIncludeList extends _i1.IncludeList {
-  IntDefaultMixIncludeList._({
+  @_i2.internal
+  IntDefaultMixIncludeList.internal_({
     _i1.WhereExpressionBuilder<IntDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(IntDefaultMix.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class DeferrableRelationParent
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -71,7 +72,7 @@ abstract class DeferrableRelationParent
   }
 
   static DeferrableRelationParentInclude include() {
-    return DeferrableRelationParentInclude._();
+    return DeferrableRelationParentInclude.internal_();
   }
 
   static DeferrableRelationParentIncludeList includeList({
@@ -82,7 +83,7 @@ abstract class DeferrableRelationParent
     _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
     DeferrableRelationParentInclude? include,
   }) {
-    return DeferrableRelationParentIncludeList._(
+    return DeferrableRelationParentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -156,7 +157,12 @@ class DeferrableRelationParentTable extends _i1.Table<int?> {
 }
 
 class DeferrableRelationParentInclude extends _i1.IncludeObject {
-  DeferrableRelationParentInclude._();
+  @_i2.internal
+  DeferrableRelationParentInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -166,16 +172,20 @@ class DeferrableRelationParentInclude extends _i1.IncludeObject {
 }
 
 class DeferrableRelationParentIncludeList extends _i1.IncludeList {
-  DeferrableRelationParentIncludeList._({
+  @_i2.internal
+  DeferrableRelationParentIncludeList.internal_({
     _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationParent.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

@@ -12,6 +12,7 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import 'package:meta/meta.dart' as _i3;
 
 abstract class EnumDefaultMix
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -114,7 +115,7 @@ abstract class EnumDefaultMix
   }
 
   static EnumDefaultMixInclude include() {
-    return EnumDefaultMixInclude._();
+    return EnumDefaultMixInclude.internal_();
   }
 
   static EnumDefaultMixIncludeList includeList({
@@ -125,7 +126,7 @@ abstract class EnumDefaultMix
     _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
   }) {
-    return EnumDefaultMixIncludeList._(
+    return EnumDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -248,7 +249,10 @@ class EnumDefaultMixTable extends _i1.Table<int?> {
 }
 
 class EnumDefaultMixInclude extends _i1.IncludeObject {
-  EnumDefaultMixInclude._();
+  @_i3.internal
+  EnumDefaultMixInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -258,16 +262,20 @@ class EnumDefaultMixInclude extends _i1.IncludeObject {
 }
 
 class EnumDefaultMixIncludeList extends _i1.IncludeList {
-  EnumDefaultMixIncludeList._({
+  @_i3.internal
+  EnumDefaultMixIncludeList.internal_({
     _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultMix.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

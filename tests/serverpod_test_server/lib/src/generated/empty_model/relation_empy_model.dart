@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import '../empty_model/empty_model_relation_item.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class RelationEmptyModel
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -79,7 +80,7 @@ abstract class RelationEmptyModel
   static RelationEmptyModelInclude include({
     _i2.EmptyModelRelationItemIncludeList? items,
   }) {
-    return RelationEmptyModelInclude._(items: items);
+    return RelationEmptyModelInclude.internal_(items: items);
   }
 
   static RelationEmptyModelIncludeList includeList({
@@ -90,7 +91,7 @@ abstract class RelationEmptyModel
     _i1.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     RelationEmptyModelInclude? include,
   }) {
-    return RelationEmptyModelIncludeList._(
+    return RelationEmptyModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -202,11 +203,17 @@ class RelationEmptyModelTable extends _i1.Table<int?> {
 }
 
 class RelationEmptyModelInclude extends _i1.IncludeObject {
-  RelationEmptyModelInclude._({_i2.EmptyModelRelationItemIncludeList? items}) {
+  @_i4.internal
+  RelationEmptyModelInclude.internal_({
+    _i2.EmptyModelRelationItemIncludeList? items,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _items = items;
   }
 
   _i2.EmptyModelRelationItemIncludeList? _items;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'items': _items};
@@ -216,16 +223,20 @@ class RelationEmptyModelInclude extends _i1.IncludeObject {
 }
 
 class RelationEmptyModelIncludeList extends _i1.IncludeList {
-  RelationEmptyModelIncludeList._({
+  @_i4.internal
+  RelationEmptyModelIncludeList.internal_({
     _i1.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(RelationEmptyModel.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

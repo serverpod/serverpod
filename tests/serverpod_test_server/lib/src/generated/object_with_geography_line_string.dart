@@ -11,6 +11,7 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i2;
 
 abstract class ObjectWithGeographyLineString
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -93,7 +94,7 @@ abstract class ObjectWithGeographyLineString
   }
 
   static ObjectWithGeographyLineStringInclude include() {
-    return ObjectWithGeographyLineStringInclude._();
+    return ObjectWithGeographyLineStringInclude.internal_();
   }
 
   static ObjectWithGeographyLineStringIncludeList includeList({
@@ -104,7 +105,7 @@ abstract class ObjectWithGeographyLineString
     _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
   }) {
-    return ObjectWithGeographyLineStringIncludeList._(
+    return ObjectWithGeographyLineStringIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +217,12 @@ class ObjectWithGeographyLineStringTable extends _i1.Table<int?> {
 }
 
 class ObjectWithGeographyLineStringInclude extends _i1.IncludeObject {
-  ObjectWithGeographyLineStringInclude._();
+  @_i2.internal
+  ObjectWithGeographyLineStringInclude.internal_({
+    List<_i1.Column>? this.selectedColumns,
+  }) {}
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {};
@@ -226,16 +232,20 @@ class ObjectWithGeographyLineStringInclude extends _i1.IncludeObject {
 }
 
 class ObjectWithGeographyLineStringIncludeList extends _i1.IncludeList {
-  ObjectWithGeographyLineStringIncludeList._({
+  @_i2.internal
+  ObjectWithGeographyLineStringIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyLineString.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

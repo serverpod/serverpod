@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+
 import '../serverpod_database.dart';
 import 'interface/database_connection.dart';
 
@@ -150,6 +152,77 @@ class Database {
     );
   }
 
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  @internal
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
+    return _databaseConnection.findAsJson<T>(
+      _session,
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      transaction: resolvedTransaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a single [Map<String, dynamic>] matching the given query parameters or null
+  /// if no matching row is found.
+  @internal
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
+    return await _databaseConnection.findFirstRowAsJson<T>(
+      _session,
+      where: where,
+      offset: offset,
+      orderBy: orderBy,
+      orderByList: orderByList,
+      transaction: resolvedTransaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
   /// Finds a single [TableRow] by its [id] or null if no such row exists. It's
   /// often useful to cast the object returned.
   ///
@@ -179,6 +252,34 @@ class Database {
     }
 
     return _databaseConnection.findById<T>(
+      _session,
+      id,
+      transaction: resolvedTransaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  @internal
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
+    Object id, {
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) async {
+    // ignore: invalid_use_of_visible_for_testing_member
+    final resolvedTransaction = transaction ?? _session.transaction;
+    if (lockMode != null && resolvedTransaction == null) {
+      throw ArgumentError(
+        'A transaction is required when using row locking. '
+        'Wrap your query in session.db.transaction().',
+      );
+    }
+
+    return _databaseConnection.findByIdAsJson<T>(
       _session,
       id,
       transaction: resolvedTransaction,

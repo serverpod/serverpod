@@ -14,6 +14,7 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class ObjectUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -92,7 +93,7 @@ abstract class ObjectUser
   }
 
   static ObjectUserInclude include({_i2.UserInfoInclude? userInfo}) {
-    return ObjectUserInclude._(userInfo: userInfo);
+    return ObjectUserInclude.internal_(userInfo: userInfo);
   }
 
   static ObjectUserIncludeList includeList({
@@ -103,7 +104,7 @@ abstract class ObjectUser
     _i1.OrderByListBuilder<ObjectUserTable>? orderByList,
     ObjectUserInclude? include,
   }) {
-    return ObjectUserIncludeList._(
+    return ObjectUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -220,11 +221,17 @@ class ObjectUserTable extends _i1.Table<int?> {
 }
 
 class ObjectUserInclude extends _i1.IncludeObject {
-  ObjectUserInclude._({_i2.UserInfoInclude? userInfo}) {
+  @_i4.internal
+  ObjectUserInclude.internal_({
+    _i2.UserInfoInclude? userInfo,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
     _userInfo = userInfo;
   }
 
   _i2.UserInfoInclude? _userInfo;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'userInfo': _userInfo};
@@ -234,16 +241,20 @@ class ObjectUserInclude extends _i1.IncludeObject {
 }
 
 class ObjectUserIncludeList extends _i1.IncludeList {
-  ObjectUserIncludeList._({
+  @_i4.internal
+  ObjectUserIncludeList.internal_({
     _i1.WhereExpressionBuilder<ObjectUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectUser.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};

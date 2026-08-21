@@ -15,6 +15,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
     as _i2;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
 
 abstract class UserNoteCollectionWithALongName
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -90,7 +91,7 @@ abstract class UserNoteCollectionWithALongName
   static UserNoteCollectionWithALongNameInclude include({
     _i2.UserNoteWithALongNameIncludeList? notes,
   }) {
-    return UserNoteCollectionWithALongNameInclude._(notes: notes);
+    return UserNoteCollectionWithALongNameInclude.internal_(notes: notes);
   }
 
   static UserNoteCollectionWithALongNameIncludeList includeList({
@@ -101,7 +102,7 @@ abstract class UserNoteCollectionWithALongName
     _i1.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     UserNoteCollectionWithALongNameInclude? include,
   }) {
-    return UserNoteCollectionWithALongNameIncludeList._(
+    return UserNoteCollectionWithALongNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -232,13 +233,17 @@ class UserNoteCollectionWithALongNameTable extends _i1.Table<int?> {
 }
 
 class UserNoteCollectionWithALongNameInclude extends _i1.IncludeObject {
-  UserNoteCollectionWithALongNameInclude._({
+  @_i4.internal
+  UserNoteCollectionWithALongNameInclude.internal_({
     _i2.UserNoteWithALongNameIncludeList? notes,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     _notes = notes;
   }
 
   _i2.UserNoteWithALongNameIncludeList? _notes;
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => {'notes': _notes};
@@ -248,16 +253,20 @@ class UserNoteCollectionWithALongNameInclude extends _i1.IncludeObject {
 }
 
 class UserNoteCollectionWithALongNameIncludeList extends _i1.IncludeList {
-  UserNoteCollectionWithALongNameIncludeList._({
+  @_i4.internal
+  UserNoteCollectionWithALongNameIncludeList.internal_({
     _i1.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    List<_i1.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteCollectionWithALongName.t);
   }
+
+  final List<_i1.Column>? selectedColumns;
 
   @override
   Map<String, _i1.Include?> get includes => include?.includes ?? {};
