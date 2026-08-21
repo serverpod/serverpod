@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
+
+const _staticCacheControlEnvironmentVariable =
+    'SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL';
 
 /// Route for serving static assets.
 class StaticRoute extends Route {
-  static CacheControlHeader? _defaultFactory(
-    Request ctx,
-    FileInfo fileInfo,
-  ) => null;
-
   /// Returns a [CacheControlHeader] with private and no-cache.
   static CacheControlFactory privateNoCache() =>
       (_, _) => CacheControlHeader(privateCache: true, noCache: true);
@@ -38,22 +37,31 @@ class StaticRoute extends Route {
   /// Use [StaticRoute.directory] to serve everything below a given [root].
   ///
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
-  /// return for a given asset. Default is to leave caching behavior to client
-  /// side heuristics.
+  /// return for a given asset. Defaults to the value of
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL`, or leaving caching behavior
+  /// to client side heuristics when the environment variable is not set.
+  ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable.
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   factory StaticRoute.directory(
     Directory root, {
     CacheBustingConfig? cacheBustingConfig,
-    CacheControlFactory cacheControlFactory = _defaultFactory,
+    CacheControlFactory? cacheControlFactory,
     String? host,
   }) {
     return StaticRoute._(
       StaticHandler.directory(
         root,
         cacheBustingConfig: cacheBustingConfig,
-        cacheControl: cacheControlFactory,
+        cacheControl:
+            cacheControlFactory ??
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
+              fallback: noCacheControl,
+            ),
       ).asHandler,
       tailMatch: true,
       host: host,
@@ -65,8 +73,13 @@ class StaticRoute extends Route {
   /// [CacheBustingConfig.fileSystemRoot]
   ///
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
-  /// return for a given asset. Defaults to a factory that produces a
-  /// [CacheControlHeader] with public cache enabled and 1 year max age.
+  /// return for a given asset. Defaults to the value of
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL`, or a factory that produces a
+  /// [CacheControlHeader] with public cache enabled and 1 year max age when
+  /// the environment variable is not set.
+  ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable.
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
@@ -81,7 +94,12 @@ class StaticRoute extends Route {
         cacheBustingConfig: config,
         cacheControl:
             cacheControlFactory ??
-            StaticRoute.publicImmutable(maxAge: const Duration(days: 365)),
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
+              fallback: StaticRoute.publicImmutable(
+                maxAge: const Duration(days: 365),
+              ),
+            ),
       ).asHandler,
       tailMatch: true,
       host: host,
@@ -91,20 +109,29 @@ class StaticRoute extends Route {
   /// Use [StaticRoute.file] to serve a single [file].
   ///
   /// Use [cacheControlFactory] to customize what [CacheControlHeader] to
-  /// return for a given asset. Default is to leave caching behavior to client
-  /// side heuristics.
+  /// return for a given asset. Defaults to the value of
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL`, or leaving caching behavior
+  /// to client side heuristics when the environment variable is not set.
+  ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable.
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   factory StaticRoute.file(
     File file, {
-    CacheControlFactory cacheControlFactory = _defaultFactory,
+    CacheControlFactory? cacheControlFactory,
     String? host,
   }) {
     return StaticRoute._(
       StaticHandler.file(
         file,
-        cacheControl: cacheControlFactory,
+        cacheControl:
+            cacheControlFactory ??
+            cacheControlFactoryFromEnvironment(
+              _staticCacheControlEnvironmentVariable,
+              fallback: noCacheControl,
+            ),
       ).asHandler,
       tailMatch: false,
       host: host,
