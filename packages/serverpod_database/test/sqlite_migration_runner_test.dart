@@ -54,7 +54,7 @@ void main() {
         }),
 
         throwsA(
-          isA<SqliteForeignKeyViolationException>().having(
+          isA<SqliteMigrationForeignKeyViolationException>().having(
             (e) => e.message,
             'message',
             equals(
