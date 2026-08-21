@@ -1223,11 +1223,11 @@ class Serverpod {
     if (config.role != ServerpodRole.maintenance) return;
     if (_completedFutureCalls && _completedHealthChecks) {
       _writeLifecycleMessage('All maintenance tasks completed. Exiting.');
-      // Do not throw [ExitException]: health-check code swallows it, and the
-      // embedded-Postgres pool then keeps the isolate alive. Do not drain
-      // log writers here — they can block the isolate while the pool is
-      // still up. Flush the lifecycle line so spawn tests see it on a pipe.
-      _exitAfterFlush(_exitCode, drainLogs: false);
+      // Throw so `_unguardedStart` unwinds into the start-up zone, which
+      // flushes stdio and exits. Calling [_exitAfterFlush] here is a
+      // fire-and-forget Future that races the still-running start() and
+      // leaves the embedded-Postgres pool keeping the isolate alive.
+      throw ExitException(_exitCode);
     }
   }
 
