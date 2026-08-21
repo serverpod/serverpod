@@ -837,7 +837,14 @@ class Serverpod {
 
     void onZoneError(Object error, StackTrace stackTrace) {
       if (error is ExitException) {
-        _exitAfterFlush(error.exitCode, message: error.message);
+        // Successful maintenance / apply-migrations exits must not drain
+        // log writers: that can block the isolate while the pool is up
+        // and prevents [exit] from running.
+        _exitAfterFlush(
+          error.exitCode,
+          message: error.message,
+          drainLogs: error.exitCode != 0,
+        );
         return;
       }
 
@@ -850,9 +857,13 @@ class Serverpod {
     }
 
     if (runInGuardedZone) {
-      await runZonedGuarded(() async {
-        await _unguardedStart();
-      }, onZoneError);
+      try {
+        await runZonedGuarded(() async {
+          await _unguardedStart();
+        }, onZoneError);
+      } on ExitException {
+        // [onZoneError] already scheduled process exit.
+      }
     } else {
       await _unguardedStart();
       if (_exitCode != 0) {

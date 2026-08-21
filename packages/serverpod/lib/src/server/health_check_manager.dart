@@ -66,9 +66,17 @@ class HealthCheckManager {
       log.warning(
         'CPU and memory usage metrics are not supported on Windows.',
       );
-      if (_pod.config.role == ServerpodRole.maintenance) {
-        onCompleted();
-      }
+    }
+
+    // Maintenance is a one-shot process. Do not wait on [SystemResources]
+    // or a health-check query: either can hang the isolate, and spawn tests
+    // then miss the 120s exit wait. Windows already skipped this work.
+    if (_pod.config.role == ServerpodRole.maintenance) {
+      onCompleted();
+      return;
+    }
+
+    if (Platform.isWindows) {
       return;
     }
 
@@ -81,19 +89,7 @@ class HealthCheckManager {
       );
     }
 
-    // Maintenance is a one-shot: run now instead of waiting up to [interval]
-    // for the next aligned slot. Spawn tests otherwise miss the 120s exit
-    // wait after a cold embedded-Postgres start. Bound the check so a stuck
-    // query cannot keep the process alive until the suite times out.
-    if (_pod.config.role == ServerpodRole.maintenance) {
-      try {
-        await _performHealthCheck().timeout(const Duration(seconds: 15));
-      } on TimeoutException {
-        onCompleted();
-      }
-    } else {
-      _scheduleNextCheck();
-    }
+    _scheduleNextCheck();
   }
 
   /// Stops the health check manager.
