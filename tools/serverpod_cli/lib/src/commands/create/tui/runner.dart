@@ -121,6 +121,7 @@ Future<void> performCreateWithTui(
   List<ServerpodCreateConfig> configs = ServerpodCreateConfig.values,
   TemplateContext? defaultContext,
   bool requireIde = false,
+  String? org,
 }) async {
   final result = await getCreateConfigState(
     name: name,
@@ -166,6 +167,7 @@ Future<void> performCreateWithTui(
           createDefaultMigrationForUpgrade: createDefaultMigrationForUpgrade,
           context: state.toTemplateContext(),
           analyticsMethod: analyticsMethod,
+          org: org,
         );
 
         final success = result is CreateSuccess;

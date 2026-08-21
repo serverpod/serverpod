@@ -61,6 +61,7 @@ commands:
       --no-website: "Configure the server to host a website."
       --ide=*: "Configure agent skills and MCP servers for one or more IDEs. Use \"none\" to disable all IDE configuration."
       -n, --name=!: "The name of the project to create.\nCan also be specified as the first argument."
+      --org=: "The organization identifier in reverse-domain notation for the Flutter app, e.g. com.example. Passed to `flutter create --org`."
     exclusiveFlags:
       - [database, no-database]
       - [redis, no-redis]

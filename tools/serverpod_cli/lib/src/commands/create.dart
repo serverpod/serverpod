@@ -100,7 +100,15 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  )
+  ),
+  org(
+    StringOption(
+      argName: 'org',
+      helpText:
+          'The organization identifier in reverse-domain notation for the '
+          'Flutter app, e.g. com.example. Passed to `flutter create --org`.',
+    ),
+  ),
   ;
 
   static const _templateGroup = MutuallyExclusive(
@@ -174,6 +182,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
     var template = commandConfig.value(CreateOption.template);
     var force = commandConfig.value(CreateOption.force);
     var name = commandConfig.value(CreateOption.name);
+    var org = commandConfig.optionalValue(CreateOption.org);
 
     // Get interactive flag from global configuration
     final interactive = serverpodRunner.globalConfiguration.optionalValue(
@@ -244,6 +253,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
         force,
         template: template,
         interactive: true,
+        org: org,
       );
       return;
     }
@@ -254,6 +264,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
       interactive: interactive,
       context: context,
       analyticsMethod: 'create',
+      org: org,
     );
 
     if (result is! CreateSuccess) {
