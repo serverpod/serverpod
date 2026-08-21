@@ -1,3 +1,19 @@
+## 4.0.0-beta.4
+
+- feat: Allows overriding the default cache header for `StaticRoute` and `SpaRoute` from env vars.
+- feat: Adds opt-in `httpOnly` cookie authentication for web clients.
+- feat: Generates the column specified as `field=` on relations that require the explicit foreign key.
+- feat: Introduces the `deferred` and `deferrable` flags on relations to postpone constraints evaluation inside transactions.
+- feat: Makes `start` TUI app URLs clickable.
+- fix: Restores inbound foreign keys on migrations when a table is recreated.
+- fix: Resolves generated Dart formatters with captured stderr.
+- fix: Fixes the `start` TUI app status on spontaneous exit.
+- refactor: BREAKING. Refactors the `ServerpodClientException` hierarchy to introduce a proper exception for network errors. Previous HTTP-related exceptions now extend the sealed `ServerpodClientHttpException` class.
+- refactor: BREAKING. Refactors the database exception hierarchy to throw specific exceptions for common operation errors (unique/foreign key constraint violations, SQLite database locked, etc.).
+- chore: Generates stable import prefixes on generated code to reduce conflicts and diff noise.
+- chore: Generates a simplified `Serverpod` class for cleaner initialization.
+- chore: Reviews all skills for correctness and better guidance.
+
 ## 4.0.0-beta.3
 
 - fix: Improves the `serverpod start` TUI borders and dividers with T-junction characters.
