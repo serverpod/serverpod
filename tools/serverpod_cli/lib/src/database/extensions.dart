@@ -255,12 +255,14 @@ extension DatabaseDefinitionSqlGeneration on DatabaseDefinition {
 
 extension DatabaseMigrationSqlGeneration on DatabaseMigration {
   String toSql({
+    required DatabaseDefinition databaseDefinition,
     required List<DatabaseMigrationVersion> installedModules,
     required List<DatabaseMigrationVersion> removedModules,
     required DatabaseDialect dialect,
   }) {
     return SqlGenerator.forDialect(dialect).generateDatabaseMigrationSql(
       this,
+      databaseDefinition,
       installedModules: installedModules,
       removedModules: removedModules,
     );

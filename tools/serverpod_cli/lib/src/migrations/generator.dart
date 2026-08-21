@@ -233,6 +233,7 @@ class MigrationGenerator {
     return _writeRepairMigration(
       repairMigrationName,
       migration,
+      dstDatabase,
       installedModules,
       removedModules,
       dialect,
@@ -396,11 +397,13 @@ class MigrationGenerator {
   File _writeRepairMigration(
     String repairMigrationName,
     DatabaseMigration migration,
+    DatabaseDefinition databaseDefinition,
     List<DatabaseMigrationVersion> installedModules,
     List<DatabaseMigrationVersion> removedModules,
     DatabaseDialect dialect,
   ) {
     var repairMigrationSql = migration.toSql(
+      databaseDefinition: databaseDefinition,
       dialect: dialect,
       installedModules: installedModules,
       removedModules: removedModules,
@@ -545,6 +548,7 @@ class MigrationVersion {
     );
 
     var migrationSql = migration.toSql(
+      databaseDefinition: databaseDefinitionFull,
       dialect: dialect,
       installedModules: installedModules,
       removedModules: removedModules,
