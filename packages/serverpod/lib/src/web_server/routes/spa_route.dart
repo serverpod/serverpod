@@ -2,6 +2,10 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
+
+const _spaCacheControlEnvironmentVariable =
+    'SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL';
 
 /// Route for serving Single Page Applications (SPAs) with fallback support.
 ///
@@ -16,6 +20,22 @@ import 'package:serverpod/serverpod.dart';
 ///   ),
 /// );
 /// ```
+///
+/// ## About caching
+///
+/// The [fallback] file is always served without a `Cache-Control` header when
+/// it answers a client side route, leaving caching behavior to client side
+/// heuristics. Caching the app shell would serve a stale application after a
+/// deploy, so neither [cacheControlFactory] nor the environment variable below
+/// applies to it.
+///
+/// The files in [directory] are served without a `Cache-Control` header as
+/// well, unless `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` is set. Set it when
+/// the SPA build embeds content hashes in its asset URLs, so that assets can
+/// safely be cached for a long time.
+///
+/// The `SERVERPOD_WEB_SERVER_STATIC_CACHE_CONTROL` environment variable used by
+/// [StaticRoute] does not apply to this route.
 class SpaRoute extends Route {
   /// The directory containing static files
   final Directory directory;
@@ -23,8 +43,13 @@ class SpaRoute extends Route {
   /// The fallback file (typically [directory]/index.html)
   final File fallback;
 
-  /// Cache control factory for static files
-  final CacheControlFactory? cacheControlFactory;
+  /// Cache control factory for the files in [directory].
+  ///
+  /// Defaults to the value of `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL`, or to
+  /// leaving caching behavior to client side heuristics when the environment
+  /// variable is not set. It never applies to the [fallback] file, which is
+  /// always served without a `Cache-Control` header.
+  final CacheControlFactory cacheControlFactory;
 
   /// Cache busting configuration for static files
   final CacheBustingConfig? cacheBustingConfig;
@@ -35,18 +60,29 @@ class SpaRoute extends Route {
   /// files. The [fallback] parameter is the file served when requested files
   /// don't exist, enabling client-side routing.
   ///
-  /// Cache behavior can be customized using [cacheControlFactory] for static
-  /// asset headers and [cacheBustingConfig] for cache busting support.
+  /// Cache behavior can be customized using [cacheControlFactory] for the
+  /// headers of the files in [directory] and [cacheBustingConfig] for cache
+  /// busting support. The [fallback] file is always served without a
+  /// `Cache-Control` header.
+  ///
+  /// An explicit [cacheControlFactory] takes precedence over the value of the
+  /// `SERVERPOD_WEB_SERVER_SPA_CACHE_CONTROL` environment variable.
   ///
   /// The [host] parameter restricts this route to a specific virtual host
   /// (defaults to `null`, matching any host).
   SpaRoute(
     this.directory, {
     required this.fallback,
-    this.cacheControlFactory,
+    CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
     super.host,
-  }) : super(methods: {Method.get, Method.head});
+  }) : cacheControlFactory =
+           cacheControlFactory ??
+           cacheControlFactoryFromEnvironment(
+             _spaCacheControlEnvironmentVariable,
+             fallback: noCacheControl,
+           ),
+       super(methods: {Method.get, Method.head});
 
   @override
   void injectIn(RelicRouter router) {
@@ -55,7 +91,10 @@ class SpaRoute extends Route {
     subRouter.use(
       '/',
       FallbackMiddleware(
-        fallback: StaticRoute.file(fallback),
+        fallback: StaticRoute.file(
+          fallback,
+          cacheControlFactory: noCacheControl,
+        ),
         on: (response) => response.statusCode == 404,
       ).call,
     );
@@ -63,7 +102,7 @@ class SpaRoute extends Route {
     StaticRoute.directory(
       directory,
       cacheBustingConfig: cacheBustingConfig,
-      cacheControlFactory: cacheControlFactory ?? (_, _) => null,
+      cacheControlFactory: cacheControlFactory,
     ).injectIn(subRouter);
 
     router.attach('/', subRouter);

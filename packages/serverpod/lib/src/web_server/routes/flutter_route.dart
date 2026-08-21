@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
 
 const _flutterCacheControlEnvironmentVariable =
     'SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL';
@@ -77,25 +78,14 @@ class FlutterRoute extends Route {
     CacheControlFactory? cacheControlFactory,
     this.cacheBustingConfig,
     super.host,
-  }) : cacheControlFactory =
-           cacheControlFactory ?? _cacheControlFromEnvironment(),
-       indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
+  }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
+       cacheControlFactory =
+           cacheControlFactory ??
+           cacheControlFactoryFromEnvironment(
+             _flutterCacheControlEnvironmentVariable,
+             fallback: _defaultFlutterCacheControl,
+           ),
        super(methods: {Method.get, Method.head});
-
-  /// Resolves cache control from the environment, or the Flutter defaults.
-  ///
-  /// Parses `SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL` immediately so invalid
-  /// values fail at construction rather than on the first request.
-  static CacheControlFactory _cacheControlFromEnvironment() {
-    final cacheControl =
-        Platform.environment[_flutterCacheControlEnvironmentVariable];
-    if (cacheControl == null) {
-      return _defaultFlutterCacheControl;
-    }
-
-    final header = CacheControlHeader.parse([cacheControl]);
-    return (_, _) => header;
-  }
 
   /// Default cache control factory for Flutter web files.
   ///
