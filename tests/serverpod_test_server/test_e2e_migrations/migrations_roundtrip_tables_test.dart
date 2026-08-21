@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 5))
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -7,8 +8,8 @@ void main() {
   group('Given new protocol model with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -61,9 +62,10 @@ void main() {
   group('Given multiple new protocol models with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql:
-            'DROP TABLE IF EXISTS migrated_table, migrated_table_2, migrated_table_3;',
-        serviceClient: serviceClient,
+        resetQueries: [
+          'DROP TABLE IF EXISTS migrated_table, migrated_table_2, migrated_table_3;',
+        ],
+        runQueries: runQueries,
       );
     });
 
@@ -134,8 +136,8 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -172,8 +174,8 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 

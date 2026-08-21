@@ -1,11 +1,10 @@
 @Timeout(Duration(minutes: 5))
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
+import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
+import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
-import 'package:serverpod_test_server/test_util/service_client.dart';
-import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'test_tools/serverpod_test_tools.dart';
-
-const serviceServerUrl = 'http://localhost:8081/';
 
 void main() {
   MigrationTestUtils.setModuleName('serverpod_test_nonvector');
@@ -17,8 +16,8 @@ void main() {
       group('when applying a migration with no vector columns', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
-            resetSql: 'DROP TABLE IF EXISTS integrity_test_table;',
-            serviceClient: serviceClient,
+            resetQueries: ['DROP TABLE IF EXISTS integrity_test_table;'],
+            runQueries: runQueries,
           );
         });
 
@@ -77,8 +76,8 @@ fields:
       group('when applying a migration with a vector column', () {
         tearDown(() async {
           await MigrationTestUtils.migrationTestCleanup(
-            resetSql: 'DROP TABLE IF EXISTS vector_test_table;',
-            serviceClient: serviceClient,
+            resetQueries: ['DROP TABLE IF EXISTS vector_test_table;'],
+            runQueries: runQueries,
           );
         });
 

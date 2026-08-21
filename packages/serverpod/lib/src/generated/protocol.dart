@@ -43,11 +43,10 @@ import 'runtime_settings.dart' as _i29;
 import 'server_health_connection_info.dart' as _i30;
 import 'server_health_metric.dart' as _i31;
 import 'server_health_result.dart' as _i32;
-import 'serverpod_sql_exception.dart' as _i33;
-import 'session_log_entry.dart' as _i34;
-import 'session_log_filter.dart' as _i35;
-import 'session_log_info.dart' as _i36;
-import 'session_log_result.dart' as _i37;
+import 'session_log_entry.dart' as _i33;
+import 'session_log_filter.dart' as _i34;
+import 'session_log_info.dart' as _i35;
+import 'session_log_result.dart' as _i36;
 export 'authentication/revoked_authentication_auth_id.dart';
 export 'authentication/revoked_authentication_scope.dart';
 export 'authentication/revoked_authentication_user.dart';
@@ -77,7 +76,6 @@ export 'runtime_settings.dart';
 export 'server_health_connection_info.dart';
 export 'server_health_metric.dart';
 export 'server_health_result.dart';
-export 'serverpod_sql_exception.dart';
 export 'session_log_entry.dart';
 export 'session_log_filter.dart';
 export 'session_log_info.dart';
@@ -1306,20 +1304,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i32.ServerHealthResult) {
       return _i32.ServerHealthResult.fromJson(data) as T;
     }
-    if (t == _i33.ServerpodSqlException) {
-      return _i33.ServerpodSqlException.fromJson(data) as T;
+    if (t == _i33.SessionLogEntry) {
+      return _i33.SessionLogEntry.fromJson(data) as T;
     }
-    if (t == _i34.SessionLogEntry) {
-      return _i34.SessionLogEntry.fromJson(data) as T;
+    if (t == _i34.SessionLogFilter) {
+      return _i34.SessionLogFilter.fromJson(data) as T;
     }
-    if (t == _i35.SessionLogFilter) {
-      return _i35.SessionLogFilter.fromJson(data) as T;
+    if (t == _i35.SessionLogInfo) {
+      return _i35.SessionLogInfo.fromJson(data) as T;
     }
-    if (t == _i36.SessionLogInfo) {
-      return _i36.SessionLogInfo.fromJson(data) as T;
-    }
-    if (t == _i37.SessionLogResult) {
-      return _i37.SessionLogResult.fromJson(data) as T;
+    if (t == _i36.SessionLogResult) {
+      return _i36.SessionLogResult.fromJson(data) as T;
     }
     if (t == _i1.getType<_i4.RevokedAuthenticationAuthId?>()) {
       return (data != null
@@ -1443,21 +1438,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return (data != null ? _i32.ServerHealthResult.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i33.ServerpodSqlException?>()) {
-      return (data != null ? _i33.ServerpodSqlException.fromJson(data) : null)
-          as T;
+    if (t == _i1.getType<_i33.SessionLogEntry?>()) {
+      return (data != null ? _i33.SessionLogEntry.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i34.SessionLogEntry?>()) {
-      return (data != null ? _i34.SessionLogEntry.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i34.SessionLogFilter?>()) {
+      return (data != null ? _i34.SessionLogFilter.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i35.SessionLogFilter?>()) {
-      return (data != null ? _i35.SessionLogFilter.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i35.SessionLogInfo?>()) {
+      return (data != null ? _i35.SessionLogInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i36.SessionLogInfo?>()) {
-      return (data != null ? _i36.SessionLogInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i37.SessionLogResult?>()) {
-      return (data != null ? _i37.SessionLogResult.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i36.SessionLogResult?>()) {
+      return (data != null ? _i36.SessionLogResult.fromJson(data) : null) as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
@@ -1532,9 +1523,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
               : null)
           as T;
     }
-    if (t == List<_i36.SessionLogInfo>) {
+    if (t == List<_i35.SessionLogInfo>) {
       return (data as List)
-              .map((e) => deserialize<_i36.SessionLogInfo>(e))
+              .map((e) => deserialize<_i35.SessionLogInfo>(e))
               .toList()
           as T;
     }
@@ -1585,11 +1576,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i30.ServerHealthConnectionInfo => 'ServerHealthConnectionInfo',
       _i31.ServerHealthMetric => 'ServerHealthMetric',
       _i32.ServerHealthResult => 'ServerHealthResult',
-      _i33.ServerpodSqlException => 'ServerpodSqlException',
-      _i34.SessionLogEntry => 'SessionLogEntry',
-      _i35.SessionLogFilter => 'SessionLogFilter',
-      _i36.SessionLogInfo => 'SessionLogInfo',
-      _i37.SessionLogResult => 'SessionLogResult',
+      _i33.SessionLogEntry => 'SessionLogEntry',
+      _i34.SessionLogFilter => 'SessionLogFilter',
+      _i35.SessionLogInfo => 'SessionLogInfo',
+      _i36.SessionLogResult => 'SessionLogResult',
       _ => null,
     };
   }
@@ -1664,15 +1654,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'ServerHealthMetric';
       case _i32.ServerHealthResult():
         return 'ServerHealthResult';
-      case _i33.ServerpodSqlException():
-        return 'ServerpodSqlException';
-      case _i34.SessionLogEntry():
+      case _i33.SessionLogEntry():
         return 'SessionLogEntry';
-      case _i35.SessionLogFilter():
+      case _i34.SessionLogFilter():
         return 'SessionLogFilter';
-      case _i36.SessionLogInfo():
+      case _i35.SessionLogInfo():
         return 'SessionLogInfo';
-      case _i37.SessionLogResult():
+      case _i36.SessionLogResult():
         return 'SessionLogResult';
     }
     className = _i3.Protocol().getClassNameForObject(data);
@@ -1780,20 +1768,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'ServerHealthResult') {
       return deserialize<_i32.ServerHealthResult>(data['data']);
     }
-    if (dataClassName == 'ServerpodSqlException') {
-      return deserialize<_i33.ServerpodSqlException>(data['data']);
-    }
     if (dataClassName == 'SessionLogEntry') {
-      return deserialize<_i34.SessionLogEntry>(data['data']);
+      return deserialize<_i33.SessionLogEntry>(data['data']);
     }
     if (dataClassName == 'SessionLogFilter') {
-      return deserialize<_i35.SessionLogFilter>(data['data']);
+      return deserialize<_i34.SessionLogFilter>(data['data']);
     }
     if (dataClassName == 'SessionLogInfo') {
-      return deserialize<_i36.SessionLogInfo>(data['data']);
+      return deserialize<_i35.SessionLogInfo>(data['data']);
     }
     if (dataClassName == 'SessionLogResult') {
-      return deserialize<_i37.SessionLogResult>(data['data']);
+      return deserialize<_i36.SessionLogResult>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_database.')) {
       data['className'] = dataClassName.substring(19);
@@ -1844,8 +1829,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return _i30.ServerHealthConnectionInfo.t;
       case _i31.ServerHealthMetric:
         return _i31.ServerHealthMetric.t;
-      case _i34.SessionLogEntry:
-        return _i34.SessionLogEntry.t;
+      case _i33.SessionLogEntry:
+        return _i33.SessionLogEntry.t;
     }
     return null;
   }

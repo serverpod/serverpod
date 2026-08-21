@@ -1,2 +1,7 @@
+insightsDatabaseTest:
+  - executeSql:
+  - fetchDatabaseBulkData:
+  - runQueries:
+  - getDatabaseRowCount:
 greeting:
   - hello:

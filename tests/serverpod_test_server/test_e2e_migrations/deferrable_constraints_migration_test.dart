@@ -1,5 +1,6 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_database/serverpod_database.dart';
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -10,8 +11,8 @@ const _childTable = 'defer_fk_child';
 void main() {
   tearDown(() async {
     await MigrationTestUtils.migrationTestCleanup(
-      resetSql: 'DROP TABLE IF EXISTS $_childTable, $_parentTable;',
-      serviceClient: serviceClient,
+      resetQueries: ['DROP TABLE IF EXISTS $_childTable, $_parentTable;'],
+      runQueries: runQueries,
     );
   });
 

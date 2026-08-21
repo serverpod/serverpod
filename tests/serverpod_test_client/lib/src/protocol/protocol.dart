@@ -258,6 +258,8 @@ import 'package:serverpod_test_client/src/protocol/inheritance/polymorphism/pare
 import 'package:serverpod_test_client/src/protocol/types.dart' as _i229;
 import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
     as _i230;
+import 'package:serverpod_service_client/serverpod_service_client.dart'
+    as _i231;
 export 'by_index_enum_with_name_value.dart';
 export 'by_name_enum_with_name_value.dart';
 export 'changed_id_type/many_to_many/course.dart';
@@ -6007,6 +6009,9 @@ class Protocol extends _i1.SerializationManager {
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i224.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i231.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }

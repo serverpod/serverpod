@@ -36,6 +36,8 @@ dependency_overrides:
     path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
+  serverpod_service_client:
+    path: ../../packages/serverpod_service_client
   serverpod_shared:
     path: ../../packages/serverpod_shared
   serverpod_test_module_client:

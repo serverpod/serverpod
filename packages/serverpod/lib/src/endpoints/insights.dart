@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/log.dart' hide LogEntry;
@@ -130,15 +129,6 @@ class InsightsEndpoint extends Endpoint {
     return SessionLogResult(sessionLog: sessionLogInfo);
   }
 
-  /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getOpenSessionLog(
-    Session session,
-    int? numEntries,
-    SessionLogFilter? filter,
-  ) async {
-    return SessionLogResult(sessionLog: []);
-  }
-
   /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
     return CachesInfo(
@@ -154,11 +144,6 @@ class InsightsEndpoint extends Endpoint {
       maxEntries: cache.maxLocalEntries,
       keys: fetchKeys ? cache.localKeys : null,
     );
-  }
-
-  /// Safely shuts down this [ServerPod].
-  Future<void> shutdown(Session session) async {
-    await server.serverpod.shutdown();
   }
 
   /// Performs a health check on the running [ServerPod].
@@ -189,17 +174,6 @@ class InsightsEndpoint extends Endpoint {
       metrics: metrics,
       connectionInfos: connectionInfos,
     );
-  }
-
-  /// Performs a hot reload of the server.
-  Future<bool> hotReload(Session session) async {
-    if (!await HotReloader.isHotReloadAvailable()) {
-      log.error(
-        'Hot reload is not available. You need to run dart with --enable-vm-service.',
-      );
-      return false;
-    }
-    return await HotReloader.hotReload();
   }
 
   /// Returns the target structure of the database defined in the
@@ -292,77 +266,6 @@ class InsightsEndpoint extends Endpoint {
       installedMigrations: installedMigrations,
       latestAvailableMigrations: latestAvailableMigrations,
     );
-  }
-
-  /// Exports raw data serialized in JSON from the database.
-  Future<BulkData> fetchDatabaseBulkData(
-    Session session, {
-    required String table,
-    required int startingId,
-    required int limit,
-    Filter? filter,
-  }) async {
-    try {
-      return DatabaseBulkData.exportTableData(
-        database: session.db,
-        table: table,
-        lastId: startingId,
-        limit: limit,
-        filter: filter,
-      );
-    } catch (e) {
-      throw BulkDataException(
-        message: 'Failed to fetch bulk data. ($e)',
-      );
-    }
-  }
-
-  /// Executes a list of queries on the database and returns the last result.
-  /// The queries are executed in a single transaction.
-  Future<BulkQueryResult> runQueries(
-    Session session,
-    List<String> queries,
-  ) async {
-    try {
-      var result = await DatabaseBulkData.executeQueries(
-        database: session.db,
-        queries: queries,
-      );
-      return result;
-    } catch (e) {
-      if (e is DatabaseException) {
-        throw BulkDataException(
-          message: 'Failed to execute query: ${e.message}',
-        );
-      } else {
-        throw BulkDataException(
-          message: 'Failed to execute query: $e',
-        );
-      }
-    }
-  }
-
-  /// Returns the approximate number of rows in the provided [table].
-  Future<int> getDatabaseRowCount(
-    Session session, {
-    required String table,
-  }) async {
-    return DatabaseBulkData.approximateRowCount(
-      database: session.db,
-      table: table,
-    );
-  }
-
-  /// Executes SQL commands. Returns the number of rows affected.
-  Future<int> executeSql(Session session, String sql) async {
-    try {
-      return await session.db.unsafeExecute(sql);
-    } catch (e) {
-      throw ServerpodSqlException(
-        message: '$e',
-        sql: sql,
-      );
-    }
   }
 
   /// Fetches a file from the server. Only whitelisted files in

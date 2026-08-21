@@ -1,5 +1,6 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
+import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
@@ -7,8 +8,8 @@ void main() {
   group('Given protocol model with added index', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -90,8 +91,8 @@ void main() {
   group('Given protocol model with index that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -173,8 +174,8 @@ void main() {
   group('Given protocol model with added relation', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -250,8 +251,8 @@ void main() {
   group('Given protocol model with relation that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod_service_client/serverpod_service_client.dart';
 import 'package:serverpod/protocol.dart' as serverProtocol;
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
@@ -119,14 +118,14 @@ abstract class MigrationTestUtils {
   }
 
   static Future<void> migrationTestCleanup({
-    String? resetSql,
-    required Client serviceClient,
+    List<String>? resetQueries,
+    required Future<void> Function(List<String> queries) runQueries,
   }) async {
     await migrationArtifactsCleanup();
-    if (resetSql != null) {
-      await _resetDatabase(resetSql: resetSql, serviceClient: serviceClient);
+    if (resetQueries != null) {
+      await runQueries(resetQueries);
     }
-    await _setDatabaseMigrationToLatestInRegistry(serviceClient: serviceClient);
+    await _setDatabaseMigrationToLatestInRegistry(runQueries: runQueries);
   }
 
   /// Removes tagged migrations, repair migration, protocol test files, and
@@ -289,15 +288,8 @@ abstract class MigrationTestUtils {
     }
   }
 
-  static Future<void> _resetDatabase({
-    required Client serviceClient,
-    required String resetSql,
-  }) async {
-    await serviceClient.insights.executeSql(resetSql);
-  }
-
   static Future<void> _setDatabaseMigrationToLatestInRegistry({
-    required Client serviceClient,
+    required Future<void> Function(List<String> queries) runQueries,
   }) async {
     var versions = await loadMigrationRegistry();
     var latestMigration = versions.lastOrNull;
@@ -307,13 +299,15 @@ abstract class MigrationTestUtils {
       DatabaseDialect.postgres => 'now()',
     };
 
-    await serviceClient.insights.executeSql('''
+    await runQueries([
+      '''
 INSERT INTO "${serverProtocol.DatabaseMigrationVersion.t.tableName}"
     ("module", "version", "timestamp")
     VALUES ('$_moduleName', '$latestMigration', $timestampSql)
     ON CONFLICT ("module")
     DO UPDATE SET "version" = '$latestMigration';
-''');
+''',
+    ]);
   }
 
   static Future<int> _runProcess(

@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 5))
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -7,8 +8,8 @@ void main() {
   group('Given existing protocol model with nullability added to column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -96,8 +97,8 @@ void main() {
   group('Given existing protocol model with nullability removed from column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+        runQueries: runQueries,
       );
     });
 
@@ -188,8 +189,8 @@ void main() {
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
-          serviceClient: serviceClient,
+          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
+          runQueries: runQueries,
         );
       });
 

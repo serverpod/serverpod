@@ -70,19 +70,6 @@ class EndpointInsights extends _i1.EndpointRef {
     },
   );
 
-  /// Get the latest [numEntries] from the session log.
-  _i2.Future<_i4.SessionLogResult> getOpenSessionLog(
-    int? numEntries,
-    _i5.SessionLogFilter? filter,
-  ) => caller.callServerEndpoint<_i4.SessionLogResult>(
-    'insights',
-    'getOpenSessionLog',
-    {
-      'numEntries': numEntries,
-      'filter': filter,
-    },
-  );
-
   /// Retrieve information about the state of the caches on this server.
   _i2.Future<_i6.CachesInfo> getCachesInfo(bool fetchKeys) =>
       caller.callServerEndpoint<_i6.CachesInfo>(
@@ -90,13 +77,6 @@ class EndpointInsights extends _i1.EndpointRef {
         'getCachesInfo',
         {'fetchKeys': fetchKeys},
       );
-
-  /// Safely shuts down this [ServerPod].
-  _i2.Future<void> shutdown() => caller.callServerEndpoint<void>(
-    'insights',
-    'shutdown',
-    {},
-  );
 
   /// Performs a health check on the running [ServerPod].
   _i2.Future<_i7.ServerHealthResult> checkHealth() =>
@@ -117,13 +97,6 @@ class EndpointInsights extends _i1.EndpointRef {
       'start': start,
       'end': end,
     },
-  );
-
-  /// Performs a hot reload of the server.
-  _i2.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
-    'insights',
-    'hotReload',
-    {},
   );
 
   /// Returns the target structure of the database defined in the
@@ -189,47 +162,6 @@ class EndpointInsights extends _i1.EndpointRef {
         {},
       );
 
-  /// Exports raw data serialized in JSON from the database.
-  _i2.Future<_i8.BulkData> fetchDatabaseBulkData({
-    required String table,
-    required int startingId,
-    required int limit,
-    _i8.Filter? filter,
-  }) => caller.callServerEndpoint<_i8.BulkData>(
-    'insights',
-    'fetchDatabaseBulkData',
-    {
-      'table': table,
-      'startingId': startingId,
-      'limit': limit,
-      'filter': filter,
-    },
-  );
-
-  /// Executes a list of queries on the database and returns the last result.
-  /// The queries are executed in a single transaction.
-  _i2.Future<_i8.BulkQueryResult> runQueries(List<String> queries) =>
-      caller.callServerEndpoint<_i8.BulkQueryResult>(
-        'insights',
-        'runQueries',
-        {'queries': queries},
-      );
-
-  /// Returns the approximate number of rows in the provided [table].
-  _i2.Future<int> getDatabaseRowCount({required String table}) =>
-      caller.callServerEndpoint<int>(
-        'insights',
-        'getDatabaseRowCount',
-        {'table': table},
-      );
-
-  /// Executes SQL commands. Returns the number of rows affected.
-  _i2.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
-    'insights',
-    'executeSql',
-    {'sql': sql},
-  );
-
   /// Fetches a file from the server. Only whitelisted files in
   /// [Serverpod.filesWhitelistedForInsights] can be fetched.
   /// The file path must be in unix format and relative to the servers root
@@ -240,6 +172,38 @@ class EndpointInsights extends _i1.EndpointRef {
         'fetchFile',
         {'path': path},
       );
+}
+
+/// Opt-in endpoint exposing raw database access for tooling, such as the
+/// Serverpod Insights database browser.
+///
+/// Not served by default. To enable it, extend this endpoint in your server,
+/// like with the auth module endpoints:
+///
+/// ```dart
+/// class MyInsightsDatabaseEndpoint extends InsightsDatabaseEndpoint {}
+/// ```
+/// {@category Endpoint}
+abstract class EndpointInsightsDatabase extends _i1.EndpointRef {
+  EndpointInsightsDatabase(_i1.EndpointCaller caller) : super(caller);
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  _i2.Future<int> executeSql(String sql);
+
+  /// Exports raw data serialized in JSON from the database.
+  _i2.Future<_i8.BulkData> fetchDatabaseBulkData({
+    required String table,
+    required int startingId,
+    required int limit,
+    _i8.Filter? filter,
+  });
+
+  /// Executes a list of queries on the database and returns the last result.
+  /// The queries are executed in a single transaction.
+  _i2.Future<_i8.BulkQueryResult> runQueries(List<String> queries);
+
+  /// Returns the approximate number of rows in the provided [table].
+  _i2.Future<int> getDatabaseRowCount({required String table});
 }
 
 class Client extends _i1.ServerpodClientShared {

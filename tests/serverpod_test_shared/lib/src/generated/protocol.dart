@@ -26,6 +26,7 @@ import 'shared/sealed/exception/shared_sealed_app_exception.dart' as _i12;
 import 'shared/shared_object_with_sealed_exception.dart' as _i13;
 import 'shared/shared_table_record.dart' as _i14;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i15;
+import 'package:serverpod_database/serverpod_database.dart' as _i16;
 export 'shared/container.dart';
 export 'shared/dynamic_on_shared.dart';
 export 'shared/enum.dart';
@@ -226,6 +227,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
               .toList()
           as T;
     }
+    try {
+      return _i16.Protocol().deserialize<T>(data, t);
+    } on _i2.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
@@ -423,6 +427,9 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (record == null) {
       return null;
     }
+    try {
+      return _i16.Protocol().mapRecordToJson(record);
+    } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }
 }

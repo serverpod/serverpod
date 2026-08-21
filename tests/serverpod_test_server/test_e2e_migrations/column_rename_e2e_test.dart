@@ -1,4 +1,7 @@
 @Timeout(Duration(minutes: 5))
+import 'dart:convert';
+
+import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
 import 'package:test/test.dart';
@@ -11,8 +14,8 @@ void main() {
 
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetSql: 'DROP TABLE IF EXISTS $tableName;',
-        serviceClient: serviceClient,
+        resetQueries: ['DROP TABLE IF EXISTS $tableName;'],
+        runQueries: runQueries,
       );
     });
 
@@ -87,12 +90,12 @@ fields:
         await MigrationTestUtils.runApplyMigrations();
 
         // Insert test data to verify no data loss
-        await serviceClient.insights.executeSql(
+        await runQueries([
           '''
 INSERT INTO "$tableName" ("id", "$originalColumnName")
 VALUES (1, 'test_value_1'), (2, 'test_value_2');
 ''',
-        );
+        ]);
 
         // Now rename the column using column override
         var renameTag = 'rename-column';
@@ -137,23 +140,20 @@ fields:
           reason: 'Original column name should not exist after rename.',
         );
 
-        var columnValues = await serviceClient.insights.runQueries([
-          'SELECT "$newColumnName" FROM "$tableName" ORDER BY id;',
-        ]);
+        var columnValues =
+            jsonDecode(
+                  (await runQueries([
+                    'SELECT "$newColumnName" FROM "$tableName" ORDER BY id;',
+                  ])).data,
+                )
+                as List;
         expect(
-          columnValues.numAffectedRows,
-          2,
-          reason: 'Bulk query should report two rows for the two inserted ids.',
-        );
-        expect(
-          columnValues.data,
-          contains('test_value_1'),
-          reason: 'Renamed column should still hold the first inserted value.',
-        );
-        expect(
-          columnValues.data,
-          contains('test_value_2'),
-          reason: 'Renamed column should still hold the second inserted value.',
+          columnValues,
+          [
+            ['test_value_1'],
+            ['test_value_2'],
+          ],
+          reason: 'Renamed column should still hold the inserted values.',
         );
       },
     );

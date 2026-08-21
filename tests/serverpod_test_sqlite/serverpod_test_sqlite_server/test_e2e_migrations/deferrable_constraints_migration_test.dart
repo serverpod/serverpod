@@ -1,6 +1,7 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
+import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
@@ -13,14 +14,15 @@ extension on TableDefinition {
 }
 
 void main() {
-  const resetSql =
-      'DROP TABLE IF EXISTS $_childTable;'
-      'DROP TABLE IF EXISTS $_parentTable;';
+  const resetQueries = [
+    'DROP TABLE IF EXISTS $_childTable;',
+    'DROP TABLE IF EXISTS $_parentTable;',
+  ];
 
   tearDown(() async {
     await MigrationTestUtils.migrationTestCleanup(
-      resetSql: resetSql,
-      serviceClient: serviceClient,
+      resetQueries: resetQueries,
+      runQueries: runQueries,
     );
   });
 
@@ -270,16 +272,18 @@ fields:
     'when reading the live database definition, '
     'then the foreign key is not deferrable.',
     () async {
-      await serviceClient.insights.executeSql(
+      await runQueries([
         'CREATE TABLE "$_parentTable" ("id" INTEGER PRIMARY KEY);',
-      );
-      await serviceClient.insights.executeSql('''
+      ]);
+      await runQueries([
+        '''
 CREATE TABLE "$_childTable" (
   "id" INTEGER PRIMARY KEY,
   "parentId" INTEGER,
   CONSTRAINT "${_childTable}_fk_0" FOREIGN KEY ("parentId") REFERENCES "$_parentTable" ("id") NOT DEFERRABLE
 );
-''');
+''',
+      ]);
 
       var liveDefinition = await serviceClient.insights
           .getLiveDatabaseDefinition();
