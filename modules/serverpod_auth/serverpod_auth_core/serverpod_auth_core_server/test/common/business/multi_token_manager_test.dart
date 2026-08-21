@@ -1009,7 +1009,7 @@ void main() {
   );
 }
 
-class MockedTokenManager implements TokenManager {
+class MockedTokenManager extends TokenManager {
   final List<TokenInfo> Function(
     Session session, {
     required UuidValue? authUserId,
@@ -1046,14 +1046,14 @@ class MockedTokenManager implements TokenManager {
     Set<Scope>? scopes,
     Transaction? transaction,
   })?
-  onIssueToken;
+  onCreateToken;
 
   MockedTokenManager({
     this.onListTokens,
     this.onRevokeToken,
     this.onRevokeAllTokens,
     this.onValidateToken,
-    this.onIssueToken,
+    this.onCreateToken,
   });
 
   @override
@@ -1114,14 +1114,14 @@ class MockedTokenManager implements TokenManager {
   }
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) async {
-    return onIssueToken!(
+    return onCreateToken!(
       session,
       authUserId: authUserId,
       method: method,

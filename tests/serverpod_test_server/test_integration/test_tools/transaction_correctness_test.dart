@@ -185,7 +185,7 @@ void main() {
         await expectLater(
           future,
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (e) => e.code,
               'code',
               PgErrorCode.uniqueViolation,

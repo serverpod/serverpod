@@ -1,6 +1,6 @@
 ---
 name: serverpod-models
-description: Define Serverpod data models in YAML (.spy.yaml), serialization, database tables, relations, enums, and exceptions. Use when creating or editing models, database schema, .spy.yaml files, or Serverpod ORM entities.
+description: Define Serverpod data models in YAML (.spy.yaml) — fields, defaults, database tables, relations, enums, exceptions. Use when creating or editing .spy.yaml files. To query the generated ORM instead, use serverpod-database.
 ---
 
 # Serverpod Models
@@ -41,6 +41,44 @@ fields:
   name: String
   foundedDate: DateTime?
 ```
+
+## Default values
+
+- `default=` sets the value on both the Dart model and the database column.
+- `defaultModel=` sets it only on the Dart model (used when the object is created in Dart).
+- `defaultPersist=` sets it only on the database column (requires the field to be nullable in Dart, unless it is the `id`).
+
+```yaml
+class: Post
+table: post
+fields:
+  title: String, default='Untitled'
+  createdAt: DateTime, default=now
+  publishedAt: DateTime?, defaultPersist=now
+  externalId: UuidValue, default=random_v7
+  views: int, default=0
+  isPublic: bool, default=false
+```
+
+`now` (DateTime), `random`/`random_v7` (UuidValue), and quoted literals are supported. A field with a default does not need to be passed to the constructor.
+
+## Custom id types
+
+The `id` field is `int` with a `serial` default unless declared explicitly. Declare it to opt into UUID primary keys:
+
+```yaml
+class: Company
+table: company
+fields:
+  id: UuidValue?, defaultPersist=random_v7  # database generates the id
+  name: String
+```
+
+- `defaultPersist=random_v7` — the database generates the id on insert (`random` for v4).
+- `defaultModel=random_v7` — Dart generates the id when the object is created, so it is known before insert.
+- `id: int?, defaultPersist=serial` — the explicit form of the default behavior.
+
+Relations to a model with a custom id type use the same type on the foreign key field.
 
 ## Scope
 
@@ -106,6 +144,7 @@ indexes:
   company_name_idx:
     fields: name
     unique: true
+    nulls_distinct: false  # PostgreSQL only, treats NULLs as equal
 ```
 
 Field-level `unique` auto-generates a btree unique index:
@@ -139,30 +178,15 @@ fields:
 
 **Many-to-many:** Use a join table model with two relation fields.
 
+**Referential actions:** `relation(onDelete=Cascade)` and `relation(onUpdate=...)` map to the SQL foreign key actions (`Cascade`, `SetNull`, `SetDefault`, `Restrict`, `NoAction`). `SetNull` requires a nullable foreign key (a nullable object relation field, or `relation(optional)`). Add `deferrable` (or `deferred` for initially deferred) to check the constraint at the end of the transaction instead of per statement.
+
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
-
-## Client-side database
-
-Models with the `table` keyword can also generate a client-side database with the `database` keyword:
-
-```yaml
-class: Company
-table: company
-database: client
-```
-
-| Value | Description |
-| ------- | ----------- |
-| `server` | Generates tables only on the server, and a non-table model on the client package (default). |
-| `client` | Generates tables only on the client, and a non-table model on the server package. |
-| `all` | Generates table models on both server and client. |
-
-For how to use the client-side database, see the [Serverpod Database](../serverpod-database/SKILL.md#client-side-database#client-side-database) skill.
 
 ## Backward compatibility
 
 To keep backward compatibility, do not change or remove fields in serialized classes used by clients. Add new fields only if nullable or with a default value, so older clients that don't send the field still work.
 
-## Custom serialization
+## Reference files
 
-To use serializable models not in YAML: implement `toJson()`, `fromJson`, `copyWith()`. Register in `config/generator.yaml` under `extraClasses` with full URI (e.g. `package:my_shared/my_shared.dart:ClassName`). Both server and client must depend on the package. Freezed classes with `fromJson` work the same way. Implement `ProtocolSerialization` with `toJsonForProtocol()` to omit fields when sending to client.
+- [`references/client-side-database.md`](references/client-side-database.md) — the `database:` keyword, generating tables on the client.
+- [`references/custom-serialization.md`](references/custom-serialization.md) — using hand-written or Freezed classes as model types via `extraClasses`.

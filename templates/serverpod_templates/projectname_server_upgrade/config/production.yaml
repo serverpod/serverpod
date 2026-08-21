@@ -74,3 +74,19 @@ sessionLogs:
 #futureCall:
 #  concurrencyLimit: 1 # Defaults to 1, a negative or null value removes the limit
 #  scanInterval: 5000 # Unit in milliseconds, defaults to 5000
+
+# Recommended when serving web clients: keeps auth tokens in httpOnly
+# cookies. Without this, web tokens live in JavaScript-readable storage,
+# where any XSS can steal them. Web clients opt in with
+# `client.cookieAuth = true`. Requires `allowedOrigins`; browsers from
+# origins not in the list lose cross-origin access, including to public
+# endpoints.
+#authCookie:
+#  sameSite: lax # Defaults to "lax", options are "strict" or "none"
+#  #name: serverpod_auth # Defaults to "serverpod_auth"
+#  #refreshName: serverpod_auth_refresh # Defaults to "<name>_refresh"
+#  #domain: examplepod.com # Defaults to host-only; set to share across subdomains
+#  #path: / # Defaults to "/"
+#  #secure: true # Defaults to true; the cookie is only sent over https
+#allowedOrigins:
+#  - https://app.examplepod.com # The origin serving your Flutter web app

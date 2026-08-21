@@ -750,7 +750,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
-      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+      - uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
       - name: Run unit tests
         run: >-
           dart test
@@ -863,7 +863,7 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           cache: false
-      - uses: browser-actions/setup-chrome@2e1d749697dd1612b833dba4a722266286fbefcd # v2.1.2
+      - uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
       - name: Retry transient Dart build-hook failures
         uses: ./.github/actions/use-dart-test-retry
       - name: Resolve melos
@@ -934,6 +934,25 @@ jobs:
         working-directory: tests/docker/tests_integration
       - name: Run E2E tests (concurrently)
         run: flutter test --reporter=failures-only
+        working-directory: ${{ matrix.module.client }}
+      - name: Start chromedriver
+        run: chromedriver --port=4444 &
+      - name: Run cookie-auth browser E2E tests (allow-listed origin)
+        run: >-
+          flutter drive
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/cookie_auth_browser_test.dart
+          -d web-server
+          --web-port=8083
+        working-directory: ${{ matrix.module.client }}
+      - name: Run cookie-auth browser E2E tests (rejected origin)
+        run: >-
+          flutter drive
+          --driver=test_driver/integration_test.dart
+          --target=integration_test/cookie_auth_browser_test.dart
+          -d web-server
+          --web-port=8084
+          --dart-define=SERVERPOD_COOKIE_CORS_REJECTION=true
         working-directory: ${{ matrix.module.client }}
       - name: Stop containers
         if: always()

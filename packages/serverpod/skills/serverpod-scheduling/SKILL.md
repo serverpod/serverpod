@@ -23,14 +23,9 @@ class ExampleFutureCall extends FutureCall {
 
 Run `serverpod generate` for the type-safe API on `pod.futureCalls`.
 
-## Supported parameter and return types
+## Supported parameter types
 
-The same parameters as for endpoint methods are supported:
-
-- Primitives: `bool`, `int`, `double`, `String`
-- `Duration`, `DateTime` (UTC), `ByteData`, `UuidValue`, `Uri`, `BigInt`
-- Generated serializable models (from `.spy.yaml`)
-- `List`, `Map`, `Set`, `Record` — strictly typed with the above
+The same types as for endpoint methods, listed in [Serverpod Endpoints](../serverpod-endpoints/SKILL.md#supported-parameter-and-return-types).
 
 ## Scheduling
 

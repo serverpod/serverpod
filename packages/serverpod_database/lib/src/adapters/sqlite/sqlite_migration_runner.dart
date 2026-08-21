@@ -40,5 +40,5 @@ Future<void> _verifyForeignKeyIntegrity(
   if (result.isEmpty) return;
 
   final violations = result.map((row) => row.toColumnMap()).toList();
-  throw SqliteForeignKeyViolationException(violations);
+  throw SqliteMigrationForeignKeyViolationException(violations);
 }

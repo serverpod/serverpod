@@ -2,6 +2,7 @@ import 'package:serverpod/serverpod.dart';
 
 import '../../common/business/auth_services.dart';
 import '../jwt.dart';
+import '../util/jwt_refresh_cookie_path.dart';
 
 /// Endpoint for JWT tokens management.
 abstract class RefreshJwtTokensEndpoint extends Endpoint {
@@ -14,6 +15,11 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
   late final Jwt jwt = AuthServices.getTokenManager<JwtTokenManager>().jwt;
 
   /// Creates a new token pair for the given [refreshToken].
+  ///
+  /// If [refreshToken] is omitted, cookie-mode web clients fall back to the
+  /// configured HttpOnly refresh cookie. When neither source is present this
+  /// throws [RefreshTokenNotFoundException], the same public "no usable refresh
+  /// credential" exception used for unknown refresh tokens.
   ///
   /// Can throw the following exceptions:
   /// -[RefreshTokenMalformedException]: refresh token is malformed and could
@@ -34,11 +40,30 @@ abstract class RefreshJwtTokensEndpoint extends Endpoint {
   @unauthenticatedClientCall
   Future<AuthSuccess> refreshAccessToken(
     final Session session, {
-    required final String refreshToken,
+    final String? refreshToken,
   }) async {
-    return jwt.refreshAccessToken(
+    final resolvedRefreshToken =
+        refreshToken ?? session.readWebAuthRefreshCookie();
+    if (resolvedRefreshToken == null) {
+      throw RefreshTokenNotFoundException();
+    }
+
+    final authSuccess = await jwt.refreshAccessToken(
       session,
-      refreshToken: refreshToken,
+      refreshToken: resolvedRefreshToken,
     );
+
+    if (!session.isWebAuthCookieRequest) return authSuccess;
+
+    final rotatedRefreshToken = authSuccess.refreshToken;
+    if (rotatedRefreshToken == null) return authSuccess;
+
+    final maxAgeSeconds = jwt.config.refreshTokenLifetime.inSeconds;
+    session.writeWebAuthRefreshCookie(
+      rotatedRefreshToken,
+      maxAgeSeconds: maxAgeSeconds > 0 ? maxAgeSeconds : null,
+      path: jwtRefreshCookiePath(session),
+    );
+    return authSuccess.copyWith(refreshToken: null);
   }
 }

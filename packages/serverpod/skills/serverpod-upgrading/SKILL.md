@@ -1,11 +1,11 @@
 ---
 name: serverpod-upgrading
-description: Upgrade Serverpod — minor/patch updates, major upgrade to v3. Use when upgrading Serverpod versions or updating dependencies.
+description: Upgrade Serverpod — minor/patch updates, major upgrades (2.x to 3.0, 3.x to 4.0). Use when upgrading Serverpod versions or updating dependencies.
 ---
 
 # Serverpod minor/patch upgrade
 
-Requirements: Dart 3.10.3+, Flutter 3.38.4+.
+Requirements for this Serverpod version: Dart 3.10.3+, Flutter 3.38.4+. Check the release notes for the version being installed.
 
 Use the same pinned Serverpod version across all packages. Use the CLI to do the upgrade. Ask the user to start the server with `serverpod start` after the upgrade. NEVER update the CLI tooling, instead STOP and ask the user to do it.
 
@@ -18,6 +18,26 @@ Use the same pinned Serverpod version across all packages. Use the CLI to do the
 7. Run `dart analyze` in the root of the project and address any issues.
 8. Ensure that the Dockerfile uses at least `FROM dart:3.10.3 AS build`.
 9. Inform the user that the upgrade is complete and they should start the server with `serverpod start`.
+
+## Major upgrade: Serverpod 3.x to 4.0
+
+After following the regular upgrade process, address the following breaking changes.
+
+**Streaming:** The legacy streaming session and the deprecated streaming APIs are removed. Endpoints must use streaming methods (`Stream<T>` parameters and return types). See [Serverpod Streams](../serverpod-streams/SKILL.md).
+
+**Future calls:** `pod.registerFutureCall(...)`, `FutureCall.invoke`, `pod.futureCallWithDelay(...)` and `pod.futureCallAtTime(...)` are removed. Define methods on the `FutureCall` class and schedule them through the generated `pod.futureCalls` API. See [Serverpod Scheduling](../serverpod-scheduling/SKILL.md).
+
+**Server events:** `postMessage` now defaults to global delivery (falling back to local when Redis is disabled). Pass `scope: MessageScope.local` where messages must not leave the server instance.
+
+**ORM:** The deprecated `orderDescending` parameter is removed. Use `orderBy: (t) => t.column.desc()` or `orderByList`.
+
+**Endpoints:** The `ignoreEndpoint` annotation is removed. Use `@doNotGenerate`.
+
+**Web server:** The deprecated widget classes and legacy static directory classes are removed. Use `WebWidget`, `TemplateWidget`, `ListWidget`, `JsonWidget`, `RedirectWidget` and `StaticRoute.directory(...)`. `WidgetRoute.build` now returns `Future<WebWidget?>`, where `null` responds with 404.
+
+**Auth:** The `authenticationKeyManager` client parameter is removed; use `authSessionManager` (Flutter) or `authKeyProvider`. The native Google Sign-In web implementation is replaced by OAuth2, and dead email exceptions are removed.
+
+**Server:** `SerializationManagerServer` is replaced by `DatabaseSerializationManager`. Generated projects now import `src/generated/serverpod.dart` and create the server with `Serverpod(args)`; the `Serverpod(args, Protocol(), Endpoints())` form still works, but prefer the new simpler form.
 
 ## Major upgrade: Serverpod 2.x to 3.0
 

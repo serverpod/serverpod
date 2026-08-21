@@ -521,6 +521,70 @@ void main() {
   );
 
   group(
+    'Given an initialized FlutterAppManager running a web app that can exit '
+    'on its own',
+    () {
+      late _ManagerFixture f;
+      late Directory pidDir;
+      late File pidFile;
+      late Completer<String?> ready;
+      late int stopCalls;
+
+      setUp(() async {
+        ready = Completer<String?>();
+        stopCalls = 0;
+        pidDir = await Directory.systemTemp.createTemp('flutter_exit_');
+        pidFile = File(p.join(pidDir.path, 'pid'));
+        f = await _ManagerFixture.create(
+          shim: 'emits_machine_events.dart',
+          shimArgs: ['--pid-file=${pidFile.path}'],
+          fakeVmService: true,
+          onReady: (_, url) => ready.complete(url),
+          onStop: (_) => stopCalls++,
+        );
+        await f.manager.launch('project');
+        await ready.future.timeout(const Duration(seconds: 30));
+      });
+
+      tearDown(() async {
+        await f.dispose();
+        await pidDir.deleteBestEffort(recursive: true);
+      });
+
+      test(
+        'when the process exits without a stop call then onStop fires once '
+        'and the app reports not running',
+        () async {
+          // Kill the shim out from under the manager, simulating e.g. the
+          // heartbeat teardown after the app's browser window is closed.
+          // The shim wrote its pid on startup, before the ready event.
+          final shimPid = int.parse(pidFile.readAsStringSync());
+          Process.killPid(shimPid, ProcessSignal.sigkill);
+
+          await _eventually(() => stopCalls > 0);
+
+          expect(stopCalls, 1);
+          expect(f.manager.isRunning('project'), isFalse);
+          expect(f.manager.isLaunching('project'), isFalse);
+        },
+      );
+
+      test(
+        'when the app is stopped explicitly then onStop fires exactly once',
+        () async {
+          await f.manager.stop('project');
+
+          // Let the process-exit listener settle; it must not double-signal.
+          await Future<void>.delayed(const Duration(milliseconds: 100));
+
+          expect(stopCalls, 1);
+          expect(f.manager.isRunning('project'), isFalse);
+        },
+      );
+    },
+  );
+
+  group(
     'Given an initialized FlutterAppManager running an app on a desktop device',
     () {
       late _ManagerFixture f;

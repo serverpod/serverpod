@@ -107,7 +107,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a a valid Uri string (e.g., "default"=\'http://serverpod.dev\').',
+          'The "default" value must be a valid Uri string (e.g., "default"=\'http://serverpod.dev\').',
         );
       },
     );
@@ -138,7 +138,7 @@ void main() {
         var firstError = collector.errors.first as SourceSpanSeverityException;
         expect(
           firstError.message,
-          'The "default" value must be a a valid Uri string (e.g., "default"=\'http://serverpod.dev\').',
+          'The "default" value must be a valid Uri string (e.g., "default"=\'http://serverpod.dev\').',
         );
       },
     );

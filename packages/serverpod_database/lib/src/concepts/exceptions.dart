@@ -1,34 +1,55 @@
 /// Exception thrown when an error occurs in the database.
-abstract base class DatabaseException implements Exception {
-  /// Returns the message of the exception.
-  String get message;
+class DatabaseException implements Exception {
+  /// Creates a new [DatabaseException] with the given [message].
+  DatabaseException(this.message);
+
+  /// A message describing the error.
+  final String message;
 
   @override
-  String toString() => 'DatabaseException: $message';
+  String toString() => '$runtimeType: $message';
+}
+
+/// Exception thrown when the result of a database operation is unexpected.
+class DatabaseUnexpectedResultException extends DatabaseException {
+  /// Creates a new [DatabaseUnexpectedResultException].
+  DatabaseUnexpectedResultException(super.message);
 }
 
 /// Exception thrown when an exception occurs during a database query.
-abstract base class DatabaseQueryException implements DatabaseException {
-  /// Returns the error code of the exception.
-  String? get code;
+class DatabaseQueryException extends DatabaseException {
+  /// Creates a new [DatabaseQueryException].
+  DatabaseQueryException(
+    super.message, {
+    this.code,
+    this.detail,
+    this.hint,
+    this.tableName,
+    this.columnName,
+    this.constraintName,
+    this.position,
+  });
+
+  /// The error code of the exception.
+  final String? code;
 
   /// Additional details if provided by the database.
-  String? get detail;
+  final String? detail;
 
   /// A hint on how to remedy an error, if provided by the database.
-  String? get hint;
+  final String? hint;
 
-  /// Returns the name of the table where the error occurred.
-  String? get tableName;
+  /// The name of the table where the error occurred.
+  final String? tableName;
 
-  /// Returns the name of the column where the error occurred.
-  String? get columnName;
+  /// The name of the column where the error occurred.
+  final String? columnName;
 
-  /// Returns the name of the constraint that was violated.
-  String? get constraintName;
+  /// The name of the constraint that was violated.
+  final String? constraintName;
 
-  /// Returns the position in the query where the error occurred.
-  int? get position;
+  /// The position in the query where the error occurred.
+  final int? position;
 
   @override
   String toString() {
@@ -42,42 +63,67 @@ abstract base class DatabaseQueryException implements DatabaseException {
       if (constraintName != null) 'constraint: $constraintName',
       if (position != null) 'position: $position',
     ].join(', ');
-    return 'DatabaseQueryException: { $details }';
+    return '$runtimeType: { $details }';
   }
 }
 
-/// Exception thrown when an insert row operation fails.
-abstract base class DatabaseInsertRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseInsertRowException: $message';
+/// Exception thrown when a query violates a unique constraint.
+class DatabaseUniqueViolationException extends DatabaseQueryException {
+  /// Creates a new [DatabaseUniqueViolationException].
+  DatabaseUniqueViolationException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
 }
 
-/// Exception thrown when an update row operation fails.
-abstract base class DatabaseUpdateRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseUpdateRowException: $message';
+/// Exception thrown when a query violates a foreign key constraint..
+class DatabaseForeignKeyViolationException extends DatabaseQueryException {
+  /// Creates a new [DatabaseForeignKeyViolationException].
+  DatabaseForeignKeyViolationException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
 }
 
-/// Exception thrown when a delete row operation fails.
-abstract base class DatabaseDeleteRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseDeleteRowException: $message';
-}
-
-/// Exception thrown when an upsert row operation fails.
-abstract base class DatabaseUpsertRowException implements DatabaseException {
-  @override
-  String toString() => 'DatabaseUpsertRowException: $message';
+/// Exception thrown when a query cannot acquire a lock on the SQLite database.
+///
+/// This typically happens when transactions run concurrently, or when a query
+/// is executed without passing the transaction of an already active transaction.
+class SqliteDatabaseLockedException extends DatabaseQueryException {
+  /// Creates a new [SqliteDatabaseLockedException].
+  SqliteDatabaseLockedException(
+    super.message, {
+    super.code,
+    super.detail,
+    super.hint,
+    super.tableName,
+    super.columnName,
+    super.constraintName,
+    super.position,
+  });
 }
 
 /// Thrown when SQLite [PRAGMA foreign_key_check](https://www.sqlite.org/pragma.html#pragma_foreign_key_check)
 /// reports one or more rows that violate foreign key constraints.
-final class SqliteForeignKeyViolationException implements DatabaseException {
-  /// Creates a new [SqliteForeignKeyViolationException].
+final class SqliteMigrationForeignKeyViolationException
+    implements DatabaseException {
+  /// Creates a new [SqliteMigrationForeignKeyViolationException].
   ///
   /// Each map is a row from `PRAGMA foreign_key_check` (typically `table`,
   /// `rowid`, `parent`, `fkid`).
-  SqliteForeignKeyViolationException(this.violations)
+  SqliteMigrationForeignKeyViolationException(this.violations)
     : message = _formatMessage(violations);
 
   /// Rows returned by `PRAGMA foreign_key_check`.
@@ -102,5 +148,5 @@ final class SqliteForeignKeyViolationException implements DatabaseException {
   }
 
   @override
-  String toString() => 'SqliteForeignKeyViolationException: $message';
+  String toString() => 'SqliteMigrationForeignKeyViolationException: $message';
 }

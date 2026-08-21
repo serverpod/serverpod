@@ -44,7 +44,8 @@ class StripeApiIndicator extends HealthIndicator<double> {
 ## Registration
 
 ```dart
-final pod = Serverpod(args, Protocol(), Endpoints(),
+final pod = Serverpod(
+  args,
   healthConfig: HealthConfig(
     cacheTtl: Duration(seconds: 2), // default is 1 second
     additionalReadinessIndicators: [StripeApiIndicator()],

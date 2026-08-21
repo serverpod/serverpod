@@ -1,5 +1,8 @@
 import 'package:serverpod_client/serverpod_client.dart';
 
+export 'package:serverpod_client/serverpod_client.dart'
+    show ServerpodClientCookieAuth;
+
 /// Test serialization manager used in tests.
 class TestSerializationManager extends SerializationManager {}
 
@@ -8,6 +11,7 @@ class TestServerpodClient extends ServerpodClientShared {
   TestServerpodClient({
     required Uri host,
     ClientAuthKeyProvider? authKeyProvider,
+    super.httpClientOverride,
   }) : super(
          host.toString(),
          TestSerializationManager(),

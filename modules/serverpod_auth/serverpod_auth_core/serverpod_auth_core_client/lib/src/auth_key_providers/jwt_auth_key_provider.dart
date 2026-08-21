@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:clock/clock.dart';
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart';
 
@@ -15,6 +17,17 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     /// The endpoint to use for refreshing the token.
     required EndpointRefreshJwtTokens refreshEndpoint,
 
+    /// Whether refresh credentials are carried in an HttpOnly cookie.
+    /// Defaults to header mode (no cookie).
+    bool Function()? usesCookieAuth,
+
+    /// Returns the lock serializing refreshes across browser tabs, used in
+    /// cookie mode where concurrent tab refreshes of the shared refresh
+    /// cookie could trip the server's reuse revocation. When null (no Web
+    /// Locks support, e.g. an insecure context), refreshes run
+    /// uncoordinated and the race is logged instead.
+    CrossTabLock? Function()? getCrossTabRefreshLock,
+
     /// Optional function to invalidate the cached authentication info before
     /// refreshing the token.
     Future<void> Function()? invalidateCachedAuthInfo,
@@ -23,25 +36,59 @@ class JwtAuthKeyProvider extends MutexRefresherClientAuthKeyProvider {
     Duration refreshJwtTokenBefore = const Duration(seconds: 30),
   }) : super(
          _JwtAuthKeyProviderDelegate(
-           getAuthInfo: getAuthInfo,
-           invalidateCachedAuthInfo: invalidateCachedAuthInfo,
-           onRefreshAuthInfo: onRefreshAuthInfo,
-           refreshEndpoint: refreshEndpoint,
-           refreshJwtTokenBefore: refreshJwtTokenBefore,
+           usesCookieAuth: usesCookieAuth ?? () => false,
+           headerDelegate: _HeaderJwtRefreshDelegate(
+             getAuthInfo: getAuthInfo,
+             onRefreshAuthInfo: onRefreshAuthInfo,
+             refreshEndpoint: refreshEndpoint,
+             refreshJwtTokenBefore: refreshJwtTokenBefore,
+             invalidateCachedAuthInfo: invalidateCachedAuthInfo,
+           ),
+           cookieDelegate: _CookieJwtRefreshDelegate(
+             getAuthInfo: getAuthInfo,
+             onRefreshAuthInfo: onRefreshAuthInfo,
+             refreshEndpoint: refreshEndpoint,
+             refreshJwtTokenBefore: refreshJwtTokenBefore,
+             getCrossTabRefreshLock: getCrossTabRefreshLock ?? () => null,
+           ),
          ),
        );
 }
 
+/// Dispatches to the header or cookie delegate. The mode is re-read per call
+/// because the provider instance is cached across sign-ins by the session
+/// manager, while both delegates live for the provider's lifetime so the
+/// cookie delegate's latch state survives between calls.
 class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
+  final bool Function() usesCookieAuth;
+  final _HeaderJwtRefreshDelegate headerDelegate;
+  final _CookieJwtRefreshDelegate cookieDelegate;
+
+  _JwtAuthKeyProviderDelegate({
+    required this.usesCookieAuth,
+    required this.headerDelegate,
+    required this.cookieDelegate,
+  });
+
+  _JwtRefreshDelegate get _current =>
+      usesCookieAuth() ? cookieDelegate : headerDelegate;
+
+  @override
+  Future<String?> get authHeaderValue => _current.authHeaderValue;
+
+  @override
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) =>
+      _current.refreshAuthKey(force: force);
+}
+
+abstract class _JwtRefreshDelegate implements RefresherClientAuthKeyProvider {
   final Future<AuthSuccess?> Function() getAuthInfo;
-  final Future<void> Function()? invalidateCachedAuthInfo;
   final Future<void> Function(AuthSuccess authSuccess) onRefreshAuthInfo;
   final EndpointRefreshJwtTokens refreshEndpoint;
   final Duration refreshJwtTokenBefore;
 
-  _JwtAuthKeyProviderDelegate({
+  _JwtRefreshDelegate({
     required this.getAuthInfo,
-    required this.invalidateCachedAuthInfo,
     required this.onRefreshAuthInfo,
     required this.refreshEndpoint,
     required this.refreshJwtTokenBefore,
@@ -51,23 +98,11 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
   Future<String?> get authHeaderValue async {
     final currentAuth = await getAuthInfo();
     if (currentAuth == null) return null;
+    if (currentAuth.token.isEmpty) return null;
     return wrapAsBearerAuthHeaderValue(currentAuth.token);
   }
 
-  /// Only performs a refresh if the token has a valid expiration time and is
-  /// about to expire within the configured tolerance. Otherwise, returns skipped.
-  @override
-  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
-    await invalidateCachedAuthInfo?.call();
-    final currentAuthInfo = await getAuthInfo();
-    final currentExpiresAt = currentAuthInfo?.tokenExpiresAt;
-    final refreshToken = currentAuthInfo?.refreshToken;
-
-    if (!force && currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true ||
-        refreshToken == null) {
-      return RefreshAuthKeyResult.skipped;
-    }
-
+  Future<RefreshAuthKeyResult> _refresh({required String? refreshToken}) async {
     try {
       final authSuccess = await refreshEndpoint.refreshAccessToken(
         refreshToken: refreshToken,
@@ -83,6 +118,110 @@ class _JwtAuthKeyProviderDelegate implements RefresherClientAuthKeyProvider {
       }
       return RefreshAuthKeyResult.failedOther;
     }
+  }
+}
+
+class _HeaderJwtRefreshDelegate extends _JwtRefreshDelegate {
+  final Future<void> Function()? invalidateCachedAuthInfo;
+
+  _HeaderJwtRefreshDelegate({
+    required super.getAuthInfo,
+    required super.onRefreshAuthInfo,
+    required super.refreshEndpoint,
+    required super.refreshJwtTokenBefore,
+    required this.invalidateCachedAuthInfo,
+  });
+
+  /// Only performs a refresh if the token has a valid expiration time and is
+  /// about to expire within the configured tolerance. Otherwise, returns skipped.
+  @override
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    await invalidateCachedAuthInfo?.call();
+    final currentAuthInfo = await getAuthInfo();
+    final currentExpiresAt = currentAuthInfo?.tokenExpiresAt;
+    final refreshToken = currentAuthInfo?.refreshToken;
+
+    if ((!force &&
+            currentExpiresAt?.isExpiring(refreshJwtTokenBefore) != true) ||
+        refreshToken == null) {
+      return RefreshAuthKeyResult.skipped;
+    }
+    return _refresh(refreshToken: refreshToken);
+  }
+}
+
+class _CookieJwtRefreshDelegate extends _JwtRefreshDelegate {
+  final CrossTabLock? Function() getCrossTabRefreshLock;
+
+  bool _refreshUnauthorized = false;
+  AuthSuccess? _unauthorizedAuthInfo;
+  bool _warnedMissingCrossTabLock = false;
+
+  void _warnMissingCrossTabLock() {
+    if (_warnedMissingCrossTabLock) return;
+    _warnedMissingCrossTabLock = true;
+    developer.log(
+      'Cookie-based JWT refresh is running without cross-tab coordination: '
+      'the Web Locks API is unavailable (typically an insecure http:// '
+      'origin). Concurrent refreshes from multiple tabs may race and sign '
+      'the user out.',
+      name: 'serverpod_auth',
+      level: 900,
+    );
+  }
+
+  _CookieJwtRefreshDelegate({
+    required super.getAuthInfo,
+    required super.onRefreshAuthInfo,
+    required super.refreshEndpoint,
+    required super.refreshJwtTokenBefore,
+    required this.getCrossTabRefreshLock,
+  });
+
+  @override
+  Future<RefreshAuthKeyResult> refreshAuthKey({bool force = false}) async {
+    // The persisted copy is token-blanked and the browser jar holds the
+    // (shared) refresh cookie, so unlike header mode there is no cached auth
+    // info to invalidate; reloading from storage would only discard the
+    // in-memory access token and force a needless rotation.
+    final currentAuthInfo = await getAuthInfo();
+    final currentToken = currentAuthInfo?.token;
+    final shouldRefresh =
+        force ||
+        currentToken == null ||
+        currentToken.isEmpty ||
+        currentAuthInfo?.tokenExpiresAt?.isExpiring(refreshJwtTokenBefore) ==
+            true;
+    if (!shouldRefresh) return RefreshAuthKeyResult.skipped;
+
+    // A rejected refresh cookie stays rejected until the auth state
+    // changes (a sign-in or successful refresh replaces the auth info
+    // instance), so repeat the failure without a server round-trip per
+    // call. A forced refresh and transient failures are not suppressed.
+    if (!force &&
+        _refreshUnauthorized &&
+        identical(currentAuthInfo, _unauthorizedAuthInfo)) {
+      return RefreshAuthKeyResult.failedUnauthorized;
+    }
+
+    // The refresh cookie is shared between tabs and its secret is
+    // single-use, so an uncoordinated concurrent refresh from another tab
+    // may be treated as credential reuse and revoke the session. Without
+    // cross-tab locks (the Web Locks API needs a secure context) the race
+    // is accepted and logged instead of failing every refresh.
+    final crossTabLock = getCrossTabRefreshLock();
+    if (crossTabLock == null) _warnMissingCrossTabLock();
+    final result = crossTabLock == null
+        ? await _refresh(refreshToken: null)
+        : await crossTabLock.synchronize(() => _refresh(refreshToken: null));
+    if (result == RefreshAuthKeyResult.failedUnauthorized) {
+      _refreshUnauthorized = true;
+      _unauthorizedAuthInfo = currentAuthInfo;
+    } else if (result == RefreshAuthKeyResult.success) {
+      _refreshUnauthorized = false;
+      _unauthorizedAuthInfo = null;
+    }
+    return result;
   }
 }
 

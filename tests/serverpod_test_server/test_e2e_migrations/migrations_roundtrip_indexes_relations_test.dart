@@ -1,4 +1,5 @@
 @Timeout(Duration(minutes: 5))
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_test_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
 import 'package:serverpod_test_server/test_util/service_client.dart';
@@ -320,6 +321,113 @@ void main() {
           relations,
           isEmpty,
           reason: 'Could still find relation for migrated table.',
+        );
+      },
+    );
+  });
+
+  group('Given a protocol model referenced by a relation from another model,', () {
+    var parentTable = 'migrated_table_parent';
+    var childTable = 'migrated_table_child';
+
+    late String tag;
+    late String childProtocol;
+
+    setUp(() async {
+      tag = 'recreate-referenced-table';
+      childProtocol =
+          '''
+  class: MigratedTableChild
+  table: $childTable
+  fields:
+    parent: MigratedTableParent?, relation(onDelete=Cascade)
+  ''';
+
+      await MigrationTestUtils.createInitialState(
+        migrationProtocols: [
+          {
+            'migrated_table_parent':
+                '''
+  class: MigratedTableParent
+  table: $parentTable
+  fields:
+    anInt: int
+  ''',
+            'migrated_table_child': childProtocol,
+          },
+        ],
+        tag: tag,
+      );
+    });
+
+    tearDown(() async {
+      await MigrationTestUtils.migrationTestCleanup(
+        resetQueries: [
+          'DROP TABLE IF EXISTS $childTable, $parentTable CASCADE;',
+        ],
+        runQueries: runQueries,
+      );
+    });
+
+    group(
+      'when the referenced model is changed so that its table has to be deleted and recreated,',
+      () {
+        late DatabaseDefinition liveDefinition;
+
+        setUp(() async {
+          // The added non-nullable field without a default cannot be added to an
+          // existing table, so the parent table is deleted and recreated.
+          var createMigrationExitCode =
+              await MigrationTestUtils.createMigrationFromProtocols(
+                protocols: {
+                  'migrated_table_parent':
+                      '''
+  class: MigratedTableParent
+  table: $parentTable
+  fields:
+    anInt: int
+    aRequiredString: String
+  ''',
+                  'migrated_table_child': childProtocol,
+                },
+                tag: tag,
+                force: true,
+              );
+          expect(
+            createMigrationExitCode,
+            0,
+            reason: 'Failed to create migration, exit code was not 0.',
+          );
+
+          var applyMigrationExitCode =
+              await MigrationTestUtils.runApplyMigrations();
+          expect(
+            applyMigrationExitCode,
+            0,
+            reason: 'Failed to apply migration, exit code was not 0.',
+          );
+
+          liveDefinition = await serviceClient.insights
+              .getLiveDatabaseDefinition();
+        });
+
+        test(
+          'then the relation of the referencing table is still in the database, with its delete action.',
+          () {
+            var liveChildTable = liveDefinition.tables.firstWhere(
+              (t) => t.name == childTable,
+            );
+
+            expect(
+              liveChildTable.foreignKeys.map(
+                (key) => (key.referenceTable, key.onDelete),
+              ),
+              [(parentTable, ForeignKeyAction.cascade)],
+              reason:
+                  'The referencing table lost its relation when the referenced '
+                  'table was dropped and recreated.',
+            );
+          },
         );
       },
     );

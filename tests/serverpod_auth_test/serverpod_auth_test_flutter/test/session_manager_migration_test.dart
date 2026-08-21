@@ -6,7 +6,7 @@ import 'package:serverpod_auth_shared_flutter/serverpod_auth_shared_flutter.dart
     as legacy_auth_flutter;
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
-import 'utils/test_storage.dart';
+import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
 void main() {
   test(

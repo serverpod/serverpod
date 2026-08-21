@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
+import 'package:meta/meta.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/protocol.dart';
+
+import 'cookie_auth_success.dart';
 
 /// Information about an authentication token.
 class TokenInfo {
@@ -35,31 +39,105 @@ class TokenInfo {
   }
 }
 
-/// An interface for issuing authentication tokens.
+/// A base class for issuing authentication tokens.
 ///
-/// Implementations of this interface are responsible for creating and storing
-/// new authentication tokens for users.
-abstract interface class TokenIssuer {
-  /// Issues an authentication token.
+/// Implementations provide the token creation through [createToken], while
+/// the non-virtual [issueToken] applies the sign-in policy and the delivery
+/// of the issued secrets, uniformly for every token type.
+abstract class TokenIssuer {
+  /// Creates a new [TokenIssuer].
+  const TokenIssuer();
+
+  /// Issues an authentication token for [authUserId] and delivers it
+  /// according to the request.
   ///
-  /// Creates a new authentication token for the specified user with the given
-  /// authentication method and optional scopes.
+  /// An authenticated caller may only re-issue a token for themself; issuing
+  /// for a different user throws a [SignInWhileAuthenticatedException]
+  /// (switching users requires a sign-out first). To mint a token on behalf
+  /// of another user (e.g. an admin flow), call [createToken] directly.
   ///
-  /// Returns an [AuthSuccess] containing the generated token and user information.
+  /// On a cookie-mode web request the issued secrets are set as `HttpOnly`
+  /// cookies and hidden from the response body: a refresh token moves to the
+  /// refresh cookie, otherwise a non-empty token moves to the auth cookie.
+  ///
+  /// Returns an [AuthSuccess] containing the token and user information.
+  @nonVirtual
   Future<AuthSuccess> issueToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
+  }) async {
+    final callerIdentifier = session.authenticated?.userIdentifier;
+    if (callerIdentifier != null && callerIdentifier != authUserId.toString()) {
+      throw SignInWhileAuthenticatedException();
+    }
+
+    final authSuccess = await createToken(
+      session,
+      authUserId: authUserId,
+      method: method,
+      scopes: scopes,
+      transaction: transaction,
+    );
+    if (!session.isWebAuthCookieRequest) return authSuccess;
+
+    final refreshToken = authSuccess.refreshToken;
+    if (refreshToken != null && refreshToken.isNotEmpty) {
+      session.writeWebAuthRefreshCookie(
+        refreshToken,
+        maxAgeSeconds: _maxAgeSeconds(refreshTokenExpiresAt()),
+        path: refreshCookiePath(session),
+      );
+      return CookieAuthSuccess(authSuccess, maskRefreshToken: true);
+    }
+    if (authSuccess.token.isNotEmpty) {
+      session.writeWebAuthCookie(
+        authSuccess.token,
+        maxAgeSeconds: _maxAgeSeconds(authSuccess.tokenExpiresAt),
+      );
+      return CookieAuthSuccess(authSuccess, maskToken: true);
+    }
+    return authSuccess;
+  }
+
+  /// Creates a new authentication token for the specified user with the
+  /// given authentication method and optional scopes.
+  ///
+  /// Unlike [issueToken] this performs no sign-in policy check and no cookie
+  /// delivery; the returned [AuthSuccess] always carries the secrets.
+  Future<AuthSuccess> createToken(
+    final Session session, {
+    required final UuidValue authUserId,
+    required final String method,
+    final Set<Scope>? scopes,
+    final Transaction? transaction,
   });
+
+  /// The expiry of a cookie-delivered refresh token, or null for a browser
+  /// session cookie.
+  DateTime? refreshTokenExpiresAt() => null;
+
+  /// The cookie `Path` for a cookie-delivered refresh token, or null for the
+  /// configured auth cookie path.
+  String? refreshCookiePath(final Session session) => null;
+
+  static int? _maxAgeSeconds(final DateTime? expiresAt) {
+    if (expiresAt == null) return null;
+    final seconds = expiresAt.difference(clock.now()).inSeconds;
+    return seconds > 0 ? seconds : null;
+  }
 }
 
-/// An interface for managing authentication tokens.
+/// A base class for managing authentication tokens.
 ///
-/// This interface extends [TokenIssuer] to provide comprehensive token management
+/// This class extends [TokenIssuer] to provide comprehensive token management
 /// capabilities including issuing, validating, listing, and revoking tokens.
-abstract interface class TokenManager implements TokenIssuer {
+abstract class TokenManager extends TokenIssuer {
+  /// Creates a new [TokenManager].
+  const TokenManager();
+
   /// Revokes all tokens matching the given criteria.
   ///
   /// If [authUserId] is provided, only tokens for that user will be revoked.

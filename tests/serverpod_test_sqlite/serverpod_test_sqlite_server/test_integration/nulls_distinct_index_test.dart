@@ -62,7 +62,7 @@ void main() {
         await expectLater(
           duplicateInsert,
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (error) => error.code,
               'code',
               SqliteErrorCode.uniqueViolation,

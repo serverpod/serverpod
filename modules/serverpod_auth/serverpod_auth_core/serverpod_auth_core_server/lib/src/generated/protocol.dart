@@ -19,25 +19,27 @@ import 'auth_user/models/auth_user_model.dart' as _i5;
 import 'auth_user/models/auth_user_not_found_exception.dart' as _i6;
 import 'common/models/auth_strategy.dart' as _i7;
 import 'common/models/auth_success.dart' as _i8;
-import 'jwt/models/jwt_token_info.dart' as _i9;
-import 'jwt/models/refresh_token.dart' as _i10;
-import 'jwt/models/refresh_token_expired_exception.dart' as _i11;
-import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i12;
-import 'jwt/models/refresh_token_malformed_exception.dart' as _i13;
-import 'jwt/models/refresh_token_not_found_exception.dart' as _i14;
-import 'jwt/models/token_pair.dart' as _i15;
-import 'profile/models/user_profile.dart' as _i16;
-import 'profile/models/user_profile_data.dart' as _i17;
-import 'profile/models/user_profile_image.dart' as _i18;
-import 'profile/models/user_profile_model.dart' as _i19;
-import 'session/models/server_side_session.dart' as _i20;
-import 'session/models/server_side_session_info.dart' as _i21;
+import 'common/models/sign_in_while_authenticated_exception.dart' as _i9;
+import 'jwt/models/jwt_token_info.dart' as _i10;
+import 'jwt/models/refresh_token.dart' as _i11;
+import 'jwt/models/refresh_token_expired_exception.dart' as _i12;
+import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i13;
+import 'jwt/models/refresh_token_malformed_exception.dart' as _i14;
+import 'jwt/models/refresh_token_not_found_exception.dart' as _i15;
+import 'jwt/models/token_pair.dart' as _i16;
+import 'profile/models/user_profile.dart' as _i17;
+import 'profile/models/user_profile_data.dart' as _i18;
+import 'profile/models/user_profile_image.dart' as _i19;
+import 'profile/models/user_profile_model.dart' as _i20;
+import 'session/models/server_side_session.dart' as _i21;
+import 'session/models/server_side_session_info.dart' as _i22;
 export 'auth_user/models/auth_user.dart';
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
 export 'common/models/auth_strategy.dart';
 export 'common/models/auth_success.dart';
+export 'common/models/sign_in_while_authenticated_exception.dart';
 export 'jwt/models/jwt_token_info.dart';
 export 'jwt/models/refresh_token.dart';
 export 'jwt/models/refresh_token_expired_exception.dart';
@@ -482,44 +484,47 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i8.AuthSuccess) {
       return _i8.AuthSuccess.fromJson(data) as T;
     }
-    if (t == _i9.JwtTokenInfo) {
-      return _i9.JwtTokenInfo.fromJson(data) as T;
+    if (t == _i9.SignInWhileAuthenticatedException) {
+      return _i9.SignInWhileAuthenticatedException.fromJson(data) as T;
     }
-    if (t == _i10.RefreshToken) {
-      return _i10.RefreshToken.fromJson(data) as T;
+    if (t == _i10.JwtTokenInfo) {
+      return _i10.JwtTokenInfo.fromJson(data) as T;
     }
-    if (t == _i11.RefreshTokenExpiredException) {
-      return _i11.RefreshTokenExpiredException.fromJson(data) as T;
+    if (t == _i11.RefreshToken) {
+      return _i11.RefreshToken.fromJson(data) as T;
     }
-    if (t == _i12.RefreshTokenInvalidSecretException) {
-      return _i12.RefreshTokenInvalidSecretException.fromJson(data) as T;
+    if (t == _i12.RefreshTokenExpiredException) {
+      return _i12.RefreshTokenExpiredException.fromJson(data) as T;
     }
-    if (t == _i13.RefreshTokenMalformedException) {
-      return _i13.RefreshTokenMalformedException.fromJson(data) as T;
+    if (t == _i13.RefreshTokenInvalidSecretException) {
+      return _i13.RefreshTokenInvalidSecretException.fromJson(data) as T;
     }
-    if (t == _i14.RefreshTokenNotFoundException) {
-      return _i14.RefreshTokenNotFoundException.fromJson(data) as T;
+    if (t == _i14.RefreshTokenMalformedException) {
+      return _i14.RefreshTokenMalformedException.fromJson(data) as T;
     }
-    if (t == _i15.TokenPair) {
-      return _i15.TokenPair.fromJson(data) as T;
+    if (t == _i15.RefreshTokenNotFoundException) {
+      return _i15.RefreshTokenNotFoundException.fromJson(data) as T;
     }
-    if (t == _i16.UserProfile) {
-      return _i16.UserProfile.fromJson(data) as T;
+    if (t == _i16.TokenPair) {
+      return _i16.TokenPair.fromJson(data) as T;
     }
-    if (t == _i17.UserProfileData) {
-      return _i17.UserProfileData.fromJson(data) as T;
+    if (t == _i17.UserProfile) {
+      return _i17.UserProfile.fromJson(data) as T;
     }
-    if (t == _i18.UserProfileImage) {
-      return _i18.UserProfileImage.fromJson(data) as T;
+    if (t == _i18.UserProfileData) {
+      return _i18.UserProfileData.fromJson(data) as T;
     }
-    if (t == _i19.UserProfileModel) {
-      return _i19.UserProfileModel.fromJson(data) as T;
+    if (t == _i19.UserProfileImage) {
+      return _i19.UserProfileImage.fromJson(data) as T;
     }
-    if (t == _i20.ServerSideSession) {
-      return _i20.ServerSideSession.fromJson(data) as T;
+    if (t == _i20.UserProfileModel) {
+      return _i20.UserProfileModel.fromJson(data) as T;
     }
-    if (t == _i21.ServerSideSessionInfo) {
-      return _i21.ServerSideSessionInfo.fromJson(data) as T;
+    if (t == _i21.ServerSideSession) {
+      return _i21.ServerSideSession.fromJson(data) as T;
+    }
+    if (t == _i22.ServerSideSessionInfo) {
+      return _i22.ServerSideSessionInfo.fromJson(data) as T;
     }
     if (t == _i1.getType<_i3.AuthUser?>()) {
       return (data != null ? _i3.AuthUser.fromJson(data) : null) as T;
@@ -543,56 +548,62 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == _i1.getType<_i8.AuthSuccess?>()) {
       return (data != null ? _i8.AuthSuccess.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i9.JwtTokenInfo?>()) {
-      return (data != null ? _i9.JwtTokenInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.RefreshToken?>()) {
-      return (data != null ? _i10.RefreshToken.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.RefreshTokenExpiredException?>()) {
+    if (t == _i1.getType<_i9.SignInWhileAuthenticatedException?>()) {
       return (data != null
-              ? _i11.RefreshTokenExpiredException.fromJson(data)
+              ? _i9.SignInWhileAuthenticatedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.RefreshTokenInvalidSecretException?>()) {
+    if (t == _i1.getType<_i10.JwtTokenInfo?>()) {
+      return (data != null ? _i10.JwtTokenInfo.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i11.RefreshToken?>()) {
+      return (data != null ? _i11.RefreshToken.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i12.RefreshTokenExpiredException?>()) {
       return (data != null
-              ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
+              ? _i12.RefreshTokenExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i13.RefreshTokenMalformedException?>()) {
+    if (t == _i1.getType<_i13.RefreshTokenInvalidSecretException?>()) {
       return (data != null
-              ? _i13.RefreshTokenMalformedException.fromJson(data)
+              ? _i13.RefreshTokenInvalidSecretException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i14.RefreshTokenNotFoundException?>()) {
+    if (t == _i1.getType<_i14.RefreshTokenMalformedException?>()) {
       return (data != null
-              ? _i14.RefreshTokenNotFoundException.fromJson(data)
+              ? _i14.RefreshTokenMalformedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.TokenPair?>()) {
-      return (data != null ? _i15.TokenPair.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i15.RefreshTokenNotFoundException?>()) {
+      return (data != null
+              ? _i15.RefreshTokenNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
-    if (t == _i1.getType<_i16.UserProfile?>()) {
-      return (data != null ? _i16.UserProfile.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.TokenPair?>()) {
+      return (data != null ? _i16.TokenPair.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i17.UserProfileData?>()) {
-      return (data != null ? _i17.UserProfileData.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i17.UserProfile?>()) {
+      return (data != null ? _i17.UserProfile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.UserProfileImage?>()) {
-      return (data != null ? _i18.UserProfileImage.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i18.UserProfileData?>()) {
+      return (data != null ? _i18.UserProfileData.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.UserProfileModel?>()) {
-      return (data != null ? _i19.UserProfileModel.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i19.UserProfileImage?>()) {
+      return (data != null ? _i19.UserProfileImage.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i20.ServerSideSession?>()) {
-      return (data != null ? _i20.ServerSideSession.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.UserProfileModel?>()) {
+      return (data != null ? _i20.UserProfileModel.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.ServerSideSessionInfo?>()) {
-      return (data != null ? _i21.ServerSideSessionInfo.fromJson(data) : null)
+    if (t == _i1.getType<_i21.ServerSideSession?>()) {
+      return (data != null ? _i21.ServerSideSession.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i22.ServerSideSessionInfo?>()) {
+      return (data != null ? _i22.ServerSideSessionInfo.fromJson(data) : null)
           as T;
     }
     if (t == Set<String>) {
@@ -612,20 +623,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       _i6.AuthUserNotFoundException => 'AuthUserNotFoundException',
       _i7.AuthStrategy => 'AuthStrategy',
       _i8.AuthSuccess => 'AuthSuccess',
-      _i9.JwtTokenInfo => 'JwtTokenInfo',
-      _i10.RefreshToken => 'RefreshToken',
-      _i11.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
-      _i12.RefreshTokenInvalidSecretException =>
+      _i9.SignInWhileAuthenticatedException =>
+        'SignInWhileAuthenticatedException',
+      _i10.JwtTokenInfo => 'JwtTokenInfo',
+      _i11.RefreshToken => 'RefreshToken',
+      _i12.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
+      _i13.RefreshTokenInvalidSecretException =>
         'RefreshTokenInvalidSecretException',
-      _i13.RefreshTokenMalformedException => 'RefreshTokenMalformedException',
-      _i14.RefreshTokenNotFoundException => 'RefreshTokenNotFoundException',
-      _i15.TokenPair => 'TokenPair',
-      _i16.UserProfile => 'UserProfile',
-      _i17.UserProfileData => 'UserProfileData',
-      _i18.UserProfileImage => 'UserProfileImage',
-      _i19.UserProfileModel => 'UserProfileModel',
-      _i20.ServerSideSession => 'ServerSideSession',
-      _i21.ServerSideSessionInfo => 'ServerSideSessionInfo',
+      _i14.RefreshTokenMalformedException => 'RefreshTokenMalformedException',
+      _i15.RefreshTokenNotFoundException => 'RefreshTokenNotFoundException',
+      _i16.TokenPair => 'TokenPair',
+      _i17.UserProfile => 'UserProfile',
+      _i18.UserProfileData => 'UserProfileData',
+      _i19.UserProfileImage => 'UserProfileImage',
+      _i20.UserProfileModel => 'UserProfileModel',
+      _i21.ServerSideSession => 'ServerSideSession',
+      _i22.ServerSideSessionInfo => 'ServerSideSessionInfo',
       _ => null,
     };
   }
@@ -655,31 +668,33 @@ class Protocol extends _i1.DatabaseSerializationManager {
         return 'AuthStrategy';
       case _i8.AuthSuccess():
         return 'AuthSuccess';
-      case _i9.JwtTokenInfo():
+      case _i9.SignInWhileAuthenticatedException():
+        return 'SignInWhileAuthenticatedException';
+      case _i10.JwtTokenInfo():
         return 'JwtTokenInfo';
-      case _i10.RefreshToken():
+      case _i11.RefreshToken():
         return 'RefreshToken';
-      case _i11.RefreshTokenExpiredException():
+      case _i12.RefreshTokenExpiredException():
         return 'RefreshTokenExpiredException';
-      case _i12.RefreshTokenInvalidSecretException():
+      case _i13.RefreshTokenInvalidSecretException():
         return 'RefreshTokenInvalidSecretException';
-      case _i13.RefreshTokenMalformedException():
+      case _i14.RefreshTokenMalformedException():
         return 'RefreshTokenMalformedException';
-      case _i14.RefreshTokenNotFoundException():
+      case _i15.RefreshTokenNotFoundException():
         return 'RefreshTokenNotFoundException';
-      case _i15.TokenPair():
+      case _i16.TokenPair():
         return 'TokenPair';
-      case _i16.UserProfile():
+      case _i17.UserProfile():
         return 'UserProfile';
-      case _i17.UserProfileData():
+      case _i18.UserProfileData():
         return 'UserProfileData';
-      case _i18.UserProfileImage():
+      case _i19.UserProfileImage():
         return 'UserProfileImage';
-      case _i19.UserProfileModel():
+      case _i20.UserProfileModel():
         return 'UserProfileModel';
-      case _i20.ServerSideSession():
+      case _i21.ServerSideSession():
         return 'ServerSideSession';
-      case _i21.ServerSideSessionInfo():
+      case _i22.ServerSideSessionInfo():
         return 'ServerSideSessionInfo';
     }
     className = _i2.Protocol().getClassNameForObject(data);
@@ -713,44 +728,47 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (dataClassName == 'AuthSuccess') {
       return deserialize<_i8.AuthSuccess>(data['data']);
     }
+    if (dataClassName == 'SignInWhileAuthenticatedException') {
+      return deserialize<_i9.SignInWhileAuthenticatedException>(data['data']);
+    }
     if (dataClassName == 'JwtTokenInfo') {
-      return deserialize<_i9.JwtTokenInfo>(data['data']);
+      return deserialize<_i10.JwtTokenInfo>(data['data']);
     }
     if (dataClassName == 'RefreshToken') {
-      return deserialize<_i10.RefreshToken>(data['data']);
+      return deserialize<_i11.RefreshToken>(data['data']);
     }
     if (dataClassName == 'RefreshTokenExpiredException') {
-      return deserialize<_i11.RefreshTokenExpiredException>(data['data']);
+      return deserialize<_i12.RefreshTokenExpiredException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenInvalidSecretException') {
-      return deserialize<_i12.RefreshTokenInvalidSecretException>(data['data']);
+      return deserialize<_i13.RefreshTokenInvalidSecretException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenMalformedException') {
-      return deserialize<_i13.RefreshTokenMalformedException>(data['data']);
+      return deserialize<_i14.RefreshTokenMalformedException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenNotFoundException') {
-      return deserialize<_i14.RefreshTokenNotFoundException>(data['data']);
+      return deserialize<_i15.RefreshTokenNotFoundException>(data['data']);
     }
     if (dataClassName == 'TokenPair') {
-      return deserialize<_i15.TokenPair>(data['data']);
+      return deserialize<_i16.TokenPair>(data['data']);
     }
     if (dataClassName == 'UserProfile') {
-      return deserialize<_i16.UserProfile>(data['data']);
+      return deserialize<_i17.UserProfile>(data['data']);
     }
     if (dataClassName == 'UserProfileData') {
-      return deserialize<_i17.UserProfileData>(data['data']);
+      return deserialize<_i18.UserProfileData>(data['data']);
     }
     if (dataClassName == 'UserProfileImage') {
-      return deserialize<_i18.UserProfileImage>(data['data']);
+      return deserialize<_i19.UserProfileImage>(data['data']);
     }
     if (dataClassName == 'UserProfileModel') {
-      return deserialize<_i19.UserProfileModel>(data['data']);
+      return deserialize<_i20.UserProfileModel>(data['data']);
     }
     if (dataClassName == 'ServerSideSession') {
-      return deserialize<_i20.ServerSideSession>(data['data']);
+      return deserialize<_i21.ServerSideSession>(data['data']);
     }
     if (dataClassName == 'ServerSideSessionInfo') {
-      return deserialize<_i21.ServerSideSessionInfo>(data['data']);
+      return deserialize<_i22.ServerSideSessionInfo>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -829,14 +847,14 @@ class Protocol extends _i1.DatabaseSerializationManager {
     switch (t) {
       case _i3.AuthUser:
         return _i3.AuthUser.t;
-      case _i10.RefreshToken:
-        return _i10.RefreshToken.t;
-      case _i16.UserProfile:
-        return _i16.UserProfile.t;
-      case _i18.UserProfileImage:
-        return _i18.UserProfileImage.t;
-      case _i20.ServerSideSession:
-        return _i20.ServerSideSession.t;
+      case _i11.RefreshToken:
+        return _i11.RefreshToken.t;
+      case _i17.UserProfile:
+        return _i17.UserProfile.t;
+      case _i19.UserProfileImage:
+        return _i19.UserProfileImage.t;
+      case _i21.ServerSideSession:
+        return _i21.ServerSideSession.t;
     }
     return null;
   }
