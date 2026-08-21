@@ -1,0 +1,15 @@
+class: ProjectedEnrollment
+table: projected_enrollment
+fields:
+  student: ProjectedStudent?, relation(name=projected_student_enrollments, onDelete=Cascade)
+  course: ProjectedCourse?, relation(name=projected_course_enrollments, onDelete=Cascade)
+
+indexes:
+  projected_enrollment_index_idx:
+    fields: studentId, courseId
+    unique: true
+
+projections:
+  ProjectedEnrollmentCourse:
+    select:
+      - course -> ProjectedCourseName

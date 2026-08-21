@@ -1,0 +1,33 @@
+class: ProjectedUser
+table: projected_user
+fields:
+  name: String
+  address: ProjectedAddress?, relation
+  orders: List<ProjectedOrder>?, relation
+
+projections:
+  ProjectedUserStreetAddress:
+    select:
+      - name
+      - address -> ProjectedAddressStreet
+      
+  ProjectedUserCountryAddress:
+    select:
+      - name
+      - address -> ProjectedAddressCountry
+
+  ProjectedUserOrders:
+    select:
+      - name
+      - orders -> ProjectedOrderDescription
+
+  ProjectedUserAddressAndOrders:
+    select:
+      - name
+      - orders -> ProjectedOrderDescription
+      - address -> ProjectedAddressStreet
+
+  ProjectedUserAddressStreetOnly:
+    select:
+      - name
+      - address.street

@@ -1,0 +1,113 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _i1;
+
+abstract class ProjectedUserAddressStreetOnly
+    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+  ProjectedUserAddressStreetOnly._({
+    this.id,
+    required this.name,
+    required this.addressStreet,
+  });
+
+  factory ProjectedUserAddressStreetOnly({
+    int? id,
+    required String name,
+    required String addressStreet,
+  }) = _ProjectedUserAddressStreetOnlyImpl;
+
+  factory ProjectedUserAddressStreetOnly.fromJson(
+    Map<String, dynamic> jsonSerialization,
+  ) {
+    return ProjectedUserAddressStreetOnly(
+      id: jsonSerialization['id'] as int?,
+      name: jsonSerialization['name'] as String,
+      addressStreet:
+          jsonSerialization['addressStreet'] ??
+          (jsonSerialization['address'] as Map?)?['street'] as String,
+    );
+  }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
+  String name;
+
+  String addressStreet;
+
+  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  ProjectedUserAddressStreetOnly copyWith({
+    int? id,
+    String? name,
+    String? addressStreet,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ProjectedUserAddressStreetOnly',
+      if (id != null) 'id': id,
+      'name': name,
+      'addressStreet': addressStreet,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ProjectedUserAddressStreetOnly',
+      if (id != null) 'id': id,
+      'name': name,
+      'addressStreet': addressStreet,
+    };
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _ProjectedUserAddressStreetOnlyImpl
+    extends ProjectedUserAddressStreetOnly {
+  _ProjectedUserAddressStreetOnlyImpl({
+    int? id,
+    required String name,
+    required String addressStreet,
+  }) : super._(
+         id: id,
+         name: name,
+         addressStreet: addressStreet,
+       );
+
+  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  ProjectedUserAddressStreetOnly copyWith({
+    Object? id = _Undefined,
+    String? name,
+    String? addressStreet,
+  }) {
+    return ProjectedUserAddressStreetOnly(
+      id: id is int? ? id : this.id,
+      name: name ?? this.name,
+      addressStreet: addressStreet ?? this.addressStreet,
+    );
+  }
+}

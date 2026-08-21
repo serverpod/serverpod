@@ -1,0 +1,770 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+// ignore_for_file: dead_code, unnecessary_null_comparison
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod/serverpod.dart' as _i1;
+import 'projected_author.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:meta/meta.dart' as _i4;
+
+abstract class ProjectedArticle
+    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+  ProjectedArticle._({
+    this.id,
+    required this.title,
+    required this.authorId,
+    this.author,
+    required this.summary,
+    required this.content,
+  });
+
+  factory ProjectedArticle({
+    int? id,
+    required String title,
+    required int authorId,
+    _i2.ProjectedAuthor? author,
+    required String summary,
+    required String content,
+  }) = _ProjectedArticleImpl;
+
+  factory ProjectedArticle.fromJson(Map<String, dynamic> jsonSerialization) {
+    return ProjectedArticle(
+      id: jsonSerialization['id'] as int?,
+      title: jsonSerialization['title'] as String,
+      authorId: jsonSerialization['authorId'] as int,
+      author: jsonSerialization['author'] == null
+          ? null
+          : _i3.Protocol().deserialize<_i2.ProjectedAuthor>(
+              jsonSerialization['author'],
+            ),
+      summary: jsonSerialization['summary'] as String,
+      content: jsonSerialization['content'] as String,
+    );
+  }
+
+  static final t = ProjectedArticleTable();
+
+  static const db = ProjectedArticleRepository._();
+
+  @override
+  int? id;
+
+  String title;
+
+  int authorId;
+
+  _i2.ProjectedAuthor? author;
+
+  String summary;
+
+  String content;
+
+  @override
+  _i1.Table<int?> get table => t;
+
+  /// Returns a shallow copy of this [ProjectedArticle]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  ProjectedArticle copyWith({
+    int? id,
+    String? title,
+    int? authorId,
+    _i2.ProjectedAuthor? author,
+    String? summary,
+    String? content,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ProjectedArticle',
+      if (id != null) 'id': id,
+      'title': title,
+      'authorId': authorId,
+      if (author != null) 'author': author?.toJson(),
+      'summary': summary,
+      'content': content,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ProjectedArticle',
+      if (id != null) 'id': id,
+      'title': title,
+      'authorId': authorId,
+      if (author != null) 'author': author?.toJsonForProtocol(),
+      'summary': summary,
+      'content': content,
+    };
+  }
+
+  static ProjectedArticleInclude include({_i2.ProjectedAuthorInclude? author}) {
+    return ProjectedArticleInclude.internal_(author: author);
+  }
+
+  static ProjectedArticleIncludeList includeList({
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    ProjectedArticleInclude? include,
+  }) {
+    return ProjectedArticleIncludeList.internal_(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use_from_same_package
+          orderDescending,
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      include: include,
+    );
+  }
+
+  @override
+  String toString() {
+    return _i1.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _ProjectedArticleImpl extends ProjectedArticle {
+  _ProjectedArticleImpl({
+    int? id,
+    required String title,
+    required int authorId,
+    _i2.ProjectedAuthor? author,
+    required String summary,
+    required String content,
+  }) : super._(
+         id: id,
+         title: title,
+         authorId: authorId,
+         author: author,
+         summary: summary,
+         content: content,
+       );
+
+  /// Returns a shallow copy of this [ProjectedArticle]
+  /// with some or all fields replaced by the given arguments.
+  @_i1.useResult
+  @override
+  ProjectedArticle copyWith({
+    Object? id = _Undefined,
+    String? title,
+    int? authorId,
+    Object? author = _Undefined,
+    String? summary,
+    String? content,
+  }) {
+    return ProjectedArticle(
+      id: id is int? ? id : this.id,
+      title: title ?? this.title,
+      authorId: authorId ?? this.authorId,
+      author: author is _i2.ProjectedAuthor? ? author : this.author?.copyWith(),
+      summary: summary ?? this.summary,
+      content: content ?? this.content,
+    );
+  }
+}
+
+class ProjectedArticleUpdateTable
+    extends _i1.UpdateTable<ProjectedArticleTable> {
+  ProjectedArticleUpdateTable(super.table);
+
+  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+    table.title,
+    value,
+  );
+
+  _i1.ColumnValue<int, int> authorId(int value) => _i1.ColumnValue(
+    table.authorId,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> summary(String value) => _i1.ColumnValue(
+    table.summary,
+    value,
+  );
+
+  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
+    table.content,
+    value,
+  );
+}
+
+class ProjectedArticleTable extends _i1.Table<int?> {
+  ProjectedArticleTable({super.tableRelation})
+    : super(tableName: 'projected_article') {
+    updateTable = ProjectedArticleUpdateTable(this);
+    title = _i1.ColumnString(
+      'title',
+      this,
+    );
+    authorId = _i1.ColumnInt(
+      'authorId',
+      this,
+    );
+    summary = _i1.ColumnString(
+      'summary',
+      this,
+    );
+    content = _i1.ColumnString(
+      'content',
+      this,
+    );
+  }
+
+  late final ProjectedArticleUpdateTable updateTable;
+
+  late final _i1.ColumnString title;
+
+  late final _i1.ColumnInt authorId;
+
+  _i2.ProjectedAuthorTable? _author;
+
+  late final _i1.ColumnString summary;
+
+  late final _i1.ColumnString content;
+
+  _i2.ProjectedAuthorTable get author {
+    if (_author != null) return _author!;
+    _author = _i1.createRelationTable(
+      relationFieldName: 'author',
+      field: ProjectedArticle.t.authorId,
+      foreignField: _i2.ProjectedAuthor.t.id,
+      tableRelation: tableRelation,
+      createTable: (foreignTableRelation) =>
+          _i2.ProjectedAuthorTable(tableRelation: foreignTableRelation),
+    );
+    return _author!;
+  }
+
+  @override
+  List<_i1.Column> get columns => [
+    id,
+    title,
+    authorId,
+    summary,
+    content,
+  ];
+
+  @override
+  _i1.Table? getRelationTable(String relationField) {
+    if (relationField == 'author') {
+      return author;
+    }
+    return null;
+  }
+}
+
+class ProjectedArticleInclude extends _i1.IncludeObject {
+  @_i4.internal
+  ProjectedArticleInclude.internal_({
+    _i2.ProjectedAuthorInclude? author,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
+    _author = author;
+  }
+
+  _i2.ProjectedAuthorInclude? _author;
+
+  final List<_i1.Column>? selectedColumns;
+
+  @override
+  Map<String, _i1.Include?> get includes => {'author': _author};
+
+  @override
+  _i1.Table<int?> get table => ProjectedArticle.t;
+}
+
+class ProjectedArticleIncludeList extends _i1.IncludeList {
+  @_i4.internal
+  ProjectedArticleIncludeList.internal_({
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    super.orderDescending,
+    super.orderByList,
+    super.include,
+    List<_i1.Column>? this.selectedColumns,
+  }) {
+    super.where = where?.call(ProjectedArticle.t);
+  }
+
+  final List<_i1.Column>? selectedColumns;
+
+  @override
+  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _i1.Table<int?> get table => ProjectedArticle.t;
+}
+
+class ProjectedArticleRepository {
+  const ProjectedArticleRepository._();
+
+  final attachRow = const ProjectedArticleAttachRowRepository._();
+
+  /// Returns a list of [ProjectedArticle]s matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.find(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
+  Future<List<ProjectedArticle>> find(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.find<ProjectedArticle>(
+      where: where?.call(ProjectedArticle.t),
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [ProjectedArticle] matching the given query parameters.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRow(
+  ///   session,
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
+  Future<ProjectedArticle?> findFirstRow(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? offset,
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findFirstRow<ProjectedArticle>(
+      where: where?.call(ProjectedArticle.t),
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [ProjectedArticle] by its [id] or null if no such row exists.
+  Future<ProjectedArticle?> findById(
+    _i1.DatabaseSession session,
+    int id, {
+    _i1.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _i1.LockMode? lockMode,
+    _i1.LockBehavior? lockBehavior,
+  }) async {
+    return session.db.findById<ProjectedArticle>(
+      id,
+      transaction: transaction,
+      include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Inserts all [ProjectedArticle]s in the list and returns the inserted rows.
+  ///
+  /// The returned [ProjectedArticle]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// insert, none of the rows will be inserted.
+  ///
+  /// If [ignoreConflicts] is set to `true`, rows that conflict with existing
+  /// rows are silently skipped, and only the successfully inserted rows are
+  /// returned.
+  ///
+  /// If [noReturn] is set to `true`, the inserted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> insert(
+    _i1.DatabaseSession session,
+    List<ProjectedArticle> rows, {
+    _i1.Transaction? transaction,
+    bool ignoreConflicts = false,
+    bool noReturn = false,
+  }) async {
+    return session.db.insert<ProjectedArticle>(
+      rows,
+      transaction: transaction,
+      ignoreConflicts: ignoreConflicts,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Inserts a single [ProjectedArticle] and returns the inserted row.
+  ///
+  /// The returned [ProjectedArticle] will have its `id` field set.
+  Future<ProjectedArticle> insertRow(
+    _i1.DatabaseSession session,
+    ProjectedArticle row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.insertRow<ProjectedArticle>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Upserts all [ProjectedArticle]s in the list and returns the resulting rows.
+  ///
+  /// If a row conflicts on the given [conflictColumns], the existing row is
+  /// updated with the new values. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies to rows matching the
+  /// given expression. Conflicting rows that don't match are skipped and not
+  /// returned, so the resulting list may be shorter than [rows].
+  ///
+  /// The returned [ProjectedArticle]s will have their `id` fields set.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fails,
+  /// none of the rows will be affected.
+  ///
+  /// If [noReturn] is set to `true`, the resulting rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> upsert(
+    _i1.DatabaseSession session,
+    List<ProjectedArticle> rows, {
+    required _i1.ColumnSelections<ProjectedArticleTable> conflictColumns,
+    _i1.ColumnSelections<ProjectedArticleTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.upsert<ProjectedArticle>(
+      rows,
+      conflictColumns: conflictColumns(ProjectedArticle.t),
+      updateColumns: updateColumns?.call(ProjectedArticle.t),
+      updateWhere: updateWhere?.call(ProjectedArticle.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Upserts a single [ProjectedArticle] and returns the resulting row.
+  ///
+  /// If the row conflicts on the given [conflictColumns], the existing row is
+  /// updated. Otherwise, a new row is inserted.
+  ///
+  /// If [updateColumns] is provided, only those columns will be updated on
+  /// conflict. If null, all non-conflict, non-id columns are updated.
+  ///
+  /// If [updateWhere] is provided, the update only applies when the existing
+  /// row matches the expression. Returns `null` if no row was affected — for
+  /// example when [updateWhere] does not match the conflicting row.
+  ///
+  /// The returned [ProjectedArticle] will have its `id` field set.
+  Future<ProjectedArticle?> upsertRow(
+    _i1.DatabaseSession session,
+    ProjectedArticle row, {
+    required _i1.ColumnSelections<ProjectedArticleTable> conflictColumns,
+    _i1.ColumnSelections<ProjectedArticleTable>? updateColumns,
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.upsertRow<ProjectedArticle>(
+      row,
+      conflictColumns: conflictColumns(ProjectedArticle.t),
+      updateColumns: updateColumns?.call(ProjectedArticle.t),
+      updateWhere: updateWhere?.call(ProjectedArticle.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ProjectedArticle]s in the list and returns the updated rows. If
+  /// [columns] is provided, only those columns will be updated. Defaults to
+  /// all columns.
+  /// This is an atomic operation, meaning that if one of the rows fails to
+  /// update, none of the rows will be updated.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> update(
+    _i1.DatabaseSession session,
+    List<ProjectedArticle> rows, {
+    _i1.ColumnSelections<ProjectedArticleTable>? columns,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.update<ProjectedArticle>(
+      rows,
+      columns: columns?.call(ProjectedArticle.t),
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Updates a single [ProjectedArticle]. The row needs to have its id set.
+  /// Optionally, a list of [columns] can be provided to only update those
+  /// columns. Defaults to all columns.
+  Future<ProjectedArticle> updateRow(
+    _i1.DatabaseSession session,
+    ProjectedArticle row, {
+    _i1.ColumnSelections<ProjectedArticleTable>? columns,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateRow<ProjectedArticle>(
+      row,
+      columns: columns?.call(ProjectedArticle.t),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates a single [ProjectedArticle] by its [id] with the specified [columnValues].
+  /// Returns the updated row or null if no row with the given id exists.
+  Future<ProjectedArticle?> updateById(
+    _i1.DatabaseSession session,
+    int id, {
+    required _i1.ColumnValueListBuilder<ProjectedArticleUpdateTable>
+    columnValues,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.updateById<ProjectedArticle>(
+      id,
+      columnValues: columnValues(ProjectedArticle.t.updateTable),
+      transaction: transaction,
+    );
+  }
+
+  /// Updates all [ProjectedArticle]s matching the [where] expression with the specified [columnValues].
+  /// Returns the list of updated rows.
+  ///
+  /// If [noReturn] is set to `true`, the updated rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> updateWhere(
+    _i1.DatabaseSession session, {
+    required _i1.ColumnValueListBuilder<ProjectedArticleUpdateTable>
+    columnValues,
+    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
+    int? limit,
+    int? offset,
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.updateWhere<ProjectedArticle>(
+      columnValues: columnValues(ProjectedArticle.t.updateTable),
+      where: where(ProjectedArticle.t),
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Deletes all [ProjectedArticle]s in the list and returns the deleted rows.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// This is an atomic operation, meaning that if one of the rows fail to
+  /// be deleted, none of the rows will be deleted.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> delete(
+    _i1.DatabaseSession session,
+    List<ProjectedArticle> rows, {
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.delete<ProjectedArticle>(
+      rows,
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Deletes a single [ProjectedArticle].
+  Future<ProjectedArticle> deleteRow(
+    _i1.DatabaseSession session,
+    ProjectedArticle row, {
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.deleteRow<ProjectedArticle>(
+      row,
+      transaction: transaction,
+    );
+  }
+
+  /// Deletes all rows matching the [where] expression.
+  ///
+  /// To specify the order of the returned rows use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// If [noReturn] is set to `true`, the deleted rows are not read back from
+  /// the database and an empty list is returned. This avoids the overhead of
+  /// transferring and deserializing the rows when the result is not needed.
+  Future<List<ProjectedArticle>> deleteWhere(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
+    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    @Deprecated('Use desc() on the orderBy column instead.')
+    bool orderDescending = false,
+    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.Transaction? transaction,
+    bool noReturn = false,
+  }) async {
+    return session.db.deleteWhere<ProjectedArticle>(
+      where: where(ProjectedArticle.t),
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      orderDescending: // ignore: deprecated_member_use
+          orderDescending,
+      transaction: transaction,
+      noReturn: noReturn,
+    );
+  }
+
+  /// Counts the number of rows matching the [where] expression. If omitted,
+  /// will return the count of all rows in the table.
+  Future<int> count(
+    _i1.DatabaseSession session, {
+    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? limit,
+    _i1.Transaction? transaction,
+  }) async {
+    return session.db.count<ProjectedArticle>(
+      where: where?.call(ProjectedArticle.t),
+      limit: limit,
+      transaction: transaction,
+    );
+  }
+
+  /// Acquires row-level locks on [ProjectedArticle] rows matching the [where] expression.
+  Future<void> lockRows(
+    _i1.DatabaseSession session, {
+    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
+    required _i1.LockMode lockMode,
+    required _i1.Transaction transaction,
+    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+  }) async {
+    return session.db.lockRows<ProjectedArticle>(
+      where: where(ProjectedArticle.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+      transaction: transaction,
+    );
+  }
+}
+
+class ProjectedArticleAttachRowRepository {
+  const ProjectedArticleAttachRowRepository._();
+
+  /// Creates a relation between the given [ProjectedArticle] and [ProjectedAuthor]
+  /// by setting the [ProjectedArticle]'s foreign key `authorId` to refer to the [ProjectedAuthor].
+  Future<void> author(
+    _i1.DatabaseSession session,
+    ProjectedArticle projectedArticle,
+    _i2.ProjectedAuthor author, {
+    _i1.Transaction? transaction,
+  }) async {
+    if (projectedArticle.id == null) {
+      throw ArgumentError.notNull('projectedArticle.id');
+    }
+    if (author.id == null) {
+      throw ArgumentError.notNull('author.id');
+    }
+
+    var $projectedArticle = projectedArticle.copyWith(authorId: author.id);
+    await session.db.updateRow<ProjectedArticle>(
+      $projectedArticle,
+      columns: [ProjectedArticle.t.authorId],
+      transaction: transaction,
+    );
+  }
+}
