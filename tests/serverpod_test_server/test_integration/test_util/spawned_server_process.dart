@@ -38,9 +38,15 @@ Future<ProcessOutput> startSpawnedServer(
     verbose: verbose,
   );
 
+  // Keep a listener for the life of the test so [asBroadcastStream] does
+  // not pause when `expectLater` cancels. A pause while the child exits
+  // drops the completion line and the suite waits out its 120s timeout.
+  final outListen = outQueue.listen((_) {}, cancelOnError: true);
+  final errListen = errQueue.listen((_) {}, cancelOnError: true);
+
   addTearDown(() {
-    outQueue.listen((_) {}, cancelOnError: true);
-    errQueue.listen((_) {}, cancelOnError: true);
+    outListen.cancel();
+    errListen.cancel();
     process.kill(ProcessSignal.sigkill);
   });
 
@@ -64,16 +70,5 @@ Stream<String> _streamTransformer(
         if (verbose) print('$startOfLine$line');
         return line;
       })
-      .asBroadcastStream(
-        onCancel: (controller) {
-          if (verbose) print('<pausing ${prefix ?? ''} stream>');
-          controller.pause();
-        },
-        onListen: (controller) async {
-          if (controller.isPaused) {
-            if (verbose) print('<resuming ${prefix ?? ''} stream>');
-            controller.resume();
-          }
-        },
-      );
+      .asBroadcastStream();
 }

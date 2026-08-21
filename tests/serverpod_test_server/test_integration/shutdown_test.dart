@@ -32,12 +32,8 @@ void main() {
 
     await expectLater(
       processOutput.outQueue,
-      emitsThrough(contains('SERVERPOD initialized')),
-    );
-
-    await expectLater(
-      processOutput.outQueue,
       emitsInOrder([
+        emitsThrough(contains('SERVERPOD initialized')),
         emitsThrough(contains('All maintenance tasks completed. Exiting.')),
       ]),
     );

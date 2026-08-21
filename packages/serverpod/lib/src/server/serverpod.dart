@@ -1040,26 +1040,23 @@ class Serverpod {
         (config.role == ServerpodRole.maintenance && !applyingMigrations)) {
       _internalLogVerbose('Starting maintenance tasks.');
 
-      // Start future calls
-      _completedFutureCalls = _futureCallManager == null;
       if (!config.futureCallExecutionEnabled) {
         _internalLogVerbose('Future call execution is disabled.');
-        _completedFutureCalls = true;
       } else if (config.role == ServerpodRole.maintenance) {
-        unawaited(
-          _futureCallManager?.runScheduledFutureCalls().whenComplete(
-            _onCompletedFutureCalls,
-          ),
-        );
+        await _futureCallManager?.runScheduledFutureCalls();
       } else {
         await _futureCallManager?.start();
       }
 
-      // Start health check manager
-      _completedHealthChecks = _healthCheckManager == null;
       await _healthCheckManager?.start();
-      // No managers (e.g. `--no-database` maintenance) must still exit.
-      _checkMaintenanceTasksCompletion();
+      if (config.role == ServerpodRole.maintenance) {
+        // Flush then [exit] here. Throwing [ExitException] into the start-up
+        // zone races a fire-and-forget drain against unread pipe stdout, and
+        // the spawn test never sees the completion line.
+        _writeLifecycleMessage('All maintenance tasks completed. Exiting.');
+        await _flushLifecycleStdout();
+        exit(_exitCode);
+      }
     }
 
     _writeLifecycleMessage(
@@ -1215,31 +1212,8 @@ class Serverpod {
     return ServerpodRunMode.development;
   }
 
-  bool _completedHealthChecks = false;
-  bool _completedFutureCalls = false;
-
   void _onCompletedHealthChecks() {
     _internalLogVerbose('Health checks completed.');
-    _completedHealthChecks = true;
-    _checkMaintenanceTasksCompletion();
-  }
-
-  void _onCompletedFutureCalls() {
-    _internalLogVerbose('Future calls completed.');
-    _completedFutureCalls = true;
-    _checkMaintenanceTasksCompletion();
-  }
-
-  void _checkMaintenanceTasksCompletion() {
-    if (config.role != ServerpodRole.maintenance) return;
-    if (_completedFutureCalls && _completedHealthChecks) {
-      _writeLifecycleMessage('All maintenance tasks completed. Exiting.');
-      // Throw so `_unguardedStart` unwinds into the start-up zone, which
-      // flushes stdio and exits. Calling [_exitAfterFlush] here is a
-      // fire-and-forget Future that races the still-running start() and
-      // leaves the embedded-Postgres pool keeping the isolate alive.
-      throw ExitException(_exitCode);
-    }
   }
 
   void _onShutdownSignal(ProcessSignal signal) {

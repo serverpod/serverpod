@@ -113,9 +113,6 @@ class HealthCheckManager {
     try {
       await _innerPerformHealthCheck();
     } catch (e, stackTrace) {
-      // Maintenance completion throws [ExitException]. Swallow it so
-      // [start] returns and `_unguardedStart` can rethrow from
-      // `_checkMaintenanceTasksCompletion` into the start-up zone.
       if (!(e is ExitException && e.exitCode == 0)) {
         _pod.reportFrameworkException(
           e,
