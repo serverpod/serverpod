@@ -14,8 +14,9 @@
 import 'package:serverpod/serverpod.dart' as _i1;
 import 'projected_address.dart' as _i2;
 import 'projected_order.dart' as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
-import 'package:meta/meta.dart' as _i5;
+import 'projected_json_field.dart' as _i4;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i5;
+import 'package:meta/meta.dart' as _i6;
 
 abstract class ProjectedUser
     implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
@@ -25,6 +26,7 @@ abstract class ProjectedUser
     required this.addressId,
     this.address,
     this.orders,
+    this.jsonField,
   });
 
   factory ProjectedUser({
@@ -33,6 +35,7 @@ abstract class ProjectedUser
     required int addressId,
     _i2.ProjectedAddress? address,
     List<_i3.ProjectedOrder>? orders,
+    _i4.ProjectedJsonField? jsonField,
   }) = _ProjectedUserImpl;
 
   factory ProjectedUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,13 +45,18 @@ abstract class ProjectedUser
       addressId: jsonSerialization['addressId'] as int,
       address: jsonSerialization['address'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.ProjectedAddress>(
+          : _i5.Protocol().deserialize<_i2.ProjectedAddress>(
               jsonSerialization['address'],
             ),
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.ProjectedOrder>>(
+          : _i5.Protocol().deserialize<List<_i3.ProjectedOrder>>(
               jsonSerialization['orders'],
+            ),
+      jsonField: jsonSerialization['jsonField'] == null
+          ? null
+          : _i5.Protocol().deserialize<_i4.ProjectedJsonField>(
+              jsonSerialization['jsonField'],
             ),
     );
   }
@@ -68,6 +76,8 @@ abstract class ProjectedUser
 
   List<_i3.ProjectedOrder>? orders;
 
+  _i4.ProjectedJsonField? jsonField;
+
   @override
   _i1.Table<int?> get table => t;
 
@@ -80,6 +90,7 @@ abstract class ProjectedUser
     int? addressId,
     _i2.ProjectedAddress? address,
     List<_i3.ProjectedOrder>? orders,
+    _i4.ProjectedJsonField? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,6 +102,7 @@ abstract class ProjectedUser
       if (address != null) 'address': address?.toJson(),
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
+      if (jsonField != null) 'jsonField': jsonField?.toJson(),
     };
   }
 
@@ -104,6 +116,7 @@ abstract class ProjectedUser
       if (address != null) 'address': address?.toJsonForProtocol(),
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJsonForProtocol()),
+      if (jsonField != null) 'jsonField': jsonField?.toJsonForProtocol(),
     };
   }
 
@@ -150,12 +163,14 @@ class _ProjectedUserImpl extends ProjectedUser {
     required int addressId,
     _i2.ProjectedAddress? address,
     List<_i3.ProjectedOrder>? orders,
+    _i4.ProjectedJsonField? jsonField,
   }) : super._(
          id: id,
          name: name,
          addressId: addressId,
          address: address,
          orders: orders,
+         jsonField: jsonField,
        );
 
   /// Returns a shallow copy of this [ProjectedUser]
@@ -168,6 +183,7 @@ class _ProjectedUserImpl extends ProjectedUser {
     int? addressId,
     Object? address = _Undefined,
     Object? orders = _Undefined,
+    Object? jsonField = _Undefined,
   }) {
     return ProjectedUser(
       id: id is int? ? id : this.id,
@@ -179,6 +195,9 @@ class _ProjectedUserImpl extends ProjectedUser {
       orders: orders is List<_i3.ProjectedOrder>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
+      jsonField: jsonField is _i4.ProjectedJsonField?
+          ? jsonField
+          : this.jsonField?.copyWith(),
     );
   }
 }
@@ -195,6 +214,13 @@ class ProjectedUserUpdateTable extends _i1.UpdateTable<ProjectedUserTable> {
     table.addressId,
     value,
   );
+
+  _i1.ColumnValue<_i4.ProjectedJsonField, _i4.ProjectedJsonField> jsonField(
+    _i4.ProjectedJsonField? value,
+  ) => _i1.ColumnValue(
+    table.jsonField,
+    value,
+  );
 }
 
 class ProjectedUserTable extends _i1.Table<int?> {
@@ -207,6 +233,10 @@ class ProjectedUserTable extends _i1.Table<int?> {
     );
     addressId = _i1.ColumnInt(
       'addressId',
+      this,
+    );
+    jsonField = _i1.ColumnSerializable<_i4.ProjectedJsonField>(
+      'jsonField',
       this,
     );
   }
@@ -222,6 +252,8 @@ class ProjectedUserTable extends _i1.Table<int?> {
   _i3.ProjectedOrderTable? ___orders;
 
   _i1.ManyRelation<_i3.ProjectedOrderTable>? _orders;
+
+  late final _i1.ColumnSerializable<_i4.ProjectedJsonField> jsonField;
 
   _i2.ProjectedAddressTable get address {
     if (_address != null) return _address!;
@@ -273,6 +305,7 @@ class ProjectedUserTable extends _i1.Table<int?> {
     id,
     name,
     addressId,
+    jsonField,
   ];
 
   @override
@@ -288,7 +321,7 @@ class ProjectedUserTable extends _i1.Table<int?> {
 }
 
 class ProjectedUserInclude extends _i1.IncludeObject {
-  @_i5.internal
+  @_i6.internal
   ProjectedUserInclude.internal_({
     _i2.ProjectedAddressInclude? address,
     _i3.ProjectedOrderIncludeList? orders,
@@ -315,7 +348,7 @@ class ProjectedUserInclude extends _i1.IncludeObject {
 }
 
 class ProjectedUserIncludeList extends _i1.IncludeList {
-  @_i5.internal
+  @_i6.internal
   ProjectedUserIncludeList.internal_({
     _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     super.limit,

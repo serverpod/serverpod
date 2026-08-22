@@ -223,4 +223,167 @@ void main() async {
       expect(result?.authorName, 'Jane Doe');
     },
   );
+
+  test(
+    'Given a projected user with a json projected field when fetching using findFirstRow and using projection forwarding (.) then the nested json field is correctly flattened into the object.',
+    () async {
+      var address = await ProjectedAddress.db.insertRow(
+        session,
+        ProjectedAddress(street: 'Main Street', state: 'CA', country: 'USA'),
+      );
+
+      await ProjectedUser.db.insertRow(
+        session,
+        ProjectedUser(
+          name: 'John',
+          addressId: address.id!,
+          jsonField: ProjectedJsonField(
+            text: 'text',
+            value: 1,
+            valueA: true,
+            valueB: 2.1,
+            list: ['John Doe', 'Jane Doe'],
+            listA: [1, 2, 5, 4, 9],
+            listB: [true, false, true, false],
+            listC: [1.2, 3.2, 5.34, 6.78],
+            listD: ['Hello', 'World'],
+            map: {'text': 'Discount Text', 'value': '50% off'},
+            mapA: {'min': 1, 'max': 100},
+            mapB: {'mute': true, 'video': false},
+            mapC: {'amount': 1.4, 'discount': 0.2},
+            dateValue: DateTime.now(),
+          ),
+        ),
+      );
+
+      var result = await ProjectedUserJsonField.db.findFirstRow(
+        session,
+      );
+
+      print('Json fields: $result');
+
+      expect(result, isNotNull);
+      expect(result?.name, 'John');
+      expect(result?.jsonFieldText, 'text');
+    },
+  );
+
+  test(
+    'Given a projected user with multiple json projected fields when fetching using findFirstRow then multiple nested json fields are flattened into the object.',
+    () async {
+      var address = await ProjectedAddress.db.insertRow(
+        session,
+        ProjectedAddress(street: 'Main Street', state: 'CA', country: 'USA'),
+      );
+
+      await ProjectedUser.db.insertRow(
+        session,
+        ProjectedUser(
+          name: 'Alice',
+          addressId: address.id!,
+          jsonField: ProjectedJsonField(
+            text: 'sample text',
+            value: 42,
+            valueA: true,
+            valueB: 3.14,
+            list: ['John Doe', 'Jane Doe', 'Bob Smith'],
+            listA: [1, 42, 99, 3],
+            listB: [true, false, false],
+            listC: [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+            listD: ['Hello', 'World', 'Test'],
+            map: {'text': 'Discount Text', 'value': '50% off'},
+            mapA: {'discount': 50, 'amount': 200},
+            mapB: {'mute': true, 'video': false},
+            mapC: {'amount': 1.4, 'discount': 0.2},
+            dateValue: DateTime.now(),
+          ),
+        ),
+      );
+
+      var result = await ProjectedUserJsonMultiField.db.findFirstRow(
+        session,
+      );
+
+      print('Json fields Multi: $result');
+
+      expect(result, isNotNull);
+      expect(result?.name, 'Alice');
+      expect(result?.jsonFieldText, 'sample text');
+      expect(result?.jsonFieldValue, 42);
+      expect(result?.jsonFieldMapA, {'discount': 50, 'amount': 200});
+      expect(result?.jsonFieldListA, [1, 42, 99, 3]);
+      expect(result?.jsonFieldDateValue, isA<DateTime>());
+    },
+  );
+
+  test(
+    'Given a projected user with a sub-projected json model (->) when fetching using findFirstRow then the sub-projected json model is correctly deserialized.',
+    () async {
+      var address = await ProjectedAddress.db.insertRow(
+        session,
+        ProjectedAddress(street: 'Main Street', state: 'CA', country: 'USA'),
+      );
+
+      await ProjectedUser.db.insertRow(
+        session,
+        ProjectedUser(
+          name: 'Bob',
+          addressId: address.id!,
+          jsonField: ProjectedJsonField(
+            text: 'sub-projected',
+            value: 99,
+            valueA: false,
+            valueB: 1.0,
+            list: [],
+            listA: [],
+            listB: [],
+            listC: [],
+            listD: [],
+            map: {},
+            mapA: {},
+            mapB: {},
+            mapC: {},
+            dateValue: DateTime.now(),
+          ),
+        ),
+      );
+
+      var result = await ProjectedUserSimpleJson.db.findFirstRow(
+        session,
+      );
+
+      expect(result, isNotNull);
+      expect(result?.name, 'Bob');
+      expect(result?.jsonField, isA<ProjectedJsonFieldSimple>());
+      expect(result?.jsonField?.text, 'sub-projected');
+      expect(result?.jsonField?.value, 99);
+    },
+  );
+
+  test(
+    'Given a projected user with a null json field when fetching using findFirstRow then the flattened json field is null.',
+    () async {
+      var address = await ProjectedAddress.db.insertRow(
+        session,
+        ProjectedAddress(street: 'Main Street', state: 'CA', country: 'USA'),
+      );
+
+      await ProjectedUser.db.insertRow(
+        session,
+        ProjectedUser(
+          name: 'Charlie',
+          addressId: address.id!,
+          jsonField: null,
+        ),
+      );
+
+      var result = await ProjectedUserJsonField.db.findFirstRow(
+        session,
+      );
+
+      expect(result, isNotNull);
+      expect(result?.name, 'Charlie');
+      expect(result?.jsonFieldText, isNull);
+    },
+  );
 }

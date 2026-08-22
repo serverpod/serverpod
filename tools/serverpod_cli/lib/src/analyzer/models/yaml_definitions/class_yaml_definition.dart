@@ -267,6 +267,7 @@ class ClassYamlDefinition {
           ValidateNode(
             Keyword.any,
             keyRestriction: restrictions.validateClassName,
+            valueRestriction: restrictions.validateProjectionValue,
             mutuallyExclusiveKeys: {Keyword.select, Keyword.exclude},
             nested: {
               ValidateNode(

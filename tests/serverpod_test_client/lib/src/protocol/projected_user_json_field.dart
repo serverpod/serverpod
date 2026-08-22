@@ -12,30 +12,30 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 
-abstract class ProjectedUserAddressStreetOnly
+abstract class ProjectedUserJsonField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ProjectedUserAddressStreetOnly._({
+  ProjectedUserJsonField._({
     this.id,
     required this.name,
-    required this.addressStreet,
+    this.jsonFieldText,
   });
 
-  factory ProjectedUserAddressStreetOnly({
+  factory ProjectedUserJsonField({
     int? id,
     required String name,
-    required String addressStreet,
-  }) = _ProjectedUserAddressStreetOnlyImpl;
+    String? jsonFieldText,
+  }) = _ProjectedUserJsonFieldImpl;
 
-  factory ProjectedUserAddressStreetOnly.fromJson(
+  factory ProjectedUserJsonField.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserJsonField(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      addressStreet:
-          (jsonSerialization['addressStreet'] ??
-                  (jsonSerialization['address'] as Map?)?['street'])
-              as String,
+      jsonFieldText:
+          (jsonSerialization['jsonFieldText'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['text'])
+              as String?,
     );
   }
 
@@ -46,33 +46,33 @@ abstract class ProjectedUserAddressStreetOnly
 
   String name;
 
-  String addressStreet;
+  String? jsonFieldText;
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserJsonField copyWith({
     int? id,
     String? name,
-    String? addressStreet,
+    String? jsonFieldText,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserJsonField',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserJsonField',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
   }
 
@@ -84,31 +84,32 @@ abstract class ProjectedUserAddressStreetOnly
 
 class _Undefined {}
 
-class _ProjectedUserAddressStreetOnlyImpl
-    extends ProjectedUserAddressStreetOnly {
-  _ProjectedUserAddressStreetOnlyImpl({
+class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
+  _ProjectedUserJsonFieldImpl({
     int? id,
     required String name,
-    required String addressStreet,
+    String? jsonFieldText,
   }) : super._(
          id: id,
          name: name,
-         addressStreet: addressStreet,
+         jsonFieldText: jsonFieldText,
        );
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserJsonField copyWith({
     Object? id = _Undefined,
     String? name,
-    String? addressStreet,
+    Object? jsonFieldText = _Undefined,
   }) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserJsonField(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      addressStreet: addressStreet ?? this.addressStreet,
+      jsonFieldText: jsonFieldText is String?
+          ? jsonFieldText
+          : this.jsonFieldText,
     );
   }
 }

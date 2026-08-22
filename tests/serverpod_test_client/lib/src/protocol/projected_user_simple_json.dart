@@ -11,31 +11,33 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'projected_json_field_simple.dart' as _i2;
 
-abstract class ProjectedUserAddressStreetOnly
+abstract class ProjectedUserSimpleJson
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ProjectedUserAddressStreetOnly._({
+  ProjectedUserSimpleJson._({
     this.id,
     required this.name,
-    required this.addressStreet,
+    this.jsonField,
   });
 
-  factory ProjectedUserAddressStreetOnly({
+  factory ProjectedUserSimpleJson({
     int? id,
     required String name,
-    required String addressStreet,
-  }) = _ProjectedUserAddressStreetOnlyImpl;
+    _i2.ProjectedJsonFieldSimple? jsonField,
+  }) = _ProjectedUserSimpleJsonImpl;
 
-  factory ProjectedUserAddressStreetOnly.fromJson(
+  factory ProjectedUserSimpleJson.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserSimpleJson(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      addressStreet:
-          (jsonSerialization['addressStreet'] ??
-                  (jsonSerialization['address'] as Map?)?['street'])
-              as String,
+      jsonField: jsonSerialization['jsonField'] == null
+          ? null
+          : _i2.ProjectedJsonFieldSimple.fromJson(
+              jsonSerialization['jsonField'],
+            ),
     );
   }
 
@@ -46,33 +48,40 @@ abstract class ProjectedUserAddressStreetOnly
 
   String name;
 
-  String addressStreet;
+  _i2.ProjectedJsonFieldSimple? jsonField;
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserSimpleJson copyWith({
     int? id,
     String? name,
-    String? addressStreet,
+    _i2.ProjectedJsonFieldSimple? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserSimpleJson',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonField != null) 'jsonField': jsonField?.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserSimpleJson',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonField != null)
+        'jsonField':
+            // ignore: unnecessary_type_check
+            jsonField is _i1.ProtocolSerialization
+            ? (jsonField as _i1.ProtocolSerialization).toJsonForProtocol()
+            :
+              // ignore: dead_code
+              jsonField?.toJson(),
     };
   }
 
@@ -84,31 +93,32 @@ abstract class ProjectedUserAddressStreetOnly
 
 class _Undefined {}
 
-class _ProjectedUserAddressStreetOnlyImpl
-    extends ProjectedUserAddressStreetOnly {
-  _ProjectedUserAddressStreetOnlyImpl({
+class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
+  _ProjectedUserSimpleJsonImpl({
     int? id,
     required String name,
-    required String addressStreet,
+    _i2.ProjectedJsonFieldSimple? jsonField,
   }) : super._(
          id: id,
          name: name,
-         addressStreet: addressStreet,
+         jsonField: jsonField,
        );
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserSimpleJson copyWith({
     Object? id = _Undefined,
     String? name,
-    String? addressStreet,
+    Object? jsonField = _Undefined,
   }) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserSimpleJson(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      addressStreet: addressStreet ?? this.addressStreet,
+      jsonField: jsonField is _i2.ProjectedJsonFieldSimple?
+          ? jsonField
+          : this.jsonField?.copyWith(),
     );
   }
 }

@@ -143,7 +143,7 @@ Expression _buildFromJson(
       nestedAccess = '($nestedAccess as Map?)?[\'${parts[i]}\']';
     }
     valueExpression = CodeExpression(
-      Code('jsonSerialization[\'${fieldName!}\'] ?? $nestedAccess'),
+      Code('(jsonSerialization[\'${fieldName!}\'] ?? $nestedAccess)'),
     );
   } else {
     valueExpression =

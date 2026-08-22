@@ -11,110 +11,101 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_author.dart' as _i2;
-import 'projected_article.dart';
+import 'projected_user.dart';
 
-abstract class ProjectedArticleAuthorNameOnly
+abstract class ProjectedUserJsonField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ProjectedArticleAuthorNameOnly._({
+  ProjectedUserJsonField._({
     this.id,
-    required this.title,
-    required this.summary,
-    required this.authorName,
+    required this.name,
+    this.jsonFieldText,
   });
 
-  factory ProjectedArticleAuthorNameOnly({
+  factory ProjectedUserJsonField({
     int? id,
-    required String title,
-    required String summary,
-    required String authorName,
-  }) = _ProjectedArticleAuthorNameOnlyImpl;
+    required String name,
+    String? jsonFieldText,
+  }) = _ProjectedUserJsonFieldImpl;
 
-  factory ProjectedArticleAuthorNameOnly.fromJson(
+  factory ProjectedUserJsonField.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedArticleAuthorNameOnly(
+    return ProjectedUserJsonField(
       id: jsonSerialization['id'] as int?,
-      title: jsonSerialization['title'] as String,
-      summary: jsonSerialization['summary'] as String,
-      authorName:
-          (jsonSerialization['authorName'] ??
-                  (jsonSerialization['author'] as Map?)?['name'])
-              as String,
+      name: jsonSerialization['name'] as String,
+      jsonFieldText:
+          (jsonSerialization['jsonFieldText'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['text'])
+              as String?,
     );
   }
 
-  static const db = ProjectedArticleAuthorNameOnlyRepository._();
+  static const db = ProjectedUserJsonFieldRepository._();
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
   int? id;
 
-  String title;
+  String name;
 
-  String summary;
+  String? jsonFieldText;
 
-  String authorName;
-
-  /// Returns a shallow copy of this [ProjectedArticleAuthorNameOnly]
+  /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ProjectedArticleAuthorNameOnly copyWith({
+  ProjectedUserJsonField copyWith({
     int? id,
-    String? title,
-    String? summary,
-    String? authorName,
+    String? name,
+    String? jsonFieldText,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedArticleAuthorNameOnly',
+      '__className__': 'ProjectedUserJsonField',
       if (id != null) 'id': id,
-      'title': title,
-      'summary': summary,
-      'authorName': authorName,
+      'name': name,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedArticleAuthorNameOnly',
+      '__className__': 'ProjectedUserJsonField',
       if (id != null) 'id': id,
-      'title': title,
-      'summary': summary,
-      'authorName': authorName,
+      'name': name,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
   }
 
-  static ProjectedArticleInclude include() {
-    return ProjectedArticleInclude.internal_(
+  static ProjectedUserInclude include() {
+    return ProjectedUserInclude.internal_(
       selectedColumns: [
-        ProjectedArticle.t.id,
-        ProjectedArticle.t.title,
-        ProjectedArticle.t.summary,
+        ProjectedUser.t.id,
+        ProjectedUser.t.name,
+        ProjectedUser.t.jsonField.jsonKey(
+          'text',
+          fieldName: 'jsonFieldText',
+        ),
       ],
-      author: _i2.ProjectedAuthorInclude.internal_(
-        selectedColumns: [_i2.ProjectedAuthor.t.name],
-      ),
     );
   }
 
-  static ProjectedArticleIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+  static ProjectedUserIncludeList includeList({
+    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
-    return ProjectedArticle.includeList(
+    return ProjectedUser.includeList(
       where: where,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      include: ProjectedArticleAuthorNameOnly.include(),
+      include: ProjectedUserJsonField.include(),
     );
   }
 
@@ -126,41 +117,38 @@ abstract class ProjectedArticleAuthorNameOnly
 
 class _Undefined {}
 
-class _ProjectedArticleAuthorNameOnlyImpl
-    extends ProjectedArticleAuthorNameOnly {
-  _ProjectedArticleAuthorNameOnlyImpl({
+class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
+  _ProjectedUserJsonFieldImpl({
     int? id,
-    required String title,
-    required String summary,
-    required String authorName,
+    required String name,
+    String? jsonFieldText,
   }) : super._(
          id: id,
-         title: title,
-         summary: summary,
-         authorName: authorName,
+         name: name,
+         jsonFieldText: jsonFieldText,
        );
 
-  /// Returns a shallow copy of this [ProjectedArticleAuthorNameOnly]
+  /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ProjectedArticleAuthorNameOnly copyWith({
+  ProjectedUserJsonField copyWith({
     Object? id = _Undefined,
-    String? title,
-    String? summary,
-    String? authorName,
+    String? name,
+    Object? jsonFieldText = _Undefined,
   }) {
-    return ProjectedArticleAuthorNameOnly(
+    return ProjectedUserJsonField(
       id: id is int? ? id : this.id,
-      title: title ?? this.title,
-      summary: summary ?? this.summary,
-      authorName: authorName ?? this.authorName,
+      name: name ?? this.name,
+      jsonFieldText: jsonFieldText is String?
+          ? jsonFieldText
+          : this.jsonFieldText,
     );
   }
 }
 
-class ProjectedArticleAuthorNameOnlyRepository {
-  const ProjectedArticleAuthorNameOnlyRepository._();
+class ProjectedUserJsonFieldRepository {
+  const ProjectedUserJsonFieldRepository._();
 
   Map<String, dynamic> _stripClassName(Map<String, dynamic> map) {
     var result = <String, dynamic>{};
@@ -181,7 +169,7 @@ class ProjectedArticleAuthorNameOnlyRepository {
     return result;
   }
 
-  /// Returns a list of [ProjectedArticle]s matching the given query parameters.
+  /// Returns a list of [ProjectedUser]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -203,38 +191,37 @@ class ProjectedArticleAuthorNameOnlyRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<ProjectedArticleAuthorNameOnly>> find(
+  Future<List<ProjectedUserJsonField>> find(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
     // ignore: invalid_use_of_internal_member
     return await session.db
-        .findAsJson<ProjectedArticle>(
-          where: where?.call(ProjectedArticle.t),
-          orderBy: orderBy?.call(ProjectedArticle.t),
-          orderByList: orderByList?.call(ProjectedArticle.t),
+        .findAsJson<ProjectedUser>(
+          where: where?.call(ProjectedUser.t),
+          orderBy: orderBy?.call(ProjectedUser.t),
+          orderByList: orderByList?.call(ProjectedUser.t),
           limit: limit,
           offset: offset,
           transaction: transaction,
-          include: ProjectedArticleAuthorNameOnly.include(),
+          include: ProjectedUserJsonField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
         .then(
-          (rows) => rows
-              .map((e) => ProjectedArticleAuthorNameOnly.fromJson(e))
-              .toList(),
+          (rows) =>
+              rows.map((e) => ProjectedUserJsonField.fromJson(e)).toList(),
         );
   }
 
-  /// Returns the first matching [ProjectedArticle] matching the given query parameters.
+  /// Returns the first matching [ProjectedUser] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -251,35 +238,33 @@ class ProjectedArticleAuthorNameOnlyRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<ProjectedArticleAuthorNameOnly?> findFirstRow(
+  Future<ProjectedUserJsonField?> findFirstRow(
     _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
     // ignore: invalid_use_of_internal_member
     return await session.db
-        .findFirstRowAsJson<ProjectedArticle>(
-          where: where?.call(ProjectedArticle.t),
-          orderBy: orderBy?.call(ProjectedArticle.t),
-          orderByList: orderByList?.call(ProjectedArticle.t),
+        .findFirstRowAsJson<ProjectedUser>(
+          where: where?.call(ProjectedUser.t),
+          orderBy: orderBy?.call(ProjectedUser.t),
+          orderByList: orderByList?.call(ProjectedUser.t),
           offset: offset,
           transaction: transaction,
-          include: ProjectedArticleAuthorNameOnly.include(),
+          include: ProjectedUserJsonField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
-        .then(
-          (e) => e == null ? null : ProjectedArticleAuthorNameOnly.fromJson(e),
-        );
+        .then((e) => e == null ? null : ProjectedUserJsonField.fromJson(e));
   }
 
-  /// Finds a single [ProjectedArticle] by its [id] or null if no such row exists.
-  Future<ProjectedArticleAuthorNameOnly?> findById(
+  /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
+  Future<ProjectedUserJsonField?> findById(
     _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
@@ -288,15 +273,13 @@ class ProjectedArticleAuthorNameOnlyRepository {
   }) async {
     // ignore: invalid_use_of_internal_member
     return await session.db
-        .findByIdAsJson<ProjectedArticle>(
+        .findByIdAsJson<ProjectedUser>(
           id,
           transaction: transaction,
-          include: ProjectedArticleAuthorNameOnly.include(),
+          include: ProjectedUserJsonField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
-        .then(
-          (e) => e == null ? null : ProjectedArticleAuthorNameOnly.fromJson(e),
-        );
+        .then((e) => e == null ? null : ProjectedUserJsonField.fromJson(e));
   }
 }

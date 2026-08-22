@@ -36,8 +36,9 @@ abstract class ProjectedArticleAuthorNameOnly
       title: jsonSerialization['title'] as String,
       summary: jsonSerialization['summary'] as String,
       authorName:
-          jsonSerialization['authorName'] ??
-          (jsonSerialization['author'] as Map?)?['name'] as String,
+          (jsonSerialization['authorName'] ??
+                  (jsonSerialization['author'] as Map?)?['name'])
+              as String,
     );
   }
 

@@ -8,6 +8,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
     show FutureCallDefinition;
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
@@ -531,7 +532,7 @@ List<SerializableModelDefinition> _expandProjections(
                   .where((f) => f.name == relationName)
                   .firstOrNull;
 
-              if (relationField != null && relationField.relation != null) {
+              if (relationField != null) {
                 var targetModelName = relationField.type.className;
                 var targetModel = models
                     .whereType<ModelClassDefinition>()
@@ -546,14 +547,28 @@ List<SerializableModelDefinition> _expandProjections(
                   if (targetField != null) {
                     var flatName =
                         '$relationName${forwardedName.substring(0, 1).toUpperCase()}${forwardedName.substring(1)}';
+                    var isParentNullable =
+                        relationField.relation is ObjectRelationDefinition
+                            ? (relationField.relation
+                                    as ObjectRelationDefinition)
+                                .nullableRelation
+                            : relationField.type.nullable;
+                    var fieldType =
+                        isParentNullable && !targetField.type.nullable
+                            ? targetField.type.asNullable
+                            : targetField.type;
+
                     projectedFields.add(
                       SerializableModelFieldDefinition(
                         name: flatName,
-                        type: targetField.type,
+                        type: fieldType,
                         scope: targetField.scope,
                         shouldPersist: false,
                         forwardedFrom: pf.name,
-                        forwardedRelationType: relationField.type,
+                        forwardedRelationType:
+                            relationField.relation != null
+                                ? relationField.type
+                                : null,
                       ),
                     );
                     continue;

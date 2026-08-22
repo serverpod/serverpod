@@ -253,7 +253,9 @@ class SerializableModelLibraryGenerator {
             // On Dart 3.10+, this issue becomes a `dead_code` lint.
             libraryBuilder.ignoreForFile.add('dead_code');
           }
-        } else if (classDefinition.isProjection && serverCode) {
+        } else if (classDefinition.isProjection &&
+            serverCode &&
+            classDefinition.findField('id') != null) {
           libraryBuilder.directives.add(
             Directive.import(
               '${ReCase(classDefinition.baseClassName!).snakeCase}.dart',
@@ -504,7 +506,9 @@ class SerializableModelLibraryGenerator {
         );
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
-      } else if (classDefinition.isProjection && serverCode) {
+      } else if (classDefinition.isProjection &&
+          serverCode &&
+          classDefinition.findField('id') != null) {
         classBuilder.implements.add(
           refer('SerializableModel', serverpodUrl(serverCode)),
         );
@@ -635,7 +639,8 @@ class SerializableModelLibraryGenerator {
       }
       if (serverCode &&
           classDefinition.isProjection &&
-          classDefinition.baseClassName != null) {
+          classDefinition.baseClassName != null &&
+          classDefinition.findField('id') != null) {
         classBuilder.methods.addAll([
           _buildProjectionIncludeMethod(
             className,
@@ -1487,8 +1492,13 @@ class SerializableModelLibraryGenerator {
     }
 
     var forwardedFields = fields.where((f) => f.forwardedFrom != null);
+    var forwardedRelationFields =
+        forwardedFields.where((f) => f.forwardedRelationType != null);
+    var forwardedJsonFields =
+        forwardedFields.where((f) => f.forwardedRelationType == null);
+
     var forwardedMap = <String, List<SerializableModelFieldDefinition>>{};
-    for (var f in forwardedFields) {
+    for (var f in forwardedRelationFields) {
       var parts = f.forwardedFrom!.split('.');
       var relation = parts[0];
       forwardedMap.putIfAbsent(relation, () => []).add(f);
@@ -1518,11 +1528,32 @@ class SerializableModelLibraryGenerator {
           });
     }
 
-    var columnNames = fields
-        .where((field) => field.relation == null && field.forwardedFrom == null)
-        .map(
-          (field) => refer(baseClassName).property('t').property(field.name),
-        );
+    var jsonColumns = <Expression>[];
+    for (var f in forwardedJsonFields) {
+      var parts = f.forwardedFrom!.split('.');
+      var rootColumnName = parts[0];
+      var jsonKey = parts.skip(1).join('.');
+      jsonColumns.add(
+        refer(baseClassName)
+            .property('t')
+            .property(rootColumnName)
+            .property('jsonKey')
+            .call([
+              literalString(jsonKey),
+            ], {
+              'fieldName': literalString(f.name),
+            }),
+      );
+    }
+
+    var columnNames = [
+      ...fields
+          .where((field) => field.relation == null && field.forwardedFrom == null)
+          .map(
+            (field) => refer(baseClassName).property('t').property(field.name),
+          ),
+      ...jsonColumns,
+    ];
 
     return Method(
       (m) => m

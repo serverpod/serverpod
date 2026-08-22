@@ -691,22 +691,26 @@ class ModelParser {
           var keyScalar = node.key;
           var nodeDocument = node.value;
           if (keyScalar is! YamlScalar) return null;
-          if (nodeDocument is! YamlMap) return null;
-
           var projectionName = keyScalar.value;
           if (projectionName is! String) return null;
-
-          var selectNode = nodeDocument.nodes[Keyword.select];
-          var excludeNode = nodeDocument.nodes[Keyword.exclude];
 
           var isExclude = false;
           YamlList? fieldsNode;
 
-          if (selectNode is YamlList) {
-            fieldsNode = selectNode;
-          } else if (excludeNode is YamlList) {
-            fieldsNode = excludeNode;
-            isExclude = true;
+          if (nodeDocument is YamlList) {
+            fieldsNode = nodeDocument;
+          } else if (nodeDocument is YamlMap) {
+            var selectNode = nodeDocument.nodes[Keyword.select];
+            var excludeNode = nodeDocument.nodes[Keyword.exclude];
+
+            if (selectNode is YamlList) {
+              fieldsNode = selectNode;
+            } else if (excludeNode is YamlList) {
+              fieldsNode = excludeNode;
+              isExclude = true;
+            } else {
+              return null;
+            }
           } else {
             return null;
           }
@@ -725,8 +729,10 @@ class ModelParser {
                   return ProjectionFieldDefinition(name: value.trim());
                 } else if (value is YamlMap && value.nodes.length == 1) {
                   var entry = value.nodes.entries.first;
-                  var key = entry.key.value;
-                  var val = entry.value.value;
+                  var keyNode = entry.key;
+                  var valNode = entry.value;
+                  var key = keyNode is YamlScalar ? keyNode.value : null;
+                  var val = valNode is YamlScalar ? valNode.value : null;
                   if (key is String && val is String) {
                     return ProjectionFieldDefinition(
                       name: key.trim(),

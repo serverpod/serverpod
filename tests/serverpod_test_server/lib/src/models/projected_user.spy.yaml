@@ -4,8 +4,27 @@ fields:
   name: String
   address: ProjectedAddress?, relation
   orders: List<ProjectedOrder>?, relation
+  jsonField: ProjectedJsonField?
 
 projections:
+  ProjectedUserJsonField:
+    - name
+    - jsonField.text
+
+  ProjectedUserJsonMultiField:
+    select:
+      - name
+      - jsonField.text
+      - jsonField.value
+      - jsonField.mapA
+      - jsonField.listA
+      - jsonField.dateValue
+
+  ProjectedUserSimpleJson:
+    select:
+      - name
+      - jsonField -> ProjectedJsonFieldSimple
+    
   ProjectedUserStreetAddress:
     select:
       - name

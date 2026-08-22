@@ -11,37 +11,76 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_address.dart' as _i2;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
 import 'projected_user.dart';
 
-abstract class ProjectedUserAddressStreetOnly
+abstract class ProjectedUserJsonMultiField
     implements _i1.SerializableModel, _i1.ProtocolSerialization {
-  ProjectedUserAddressStreetOnly._({
+  ProjectedUserJsonMultiField._({
     this.id,
     required this.name,
-    required this.addressStreet,
+    this.jsonFieldText,
+    this.jsonFieldValue,
+    this.jsonFieldMapA,
+    this.jsonFieldListA,
+    this.jsonFieldDateValue,
   });
 
-  factory ProjectedUserAddressStreetOnly({
+  factory ProjectedUserJsonMultiField({
     int? id,
     required String name,
-    required String addressStreet,
-  }) = _ProjectedUserAddressStreetOnlyImpl;
+    String? jsonFieldText,
+    int? jsonFieldValue,
+    Map<String, int>? jsonFieldMapA,
+    List<int>? jsonFieldListA,
+    DateTime? jsonFieldDateValue,
+  }) = _ProjectedUserJsonMultiFieldImpl;
 
-  factory ProjectedUserAddressStreetOnly.fromJson(
+  factory ProjectedUserJsonMultiField.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserJsonMultiField(
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
-      addressStreet:
-          (jsonSerialization['addressStreet'] ??
-                  (jsonSerialization['address'] as Map?)?['street'])
-              as String,
+      jsonFieldText:
+          (jsonSerialization['jsonFieldText'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['text'])
+              as String?,
+      jsonFieldValue:
+          (jsonSerialization['jsonFieldValue'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['value'])
+              as int?,
+      jsonFieldMapA:
+          (jsonSerialization['jsonFieldMapA'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['mapA']) ==
+              null
+          ? null
+          : _i2.Protocol().deserialize<Map<String, int>>(
+              (jsonSerialization['jsonFieldMapA'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['mapA']),
+            ),
+      jsonFieldListA:
+          (jsonSerialization['jsonFieldListA'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['listA']) ==
+              null
+          ? null
+          : _i2.Protocol().deserialize<List<int>>(
+              (jsonSerialization['jsonFieldListA'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['listA']),
+            ),
+      jsonFieldDateValue:
+          (jsonSerialization['jsonFieldDateValue'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['dateValue']) ==
+              null
+          ? null
+          : _i1.DateTimeJsonExtension.fromJson(
+              (jsonSerialization['jsonFieldDateValue'] ??
+                  (jsonSerialization['jsonField'] as Map?)?['dateValue']),
+            ),
     );
   }
 
-  static const db = ProjectedUserAddressStreetOnlyRepository._();
+  static const db = ProjectedUserJsonMultiFieldRepository._();
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
@@ -50,33 +89,55 @@ abstract class ProjectedUserAddressStreetOnly
 
   String name;
 
-  String addressStreet;
+  String? jsonFieldText;
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  int? jsonFieldValue;
+
+  Map<String, int>? jsonFieldMapA;
+
+  List<int>? jsonFieldListA;
+
+  DateTime? jsonFieldDateValue;
+
+  /// Returns a shallow copy of this [ProjectedUserJsonMultiField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserJsonMultiField copyWith({
     int? id,
     String? name,
-    String? addressStreet,
+    String? jsonFieldText,
+    int? jsonFieldValue,
+    Map<String, int>? jsonFieldMapA,
+    List<int>? jsonFieldListA,
+    DateTime? jsonFieldDateValue,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserJsonMultiField',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
+      if (jsonFieldValue != null) 'jsonFieldValue': jsonFieldValue,
+      if (jsonFieldMapA != null) 'jsonFieldMapA': jsonFieldMapA?.toJson(),
+      if (jsonFieldListA != null) 'jsonFieldListA': jsonFieldListA?.toJson(),
+      if (jsonFieldDateValue != null)
+        'jsonFieldDateValue': jsonFieldDateValue?.toJson(),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedUserJsonMultiField',
       if (id != null) 'id': id,
       'name': name,
-      'addressStreet': addressStreet,
+      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
+      if (jsonFieldValue != null) 'jsonFieldValue': jsonFieldValue,
+      if (jsonFieldMapA != null) 'jsonFieldMapA': jsonFieldMapA?.toJson(),
+      if (jsonFieldListA != null) 'jsonFieldListA': jsonFieldListA?.toJson(),
+      if (jsonFieldDateValue != null)
+        'jsonFieldDateValue': jsonFieldDateValue?.toJson(),
     };
   }
 
@@ -85,10 +146,27 @@ abstract class ProjectedUserAddressStreetOnly
       selectedColumns: [
         ProjectedUser.t.id,
         ProjectedUser.t.name,
+        ProjectedUser.t.jsonField.jsonKey(
+          'text',
+          fieldName: 'jsonFieldText',
+        ),
+        ProjectedUser.t.jsonField.jsonKey(
+          'value',
+          fieldName: 'jsonFieldValue',
+        ),
+        ProjectedUser.t.jsonField.jsonKey(
+          'mapA',
+          fieldName: 'jsonFieldMapA',
+        ),
+        ProjectedUser.t.jsonField.jsonKey(
+          'listA',
+          fieldName: 'jsonFieldListA',
+        ),
+        ProjectedUser.t.jsonField.jsonKey(
+          'dateValue',
+          fieldName: 'jsonFieldDateValue',
+        ),
       ],
-      address: _i2.ProjectedAddressInclude.internal_(
-        selectedColumns: [_i2.ProjectedAddress.t.street],
-      ),
     );
   }
 
@@ -105,7 +183,7 @@ abstract class ProjectedUserAddressStreetOnly
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      include: ProjectedUserAddressStreetOnly.include(),
+      include: ProjectedUserJsonMultiField.include(),
     );
   }
 
@@ -117,37 +195,70 @@ abstract class ProjectedUserAddressStreetOnly
 
 class _Undefined {}
 
-class _ProjectedUserAddressStreetOnlyImpl
-    extends ProjectedUserAddressStreetOnly {
-  _ProjectedUserAddressStreetOnlyImpl({
+class _ProjectedUserJsonMultiFieldImpl extends ProjectedUserJsonMultiField {
+  _ProjectedUserJsonMultiFieldImpl({
     int? id,
     required String name,
-    required String addressStreet,
+    String? jsonFieldText,
+    int? jsonFieldValue,
+    Map<String, int>? jsonFieldMapA,
+    List<int>? jsonFieldListA,
+    DateTime? jsonFieldDateValue,
   }) : super._(
          id: id,
          name: name,
-         addressStreet: addressStreet,
+         jsonFieldText: jsonFieldText,
+         jsonFieldValue: jsonFieldValue,
+         jsonFieldMapA: jsonFieldMapA,
+         jsonFieldListA: jsonFieldListA,
+         jsonFieldDateValue: jsonFieldDateValue,
        );
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedUserJsonMultiField]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
   @override
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedUserJsonMultiField copyWith({
     Object? id = _Undefined,
     String? name,
-    String? addressStreet,
+    Object? jsonFieldText = _Undefined,
+    Object? jsonFieldValue = _Undefined,
+    Object? jsonFieldMapA = _Undefined,
+    Object? jsonFieldListA = _Undefined,
+    Object? jsonFieldDateValue = _Undefined,
   }) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedUserJsonMultiField(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      addressStreet: addressStreet ?? this.addressStreet,
+      jsonFieldText: jsonFieldText is String?
+          ? jsonFieldText
+          : this.jsonFieldText,
+      jsonFieldValue: jsonFieldValue is int?
+          ? jsonFieldValue
+          : this.jsonFieldValue,
+      jsonFieldMapA: jsonFieldMapA is Map<String, int>?
+          ? jsonFieldMapA
+          : this.jsonFieldMapA?.map(
+              (
+                key0,
+                value0,
+              ) => MapEntry(
+                key0,
+                value0,
+              ),
+            ),
+      jsonFieldListA: jsonFieldListA is List<int>?
+          ? jsonFieldListA
+          : this.jsonFieldListA?.map((e0) => e0).toList(),
+      jsonFieldDateValue: jsonFieldDateValue is DateTime?
+          ? jsonFieldDateValue
+          : this.jsonFieldDateValue,
     );
   }
 }
 
-class ProjectedUserAddressStreetOnlyRepository {
-  const ProjectedUserAddressStreetOnlyRepository._();
+class ProjectedUserJsonMultiFieldRepository {
+  const ProjectedUserJsonMultiFieldRepository._();
 
   Map<String, dynamic> _stripClassName(Map<String, dynamic> map) {
     var result = <String, dynamic>{};
@@ -190,7 +301,7 @@ class ProjectedUserAddressStreetOnlyRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<ProjectedUserAddressStreetOnly>> find(
+  Future<List<ProjectedUserJsonMultiField>> find(
     _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
@@ -210,14 +321,13 @@ class ProjectedUserAddressStreetOnlyRepository {
           limit: limit,
           offset: offset,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedUserJsonMultiField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
         .then(
-          (rows) => rows
-              .map((e) => ProjectedUserAddressStreetOnly.fromJson(e))
-              .toList(),
+          (rows) =>
+              rows.map((e) => ProjectedUserJsonMultiField.fromJson(e)).toList(),
         );
   }
 
@@ -238,7 +348,7 @@ class ProjectedUserAddressStreetOnlyRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<ProjectedUserAddressStreetOnly?> findFirstRow(
+  Future<ProjectedUserJsonMultiField?> findFirstRow(
     _i1.DatabaseSession session, {
     _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
@@ -256,17 +366,17 @@ class ProjectedUserAddressStreetOnlyRepository {
           orderByList: orderByList?.call(ProjectedUser.t),
           offset: offset,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedUserJsonMultiField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
         .then(
-          (e) => e == null ? null : ProjectedUserAddressStreetOnly.fromJson(e),
+          (e) => e == null ? null : ProjectedUserJsonMultiField.fromJson(e),
         );
   }
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
-  Future<ProjectedUserAddressStreetOnly?> findById(
+  Future<ProjectedUserJsonMultiField?> findById(
     _i1.DatabaseSession session,
     int id, {
     _i1.Transaction? transaction,
@@ -278,12 +388,12 @@ class ProjectedUserAddressStreetOnlyRepository {
         .findByIdAsJson<ProjectedUser>(
           id,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedUserJsonMultiField.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
         .then(
-          (e) => e == null ? null : ProjectedUserAddressStreetOnly.fromJson(e),
+          (e) => e == null ? null : ProjectedUserJsonMultiField.fromJson(e),
         );
   }
 }

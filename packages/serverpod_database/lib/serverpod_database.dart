@@ -4,7 +4,7 @@ export 'src/adapters/postgres/postgres_error_codes.dart';
 export 'src/adapters/sqlite/sqlite_error_codes.dart';
 export 'src/bulk_data.dart';
 export 'src/concepts/column_value.dart';
-export 'src/concepts/columns.dart';
+export 'src/concepts/columns.dart' hide ColumnJsonField;
 export 'src/concepts/database_result.dart';
 export 'src/concepts/exceptions.dart';
 export 'src/concepts/expressions.dart';
