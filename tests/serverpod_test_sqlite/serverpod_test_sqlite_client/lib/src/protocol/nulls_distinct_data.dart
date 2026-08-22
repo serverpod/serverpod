@@ -86,7 +86,7 @@ abstract class NullsDistinctData
   }
 
   static NullsDistinctDataInclude include() {
-    return NullsDistinctDataInclude._();
+    return NullsDistinctDataInclude.internal_();
   }
 
   static NullsDistinctDataIncludeList includeList({
@@ -97,7 +97,7 @@ abstract class NullsDistinctData
     _isd.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
     NullsDistinctDataInclude? include,
   }) {
-    return NullsDistinctDataIncludeList._(
+    return NullsDistinctDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,7 +204,10 @@ class NullsDistinctDataTable extends _isd.Table<int?> {
 }
 
 class NullsDistinctDataInclude extends _isd.IncludeObject {
-  NullsDistinctDataInclude._();
+  NullsDistinctDataInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -214,16 +217,20 @@ class NullsDistinctDataInclude extends _isd.IncludeObject {
 }
 
 class NullsDistinctDataIncludeList extends _isd.IncludeList {
-  NullsDistinctDataIncludeList._({
+  NullsDistinctDataIncludeList.internal_({
     _isd.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(NullsDistinctData.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

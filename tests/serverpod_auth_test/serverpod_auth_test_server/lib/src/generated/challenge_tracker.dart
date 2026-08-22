@@ -104,7 +104,7 @@ abstract class ChallengeTracker
   static ChallengeTrackerInclude include({
     _iais.SecretChallengeInclude? secretChallenge,
   }) {
-    return ChallengeTrackerInclude._(secretChallenge: secretChallenge);
+    return ChallengeTrackerInclude.internal_(secretChallenge: secretChallenge);
   }
 
   static ChallengeTrackerIncludeList includeList({
@@ -115,7 +115,7 @@ abstract class ChallengeTracker
     _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     ChallengeTrackerInclude? include,
   }) {
-    return ChallengeTrackerIncludeList._(
+    return ChallengeTrackerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -256,11 +256,17 @@ class ChallengeTrackerTable extends _is.Table<int?> {
 }
 
 class ChallengeTrackerInclude extends _is.IncludeObject {
-  ChallengeTrackerInclude._({_iais.SecretChallengeInclude? secretChallenge}) {
+  ChallengeTrackerInclude.internal_({
+    _iais.SecretChallengeInclude? secretChallenge,
+    this.selectedColumns,
+  }) {
     _secretChallenge = secretChallenge;
   }
 
   _iais.SecretChallengeInclude? _secretChallenge;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -272,16 +278,20 @@ class ChallengeTrackerInclude extends _is.IncludeObject {
 }
 
 class ChallengeTrackerIncludeList extends _is.IncludeList {
-  ChallengeTrackerIncludeList._({
+  ChallengeTrackerIncludeList.internal_({
     _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChallengeTracker.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

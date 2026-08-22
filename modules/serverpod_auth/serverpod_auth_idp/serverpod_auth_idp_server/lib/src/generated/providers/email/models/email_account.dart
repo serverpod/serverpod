@@ -117,7 +117,7 @@ abstract class EmailAccount
   }
 
   static EmailAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return EmailAccountInclude._(authUser: authUser);
+    return EmailAccountInclude.internal_(authUser: authUser);
   }
 
   static EmailAccountIncludeList includeList({
@@ -128,7 +128,7 @@ abstract class EmailAccount
     _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     EmailAccountInclude? include,
   }) {
-    return EmailAccountIncludeList._(
+    return EmailAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -289,11 +289,17 @@ class EmailAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class EmailAccountInclude extends _is.IncludeObject {
-  EmailAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  EmailAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -303,16 +309,20 @@ class EmailAccountInclude extends _is.IncludeObject {
 }
 
 class EmailAccountIncludeList extends _is.IncludeList {
-  EmailAccountIncludeList._({
+  EmailAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

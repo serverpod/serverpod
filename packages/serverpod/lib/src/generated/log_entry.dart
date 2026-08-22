@@ -155,7 +155,7 @@ abstract class LogEntry
   }
 
   static LogEntryInclude include() {
-    return LogEntryInclude._();
+    return LogEntryInclude.internal_();
   }
 
   static LogEntryIncludeList includeList({
@@ -166,7 +166,7 @@ abstract class LogEntry
     _is.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
   }) {
-    return LogEntryIncludeList._(
+    return LogEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -395,7 +395,10 @@ class LogEntryTable extends _is.Table<int?> {
 }
 
 class LogEntryInclude extends _is.IncludeObject {
-  LogEntryInclude._();
+  LogEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -405,16 +408,20 @@ class LogEntryInclude extends _is.IncludeObject {
 }
 
 class LogEntryIncludeList extends _is.IncludeList {
-  LogEntryIncludeList._({
+  LogEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<LogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(LogEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

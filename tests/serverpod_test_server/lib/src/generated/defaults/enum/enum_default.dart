@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
 import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
@@ -271,9 +270,9 @@ class EnumDefaultTable extends _is.Table<int?> {
 }
 
 class EnumDefaultInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  EnumDefaultInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  EnumDefaultInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -284,7 +283,6 @@ class EnumDefaultInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   EnumDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     super.limit,
@@ -292,11 +290,12 @@ class EnumDefaultIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefault.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

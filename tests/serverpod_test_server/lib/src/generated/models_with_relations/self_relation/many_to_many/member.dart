@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/many_to_many/blocking.dart'
@@ -287,11 +286,10 @@ class MemberTable extends _is.Table<int?> {
 }
 
 class MemberInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   MemberInclude.internal_({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _blocking = blocking;
     _blockedBy = blockedBy;
@@ -301,6 +299,7 @@ class MemberInclude extends _is.IncludeObject {
 
   _iv5rlvod.BlockingIncludeList? _blockedBy;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -314,7 +313,6 @@ class MemberInclude extends _is.IncludeObject {
 }
 
 class MemberIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   MemberIncludeList.internal_({
     _is.WhereExpressionBuilder<MemberTable>? where,
     super.limit,
@@ -322,11 +320,12 @@ class MemberIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Member.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

@@ -103,7 +103,7 @@ abstract class AuthUser
   }
 
   static AuthUserInclude include() {
-    return AuthUserInclude._();
+    return AuthUserInclude.internal_();
   }
 
   static AuthUserIncludeList includeList({
@@ -114,7 +114,7 @@ abstract class AuthUser
     _is.OrderByListBuilder<AuthUserTable>? orderByList,
     AuthUserInclude? include,
   }) {
-    return AuthUserIncludeList._(
+    return AuthUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -224,7 +224,10 @@ class AuthUserTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AuthUserInclude extends _is.IncludeObject {
-  AuthUserInclude._();
+  AuthUserInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -234,16 +237,20 @@ class AuthUserInclude extends _is.IncludeObject {
 }
 
 class AuthUserIncludeList extends _is.IncludeList {
-  AuthUserIncludeList._({
+  AuthUserIncludeList.internal_({
     _is.WhereExpressionBuilder<AuthUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AuthUser.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

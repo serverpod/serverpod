@@ -93,7 +93,7 @@ abstract class ObjectFieldPersist
   }
 
   static ObjectFieldPersistInclude include() {
-    return ObjectFieldPersistInclude._();
+    return ObjectFieldPersistInclude.internal_();
   }
 
   static ObjectFieldPersistIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class ObjectFieldPersist
     _isd.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
   }) {
-    return ObjectFieldPersistIncludeList._(
+    return ObjectFieldPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +186,10 @@ class ObjectFieldPersistTable extends _isd.Table<int?> {
 }
 
 class ObjectFieldPersistInclude extends _isd.IncludeObject {
-  ObjectFieldPersistInclude._();
+  ObjectFieldPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -196,16 +199,20 @@ class ObjectFieldPersistInclude extends _isd.IncludeObject {
 }
 
 class ObjectFieldPersistIncludeList extends _isd.IncludeList {
-  ObjectFieldPersistIncludeList._({
+  ObjectFieldPersistIncludeList.internal_({
     _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectFieldPersist.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

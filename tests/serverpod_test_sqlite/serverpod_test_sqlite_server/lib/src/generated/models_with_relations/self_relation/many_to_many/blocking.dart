@@ -109,7 +109,7 @@ abstract class Blocking
     _iubhvl5a.MemberInclude? blocked,
     _iubhvl5a.MemberInclude? blockedBy,
   }) {
-    return BlockingInclude._(
+    return BlockingInclude.internal_(
       blocked: blocked,
       blockedBy: blockedBy,
     );
@@ -123,7 +123,7 @@ abstract class Blocking
     _is.OrderByListBuilder<BlockingTable>? orderByList,
     BlockingInclude? include,
   }) {
-    return BlockingIncludeList._(
+    return BlockingIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -264,9 +264,10 @@ class BlockingTable extends _is.Table<int?> {
 }
 
 class BlockingInclude extends _is.IncludeObject {
-  BlockingInclude._({
+  BlockingInclude.internal_({
     _iubhvl5a.MemberInclude? blocked,
     _iubhvl5a.MemberInclude? blockedBy,
+    this.selectedColumns,
   }) {
     _blocked = blocked;
     _blockedBy = blockedBy;
@@ -275,6 +276,9 @@ class BlockingInclude extends _is.IncludeObject {
   _iubhvl5a.MemberInclude? _blocked;
 
   _iubhvl5a.MemberInclude? _blockedBy;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -287,16 +291,20 @@ class BlockingInclude extends _is.IncludeObject {
 }
 
 class BlockingIncludeList extends _is.IncludeList {
-  BlockingIncludeList._({
+  BlockingIncludeList.internal_({
     _is.WhereExpressionBuilder<BlockingTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Blocking.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -152,7 +152,7 @@ abstract class EmailAccountPasswordResetRequest
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? setPasswordChallenge,
   }) {
-    return EmailAccountPasswordResetRequestInclude._(
+    return EmailAccountPasswordResetRequestInclude.internal_(
       emailAccount: emailAccount,
       challenge: challenge,
       setPasswordChallenge: setPasswordChallenge,
@@ -167,7 +167,7 @@ abstract class EmailAccountPasswordResetRequest
     _is.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     EmailAccountPasswordResetRequestInclude? include,
   }) {
-    return EmailAccountPasswordResetRequestIncludeList._(
+    return EmailAccountPasswordResetRequestIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -384,10 +384,11 @@ class EmailAccountPasswordResetRequestTable extends _is.Table<_is.UuidValue?> {
 }
 
 class EmailAccountPasswordResetRequestInclude extends _is.IncludeObject {
-  EmailAccountPasswordResetRequestInclude._({
+  EmailAccountPasswordResetRequestInclude.internal_({
     _imety4f2.EmailAccountInclude? emailAccount,
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? setPasswordChallenge,
+    this.selectedColumns,
   }) {
     _emailAccount = emailAccount;
     _challenge = challenge;
@@ -401,6 +402,9 @@ class EmailAccountPasswordResetRequestInclude extends _is.IncludeObject {
   _i7k1fa50.SecretChallengeInclude? _setPasswordChallenge;
 
   @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
   Map<String, _is.Include?> get includes => {
     'emailAccount': _emailAccount,
     'challenge': _challenge,
@@ -412,16 +416,20 @@ class EmailAccountPasswordResetRequestInclude extends _is.IncludeObject {
 }
 
 class EmailAccountPasswordResetRequestIncludeList extends _is.IncludeList {
-  EmailAccountPasswordResetRequestIncludeList._({
+  EmailAccountPasswordResetRequestIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailAccountPasswordResetRequest.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

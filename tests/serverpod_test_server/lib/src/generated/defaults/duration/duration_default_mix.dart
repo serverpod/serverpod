@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DurationDefaultMix
@@ -263,11 +262,9 @@ class DurationDefaultMixTable extends _is.Table<int?> {
 }
 
 class DurationDefaultMixInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  DurationDefaultMixInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  DurationDefaultMixInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -278,7 +275,6 @@ class DurationDefaultMixInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultMixIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   DurationDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     super.limit,
@@ -286,11 +282,12 @@ class DurationDefaultMixIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultMix.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

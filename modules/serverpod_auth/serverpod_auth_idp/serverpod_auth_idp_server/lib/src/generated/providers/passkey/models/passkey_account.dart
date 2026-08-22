@@ -144,7 +144,7 @@ abstract class PasskeyAccount
   }
 
   static PasskeyAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return PasskeyAccountInclude._(authUser: authUser);
+    return PasskeyAccountInclude.internal_(authUser: authUser);
   }
 
   static PasskeyAccountIncludeList includeList({
@@ -155,7 +155,7 @@ abstract class PasskeyAccount
     _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     PasskeyAccountInclude? include,
   }) {
-    return PasskeyAccountIncludeList._(
+    return PasskeyAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -370,11 +370,17 @@ class PasskeyAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PasskeyAccountInclude extends _is.IncludeObject {
-  PasskeyAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  PasskeyAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -384,16 +390,20 @@ class PasskeyAccountInclude extends _is.IncludeObject {
 }
 
 class PasskeyAccountIncludeList extends _is.IncludeList {
-  PasskeyAccountIncludeList._({
+  PasskeyAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(PasskeyAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

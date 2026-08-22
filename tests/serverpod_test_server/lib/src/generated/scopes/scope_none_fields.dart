@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../simple_data.dart' as _ibunj3w2;
@@ -191,9 +190,9 @@ class ScopeNoneFieldsTable extends _is.Table<int?> {
 }
 
 class ScopeNoneFieldsInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ScopeNoneFieldsInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  ScopeNoneFieldsInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -204,7 +203,6 @@ class ScopeNoneFieldsInclude extends _is.IncludeObject {
 }
 
 class ScopeNoneFieldsIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ScopeNoneFieldsIncludeList.internal_({
     _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
@@ -212,11 +210,12 @@ class ScopeNoneFieldsIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ScopeNoneFields.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

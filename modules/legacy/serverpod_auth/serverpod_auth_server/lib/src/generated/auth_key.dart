@@ -111,7 +111,7 @@ abstract class AuthKey
   }
 
   static AuthKeyInclude include() {
-    return AuthKeyInclude._();
+    return AuthKeyInclude.internal_();
   }
 
   static AuthKeyIncludeList includeList({
@@ -122,7 +122,7 @@ abstract class AuthKey
     _is.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
   }) {
-    return AuthKeyIncludeList._(
+    return AuthKeyIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -252,7 +252,10 @@ class AuthKeyTable extends _is.Table<int?> {
 }
 
 class AuthKeyInclude extends _is.IncludeObject {
-  AuthKeyInclude._();
+  AuthKeyInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -262,16 +265,20 @@ class AuthKeyInclude extends _is.IncludeObject {
 }
 
 class AuthKeyIncludeList extends _is.IncludeList {
-  AuthKeyIncludeList._({
+  AuthKeyIncludeList.internal_({
     _is.WhereExpressionBuilder<AuthKeyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AuthKey.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

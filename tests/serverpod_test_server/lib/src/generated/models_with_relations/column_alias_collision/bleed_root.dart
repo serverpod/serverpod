@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/column_alias_collision/bleed_child.dart'
@@ -338,13 +337,12 @@ class BleedRootTable extends _is.Table<int?> {
 }
 
 class BleedRootInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   BleedRootInclude.internal_({
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun23,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _childRelationWithExtremelyLongFieldNameForcingTrun24 =
         childRelationWithExtremelyLongFieldNameForcingTrun24;
@@ -358,6 +356,7 @@ class BleedRootInclude extends _is.IncludeObject {
   _i2rsfnut.BleedChildInclude?
   _childRelationWithExtremelyLongFieldNameForcingTrun23;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -373,7 +372,6 @@ class BleedRootInclude extends _is.IncludeObject {
 }
 
 class BleedRootIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   BleedRootIncludeList.internal_({
     _is.WhereExpressionBuilder<BleedRootTable>? where,
     super.limit,
@@ -381,11 +379,12 @@ class BleedRootIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BleedRoot.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

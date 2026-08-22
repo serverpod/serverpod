@@ -53,7 +53,7 @@ abstract class EmptyModelWithTable
   }
 
   static EmptyModelWithTableInclude include() {
-    return EmptyModelWithTableInclude._();
+    return EmptyModelWithTableInclude.internal_();
   }
 
   static EmptyModelWithTableIncludeList includeList({
@@ -64,7 +64,7 @@ abstract class EmptyModelWithTable
     _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     EmptyModelWithTableInclude? include,
   }) {
-    return EmptyModelWithTableIncludeList._(
+    return EmptyModelWithTableIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -112,7 +112,10 @@ class EmptyModelWithTableTable extends _is.Table<int?> {
 }
 
 class EmptyModelWithTableInclude extends _is.IncludeObject {
-  EmptyModelWithTableInclude._();
+  EmptyModelWithTableInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -122,16 +125,20 @@ class EmptyModelWithTableInclude extends _is.IncludeObject {
 }
 
 class EmptyModelWithTableIncludeList extends _is.IncludeList {
-  EmptyModelWithTableIncludeList._({
+  EmptyModelWithTableIncludeList.internal_({
     _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmptyModelWithTable.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

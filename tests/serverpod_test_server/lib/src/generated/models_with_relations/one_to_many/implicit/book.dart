@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
@@ -220,16 +219,16 @@ class BookTable extends _is.Table<int?> {
 }
 
 class BookInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   BookInclude.internal_({
     _ithd8abs.ChapterIncludeList? chapters,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _chapters = chapters;
   }
 
   _ithd8abs.ChapterIncludeList? _chapters;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -240,7 +239,6 @@ class BookInclude extends _is.IncludeObject {
 }
 
 class BookIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   BookIncludeList.internal_({
     _is.WhereExpressionBuilder<BookTable>? where,
     super.limit,
@@ -248,11 +246,12 @@ class BookIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Book.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

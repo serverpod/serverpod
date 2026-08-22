@@ -102,7 +102,7 @@ abstract class CloudStorageDirectUploadEntry
   }
 
   static CloudStorageDirectUploadEntryInclude include() {
-    return CloudStorageDirectUploadEntryInclude._();
+    return CloudStorageDirectUploadEntryInclude.internal_();
   }
 
   static CloudStorageDirectUploadEntryIncludeList includeList({
@@ -113,7 +113,7 @@ abstract class CloudStorageDirectUploadEntry
     _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
   }) {
-    return CloudStorageDirectUploadEntryIncludeList._(
+    return CloudStorageDirectUploadEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -240,7 +240,10 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
 }
 
 class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
-  CloudStorageDirectUploadEntryInclude._();
+  CloudStorageDirectUploadEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -250,16 +253,20 @@ class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
 }
 
 class CloudStorageDirectUploadEntryIncludeList extends _is.IncludeList {
-  CloudStorageDirectUploadEntryIncludeList._({
+  CloudStorageDirectUploadEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(CloudStorageDirectUploadEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

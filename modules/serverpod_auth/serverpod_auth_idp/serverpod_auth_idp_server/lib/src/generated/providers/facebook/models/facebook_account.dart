@@ -146,7 +146,7 @@ abstract class FacebookAccount
   }
 
   static FacebookAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return FacebookAccountInclude._(authUser: authUser);
+    return FacebookAccountInclude.internal_(authUser: authUser);
   }
 
   static FacebookAccountIncludeList includeList({
@@ -157,7 +157,7 @@ abstract class FacebookAccount
     _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     FacebookAccountInclude? include,
   }) {
-    return FacebookAccountIncludeList._(
+    return FacebookAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -375,11 +375,17 @@ class FacebookAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class FacebookAccountInclude extends _is.IncludeObject {
-  FacebookAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  FacebookAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -389,16 +395,20 @@ class FacebookAccountInclude extends _is.IncludeObject {
 }
 
 class FacebookAccountIncludeList extends _is.IncludeList {
-  FacebookAccountIncludeList._({
+  FacebookAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(FacebookAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

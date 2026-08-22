@@ -80,7 +80,7 @@ abstract class MethodInfo
   }
 
   static MethodInfoInclude include() {
-    return MethodInfoInclude._();
+    return MethodInfoInclude.internal_();
   }
 
   static MethodInfoIncludeList includeList({
@@ -91,7 +91,7 @@ abstract class MethodInfo
     _is.OrderByListBuilder<MethodInfoTable>? orderByList,
     MethodInfoInclude? include,
   }) {
-    return MethodInfoIncludeList._(
+    return MethodInfoIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -182,7 +182,10 @@ class MethodInfoTable extends _is.Table<int?> {
 }
 
 class MethodInfoInclude extends _is.IncludeObject {
-  MethodInfoInclude._();
+  MethodInfoInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -192,16 +195,20 @@ class MethodInfoInclude extends _is.IncludeObject {
 }
 
 class MethodInfoIncludeList extends _is.IncludeList {
-  MethodInfoIncludeList._({
+  MethodInfoIncludeList.internal_({
     _is.WhereExpressionBuilder<MethodInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MethodInfo.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -108,7 +108,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
   }) {
-    return PostInclude._(
+    return PostInclude.internal_(
       previous: previous,
       next: next,
     );
@@ -122,7 +122,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
   }) {
-    return PostIncludeList._(
+    return PostIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -261,9 +261,10 @@ class PostTable extends _is.Table<int?> {
 }
 
 class PostInclude extends _is.IncludeObject {
-  PostInclude._({
+  PostInclude.internal_({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
+    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -272,6 +273,9 @@ class PostInclude extends _is.IncludeObject {
   _ittc76ec.PostInclude? _previous;
 
   _ittc76ec.PostInclude? _next;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -284,16 +288,20 @@ class PostInclude extends _is.IncludeObject {
 }
 
 class PostIncludeList extends _is.IncludeList {
-  PostIncludeList._({
+  PostIncludeList.internal_({
     _is.WhereExpressionBuilder<PostTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Post.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

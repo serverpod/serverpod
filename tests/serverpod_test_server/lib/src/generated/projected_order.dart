@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProjectedOrder
@@ -238,9 +237,9 @@ class ProjectedOrderTable extends _is.Table<int?> {
 }
 
 class ProjectedOrderInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ProjectedOrderInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  ProjectedOrderInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -251,7 +250,6 @@ class ProjectedOrderInclude extends _is.IncludeObject {
 }
 
 class ProjectedOrderIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ProjectedOrderIncludeList.internal_({
     _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     super.limit,
@@ -259,11 +257,12 @@ class ProjectedOrderIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedOrder.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

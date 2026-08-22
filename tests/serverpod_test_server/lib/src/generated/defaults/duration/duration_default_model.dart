@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DurationDefaultModel
@@ -214,11 +213,9 @@ class DurationDefaultModelTable extends _is.Table<int?> {
 }
 
 class DurationDefaultModelInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  DurationDefaultModelInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  DurationDefaultModelInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -229,7 +226,6 @@ class DurationDefaultModelInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultModelIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   DurationDefaultModelIncludeList.internal_({
     _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
     super.limit,
@@ -237,11 +233,12 @@ class DurationDefaultModelIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultModel.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

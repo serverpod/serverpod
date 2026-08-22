@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DoubleDefaultPersist
@@ -164,11 +163,9 @@ class DoubleDefaultPersistTable extends _is.Table<int?> {
 }
 
 class DoubleDefaultPersistInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  DoubleDefaultPersistInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  DoubleDefaultPersistInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -179,7 +176,6 @@ class DoubleDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class DoubleDefaultPersistIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   DoubleDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     super.limit,
@@ -187,11 +183,12 @@ class DoubleDefaultPersistIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DoubleDefaultPersist.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

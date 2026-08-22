@@ -80,7 +80,7 @@ abstract class GoogleRefreshToken
   }
 
   static GoogleRefreshTokenInclude include() {
-    return GoogleRefreshTokenInclude._();
+    return GoogleRefreshTokenInclude.internal_();
   }
 
   static GoogleRefreshTokenIncludeList includeList({
@@ -91,7 +91,7 @@ abstract class GoogleRefreshToken
     _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
   }) {
-    return GoogleRefreshTokenIncludeList._(
+    return GoogleRefreshTokenIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,7 +183,10 @@ class GoogleRefreshTokenTable extends _is.Table<int?> {
 }
 
 class GoogleRefreshTokenInclude extends _is.IncludeObject {
-  GoogleRefreshTokenInclude._();
+  GoogleRefreshTokenInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -193,16 +196,20 @@ class GoogleRefreshTokenInclude extends _is.IncludeObject {
 }
 
 class GoogleRefreshTokenIncludeList extends _is.IncludeList {
-  GoogleRefreshTokenIncludeList._({
+  GoogleRefreshTokenIncludeList.internal_({
     _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GoogleRefreshToken.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

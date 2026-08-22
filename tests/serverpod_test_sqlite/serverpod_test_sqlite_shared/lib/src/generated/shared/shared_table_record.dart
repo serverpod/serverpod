@@ -103,7 +103,7 @@ abstract class SharedTableRecord
   }
 
   static SharedTableRecordInclude include() {
-    return SharedTableRecordInclude._();
+    return SharedTableRecordInclude.internal_();
   }
 
   static SharedTableRecordIncludeList includeList({
@@ -114,7 +114,7 @@ abstract class SharedTableRecord
     _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
   }) {
-    return SharedTableRecordIncludeList._(
+    return SharedTableRecordIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -243,7 +243,10 @@ class SharedTableRecordTable extends _isd.Table<int?> {
 }
 
 class SharedTableRecordInclude extends _isd.IncludeObject {
-  SharedTableRecordInclude._();
+  SharedTableRecordInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -253,16 +256,20 @@ class SharedTableRecordInclude extends _isd.IncludeObject {
 }
 
 class SharedTableRecordIncludeList extends _isd.IncludeList {
-  SharedTableRecordIncludeList._({
+  SharedTableRecordIncludeList.internal_({
     _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SharedTableRecord.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

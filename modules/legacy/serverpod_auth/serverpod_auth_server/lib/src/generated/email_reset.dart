@@ -91,7 +91,7 @@ abstract class EmailReset
   }
 
   static EmailResetInclude include() {
-    return EmailResetInclude._();
+    return EmailResetInclude.internal_();
   }
 
   static EmailResetIncludeList includeList({
@@ -102,7 +102,7 @@ abstract class EmailReset
     _is.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
   }) {
-    return EmailResetIncludeList._(
+    return EmailResetIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -212,7 +212,10 @@ class EmailResetTable extends _is.Table<int?> {
 }
 
 class EmailResetInclude extends _is.IncludeObject {
-  EmailResetInclude._();
+  EmailResetInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -222,16 +225,20 @@ class EmailResetInclude extends _is.IncludeObject {
 }
 
 class EmailResetIncludeList extends _is.IncludeList {
-  EmailResetIncludeList._({
+  EmailResetIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailResetTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailReset.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

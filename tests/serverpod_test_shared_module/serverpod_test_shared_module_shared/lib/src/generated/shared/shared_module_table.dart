@@ -85,7 +85,7 @@ abstract class SharedModuleTable
   }
 
   static SharedModuleTableInclude include() {
-    return SharedModuleTableInclude._();
+    return SharedModuleTableInclude.internal_();
   }
 
   static SharedModuleTableIncludeList includeList({
@@ -96,7 +96,7 @@ abstract class SharedModuleTable
     _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
     SharedModuleTableInclude? include,
   }) {
-    return SharedModuleTableIncludeList._(
+    return SharedModuleTableIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +186,10 @@ class SharedModuleTableTable extends _isd.Table<int?> {
 }
 
 class SharedModuleTableInclude extends _isd.IncludeObject {
-  SharedModuleTableInclude._();
+  SharedModuleTableInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -196,16 +199,20 @@ class SharedModuleTableInclude extends _isd.IncludeObject {
 }
 
 class SharedModuleTableIncludeList extends _isd.IncludeList {
-  SharedModuleTableIncludeList._({
+  SharedModuleTableIncludeList.internal_({
     _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SharedModuleTable.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

@@ -112,7 +112,7 @@ abstract class LegacySession
   }
 
   static LegacySessionInclude include({_iacs.AuthUserInclude? authUser}) {
-    return LegacySessionInclude._(authUser: authUser);
+    return LegacySessionInclude.internal_(authUser: authUser);
   }
 
   static LegacySessionIncludeList includeList({
@@ -123,7 +123,7 @@ abstract class LegacySession
     _is.OrderByListBuilder<LegacySessionTable>? orderByList,
     LegacySessionInclude? include,
   }) {
-    return LegacySessionIncludeList._(
+    return LegacySessionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -282,11 +282,17 @@ class LegacySessionTable extends _is.Table<int?> {
 }
 
 class LegacySessionInclude extends _is.IncludeObject {
-  LegacySessionInclude._({_iacs.AuthUserInclude? authUser}) {
+  LegacySessionInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -296,16 +302,20 @@ class LegacySessionInclude extends _is.IncludeObject {
 }
 
 class LegacySessionIncludeList extends _is.IncludeList {
-  LegacySessionIncludeList._({
+  LegacySessionIncludeList.internal_({
     _is.WhereExpressionBuilder<LegacySessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(LegacySession.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

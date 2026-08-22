@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
@@ -221,16 +220,16 @@ class ObjectUserTable extends _is.Table<int?> {
 }
 
 class ObjectUserInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   ObjectUserInclude.internal_({
     _i1n3uhu0.UserInfoInclude? userInfo,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _userInfo = userInfo;
   }
 
   _i1n3uhu0.UserInfoInclude? _userInfo;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -241,7 +240,6 @@ class ObjectUserInclude extends _is.IncludeObject {
 }
 
 class ObjectUserIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ObjectUserIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectUserTable>? where,
     super.limit,
@@ -249,11 +247,12 @@ class ObjectUserIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectUser.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

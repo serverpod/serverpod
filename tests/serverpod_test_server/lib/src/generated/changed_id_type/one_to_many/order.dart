@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/one_to_many/comment.dart' as _i7e4crca;
@@ -289,11 +288,10 @@ class OrderUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class OrderUuidInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   OrderUuidInclude.internal_({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _customer = customer;
     _comments = comments;
@@ -303,6 +301,7 @@ class OrderUuidInclude extends _is.IncludeObject {
 
   _i7e4crca.CommentIntIncludeList? _comments;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -316,7 +315,6 @@ class OrderUuidInclude extends _is.IncludeObject {
 }
 
 class OrderUuidIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   OrderUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<OrderUuidTable>? where,
     super.limit,
@@ -324,11 +322,12 @@ class OrderUuidIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(OrderUuid.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

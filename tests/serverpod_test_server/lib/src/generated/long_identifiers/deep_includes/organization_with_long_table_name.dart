@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/deep_includes/city_with_long_table_name.dart'
@@ -302,11 +301,10 @@ class OrganizationWithLongTableNameTable extends _is.Table<int?> {
 }
 
 class OrganizationWithLongTableNameInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   OrganizationWithLongTableNameInclude.internal_({
     _i5nficvp.PersonWithLongTableNameIncludeList? people,
     _ii8bs4lb.CityWithLongTableNameInclude? city,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _people = people;
     _city = city;
@@ -316,6 +314,7 @@ class OrganizationWithLongTableNameInclude extends _is.IncludeObject {
 
   _ii8bs4lb.CityWithLongTableNameInclude? _city;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -329,7 +328,6 @@ class OrganizationWithLongTableNameInclude extends _is.IncludeObject {
 }
 
 class OrganizationWithLongTableNameIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   OrganizationWithLongTableNameIncludeList.internal_({
     _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
     super.limit,
@@ -337,11 +335,12 @@ class OrganizationWithLongTableNameIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(OrganizationWithLongTableName.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

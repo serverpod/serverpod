@@ -99,7 +99,7 @@ abstract class AnonymousAccount
   }
 
   static AnonymousAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return AnonymousAccountInclude._(authUser: authUser);
+    return AnonymousAccountInclude.internal_(authUser: authUser);
   }
 
   static AnonymousAccountIncludeList includeList({
@@ -110,7 +110,7 @@ abstract class AnonymousAccount
     _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     AnonymousAccountInclude? include,
   }) {
-    return AnonymousAccountIncludeList._(
+    return AnonymousAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -234,11 +234,17 @@ class AnonymousAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AnonymousAccountInclude extends _is.IncludeObject {
-  AnonymousAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  AnonymousAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -248,16 +254,20 @@ class AnonymousAccountInclude extends _is.IncludeObject {
 }
 
 class AnonymousAccountIncludeList extends _is.IncludeList {
-  AnonymousAccountIncludeList._({
+  AnonymousAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AnonymousAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

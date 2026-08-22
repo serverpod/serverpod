@@ -104,7 +104,7 @@ abstract class DurationDefault
   }
 
   static DurationDefaultInclude include() {
-    return DurationDefaultInclude._();
+    return DurationDefaultInclude.internal_();
   }
 
   static DurationDefaultIncludeList includeList({
@@ -115,7 +115,7 @@ abstract class DurationDefault
     _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
     DurationDefaultInclude? include,
   }) {
-    return DurationDefaultIncludeList._(
+    return DurationDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -210,7 +210,10 @@ class DurationDefaultTable extends _is.Table<int?> {
 }
 
 class DurationDefaultInclude extends _is.IncludeObject {
-  DurationDefaultInclude._();
+  DurationDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -220,16 +223,20 @@ class DurationDefaultInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultIncludeList extends _is.IncludeList {
-  DurationDefaultIncludeList._({
+  DurationDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

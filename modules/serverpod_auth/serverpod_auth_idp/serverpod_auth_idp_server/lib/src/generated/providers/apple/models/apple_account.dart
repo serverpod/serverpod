@@ -200,7 +200,7 @@ abstract class AppleAccount
   }
 
   static AppleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return AppleAccountInclude._(authUser: authUser);
+    return AppleAccountInclude.internal_(authUser: authUser);
   }
 
   static AppleAccountIncludeList includeList({
@@ -211,7 +211,7 @@ abstract class AppleAccount
     _is.OrderByListBuilder<AppleAccountTable>? orderByList,
     AppleAccountInclude? include,
   }) {
-    return AppleAccountIncludeList._(
+    return AppleAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -516,11 +516,17 @@ class AppleAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AppleAccountInclude extends _is.IncludeObject {
-  AppleAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  AppleAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -530,16 +536,20 @@ class AppleAccountInclude extends _is.IncludeObject {
 }
 
 class AppleAccountIncludeList extends _is.IncludeList {
-  AppleAccountIncludeList._({
+  AppleAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<AppleAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AppleAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class BoolDefaultMix
@@ -230,9 +229,9 @@ class BoolDefaultMixTable extends _is.Table<int?> {
 }
 
 class BoolDefaultMixInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  BoolDefaultMixInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  BoolDefaultMixInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -243,7 +242,6 @@ class BoolDefaultMixInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultMixIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   BoolDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     super.limit,
@@ -251,11 +249,12 @@ class BoolDefaultMixIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefaultMix.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

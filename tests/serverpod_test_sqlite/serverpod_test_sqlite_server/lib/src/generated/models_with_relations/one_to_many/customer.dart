@@ -87,7 +87,7 @@ abstract class Customer
   }
 
   static CustomerInclude include({_ig920ya2.OrderIncludeList? orders}) {
-    return CustomerInclude._(orders: orders);
+    return CustomerInclude.internal_(orders: orders);
   }
 
   static CustomerIncludeList includeList({
@@ -98,7 +98,7 @@ abstract class Customer
     _is.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
-    return CustomerIncludeList._(
+    return CustomerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -220,11 +220,17 @@ class CustomerTable extends _is.Table<int?> {
 }
 
 class CustomerInclude extends _is.IncludeObject {
-  CustomerInclude._({_ig920ya2.OrderIncludeList? orders}) {
+  CustomerInclude.internal_({
+    _ig920ya2.OrderIncludeList? orders,
+    this.selectedColumns,
+  }) {
     _orders = orders;
   }
 
   _ig920ya2.OrderIncludeList? _orders;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'orders': _orders};
@@ -234,16 +240,20 @@ class CustomerInclude extends _is.IncludeObject {
 }
 
 class CustomerIncludeList extends _is.IncludeList {
-  CustomerIncludeList._({
+  CustomerIncludeList.internal_({
     _is.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Customer.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

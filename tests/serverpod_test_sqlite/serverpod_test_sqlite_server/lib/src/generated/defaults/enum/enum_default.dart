@@ -122,7 +122,7 @@ abstract class EnumDefault
   }
 
   static EnumDefaultInclude include() {
-    return EnumDefaultInclude._();
+    return EnumDefaultInclude.internal_();
   }
 
   static EnumDefaultIncludeList includeList({
@@ -133,7 +133,7 @@ abstract class EnumDefault
     _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
     EnumDefaultInclude? include,
   }) {
-    return EnumDefaultIncludeList._(
+    return EnumDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -270,7 +270,10 @@ class EnumDefaultTable extends _is.Table<int?> {
 }
 
 class EnumDefaultInclude extends _is.IncludeObject {
-  EnumDefaultInclude._();
+  EnumDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -280,16 +283,20 @@ class EnumDefaultInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultIncludeList extends _is.IncludeList {
-  EnumDefaultIncludeList._({
+  EnumDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -93,7 +93,7 @@ abstract class DateTimeDefaultPersist
   }
 
   static DateTimeDefaultPersistInclude include() {
-    return DateTimeDefaultPersistInclude._();
+    return DateTimeDefaultPersistInclude.internal_();
   }
 
   static DateTimeDefaultPersistIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class DateTimeDefaultPersist
     _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
   }) {
-    return DateTimeDefaultPersistIncludeList._(
+    return DateTimeDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,7 +204,10 @@ class DateTimeDefaultPersistTable extends _is.Table<int?> {
 }
 
 class DateTimeDefaultPersistInclude extends _is.IncludeObject {
-  DateTimeDefaultPersistInclude._();
+  DateTimeDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -214,16 +217,20 @@ class DateTimeDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class DateTimeDefaultPersistIncludeList extends _is.IncludeList {
-  DateTimeDefaultPersistIncludeList._({
+  DateTimeDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<DateTimeDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

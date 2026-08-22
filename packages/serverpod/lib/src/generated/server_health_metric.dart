@@ -121,7 +121,7 @@ abstract class ServerHealthMetric
   }
 
   static ServerHealthMetricInclude include() {
-    return ServerHealthMetricInclude._();
+    return ServerHealthMetricInclude.internal_();
   }
 
   static ServerHealthMetricIncludeList includeList({
@@ -132,7 +132,7 @@ abstract class ServerHealthMetric
     _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     ServerHealthMetricInclude? include,
   }) {
-    return ServerHealthMetricIncludeList._(
+    return ServerHealthMetricIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -294,7 +294,10 @@ class ServerHealthMetricTable extends _is.Table<int?> {
 }
 
 class ServerHealthMetricInclude extends _is.IncludeObject {
-  ServerHealthMetricInclude._();
+  ServerHealthMetricInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -304,16 +307,20 @@ class ServerHealthMetricInclude extends _is.IncludeObject {
 }
 
 class ServerHealthMetricIncludeList extends _is.IncludeList {
-  ServerHealthMetricIncludeList._({
+  ServerHealthMetricIncludeList.internal_({
     _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ServerHealthMetric.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

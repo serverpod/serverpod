@@ -3284,6 +3284,7 @@ class SerializableModelLibraryGenerator {
       c.fields.add(
         Field(
           (f) => f
+            ..annotations.add(refer('override'))
             ..name = 'selectedColumns'
             ..type = TypeReference(
               (b) => b
@@ -3307,9 +3308,6 @@ class SerializableModelLibraryGenerator {
   ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = 'internal_';
-      constructorBuilder.annotations.add(
-        refer('internal', 'package:meta/meta.dart'),
-      );
 
       constructorBuilder.optionalParameters.addAll([
         Parameter(
@@ -3354,12 +3352,6 @@ class SerializableModelLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'selectedColumns'
-            ..type = TypeReference(
-              (b) => b
-                ..symbol = 'List'
-                ..isNullable = true
-                ..types.add(refer('Column', _databaseRuntimeUrl)),
-            )
             ..toThis = true
             ..named = true,
         ),
@@ -3482,6 +3474,7 @@ class SerializableModelLibraryGenerator {
     modelIncludeClassFields.add(
       Field(
         (f) => f
+          ..annotations.add(refer('override'))
           ..name = 'selectedColumns'
           ..type = TypeReference(
             (b) => b
@@ -3502,9 +3495,6 @@ class SerializableModelLibraryGenerator {
   ) {
     return Constructor((constructorBuilder) {
       constructorBuilder.name = 'internal_';
-      constructorBuilder.annotations.add(
-        refer('internal', 'package:meta/meta.dart'),
-      );
 
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {
@@ -3544,21 +3534,17 @@ class SerializableModelLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'selectedColumns'
-            ..type = TypeReference(
-              (b) => b
-                ..symbol = 'List'
-                ..isNullable = true
-                ..types.add(refer('Column', _databaseRuntimeUrl)),
-            )
             ..toThis = true
             ..named = true,
         ),
       );
 
-      constructorBuilder.body = Block.of([
-        for (var field in relationFields)
-          refer('_${field.name}').assign(refer(field.name)).statement,
-      ]);
+      if (relationFields.isNotEmpty) {
+        constructorBuilder.body = Block.of([
+          for (var field in relationFields)
+            refer('_${field.name}').assign(refer(field.name)).statement,
+        ]);
+      }
     });
   }
 

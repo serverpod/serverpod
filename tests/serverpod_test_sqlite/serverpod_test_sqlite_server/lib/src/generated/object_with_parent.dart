@@ -69,7 +69,7 @@ abstract class ObjectWithParent
   }
 
   static ObjectWithParentInclude include() {
-    return ObjectWithParentInclude._();
+    return ObjectWithParentInclude.internal_();
   }
 
   static ObjectWithParentIncludeList includeList({
@@ -80,7 +80,7 @@ abstract class ObjectWithParent
     _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
     ObjectWithParentInclude? include,
   }) {
-    return ObjectWithParentIncludeList._(
+    return ObjectWithParentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -154,7 +154,10 @@ class ObjectWithParentTable extends _is.Table<int?> {
 }
 
 class ObjectWithParentInclude extends _is.IncludeObject {
-  ObjectWithParentInclude._();
+  ObjectWithParentInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -164,16 +167,20 @@ class ObjectWithParentInclude extends _is.IncludeObject {
 }
 
 class ObjectWithParentIncludeList extends _is.IncludeList {
-  ObjectWithParentIncludeList._({
+  ObjectWithParentIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithParent.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/multiple_max_field_name.dart' as _ipoh7twa;
@@ -247,16 +246,16 @@ class RelationToMultipleMaxFieldNameTable extends _is.Table<int?> {
 }
 
 class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   RelationToMultipleMaxFieldNameInclude.internal_({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _multipleMaxFieldNames = multipleMaxFieldNames;
   }
 
   _ipoh7twa.MultipleMaxFieldNameIncludeList? _multipleMaxFieldNames;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -269,7 +268,6 @@ class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   RelationToMultipleMaxFieldNameIncludeList.internal_({
     _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     super.limit,
@@ -277,11 +275,12 @@ class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RelationToMultipleMaxFieldName.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

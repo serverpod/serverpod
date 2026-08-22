@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../explicit_column_name/relations/one_to_one/service.dart'
@@ -225,16 +224,16 @@ class ContractorTable extends _is.Table<int?> {
 }
 
 class ContractorInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   ContractorInclude.internal_({
     _iml73r3x.ServiceInclude? service,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _service = service;
   }
 
   _iml73r3x.ServiceInclude? _service;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -245,7 +244,6 @@ class ContractorInclude extends _is.IncludeObject {
 }
 
 class ContractorIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ContractorIncludeList.internal_({
     _is.WhereExpressionBuilder<ContractorTable>? where,
     super.limit,
@@ -253,11 +251,12 @@ class ContractorIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Contractor.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

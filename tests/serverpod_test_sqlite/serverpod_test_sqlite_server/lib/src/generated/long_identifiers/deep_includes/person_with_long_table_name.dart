@@ -109,7 +109,7 @@ abstract class PersonWithLongTableName
   static PersonWithLongTableNameInclude include({
     _imc5i9r4.OrganizationWithLongTableNameInclude? organization,
   }) {
-    return PersonWithLongTableNameInclude._(organization: organization);
+    return PersonWithLongTableNameInclude.internal_(organization: organization);
   }
 
   static PersonWithLongTableNameIncludeList includeList({
@@ -120,7 +120,7 @@ abstract class PersonWithLongTableName
     _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     PersonWithLongTableNameInclude? include,
   }) {
-    return PersonWithLongTableNameIncludeList._(
+    return PersonWithLongTableNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -303,13 +303,17 @@ class PersonWithLongTableNameTable extends _is.Table<int?> {
 }
 
 class PersonWithLongTableNameInclude extends _is.IncludeObject {
-  PersonWithLongTableNameInclude._({
+  PersonWithLongTableNameInclude.internal_({
     _imc5i9r4.OrganizationWithLongTableNameInclude? organization,
+    this.selectedColumns,
   }) {
     _organization = organization;
   }
 
   _imc5i9r4.OrganizationWithLongTableNameInclude? _organization;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'organization': _organization};
@@ -319,16 +323,20 @@ class PersonWithLongTableNameInclude extends _is.IncludeObject {
 }
 
 class PersonWithLongTableNameIncludeList extends _is.IncludeList {
-  PersonWithLongTableNameIncludeList._({
+  PersonWithLongTableNameIncludeList.internal_({
     _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(PersonWithLongTableName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

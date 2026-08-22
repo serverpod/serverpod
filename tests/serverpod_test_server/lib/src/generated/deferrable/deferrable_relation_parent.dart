@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DeferrableRelationParent
@@ -157,11 +156,9 @@ class DeferrableRelationParentTable extends _is.Table<int?> {
 }
 
 class DeferrableRelationParentInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  DeferrableRelationParentInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  DeferrableRelationParentInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -172,7 +169,6 @@ class DeferrableRelationParentInclude extends _is.IncludeObject {
 }
 
 class DeferrableRelationParentIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   DeferrableRelationParentIncludeList.internal_({
     _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     super.limit,
@@ -180,11 +176,12 @@ class DeferrableRelationParentIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationParent.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

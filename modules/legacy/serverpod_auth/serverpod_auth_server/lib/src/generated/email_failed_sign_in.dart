@@ -90,7 +90,7 @@ abstract class EmailFailedSignIn
   }
 
   static EmailFailedSignInInclude include() {
-    return EmailFailedSignInInclude._();
+    return EmailFailedSignInInclude.internal_();
   }
 
   static EmailFailedSignInIncludeList includeList({
@@ -101,7 +101,7 @@ abstract class EmailFailedSignIn
     _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
   }) {
-    return EmailFailedSignInIncludeList._(
+    return EmailFailedSignInIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -210,7 +210,10 @@ class EmailFailedSignInTable extends _is.Table<int?> {
 }
 
 class EmailFailedSignInInclude extends _is.IncludeObject {
-  EmailFailedSignInInclude._();
+  EmailFailedSignInInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -220,16 +223,20 @@ class EmailFailedSignInInclude extends _is.IncludeObject {
 }
 
 class EmailFailedSignInIncludeList extends _is.IncludeList {
-  EmailFailedSignInIncludeList._({
+  EmailFailedSignInIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailFailedSignIn.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

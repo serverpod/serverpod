@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/one_to_one/citizen.dart' as _i7hzilwf;
@@ -223,16 +222,16 @@ class AddressUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class AddressUuidInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   AddressUuidInclude.internal_({
     _i7hzilwf.CitizenIntInclude? inhabitant,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _inhabitant = inhabitant;
   }
 
   _i7hzilwf.CitizenIntInclude? _inhabitant;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -243,7 +242,6 @@ class AddressUuidInclude extends _is.IncludeObject {
 }
 
 class AddressUuidIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   AddressUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<AddressUuidTable>? where,
     super.limit,
@@ -251,11 +249,12 @@ class AddressUuidIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AddressUuid.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

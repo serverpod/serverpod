@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../changed_id_type/self.dart' as _iqjmn1nu;
@@ -395,13 +394,12 @@ class ChangedIdTypeSelfTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ChangedIdTypeSelfInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   ChangedIdTypeSelfInclude.internal_({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -417,6 +415,7 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
 
   _iqjmn1nu.ChangedIdTypeSelfIncludeList? _children;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -432,7 +431,6 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
 }
 
 class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ChangedIdTypeSelfIncludeList.internal_({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     super.limit,
@@ -440,11 +438,12 @@ class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChangedIdTypeSelf.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

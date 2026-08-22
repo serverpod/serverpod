@@ -134,7 +134,7 @@ abstract class UuidDefault
   }
 
   static UuidDefaultInclude include() {
-    return UuidDefaultInclude._();
+    return UuidDefaultInclude.internal_();
   }
 
   static UuidDefaultIncludeList includeList({
@@ -145,7 +145,7 @@ abstract class UuidDefault
     _is.OrderByListBuilder<UuidDefaultTable>? orderByList,
     UuidDefaultInclude? include,
   }) {
-    return UuidDefaultIncludeList._(
+    return UuidDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -300,7 +300,10 @@ class UuidDefaultTable extends _is.Table<int?> {
 }
 
 class UuidDefaultInclude extends _is.IncludeObject {
-  UuidDefaultInclude._();
+  UuidDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -310,16 +313,20 @@ class UuidDefaultInclude extends _is.IncludeObject {
 }
 
 class UuidDefaultIncludeList extends _is.IncludeList {
-  UuidDefaultIncludeList._({
+  UuidDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<UuidDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

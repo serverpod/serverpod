@@ -115,7 +115,7 @@ abstract class EnumDefaultMix
   }
 
   static EnumDefaultMixInclude include() {
-    return EnumDefaultMixInclude._();
+    return EnumDefaultMixInclude.internal_();
   }
 
   static EnumDefaultMixIncludeList includeList({
@@ -126,7 +126,7 @@ abstract class EnumDefaultMix
     _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
   }) {
-    return EnumDefaultMixIncludeList._(
+    return EnumDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -253,7 +253,10 @@ class EnumDefaultMixTable extends _is.Table<int?> {
 }
 
 class EnumDefaultMixInclude extends _is.IncludeObject {
-  EnumDefaultMixInclude._();
+  EnumDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -263,16 +266,20 @@ class EnumDefaultMixInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultMixIncludeList extends _is.IncludeList {
-  EnumDefaultMixIncludeList._({
+  EnumDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

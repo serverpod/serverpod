@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
@@ -220,16 +219,16 @@ class CustomerTable extends _is.Table<int?> {
 }
 
 class CustomerInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   CustomerInclude.internal_({
     _ig920ya2.OrderIncludeList? orders,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _orders = orders;
   }
 
   _ig920ya2.OrderIncludeList? _orders;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -240,7 +239,6 @@ class CustomerInclude extends _is.IncludeObject {
 }
 
 class CustomerIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   CustomerIncludeList.internal_({
     _is.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,
@@ -248,11 +246,12 @@ class CustomerIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Customer.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

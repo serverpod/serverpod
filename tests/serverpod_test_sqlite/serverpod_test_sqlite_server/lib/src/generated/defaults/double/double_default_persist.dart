@@ -74,7 +74,7 @@ abstract class DoubleDefaultPersist
   }
 
   static DoubleDefaultPersistInclude include() {
-    return DoubleDefaultPersistInclude._();
+    return DoubleDefaultPersistInclude.internal_();
   }
 
   static DoubleDefaultPersistIncludeList includeList({
@@ -85,7 +85,7 @@ abstract class DoubleDefaultPersist
     _is.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
     DoubleDefaultPersistInclude? include,
   }) {
-    return DoubleDefaultPersistIncludeList._(
+    return DoubleDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,7 +163,10 @@ class DoubleDefaultPersistTable extends _is.Table<int?> {
 }
 
 class DoubleDefaultPersistInclude extends _is.IncludeObject {
-  DoubleDefaultPersistInclude._();
+  DoubleDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -173,16 +176,20 @@ class DoubleDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class DoubleDefaultPersistIncludeList extends _is.IncludeList {
-  DoubleDefaultPersistIncludeList._({
+  DoubleDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DoubleDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

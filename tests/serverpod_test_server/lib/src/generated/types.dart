@@ -11,7 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'test_enum.dart' as _ionapfu9;
@@ -850,9 +849,9 @@ class TypesTable extends _is.Table<int?> {
 }
 
 class TypesInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  TypesInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  TypesInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -863,7 +862,6 @@ class TypesInclude extends _is.IncludeObject {
 }
 
 class TypesIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   TypesIncludeList.internal_({
     _is.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
@@ -871,11 +869,12 @@ class TypesIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Types.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

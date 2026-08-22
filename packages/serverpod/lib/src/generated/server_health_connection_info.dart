@@ -123,7 +123,7 @@ abstract class ServerHealthConnectionInfo
   }
 
   static ServerHealthConnectionInfoInclude include() {
-    return ServerHealthConnectionInfoInclude._();
+    return ServerHealthConnectionInfoInclude.internal_();
   }
 
   static ServerHealthConnectionInfoIncludeList includeList({
@@ -134,7 +134,7 @@ abstract class ServerHealthConnectionInfo
     _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
   }) {
-    return ServerHealthConnectionInfoIncludeList._(
+    return ServerHealthConnectionInfoIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -296,7 +296,10 @@ class ServerHealthConnectionInfoTable extends _is.Table<int?> {
 }
 
 class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
-  ServerHealthConnectionInfoInclude._();
+  ServerHealthConnectionInfoInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -306,16 +309,20 @@ class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
 }
 
 class ServerHealthConnectionInfoIncludeList extends _is.IncludeList {
-  ServerHealthConnectionInfoIncludeList._({
+  ServerHealthConnectionInfoIncludeList.internal_({
     _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ServerHealthConnectionInfo.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

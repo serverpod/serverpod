@@ -11,7 +11,6 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'dart:typed_data' as _idt;
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithByteData
@@ -159,11 +158,9 @@ class ObjectWithByteDataTable extends _is.Table<int?> {
 }
 
 class ObjectWithByteDataInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ObjectWithByteDataInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  ObjectWithByteDataInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -174,7 +171,6 @@ class ObjectWithByteDataInclude extends _is.IncludeObject {
 }
 
 class ObjectWithByteDataIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ObjectWithByteDataIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,
@@ -182,11 +178,12 @@ class ObjectWithByteDataIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithByteData.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

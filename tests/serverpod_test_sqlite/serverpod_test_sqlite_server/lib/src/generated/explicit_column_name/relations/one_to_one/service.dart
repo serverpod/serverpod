@@ -77,7 +77,7 @@ abstract class Service
   }
 
   static ServiceInclude include() {
-    return ServiceInclude._();
+    return ServiceInclude.internal_();
   }
 
   static ServiceIncludeList includeList({
@@ -88,7 +88,7 @@ abstract class Service
     _is.OrderByListBuilder<ServiceTable>? orderByList,
     ServiceInclude? include,
   }) {
-    return ServiceIncludeList._(
+    return ServiceIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -176,7 +176,10 @@ class ServiceTable extends _is.Table<int?> {
 }
 
 class ServiceInclude extends _is.IncludeObject {
-  ServiceInclude._();
+  ServiceInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -186,16 +189,20 @@ class ServiceInclude extends _is.IncludeObject {
 }
 
 class ServiceIncludeList extends _is.IncludeList {
-  ServiceIncludeList._({
+  ServiceIncludeList.internal_({
     _is.WhereExpressionBuilder<ServiceTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Service.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

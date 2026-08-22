@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/one_to_one/address.dart' as _i5rzbc0r;
@@ -326,12 +325,11 @@ class CitizenTable extends _is.Table<int?> {
 }
 
 class CitizenInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   CitizenInclude.internal_({
     _i5rzbc0r.AddressInclude? address,
     _i2fdza8t.CompanyInclude? company,
     _i2fdza8t.CompanyInclude? oldCompany,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _address = address;
     _company = company;
@@ -344,6 +342,7 @@ class CitizenInclude extends _is.IncludeObject {
 
   _i2fdza8t.CompanyInclude? _oldCompany;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -358,7 +357,6 @@ class CitizenInclude extends _is.IncludeObject {
 }
 
 class CitizenIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   CitizenIncludeList.internal_({
     _is.WhereExpressionBuilder<CitizenTable>? where,
     super.limit,
@@ -366,11 +364,12 @@ class CitizenIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Citizen.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

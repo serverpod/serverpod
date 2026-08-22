@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithSelfParent
@@ -157,11 +156,9 @@ class ObjectWithSelfParentTable extends _is.Table<int?> {
 }
 
 class ObjectWithSelfParentInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ObjectWithSelfParentInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  ObjectWithSelfParentInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -172,7 +169,6 @@ class ObjectWithSelfParentInclude extends _is.IncludeObject {
 }
 
 class ObjectWithSelfParentIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ObjectWithSelfParentIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     super.limit,
@@ -180,11 +176,12 @@ class ObjectWithSelfParentIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSelfParent.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

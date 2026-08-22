@@ -78,7 +78,7 @@ abstract class DurationDefaultPersist
   }
 
   static DurationDefaultPersistInclude include() {
-    return DurationDefaultPersistInclude._();
+    return DurationDefaultPersistInclude.internal_();
   }
 
   static DurationDefaultPersistIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class DurationDefaultPersist
     _is.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     DurationDefaultPersistInclude? include,
   }) {
-    return DurationDefaultPersistIncludeList._(
+    return DurationDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -167,7 +167,10 @@ class DurationDefaultPersistTable extends _is.Table<int?> {
 }
 
 class DurationDefaultPersistInclude extends _is.IncludeObject {
-  DurationDefaultPersistInclude._();
+  DurationDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -177,16 +180,20 @@ class DurationDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultPersistIncludeList extends _is.IncludeList {
-  DurationDefaultPersistIncludeList._({
+  DurationDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -94,7 +94,7 @@ abstract class Address
   }
 
   static AddressInclude include({_igho3lba.CitizenInclude? inhabitant}) {
-    return AddressInclude._(inhabitant: inhabitant);
+    return AddressInclude.internal_(inhabitant: inhabitant);
   }
 
   static AddressIncludeList includeList({
@@ -105,7 +105,7 @@ abstract class Address
     _isd.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
   }) {
-    return AddressIncludeList._(
+    return AddressIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,11 +222,17 @@ class AddressTable extends _isd.Table<int?> {
 }
 
 class AddressInclude extends _isd.IncludeObject {
-  AddressInclude._({_igho3lba.CitizenInclude? inhabitant}) {
+  AddressInclude.internal_({
+    _igho3lba.CitizenInclude? inhabitant,
+    this.selectedColumns,
+  }) {
     _inhabitant = inhabitant;
   }
 
   _igho3lba.CitizenInclude? _inhabitant;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {'inhabitant': _inhabitant};
@@ -236,16 +242,20 @@ class AddressInclude extends _isd.IncludeObject {
 }
 
 class AddressIncludeList extends _isd.IncludeList {
-  AddressIncludeList._({
+  AddressIncludeList.internal_({
     _isd.WhereExpressionBuilder<AddressTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Address.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

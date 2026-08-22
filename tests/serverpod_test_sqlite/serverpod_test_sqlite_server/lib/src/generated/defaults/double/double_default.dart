@@ -79,7 +79,7 @@ abstract class DoubleDefault
   }
 
   static DoubleDefaultInclude include() {
-    return DoubleDefaultInclude._();
+    return DoubleDefaultInclude.internal_();
   }
 
   static DoubleDefaultIncludeList includeList({
@@ -90,7 +90,7 @@ abstract class DoubleDefault
     _is.OrderByListBuilder<DoubleDefaultTable>? orderByList,
     DoubleDefaultInclude? include,
   }) {
-    return DoubleDefaultIncludeList._(
+    return DoubleDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -185,7 +185,10 @@ class DoubleDefaultTable extends _is.Table<int?> {
 }
 
 class DoubleDefaultInclude extends _is.IncludeObject {
-  DoubleDefaultInclude._();
+  DoubleDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -195,16 +198,20 @@ class DoubleDefaultInclude extends _is.IncludeObject {
 }
 
 class DoubleDefaultIncludeList extends _is.IncludeList {
-  DoubleDefaultIncludeList._({
+  DoubleDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<DoubleDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DoubleDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

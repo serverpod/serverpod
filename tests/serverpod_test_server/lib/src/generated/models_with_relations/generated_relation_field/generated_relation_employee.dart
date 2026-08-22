@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/generated_relation_field/generated_relation_company.dart'
@@ -309,11 +308,10 @@ class GeneratedRelationEmployeeTable extends _is.Table<int?> {
 }
 
 class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   GeneratedRelationEmployeeInclude.internal_({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _company = company;
     _previousCompany = previousCompany;
@@ -323,6 +321,7 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
 
   _ipeijyfj.GeneratedRelationCompanyInclude? _previousCompany;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -336,7 +335,6 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
 }
 
 class GeneratedRelationEmployeeIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   GeneratedRelationEmployeeIncludeList.internal_({
     _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
     super.limit,
@@ -344,11 +342,12 @@ class GeneratedRelationEmployeeIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationEmployee.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

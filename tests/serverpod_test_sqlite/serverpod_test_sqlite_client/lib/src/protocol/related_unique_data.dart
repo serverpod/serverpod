@@ -96,7 +96,7 @@ abstract class RelatedUniqueData
   static RelatedUniqueDataInclude include({
     _iufhyrjh.UniqueDataInclude? uniqueData,
   }) {
-    return RelatedUniqueDataInclude._(uniqueData: uniqueData);
+    return RelatedUniqueDataInclude.internal_(uniqueData: uniqueData);
   }
 
   static RelatedUniqueDataIncludeList includeList({
@@ -107,7 +107,7 @@ abstract class RelatedUniqueData
     _isd.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
   }) {
-    return RelatedUniqueDataIncludeList._(
+    return RelatedUniqueDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -226,11 +226,17 @@ class RelatedUniqueDataTable extends _isd.Table<int?> {
 }
 
 class RelatedUniqueDataInclude extends _isd.IncludeObject {
-  RelatedUniqueDataInclude._({_iufhyrjh.UniqueDataInclude? uniqueData}) {
+  RelatedUniqueDataInclude.internal_({
+    _iufhyrjh.UniqueDataInclude? uniqueData,
+    this.selectedColumns,
+  }) {
     _uniqueData = uniqueData;
   }
 
   _iufhyrjh.UniqueDataInclude? _uniqueData;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {'uniqueData': _uniqueData};
@@ -240,16 +246,20 @@ class RelatedUniqueDataInclude extends _isd.IncludeObject {
 }
 
 class RelatedUniqueDataIncludeList extends _isd.IncludeList {
-  RelatedUniqueDataIncludeList._({
+  RelatedUniqueDataIncludeList.internal_({
     _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RelatedUniqueData.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

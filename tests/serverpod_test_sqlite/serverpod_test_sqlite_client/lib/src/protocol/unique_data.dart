@@ -78,7 +78,7 @@ abstract class UniqueData
   }
 
   static UniqueDataInclude include() {
-    return UniqueDataInclude._();
+    return UniqueDataInclude.internal_();
   }
 
   static UniqueDataIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class UniqueData
     _isd.OrderByListBuilder<UniqueDataTable>? orderByList,
     UniqueDataInclude? include,
   }) {
-    return UniqueDataIncludeList._(
+    return UniqueDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -177,7 +177,10 @@ class UniqueDataTable extends _isd.Table<int?> {
 }
 
 class UniqueDataInclude extends _isd.IncludeObject {
-  UniqueDataInclude._();
+  UniqueDataInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -187,16 +190,20 @@ class UniqueDataInclude extends _isd.IncludeObject {
 }
 
 class UniqueDataIncludeList extends _isd.IncludeList {
-  UniqueDataIncludeList._({
+  UniqueDataIncludeList.internal_({
     _isd.WhereExpressionBuilder<UniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UniqueData.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

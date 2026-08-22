@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'projected_enrollment.dart' as _i3lw6w5n;
@@ -229,16 +228,16 @@ class ProjectedStudentTable extends _is.Table<int?> {
 }
 
 class ProjectedStudentInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   ProjectedStudentInclude.internal_({
     _i3lw6w5n.ProjectedEnrollmentIncludeList? enrollments,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _enrollments = enrollments;
   }
 
   _i3lw6w5n.ProjectedEnrollmentIncludeList? _enrollments;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -249,7 +248,6 @@ class ProjectedStudentInclude extends _is.IncludeObject {
 }
 
 class ProjectedStudentIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ProjectedStudentIncludeList.internal_({
     _is.WhereExpressionBuilder<ProjectedStudentTable>? where,
     super.limit,
@@ -257,11 +255,12 @@ class ProjectedStudentIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedStudent.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

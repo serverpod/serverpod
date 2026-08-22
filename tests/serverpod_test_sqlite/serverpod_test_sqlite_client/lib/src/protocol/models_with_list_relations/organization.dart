@@ -112,7 +112,7 @@ abstract class Organization
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
   }) {
-    return OrganizationInclude._(
+    return OrganizationInclude.internal_(
       people: people,
       city: city,
     );
@@ -126,7 +126,7 @@ abstract class Organization
     _isd.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
   }) {
-    return OrganizationIncludeList._(
+    return OrganizationIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -286,9 +286,10 @@ class OrganizationTable extends _isd.Table<int?> {
 }
 
 class OrganizationInclude extends _isd.IncludeObject {
-  OrganizationInclude._({
+  OrganizationInclude.internal_({
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
+    this.selectedColumns,
   }) {
     _people = people;
     _city = city;
@@ -297,6 +298,9 @@ class OrganizationInclude extends _isd.IncludeObject {
   _ijqkgw0m.PersonIncludeList? _people;
 
   _i64066zp.CityInclude? _city;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {
@@ -309,16 +313,20 @@ class OrganizationInclude extends _isd.IncludeObject {
 }
 
 class OrganizationIncludeList extends _isd.IncludeList {
-  OrganizationIncludeList._({
+  OrganizationIncludeList.internal_({
     _isd.WhereExpressionBuilder<OrganizationTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Organization.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

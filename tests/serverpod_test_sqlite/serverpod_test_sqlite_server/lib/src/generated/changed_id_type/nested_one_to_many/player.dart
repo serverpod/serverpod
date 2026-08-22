@@ -95,7 +95,7 @@ abstract class PlayerUuid
   }
 
   static PlayerUuidInclude include({_i9bz1am4.TeamIntInclude? team}) {
-    return PlayerUuidInclude._(team: team);
+    return PlayerUuidInclude.internal_(team: team);
   }
 
   static PlayerUuidIncludeList includeList({
@@ -106,7 +106,7 @@ abstract class PlayerUuid
     _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
   }) {
-    return PlayerUuidIncludeList._(
+    return PlayerUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -221,11 +221,17 @@ class PlayerUuidTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PlayerUuidInclude extends _is.IncludeObject {
-  PlayerUuidInclude._({_i9bz1am4.TeamIntInclude? team}) {
+  PlayerUuidInclude.internal_({
+    _i9bz1am4.TeamIntInclude? team,
+    this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _i9bz1am4.TeamIntInclude? _team;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'team': _team};
@@ -235,16 +241,20 @@ class PlayerUuidInclude extends _is.IncludeObject {
 }
 
 class PlayerUuidIncludeList extends _is.IncludeList {
-  PlayerUuidIncludeList._({
+  PlayerUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(PlayerUuid.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

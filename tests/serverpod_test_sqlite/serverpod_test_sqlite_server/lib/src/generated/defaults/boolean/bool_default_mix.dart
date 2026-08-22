@@ -103,7 +103,7 @@ abstract class BoolDefaultMix
   }
 
   static BoolDefaultMixInclude include() {
-    return BoolDefaultMixInclude._();
+    return BoolDefaultMixInclude.internal_();
   }
 
   static BoolDefaultMixIncludeList includeList({
@@ -114,7 +114,7 @@ abstract class BoolDefaultMix
     _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     BoolDefaultMixInclude? include,
   }) {
-    return BoolDefaultMixIncludeList._(
+    return BoolDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,10 @@ class BoolDefaultMixTable extends _is.Table<int?> {
 }
 
 class BoolDefaultMixInclude extends _is.IncludeObject {
-  BoolDefaultMixInclude._();
+  BoolDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -239,16 +242,20 @@ class BoolDefaultMixInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultMixIncludeList extends _is.IncludeList {
-  BoolDefaultMixIncludeList._({
+  BoolDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/one_to_one/post.dart'
@@ -261,11 +260,10 @@ class PostTable extends _is.Table<int?> {
 }
 
 class PostInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   PostInclude.internal_({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -275,6 +273,7 @@ class PostInclude extends _is.IncludeObject {
 
   _ittc76ec.PostInclude? _next;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -288,7 +287,6 @@ class PostInclude extends _is.IncludeObject {
 }
 
 class PostIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   PostIncludeList.internal_({
     _is.WhereExpressionBuilder<PostTable>? where,
     super.limit,
@@ -296,11 +294,12 @@ class PostIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Post.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

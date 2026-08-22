@@ -130,7 +130,7 @@ abstract class DurationDefaultMix
   }
 
   static DurationDefaultMixInclude include() {
-    return DurationDefaultMixInclude._();
+    return DurationDefaultMixInclude.internal_();
   }
 
   static DurationDefaultMixIncludeList includeList({
@@ -141,7 +141,7 @@ abstract class DurationDefaultMix
     _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     DurationDefaultMixInclude? include,
   }) {
-    return DurationDefaultMixIncludeList._(
+    return DurationDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -262,7 +262,10 @@ class DurationDefaultMixTable extends _is.Table<int?> {
 }
 
 class DurationDefaultMixInclude extends _is.IncludeObject {
-  DurationDefaultMixInclude._();
+  DurationDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -272,16 +275,20 @@ class DurationDefaultMixInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultMixIncludeList extends _is.IncludeList {
-  DurationDefaultMixIncludeList._({
+  DurationDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

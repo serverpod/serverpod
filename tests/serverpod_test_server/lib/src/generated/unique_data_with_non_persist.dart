@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UniqueDataWithNonPersist
@@ -193,11 +192,9 @@ class UniqueDataWithNonPersistTable extends _is.Table<int?> {
 }
 
 class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  UniqueDataWithNonPersistInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  UniqueDataWithNonPersistInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -208,7 +205,6 @@ class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
 }
 
 class UniqueDataWithNonPersistIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   UniqueDataWithNonPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
@@ -216,11 +212,12 @@ class UniqueDataWithNonPersistIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UniqueDataWithNonPersist.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

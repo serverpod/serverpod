@@ -118,7 +118,7 @@ abstract class TokenMetadata
   static TokenMetadataInclude include({
     _iacs.RefreshTokenInclude? refreshToken,
   }) {
-    return TokenMetadataInclude._(refreshToken: refreshToken);
+    return TokenMetadataInclude.internal_(refreshToken: refreshToken);
   }
 
   static TokenMetadataIncludeList includeList({
@@ -129,7 +129,7 @@ abstract class TokenMetadata
     _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     TokenMetadataInclude? include,
   }) {
-    return TokenMetadataIncludeList._(
+    return TokenMetadataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -302,11 +302,17 @@ class TokenMetadataTable extends _is.Table<int?> {
 }
 
 class TokenMetadataInclude extends _is.IncludeObject {
-  TokenMetadataInclude._({_iacs.RefreshTokenInclude? refreshToken}) {
+  TokenMetadataInclude.internal_({
+    _iacs.RefreshTokenInclude? refreshToken,
+    this.selectedColumns,
+  }) {
     _refreshToken = refreshToken;
   }
 
   _iacs.RefreshTokenInclude? _refreshToken;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'refreshToken': _refreshToken};
@@ -316,16 +322,20 @@ class TokenMetadataInclude extends _is.IncludeObject {
 }
 
 class TokenMetadataIncludeList extends _is.IncludeList {
-  TokenMetadataIncludeList._({
+  TokenMetadataIncludeList.internal_({
     _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(TokenMetadata.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

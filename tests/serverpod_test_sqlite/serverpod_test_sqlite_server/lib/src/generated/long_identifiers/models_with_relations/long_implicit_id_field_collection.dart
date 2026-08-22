@@ -104,7 +104,7 @@ abstract class LongImplicitIdFieldCollection
     _i4kuijum.LongImplicitIdFieldIncludeList?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) {
-    return LongImplicitIdFieldCollectionInclude._(
+    return LongImplicitIdFieldCollectionInclude.internal_(
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
     );
@@ -118,7 +118,7 @@ abstract class LongImplicitIdFieldCollection
     _is.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     LongImplicitIdFieldCollectionInclude? include,
   }) {
-    return LongImplicitIdFieldCollectionIncludeList._(
+    return LongImplicitIdFieldCollectionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -270,9 +270,10 @@ class LongImplicitIdFieldCollectionTable extends _is.Table<int?> {
 }
 
 class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
-  LongImplicitIdFieldCollectionInclude._({
+  LongImplicitIdFieldCollectionInclude.internal_({
     _i4kuijum.LongImplicitIdFieldIncludeList?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    this.selectedColumns,
   }) {
     _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
@@ -280,6 +281,9 @@ class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
 
   _i4kuijum.LongImplicitIdFieldIncludeList?
   _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -292,16 +296,20 @@ class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
 }
 
 class LongImplicitIdFieldCollectionIncludeList extends _is.IncludeList {
-  LongImplicitIdFieldCollectionIncludeList._({
+  LongImplicitIdFieldCollectionIncludeList.internal_({
     _is.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(LongImplicitIdFieldCollection.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

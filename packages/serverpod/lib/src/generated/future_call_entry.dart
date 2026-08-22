@@ -123,7 +123,7 @@ abstract class FutureCallEntry
   }
 
   static FutureCallEntryInclude include() {
-    return FutureCallEntryInclude._();
+    return FutureCallEntryInclude.internal_();
   }
 
   static FutureCallEntryIncludeList includeList({
@@ -134,7 +134,7 @@ abstract class FutureCallEntry
     _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
   }) {
-    return FutureCallEntryIncludeList._(
+    return FutureCallEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -303,7 +303,10 @@ class FutureCallEntryTable extends _is.Table<int?> {
 }
 
 class FutureCallEntryInclude extends _is.IncludeObject {
-  FutureCallEntryInclude._();
+  FutureCallEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -313,16 +316,20 @@ class FutureCallEntryInclude extends _is.IncludeObject {
 }
 
 class FutureCallEntryIncludeList extends _is.IncludeList {
-  FutureCallEntryIncludeList._({
+  FutureCallEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(FutureCallEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

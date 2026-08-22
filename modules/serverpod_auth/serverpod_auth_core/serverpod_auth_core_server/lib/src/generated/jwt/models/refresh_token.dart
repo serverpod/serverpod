@@ -180,7 +180,7 @@ abstract class RefreshToken
   }
 
   static RefreshTokenInclude include({_ivyervu7.AuthUserInclude? authUser}) {
-    return RefreshTokenInclude._(authUser: authUser);
+    return RefreshTokenInclude.internal_(authUser: authUser);
   }
 
   static RefreshTokenIncludeList includeList({
@@ -191,7 +191,7 @@ abstract class RefreshToken
     _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     RefreshTokenInclude? include,
   }) {
-    return RefreshTokenIncludeList._(
+    return RefreshTokenIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -449,11 +449,17 @@ class RefreshTokenTable extends _is.Table<_is.UuidValue?> {
 }
 
 class RefreshTokenInclude extends _is.IncludeObject {
-  RefreshTokenInclude._({_ivyervu7.AuthUserInclude? authUser}) {
+  RefreshTokenInclude.internal_({
+    _ivyervu7.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _ivyervu7.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -463,16 +469,20 @@ class RefreshTokenInclude extends _is.IncludeObject {
 }
 
 class RefreshTokenIncludeList extends _is.IncludeList {
-  RefreshTokenIncludeList._({
+  RefreshTokenIncludeList.internal_({
     _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RefreshToken.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

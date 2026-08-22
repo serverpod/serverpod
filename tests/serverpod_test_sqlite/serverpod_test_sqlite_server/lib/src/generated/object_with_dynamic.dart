@@ -163,7 +163,7 @@ abstract class ObjectWithDynamic
   }
 
   static ObjectWithDynamicInclude include() {
-    return ObjectWithDynamicInclude._();
+    return ObjectWithDynamicInclude.internal_();
   }
 
   static ObjectWithDynamicIncludeList includeList({
@@ -174,7 +174,7 @@ abstract class ObjectWithDynamic
     _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     ObjectWithDynamicInclude? include,
   }) {
-    return ObjectWithDynamicIncludeList._(
+    return ObjectWithDynamicIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -358,7 +358,10 @@ class ObjectWithDynamicTable extends _is.Table<int?> {
 }
 
 class ObjectWithDynamicInclude extends _is.IncludeObject {
-  ObjectWithDynamicInclude._();
+  ObjectWithDynamicInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -368,16 +371,20 @@ class ObjectWithDynamicInclude extends _is.IncludeObject {
 }
 
 class ObjectWithDynamicIncludeList extends _is.IncludeList {
-  ObjectWithDynamicIncludeList._({
+  ObjectWithDynamicIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithDynamic.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

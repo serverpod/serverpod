@@ -120,7 +120,7 @@ abstract class MicrosoftAccount
   }
 
   static MicrosoftAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return MicrosoftAccountInclude._(authUser: authUser);
+    return MicrosoftAccountInclude.internal_(authUser: authUser);
   }
 
   static MicrosoftAccountIncludeList includeList({
@@ -131,7 +131,7 @@ abstract class MicrosoftAccount
     _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
   }) {
-    return MicrosoftAccountIncludeList._(
+    return MicrosoftAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -297,11 +297,17 @@ class MicrosoftAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class MicrosoftAccountInclude extends _is.IncludeObject {
-  MicrosoftAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  MicrosoftAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -311,16 +317,20 @@ class MicrosoftAccountInclude extends _is.IncludeObject {
 }
 
 class MicrosoftAccountIncludeList extends _is.IncludeList {
-  MicrosoftAccountIncludeList._({
+  MicrosoftAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MicrosoftAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

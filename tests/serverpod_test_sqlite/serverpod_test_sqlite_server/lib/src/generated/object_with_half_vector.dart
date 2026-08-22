@@ -131,7 +131,7 @@ abstract class ObjectWithHalfVector
   }
 
   static ObjectWithHalfVectorInclude include() {
-    return ObjectWithHalfVectorInclude._();
+    return ObjectWithHalfVectorInclude.internal_();
   }
 
   static ObjectWithHalfVectorIncludeList includeList({
@@ -142,7 +142,7 @@ abstract class ObjectWithHalfVector
     _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     ObjectWithHalfVectorInclude? include,
   }) {
-    return ObjectWithHalfVectorIncludeList._(
+    return ObjectWithHalfVectorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -320,7 +320,10 @@ class ObjectWithHalfVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithHalfVectorInclude extends _is.IncludeObject {
-  ObjectWithHalfVectorInclude._();
+  ObjectWithHalfVectorInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -330,16 +333,20 @@ class ObjectWithHalfVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithHalfVectorIncludeList extends _is.IncludeList {
-  ObjectWithHalfVectorIncludeList._({
+  ObjectWithHalfVectorIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithHalfVector.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

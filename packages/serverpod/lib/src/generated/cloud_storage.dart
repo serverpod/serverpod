@@ -123,7 +123,7 @@ abstract class CloudStorageEntry
   }
 
   static CloudStorageEntryInclude include() {
-    return CloudStorageEntryInclude._();
+    return CloudStorageEntryInclude.internal_();
   }
 
   static CloudStorageEntryIncludeList includeList({
@@ -134,7 +134,7 @@ abstract class CloudStorageEntry
     _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
   }) {
-    return CloudStorageEntryIncludeList._(
+    return CloudStorageEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -297,7 +297,10 @@ class CloudStorageEntryTable extends _is.Table<int?> {
 }
 
 class CloudStorageEntryInclude extends _is.IncludeObject {
-  CloudStorageEntryInclude._();
+  CloudStorageEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -307,16 +310,20 @@ class CloudStorageEntryInclude extends _is.IncludeObject {
 }
 
 class CloudStorageEntryIncludeList extends _is.IncludeList {
-  CloudStorageEntryIncludeList._({
+  CloudStorageEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(CloudStorageEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

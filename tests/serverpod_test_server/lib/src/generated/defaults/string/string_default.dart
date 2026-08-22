@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class StringDefault
@@ -185,9 +184,9 @@ class StringDefaultTable extends _is.Table<int?> {
 }
 
 class StringDefaultInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  StringDefaultInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  StringDefaultInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -198,7 +197,6 @@ class StringDefaultInclude extends _is.IncludeObject {
 }
 
 class StringDefaultIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   StringDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<StringDefaultTable>? where,
     super.limit,
@@ -206,11 +204,12 @@ class StringDefaultIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(StringDefault.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

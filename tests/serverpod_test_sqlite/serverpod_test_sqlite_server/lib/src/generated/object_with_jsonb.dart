@@ -156,7 +156,7 @@ abstract class ObjectWithJsonb
   }
 
   static ObjectWithJsonbInclude include() {
-    return ObjectWithJsonbInclude._();
+    return ObjectWithJsonbInclude.internal_();
   }
 
   static ObjectWithJsonbIncludeList includeList({
@@ -167,7 +167,7 @@ abstract class ObjectWithJsonb
     _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
     ObjectWithJsonbInclude? include,
   }) {
-    return ObjectWithJsonbIncludeList._(
+    return ObjectWithJsonbIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -401,7 +401,10 @@ class ObjectWithJsonbTable extends _is.Table<int?> {
 }
 
 class ObjectWithJsonbInclude extends _is.IncludeObject {
-  ObjectWithJsonbInclude._();
+  ObjectWithJsonbInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -411,16 +414,20 @@ class ObjectWithJsonbInclude extends _is.IncludeObject {
 }
 
 class ObjectWithJsonbIncludeList extends _is.IncludeList {
-  ObjectWithJsonbIncludeList._({
+  ObjectWithJsonbIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithJsonb.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

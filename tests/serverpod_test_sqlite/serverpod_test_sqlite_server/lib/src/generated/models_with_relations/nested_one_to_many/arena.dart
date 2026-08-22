@@ -84,7 +84,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
   }
 
   static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
-    return ArenaInclude._(team: team);
+    return ArenaInclude.internal_(team: team);
   }
 
   static ArenaIncludeList includeList({
@@ -95,7 +95,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
   }) {
-    return ArenaIncludeList._(
+    return ArenaIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -194,11 +194,17 @@ class ArenaTable extends _is.Table<int?> {
 }
 
 class ArenaInclude extends _is.IncludeObject {
-  ArenaInclude._({_iaks25tn.TeamInclude? team}) {
+  ArenaInclude.internal_({
+    _iaks25tn.TeamInclude? team,
+    this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _iaks25tn.TeamInclude? _team;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'team': _team};
@@ -208,16 +214,20 @@ class ArenaInclude extends _is.IncludeObject {
 }
 
 class ArenaIncludeList extends _is.IncludeList {
-  ArenaIncludeList._({
+  ArenaIncludeList.internal_({
     _is.WhereExpressionBuilder<ArenaTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Arena.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

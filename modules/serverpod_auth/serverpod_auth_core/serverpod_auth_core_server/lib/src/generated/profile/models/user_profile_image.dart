@@ -131,7 +131,7 @@ abstract class UserProfileImage
   static UserProfileImageInclude include({
     _ixqiikps.UserProfileInclude? userProfile,
   }) {
-    return UserProfileImageInclude._(userProfile: userProfile);
+    return UserProfileImageInclude.internal_(userProfile: userProfile);
   }
 
   static UserProfileImageIncludeList includeList({
@@ -142,7 +142,7 @@ abstract class UserProfileImage
     _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
     UserProfileImageInclude? include,
   }) {
-    return UserProfileImageIncludeList._(
+    return UserProfileImageIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -318,11 +318,17 @@ class UserProfileImageTable extends _is.Table<_is.UuidValue?> {
 }
 
 class UserProfileImageInclude extends _is.IncludeObject {
-  UserProfileImageInclude._({_ixqiikps.UserProfileInclude? userProfile}) {
+  UserProfileImageInclude.internal_({
+    _ixqiikps.UserProfileInclude? userProfile,
+    this.selectedColumns,
+  }) {
     _userProfile = userProfile;
   }
 
   _ixqiikps.UserProfileInclude? _userProfile;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'userProfile': _userProfile};
@@ -332,16 +338,20 @@ class UserProfileImageInclude extends _is.IncludeObject {
 }
 
 class UserProfileImageIncludeList extends _is.IncludeList {
-  UserProfileImageIncludeList._({
+  UserProfileImageIncludeList.internal_({
     _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserProfileImage.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

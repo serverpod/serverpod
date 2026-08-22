@@ -154,7 +154,7 @@ abstract class MessageLogEntry
   }
 
   static MessageLogEntryInclude include() {
-    return MessageLogEntryInclude._();
+    return MessageLogEntryInclude.internal_();
   }
 
   static MessageLogEntryIncludeList includeList({
@@ -165,7 +165,7 @@ abstract class MessageLogEntry
     _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
   }) {
-    return MessageLogEntryIncludeList._(
+    return MessageLogEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -394,7 +394,10 @@ class MessageLogEntryTable extends _is.Table<int?> {
 }
 
 class MessageLogEntryInclude extends _is.IncludeObject {
-  MessageLogEntryInclude._();
+  MessageLogEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -404,16 +407,20 @@ class MessageLogEntryInclude extends _is.IncludeObject {
 }
 
 class MessageLogEntryIncludeList extends _is.IncludeList {
-  MessageLogEntryIncludeList._({
+  MessageLogEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MessageLogEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

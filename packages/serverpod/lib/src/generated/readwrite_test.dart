@@ -72,7 +72,7 @@ abstract class ReadWriteTestEntry
   }
 
   static ReadWriteTestEntryInclude include() {
-    return ReadWriteTestEntryInclude._();
+    return ReadWriteTestEntryInclude.internal_();
   }
 
   static ReadWriteTestEntryIncludeList includeList({
@@ -83,7 +83,7 @@ abstract class ReadWriteTestEntry
     _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
   }) {
-    return ReadWriteTestEntryIncludeList._(
+    return ReadWriteTestEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -158,7 +158,10 @@ class ReadWriteTestEntryTable extends _is.Table<int?> {
 }
 
 class ReadWriteTestEntryInclude extends _is.IncludeObject {
-  ReadWriteTestEntryInclude._();
+  ReadWriteTestEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -168,16 +171,20 @@ class ReadWriteTestEntryInclude extends _is.IncludeObject {
 }
 
 class ReadWriteTestEntryIncludeList extends _is.IncludeList {
-  ReadWriteTestEntryIncludeList._({
+  ReadWriteTestEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ReadWriteTestEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

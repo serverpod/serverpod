@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
@@ -243,11 +242,9 @@ class SharedTableRecordTable extends _isd.Table<int?> {
 }
 
 class SharedTableRecordInclude extends _isd.IncludeObject {
-  @_i057hz1u.internal
-  SharedTableRecordInclude.internal_({
-    List<_isd.Column>? this.selectedColumns,
-  }) {}
+  SharedTableRecordInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_isd.Column>? selectedColumns;
 
   @override
@@ -258,7 +255,6 @@ class SharedTableRecordInclude extends _isd.IncludeObject {
 }
 
 class SharedTableRecordIncludeList extends _isd.IncludeList {
-  @_i057hz1u.internal
   SharedTableRecordIncludeList.internal_({
     _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
@@ -266,11 +262,12 @@ class SharedTableRecordIncludeList extends _isd.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_isd.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SharedTableRecord.t);
   }
 
+  @override
   final List<_isd.Column>? selectedColumns;
 
   @override

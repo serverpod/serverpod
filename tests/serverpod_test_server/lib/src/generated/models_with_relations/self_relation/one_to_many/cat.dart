@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
@@ -284,11 +283,10 @@ class CatTable extends _is.Table<int?> {
 }
 
 class CatInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   CatInclude.internal_({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _mother = mother;
     _kittens = kittens;
@@ -298,6 +296,7 @@ class CatInclude extends _is.IncludeObject {
 
   _iayhscrz.CatIncludeList? _kittens;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -311,7 +310,6 @@ class CatInclude extends _is.IncludeObject {
 }
 
 class CatIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   CatIncludeList.internal_({
     _is.WhereExpressionBuilder<CatTable>? where,
     super.limit,
@@ -319,11 +317,12 @@ class CatIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Cat.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

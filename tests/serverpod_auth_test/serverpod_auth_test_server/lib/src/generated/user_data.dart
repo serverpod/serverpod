@@ -107,7 +107,7 @@ abstract class UserData
   }
 
   static UserDataInclude include({_iacs.AuthUserInclude? authUser}) {
-    return UserDataInclude._(authUser: authUser);
+    return UserDataInclude.internal_(authUser: authUser);
   }
 
   static UserDataIncludeList includeList({
@@ -118,7 +118,7 @@ abstract class UserData
     _is.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
   }) {
-    return UserDataIncludeList._(
+    return UserDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -256,11 +256,17 @@ class UserDataTable extends _is.Table<int?> {
 }
 
 class UserDataInclude extends _is.IncludeObject {
-  UserDataInclude._({_iacs.AuthUserInclude? authUser}) {
+  UserDataInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -270,16 +276,20 @@ class UserDataInclude extends _is.IncludeObject {
 }
 
 class UserDataIncludeList extends _is.IncludeList {
-  UserDataIncludeList._({
+  UserDataIncludeList.internal_({
     _is.WhereExpressionBuilder<UserDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserData.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

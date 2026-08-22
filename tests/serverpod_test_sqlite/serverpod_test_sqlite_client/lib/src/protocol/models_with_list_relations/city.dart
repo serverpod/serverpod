@@ -107,7 +107,7 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
   }) {
-    return CityInclude._(
+    return CityInclude.internal_(
       citizens: citizens,
       organizations: organizations,
     );
@@ -121,7 +121,7 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
   }) {
-    return CityIncludeList._(
+    return CityIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -288,9 +288,10 @@ class CityTable extends _isd.Table<int?> {
 }
 
 class CityInclude extends _isd.IncludeObject {
-  CityInclude._({
+  CityInclude.internal_({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
+    this.selectedColumns,
   }) {
     _citizens = citizens;
     _organizations = organizations;
@@ -299,6 +300,9 @@ class CityInclude extends _isd.IncludeObject {
   _ijqkgw0m.PersonIncludeList? _citizens;
 
   _i0ptycc3.OrganizationIncludeList? _organizations;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {
@@ -311,16 +315,20 @@ class CityInclude extends _isd.IncludeObject {
 }
 
 class CityIncludeList extends _isd.IncludeList {
-  CityIncludeList._({
+  CityIncludeList.internal_({
     _isd.WhereExpressionBuilder<CityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(City.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

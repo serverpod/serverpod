@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
@@ -270,11 +269,10 @@ class LongImplicitIdFieldCollectionTable extends _is.Table<int?> {
 }
 
 class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   LongImplicitIdFieldCollectionInclude.internal_({
     _i4kuijum.LongImplicitIdFieldIncludeList?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa =
         thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
@@ -283,6 +281,7 @@ class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
   _i4kuijum.LongImplicitIdFieldIncludeList?
   _thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -296,7 +295,6 @@ class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
 }
 
 class LongImplicitIdFieldCollectionIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   LongImplicitIdFieldCollectionIncludeList.internal_({
     _is.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     super.limit,
@@ -304,11 +302,12 @@ class LongImplicitIdFieldCollectionIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(LongImplicitIdFieldCollection.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

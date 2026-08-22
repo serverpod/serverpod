@@ -91,7 +91,7 @@ abstract class Greeting
   }
 
   static GreetingInclude include() {
-    return GreetingInclude._();
+    return GreetingInclude.internal_();
   }
 
   static GreetingIncludeList includeList({
@@ -102,7 +102,7 @@ abstract class Greeting
     _is.OrderByListBuilder<GreetingTable>? orderByList,
     GreetingInclude? include,
   }) {
-    return GreetingIncludeList._(
+    return GreetingIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -210,7 +210,10 @@ class GreetingTable extends _is.Table<int?> {
 }
 
 class GreetingInclude extends _is.IncludeObject {
-  GreetingInclude._();
+  GreetingInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -220,16 +223,20 @@ class GreetingInclude extends _is.IncludeObject {
 }
 
 class GreetingIncludeList extends _is.IncludeList {
-  GreetingIncludeList._({
+  GreetingIncludeList.internal_({
     _is.WhereExpressionBuilder<GreetingTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Greeting.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

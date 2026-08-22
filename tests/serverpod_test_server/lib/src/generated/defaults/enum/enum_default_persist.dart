@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
 import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
@@ -207,11 +206,9 @@ class EnumDefaultPersistTable extends _is.Table<int?> {
 }
 
 class EnumDefaultPersistInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  EnumDefaultPersistInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  EnumDefaultPersistInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -222,7 +219,6 @@ class EnumDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultPersistIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   EnumDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     super.limit,
@@ -230,11 +226,12 @@ class EnumDefaultPersistIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultPersist.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

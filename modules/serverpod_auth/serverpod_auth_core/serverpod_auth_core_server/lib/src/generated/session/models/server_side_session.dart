@@ -185,7 +185,7 @@ abstract class ServerSideSession
   static ServerSideSessionInclude include({
     _ivyervu7.AuthUserInclude? authUser,
   }) {
-    return ServerSideSessionInclude._(authUser: authUser);
+    return ServerSideSessionInclude.internal_(authUser: authUser);
   }
 
   static ServerSideSessionIncludeList includeList({
@@ -196,7 +196,7 @@ abstract class ServerSideSession
     _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     ServerSideSessionInclude? include,
   }) {
-    return ServerSideSessionIncludeList._(
+    return ServerSideSessionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -465,11 +465,17 @@ class ServerSideSessionTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ServerSideSessionInclude extends _is.IncludeObject {
-  ServerSideSessionInclude._({_ivyervu7.AuthUserInclude? authUser}) {
+  ServerSideSessionInclude.internal_({
+    _ivyervu7.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _ivyervu7.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -479,16 +485,20 @@ class ServerSideSessionInclude extends _is.IncludeObject {
 }
 
 class ServerSideSessionIncludeList extends _is.IncludeList {
-  ServerSideSessionIncludeList._({
+  ServerSideSessionIncludeList.internal_({
     _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ServerSideSession.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

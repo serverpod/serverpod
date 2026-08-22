@@ -112,7 +112,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _iv085ahk.ArenaInclude? arena,
     _i9mhudyy.PlayerIncludeList? players,
   }) {
-    return TeamInclude._(
+    return TeamInclude.internal_(
       arena: arena,
       players: players,
     );
@@ -126,7 +126,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByListBuilder<TeamTable>? orderByList,
     TeamInclude? include,
   }) {
-    return TeamIncludeList._(
+    return TeamIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -286,9 +286,10 @@ class TeamTable extends _isd.Table<int?> {
 }
 
 class TeamInclude extends _isd.IncludeObject {
-  TeamInclude._({
+  TeamInclude.internal_({
     _iv085ahk.ArenaInclude? arena,
     _i9mhudyy.PlayerIncludeList? players,
+    this.selectedColumns,
   }) {
     _arena = arena;
     _players = players;
@@ -297,6 +298,9 @@ class TeamInclude extends _isd.IncludeObject {
   _iv085ahk.ArenaInclude? _arena;
 
   _i9mhudyy.PlayerIncludeList? _players;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {
@@ -309,16 +313,20 @@ class TeamInclude extends _isd.IncludeObject {
 }
 
 class TeamIncludeList extends _isd.IncludeList {
-  TeamIncludeList._({
+  TeamIncludeList.internal_({
     _isd.WhereExpressionBuilder<TeamTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Team.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

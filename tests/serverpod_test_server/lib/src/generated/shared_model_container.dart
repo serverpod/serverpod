@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
@@ -945,11 +944,9 @@ class SharedModelContainerTable extends _is.Table<int?> {
 }
 
 class SharedModelContainerInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  SharedModelContainerInclude.internal_({
-    List<_is.Column>? this.selectedColumns,
-  }) {}
+  SharedModelContainerInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -960,7 +957,6 @@ class SharedModelContainerInclude extends _is.IncludeObject {
 }
 
 class SharedModelContainerIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   SharedModelContainerIncludeList.internal_({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
@@ -968,11 +964,12 @@ class SharedModelContainerIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SharedModelContainer.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

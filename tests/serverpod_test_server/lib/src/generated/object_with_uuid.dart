@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithUuid
@@ -187,9 +186,9 @@ class ObjectWithUuidTable extends _is.Table<int?> {
 }
 
 class ObjectWithUuidInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ObjectWithUuidInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  ObjectWithUuidInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -200,7 +199,6 @@ class ObjectWithUuidInclude extends _is.IncludeObject {
 }
 
 class ObjectWithUuidIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ObjectWithUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,
@@ -208,11 +206,12 @@ class ObjectWithUuidIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithUuid.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

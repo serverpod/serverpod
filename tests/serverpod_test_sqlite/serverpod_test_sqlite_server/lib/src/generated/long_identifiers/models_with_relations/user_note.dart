@@ -78,7 +78,7 @@ abstract class UserNote
   }
 
   static UserNoteInclude include() {
-    return UserNoteInclude._();
+    return UserNoteInclude.internal_();
   }
 
   static UserNoteIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class UserNote
     _is.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
   }) {
-    return UserNoteIncludeList._(
+    return UserNoteIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -213,7 +213,10 @@ class UserNoteTable extends _is.Table<int?> {
 }
 
 class UserNoteInclude extends _is.IncludeObject {
-  UserNoteInclude._();
+  UserNoteInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -223,16 +226,20 @@ class UserNoteInclude extends _is.IncludeObject {
 }
 
 class UserNoteIncludeList extends _is.IncludeList {
-  UserNoteIncludeList._({
+  UserNoteIncludeList.internal_({
     _is.WhereExpressionBuilder<UserNoteTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserNote.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -74,7 +74,7 @@ abstract class SimpleData
   }
 
   static SimpleDataInclude include() {
-    return SimpleDataInclude._();
+    return SimpleDataInclude.internal_();
   }
 
   static SimpleDataIncludeList includeList({
@@ -85,7 +85,7 @@ abstract class SimpleData
     _isd.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
   }) {
-    return SimpleDataIncludeList._(
+    return SimpleDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -160,7 +160,10 @@ class SimpleDataTable extends _isd.Table<int?> {
 }
 
 class SimpleDataInclude extends _isd.IncludeObject {
-  SimpleDataInclude._();
+  SimpleDataInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -170,16 +173,20 @@ class SimpleDataInclude extends _isd.IncludeObject {
 }
 
 class SimpleDataIncludeList extends _isd.IncludeList {
-  SimpleDataIncludeList._({
+  SimpleDataIncludeList.internal_({
     _isd.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SimpleData.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

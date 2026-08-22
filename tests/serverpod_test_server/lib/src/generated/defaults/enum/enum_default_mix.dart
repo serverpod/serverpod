@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
@@ -254,9 +253,9 @@ class EnumDefaultMixTable extends _is.Table<int?> {
 }
 
 class EnumDefaultMixInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  EnumDefaultMixInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  EnumDefaultMixInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -267,7 +266,6 @@ class EnumDefaultMixInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultMixIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   EnumDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
@@ -275,11 +273,12 @@ class EnumDefaultMixIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultMix.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../changed_id_type/nested_one_to_many/team.dart' as _i9bz1am4;
@@ -221,16 +220,16 @@ class PlayerUuidTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PlayerUuidInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   PlayerUuidInclude.internal_({
     _i9bz1am4.TeamIntInclude? team,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _team = team;
   }
 
   _i9bz1am4.TeamIntInclude? _team;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -241,7 +240,6 @@ class PlayerUuidInclude extends _is.IncludeObject {
 }
 
 class PlayerUuidIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   PlayerUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
@@ -249,11 +247,12 @@ class PlayerUuidIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(PlayerUuid.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

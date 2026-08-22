@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
@@ -238,16 +237,16 @@ class UserNoteCollectionWithALongNameTable extends _is.Table<int?> {
 }
 
 class UserNoteCollectionWithALongNameInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   UserNoteCollectionWithALongNameInclude.internal_({
     _iegdvue1.UserNoteWithALongNameIncludeList? notes,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _notes = notes;
   }
 
   _iegdvue1.UserNoteWithALongNameIncludeList? _notes;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -258,7 +257,6 @@ class UserNoteCollectionWithALongNameInclude extends _is.IncludeObject {
 }
 
 class UserNoteCollectionWithALongNameIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   UserNoteCollectionWithALongNameIncludeList.internal_({
     _is.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     super.limit,
@@ -266,11 +264,12 @@ class UserNoteCollectionWithALongNameIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteCollectionWithALongName.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

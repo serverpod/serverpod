@@ -87,7 +87,7 @@ abstract class UniqueDataWithNonPersist
   }
 
   static UniqueDataWithNonPersistInclude include() {
-    return UniqueDataWithNonPersistInclude._();
+    return UniqueDataWithNonPersistInclude.internal_();
   }
 
   static UniqueDataWithNonPersistIncludeList includeList({
@@ -98,7 +98,7 @@ abstract class UniqueDataWithNonPersist
     _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
   }) {
-    return UniqueDataWithNonPersistIncludeList._(
+    return UniqueDataWithNonPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +192,10 @@ class UniqueDataWithNonPersistTable extends _is.Table<int?> {
 }
 
 class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
-  UniqueDataWithNonPersistInclude._();
+  UniqueDataWithNonPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -202,16 +205,20 @@ class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
 }
 
 class UniqueDataWithNonPersistIncludeList extends _is.IncludeList {
-  UniqueDataWithNonPersistIncludeList._({
+  UniqueDataWithNonPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UniqueDataWithNonPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class Service
@@ -177,9 +176,9 @@ class ServiceTable extends _is.Table<int?> {
 }
 
 class ServiceInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  ServiceInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  ServiceInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -190,7 +189,6 @@ class ServiceInclude extends _is.IncludeObject {
 }
 
 class ServiceIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ServiceIncludeList.internal_({
     _is.WhereExpressionBuilder<ServiceTable>? where,
     super.limit,
@@ -198,11 +196,12 @@ class ServiceIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Service.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

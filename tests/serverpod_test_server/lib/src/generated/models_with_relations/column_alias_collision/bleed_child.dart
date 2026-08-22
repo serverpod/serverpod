@@ -10,7 +10,6 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 
 /// Child model used to reproduce the include column-alias collision in
@@ -161,9 +160,9 @@ class BleedChildTable extends _is.Table<int?> {
 }
 
 class BleedChildInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
-  BleedChildInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
+  BleedChildInclude.internal_({this.selectedColumns});
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -174,7 +173,6 @@ class BleedChildInclude extends _is.IncludeObject {
 }
 
 class BleedChildIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   BleedChildIncludeList.internal_({
     _is.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
@@ -182,11 +180,12 @@ class BleedChildIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BleedChild.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

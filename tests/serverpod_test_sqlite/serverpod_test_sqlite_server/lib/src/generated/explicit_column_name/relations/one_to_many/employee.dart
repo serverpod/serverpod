@@ -77,7 +77,7 @@ abstract class Employee
   }
 
   static EmployeeInclude include() {
-    return EmployeeInclude._();
+    return EmployeeInclude.internal_();
   }
 
   static EmployeeIncludeList includeList({
@@ -88,7 +88,7 @@ abstract class Employee
     _is.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
   }) {
-    return EmployeeIncludeList._(
+    return EmployeeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -177,7 +177,10 @@ class EmployeeTable extends _is.Table<int?> {
 }
 
 class EmployeeInclude extends _is.IncludeObject {
-  EmployeeInclude._();
+  EmployeeInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -187,16 +190,20 @@ class EmployeeInclude extends _is.IncludeObject {
 }
 
 class EmployeeIncludeList extends _is.IncludeList {
-  EmployeeIncludeList._({
+  EmployeeIncludeList.internal_({
     _is.WhereExpressionBuilder<EmployeeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Employee.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

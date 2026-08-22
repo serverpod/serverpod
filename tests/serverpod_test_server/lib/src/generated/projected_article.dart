@@ -11,7 +11,6 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:meta/meta.dart' as _i057hz1u;
 import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'projected_author.dart' as _iq5hz6n4;
@@ -273,16 +272,16 @@ class ProjectedArticleTable extends _is.Table<int?> {
 }
 
 class ProjectedArticleInclude extends _is.IncludeObject {
-  @_i057hz1u.internal
   ProjectedArticleInclude.internal_({
     _iq5hz6n4.ProjectedAuthorInclude? author,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     _author = author;
   }
 
   _iq5hz6n4.ProjectedAuthorInclude? _author;
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -293,7 +292,6 @@ class ProjectedArticleInclude extends _is.IncludeObject {
 }
 
 class ProjectedArticleIncludeList extends _is.IncludeList {
-  @_i057hz1u.internal
   ProjectedArticleIncludeList.internal_({
     _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     super.limit,
@@ -301,11 +299,12 @@ class ProjectedArticleIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_is.Column>? this.selectedColumns,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedArticle.t);
   }
 
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override

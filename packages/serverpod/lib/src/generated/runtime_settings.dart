@@ -114,7 +114,7 @@ abstract class RuntimeSettings
   }
 
   static RuntimeSettingsInclude include() {
-    return RuntimeSettingsInclude._();
+    return RuntimeSettingsInclude.internal_();
   }
 
   static RuntimeSettingsIncludeList includeList({
@@ -125,7 +125,7 @@ abstract class RuntimeSettings
     _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
   }) {
-    return RuntimeSettingsIncludeList._(
+    return RuntimeSettingsIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -261,7 +261,10 @@ class RuntimeSettingsTable extends _is.Table<int?> {
 }
 
 class RuntimeSettingsInclude extends _is.IncludeObject {
-  RuntimeSettingsInclude._();
+  RuntimeSettingsInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -271,16 +274,20 @@ class RuntimeSettingsInclude extends _is.IncludeObject {
 }
 
 class RuntimeSettingsIncludeList extends _is.IncludeList {
-  RuntimeSettingsIncludeList._({
+  RuntimeSettingsIncludeList.internal_({
     _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RuntimeSettings.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
