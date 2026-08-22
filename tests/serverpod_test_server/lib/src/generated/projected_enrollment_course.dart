@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_course_name.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'projected_course_name.dart' as _icve44wq;
 import 'projected_enrollment.dart';
 
 abstract class ProjectedEnrollmentCourse
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedEnrollmentCourse._({
     this.id,
     this.course,
@@ -23,7 +23,7 @@ abstract class ProjectedEnrollmentCourse
 
   factory ProjectedEnrollmentCourse({
     int? id,
-    _i2.ProjectedCourseName? course,
+    _icve44wq.ProjectedCourseName? course,
   }) = _ProjectedEnrollmentCourseImpl;
 
   factory ProjectedEnrollmentCourse.fromJson(
@@ -33,7 +33,7 @@ abstract class ProjectedEnrollmentCourse
       id: jsonSerialization['id'] as int?,
       course: jsonSerialization['course'] == null
           ? null
-          : _i2.ProjectedCourseName.fromJson(jsonSerialization['course']),
+          : _icve44wq.ProjectedCourseName.fromJson(jsonSerialization['course']),
     );
   }
 
@@ -44,14 +44,14 @@ abstract class ProjectedEnrollmentCourse
   /// the id will be null.
   int? id;
 
-  _i2.ProjectedCourseName? course;
+  _icve44wq.ProjectedCourseName? course;
 
   /// Returns a shallow copy of this [ProjectedEnrollmentCourse]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedEnrollmentCourse copyWith({
     int? id,
-    _i2.ProjectedCourseName? course,
+    _icve44wq.ProjectedCourseName? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -70,8 +70,8 @@ abstract class ProjectedEnrollmentCourse
       if (course != null)
         'course':
             // ignore: unnecessary_type_check
-            course is _i1.ProtocolSerialization
-            ? (course as _i1.ProtocolSerialization).toJsonForProtocol()
+            course is _is.ProtocolSerialization
+            ? (course as _is.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               course?.toJson(),
@@ -81,16 +81,16 @@ abstract class ProjectedEnrollmentCourse
   static ProjectedEnrollmentInclude include() {
     return ProjectedEnrollmentInclude.internal_(
       selectedColumns: [ProjectedEnrollment.t.id],
-      course: _i2.ProjectedCourseName.include(),
+      course: _icve44wq.ProjectedCourseName.include(),
     );
   }
 
   static ProjectedEnrollmentIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
   }) {
     return ProjectedEnrollment.includeList(
       where: where,
@@ -104,7 +104,7 @@ abstract class ProjectedEnrollmentCourse
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -113,7 +113,7 @@ class _Undefined {}
 class _ProjectedEnrollmentCourseImpl extends ProjectedEnrollmentCourse {
   _ProjectedEnrollmentCourseImpl({
     int? id,
-    _i2.ProjectedCourseName? course,
+    _icve44wq.ProjectedCourseName? course,
   }) : super._(
          id: id,
          course: course,
@@ -121,7 +121,7 @@ class _ProjectedEnrollmentCourseImpl extends ProjectedEnrollmentCourse {
 
   /// Returns a shallow copy of this [ProjectedEnrollmentCourse]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedEnrollmentCourse copyWith({
     Object? id = _Undefined,
@@ -129,7 +129,7 @@ class _ProjectedEnrollmentCourseImpl extends ProjectedEnrollmentCourse {
   }) {
     return ProjectedEnrollmentCourse(
       id: id is int? ? id : this.id,
-      course: course is _i2.ProjectedCourseName?
+      course: course is _icve44wq.ProjectedCourseName?
           ? course
           : this.course?.copyWith(),
     );
@@ -162,15 +162,15 @@ class ProjectedEnrollmentCourseRepository {
   /// );
   /// ```
   Future<List<ProjectedEnrollmentCourse>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedEnrollment>(
@@ -208,14 +208,14 @@ class ProjectedEnrollmentCourseRepository {
   /// );
   /// ```
   Future<ProjectedEnrollmentCourse?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedEnrollment>(
@@ -233,11 +233,11 @@ class ProjectedEnrollmentCourseRepository {
 
   /// Finds a single [ProjectedEnrollment] by its [id] or null if no such row exists.
   Future<ProjectedEnrollmentCourse?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedEnrollment>(

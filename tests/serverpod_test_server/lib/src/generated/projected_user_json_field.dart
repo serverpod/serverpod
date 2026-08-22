@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'projected_user.dart';
 
 abstract class ProjectedUserJsonField
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserJsonField._({
     this.id,
     required this.name,
@@ -53,7 +53,7 @@ abstract class ProjectedUserJsonField
 
   /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserJsonField copyWith({
     int? id,
     String? name,
@@ -93,11 +93,11 @@ abstract class ProjectedUserJsonField
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -111,7 +111,7 @@ abstract class ProjectedUserJsonField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +130,7 @@ class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
 
   /// Returns a shallow copy of this [ProjectedUserJsonField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserJsonField copyWith({
     Object? id = _Undefined,
@@ -173,15 +173,15 @@ class ProjectedUserJsonFieldRepository {
   /// );
   /// ```
   Future<List<ProjectedUserJsonField>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -219,14 +219,14 @@ class ProjectedUserJsonFieldRepository {
   /// );
   /// ```
   Future<ProjectedUserJsonField?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -244,11 +244,11 @@ class ProjectedUserJsonFieldRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserJsonField?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_enrollment_course.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_enrollment_course.dart' as _ika7thts;
 
 abstract class ProjectedStudentCourses
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedStudentCourses._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class ProjectedStudentCourses
   factory ProjectedStudentCourses({
     int? id,
     required String name,
-    List<_i2.ProjectedEnrollmentCourse>? enrollments,
+    List<_ika7thts.ProjectedEnrollmentCourse>? enrollments,
   }) = _ProjectedStudentCoursesImpl;
 
   factory ProjectedStudentCourses.fromJson(
@@ -36,9 +36,10 @@ abstract class ProjectedStudentCourses
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ProjectedEnrollmentCourse>>(
-              jsonSerialization['enrollments'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_ika7thts.ProjectedEnrollmentCourse>>(
+                  jsonSerialization['enrollments'],
+                ),
     );
   }
 
@@ -49,15 +50,15 @@ abstract class ProjectedStudentCourses
 
   String name;
 
-  List<_i2.ProjectedEnrollmentCourse>? enrollments;
+  List<_ika7thts.ProjectedEnrollmentCourse>? enrollments;
 
   /// Returns a shallow copy of this [ProjectedStudentCourses]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedStudentCourses copyWith({
     int? id,
     String? name,
-    List<_i2.ProjectedEnrollmentCourse>? enrollments,
+    List<_ika7thts.ProjectedEnrollmentCourse>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -80,8 +81,8 @@ abstract class ProjectedStudentCourses
         'enrollments': enrollments?.toJson(
           valueToJson: (v) =>
               // ignore: unnecessary_type_check
-              v is _i1.ProtocolSerialization
-              ? (v as _i1.ProtocolSerialization).toJsonForProtocol()
+              v is _isc.ProtocolSerialization
+              ? (v as _isc.ProtocolSerialization).toJsonForProtocol()
               :
                 // ignore: dead_code
                 v.toJson(),
@@ -91,7 +92,7 @@ abstract class ProjectedStudentCourses
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -101,7 +102,7 @@ class _ProjectedStudentCoursesImpl extends ProjectedStudentCourses {
   _ProjectedStudentCoursesImpl({
     int? id,
     required String name,
-    List<_i2.ProjectedEnrollmentCourse>? enrollments,
+    List<_ika7thts.ProjectedEnrollmentCourse>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -110,7 +111,7 @@ class _ProjectedStudentCoursesImpl extends ProjectedStudentCourses {
 
   /// Returns a shallow copy of this [ProjectedStudentCourses]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedStudentCourses copyWith({
     Object? id = _Undefined,
@@ -120,7 +121,7 @@ class _ProjectedStudentCoursesImpl extends ProjectedStudentCourses {
     return ProjectedStudentCourses(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.ProjectedEnrollmentCourse>?
+      enrollments: enrollments is List<_ika7thts.ProjectedEnrollmentCourse>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );

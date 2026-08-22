@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ModelWithRequiredField
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ModelWithRequiredField._({
     this.id,
     required this.name,
@@ -53,11 +53,11 @@ abstract class ModelWithRequiredField
   String? phone;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ModelWithRequiredField copyWith({
     int? id,
     String? name,
@@ -91,11 +91,11 @@ abstract class ModelWithRequiredField
   }
 
   static ModelWithRequiredFieldIncludeList includeList({
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     ModelWithRequiredFieldInclude? include,
   }) {
     return ModelWithRequiredFieldIncludeList._(
@@ -110,7 +110,7 @@ abstract class ModelWithRequiredField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -131,7 +131,7 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
 
   /// Returns a shallow copy of this [ModelWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ModelWithRequiredField copyWith({
     Object? id = _Undefined,
@@ -149,38 +149,38 @@ class _ModelWithRequiredFieldImpl extends ModelWithRequiredField {
 }
 
 class ModelWithRequiredFieldUpdateTable
-    extends _i1.UpdateTable<ModelWithRequiredFieldTable> {
+    extends _is.UpdateTable<ModelWithRequiredFieldTable> {
   ModelWithRequiredFieldUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> phone(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> phone(String? value) => _is.ColumnValue(
     table.phone,
     value,
   );
 }
 
-class ModelWithRequiredFieldTable extends _i1.Table<int?> {
+class ModelWithRequiredFieldTable extends _is.Table<int?> {
   ModelWithRequiredFieldTable({super.tableRelation})
     : super(tableName: 'model_with_required_field') {
     updateTable = ModelWithRequiredFieldUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    phone = _i1.ColumnString(
+    phone = _is.ColumnString(
       'phone',
       this,
     );
@@ -188,14 +188,14 @@ class ModelWithRequiredFieldTable extends _i1.Table<int?> {
 
   late final ModelWithRequiredFieldUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
-  late final _i1.ColumnString phone;
+  late final _is.ColumnString phone;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     email,
@@ -203,19 +203,19 @@ class ModelWithRequiredFieldTable extends _i1.Table<int?> {
   ];
 }
 
-class ModelWithRequiredFieldInclude extends _i1.IncludeObject {
+class ModelWithRequiredFieldInclude extends _is.IncludeObject {
   ModelWithRequiredFieldInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ModelWithRequiredField.t;
+  _is.Table<int?> get table => ModelWithRequiredField.t;
 }
 
-class ModelWithRequiredFieldIncludeList extends _i1.IncludeList {
+class ModelWithRequiredFieldIncludeList extends _is.IncludeList {
   ModelWithRequiredFieldIncludeList._({
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -226,10 +226,10 @@ class ModelWithRequiredFieldIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ModelWithRequiredField.t;
+  _is.Table<int?> get table => ModelWithRequiredField.t;
 }
 
 class ModelWithRequiredFieldRepository {
@@ -258,15 +258,15 @@ class ModelWithRequiredFieldRepository {
   /// );
   /// ```
   Future<List<ModelWithRequiredField>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
@@ -298,14 +298,14 @@ class ModelWithRequiredFieldRepository {
   /// );
   /// ```
   Future<ModelWithRequiredField?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
@@ -320,11 +320,11 @@ class ModelWithRequiredFieldRepository {
 
   /// Finds a single [ModelWithRequiredField] by its [id] or null if no such row exists.
   Future<ModelWithRequiredField?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ModelWithRequiredField>(
       id,
@@ -349,9 +349,9 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -367,9 +367,9 @@ class ModelWithRequiredFieldRepository {
   ///
   /// The returned [ModelWithRequiredField] will have its `id` field set.
   Future<ModelWithRequiredField> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModelWithRequiredField row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ModelWithRequiredField>(
       row,
@@ -398,12 +398,12 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
-    required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
-    _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
+    _is.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ModelWithRequiredField>(
@@ -430,12 +430,12 @@ class ModelWithRequiredFieldRepository {
   ///
   /// The returned [ModelWithRequiredField] will have its `id` field set.
   Future<ModelWithRequiredField?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModelWithRequiredField row, {
-    required _i1.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
-    _i1.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ModelWithRequiredFieldTable> conflictColumns,
+    _is.ColumnSelections<ModelWithRequiredFieldTable>? updateColumns,
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ModelWithRequiredField>(
       row,
@@ -456,10 +456,10 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
-    _i1.ColumnSelections<ModelWithRequiredFieldTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ModelWithRequiredFieldTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ModelWithRequiredField>(
@@ -474,10 +474,10 @@ class ModelWithRequiredFieldRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ModelWithRequiredField> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModelWithRequiredField row, {
-    _i1.ColumnSelections<ModelWithRequiredFieldTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ModelWithRequiredFieldTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ModelWithRequiredField>(
       row,
@@ -489,11 +489,11 @@ class ModelWithRequiredFieldRepository {
   /// Updates a single [ModelWithRequiredField] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ModelWithRequiredField?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
+    required _is.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ModelWithRequiredField>(
       id,
@@ -509,15 +509,15 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ModelWithRequiredFieldUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
+    required _is.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ModelWithRequiredField>(
@@ -544,11 +544,11 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ModelWithRequiredField> rows, {
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ModelWithRequiredField>(
@@ -562,9 +562,9 @@ class ModelWithRequiredFieldRepository {
 
   /// Deletes a single [ModelWithRequiredField].
   Future<ModelWithRequiredField> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ModelWithRequiredField row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ModelWithRequiredField>(
       row,
@@ -581,11 +581,11 @@ class ModelWithRequiredFieldRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ModelWithRequiredField>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
-    _i1.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
-    _i1.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
+    _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ModelWithRequiredField>(
@@ -600,10 +600,10 @@ class ModelWithRequiredFieldRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ModelWithRequiredField>(
       where: where?.call(ModelWithRequiredField.t),
@@ -614,11 +614,11 @@ class ModelWithRequiredFieldRepository {
 
   /// Acquires row-level locks on [ModelWithRequiredField] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ModelWithRequiredFieldTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ModelWithRequiredField>(
       where: where(ModelWithRequiredField.t),

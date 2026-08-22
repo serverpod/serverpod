@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_address_country.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'projected_address_country.dart' as _ikpl2lpd;
 import 'projected_user.dart';
 
 abstract class ProjectedUserCountryAddress
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserCountryAddress._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class ProjectedUserCountryAddress
   factory ProjectedUserCountryAddress({
     int? id,
     required String name,
-    _i2.ProjectedAddressCountry? address,
+    _ikpl2lpd.ProjectedAddressCountry? address,
   }) = _ProjectedUserCountryAddressImpl;
 
   factory ProjectedUserCountryAddress.fromJson(
@@ -36,7 +36,9 @@ abstract class ProjectedUserCountryAddress
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.ProjectedAddressCountry.fromJson(jsonSerialization['address']),
+          : _ikpl2lpd.ProjectedAddressCountry.fromJson(
+              jsonSerialization['address'],
+            ),
     );
   }
 
@@ -49,15 +51,15 @@ abstract class ProjectedUserCountryAddress
 
   String name;
 
-  _i2.ProjectedAddressCountry? address;
+  _ikpl2lpd.ProjectedAddressCountry? address;
 
   /// Returns a shallow copy of this [ProjectedUserCountryAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserCountryAddress copyWith({
     int? id,
     String? name,
-    _i2.ProjectedAddressCountry? address,
+    _ikpl2lpd.ProjectedAddressCountry? address,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,8 +80,8 @@ abstract class ProjectedUserCountryAddress
       if (address != null)
         'address':
             // ignore: unnecessary_type_check
-            address is _i1.ProtocolSerialization
-            ? (address as _i1.ProtocolSerialization).toJsonForProtocol()
+            address is _is.ProtocolSerialization
+            ? (address as _is.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               address?.toJson(),
@@ -92,16 +94,16 @@ abstract class ProjectedUserCountryAddress
         ProjectedUser.t.id,
         ProjectedUser.t.name,
       ],
-      address: _i2.ProjectedAddressCountry.include(),
+      address: _ikpl2lpd.ProjectedAddressCountry.include(),
     );
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -115,7 +117,7 @@ abstract class ProjectedUserCountryAddress
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -125,7 +127,7 @@ class _ProjectedUserCountryAddressImpl extends ProjectedUserCountryAddress {
   _ProjectedUserCountryAddressImpl({
     int? id,
     required String name,
-    _i2.ProjectedAddressCountry? address,
+    _ikpl2lpd.ProjectedAddressCountry? address,
   }) : super._(
          id: id,
          name: name,
@@ -134,7 +136,7 @@ class _ProjectedUserCountryAddressImpl extends ProjectedUserCountryAddress {
 
   /// Returns a shallow copy of this [ProjectedUserCountryAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserCountryAddress copyWith({
     Object? id = _Undefined,
@@ -144,7 +146,7 @@ class _ProjectedUserCountryAddressImpl extends ProjectedUserCountryAddress {
     return ProjectedUserCountryAddress(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.ProjectedAddressCountry?
+      address: address is _ikpl2lpd.ProjectedAddressCountry?
           ? address
           : this.address?.copyWith(),
     );
@@ -177,15 +179,15 @@ class ProjectedUserCountryAddressRepository {
   /// );
   /// ```
   Future<List<ProjectedUserCountryAddress>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -223,14 +225,14 @@ class ProjectedUserCountryAddressRepository {
   /// );
   /// ```
   Future<ProjectedUserCountryAddress?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -250,11 +252,11 @@ class ProjectedUserCountryAddressRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserCountryAddress?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

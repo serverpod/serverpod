@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/many_to_many/student.dart' as _i2;
-import '../../changed_id_type/many_to_many/course.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../changed_id_type/many_to_many/course.dart' as _irfj8gqh;
+import '../../changed_id_type/many_to_many/student.dart' as _iu6t4rw4;
 
 abstract class EnrollmentInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EnrollmentInt._({
     this.id,
     required this.studentId,
@@ -27,29 +27,29 @@ abstract class EnrollmentInt
 
   factory EnrollmentInt({
     int? id,
-    required _i1.UuidValue studentId,
-    _i2.StudentUuid? student,
-    required _i1.UuidValue courseId,
-    _i3.CourseUuid? course,
+    required _isc.UuidValue studentId,
+    _iu6t4rw4.StudentUuid? student,
+    required _isc.UuidValue courseId,
+    _irfj8gqh.CourseUuid? course,
   }) = _EnrollmentIntImpl;
 
   factory EnrollmentInt.fromJson(Map<String, dynamic> jsonSerialization) {
     return EnrollmentInt(
       id: jsonSerialization['id'] as int?,
-      studentId: _i1.UuidValueJsonExtension.fromJson(
+      studentId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['studentId'],
       ),
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.StudentUuid>(
+          : _iza9lbb5.Protocol().deserialize<_iu6t4rw4.StudentUuid>(
               jsonSerialization['student'],
             ),
-      courseId: _i1.UuidValueJsonExtension.fromJson(
+      courseId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['courseId'],
       ),
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.CourseUuid>(
+          : _iza9lbb5.Protocol().deserialize<_irfj8gqh.CourseUuid>(
               jsonSerialization['course'],
             ),
     );
@@ -60,23 +60,23 @@ abstract class EnrollmentInt
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue studentId;
+  _isc.UuidValue studentId;
 
-  _i2.StudentUuid? student;
+  _iu6t4rw4.StudentUuid? student;
 
-  _i1.UuidValue courseId;
+  _isc.UuidValue courseId;
 
-  _i3.CourseUuid? course;
+  _irfj8gqh.CourseUuid? course;
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EnrollmentInt copyWith({
     int? id,
-    _i1.UuidValue? studentId,
-    _i2.StudentUuid? student,
-    _i1.UuidValue? courseId,
-    _i3.CourseUuid? course,
+    _isc.UuidValue? studentId,
+    _iu6t4rw4.StudentUuid? student,
+    _isc.UuidValue? courseId,
+    _irfj8gqh.CourseUuid? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -104,7 +104,7 @@ abstract class EnrollmentInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -113,10 +113,10 @@ class _Undefined {}
 class _EnrollmentIntImpl extends EnrollmentInt {
   _EnrollmentIntImpl({
     int? id,
-    required _i1.UuidValue studentId,
-    _i2.StudentUuid? student,
-    required _i1.UuidValue courseId,
-    _i3.CourseUuid? course,
+    required _isc.UuidValue studentId,
+    _iu6t4rw4.StudentUuid? student,
+    required _isc.UuidValue courseId,
+    _irfj8gqh.CourseUuid? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -127,21 +127,25 @@ class _EnrollmentIntImpl extends EnrollmentInt {
 
   /// Returns a shallow copy of this [EnrollmentInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EnrollmentInt copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? studentId,
+    _isc.UuidValue? studentId,
     Object? student = _Undefined,
-    _i1.UuidValue? courseId,
+    _isc.UuidValue? courseId,
     Object? course = _Undefined,
   }) {
     return EnrollmentInt(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.StudentUuid? ? student : this.student?.copyWith(),
+      student: student is _iu6t4rw4.StudentUuid?
+          ? student
+          : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.CourseUuid? ? course : this.course?.copyWith(),
+      course: course is _irfj8gqh.CourseUuid?
+          ? course
+          : this.course?.copyWith(),
     );
   }
 }

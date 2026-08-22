@@ -11,8 +11,8 @@
 
 part of 'sealed_parent.dart';
 
-class SealedChild extends _i1.SealedParent
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+class SealedChild extends _iv35mfmj.SealedParent
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SealedChild({
     required super.sealedInt,
     required super.sealedString,
@@ -31,7 +31,7 @@ class SealedChild extends _i1.SealedParent
 
   /// Returns a shallow copy of this [SealedChild]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   SealedChild copyWith({
     int? sealedInt,
@@ -67,6 +67,6 @@ class SealedChild extends _i1.SealedParent
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }

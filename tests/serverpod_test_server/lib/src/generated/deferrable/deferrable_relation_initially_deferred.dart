@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DeferrableRelationInitiallyDeferred
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DeferrableRelationInitiallyDeferred._({
     this.id,
     required this.parentId,
@@ -44,11 +44,11 @@ abstract class DeferrableRelationInitiallyDeferred
   int parentId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DeferrableRelationInitiallyDeferred]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DeferrableRelationInitiallyDeferred copyWith({
     int? id,
     int? parentId,
@@ -76,11 +76,11 @@ abstract class DeferrableRelationInitiallyDeferred
   }
 
   static DeferrableRelationInitiallyDeferredIncludeList includeList({
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
     DeferrableRelationInitiallyDeferredInclude? include,
   }) {
@@ -96,7 +96,7 @@ abstract class DeferrableRelationInitiallyDeferred
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -114,7 +114,7 @@ class _DeferrableRelationInitiallyDeferredImpl
 
   /// Returns a shallow copy of this [DeferrableRelationInitiallyDeferred]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DeferrableRelationInitiallyDeferred copyWith({
     Object? id = _Undefined,
@@ -128,20 +128,20 @@ class _DeferrableRelationInitiallyDeferredImpl
 }
 
 class DeferrableRelationInitiallyDeferredUpdateTable
-    extends _i1.UpdateTable<DeferrableRelationInitiallyDeferredTable> {
+    extends _is.UpdateTable<DeferrableRelationInitiallyDeferredTable> {
   DeferrableRelationInitiallyDeferredUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> parentId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> parentId(int value) => _is.ColumnValue(
     table.parentId,
     value,
   );
 }
 
-class DeferrableRelationInitiallyDeferredTable extends _i1.Table<int?> {
+class DeferrableRelationInitiallyDeferredTable extends _is.Table<int?> {
   DeferrableRelationInitiallyDeferredTable({super.tableRelation})
     : super(tableName: 'deferrable_relation_initially_deferred') {
     updateTable = DeferrableRelationInitiallyDeferredUpdateTable(this);
-    parentId = _i1.ColumnInt(
+    parentId = _is.ColumnInt(
       'parentId',
       this,
     );
@@ -149,51 +149,51 @@ class DeferrableRelationInitiallyDeferredTable extends _i1.Table<int?> {
 
   late final DeferrableRelationInitiallyDeferredUpdateTable updateTable;
 
-  late final _i1.ColumnInt parentId;
+  late final _is.ColumnInt parentId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     parentId,
   ];
 }
 
-class DeferrableRelationInitiallyDeferredInclude extends _i1.IncludeObject {
-  @_i2.internal
+class DeferrableRelationInitiallyDeferredInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   DeferrableRelationInitiallyDeferredInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
+  _is.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
 }
 
-class DeferrableRelationInitiallyDeferredIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class DeferrableRelationInitiallyDeferredIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   DeferrableRelationInitiallyDeferredIncludeList.internal_({
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
+  _is.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
 }
 
 class DeferrableRelationInitiallyDeferredRepository {
@@ -222,16 +222,16 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// );
   /// ```
   Future<List<DeferrableRelationInitiallyDeferred>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DeferrableRelationInitiallyDeferred>(
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
@@ -263,15 +263,15 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// );
   /// ```
   Future<DeferrableRelationInitiallyDeferred?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DeferrableRelationInitiallyDeferred>(
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
@@ -286,11 +286,11 @@ class DeferrableRelationInitiallyDeferredRepository {
 
   /// Finds a single [DeferrableRelationInitiallyDeferred] by its [id] or null if no such row exists.
   Future<DeferrableRelationInitiallyDeferred?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DeferrableRelationInitiallyDeferred>(
       id,
@@ -315,9 +315,9 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationInitiallyDeferred> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -333,9 +333,9 @@ class DeferrableRelationInitiallyDeferredRepository {
   ///
   /// The returned [DeferrableRelationInitiallyDeferred] will have its `id` field set.
   Future<DeferrableRelationInitiallyDeferred> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationInitiallyDeferred row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DeferrableRelationInitiallyDeferred>(
       row,
@@ -364,15 +364,15 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationInitiallyDeferred> rows, {
-    required _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>
+    required _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>
     conflictColumns,
-    _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>?
+    _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>?
     updateColumns,
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>?
     updateWhere,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DeferrableRelationInitiallyDeferred>(
@@ -399,15 +399,15 @@ class DeferrableRelationInitiallyDeferredRepository {
   ///
   /// The returned [DeferrableRelationInitiallyDeferred] will have its `id` field set.
   Future<DeferrableRelationInitiallyDeferred?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationInitiallyDeferred row, {
-    required _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>
+    required _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>
     conflictColumns,
-    _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>?
+    _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>?
     updateColumns,
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>?
     updateWhere,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DeferrableRelationInitiallyDeferred>(
       row,
@@ -428,10 +428,10 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationInitiallyDeferred> rows, {
-    _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DeferrableRelationInitiallyDeferred>(
@@ -446,10 +446,10 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DeferrableRelationInitiallyDeferred> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationInitiallyDeferred row, {
-    _i1.ColumnSelections<DeferrableRelationInitiallyDeferredTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationInitiallyDeferredTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DeferrableRelationInitiallyDeferred>(
       row,
@@ -461,13 +461,13 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// Updates a single [DeferrableRelationInitiallyDeferred] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DeferrableRelationInitiallyDeferred?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<
+    required _is.ColumnValueListBuilder<
       DeferrableRelationInitiallyDeferredUpdateTable
     >
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DeferrableRelationInitiallyDeferred>(
       id,
@@ -485,21 +485,21 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<
       DeferrableRelationInitiallyDeferredUpdateTable
     >
     columnValues,
-    required _i1.WhereExpressionBuilder<
+    required _is.WhereExpressionBuilder<
       DeferrableRelationInitiallyDeferredTable
     >
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DeferrableRelationInitiallyDeferred>(
@@ -528,12 +528,12 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationInitiallyDeferred> rows, {
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DeferrableRelationInitiallyDeferred>(
@@ -547,9 +547,9 @@ class DeferrableRelationInitiallyDeferredRepository {
 
   /// Deletes a single [DeferrableRelationInitiallyDeferred].
   Future<DeferrableRelationInitiallyDeferred> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationInitiallyDeferred row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DeferrableRelationInitiallyDeferred>(
       row,
@@ -566,15 +566,15 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationInitiallyDeferred>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<
       DeferrableRelationInitiallyDeferredTable
     >
     where,
-    _i1.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DeferrableRelationInitiallyDeferred>(
@@ -589,10 +589,10 @@ class DeferrableRelationInitiallyDeferredRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DeferrableRelationInitiallyDeferred>(
       where: where?.call(DeferrableRelationInitiallyDeferred.t),
@@ -603,14 +603,14 @@ class DeferrableRelationInitiallyDeferredRepository {
 
   /// Acquires row-level locks on [DeferrableRelationInitiallyDeferred] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<
       DeferrableRelationInitiallyDeferredTable
     >
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DeferrableRelationInitiallyDeferred>(
       where: where(DeferrableRelationInitiallyDeferred.t),

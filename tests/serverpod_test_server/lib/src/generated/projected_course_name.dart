@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'projected_course.dart';
 
 abstract class ProjectedCourseName
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedCourseName._({
     this.id,
     required this.name,
@@ -43,7 +43,7 @@ abstract class ProjectedCourseName
 
   /// Returns a shallow copy of this [ProjectedCourseName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedCourseName copyWith({
     int? id,
     String? name,
@@ -76,11 +76,11 @@ abstract class ProjectedCourseName
   }
 
   static ProjectedCourseIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedCourseTable>? where,
+    _is.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
+    _is.OrderByBuilder<ProjectedCourseTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedCourseTable>? orderByList,
   }) {
     return ProjectedCourse.includeList(
       where: where,
@@ -94,7 +94,7 @@ abstract class ProjectedCourseName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -111,7 +111,7 @@ class _ProjectedCourseNameImpl extends ProjectedCourseName {
 
   /// Returns a shallow copy of this [ProjectedCourseName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedCourseName copyWith({
     Object? id = _Undefined,
@@ -150,15 +150,15 @@ class ProjectedCourseNameRepository {
   /// );
   /// ```
   Future<List<ProjectedCourseName>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedCourseTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedCourseTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedCourseTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedCourse>(
@@ -195,14 +195,14 @@ class ProjectedCourseNameRepository {
   /// );
   /// ```
   Future<ProjectedCourseName?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedCourseTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedCourseTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedCourseTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedCourse>(
@@ -220,11 +220,11 @@ class ProjectedCourseNameRepository {
 
   /// Finds a single [ProjectedCourse] by its [id] or null if no such row exists.
   Future<ProjectedCourseName?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedCourse>(

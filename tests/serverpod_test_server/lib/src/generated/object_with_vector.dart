@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithVector
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithVector._({
     this.id,
     required this.vector,
@@ -27,33 +27,33 @@ abstract class ObjectWithVector
 
   factory ObjectWithVector({
     int? id,
-    required _i1.Vector vector,
-    _i1.Vector? vectorNullable,
-    required _i1.Vector vectorIndexedHnsw,
-    required _i1.Vector vectorIndexedHnswWithParams,
-    required _i1.Vector vectorIndexedIvfflat,
-    required _i1.Vector vectorIndexedIvfflatWithParams,
+    required _is.Vector vector,
+    _is.Vector? vectorNullable,
+    required _is.Vector vectorIndexedHnsw,
+    required _is.Vector vectorIndexedHnswWithParams,
+    required _is.Vector vectorIndexedIvfflat,
+    required _is.Vector vectorIndexedIvfflatWithParams,
   }) = _ObjectWithVectorImpl;
 
   factory ObjectWithVector.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithVector(
       id: jsonSerialization['id'] as int?,
-      vector: _i1.VectorJsonExtension.fromJson(jsonSerialization['vector']),
+      vector: _is.VectorJsonExtension.fromJson(jsonSerialization['vector']),
       vectorNullable: jsonSerialization['vectorNullable'] == null
           ? null
-          : _i1.VectorJsonExtension.fromJson(
+          : _is.VectorJsonExtension.fromJson(
               jsonSerialization['vectorNullable'],
             ),
-      vectorIndexedHnsw: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedHnsw: _is.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedHnsw'],
       ),
-      vectorIndexedHnswWithParams: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedHnswWithParams: _is.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedHnswWithParams'],
       ),
-      vectorIndexedIvfflat: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedIvfflat: _is.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedIvfflat'],
       ),
-      vectorIndexedIvfflatWithParams: _i1.VectorJsonExtension.fromJson(
+      vectorIndexedIvfflatWithParams: _is.VectorJsonExtension.fromJson(
         jsonSerialization['vectorIndexedIvfflatWithParams'],
       ),
     );
@@ -66,32 +66,32 @@ abstract class ObjectWithVector
   @override
   int? id;
 
-  _i1.Vector vector;
+  _is.Vector vector;
 
-  _i1.Vector? vectorNullable;
+  _is.Vector? vectorNullable;
 
-  _i1.Vector vectorIndexedHnsw;
+  _is.Vector vectorIndexedHnsw;
 
-  _i1.Vector vectorIndexedHnswWithParams;
+  _is.Vector vectorIndexedHnswWithParams;
 
-  _i1.Vector vectorIndexedIvfflat;
+  _is.Vector vectorIndexedIvfflat;
 
-  _i1.Vector vectorIndexedIvfflatWithParams;
+  _is.Vector vectorIndexedIvfflatWithParams;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithVector copyWith({
     int? id,
-    _i1.Vector? vector,
-    _i1.Vector? vectorNullable,
-    _i1.Vector? vectorIndexedHnsw,
-    _i1.Vector? vectorIndexedHnswWithParams,
-    _i1.Vector? vectorIndexedIvfflat,
-    _i1.Vector? vectorIndexedIvfflatWithParams,
+    _is.Vector? vector,
+    _is.Vector? vectorNullable,
+    _is.Vector? vectorIndexedHnsw,
+    _is.Vector? vectorIndexedHnswWithParams,
+    _is.Vector? vectorIndexedIvfflat,
+    _is.Vector? vectorIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,11 +126,11 @@ abstract class ObjectWithVector
   }
 
   static ObjectWithVectorIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
     ObjectWithVectorInclude? include,
   }) {
     return ObjectWithVectorIncludeList.internal_(
@@ -145,7 +145,7 @@ abstract class ObjectWithVector
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -154,12 +154,12 @@ class _Undefined {}
 class _ObjectWithVectorImpl extends ObjectWithVector {
   _ObjectWithVectorImpl({
     int? id,
-    required _i1.Vector vector,
-    _i1.Vector? vectorNullable,
-    required _i1.Vector vectorIndexedHnsw,
-    required _i1.Vector vectorIndexedHnswWithParams,
-    required _i1.Vector vectorIndexedIvfflat,
-    required _i1.Vector vectorIndexedIvfflatWithParams,
+    required _is.Vector vector,
+    _is.Vector? vectorNullable,
+    required _is.Vector vectorIndexedHnsw,
+    required _is.Vector vectorIndexedHnswWithParams,
+    required _is.Vector vectorIndexedIvfflat,
+    required _is.Vector vectorIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          vector: vector,
@@ -172,21 +172,21 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
 
   /// Returns a shallow copy of this [ObjectWithVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithVector copyWith({
     Object? id = _Undefined,
-    _i1.Vector? vector,
+    _is.Vector? vector,
     Object? vectorNullable = _Undefined,
-    _i1.Vector? vectorIndexedHnsw,
-    _i1.Vector? vectorIndexedHnswWithParams,
-    _i1.Vector? vectorIndexedIvfflat,
-    _i1.Vector? vectorIndexedIvfflatWithParams,
+    _is.Vector? vectorIndexedHnsw,
+    _is.Vector? vectorIndexedHnswWithParams,
+    _is.Vector? vectorIndexedIvfflat,
+    _is.Vector? vectorIndexedIvfflatWithParams,
   }) {
     return ObjectWithVector(
       id: id is int? ? id : this.id,
       vector: vector ?? this.vector.clone(),
-      vectorNullable: vectorNullable is _i1.Vector?
+      vectorNullable: vectorNullable is _is.Vector?
           ? vectorNullable
           : this.vectorNullable?.clone(),
       vectorIndexedHnsw: vectorIndexedHnsw ?? this.vectorIndexedHnsw.clone(),
@@ -203,79 +203,79 @@ class _ObjectWithVectorImpl extends ObjectWithVector {
 }
 
 class ObjectWithVectorUpdateTable
-    extends _i1.UpdateTable<ObjectWithVectorTable> {
+    extends _is.UpdateTable<ObjectWithVectorTable> {
   ObjectWithVectorUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vector(_i1.Vector value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vector(_is.Vector value) =>
+      _is.ColumnValue(
         table.vector,
         value,
       );
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorNullable(_i1.Vector? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vectorNullable(_is.Vector? value) =>
+      _is.ColumnValue(
         table.vectorNullable,
         value,
       );
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnsw(_i1.Vector value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vectorIndexedHnsw(_is.Vector value) =>
+      _is.ColumnValue(
         table.vectorIndexedHnsw,
         value,
       );
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedHnswWithParams(
-    _i1.Vector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vectorIndexedHnswWithParams(
+    _is.Vector value,
+  ) => _is.ColumnValue(
     table.vectorIndexedHnswWithParams,
     value,
   );
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflat(
-    _i1.Vector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vectorIndexedIvfflat(
+    _is.Vector value,
+  ) => _is.ColumnValue(
     table.vectorIndexedIvfflat,
     value,
   );
 
-  _i1.ColumnValue<_i1.Vector, _i1.Vector> vectorIndexedIvfflatWithParams(
-    _i1.Vector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.Vector, _is.Vector> vectorIndexedIvfflatWithParams(
+    _is.Vector value,
+  ) => _is.ColumnValue(
     table.vectorIndexedIvfflatWithParams,
     value,
   );
 }
 
-class ObjectWithVectorTable extends _i1.Table<int?> {
+class ObjectWithVectorTable extends _is.Table<int?> {
   ObjectWithVectorTable({super.tableRelation})
     : super(tableName: 'object_with_vector') {
     updateTable = ObjectWithVectorUpdateTable(this);
-    vector = _i1.ColumnVector(
+    vector = _is.ColumnVector(
       'vector',
       this,
       dimension: 512,
     );
-    vectorNullable = _i1.ColumnVector(
+    vectorNullable = _is.ColumnVector(
       'vectorNullable',
       this,
       dimension: 512,
     );
-    vectorIndexedHnsw = _i1.ColumnVector(
+    vectorIndexedHnsw = _is.ColumnVector(
       'vectorIndexedHnsw',
       this,
       dimension: 512,
     );
-    vectorIndexedHnswWithParams = _i1.ColumnVector(
+    vectorIndexedHnswWithParams = _is.ColumnVector(
       'vectorIndexedHnswWithParams',
       this,
       dimension: 512,
     );
-    vectorIndexedIvfflat = _i1.ColumnVector(
+    vectorIndexedIvfflat = _is.ColumnVector(
       'vectorIndexedIvfflat',
       this,
       dimension: 512,
     );
-    vectorIndexedIvfflatWithParams = _i1.ColumnVector(
+    vectorIndexedIvfflatWithParams = _is.ColumnVector(
       'vectorIndexedIvfflatWithParams',
       this,
       dimension: 512,
@@ -284,20 +284,20 @@ class ObjectWithVectorTable extends _i1.Table<int?> {
 
   late final ObjectWithVectorUpdateTable updateTable;
 
-  late final _i1.ColumnVector vector;
+  late final _is.ColumnVector vector;
 
-  late final _i1.ColumnVector vectorNullable;
+  late final _is.ColumnVector vectorNullable;
 
-  late final _i1.ColumnVector vectorIndexedHnsw;
+  late final _is.ColumnVector vectorIndexedHnsw;
 
-  late final _i1.ColumnVector vectorIndexedHnswWithParams;
+  late final _is.ColumnVector vectorIndexedHnswWithParams;
 
-  late final _i1.ColumnVector vectorIndexedIvfflat;
+  late final _is.ColumnVector vectorIndexedIvfflat;
 
-  late final _i1.ColumnVector vectorIndexedIvfflatWithParams;
+  late final _is.ColumnVector vectorIndexedIvfflatWithParams;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     vector,
     vectorNullable,
@@ -308,40 +308,40 @@ class ObjectWithVectorTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithVectorInclude extends _i1.IncludeObject {
-  @_i2.internal
-  ObjectWithVectorInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class ObjectWithVectorInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ObjectWithVectorInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ObjectWithVector.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithVector.t;
 }
 
-class ObjectWithVectorIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ObjectWithVectorIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithVectorIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithVector.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithVector.t;
+  _is.Table<int?> get table => ObjectWithVector.t;
 }
 
 class ObjectWithVectorRepository {
@@ -370,15 +370,15 @@ class ObjectWithVectorRepository {
   /// );
   /// ```
   Future<List<ObjectWithVector>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithVector>(
       where: where?.call(ObjectWithVector.t),
@@ -410,14 +410,14 @@ class ObjectWithVectorRepository {
   /// );
   /// ```
   Future<ObjectWithVector?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithVector>(
       where: where?.call(ObjectWithVector.t),
@@ -432,11 +432,11 @@ class ObjectWithVectorRepository {
 
   /// Finds a single [ObjectWithVector] by its [id] or null if no such row exists.
   Future<ObjectWithVector?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithVector>(
       id,
@@ -461,9 +461,9 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithVector> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -479,9 +479,9 @@ class ObjectWithVectorRepository {
   ///
   /// The returned [ObjectWithVector] will have its `id` field set.
   Future<ObjectWithVector> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithVector row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithVector>(
       row,
@@ -510,12 +510,12 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithVector> rows, {
-    required _i1.ColumnSelections<ObjectWithVectorTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithVectorTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithVectorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithVector>(
@@ -542,12 +542,12 @@ class ObjectWithVectorRepository {
   ///
   /// The returned [ObjectWithVector] will have its `id` field set.
   Future<ObjectWithVector?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithVector row, {
-    required _i1.ColumnSelections<ObjectWithVectorTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithVectorTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithVectorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithVector>(
       row,
@@ -568,10 +568,10 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithVector> rows, {
-    _i1.ColumnSelections<ObjectWithVectorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithVectorTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithVector>(
@@ -586,10 +586,10 @@ class ObjectWithVectorRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithVector> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithVector row, {
-    _i1.ColumnSelections<ObjectWithVectorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithVectorTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithVector>(
       row,
@@ -601,11 +601,11 @@ class ObjectWithVectorRepository {
   /// Updates a single [ObjectWithVector] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithVector?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithVector>(
       id,
@@ -621,15 +621,15 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithVectorUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithVectorTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithVector>(
@@ -656,11 +656,11 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithVector> rows, {
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithVector>(
@@ -674,9 +674,9 @@ class ObjectWithVectorRepository {
 
   /// Deletes a single [ObjectWithVector].
   Future<ObjectWithVector> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithVector row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithVector>(
       row,
@@ -693,11 +693,11 @@ class ObjectWithVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithVector>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
-    _i1.OrderByBuilder<ObjectWithVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithVector>(
@@ -712,10 +712,10 @@ class ObjectWithVectorRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithVector>(
       where: where?.call(ObjectWithVector.t),
@@ -726,11 +726,11 @@ class ObjectWithVectorRepository {
 
   /// Acquires row-level locks on [ObjectWithVector] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithVectorTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithVectorTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithVector>(
       where: where(ObjectWithVector.t),

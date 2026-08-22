@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithSparseVector
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithSparseVector._({
     this.id,
     required this.sparseVector,
@@ -24,10 +24,10 @@ abstract class ObjectWithSparseVector
 
   factory ObjectWithSparseVector({
     int? id,
-    required _i1.SparseVector sparseVector,
-    _i1.SparseVector? sparseVectorNullable,
-    required _i1.SparseVector sparseVectorIndexedHnsw,
-    required _i1.SparseVector sparseVectorIndexedHnswWithParams,
+    required _isc.SparseVector sparseVector,
+    _isc.SparseVector? sparseVectorNullable,
+    required _isc.SparseVector sparseVectorIndexedHnsw,
+    required _isc.SparseVector sparseVectorIndexedHnswWithParams,
   }) = _ObjectWithSparseVectorImpl;
 
   factory ObjectWithSparseVector.fromJson(
@@ -35,20 +35,21 @@ abstract class ObjectWithSparseVector
   ) {
     return ObjectWithSparseVector(
       id: jsonSerialization['id'] as int?,
-      sparseVector: _i1.SparseVectorJsonExtension.fromJson(
+      sparseVector: _isc.SparseVectorJsonExtension.fromJson(
         jsonSerialization['sparseVector'],
       ),
       sparseVectorNullable: jsonSerialization['sparseVectorNullable'] == null
           ? null
-          : _i1.SparseVectorJsonExtension.fromJson(
+          : _isc.SparseVectorJsonExtension.fromJson(
               jsonSerialization['sparseVectorNullable'],
             ),
-      sparseVectorIndexedHnsw: _i1.SparseVectorJsonExtension.fromJson(
+      sparseVectorIndexedHnsw: _isc.SparseVectorJsonExtension.fromJson(
         jsonSerialization['sparseVectorIndexedHnsw'],
       ),
-      sparseVectorIndexedHnswWithParams: _i1.SparseVectorJsonExtension.fromJson(
-        jsonSerialization['sparseVectorIndexedHnswWithParams'],
-      ),
+      sparseVectorIndexedHnswWithParams:
+          _isc.SparseVectorJsonExtension.fromJson(
+            jsonSerialization['sparseVectorIndexedHnswWithParams'],
+          ),
     );
   }
 
@@ -57,23 +58,23 @@ abstract class ObjectWithSparseVector
   /// the id will be null.
   int? id;
 
-  _i1.SparseVector sparseVector;
+  _isc.SparseVector sparseVector;
 
-  _i1.SparseVector? sparseVectorNullable;
+  _isc.SparseVector? sparseVectorNullable;
 
-  _i1.SparseVector sparseVectorIndexedHnsw;
+  _isc.SparseVector sparseVectorIndexedHnsw;
 
-  _i1.SparseVector sparseVectorIndexedHnswWithParams;
+  _isc.SparseVector sparseVectorIndexedHnswWithParams;
 
   /// Returns a shallow copy of this [ObjectWithSparseVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithSparseVector copyWith({
     int? id,
-    _i1.SparseVector? sparseVector,
-    _i1.SparseVector? sparseVectorNullable,
-    _i1.SparseVector? sparseVectorIndexedHnsw,
-    _i1.SparseVector? sparseVectorIndexedHnswWithParams,
+    _isc.SparseVector? sparseVector,
+    _isc.SparseVector? sparseVectorNullable,
+    _isc.SparseVector? sparseVectorIndexedHnsw,
+    _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -105,7 +106,7 @@ abstract class ObjectWithSparseVector
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -114,10 +115,10 @@ class _Undefined {}
 class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
   _ObjectWithSparseVectorImpl({
     int? id,
-    required _i1.SparseVector sparseVector,
-    _i1.SparseVector? sparseVectorNullable,
-    required _i1.SparseVector sparseVectorIndexedHnsw,
-    required _i1.SparseVector sparseVectorIndexedHnswWithParams,
+    required _isc.SparseVector sparseVector,
+    _isc.SparseVector? sparseVectorNullable,
+    required _isc.SparseVector sparseVectorIndexedHnsw,
+    required _isc.SparseVector sparseVectorIndexedHnswWithParams,
   }) : super._(
          id: id,
          sparseVector: sparseVector,
@@ -128,19 +129,19 @@ class _ObjectWithSparseVectorImpl extends ObjectWithSparseVector {
 
   /// Returns a shallow copy of this [ObjectWithSparseVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithSparseVector copyWith({
     Object? id = _Undefined,
-    _i1.SparseVector? sparseVector,
+    _isc.SparseVector? sparseVector,
     Object? sparseVectorNullable = _Undefined,
-    _i1.SparseVector? sparseVectorIndexedHnsw,
-    _i1.SparseVector? sparseVectorIndexedHnswWithParams,
+    _isc.SparseVector? sparseVectorIndexedHnsw,
+    _isc.SparseVector? sparseVectorIndexedHnswWithParams,
   }) {
     return ObjectWithSparseVector(
       id: id is int? ? id : this.id,
       sparseVector: sparseVector ?? this.sparseVector.clone(),
-      sparseVectorNullable: sparseVectorNullable is _i1.SparseVector?
+      sparseVectorNullable: sparseVectorNullable is _isc.SparseVector?
           ? sparseVectorNullable
           : this.sparseVectorNullable?.clone(),
       sparseVectorIndexedHnsw:

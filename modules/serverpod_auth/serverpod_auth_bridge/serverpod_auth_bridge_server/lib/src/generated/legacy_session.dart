@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
-    as _i3;
+    as _isg9n5v0;
+import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
+    as _iacs;
 
 abstract class LegacySession
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   LegacySession._({
     this.id,
     required this.authUserId,
@@ -30,8 +30,8 @@ abstract class LegacySession
 
   factory LegacySession({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required Set<String> scopeNames,
     required String hash,
     required String method,
@@ -40,15 +40,15 @@ abstract class LegacySession
   factory LegacySession.fromJson(Map<String, dynamic> jsonSerialization) {
     return LegacySession(
       id: jsonSerialization['id'] as int?,
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _isg9n5v0.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      scopeNames: _i3.Protocol().deserialize<Set<String>>(
+      scopeNames: _isg9n5v0.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       hash: jsonSerialization['hash'] as String,
@@ -63,10 +63,10 @@ abstract class LegacySession
   @override
   int? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The scopes this session provides access to.
   Set<String> scopeNames;
@@ -80,15 +80,15 @@ abstract class LegacySession
   String method;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [LegacySession]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacySession copyWith({
     int? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     Set<String>? scopeNames,
     String? hash,
     String? method,
@@ -111,16 +111,16 @@ abstract class LegacySession
     return {};
   }
 
-  static LegacySessionInclude include({_i2.AuthUserInclude? authUser}) {
+  static LegacySessionInclude include({_iacs.AuthUserInclude? authUser}) {
     return LegacySessionInclude._(authUser: authUser);
   }
 
   static LegacySessionIncludeList includeList({
-    _i1.WhereExpressionBuilder<LegacySessionTable>? where,
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
     LegacySessionInclude? include,
   }) {
     return LegacySessionIncludeList._(
@@ -135,7 +135,7 @@ abstract class LegacySession
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -144,8 +144,8 @@ class _Undefined {}
 class _LegacySessionImpl extends LegacySession {
   _LegacySessionImpl({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required Set<String> scopeNames,
     required String hash,
     required String method,
@@ -160,11 +160,11 @@ class _LegacySessionImpl extends LegacySession {
 
   /// Returns a shallow copy of this [LegacySession]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacySession copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
     String? hash,
@@ -173,7 +173,7 @@ class _LegacySessionImpl extends LegacySession {
     return LegacySession(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
@@ -183,50 +183,50 @@ class _LegacySessionImpl extends LegacySession {
   }
 }
 
-class LegacySessionUpdateTable extends _i1.UpdateTable<LegacySessionTable> {
+class LegacySessionUpdateTable extends _is.UpdateTable<LegacySessionTable> {
   LegacySessionUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hash(String value) => _is.ColumnValue(
     table.hash,
     value,
   );
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String value) => _is.ColumnValue(
     table.method,
     value,
   );
 }
 
-class LegacySessionTable extends _i1.Table<int?> {
+class LegacySessionTable extends _is.Table<int?> {
   LegacySessionTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_bridge_session') {
     updateTable = LegacySessionUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
+    scopeNames = _is.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
-    hash = _i1.ColumnString(
+    hash = _is.ColumnString(
       'hash',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
@@ -234,37 +234,37 @@ class LegacySessionTable extends _i1.Table<int?> {
 
   late final LegacySessionUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The scopes this session provides access to.
-  late final _i1.ColumnSerializable<Set<String>> scopeNames;
+  late final _is.ColumnSerializable<Set<String>> scopeNames;
 
   /// The hashed version of the key (as the legacy `AuthKey`)
-  late final _i1.ColumnString hash;
+  late final _is.ColumnString hash;
 
   /// The method through which this session was created.
   ///
   /// This can be either an email or social login, a personal access token, service account etc.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: LegacySession.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     scopeNames,
@@ -273,7 +273,7 @@ class LegacySessionTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -281,23 +281,23 @@ class LegacySessionTable extends _i1.Table<int?> {
   }
 }
 
-class LegacySessionInclude extends _i1.IncludeObject {
-  LegacySessionInclude._({_i2.AuthUserInclude? authUser}) {
+class LegacySessionInclude extends _is.IncludeObject {
+  LegacySessionInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<int?> get table => LegacySession.t;
+  _is.Table<int?> get table => LegacySession.t;
 }
 
-class LegacySessionIncludeList extends _i1.IncludeList {
+class LegacySessionIncludeList extends _is.IncludeList {
   LegacySessionIncludeList._({
-    _i1.WhereExpressionBuilder<LegacySessionTable>? where,
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -308,10 +308,10 @@ class LegacySessionIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => LegacySession.t;
+  _is.Table<int?> get table => LegacySession.t;
 }
 
 class LegacySessionRepository {
@@ -342,16 +342,16 @@ class LegacySessionRepository {
   /// );
   /// ```
   Future<List<LegacySession>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacySessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
     LegacySessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<LegacySession>(
       where: where?.call(LegacySession.t),
@@ -384,15 +384,15 @@ class LegacySessionRepository {
   /// );
   /// ```
   Future<LegacySession?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacySessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
     int? offset,
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
     LegacySessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<LegacySession>(
       where: where?.call(LegacySession.t),
@@ -408,12 +408,12 @@ class LegacySessionRepository {
 
   /// Finds a single [LegacySession] by its [id] or null if no such row exists.
   Future<LegacySession?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     LegacySessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<LegacySession>(
       id,
@@ -439,9 +439,9 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacySession> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -457,9 +457,9 @@ class LegacySessionRepository {
   ///
   /// The returned [LegacySession] will have its `id` field set.
   Future<LegacySession> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacySession row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<LegacySession>(
       row,
@@ -488,12 +488,12 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacySession> rows, {
-    required _i1.ColumnSelections<LegacySessionTable> conflictColumns,
-    _i1.ColumnSelections<LegacySessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LegacySessionTable> conflictColumns,
+    _is.ColumnSelections<LegacySessionTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<LegacySession>(
@@ -520,12 +520,12 @@ class LegacySessionRepository {
   ///
   /// The returned [LegacySession] will have its `id` field set.
   Future<LegacySession?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacySession row, {
-    required _i1.ColumnSelections<LegacySessionTable> conflictColumns,
-    _i1.ColumnSelections<LegacySessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<LegacySessionTable> conflictColumns,
+    _is.ColumnSelections<LegacySessionTable>? updateColumns,
+    _is.WhereExpressionBuilder<LegacySessionTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<LegacySession>(
       row,
@@ -546,10 +546,10 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacySession> rows, {
-    _i1.ColumnSelections<LegacySessionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacySessionTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<LegacySession>(
@@ -564,10 +564,10 @@ class LegacySessionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<LegacySession> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacySession row, {
-    _i1.ColumnSelections<LegacySessionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<LegacySessionTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<LegacySession>(
       row,
@@ -579,10 +579,10 @@ class LegacySessionRepository {
   /// Updates a single [LegacySession] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<LegacySession?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<LegacySession>(
       id,
@@ -598,14 +598,14 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<LegacySessionUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<LegacySessionTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<LegacySession>(
@@ -632,11 +632,11 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<LegacySession> rows, {
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<LegacySession>(
@@ -650,9 +650,9 @@ class LegacySessionRepository {
 
   /// Deletes a single [LegacySession].
   Future<LegacySession> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacySession row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<LegacySession>(
       row,
@@ -669,11 +669,11 @@ class LegacySessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<LegacySession>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
-    _i1.OrderByBuilder<LegacySessionTable>? orderBy,
-    _i1.OrderByListBuilder<LegacySessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacySessionTable> where,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<LegacySession>(
@@ -688,10 +688,10 @@ class LegacySessionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<LegacySessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<LegacySession>(
       where: where?.call(LegacySession.t),
@@ -702,11 +702,11 @@ class LegacySessionRepository {
 
   /// Acquires row-level locks on [LegacySession] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<LegacySessionTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<LegacySessionTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<LegacySession>(
       where: where(LegacySession.t),
@@ -723,10 +723,10 @@ class LegacySessionAttachRowRepository {
   /// Creates a relation between the given [LegacySession] and [AuthUser]
   /// by setting the [LegacySession]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     LegacySession legacySession,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (legacySession.id == null) {
       throw ArgumentError.notNull('legacySession.id');

@@ -149,7 +149,7 @@ void main() {
 
           expect(
             typeName?.toString(),
-            '_i1.UuidValue',
+            '_is.UuidValue',
             reason: 'Wrong generic type for TableRow.',
           );
         },
@@ -170,7 +170,7 @@ void main() {
 
           expect(
             (genericType as NamedType?)?.toString(),
-            '_i1.UuidValue',
+            '_is.UuidValue',
             reason: 'Wrong generic type for Table getter.',
           );
         },
@@ -184,7 +184,7 @@ void main() {
 
         expect(
           (maybeIdField?.fields.type as NamedType).toString(),
-          '_i1.UuidValue',
+          '_is.UuidValue',
           reason: 'Wrong type for the id field.',
         );
       });
@@ -240,7 +240,7 @@ void main() {
 
           expect(
             typeName?.toString(),
-            '_i1.UuidValue?',
+            '_is.UuidValue?',
             reason: 'Wrong generic type for TableRow.',
           );
         },
@@ -261,7 +261,7 @@ void main() {
 
           expect(
             (genericType as NamedType?)?.toString(),
-            '_i1.UuidValue?',
+            '_is.UuidValue?',
             reason: 'Wrong generic type for Table getter.',
           );
         },
@@ -275,7 +275,7 @@ void main() {
 
         expect(
           (maybeIdField?.fields.type as NamedType).toString(),
-          '_i1.UuidValue?',
+          '_is.UuidValue?',
           reason: 'Wrong type for the id field.',
         );
       });

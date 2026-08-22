@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../inheritance/polymorphism/child.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../inheritance/polymorphism/child.dart' as _ipp4ou13;
 
 /// A class that holds child objects.
 abstract class PolymorphicChildContainer
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   PolymorphicChildContainer._({
     required this.child,
     this.nullableChild,
@@ -27,72 +27,73 @@ abstract class PolymorphicChildContainer
   });
 
   factory PolymorphicChildContainer({
-    required _i2.PolymorphicChild child,
-    _i2.PolymorphicChild? nullableChild,
-    required List<_i2.PolymorphicChild> childrenList,
-    required List<_i2.PolymorphicChild?> nullableChildrenList,
-    required Map<String, _i2.PolymorphicChild> childrenMap,
-    required Map<String, _i2.PolymorphicChild?> nullableChildrenMap,
+    required _ipp4ou13.PolymorphicChild child,
+    _ipp4ou13.PolymorphicChild? nullableChild,
+    required List<_ipp4ou13.PolymorphicChild> childrenList,
+    required List<_ipp4ou13.PolymorphicChild?> nullableChildrenList,
+    required Map<String, _ipp4ou13.PolymorphicChild> childrenMap,
+    required Map<String, _ipp4ou13.PolymorphicChild?> nullableChildrenMap,
   }) = _PolymorphicChildContainerImpl;
 
   factory PolymorphicChildContainer.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return PolymorphicChildContainer(
-      child: _i3.Protocol().deserialize<_i2.PolymorphicChild>(
+      child: _igqrxdcj.Protocol().deserialize<_ipp4ou13.PolymorphicChild>(
         jsonSerialization['child'],
       ),
       nullableChild: jsonSerialization['nullableChild'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.PolymorphicChild>(
+          : _igqrxdcj.Protocol().deserialize<_ipp4ou13.PolymorphicChild>(
               jsonSerialization['nullableChild'],
             ),
-      childrenList: _i3.Protocol().deserialize<List<_i2.PolymorphicChild>>(
-        jsonSerialization['childrenList'],
-      ),
-      nullableChildrenList: _i3.Protocol()
-          .deserialize<List<_i2.PolymorphicChild?>>(
+      childrenList: _igqrxdcj.Protocol()
+          .deserialize<List<_ipp4ou13.PolymorphicChild>>(
+            jsonSerialization['childrenList'],
+          ),
+      nullableChildrenList: _igqrxdcj.Protocol()
+          .deserialize<List<_ipp4ou13.PolymorphicChild?>>(
             jsonSerialization['nullableChildrenList'],
           ),
-      childrenMap: _i3.Protocol()
-          .deserialize<Map<String, _i2.PolymorphicChild>>(
+      childrenMap: _igqrxdcj.Protocol()
+          .deserialize<Map<String, _ipp4ou13.PolymorphicChild>>(
             jsonSerialization['childrenMap'],
           ),
-      nullableChildrenMap: _i3.Protocol()
-          .deserialize<Map<String, _i2.PolymorphicChild?>>(
+      nullableChildrenMap: _igqrxdcj.Protocol()
+          .deserialize<Map<String, _ipp4ou13.PolymorphicChild?>>(
             jsonSerialization['nullableChildrenMap'],
           ),
     );
   }
 
   /// Direct contained child.
-  _i2.PolymorphicChild child;
+  _ipp4ou13.PolymorphicChild child;
 
   /// Nullable direct contained child.
-  _i2.PolymorphicChild? nullableChild;
+  _ipp4ou13.PolymorphicChild? nullableChild;
 
   /// List of children.
-  List<_i2.PolymorphicChild> childrenList;
+  List<_ipp4ou13.PolymorphicChild> childrenList;
 
   /// List of nullable children.
-  List<_i2.PolymorphicChild?> nullableChildrenList;
+  List<_ipp4ou13.PolymorphicChild?> nullableChildrenList;
 
   /// Map of children.
-  Map<String, _i2.PolymorphicChild> childrenMap;
+  Map<String, _ipp4ou13.PolymorphicChild> childrenMap;
 
   /// Map of nullable children.
-  Map<String, _i2.PolymorphicChild?> nullableChildrenMap;
+  Map<String, _ipp4ou13.PolymorphicChild?> nullableChildrenMap;
 
   /// Returns a shallow copy of this [PolymorphicChildContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PolymorphicChildContainer copyWith({
-    _i2.PolymorphicChild? child,
-    _i2.PolymorphicChild? nullableChild,
-    List<_i2.PolymorphicChild>? childrenList,
-    List<_i2.PolymorphicChild?>? nullableChildrenList,
-    Map<String, _i2.PolymorphicChild>? childrenMap,
-    Map<String, _i2.PolymorphicChild?>? nullableChildrenMap,
+    _ipp4ou13.PolymorphicChild? child,
+    _ipp4ou13.PolymorphicChild? nullableChild,
+    List<_ipp4ou13.PolymorphicChild>? childrenList,
+    List<_ipp4ou13.PolymorphicChild?>? nullableChildrenList,
+    Map<String, _ipp4ou13.PolymorphicChild>? childrenMap,
+    Map<String, _ipp4ou13.PolymorphicChild?>? nullableChildrenMap,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -135,7 +136,7 @@ abstract class PolymorphicChildContainer
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -143,12 +144,12 @@ class _Undefined {}
 
 class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
   _PolymorphicChildContainerImpl({
-    required _i2.PolymorphicChild child,
-    _i2.PolymorphicChild? nullableChild,
-    required List<_i2.PolymorphicChild> childrenList,
-    required List<_i2.PolymorphicChild?> nullableChildrenList,
-    required Map<String, _i2.PolymorphicChild> childrenMap,
-    required Map<String, _i2.PolymorphicChild?> nullableChildrenMap,
+    required _ipp4ou13.PolymorphicChild child,
+    _ipp4ou13.PolymorphicChild? nullableChild,
+    required List<_ipp4ou13.PolymorphicChild> childrenList,
+    required List<_ipp4ou13.PolymorphicChild?> nullableChildrenList,
+    required Map<String, _ipp4ou13.PolymorphicChild> childrenMap,
+    required Map<String, _ipp4ou13.PolymorphicChild?> nullableChildrenMap,
   }) : super._(
          child: child,
          nullableChild: nullableChild,
@@ -160,19 +161,19 @@ class _PolymorphicChildContainerImpl extends PolymorphicChildContainer {
 
   /// Returns a shallow copy of this [PolymorphicChildContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PolymorphicChildContainer copyWith({
-    _i2.PolymorphicChild? child,
+    _ipp4ou13.PolymorphicChild? child,
     Object? nullableChild = _Undefined,
-    List<_i2.PolymorphicChild>? childrenList,
-    List<_i2.PolymorphicChild?>? nullableChildrenList,
-    Map<String, _i2.PolymorphicChild>? childrenMap,
-    Map<String, _i2.PolymorphicChild?>? nullableChildrenMap,
+    List<_ipp4ou13.PolymorphicChild>? childrenList,
+    List<_ipp4ou13.PolymorphicChild?>? nullableChildrenList,
+    Map<String, _ipp4ou13.PolymorphicChild>? childrenMap,
+    Map<String, _ipp4ou13.PolymorphicChild?>? nullableChildrenMap,
   }) {
     return PolymorphicChildContainer(
       child: child ?? this.child.copyWith(),
-      nullableChild: nullableChild is _i2.PolymorphicChild?
+      nullableChild: nullableChild is _ipp4ou13.PolymorphicChild?
           ? nullableChild
           : this.nullableChild?.copyWith(),
       childrenList:

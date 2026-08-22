@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Message sent when all authentication for a user is revoked.
 abstract class RevokedAuthenticationUser
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   RevokedAuthenticationUser._();
 
   factory RevokedAuthenticationUser() = _RevokedAuthenticationUserImpl;
@@ -27,7 +27,7 @@ abstract class RevokedAuthenticationUser
 
   /// Returns a shallow copy of this [RevokedAuthenticationUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RevokedAuthenticationUser copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -41,7 +41,7 @@ abstract class RevokedAuthenticationUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -50,7 +50,7 @@ class _RevokedAuthenticationUserImpl extends RevokedAuthenticationUser {
 
   /// Returns a shallow copy of this [RevokedAuthenticationUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RevokedAuthenticationUser copyWith() {
     return RevokedAuthenticationUser();

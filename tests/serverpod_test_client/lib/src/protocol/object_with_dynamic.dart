@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 
 abstract class ObjectWithDynamic
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithDynamic._({
     this.id,
     required this.payload,
@@ -38,22 +38,22 @@ abstract class ObjectWithDynamic
   factory ObjectWithDynamic.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDynamic(
       id: jsonSerialization['id'] as int?,
-      payload: _i2.Protocol().deserializeDynamicFieldValue(
+      payload: _iza9lbb5.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['payload'],
       ),
-      jsonbPayload: _i2.Protocol().deserializeDynamicFieldValue(
+      jsonbPayload: _iza9lbb5.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['jsonbPayload'],
       ),
-      payloadList: _i2.Protocol().deserialize<List<dynamic>>(
+      payloadList: _iza9lbb5.Protocol().deserialize<List<dynamic>>(
         jsonSerialization['payloadList'],
       ),
-      payloadMap: _i2.Protocol().deserialize<Map<String, dynamic>>(
+      payloadMap: _iza9lbb5.Protocol().deserialize<Map<String, dynamic>>(
         jsonSerialization['payloadMap'],
       ),
-      payloadSet: _i2.Protocol().deserialize<Set<dynamic>>(
+      payloadSet: _iza9lbb5.Protocol().deserialize<Set<dynamic>>(
         jsonSerialization['payloadSet'],
       ),
-      payloadMapWithDynamicKeys: _i2.Protocol()
+      payloadMapWithDynamicKeys: _iza9lbb5.Protocol()
           .deserialize<Map<dynamic, dynamic>>(
             jsonSerialization['payloadMapWithDynamicKeys'],
           ),
@@ -79,7 +79,7 @@ abstract class ObjectWithDynamic
 
   /// Returns a shallow copy of this [ObjectWithDynamic]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithDynamic copyWith({
     int? id,
     dynamic payload,
@@ -94,20 +94,20 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().dynamicFieldToJson(payload),
-      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(jsonbPayload),
+      'payload': _iza9lbb5.Protocol().dynamicFieldToJson(payload),
+      'jsonbPayload': _iza9lbb5.Protocol().dynamicFieldToJson(jsonbPayload),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(k),
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        keyToJson: (k) => _iza9lbb5.Protocol().dynamicFieldToJson(k),
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(v),
       ),
     };
   }
@@ -117,38 +117,38 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().dynamicFieldToJson(
+      'payload': _iza9lbb5.Protocol().dynamicFieldToJson(
         payload,
         forProtocol: true,
       ),
-      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(
+      'jsonbPayload': _iza9lbb5.Protocol().dynamicFieldToJson(
         jsonbPayload,
         forProtocol: true,
       ),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(
+        keyToJson: (k) => _iza9lbb5.Protocol().dynamicFieldToJson(
           k,
           forProtocol: true,
         ),
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _iza9lbb5.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
@@ -158,7 +158,7 @@ abstract class ObjectWithDynamic
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -185,7 +185,7 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
 
   /// Returns a shallow copy of this [ObjectWithDynamic]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithDynamic copyWith({
     Object? id = _Undefined,

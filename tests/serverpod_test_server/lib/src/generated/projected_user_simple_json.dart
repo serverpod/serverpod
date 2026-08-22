@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_json_field_simple.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'projected_json_field_simple.dart' as _i37n7uc1;
 import 'projected_user.dart';
 
 abstract class ProjectedUserSimpleJson
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserSimpleJson._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class ProjectedUserSimpleJson
   factory ProjectedUserSimpleJson({
     int? id,
     required String name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) = _ProjectedUserSimpleJsonImpl;
 
   factory ProjectedUserSimpleJson.fromJson(
@@ -36,7 +36,7 @@ abstract class ProjectedUserSimpleJson
       name: jsonSerialization['name'] as String,
       jsonField: jsonSerialization['jsonField'] == null
           ? null
-          : _i2.ProjectedJsonFieldSimple.fromJson(
+          : _i37n7uc1.ProjectedJsonFieldSimple.fromJson(
               jsonSerialization['jsonField'],
             ),
     );
@@ -51,15 +51,15 @@ abstract class ProjectedUserSimpleJson
 
   String name;
 
-  _i2.ProjectedJsonFieldSimple? jsonField;
+  _i37n7uc1.ProjectedJsonFieldSimple? jsonField;
 
   /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserSimpleJson copyWith({
     int? id,
     String? name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -80,8 +80,8 @@ abstract class ProjectedUserSimpleJson
       if (jsonField != null)
         'jsonField':
             // ignore: unnecessary_type_check
-            jsonField is _i1.ProtocolSerialization
-            ? (jsonField as _i1.ProtocolSerialization).toJsonForProtocol()
+            jsonField is _is.ProtocolSerialization
+            ? (jsonField as _is.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               jsonField?.toJson(),
@@ -99,11 +99,11 @@ abstract class ProjectedUserSimpleJson
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -117,7 +117,7 @@ abstract class ProjectedUserSimpleJson
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
   _ProjectedUserSimpleJsonImpl({
     int? id,
     required String name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) : super._(
          id: id,
          name: name,
@@ -136,7 +136,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
 
   /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserSimpleJson copyWith({
     Object? id = _Undefined,
@@ -146,7 +146,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
     return ProjectedUserSimpleJson(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      jsonField: jsonField is _i2.ProjectedJsonFieldSimple?
+      jsonField: jsonField is _i37n7uc1.ProjectedJsonFieldSimple?
           ? jsonField
           : this.jsonField?.copyWith(),
     );
@@ -179,15 +179,15 @@ class ProjectedUserSimpleJsonRepository {
   /// );
   /// ```
   Future<List<ProjectedUserSimpleJson>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -225,14 +225,14 @@ class ProjectedUserSimpleJsonRepository {
   /// );
   /// ```
   Future<ProjectedUserSimpleJson?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -250,11 +250,11 @@ class ProjectedUserSimpleJsonRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserSimpleJson?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

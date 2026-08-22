@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
-import 'package:meta/meta.dart' as _i3;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
 abstract class ObjectWithDynamic
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithDynamic._({
     this.id,
     required this.payload,
@@ -39,22 +39,22 @@ abstract class ObjectWithDynamic
   factory ObjectWithDynamic.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDynamic(
       id: jsonSerialization['id'] as int?,
-      payload: _i2.Protocol().deserializeDynamicFieldValue(
+      payload: _igqrxdcj.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['payload'],
       ),
-      jsonbPayload: _i2.Protocol().deserializeDynamicFieldValue(
+      jsonbPayload: _igqrxdcj.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['jsonbPayload'],
       ),
-      payloadList: _i2.Protocol().deserialize<List<dynamic>>(
+      payloadList: _igqrxdcj.Protocol().deserialize<List<dynamic>>(
         jsonSerialization['payloadList'],
       ),
-      payloadMap: _i2.Protocol().deserialize<Map<String, dynamic>>(
+      payloadMap: _igqrxdcj.Protocol().deserialize<Map<String, dynamic>>(
         jsonSerialization['payloadMap'],
       ),
-      payloadSet: _i2.Protocol().deserialize<Set<dynamic>>(
+      payloadSet: _igqrxdcj.Protocol().deserialize<Set<dynamic>>(
         jsonSerialization['payloadSet'],
       ),
-      payloadMapWithDynamicKeys: _i2.Protocol()
+      payloadMapWithDynamicKeys: _igqrxdcj.Protocol()
           .deserialize<Map<dynamic, dynamic>>(
             jsonSerialization['payloadMapWithDynamicKeys'],
           ),
@@ -81,11 +81,11 @@ abstract class ObjectWithDynamic
   Map<dynamic, dynamic> payloadMapWithDynamicKeys;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithDynamic]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithDynamic copyWith({
     int? id,
     dynamic payload,
@@ -100,20 +100,20 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().dynamicFieldToJson(payload),
-      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(jsonbPayload),
+      'payload': _igqrxdcj.Protocol().dynamicFieldToJson(payload),
+      'jsonbPayload': _igqrxdcj.Protocol().dynamicFieldToJson(jsonbPayload),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(v),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(v),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(k),
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(v),
+        keyToJson: (k) => _igqrxdcj.Protocol().dynamicFieldToJson(k),
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(v),
       ),
     };
   }
@@ -123,38 +123,38 @@ abstract class ObjectWithDynamic
     return {
       '__className__': 'ObjectWithDynamic',
       if (id != null) 'id': id,
-      'payload': _i2.Protocol().dynamicFieldToJson(
+      'payload': _igqrxdcj.Protocol().dynamicFieldToJson(
         payload,
         forProtocol: true,
       ),
-      'jsonbPayload': _i2.Protocol().dynamicFieldToJson(
+      'jsonbPayload': _igqrxdcj.Protocol().dynamicFieldToJson(
         jsonbPayload,
         forProtocol: true,
       ),
       'payloadList': payloadList.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadMap': payloadMap.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadSet': payloadSet.toJson(
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
       ),
       'payloadMapWithDynamicKeys': payloadMapWithDynamicKeys.toJson(
-        keyToJson: (k) => _i2.Protocol().dynamicFieldToJson(
+        keyToJson: (k) => _igqrxdcj.Protocol().dynamicFieldToJson(
           k,
           forProtocol: true,
         ),
-        valueToJson: (v) => _i2.Protocol().dynamicFieldToJson(
+        valueToJson: (v) => _igqrxdcj.Protocol().dynamicFieldToJson(
           v,
           forProtocol: true,
         ),
@@ -167,11 +167,11 @@ abstract class ObjectWithDynamic
   }
 
   static ObjectWithDynamicIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     ObjectWithDynamicInclude? include,
   }) {
     return ObjectWithDynamicIncludeList.internal_(
@@ -186,7 +186,7 @@ abstract class ObjectWithDynamic
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -213,7 +213,7 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
 
   /// Returns a shallow copy of this [ObjectWithDynamic]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithDynamic copyWith({
     Object? id = _Undefined,
@@ -259,72 +259,72 @@ class _ObjectWithDynamicImpl extends ObjectWithDynamic {
 }
 
 class ObjectWithDynamicUpdateTable
-    extends _i1.UpdateTable<ObjectWithDynamicTable> {
+    extends _is.UpdateTable<ObjectWithDynamicTable> {
   ObjectWithDynamicUpdateTable(super.table);
 
-  _i1.ColumnValue<dynamic, dynamic> payload(dynamic value) => _i1.ColumnValue(
+  _is.ColumnValue<dynamic, dynamic> payload(dynamic value) => _is.ColumnValue(
     table.payload,
     value,
   );
 
-  _i1.ColumnValue<dynamic, dynamic> jsonbPayload(dynamic value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<dynamic, dynamic> jsonbPayload(dynamic value) =>
+      _is.ColumnValue(
         table.jsonbPayload,
         value,
       );
 
-  _i1.ColumnValue<List<dynamic>, List<dynamic>> payloadList(
+  _is.ColumnValue<List<dynamic>, List<dynamic>> payloadList(
     List<dynamic> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.payloadList,
     value,
   );
 
-  _i1.ColumnValue<Map<String, dynamic>, Map<String, dynamic>> payloadMap(
+  _is.ColumnValue<Map<String, dynamic>, Map<String, dynamic>> payloadMap(
     Map<String, dynamic> value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.payloadMap,
     value,
   );
 
-  _i1.ColumnValue<Set<dynamic>, Set<dynamic>> payloadSet(Set<dynamic> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Set<dynamic>, Set<dynamic>> payloadSet(Set<dynamic> value) =>
+      _is.ColumnValue(
         table.payloadSet,
         value,
       );
 
-  _i1.ColumnValue<Map<dynamic, dynamic>, Map<dynamic, dynamic>>
-  payloadMapWithDynamicKeys(Map<dynamic, dynamic> value) => _i1.ColumnValue(
+  _is.ColumnValue<Map<dynamic, dynamic>, Map<dynamic, dynamic>>
+  payloadMapWithDynamicKeys(Map<dynamic, dynamic> value) => _is.ColumnValue(
     table.payloadMapWithDynamicKeys,
     value,
   );
 }
 
-class ObjectWithDynamicTable extends _i1.Table<int?> {
+class ObjectWithDynamicTable extends _is.Table<int?> {
   ObjectWithDynamicTable({super.tableRelation})
     : super(tableName: 'object_with_dynamic') {
     updateTable = ObjectWithDynamicUpdateTable(this);
-    payload = _i1.ColumnSerializable<dynamic>(
+    payload = _is.ColumnSerializable<dynamic>(
       'payload',
       this,
     );
-    jsonbPayload = _i1.ColumnStructured<dynamic>(
+    jsonbPayload = _is.ColumnStructured<dynamic>(
       'jsonbPayload',
       this,
     );
-    payloadList = _i1.ColumnSerializable<List<dynamic>>(
+    payloadList = _is.ColumnSerializable<List<dynamic>>(
       'payloadList',
       this,
     );
-    payloadMap = _i1.ColumnSerializable<Map<String, dynamic>>(
+    payloadMap = _is.ColumnSerializable<Map<String, dynamic>>(
       'payloadMap',
       this,
     );
-    payloadSet = _i1.ColumnSerializable<Set<dynamic>>(
+    payloadSet = _is.ColumnSerializable<Set<dynamic>>(
       'payloadSet',
       this,
     );
-    payloadMapWithDynamicKeys = _i1.ColumnStructured<Map<dynamic, dynamic>>(
+    payloadMapWithDynamicKeys = _is.ColumnStructured<Map<dynamic, dynamic>>(
       'payloadMapWithDynamicKeys',
       this,
     );
@@ -332,21 +332,21 @@ class ObjectWithDynamicTable extends _i1.Table<int?> {
 
   late final ObjectWithDynamicUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<dynamic> payload;
+  late final _is.ColumnSerializable<dynamic> payload;
 
-  late final _i1.ColumnStructured<dynamic> jsonbPayload;
+  late final _is.ColumnStructured<dynamic> jsonbPayload;
 
-  late final _i1.ColumnSerializable<List<dynamic>> payloadList;
+  late final _is.ColumnSerializable<List<dynamic>> payloadList;
 
-  late final _i1.ColumnSerializable<Map<String, dynamic>> payloadMap;
+  late final _is.ColumnSerializable<Map<String, dynamic>> payloadMap;
 
-  late final _i1.ColumnSerializable<Set<dynamic>> payloadSet;
+  late final _is.ColumnSerializable<Set<dynamic>> payloadSet;
 
-  late final _i1.ColumnStructured<Map<dynamic, dynamic>>
+  late final _is.ColumnStructured<Map<dynamic, dynamic>>
   payloadMapWithDynamicKeys;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     payload,
     jsonbPayload,
@@ -357,42 +357,42 @@ class ObjectWithDynamicTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithDynamicInclude extends _i1.IncludeObject {
-  @_i3.internal
+class ObjectWithDynamicInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ObjectWithDynamicInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithDynamic.t;
+  _is.Table<int?> get table => ObjectWithDynamic.t;
 }
 
-class ObjectWithDynamicIncludeList extends _i1.IncludeList {
-  @_i3.internal
+class ObjectWithDynamicIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithDynamicIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithDynamic.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithDynamic.t;
+  _is.Table<int?> get table => ObjectWithDynamic.t;
 }
 
 class ObjectWithDynamicRepository {
@@ -421,15 +421,15 @@ class ObjectWithDynamicRepository {
   /// );
   /// ```
   Future<List<ObjectWithDynamic>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithDynamic>(
       where: where?.call(ObjectWithDynamic.t),
@@ -461,14 +461,14 @@ class ObjectWithDynamicRepository {
   /// );
   /// ```
   Future<ObjectWithDynamic?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithDynamic>(
       where: where?.call(ObjectWithDynamic.t),
@@ -483,11 +483,11 @@ class ObjectWithDynamicRepository {
 
   /// Finds a single [ObjectWithDynamic] by its [id] or null if no such row exists.
   Future<ObjectWithDynamic?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithDynamic>(
       id,
@@ -512,9 +512,9 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -530,9 +530,9 @@ class ObjectWithDynamicRepository {
   ///
   /// The returned [ObjectWithDynamic] will have its `id` field set.
   Future<ObjectWithDynamic> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithDynamic row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithDynamic>(
       row,
@@ -561,12 +561,12 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
-    required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithDynamic>(
@@ -593,12 +593,12 @@ class ObjectWithDynamicRepository {
   ///
   /// The returned [ObjectWithDynamic] will have its `id` field set.
   Future<ObjectWithDynamic?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithDynamic row, {
-    required _i1.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithDynamicTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithDynamicTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithDynamic>(
       row,
@@ -619,10 +619,10 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
-    _i1.ColumnSelections<ObjectWithDynamicTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithDynamicTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithDynamic>(
@@ -637,10 +637,10 @@ class ObjectWithDynamicRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithDynamic> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithDynamic row, {
-    _i1.ColumnSelections<ObjectWithDynamicTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithDynamicTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithDynamic>(
       row,
@@ -652,11 +652,11 @@ class ObjectWithDynamicRepository {
   /// Updates a single [ObjectWithDynamic] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithDynamic?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithDynamicUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithDynamicUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithDynamic>(
       id,
@@ -672,15 +672,15 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithDynamicUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithDynamicUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithDynamicTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithDynamicTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithDynamic>(
@@ -707,11 +707,11 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithDynamic> rows, {
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithDynamic>(
@@ -725,9 +725,9 @@ class ObjectWithDynamicRepository {
 
   /// Deletes a single [ObjectWithDynamic].
   Future<ObjectWithDynamic> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithDynamic row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithDynamic>(
       row,
@@ -744,11 +744,11 @@ class ObjectWithDynamicRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithDynamic>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithDynamicTable> where,
-    _i1.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithDynamicTable> where,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithDynamic>(
@@ -763,10 +763,10 @@ class ObjectWithDynamicRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithDynamic>(
       where: where?.call(ObjectWithDynamic.t),
@@ -777,11 +777,11 @@ class ObjectWithDynamicRepository {
 
   /// Acquires row-level locks on [ObjectWithDynamic] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithDynamicTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithDynamicTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithDynamic>(
       where: where(ObjectWithDynamic.t),

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
 
 abstract class Customer
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Customer._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class Customer
   factory Customer({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   }) = _CustomerImpl;
 
   factory Customer.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +34,7 @@ abstract class Customer
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Order>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ig920ya2.Order>>(
               jsonSerialization['orders'],
             ),
     );
@@ -47,15 +47,15 @@ abstract class Customer
 
   String name;
 
-  List<_i2.Order>? orders;
+  List<_ig920ya2.Order>? orders;
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Customer copyWith({
     int? id,
     String? name,
-    List<_i2.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -81,7 +81,7 @@ abstract class Customer
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -91,7 +91,7 @@ class _CustomerImpl extends Customer {
   _CustomerImpl({
     int? id,
     required String name,
-    List<_i2.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   }) : super._(
          id: id,
          name: name,
@@ -100,7 +100,7 @@ class _CustomerImpl extends Customer {
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Customer copyWith({
     Object? id = _Undefined,
@@ -110,7 +110,7 @@ class _CustomerImpl extends Customer {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.Order>?
+      orders: orders is List<_ig920ya2.Order>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
     );

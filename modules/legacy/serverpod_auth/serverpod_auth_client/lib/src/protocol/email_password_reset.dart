@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Information about an email password reset.
 abstract class EmailPasswordReset
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EmailPasswordReset._({
     this.userName,
     required this.email,
@@ -40,7 +40,7 @@ abstract class EmailPasswordReset
 
   /// Returns a shallow copy of this [EmailPasswordReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EmailPasswordReset copyWith({
     String? userName,
     String? email,
@@ -65,7 +65,7 @@ abstract class EmailPasswordReset
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -82,7 +82,7 @@ class _EmailPasswordResetImpl extends EmailPasswordReset {
 
   /// Returns a shallow copy of this [EmailPasswordReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EmailPasswordReset copyWith({
     Object? userName = _Undefined,

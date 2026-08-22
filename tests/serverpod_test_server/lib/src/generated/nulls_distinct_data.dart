@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class NullsDistinctData
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   NullsDistinctData._({
     this.id,
     required this.tenantId,
@@ -59,11 +59,11 @@ abstract class NullsDistinctData
   String? deletedAt;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [NullsDistinctData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   NullsDistinctData copyWith({
     int? id,
     int? tenantId,
@@ -100,11 +100,11 @@ abstract class NullsDistinctData
   }
 
   static NullsDistinctDataIncludeList includeList({
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
     NullsDistinctDataInclude? include,
   }) {
     return NullsDistinctDataIncludeList.internal_(
@@ -119,7 +119,7 @@ abstract class NullsDistinctData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -142,7 +142,7 @@ class _NullsDistinctDataImpl extends NullsDistinctData {
 
   /// Returns a shallow copy of this [NullsDistinctData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   NullsDistinctData copyWith({
     Object? id = _Undefined,
@@ -162,47 +162,47 @@ class _NullsDistinctDataImpl extends NullsDistinctData {
 }
 
 class NullsDistinctDataUpdateTable
-    extends _i1.UpdateTable<NullsDistinctDataTable> {
+    extends _is.UpdateTable<NullsDistinctDataTable> {
   NullsDistinctDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> tenantId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> tenantId(int value) => _is.ColumnValue(
     table.tenantId,
     value,
   );
 
-  _i1.ColumnValue<String, String> category(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> category(String value) => _is.ColumnValue(
     table.category,
     value,
   );
 
-  _i1.ColumnValue<String, String> archivedAt(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> archivedAt(String? value) => _is.ColumnValue(
     table.archivedAt,
     value,
   );
 
-  _i1.ColumnValue<String, String> deletedAt(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> deletedAt(String? value) => _is.ColumnValue(
     table.deletedAt,
     value,
   );
 }
 
-class NullsDistinctDataTable extends _i1.Table<int?> {
+class NullsDistinctDataTable extends _is.Table<int?> {
   NullsDistinctDataTable({super.tableRelation})
     : super(tableName: 'nulls_distinct_data') {
     updateTable = NullsDistinctDataUpdateTable(this);
-    tenantId = _i1.ColumnInt(
+    tenantId = _is.ColumnInt(
       'tenantId',
       this,
     );
-    category = _i1.ColumnString(
+    category = _is.ColumnString(
       'category',
       this,
     );
-    archivedAt = _i1.ColumnString(
+    archivedAt = _is.ColumnString(
       'archivedAt',
       this,
     );
-    deletedAt = _i1.ColumnString(
+    deletedAt = _is.ColumnString(
       'deletedAt',
       this,
     );
@@ -210,18 +210,18 @@ class NullsDistinctDataTable extends _i1.Table<int?> {
 
   late final NullsDistinctDataUpdateTable updateTable;
 
-  late final _i1.ColumnInt tenantId;
+  late final _is.ColumnInt tenantId;
 
-  late final _i1.ColumnString category;
+  late final _is.ColumnString category;
 
   /// Indexed with nulls distinct, so rows with a null here never collide.
-  late final _i1.ColumnString archivedAt;
+  late final _is.ColumnString archivedAt;
 
   /// Indexed with nulls not distinct, so rows with a null here do collide.
-  late final _i1.ColumnString deletedAt;
+  late final _is.ColumnString deletedAt;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     tenantId,
     category,
@@ -230,42 +230,42 @@ class NullsDistinctDataTable extends _i1.Table<int?> {
   ];
 }
 
-class NullsDistinctDataInclude extends _i1.IncludeObject {
-  @_i2.internal
+class NullsDistinctDataInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   NullsDistinctDataInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => NullsDistinctData.t;
+  _is.Table<int?> get table => NullsDistinctData.t;
 }
 
-class NullsDistinctDataIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class NullsDistinctDataIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   NullsDistinctDataIncludeList.internal_({
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(NullsDistinctData.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => NullsDistinctData.t;
+  _is.Table<int?> get table => NullsDistinctData.t;
 }
 
 class NullsDistinctDataRepository {
@@ -294,15 +294,15 @@ class NullsDistinctDataRepository {
   /// );
   /// ```
   Future<List<NullsDistinctData>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<NullsDistinctData>(
       where: where?.call(NullsDistinctData.t),
@@ -334,14 +334,14 @@ class NullsDistinctDataRepository {
   /// );
   /// ```
   Future<NullsDistinctData?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<NullsDistinctData>(
       where: where?.call(NullsDistinctData.t),
@@ -356,11 +356,11 @@ class NullsDistinctDataRepository {
 
   /// Finds a single [NullsDistinctData] by its [id] or null if no such row exists.
   Future<NullsDistinctData?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<NullsDistinctData>(
       id,
@@ -385,9 +385,9 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<NullsDistinctData> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -403,9 +403,9 @@ class NullsDistinctDataRepository {
   ///
   /// The returned [NullsDistinctData] will have its `id` field set.
   Future<NullsDistinctData> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     NullsDistinctData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<NullsDistinctData>(
       row,
@@ -434,12 +434,12 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<NullsDistinctData> rows, {
-    required _i1.ColumnSelections<NullsDistinctDataTable> conflictColumns,
-    _i1.ColumnSelections<NullsDistinctDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<NullsDistinctDataTable> conflictColumns,
+    _is.ColumnSelections<NullsDistinctDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<NullsDistinctData>(
@@ -466,12 +466,12 @@ class NullsDistinctDataRepository {
   ///
   /// The returned [NullsDistinctData] will have its `id` field set.
   Future<NullsDistinctData?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     NullsDistinctData row, {
-    required _i1.ColumnSelections<NullsDistinctDataTable> conflictColumns,
-    _i1.ColumnSelections<NullsDistinctDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<NullsDistinctDataTable> conflictColumns,
+    _is.ColumnSelections<NullsDistinctDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<NullsDistinctData>(
       row,
@@ -492,10 +492,10 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<NullsDistinctData> rows, {
-    _i1.ColumnSelections<NullsDistinctDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<NullsDistinctDataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<NullsDistinctData>(
@@ -510,10 +510,10 @@ class NullsDistinctDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<NullsDistinctData> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     NullsDistinctData row, {
-    _i1.ColumnSelections<NullsDistinctDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<NullsDistinctDataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<NullsDistinctData>(
       row,
@@ -525,11 +525,11 @@ class NullsDistinctDataRepository {
   /// Updates a single [NullsDistinctData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<NullsDistinctData?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<NullsDistinctDataUpdateTable>
+    required _is.ColumnValueListBuilder<NullsDistinctDataUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<NullsDistinctData>(
       id,
@@ -545,15 +545,15 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<NullsDistinctDataUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<NullsDistinctDataUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<NullsDistinctDataTable> where,
+    required _is.WhereExpressionBuilder<NullsDistinctDataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<NullsDistinctData>(
@@ -580,11 +580,11 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<NullsDistinctData> rows, {
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<NullsDistinctData>(
@@ -598,9 +598,9 @@ class NullsDistinctDataRepository {
 
   /// Deletes a single [NullsDistinctData].
   Future<NullsDistinctData> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     NullsDistinctData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<NullsDistinctData>(
       row,
@@ -617,11 +617,11 @@ class NullsDistinctDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<NullsDistinctData>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<NullsDistinctDataTable> where,
-    _i1.OrderByBuilder<NullsDistinctDataTable>? orderBy,
-    _i1.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<NullsDistinctDataTable> where,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<NullsDistinctData>(
@@ -636,10 +636,10 @@ class NullsDistinctDataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<NullsDistinctData>(
       where: where?.call(NullsDistinctData.t),
@@ -650,11 +650,11 @@ class NullsDistinctDataRepository {
 
   /// Acquires row-level locks on [NullsDistinctData] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<NullsDistinctDataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<NullsDistinctDataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<NullsDistinctData>(
       where: where(NullsDistinctData.t),

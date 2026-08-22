@@ -11,8 +11,8 @@
 
 part of 'future_call_scheduling.dart';
 
-abstract class CronFutureCallScheduling extends _i1.FutureCallScheduling
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class CronFutureCallScheduling extends _il2as5qe.FutureCallScheduling
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CronFutureCallScheduling._({required this.cron});
 
   factory CronFutureCallScheduling({required String cron}) =
@@ -30,7 +30,7 @@ abstract class CronFutureCallScheduling extends _i1.FutureCallScheduling
   /// Returns a shallow copy of this [CronFutureCallScheduling]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   CronFutureCallScheduling copyWith({String? cron});
   @override
   Map<String, dynamic> toJson() {
@@ -50,7 +50,7 @@ abstract class CronFutureCallScheduling extends _i1.FutureCallScheduling
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -59,7 +59,7 @@ class _CronFutureCallSchedulingImpl extends CronFutureCallScheduling {
 
   /// Returns a shallow copy of this [CronFutureCallScheduling]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   CronFutureCallScheduling copyWith({String? cron}) {
     return CronFutureCallScheduling(cron: cron ?? this.cron);

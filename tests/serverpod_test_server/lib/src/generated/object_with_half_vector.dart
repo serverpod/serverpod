@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithHalfVector
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithHalfVector._({
     this.id,
     required this.halfVector,
@@ -27,12 +27,12 @@ abstract class ObjectWithHalfVector
 
   factory ObjectWithHalfVector({
     int? id,
-    required _i1.HalfVector halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    required _i1.HalfVector halfVectorIndexedHnsw,
-    required _i1.HalfVector halfVectorIndexedHnswWithParams,
-    required _i1.HalfVector halfVectorIndexedIvfflat,
-    required _i1.HalfVector halfVectorIndexedIvfflatWithParams,
+    required _is.HalfVector halfVector,
+    _is.HalfVector? halfVectorNullable,
+    required _is.HalfVector halfVectorIndexedHnsw,
+    required _is.HalfVector halfVectorIndexedHnswWithParams,
+    required _is.HalfVector halfVectorIndexedIvfflat,
+    required _is.HalfVector halfVectorIndexedIvfflatWithParams,
   }) = _ObjectWithHalfVectorImpl;
 
   factory ObjectWithHalfVector.fromJson(
@@ -40,24 +40,24 @@ abstract class ObjectWithHalfVector
   ) {
     return ObjectWithHalfVector(
       id: jsonSerialization['id'] as int?,
-      halfVector: _i1.HalfVectorJsonExtension.fromJson(
+      halfVector: _is.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVector'],
       ),
       halfVectorNullable: jsonSerialization['halfVectorNullable'] == null
           ? null
-          : _i1.HalfVectorJsonExtension.fromJson(
+          : _is.HalfVectorJsonExtension.fromJson(
               jsonSerialization['halfVectorNullable'],
             ),
-      halfVectorIndexedHnsw: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedHnsw: _is.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedHnsw'],
       ),
-      halfVectorIndexedHnswWithParams: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedHnswWithParams: _is.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedHnswWithParams'],
       ),
-      halfVectorIndexedIvfflat: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedIvfflat: _is.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedIvfflat'],
       ),
-      halfVectorIndexedIvfflatWithParams: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedIvfflatWithParams: _is.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedIvfflatWithParams'],
       ),
     );
@@ -70,32 +70,32 @@ abstract class ObjectWithHalfVector
   @override
   int? id;
 
-  _i1.HalfVector halfVector;
+  _is.HalfVector halfVector;
 
-  _i1.HalfVector? halfVectorNullable;
+  _is.HalfVector? halfVectorNullable;
 
-  _i1.HalfVector halfVectorIndexedHnsw;
+  _is.HalfVector halfVectorIndexedHnsw;
 
-  _i1.HalfVector halfVectorIndexedHnswWithParams;
+  _is.HalfVector halfVectorIndexedHnswWithParams;
 
-  _i1.HalfVector halfVectorIndexedIvfflat;
+  _is.HalfVector halfVectorIndexedIvfflat;
 
-  _i1.HalfVector halfVectorIndexedIvfflatWithParams;
+  _is.HalfVector halfVectorIndexedIvfflatWithParams;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithHalfVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithHalfVector copyWith({
     int? id,
-    _i1.HalfVector? halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    _i1.HalfVector? halfVectorIndexedHnsw,
-    _i1.HalfVector? halfVectorIndexedHnswWithParams,
-    _i1.HalfVector? halfVectorIndexedIvfflat,
-    _i1.HalfVector? halfVectorIndexedIvfflatWithParams,
+    _is.HalfVector? halfVector,
+    _is.HalfVector? halfVectorNullable,
+    _is.HalfVector? halfVectorIndexedHnsw,
+    _is.HalfVector? halfVectorIndexedHnswWithParams,
+    _is.HalfVector? halfVectorIndexedIvfflat,
+    _is.HalfVector? halfVectorIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -136,11 +136,11 @@ abstract class ObjectWithHalfVector
   }
 
   static ObjectWithHalfVectorIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     ObjectWithHalfVectorInclude? include,
   }) {
     return ObjectWithHalfVectorIncludeList.internal_(
@@ -155,7 +155,7 @@ abstract class ObjectWithHalfVector
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -164,12 +164,12 @@ class _Undefined {}
 class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   _ObjectWithHalfVectorImpl({
     int? id,
-    required _i1.HalfVector halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    required _i1.HalfVector halfVectorIndexedHnsw,
-    required _i1.HalfVector halfVectorIndexedHnswWithParams,
-    required _i1.HalfVector halfVectorIndexedIvfflat,
-    required _i1.HalfVector halfVectorIndexedIvfflatWithParams,
+    required _is.HalfVector halfVector,
+    _is.HalfVector? halfVectorNullable,
+    required _is.HalfVector halfVectorIndexedHnsw,
+    required _is.HalfVector halfVectorIndexedHnswWithParams,
+    required _is.HalfVector halfVectorIndexedIvfflat,
+    required _is.HalfVector halfVectorIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          halfVector: halfVector,
@@ -182,21 +182,21 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
 
   /// Returns a shallow copy of this [ObjectWithHalfVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithHalfVector copyWith({
     Object? id = _Undefined,
-    _i1.HalfVector? halfVector,
+    _is.HalfVector? halfVector,
     Object? halfVectorNullable = _Undefined,
-    _i1.HalfVector? halfVectorIndexedHnsw,
-    _i1.HalfVector? halfVectorIndexedHnswWithParams,
-    _i1.HalfVector? halfVectorIndexedIvfflat,
-    _i1.HalfVector? halfVectorIndexedIvfflatWithParams,
+    _is.HalfVector? halfVectorIndexedHnsw,
+    _is.HalfVector? halfVectorIndexedHnswWithParams,
+    _is.HalfVector? halfVectorIndexedIvfflat,
+    _is.HalfVector? halfVectorIndexedIvfflatWithParams,
   }) {
     return ObjectWithHalfVector(
       id: id is int? ? id : this.id,
       halfVector: halfVector ?? this.halfVector.clone(),
-      halfVectorNullable: halfVectorNullable is _i1.HalfVector?
+      halfVectorNullable: halfVectorNullable is _is.HalfVector?
           ? halfVectorNullable
           : this.halfVectorNullable?.clone(),
       halfVectorIndexedHnsw:
@@ -214,80 +214,80 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
 }
 
 class ObjectWithHalfVectorUpdateTable
-    extends _i1.UpdateTable<ObjectWithHalfVectorTable> {
+    extends _is.UpdateTable<ObjectWithHalfVectorTable> {
   ObjectWithHalfVectorUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVector(
-    _i1.HalfVector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector> halfVector(
+    _is.HalfVector value,
+  ) => _is.ColumnValue(
     table.halfVector,
     value,
   );
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorNullable(
-    _i1.HalfVector? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector> halfVectorNullable(
+    _is.HalfVector? value,
+  ) => _is.ColumnValue(
     table.halfVectorNullable,
     value,
   );
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorIndexedHnsw(
-    _i1.HalfVector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector> halfVectorIndexedHnsw(
+    _is.HalfVector value,
+  ) => _is.ColumnValue(
     table.halfVectorIndexedHnsw,
     value,
   );
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector>
-  halfVectorIndexedHnswWithParams(_i1.HalfVector value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector>
+  halfVectorIndexedHnswWithParams(_is.HalfVector value) => _is.ColumnValue(
     table.halfVectorIndexedHnswWithParams,
     value,
   );
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector> halfVectorIndexedIvfflat(
-    _i1.HalfVector value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector> halfVectorIndexedIvfflat(
+    _is.HalfVector value,
+  ) => _is.ColumnValue(
     table.halfVectorIndexedIvfflat,
     value,
   );
 
-  _i1.ColumnValue<_i1.HalfVector, _i1.HalfVector>
-  halfVectorIndexedIvfflatWithParams(_i1.HalfVector value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.HalfVector, _is.HalfVector>
+  halfVectorIndexedIvfflatWithParams(_is.HalfVector value) => _is.ColumnValue(
     table.halfVectorIndexedIvfflatWithParams,
     value,
   );
 }
 
-class ObjectWithHalfVectorTable extends _i1.Table<int?> {
+class ObjectWithHalfVectorTable extends _is.Table<int?> {
   ObjectWithHalfVectorTable({super.tableRelation})
     : super(tableName: 'object_with_half_vector') {
     updateTable = ObjectWithHalfVectorUpdateTable(this);
-    halfVector = _i1.ColumnHalfVector(
+    halfVector = _is.ColumnHalfVector(
       'halfVector',
       this,
       dimension: 512,
     );
-    halfVectorNullable = _i1.ColumnHalfVector(
+    halfVectorNullable = _is.ColumnHalfVector(
       'halfVectorNullable',
       this,
       dimension: 512,
     );
-    halfVectorIndexedHnsw = _i1.ColumnHalfVector(
+    halfVectorIndexedHnsw = _is.ColumnHalfVector(
       'halfVectorIndexedHnsw',
       this,
       dimension: 512,
     );
-    halfVectorIndexedHnswWithParams = _i1.ColumnHalfVector(
+    halfVectorIndexedHnswWithParams = _is.ColumnHalfVector(
       'halfVectorIndexedHnswWithParams',
       this,
       dimension: 512,
     );
-    halfVectorIndexedIvfflat = _i1.ColumnHalfVector(
+    halfVectorIndexedIvfflat = _is.ColumnHalfVector(
       'halfVectorIndexedIvfflat',
       this,
       dimension: 512,
     );
-    halfVectorIndexedIvfflatWithParams = _i1.ColumnHalfVector(
+    halfVectorIndexedIvfflatWithParams = _is.ColumnHalfVector(
       'halfVectorIndexedIvfflatWithParams',
       this,
       dimension: 512,
@@ -296,20 +296,20 @@ class ObjectWithHalfVectorTable extends _i1.Table<int?> {
 
   late final ObjectWithHalfVectorUpdateTable updateTable;
 
-  late final _i1.ColumnHalfVector halfVector;
+  late final _is.ColumnHalfVector halfVector;
 
-  late final _i1.ColumnHalfVector halfVectorNullable;
+  late final _is.ColumnHalfVector halfVectorNullable;
 
-  late final _i1.ColumnHalfVector halfVectorIndexedHnsw;
+  late final _is.ColumnHalfVector halfVectorIndexedHnsw;
 
-  late final _i1.ColumnHalfVector halfVectorIndexedHnswWithParams;
+  late final _is.ColumnHalfVector halfVectorIndexedHnswWithParams;
 
-  late final _i1.ColumnHalfVector halfVectorIndexedIvfflat;
+  late final _is.ColumnHalfVector halfVectorIndexedIvfflat;
 
-  late final _i1.ColumnHalfVector halfVectorIndexedIvfflatWithParams;
+  late final _is.ColumnHalfVector halfVectorIndexedIvfflatWithParams;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     halfVector,
     halfVectorNullable,
@@ -320,42 +320,42 @@ class ObjectWithHalfVectorTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithHalfVectorInclude extends _i1.IncludeObject {
-  @_i2.internal
+class ObjectWithHalfVectorInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ObjectWithHalfVectorInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithHalfVector.t;
+  _is.Table<int?> get table => ObjectWithHalfVector.t;
 }
 
-class ObjectWithHalfVectorIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ObjectWithHalfVectorIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithHalfVectorIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithHalfVector.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithHalfVector.t;
+  _is.Table<int?> get table => ObjectWithHalfVector.t;
 }
 
 class ObjectWithHalfVectorRepository {
@@ -384,15 +384,15 @@ class ObjectWithHalfVectorRepository {
   /// );
   /// ```
   Future<List<ObjectWithHalfVector>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
@@ -424,14 +424,14 @@ class ObjectWithHalfVectorRepository {
   /// );
   /// ```
   Future<ObjectWithHalfVector?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
@@ -446,11 +446,11 @@ class ObjectWithHalfVectorRepository {
 
   /// Finds a single [ObjectWithHalfVector] by its [id] or null if no such row exists.
   Future<ObjectWithHalfVector?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithHalfVector>(
       id,
@@ -475,9 +475,9 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithHalfVector> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -493,9 +493,9 @@ class ObjectWithHalfVectorRepository {
   ///
   /// The returned [ObjectWithHalfVector] will have its `id` field set.
   Future<ObjectWithHalfVector> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithHalfVector row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithHalfVector>(
       row,
@@ -524,12 +524,12 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithHalfVector> rows, {
-    required _i1.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithHalfVector>(
@@ -556,12 +556,12 @@ class ObjectWithHalfVectorRepository {
   ///
   /// The returned [ObjectWithHalfVector] will have its `id` field set.
   Future<ObjectWithHalfVector?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithHalfVector row, {
-    required _i1.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithHalfVectorTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithHalfVectorTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithHalfVector>(
       row,
@@ -582,10 +582,10 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithHalfVector> rows, {
-    _i1.ColumnSelections<ObjectWithHalfVectorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithHalfVectorTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithHalfVector>(
@@ -600,10 +600,10 @@ class ObjectWithHalfVectorRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithHalfVector> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithHalfVector row, {
-    _i1.ColumnSelections<ObjectWithHalfVectorTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithHalfVectorTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithHalfVector>(
       row,
@@ -615,11 +615,11 @@ class ObjectWithHalfVectorRepository {
   /// Updates a single [ObjectWithHalfVector] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithHalfVector?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithHalfVector>(
       id,
@@ -635,15 +635,15 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithHalfVectorUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithHalfVector>(
@@ -670,11 +670,11 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithHalfVector> rows, {
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithHalfVector>(
@@ -688,9 +688,9 @@ class ObjectWithHalfVectorRepository {
 
   /// Deletes a single [ObjectWithHalfVector].
   Future<ObjectWithHalfVector> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithHalfVector row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithHalfVector>(
       row,
@@ -707,11 +707,11 @@ class ObjectWithHalfVectorRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithHalfVector>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
-    _i1.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithHalfVector>(
@@ -726,10 +726,10 @@ class ObjectWithHalfVectorRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithHalfVector>(
       where: where?.call(ObjectWithHalfVector.t),
@@ -740,11 +740,11 @@ class ObjectWithHalfVectorRepository {
 
   /// Acquires row-level locks on [ObjectWithHalfVector] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithHalfVectorTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithHalfVector>(
       where: where(ObjectWithHalfVector.t),

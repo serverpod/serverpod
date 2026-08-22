@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Database bindings for an email reset.
 abstract class EmailReset
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   EmailReset._({
     this.id,
     required this.userId,
@@ -34,7 +34,7 @@ abstract class EmailReset
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration: _i1.DateTimeJsonExtension.fromJson(
+      expiration: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiration'],
       ),
     );
@@ -56,7 +56,7 @@ abstract class EmailReset
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -87,7 +87,7 @@ abstract class EmailReset
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,7 +108,7 @@ class _EmailResetImpl extends EmailReset {
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   EmailReset copyWith({
     Object? id = _Undefined,

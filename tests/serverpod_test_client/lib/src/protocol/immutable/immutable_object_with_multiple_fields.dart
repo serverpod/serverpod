@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-@_i1.immutable
+@_isc.immutable
 abstract class ImmutableObjectWithMultipleFields
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   const ImmutableObjectWithMultipleFields._({
     this.anInt,
     this.aBool,
@@ -38,11 +38,11 @@ abstract class ImmutableObjectWithMultipleFields
       anInt: jsonSerialization['anInt'] as int?,
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['aBool']),
       aDouble: (jsonSerialization['aDouble'] as num?)?.toDouble(),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['aDateTime']),
       aString: jsonSerialization['aString'] as String?,
     );
   }
@@ -59,7 +59,7 @@ abstract class ImmutableObjectWithMultipleFields
 
   /// Returns a shallow copy of this [ImmutableObjectWithMultipleFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ImmutableObjectWithMultipleFields copyWith({
     int? anInt,
     bool? aBool,
@@ -140,7 +140,7 @@ abstract class ImmutableObjectWithMultipleFields
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -164,7 +164,7 @@ class _ImmutableObjectWithMultipleFieldsImpl
 
   /// Returns a shallow copy of this [ImmutableObjectWithMultipleFields]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ImmutableObjectWithMultipleFields copyWith({
     Object? anInt = _Undefined,

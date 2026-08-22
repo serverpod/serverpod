@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 
 /// Represents a version of a database migration with a table.
 abstract class DatabaseMigrationVersion
-    extends _i1.DatabaseMigrationVersionModel
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+    extends _isd.DatabaseMigrationVersionModel
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DatabaseMigrationVersion._({
     this.id,
     required super.module,
@@ -40,7 +40,7 @@ abstract class DatabaseMigrationVersion
       version: jsonSerialization['version'] as String,
       timestamp: jsonSerialization['timestamp'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
     );
   }
 
@@ -52,7 +52,7 @@ abstract class DatabaseMigrationVersion
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   DatabaseMigrationVersion copyWith({
     int? id,
     String? module,
@@ -83,7 +83,7 @@ abstract class DatabaseMigrationVersion
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -104,7 +104,7 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   DatabaseMigrationVersion copyWith({
     Object? id = _Undefined,

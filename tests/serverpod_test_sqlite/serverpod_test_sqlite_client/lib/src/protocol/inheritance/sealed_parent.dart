@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 part 'sealed_child.dart';
 part 'sealed_grandchild.dart';
 part 'sealed_other_child.dart';
 
 sealed class SealedParent
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SealedParent({
     required this.sealedInt,
     required this.sealedString,
@@ -29,7 +29,7 @@ sealed class SealedParent
 
   /// Returns a shallow copy of this [SealedParent]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   SealedParent copyWith({
     int? sealedInt,
     String? sealedString,

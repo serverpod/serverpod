@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import 'projected_user.dart';
 
 abstract class ProjectedUserJsonMultiField
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserJsonMultiField._({
     this.id,
     required this.name,
@@ -55,7 +55,7 @@ abstract class ProjectedUserJsonMultiField
                   (jsonSerialization['jsonField'] as Map?)?['mapA']) ==
               null
           ? null
-          : _i2.Protocol().deserialize<Map<String, int>>(
+          : _igqrxdcj.Protocol().deserialize<Map<String, int>>(
               (jsonSerialization['jsonFieldMapA'] ??
                   (jsonSerialization['jsonField'] as Map?)?['mapA']),
             ),
@@ -64,7 +64,7 @@ abstract class ProjectedUserJsonMultiField
                   (jsonSerialization['jsonField'] as Map?)?['listA']) ==
               null
           ? null
-          : _i2.Protocol().deserialize<List<int>>(
+          : _igqrxdcj.Protocol().deserialize<List<int>>(
               (jsonSerialization['jsonFieldListA'] ??
                   (jsonSerialization['jsonField'] as Map?)?['listA']),
             ),
@@ -73,7 +73,7 @@ abstract class ProjectedUserJsonMultiField
                   (jsonSerialization['jsonField'] as Map?)?['dateValue']) ==
               null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               (jsonSerialization['jsonFieldDateValue'] ??
                   (jsonSerialization['jsonField'] as Map?)?['dateValue']),
             ),
@@ -101,7 +101,7 @@ abstract class ProjectedUserJsonMultiField
 
   /// Returns a shallow copy of this [ProjectedUserJsonMultiField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserJsonMultiField copyWith({
     int? id,
     String? name,
@@ -171,11 +171,11 @@ abstract class ProjectedUserJsonMultiField
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -189,7 +189,7 @@ abstract class ProjectedUserJsonMultiField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -216,7 +216,7 @@ class _ProjectedUserJsonMultiFieldImpl extends ProjectedUserJsonMultiField {
 
   /// Returns a shallow copy of this [ProjectedUserJsonMultiField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserJsonMultiField copyWith({
     Object? id = _Undefined,
@@ -283,15 +283,15 @@ class ProjectedUserJsonMultiFieldRepository {
   /// );
   /// ```
   Future<List<ProjectedUserJsonMultiField>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -329,14 +329,14 @@ class ProjectedUserJsonMultiFieldRepository {
   /// );
   /// ```
   Future<ProjectedUserJsonMultiField?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -356,11 +356,11 @@ class ProjectedUserJsonMultiFieldRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserJsonMultiField?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

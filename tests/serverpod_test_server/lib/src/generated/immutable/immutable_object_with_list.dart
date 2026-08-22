@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
-@_i1.immutable
+@_is.immutable
 abstract class ImmutableObjectWithList
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   const ImmutableObjectWithList._({required this.listVariable});
 
   const factory ImmutableObjectWithList({required List<String> listVariable}) =
@@ -26,7 +26,7 @@ abstract class ImmutableObjectWithList
     Map<String, dynamic> jsonSerialization,
   ) {
     return ImmutableObjectWithList(
-      listVariable: _i2.Protocol().deserialize<List<String>>(
+      listVariable: _igqrxdcj.Protocol().deserialize<List<String>>(
         jsonSerialization['listVariable'],
       ),
     );
@@ -36,7 +36,7 @@ abstract class ImmutableObjectWithList
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ImmutableObjectWithList copyWith({List<String>? listVariable});
   @override
   bool operator ==(Object other) {
@@ -46,7 +46,7 @@ abstract class ImmutableObjectWithList
         ) ||
         other.runtimeType == runtimeType &&
             other is ImmutableObjectWithList &&
-            const _i3.DeepCollectionEquality().equals(
+            const _iss.DeepCollectionEquality().equals(
               other.listVariable,
               listVariable,
             );
@@ -56,7 +56,7 @@ abstract class ImmutableObjectWithList
   int get hashCode {
     return Object.hash(
       runtimeType,
-      const _i3.DeepCollectionEquality().hash(listVariable),
+      const _iss.DeepCollectionEquality().hash(listVariable),
     );
   }
 
@@ -78,7 +78,7 @@ abstract class ImmutableObjectWithList
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -88,7 +88,7 @@ class _ImmutableObjectWithListImpl extends ImmutableObjectWithList {
 
   /// Returns a shallow copy of this [ImmutableObjectWithList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ImmutableObjectWithList copyWith({List<String>? listVariable}) {
     return ImmutableObjectWithList(

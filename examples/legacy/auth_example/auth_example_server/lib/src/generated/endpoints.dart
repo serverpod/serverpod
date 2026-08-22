@@ -10,52 +10,55 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/example_endpoint.dart' as _i2;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i3;
-import 'package:auth_example_server/src/generated/future_calls.dart' as _i4;
+import 'package:auth_example_server/src/generated/future_calls.dart'
+    as _i2o1w9mh;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
+import '../endpoints/example_endpoint.dart' as _i7oio0x0;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'example': _i2.ExampleEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'example': _i7oio0x0.ExampleEndpoint()
         ..initialize(
           server,
           'example',
           null,
         ),
     };
-    connectors['example'] = _i1.EndpointConnector(
+    connectors['example'] = _is.EndpointConnector(
       name: 'example',
       endpoint: endpoints['example']!,
       methodConnectors: {
-        'hello': _i1.MethodConnector(
+        'hello': _is.MethodConnector(
           name: 'hello',
           params: {
-            'name': _i1.ParameterDescription(
+            'name': _is.ParameterDescription(
               name: 'name',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['example'] as _i2.ExampleEndpoint).hello(
-                session,
-                params['name'],
-              ),
+              ) async =>
+                  (endpoints['example'] as _i7oio0x0.ExampleEndpoint).hello(
+                    session,
+                    params['name'],
+                  ),
         ),
       },
     );
-    modules['serverpod_auth'] = _i3.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
+      ..initializeEndpoints(server);
   }
 
   @override
-  _i1.FutureCallDispatch? get futureCalls {
-    return _i4.FutureCalls();
+  _is.FutureCallDispatch? get futureCalls {
+    return _i2o1w9mh.FutureCalls();
   }
 }

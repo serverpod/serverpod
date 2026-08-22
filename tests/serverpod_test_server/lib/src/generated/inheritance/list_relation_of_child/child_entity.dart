@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../../protocol.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
-import 'package:meta/meta.dart' as _i3;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../protocol.dart' as _iototaiw;
 
-abstract class ChildEntity extends _i1.BaseEntity
-    implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class ChildEntity extends _iototaiw.BaseEntity
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ChildEntity._({
     this.id,
     required super.sharedField,
@@ -50,12 +50,12 @@ abstract class ChildEntity extends _i1.BaseEntity
   final int? _parentEntityChildrenParentEntityId;
 
   @override
-  _i2.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ChildEntity]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ChildEntity copyWith({
     int? id,
     String? sharedField,
@@ -89,11 +89,11 @@ abstract class ChildEntity extends _i1.BaseEntity
   }
 
   static ChildEntityIncludeList includeList({
-    _i2.WhereExpressionBuilder<ChildEntityTable>? where,
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
   }) {
     return ChildEntityIncludeList.internal_(
@@ -108,7 +108,7 @@ abstract class ChildEntity extends _i1.BaseEntity
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _ChildEntityImpl extends ChildEntity {
 
   /// Returns a shallow copy of this [ChildEntity]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ChildEntity copyWith({
     Object? id = _Undefined,
@@ -175,38 +175,38 @@ class ChildEntityImplicit extends _ChildEntityImpl {
   final int? _parentEntityChildrenParentEntityId;
 }
 
-class ChildEntityUpdateTable extends _i2.UpdateTable<ChildEntityTable> {
+class ChildEntityUpdateTable extends _is.UpdateTable<ChildEntityTable> {
   ChildEntityUpdateTable(super.table);
 
-  _i2.ColumnValue<String, String> sharedField(String value) => _i2.ColumnValue(
+  _is.ColumnValue<String, String> sharedField(String value) => _is.ColumnValue(
     table.sharedField,
     value,
   );
 
-  _i2.ColumnValue<String, String> localField(String value) => _i2.ColumnValue(
+  _is.ColumnValue<String, String> localField(String value) => _is.ColumnValue(
     table.localField,
     value,
   );
 
-  _i2.ColumnValue<int, int> $_parentEntityChildrenParentEntityId(int? value) =>
-      _i2.ColumnValue(
+  _is.ColumnValue<int, int> $_parentEntityChildrenParentEntityId(int? value) =>
+      _is.ColumnValue(
         table.$_parentEntityChildrenParentEntityId,
         value,
       );
 }
 
-class ChildEntityTable extends _i2.Table<int?> {
+class ChildEntityTable extends _is.Table<int?> {
   ChildEntityTable({super.tableRelation}) : super(tableName: 'child_entity') {
     updateTable = ChildEntityUpdateTable(this);
-    sharedField = _i2.ColumnString(
+    sharedField = _is.ColumnString(
       'sharedField',
       this,
     );
-    localField = _i2.ColumnString(
+    localField = _is.ColumnString(
       'localField',
       this,
     );
-    $_parentEntityChildrenParentEntityId = _i2.ColumnInt(
+    $_parentEntityChildrenParentEntityId = _is.ColumnInt(
       '_parentEntityChildrenParentEntityId',
       this,
     );
@@ -214,14 +214,14 @@ class ChildEntityTable extends _i2.Table<int?> {
 
   late final ChildEntityUpdateTable updateTable;
 
-  late final _i2.ColumnString sharedField;
+  late final _is.ColumnString sharedField;
 
-  late final _i2.ColumnString localField;
+  late final _is.ColumnString localField;
 
-  late final _i2.ColumnInt $_parentEntityChildrenParentEntityId;
+  late final _is.ColumnInt $_parentEntityChildrenParentEntityId;
 
   @override
-  List<_i2.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sharedField,
     localField,
@@ -229,47 +229,47 @@ class ChildEntityTable extends _i2.Table<int?> {
   ];
 
   @override
-  List<_i2.Column> get managedColumns => [
+  List<_is.Column> get managedColumns => [
     id,
     sharedField,
     localField,
   ];
 }
 
-class ChildEntityInclude extends _i2.IncludeObject {
-  @_i3.internal
-  ChildEntityInclude.internal_({List<_i2.Column>? this.selectedColumns}) {}
+class ChildEntityInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ChildEntityInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i2.Column>? selectedColumns;
-
-  @override
-  Map<String, _i2.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i2.Table<int?> get table => ChildEntity.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ChildEntity.t;
 }
 
-class ChildEntityIncludeList extends _i2.IncludeList {
-  @_i3.internal
+class ChildEntityIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ChildEntityIncludeList.internal_({
-    _i2.WhereExpressionBuilder<ChildEntityTable>? where,
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i2.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ChildEntity.t);
   }
 
-  final List<_i2.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i2.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i2.Table<int?> get table => ChildEntity.t;
+  _is.Table<int?> get table => ChildEntity.t;
 }
 
 class ChildEntityRepository {
@@ -298,15 +298,15 @@ class ChildEntityRepository {
   /// );
   /// ```
   Future<List<ChildEntity>> find(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildEntity>(
       where: where?.call(ChildEntity.t),
@@ -338,14 +338,14 @@ class ChildEntityRepository {
   /// );
   /// ```
   Future<ChildEntity?> findFirstRow(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
     int? offset,
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildEntity>(
       where: where?.call(ChildEntity.t),
@@ -360,11 +360,11 @@ class ChildEntityRepository {
 
   /// Finds a single [ChildEntity] by its [id] or null if no such row exists.
   Future<ChildEntity?> findById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildEntity>(
       id,
@@ -389,9 +389,9 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> insert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildEntity> rows, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -407,9 +407,9 @@ class ChildEntityRepository {
   ///
   /// The returned [ChildEntity] will have its `id` field set.
   Future<ChildEntity> insertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildEntity row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ChildEntity>(
       row,
@@ -438,12 +438,12 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> upsert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildEntity> rows, {
-    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
-    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
-    _i2.Transaction? transaction,
+    required _is.ColumnSelections<ChildEntityTable> conflictColumns,
+    _is.ColumnSelections<ChildEntityTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ChildEntity>(
@@ -470,12 +470,12 @@ class ChildEntityRepository {
   ///
   /// The returned [ChildEntity] will have its `id` field set.
   Future<ChildEntity?> upsertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildEntity row, {
-    required _i2.ColumnSelections<ChildEntityTable> conflictColumns,
-    _i2.ColumnSelections<ChildEntityTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
-    _i2.Transaction? transaction,
+    required _is.ColumnSelections<ChildEntityTable> conflictColumns,
+    _is.ColumnSelections<ChildEntityTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChildEntityTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChildEntity>(
       row,
@@ -496,10 +496,10 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> update(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildEntity> rows, {
-    _i2.ColumnSelections<ChildEntityTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildEntityTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ChildEntity>(
@@ -514,10 +514,10 @@ class ChildEntityRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChildEntity> updateRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildEntity row, {
-    _i2.ColumnSelections<ChildEntityTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildEntityTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ChildEntity>(
       row,
@@ -529,10 +529,10 @@ class ChildEntityRepository {
   /// Updates a single [ChildEntity] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChildEntity?> updateById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i2.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
-    _i2.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ChildEntity>(
       id,
@@ -548,14 +548,14 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> updateWhere(
-    _i2.DatabaseSession session, {
-    required _i2.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
-    required _i2.WhereExpressionBuilder<ChildEntityTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ChildEntityUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ChildEntityTable> where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildEntity>(
@@ -582,11 +582,11 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> delete(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildEntity> rows, {
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ChildEntity>(
@@ -600,9 +600,9 @@ class ChildEntityRepository {
 
   /// Deletes a single [ChildEntity].
   Future<ChildEntity> deleteRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildEntity row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ChildEntity>(
       row,
@@ -619,11 +619,11 @@ class ChildEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildEntity>> deleteWhere(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<ChildEntityTable> where,
-    _i2.OrderByBuilder<ChildEntityTable>? orderBy,
-    _i2.OrderByListBuilder<ChildEntityTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChildEntityTable> where,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildEntity>(
@@ -638,10 +638,10 @@ class ChildEntityRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
     int? limit,
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildEntity>(
       where: where?.call(ChildEntity.t),
@@ -652,11 +652,11 @@ class ChildEntityRepository {
 
   /// Acquires row-level locks on [ChildEntity] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<ChildEntityTable> where,
-    required _i2.LockMode lockMode,
-    required _i2.Transaction transaction,
-    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChildEntityTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildEntity>(
       where: where(ChildEntity.t),

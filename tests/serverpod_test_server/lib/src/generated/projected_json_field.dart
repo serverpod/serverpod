@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
 abstract class ProjectedJsonField
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedJsonField._({
     required this.text,
     required this.value,
@@ -55,31 +55,37 @@ abstract class ProjectedJsonField
     return ProjectedJsonField(
       text: jsonSerialization['text'] as String,
       value: jsonSerialization['value'] as int,
-      valueA: _i1.BoolJsonExtension.fromJson(jsonSerialization['valueA']),
+      valueA: _is.BoolJsonExtension.fromJson(jsonSerialization['valueA']),
       valueB: (jsonSerialization['valueB'] as num).toDouble(),
       valueC: jsonSerialization['valueC'] as String?,
-      dateValue: _i1.DateTimeJsonExtension.fromJson(
+      dateValue: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['dateValue'],
       ),
-      list: _i2.Protocol().deserialize<List<String>>(jsonSerialization['list']),
-      listA: _i2.Protocol().deserialize<List<int>>(jsonSerialization['listA']),
-      listB: _i2.Protocol().deserialize<List<bool>>(jsonSerialization['listB']),
-      listC: _i2.Protocol().deserialize<List<double>>(
+      list: _igqrxdcj.Protocol().deserialize<List<String>>(
+        jsonSerialization['list'],
+      ),
+      listA: _igqrxdcj.Protocol().deserialize<List<int>>(
+        jsonSerialization['listA'],
+      ),
+      listB: _igqrxdcj.Protocol().deserialize<List<bool>>(
+        jsonSerialization['listB'],
+      ),
+      listC: _igqrxdcj.Protocol().deserialize<List<double>>(
         jsonSerialization['listC'],
       ),
-      listD: _i2.Protocol().deserialize<List<String>>(
+      listD: _igqrxdcj.Protocol().deserialize<List<String>>(
         jsonSerialization['listD'],
       ),
-      map: _i2.Protocol().deserialize<Map<String, String>>(
+      map: _igqrxdcj.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['map'],
       ),
-      mapA: _i2.Protocol().deserialize<Map<String, int>>(
+      mapA: _igqrxdcj.Protocol().deserialize<Map<String, int>>(
         jsonSerialization['mapA'],
       ),
-      mapB: _i2.Protocol().deserialize<Map<String, bool>>(
+      mapB: _igqrxdcj.Protocol().deserialize<Map<String, bool>>(
         jsonSerialization['mapB'],
       ),
-      mapC: _i2.Protocol().deserialize<Map<String, double>>(
+      mapC: _igqrxdcj.Protocol().deserialize<Map<String, double>>(
         jsonSerialization['mapC'],
       ),
     );
@@ -117,7 +123,7 @@ abstract class ProjectedJsonField
 
   /// Returns a shallow copy of this [ProjectedJsonField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedJsonField copyWith({
     String? text,
     int? value,
@@ -181,7 +187,7 @@ abstract class ProjectedJsonField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -224,7 +230,7 @@ class _ProjectedJsonFieldImpl extends ProjectedJsonField {
 
   /// Returns a shallow copy of this [ProjectedJsonField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedJsonField copyWith({
     String? text,

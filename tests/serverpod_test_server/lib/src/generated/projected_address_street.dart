@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'projected_address.dart';
 
 abstract class ProjectedAddressStreet
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedAddressStreet._({
     this.id,
     required this.street,
@@ -45,7 +45,7 @@ abstract class ProjectedAddressStreet
 
   /// Returns a shallow copy of this [ProjectedAddressStreet]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedAddressStreet copyWith({
     int? id,
     String? street,
@@ -78,11 +78,11 @@ abstract class ProjectedAddressStreet
   }
 
   static ProjectedAddressIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
   }) {
     return ProjectedAddress.includeList(
       where: where,
@@ -96,7 +96,7 @@ abstract class ProjectedAddressStreet
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -113,7 +113,7 @@ class _ProjectedAddressStreetImpl extends ProjectedAddressStreet {
 
   /// Returns a shallow copy of this [ProjectedAddressStreet]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedAddressStreet copyWith({
     Object? id = _Undefined,
@@ -152,15 +152,15 @@ class ProjectedAddressStreetRepository {
   /// );
   /// ```
   Future<List<ProjectedAddressStreet>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedAddress>(
@@ -198,14 +198,14 @@ class ProjectedAddressStreetRepository {
   /// );
   /// ```
   Future<ProjectedAddressStreet?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedAddress>(
@@ -223,11 +223,11 @@ class ProjectedAddressStreetRepository {
 
   /// Finds a single [ProjectedAddress] by its [id] or null if no such row exists.
   Future<ProjectedAddressStreet?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedAddress>(

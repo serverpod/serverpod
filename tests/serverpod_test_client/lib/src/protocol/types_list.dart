@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:typed_data' as _i2;
-import 'test_enum.dart' as _i3;
-import 'test_enum_stringified.dart' as _i4;
-import 'types.dart' as _i5;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i6;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_stringified.dart' as _i7liykk2;
+import 'types.dart' as _iwxwszsz;
 
 abstract class TypesList
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TypesList._({
     this.anInt,
     this.aBool,
@@ -47,113 +47,122 @@ abstract class TypesList
     List<double>? aDouble,
     List<DateTime>? aDateTime,
     List<String>? aString,
-    List<_i2.ByteData>? aByteData,
+    List<_idt.ByteData>? aByteData,
     List<Duration>? aDuration,
-    List<_i1.UuidValue>? aUuid,
+    List<_isc.UuidValue>? aUuid,
     List<Uri>? aUri,
     List<BigInt>? aBigInt,
-    List<_i3.TestEnum>? anEnum,
-    List<_i4.TestEnumStringified>? aStringifiedEnum,
-    List<_i5.Types>? anObject,
-    List<Map<String, _i5.Types>>? aMap,
-    List<List<_i5.Types>>? aList,
+    List<_ionapfu9.TestEnum>? anEnum,
+    List<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    List<_iwxwszsz.Types>? anObject,
+    List<Map<String, _iwxwszsz.Types>>? aMap,
+    List<List<_iwxwszsz.Types>>? aList,
     List<(int,)>? aRecord,
     List<(int,)?>? aNullableRecord,
-    List<(_i3.TestEnum,)>? anEnumRecord,
-    List<(_i4.TestEnumStringified,)>? anEnum2Record,
+    List<(_ionapfu9.TestEnum,)>? anEnumRecord,
+    List<(_i7liykk2.TestEnumStringified,)>? anEnum2Record,
   }) = _TypesListImpl;
 
   factory TypesList.fromJson(Map<String, dynamic> jsonSerialization) {
     return TypesList(
       anInt: jsonSerialization['anInt'] == null
           ? null
-          : _i6.Protocol().deserialize<List<int>>(jsonSerialization['anInt']),
+          : _iza9lbb5.Protocol().deserialize<List<int>>(
+              jsonSerialization['anInt'],
+            ),
       aBool: jsonSerialization['aBool'] == null
           ? null
-          : _i6.Protocol().deserialize<List<bool>>(jsonSerialization['aBool']),
+          : _iza9lbb5.Protocol().deserialize<List<bool>>(
+              jsonSerialization['aBool'],
+            ),
       aDouble: jsonSerialization['aDouble'] == null
           ? null
-          : _i6.Protocol().deserialize<List<double>>(
+          : _iza9lbb5.Protocol().deserialize<List<double>>(
               jsonSerialization['aDouble'],
             ),
       aDateTime: jsonSerialization['aDateTime'] == null
           ? null
-          : _i6.Protocol().deserialize<List<DateTime>>(
+          : _iza9lbb5.Protocol().deserialize<List<DateTime>>(
               jsonSerialization['aDateTime'],
             ),
       aString: jsonSerialization['aString'] == null
           ? null
-          : _i6.Protocol().deserialize<List<String>>(
+          : _iza9lbb5.Protocol().deserialize<List<String>>(
               jsonSerialization['aString'],
             ),
       aByteData: jsonSerialization['aByteData'] == null
           ? null
-          : _i6.Protocol().deserialize<List<_i2.ByteData>>(
+          : _iza9lbb5.Protocol().deserialize<List<_idt.ByteData>>(
               jsonSerialization['aByteData'],
             ),
       aDuration: jsonSerialization['aDuration'] == null
           ? null
-          : _i6.Protocol().deserialize<List<Duration>>(
+          : _iza9lbb5.Protocol().deserialize<List<Duration>>(
               jsonSerialization['aDuration'],
             ),
       aUuid: jsonSerialization['aUuid'] == null
           ? null
-          : _i6.Protocol().deserialize<List<_i1.UuidValue>>(
+          : _iza9lbb5.Protocol().deserialize<List<_isc.UuidValue>>(
               jsonSerialization['aUuid'],
             ),
       aUri: jsonSerialization['aUri'] == null
           ? null
-          : _i6.Protocol().deserialize<List<Uri>>(jsonSerialization['aUri']),
+          : _iza9lbb5.Protocol().deserialize<List<Uri>>(
+              jsonSerialization['aUri'],
+            ),
       aBigInt: jsonSerialization['aBigInt'] == null
           ? null
-          : _i6.Protocol().deserialize<List<BigInt>>(
+          : _iza9lbb5.Protocol().deserialize<List<BigInt>>(
               jsonSerialization['aBigInt'],
             ),
       anEnum: jsonSerialization['anEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<List<_i3.TestEnum>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ionapfu9.TestEnum>>(
               jsonSerialization['anEnum'],
             ),
       aStringifiedEnum: jsonSerialization['aStringifiedEnum'] == null
           ? null
-          : _i6.Protocol().deserialize<List<_i4.TestEnumStringified>>(
-              jsonSerialization['aStringifiedEnum'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_i7liykk2.TestEnumStringified>>(
+                  jsonSerialization['aStringifiedEnum'],
+                ),
       anObject: jsonSerialization['anObject'] == null
           ? null
-          : _i6.Protocol().deserialize<List<_i5.Types>>(
+          : _iza9lbb5.Protocol().deserialize<List<_iwxwszsz.Types>>(
               jsonSerialization['anObject'],
             ),
       aMap: jsonSerialization['aMap'] == null
           ? null
-          : _i6.Protocol().deserialize<List<Map<String, _i5.Types>>>(
-              jsonSerialization['aMap'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<Map<String, _iwxwszsz.Types>>>(
+                  jsonSerialization['aMap'],
+                ),
       aList: jsonSerialization['aList'] == null
           ? null
-          : _i6.Protocol().deserialize<List<List<_i5.Types>>>(
+          : _iza9lbb5.Protocol().deserialize<List<List<_iwxwszsz.Types>>>(
               jsonSerialization['aList'],
             ),
       aRecord: jsonSerialization['aRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<List<(int,)>>(
+          : _iza9lbb5.Protocol().deserialize<List<(int,)>>(
               jsonSerialization['aRecord'],
             ),
       aNullableRecord: jsonSerialization['aNullableRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<List<(int,)?>>(
+          : _iza9lbb5.Protocol().deserialize<List<(int,)?>>(
               jsonSerialization['aNullableRecord'],
             ),
       anEnumRecord: jsonSerialization['anEnumRecord'] == null
           ? null
-          : _i6.Protocol().deserialize<List<(_i3.TestEnum,)>>(
+          : _iza9lbb5.Protocol().deserialize<List<(_ionapfu9.TestEnum,)>>(
               jsonSerialization['anEnumRecord'],
             ),
       anEnum2Record: jsonSerialization['anEnum2Record'] == null
           ? null
-          : _i6.Protocol().deserialize<List<(_i4.TestEnumStringified,)>>(
-              jsonSerialization['anEnum2Record'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<(_i7liykk2.TestEnumStringified,)>>(
+                  jsonSerialization['anEnum2Record'],
+                ),
     );
   }
 
@@ -167,57 +176,57 @@ abstract class TypesList
 
   List<String>? aString;
 
-  List<_i2.ByteData>? aByteData;
+  List<_idt.ByteData>? aByteData;
 
   List<Duration>? aDuration;
 
-  List<_i1.UuidValue>? aUuid;
+  List<_isc.UuidValue>? aUuid;
 
   List<Uri>? aUri;
 
   List<BigInt>? aBigInt;
 
-  List<_i3.TestEnum>? anEnum;
+  List<_ionapfu9.TestEnum>? anEnum;
 
-  List<_i4.TestEnumStringified>? aStringifiedEnum;
+  List<_i7liykk2.TestEnumStringified>? aStringifiedEnum;
 
-  List<_i5.Types>? anObject;
+  List<_iwxwszsz.Types>? anObject;
 
-  List<Map<String, _i5.Types>>? aMap;
+  List<Map<String, _iwxwszsz.Types>>? aMap;
 
-  List<List<_i5.Types>>? aList;
+  List<List<_iwxwszsz.Types>>? aList;
 
   List<(int,)>? aRecord;
 
   List<(int,)?>? aNullableRecord;
 
-  List<(_i3.TestEnum,)>? anEnumRecord;
+  List<(_ionapfu9.TestEnum,)>? anEnumRecord;
 
-  List<(_i4.TestEnumStringified,)>? anEnum2Record;
+  List<(_i7liykk2.TestEnumStringified,)>? anEnum2Record;
 
   /// Returns a shallow copy of this [TypesList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TypesList copyWith({
     List<int>? anInt,
     List<bool>? aBool,
     List<double>? aDouble,
     List<DateTime>? aDateTime,
     List<String>? aString,
-    List<_i2.ByteData>? aByteData,
+    List<_idt.ByteData>? aByteData,
     List<Duration>? aDuration,
-    List<_i1.UuidValue>? aUuid,
+    List<_isc.UuidValue>? aUuid,
     List<Uri>? aUri,
     List<BigInt>? aBigInt,
-    List<_i3.TestEnum>? anEnum,
-    List<_i4.TestEnumStringified>? aStringifiedEnum,
-    List<_i5.Types>? anObject,
-    List<Map<String, _i5.Types>>? aMap,
-    List<List<_i5.Types>>? aList,
+    List<_ionapfu9.TestEnum>? anEnum,
+    List<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    List<_iwxwszsz.Types>? anObject,
+    List<Map<String, _iwxwszsz.Types>>? aMap,
+    List<List<_iwxwszsz.Types>>? aList,
     List<(int,)>? aRecord,
     List<(int,)?>? aNullableRecord,
-    List<(_i3.TestEnum,)>? anEnumRecord,
-    List<(_i4.TestEnumStringified,)>? anEnum2Record,
+    List<(_ionapfu9.TestEnum,)>? anEnumRecord,
+    List<(_i7liykk2.TestEnumStringified,)>? anEnum2Record,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -254,13 +263,17 @@ abstract class TypesList
           valueToJson: (v) => v.toJson(valueToJson: (v) => v.toJson()),
         ),
       if (aRecord != null)
-        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
+        'aRecord': _iza9lbb5.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _iza9lbb5.Protocol().mapContainerToJson(
+          aNullableRecord!,
+        ),
       if (anEnumRecord != null)
-        'anEnumRecord': _i6.Protocol().mapContainerToJson(anEnumRecord!),
+        'anEnumRecord': _iza9lbb5.Protocol().mapContainerToJson(anEnumRecord!),
       if (anEnum2Record != null)
-        'anEnum2Record': _i6.Protocol().mapContainerToJson(anEnum2Record!),
+        'anEnum2Record': _iza9lbb5.Protocol().mapContainerToJson(
+          anEnum2Record!,
+        ),
     };
   }
 
@@ -301,19 +314,23 @@ abstract class TypesList
               v.toJson(valueToJson: (v) => v.toJsonForProtocol()),
         ),
       if (aRecord != null)
-        'aRecord': _i6.Protocol().mapContainerToJson(aRecord!),
+        'aRecord': _iza9lbb5.Protocol().mapContainerToJson(aRecord!),
       if (aNullableRecord != null)
-        'aNullableRecord': _i6.Protocol().mapContainerToJson(aNullableRecord!),
+        'aNullableRecord': _iza9lbb5.Protocol().mapContainerToJson(
+          aNullableRecord!,
+        ),
       if (anEnumRecord != null)
-        'anEnumRecord': _i6.Protocol().mapContainerToJson(anEnumRecord!),
+        'anEnumRecord': _iza9lbb5.Protocol().mapContainerToJson(anEnumRecord!),
       if (anEnum2Record != null)
-        'anEnum2Record': _i6.Protocol().mapContainerToJson(anEnum2Record!),
+        'anEnum2Record': _iza9lbb5.Protocol().mapContainerToJson(
+          anEnum2Record!,
+        ),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -326,20 +343,20 @@ class _TypesListImpl extends TypesList {
     List<double>? aDouble,
     List<DateTime>? aDateTime,
     List<String>? aString,
-    List<_i2.ByteData>? aByteData,
+    List<_idt.ByteData>? aByteData,
     List<Duration>? aDuration,
-    List<_i1.UuidValue>? aUuid,
+    List<_isc.UuidValue>? aUuid,
     List<Uri>? aUri,
     List<BigInt>? aBigInt,
-    List<_i3.TestEnum>? anEnum,
-    List<_i4.TestEnumStringified>? aStringifiedEnum,
-    List<_i5.Types>? anObject,
-    List<Map<String, _i5.Types>>? aMap,
-    List<List<_i5.Types>>? aList,
+    List<_ionapfu9.TestEnum>? anEnum,
+    List<_i7liykk2.TestEnumStringified>? aStringifiedEnum,
+    List<_iwxwszsz.Types>? anObject,
+    List<Map<String, _iwxwszsz.Types>>? aMap,
+    List<List<_iwxwszsz.Types>>? aList,
     List<(int,)>? aRecord,
     List<(int,)?>? aNullableRecord,
-    List<(_i3.TestEnum,)>? anEnumRecord,
-    List<(_i4.TestEnumStringified,)>? anEnum2Record,
+    List<(_ionapfu9.TestEnum,)>? anEnumRecord,
+    List<(_i7liykk2.TestEnumStringified,)>? anEnum2Record,
   }) : super._(
          anInt: anInt,
          aBool: aBool,
@@ -364,7 +381,7 @@ class _TypesListImpl extends TypesList {
 
   /// Returns a shallow copy of this [TypesList]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TypesList copyWith({
     Object? anInt = _Undefined,
@@ -401,29 +418,29 @@ class _TypesListImpl extends TypesList {
       aString: aString is List<String>?
           ? aString
           : this.aString?.map((e0) => e0).toList(),
-      aByteData: aByteData is List<_i2.ByteData>?
+      aByteData: aByteData is List<_idt.ByteData>?
           ? aByteData
           : this.aByteData?.map((e0) => e0.clone()).toList(),
       aDuration: aDuration is List<Duration>?
           ? aDuration
           : this.aDuration?.map((e0) => e0).toList(),
-      aUuid: aUuid is List<_i1.UuidValue>?
+      aUuid: aUuid is List<_isc.UuidValue>?
           ? aUuid
           : this.aUuid?.map((e0) => e0).toList(),
       aUri: aUri is List<Uri>? ? aUri : this.aUri?.map((e0) => e0).toList(),
       aBigInt: aBigInt is List<BigInt>?
           ? aBigInt
           : this.aBigInt?.map((e0) => e0).toList(),
-      anEnum: anEnum is List<_i3.TestEnum>?
+      anEnum: anEnum is List<_ionapfu9.TestEnum>?
           ? anEnum
           : this.anEnum?.map((e0) => e0).toList(),
-      aStringifiedEnum: aStringifiedEnum is List<_i4.TestEnumStringified>?
+      aStringifiedEnum: aStringifiedEnum is List<_i7liykk2.TestEnumStringified>?
           ? aStringifiedEnum
           : this.aStringifiedEnum?.map((e0) => e0).toList(),
-      anObject: anObject is List<_i5.Types>?
+      anObject: anObject is List<_iwxwszsz.Types>?
           ? anObject
           : this.anObject?.map((e0) => e0.copyWith()).toList(),
-      aMap: aMap is List<Map<String, _i5.Types>>?
+      aMap: aMap is List<Map<String, _iwxwszsz.Types>>?
           ? aMap
           : this.aMap
                 ?.map(
@@ -438,7 +455,7 @@ class _TypesListImpl extends TypesList {
                   ),
                 )
                 .toList(),
-      aList: aList is List<List<_i5.Types>>?
+      aList: aList is List<List<_iwxwszsz.Types>>?
           ? aList
           : this.aList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
@@ -451,10 +468,10 @@ class _TypesListImpl extends TypesList {
           : this.aNullableRecord
                 ?.map((e0) => e0 == null ? null : (e0.$1,))
                 .toList(),
-      anEnumRecord: anEnumRecord is List<(_i3.TestEnum,)>?
+      anEnumRecord: anEnumRecord is List<(_ionapfu9.TestEnum,)>?
           ? anEnumRecord
           : this.anEnumRecord?.map((e0) => (e0.$1,)).toList(),
-      anEnum2Record: anEnum2Record is List<(_i4.TestEnumStringified,)>?
+      anEnum2Record: anEnum2Record is List<(_i7liykk2.TestEnumStringified,)>?
           ? anEnum2Record
           : this.anEnum2Record?.map((e0) => (e0.$1,)).toList(),
     );

@@ -84,7 +84,7 @@ void main() {
       test('then the shared child class extends the shared parent.', () {
         expect(
           childCode,
-          matches('$childClassName extends _i[0-9]+.$parentClassName'),
+          matches('$childClassName extends _i[a-z0-9]+.$parentClassName'),
         );
       });
 
@@ -155,7 +155,7 @@ void main() {
         () {
           expect(
             childCode,
-            matches('$childClassName extends _i[0-9]+.$parentClassName'),
+            matches('$childClassName extends _i[a-z0-9]+.$parentClassName'),
           );
         },
       );
@@ -223,7 +223,7 @@ void main() {
         () {
           expect(
             childCode,
-            matches('$childClassName extends _i[0-9]+.$parentClassName'),
+            matches('$childClassName extends _i[a-z0-9]+.$parentClassName'),
           );
         },
       );

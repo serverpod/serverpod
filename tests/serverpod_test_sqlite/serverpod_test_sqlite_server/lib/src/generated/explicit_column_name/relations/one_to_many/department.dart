@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../explicit_column_name/relations/one_to_many/employee.dart'
-    as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i3;
+    as _i08l111i;
+import '../../../explicit_column_name/relations/one_to_many/employee.dart'
+    as _ilvmgye0;
 
 abstract class Department
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Department._({
     this.id,
     required this.name,
@@ -28,7 +28,7 @@ abstract class Department
   factory Department({
     int? id,
     required String name,
-    List<_i2.Employee>? employees,
+    List<_ilvmgye0.Employee>? employees,
   }) = _DepartmentImpl;
 
   factory Department.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class Department
       name: jsonSerialization['name'] as String,
       employees: jsonSerialization['employees'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Employee>>(
+          : _i08l111i.Protocol().deserialize<List<_ilvmgye0.Employee>>(
               jsonSerialization['employees'],
             ),
     );
@@ -52,18 +52,18 @@ abstract class Department
 
   String name;
 
-  List<_i2.Employee>? employees;
+  List<_ilvmgye0.Employee>? employees;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Department]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Department copyWith({
     int? id,
     String? name,
-    List<_i2.Employee>? employees,
+    List<_ilvmgye0.Employee>? employees,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,16 +89,16 @@ abstract class Department
     };
   }
 
-  static DepartmentInclude include({_i2.EmployeeIncludeList? employees}) {
+  static DepartmentInclude include({_ilvmgye0.EmployeeIncludeList? employees}) {
     return DepartmentInclude._(employees: employees);
   }
 
   static DepartmentIncludeList includeList({
-    _i1.WhereExpressionBuilder<DepartmentTable>? where,
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
     DepartmentInclude? include,
   }) {
     return DepartmentIncludeList._(
@@ -113,7 +113,7 @@ abstract class Department
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,7 +123,7 @@ class _DepartmentImpl extends Department {
   _DepartmentImpl({
     int? id,
     required String name,
-    List<_i2.Employee>? employees,
+    List<_ilvmgye0.Employee>? employees,
   }) : super._(
          id: id,
          name: name,
@@ -132,7 +132,7 @@ class _DepartmentImpl extends Department {
 
   /// Returns a shallow copy of this [Department]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Department copyWith({
     Object? id = _Undefined,
@@ -142,26 +142,26 @@ class _DepartmentImpl extends Department {
     return Department(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      employees: employees is List<_i2.Employee>?
+      employees: employees is List<_ilvmgye0.Employee>?
           ? employees
           : this.employees?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class DepartmentUpdateTable extends _i1.UpdateTable<DepartmentTable> {
+class DepartmentUpdateTable extends _is.UpdateTable<DepartmentTable> {
   DepartmentUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 }
 
-class DepartmentTable extends _i1.Table<int?> {
+class DepartmentTable extends _is.Table<int?> {
   DepartmentTable({super.tableRelation}) : super(tableName: 'department') {
     updateTable = DepartmentUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
@@ -169,38 +169,38 @@ class DepartmentTable extends _i1.Table<int?> {
 
   late final DepartmentUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  _i2.EmployeeTable? ___employees;
+  _ilvmgye0.EmployeeTable? ___employees;
 
-  _i1.ManyRelation<_i2.EmployeeTable>? _employees;
+  _is.ManyRelation<_ilvmgye0.EmployeeTable>? _employees;
 
-  _i2.EmployeeTable get __employees {
+  _ilvmgye0.EmployeeTable get __employees {
     if (___employees != null) return ___employees!;
-    ___employees = _i1.createRelationTable(
+    ___employees = _is.createRelationTable(
       relationFieldName: '__employees',
       field: Department.t.id,
-      foreignField: _i2.Employee.t.departmentId,
+      foreignField: _ilvmgye0.Employee.t.departmentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EmployeeTable(tableRelation: foreignTableRelation),
+          _ilvmgye0.EmployeeTable(tableRelation: foreignTableRelation),
     );
     return ___employees!;
   }
 
-  _i1.ManyRelation<_i2.EmployeeTable> get employees {
+  _is.ManyRelation<_ilvmgye0.EmployeeTable> get employees {
     if (_employees != null) return _employees!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'employees',
       field: Department.t.id,
-      foreignField: _i2.Employee.t.departmentId,
+      foreignField: _ilvmgye0.Employee.t.departmentId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EmployeeTable(tableRelation: foreignTableRelation),
+          _ilvmgye0.EmployeeTable(tableRelation: foreignTableRelation),
     );
-    _employees = _i1.ManyRelation<_i2.EmployeeTable>(
+    _employees = _is.ManyRelation<_ilvmgye0.EmployeeTable>(
       tableWithRelations: relationTable,
-      table: _i2.EmployeeTable(
+      table: _ilvmgye0.EmployeeTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -208,13 +208,13 @@ class DepartmentTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'employees') {
       return __employees;
     }
@@ -222,23 +222,23 @@ class DepartmentTable extends _i1.Table<int?> {
   }
 }
 
-class DepartmentInclude extends _i1.IncludeObject {
-  DepartmentInclude._({_i2.EmployeeIncludeList? employees}) {
+class DepartmentInclude extends _is.IncludeObject {
+  DepartmentInclude._({_ilvmgye0.EmployeeIncludeList? employees}) {
     _employees = employees;
   }
 
-  _i2.EmployeeIncludeList? _employees;
+  _ilvmgye0.EmployeeIncludeList? _employees;
 
   @override
-  Map<String, _i1.Include?> get includes => {'employees': _employees};
+  Map<String, _is.Include?> get includes => {'employees': _employees};
 
   @override
-  _i1.Table<int?> get table => Department.t;
+  _is.Table<int?> get table => Department.t;
 }
 
-class DepartmentIncludeList extends _i1.IncludeList {
+class DepartmentIncludeList extends _is.IncludeList {
   DepartmentIncludeList._({
-    _i1.WhereExpressionBuilder<DepartmentTable>? where,
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -249,10 +249,10 @@ class DepartmentIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Department.t;
+  _is.Table<int?> get table => Department.t;
 }
 
 class DepartmentRepository {
@@ -285,16 +285,16 @@ class DepartmentRepository {
   /// );
   /// ```
   Future<List<Department>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DepartmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
     DepartmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Department>(
       where: where?.call(Department.t),
@@ -327,15 +327,15 @@ class DepartmentRepository {
   /// );
   /// ```
   Future<Department?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DepartmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
     DepartmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Department>(
       where: where?.call(Department.t),
@@ -351,12 +351,12 @@ class DepartmentRepository {
 
   /// Finds a single [Department] by its [id] or null if no such row exists.
   Future<Department?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     DepartmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Department>(
       id,
@@ -382,9 +382,9 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Department> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -400,9 +400,9 @@ class DepartmentRepository {
   ///
   /// The returned [Department] will have its `id` field set.
   Future<Department> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Department>(
       row,
@@ -431,12 +431,12 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Department> rows, {
-    required _i1.ColumnSelections<DepartmentTable> conflictColumns,
-    _i1.ColumnSelections<DepartmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DepartmentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DepartmentTable> conflictColumns,
+    _is.ColumnSelections<DepartmentTable>? updateColumns,
+    _is.WhereExpressionBuilder<DepartmentTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Department>(
@@ -463,12 +463,12 @@ class DepartmentRepository {
   ///
   /// The returned [Department] will have its `id` field set.
   Future<Department?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department row, {
-    required _i1.ColumnSelections<DepartmentTable> conflictColumns,
-    _i1.ColumnSelections<DepartmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DepartmentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DepartmentTable> conflictColumns,
+    _is.ColumnSelections<DepartmentTable>? updateColumns,
+    _is.WhereExpressionBuilder<DepartmentTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Department>(
       row,
@@ -489,10 +489,10 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Department> rows, {
-    _i1.ColumnSelections<DepartmentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DepartmentTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Department>(
@@ -507,10 +507,10 @@ class DepartmentRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Department> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department row, {
-    _i1.ColumnSelections<DepartmentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DepartmentTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Department>(
       row,
@@ -522,10 +522,10 @@ class DepartmentRepository {
   /// Updates a single [Department] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Department?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DepartmentUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<DepartmentUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Department>(
       id,
@@ -541,14 +541,14 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DepartmentUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<DepartmentTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DepartmentUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<DepartmentTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Department>(
@@ -575,11 +575,11 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Department> rows, {
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Department>(
@@ -593,9 +593,9 @@ class DepartmentRepository {
 
   /// Deletes a single [Department].
   Future<Department> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Department>(
       row,
@@ -612,11 +612,11 @@ class DepartmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Department>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DepartmentTable> where,
-    _i1.OrderByBuilder<DepartmentTable>? orderBy,
-    _i1.OrderByListBuilder<DepartmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DepartmentTable> where,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Department>(
@@ -631,10 +631,10 @@ class DepartmentRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DepartmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Department>(
       where: where?.call(Department.t),
@@ -645,11 +645,11 @@ class DepartmentRepository {
 
   /// Acquires row-level locks on [Department] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DepartmentTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DepartmentTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Department>(
       where: where(Department.t),
@@ -666,10 +666,10 @@ class DepartmentAttachRepository {
   /// Creates a relation between this [Department] and the given [Employee]s
   /// by setting each [Employee]'s foreign key `departmentId` to refer to this [Department].
   Future<void> employees(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department department,
-    List<_i2.Employee> employee, {
-    _i1.Transaction? transaction,
+    List<_ilvmgye0.Employee> employee, {
+    _is.Transaction? transaction,
   }) async {
     if (employee.any((e) => e.id == null)) {
       throw ArgumentError.notNull('employee.id');
@@ -681,9 +681,9 @@ class DepartmentAttachRepository {
     var $employee = employee
         .map((e) => e.copyWith(departmentId: department.id))
         .toList();
-    await session.db.update<_i2.Employee>(
+    await session.db.update<_ilvmgye0.Employee>(
       $employee,
-      columns: [_i2.Employee.t.departmentId],
+      columns: [_ilvmgye0.Employee.t.departmentId],
       transaction: transaction,
     );
   }
@@ -695,10 +695,10 @@ class DepartmentAttachRowRepository {
   /// Creates a relation between this [Department] and the given [Employee]
   /// by setting the [Employee]'s foreign key `departmentId` to refer to this [Department].
   Future<void> employees(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Department department,
-    _i2.Employee employee, {
-    _i1.Transaction? transaction,
+    _ilvmgye0.Employee employee, {
+    _is.Transaction? transaction,
   }) async {
     if (employee.id == null) {
       throw ArgumentError.notNull('employee.id');
@@ -708,9 +708,9 @@ class DepartmentAttachRowRepository {
     }
 
     var $employee = employee.copyWith(departmentId: department.id);
-    await session.db.updateRow<_i2.Employee>(
+    await session.db.updateRow<_ilvmgye0.Employee>(
       $employee,
-      columns: [_i2.Employee.t.departmentId],
+      columns: [_ilvmgye0.Employee.t.departmentId],
       transaction: transaction,
     );
   }

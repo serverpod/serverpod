@@ -10,29 +10,30 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import 'package:meta/meta.dart' as _i3;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class EnumDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EnumDefaultMix._({
     this.id,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
-    _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   }) : byNameEnumDefaultAndDefaultModel =
-           byNameEnumDefaultAndDefaultModel ?? _i2.ByNameEnum.byName2,
+           byNameEnumDefaultAndDefaultModel ?? _iwklobdz.ByNameEnum.byName2,
        byNameEnumDefaultAndDefaultPersist =
-           byNameEnumDefaultAndDefaultPersist ?? _i2.ByNameEnum.byName1,
+           byNameEnumDefaultAndDefaultPersist ?? _iwklobdz.ByNameEnum.byName1,
        byNameEnumDefaultModelAndDefaultPersist =
-           byNameEnumDefaultModelAndDefaultPersist ?? _i2.ByNameEnum.byName1;
+           byNameEnumDefaultModelAndDefaultPersist ??
+           _iwklobdz.ByNameEnum.byName1;
 
   factory EnumDefaultMix({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
-    _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   }) = _EnumDefaultMixImpl;
 
   factory EnumDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,20 +42,20 @@ abstract class EnumDefaultMix
       byNameEnumDefaultAndDefaultModel:
           jsonSerialization['byNameEnumDefaultAndDefaultModel'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultAndDefaultModel'] as String),
             ),
       byNameEnumDefaultAndDefaultPersist:
           jsonSerialization['byNameEnumDefaultAndDefaultPersist'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultAndDefaultPersist']
                   as String),
             ),
       byNameEnumDefaultModelAndDefaultPersist:
           jsonSerialization['byNameEnumDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultModelAndDefaultPersist']
                   as String),
             ),
@@ -68,23 +69,23 @@ abstract class EnumDefaultMix
   @override
   int? id;
 
-  _i2.ByNameEnum byNameEnumDefaultAndDefaultModel;
+  _iwklobdz.ByNameEnum byNameEnumDefaultAndDefaultModel;
 
-  _i2.ByNameEnum byNameEnumDefaultAndDefaultPersist;
+  _iwklobdz.ByNameEnum byNameEnumDefaultAndDefaultPersist;
 
-  _i2.ByNameEnum byNameEnumDefaultModelAndDefaultPersist;
+  _iwklobdz.ByNameEnum byNameEnumDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EnumDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EnumDefaultMix copyWith({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
-    _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -119,11 +120,11 @@ abstract class EnumDefaultMix
   }
 
   static EnumDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
   }) {
     return EnumDefaultMixIncludeList.internal_(
@@ -138,7 +139,7 @@ abstract class EnumDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,9 +148,9 @@ class _Undefined {}
 class _EnumDefaultMixImpl extends EnumDefaultMix {
   _EnumDefaultMixImpl({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
-    _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   }) : super._(
          id: id,
          byNameEnumDefaultAndDefaultModel: byNameEnumDefaultAndDefaultModel,
@@ -160,13 +161,13 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
 
   /// Returns a shallow copy of this [EnumDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EnumDefaultMix copyWith({
     Object? id = _Undefined,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultModel,
-    _i2.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
-    _i2.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultModel,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultAndDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultModelAndDefaultPersist,
   }) {
     return EnumDefaultMix(
       id: id is int? ? id : this.id,
@@ -183,64 +184,68 @@ class _EnumDefaultMixImpl extends EnumDefaultMix {
   }
 }
 
-class EnumDefaultMixUpdateTable extends _i1.UpdateTable<EnumDefaultMixTable> {
+class EnumDefaultMixUpdateTable extends _is.UpdateTable<EnumDefaultMixTable> {
   EnumDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
-  byNameEnumDefaultAndDefaultModel(_i2.ByNameEnum value) => _i1.ColumnValue(
-    table.byNameEnumDefaultAndDefaultModel,
-    value,
-  );
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum>
+  byNameEnumDefaultAndDefaultModel(_iwklobdz.ByNameEnum value) =>
+      _is.ColumnValue(
+        table.byNameEnumDefaultAndDefaultModel,
+        value,
+      );
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
-  byNameEnumDefaultAndDefaultPersist(_i2.ByNameEnum value) => _i1.ColumnValue(
-    table.byNameEnumDefaultAndDefaultPersist,
-    value,
-  );
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum>
+  byNameEnumDefaultAndDefaultPersist(_iwklobdz.ByNameEnum value) =>
+      _is.ColumnValue(
+        table.byNameEnumDefaultAndDefaultPersist,
+        value,
+      );
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum>
-  byNameEnumDefaultModelAndDefaultPersist(_i2.ByNameEnum value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum>
+  byNameEnumDefaultModelAndDefaultPersist(_iwklobdz.ByNameEnum value) =>
+      _is.ColumnValue(
         table.byNameEnumDefaultModelAndDefaultPersist,
         value,
       );
 }
 
-class EnumDefaultMixTable extends _i1.Table<int?> {
+class EnumDefaultMixTable extends _is.Table<int?> {
   EnumDefaultMixTable({super.tableRelation})
     : super(tableName: 'enum_default_mix') {
     updateTable = EnumDefaultMixUpdateTable(this);
-    byNameEnumDefaultAndDefaultModel = _i1.ColumnEnum(
+    byNameEnumDefaultAndDefaultModel = _is.ColumnEnum(
       'byNameEnumDefaultAndDefaultModel',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    byNameEnumDefaultAndDefaultPersist = _i1.ColumnEnum(
+    byNameEnumDefaultAndDefaultPersist = _is.ColumnEnum(
       'byNameEnumDefaultAndDefaultPersist',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    byNameEnumDefaultModelAndDefaultPersist = _i1.ColumnEnum(
+    byNameEnumDefaultModelAndDefaultPersist = _is.ColumnEnum(
       'byNameEnumDefaultModelAndDefaultPersist',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
   }
 
   late final EnumDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultAndDefaultModel;
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum>
+  byNameEnumDefaultAndDefaultModel;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultAndDefaultPersist;
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum>
+  byNameEnumDefaultAndDefaultPersist;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum>
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum>
   byNameEnumDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     byNameEnumDefaultAndDefaultModel,
     byNameEnumDefaultAndDefaultPersist,
@@ -248,40 +253,40 @@ class EnumDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class EnumDefaultMixInclude extends _i1.IncludeObject {
-  @_i3.internal
-  EnumDefaultMixInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class EnumDefaultMixInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  EnumDefaultMixInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => EnumDefaultMix.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EnumDefaultMix.t;
 }
 
-class EnumDefaultMixIncludeList extends _i1.IncludeList {
-  @_i3.internal
+class EnumDefaultMixIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   EnumDefaultMixIncludeList.internal_({
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultMix.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EnumDefaultMix.t;
+  _is.Table<int?> get table => EnumDefaultMix.t;
 }
 
 class EnumDefaultMixRepository {
@@ -310,15 +315,15 @@ class EnumDefaultMixRepository {
   /// );
   /// ```
   Future<List<EnumDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
@@ -350,14 +355,14 @@ class EnumDefaultMixRepository {
   /// );
   /// ```
   Future<EnumDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
@@ -372,11 +377,11 @@ class EnumDefaultMixRepository {
 
   /// Finds a single [EnumDefaultMix] by its [id] or null if no such row exists.
   Future<EnumDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EnumDefaultMix>(
       id,
@@ -401,9 +406,9 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -419,9 +424,9 @@ class EnumDefaultMixRepository {
   ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
   Future<EnumDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EnumDefaultMix>(
       row,
@@ -450,12 +455,12 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultMix> rows, {
-    required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EnumDefaultMix>(
@@ -482,12 +487,12 @@ class EnumDefaultMixRepository {
   ///
   /// The returned [EnumDefaultMix] will have its `id` field set.
   Future<EnumDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultMix row, {
-    required _i1.ColumnSelections<EnumDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultMix>(
       row,
@@ -508,10 +513,10 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultMix> rows, {
-    _i1.ColumnSelections<EnumDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EnumDefaultMix>(
@@ -526,10 +531,10 @@ class EnumDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnumDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultMix row, {
-    _i1.ColumnSelections<EnumDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EnumDefaultMix>(
       row,
@@ -541,10 +546,10 @@ class EnumDefaultMixRepository {
   /// Updates a single [EnumDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultMix>(
       id,
@@ -560,14 +565,14 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EnumDefaultMixUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EnumDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultMix>(
@@ -594,11 +599,11 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultMix> rows, {
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EnumDefaultMix>(
@@ -612,9 +617,9 @@ class EnumDefaultMixRepository {
 
   /// Deletes a single [EnumDefaultMix].
   Future<EnumDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EnumDefaultMix>(
       row,
@@ -631,11 +636,11 @@ class EnumDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
-    _i1.OrderByBuilder<EnumDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultMix>(
@@ -650,10 +655,10 @@ class EnumDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EnumDefaultMix>(
       where: where?.call(EnumDefaultMix.t),
@@ -664,11 +669,11 @@ class EnumDefaultMixRepository {
 
   /// Acquires row-level locks on [EnumDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnumDefaultMix>(
       where: where(EnumDefaultMix.t),

@@ -10,15 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_core_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_auth_core_client/src/protocol/protocol.dart'
+    as _ifwxqeej;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Core database entity representing a user in the authentication system.
 ///
 /// This class is meant to be used only to interact with the database. To transfer
 /// user data, use the [AuthUserModel] DTO.
 abstract class AuthUser
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AuthUser._({
     this.id,
     DateTime? createdAt,
@@ -28,7 +29,7 @@ abstract class AuthUser
        blocked = blocked ?? false;
 
   factory AuthUser({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
@@ -38,23 +39,23 @@ abstract class AuthUser
     return AuthUser(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      scopeNames: _i2.Protocol().deserialize<Set<String>>(
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      scopeNames: _ifwxqeej.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
+          : _isc.BoolJsonExtension.fromJson(jsonSerialization['blocked']),
     );
   }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  _i1.UuidValue? id;
+  _isc.UuidValue? id;
 
   /// The time when this user was created.
   DateTime createdAt;
@@ -67,9 +68,9 @@ abstract class AuthUser
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AuthUser copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     DateTime? createdAt,
     Set<String>? scopeNames,
     bool? blocked,
@@ -98,7 +99,7 @@ abstract class AuthUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +107,7 @@ class _Undefined {}
 
 class _AuthUserImpl extends AuthUser {
   _AuthUserImpl({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     DateTime? createdAt,
     required Set<String> scopeNames,
     bool? blocked,
@@ -119,7 +120,7 @@ class _AuthUserImpl extends AuthUser {
 
   /// Returns a shallow copy of this [AuthUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AuthUser copyWith({
     Object? id = _Undefined,
@@ -128,7 +129,7 @@ class _AuthUserImpl extends AuthUser {
     bool? blocked,
   }) {
     return AuthUser(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
       blocked: blocked ?? this.blocked,

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_author.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_author.dart' as _iq5hz6n4;
 
 abstract class ProjectedArticle
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedArticle._({
     this.id,
     required this.title,
@@ -29,7 +29,7 @@ abstract class ProjectedArticle
     int? id,
     required String title,
     required int authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     required String summary,
     required String content,
   }) = _ProjectedArticleImpl;
@@ -41,7 +41,7 @@ abstract class ProjectedArticle
       authorId: jsonSerialization['authorId'] as int,
       author: jsonSerialization['author'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ProjectedAuthor>(
+          : _iza9lbb5.Protocol().deserialize<_iq5hz6n4.ProjectedAuthor>(
               jsonSerialization['author'],
             ),
       summary: jsonSerialization['summary'] as String,
@@ -58,7 +58,7 @@ abstract class ProjectedArticle
 
   int authorId;
 
-  _i2.ProjectedAuthor? author;
+  _iq5hz6n4.ProjectedAuthor? author;
 
   String summary;
 
@@ -66,12 +66,12 @@ abstract class ProjectedArticle
 
   /// Returns a shallow copy of this [ProjectedArticle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedArticle copyWith({
     int? id,
     String? title,
     int? authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     String? summary,
     String? content,
   });
@@ -103,7 +103,7 @@ abstract class ProjectedArticle
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -114,7 +114,7 @@ class _ProjectedArticleImpl extends ProjectedArticle {
     int? id,
     required String title,
     required int authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     required String summary,
     required String content,
   }) : super._(
@@ -128,7 +128,7 @@ class _ProjectedArticleImpl extends ProjectedArticle {
 
   /// Returns a shallow copy of this [ProjectedArticle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedArticle copyWith({
     Object? id = _Undefined,
@@ -142,7 +142,9 @@ class _ProjectedArticleImpl extends ProjectedArticle {
       id: id is int? ? id : this.id,
       title: title ?? this.title,
       authorId: authorId ?? this.authorId,
-      author: author is _i2.ProjectedAuthor? ? author : this.author?.copyWith(),
+      author: author is _iq5hz6n4.ProjectedAuthor?
+          ? author
+          : this.author?.copyWith(),
       summary: summary ?? this.summary,
       content: content ?? this.content,
     );

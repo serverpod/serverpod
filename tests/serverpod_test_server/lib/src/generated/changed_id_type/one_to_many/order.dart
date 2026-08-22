@@ -11,45 +11,45 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/one_to_many/customer.dart' as _i2;
-import '../../changed_id_type/one_to_many/comment.dart' as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
-import 'package:meta/meta.dart' as _i5;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../changed_id_type/one_to_many/comment.dart' as _i7e4crca;
+import '../../changed_id_type/one_to_many/customer.dart' as _iwdajoe0;
 
 abstract class OrderUuid
-    implements _i1.TableRow<_i1.UuidValue>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue>, _is.ProtocolSerialization {
   OrderUuid._({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required this.description,
     required this.customerId,
     this.customer,
     this.comments,
-  }) : id = id ?? const _i1.Uuid().v7obj();
+  }) : id = id ?? const _is.Uuid().v7obj();
 
   factory OrderUuid({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   }) = _OrderUuidImpl;
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.CustomerInt>(
+          : _igqrxdcj.Protocol().deserialize<_iwdajoe0.CustomerInt>(
               jsonSerialization['customer'],
             ),
       comments: jsonSerialization['comments'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.CommentInt>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i7e4crca.CommentInt>>(
               jsonSerialization['comments'],
             ),
     );
@@ -60,28 +60,28 @@ abstract class OrderUuid
   static const db = OrderUuidRepository._();
 
   @override
-  _i1.UuidValue id;
+  _is.UuidValue id;
 
   String description;
 
   int customerId;
 
-  _i2.CustomerInt? customer;
+  _iwdajoe0.CustomerInt? customer;
 
-  List<_i3.CommentInt>? comments;
+  List<_i7e4crca.CommentInt>? comments;
 
   @override
-  _i1.Table<_i1.UuidValue> get table => t;
+  _is.Table<_is.UuidValue> get table => t;
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   OrderUuid copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? description,
     int? customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,8 +110,8 @@ abstract class OrderUuid
   }
 
   static OrderUuidInclude include({
-    _i2.CustomerIntInclude? customer,
-    _i3.CommentIntIncludeList? comments,
+    _iwdajoe0.CustomerIntInclude? customer,
+    _i7e4crca.CommentIntIncludeList? comments,
   }) {
     return OrderUuidInclude.internal_(
       customer: customer,
@@ -120,11 +120,11 @@ abstract class OrderUuid
   }
 
   static OrderUuidIncludeList includeList({
-    _i1.WhereExpressionBuilder<OrderUuidTable>? where,
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
     OrderUuidInclude? include,
   }) {
     return OrderUuidIncludeList.internal_(
@@ -139,7 +139,7 @@ abstract class OrderUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,11 +147,11 @@ class _Undefined {}
 
 class _OrderUuidImpl extends OrderUuid {
   _OrderUuidImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   }) : super._(
          id: id,
          description: description,
@@ -162,10 +162,10 @@ class _OrderUuidImpl extends OrderUuid {
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   OrderUuid copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? description,
     int? customerId,
     Object? customer = _Undefined,
@@ -175,38 +175,38 @@ class _OrderUuidImpl extends OrderUuid {
       id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _i2.CustomerInt?
+      customer: customer is _iwdajoe0.CustomerInt?
           ? customer
           : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
+      comments: comments is List<_i7e4crca.CommentInt>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class OrderUuidUpdateTable extends _i1.UpdateTable<OrderUuidTable> {
+class OrderUuidUpdateTable extends _is.UpdateTable<OrderUuidTable> {
   OrderUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> description(String value) => _is.ColumnValue(
     table.description,
     value,
   );
 
-  _i1.ColumnValue<int, int> customerId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> customerId(int value) => _is.ColumnValue(
     table.customerId,
     value,
   );
 }
 
-class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
+class OrderUuidTable extends _is.Table<_is.UuidValue> {
   OrderUuidTable({super.tableRelation}) : super(tableName: 'order_uuid') {
     updateTable = OrderUuidUpdateTable(this);
-    description = _i1.ColumnString(
+    description = _is.ColumnString(
       'description',
       this,
     );
-    customerId = _i1.ColumnInt(
+    customerId = _is.ColumnInt(
       'customerId',
       this,
     );
@@ -214,55 +214,55 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
 
   late final OrderUuidUpdateTable updateTable;
 
-  late final _i1.ColumnString description;
+  late final _is.ColumnString description;
 
-  late final _i1.ColumnInt customerId;
+  late final _is.ColumnInt customerId;
 
-  _i2.CustomerIntTable? _customer;
+  _iwdajoe0.CustomerIntTable? _customer;
 
-  _i3.CommentIntTable? ___comments;
+  _i7e4crca.CommentIntTable? ___comments;
 
-  _i1.ManyRelation<_i3.CommentIntTable>? _comments;
+  _is.ManyRelation<_i7e4crca.CommentIntTable>? _comments;
 
-  _i2.CustomerIntTable get customer {
+  _iwdajoe0.CustomerIntTable get customer {
     if (_customer != null) return _customer!;
-    _customer = _i1.createRelationTable(
+    _customer = _is.createRelationTable(
       relationFieldName: 'customer',
       field: OrderUuid.t.customerId,
-      foreignField: _i2.CustomerInt.t.id,
+      foreignField: _iwdajoe0.CustomerInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.CustomerIntTable(tableRelation: foreignTableRelation),
+          _iwdajoe0.CustomerIntTable(tableRelation: foreignTableRelation),
     );
     return _customer!;
   }
 
-  _i3.CommentIntTable get __comments {
+  _i7e4crca.CommentIntTable get __comments {
     if (___comments != null) return ___comments!;
-    ___comments = _i1.createRelationTable(
+    ___comments = _is.createRelationTable(
       relationFieldName: '__comments',
       field: OrderUuid.t.id,
-      foreignField: _i3.CommentInt.t.orderId,
+      foreignField: _i7e4crca.CommentInt.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+          _i7e4crca.CommentIntTable(tableRelation: foreignTableRelation),
     );
     return ___comments!;
   }
 
-  _i1.ManyRelation<_i3.CommentIntTable> get comments {
+  _is.ManyRelation<_i7e4crca.CommentIntTable> get comments {
     if (_comments != null) return _comments!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'comments',
       field: OrderUuid.t.id,
-      foreignField: _i3.CommentInt.t.orderId,
+      foreignField: _i7e4crca.CommentInt.t.orderId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CommentIntTable(tableRelation: foreignTableRelation),
+          _i7e4crca.CommentIntTable(tableRelation: foreignTableRelation),
     );
-    _comments = _i1.ManyRelation<_i3.CommentIntTable>(
+    _comments = _is.ManyRelation<_i7e4crca.CommentIntTable>(
       tableWithRelations: relationTable,
-      table: _i3.CommentIntTable(
+      table: _i7e4crca.CommentIntTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -270,14 +270,14 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     description,
     customerId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'customer') {
       return customer;
     }
@@ -288,54 +288,54 @@ class OrderUuidTable extends _i1.Table<_i1.UuidValue> {
   }
 }
 
-class OrderUuidInclude extends _i1.IncludeObject {
-  @_i5.internal
+class OrderUuidInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   OrderUuidInclude.internal_({
-    _i2.CustomerIntInclude? customer,
-    _i3.CommentIntIncludeList? comments,
-    List<_i1.Column>? this.selectedColumns,
+    _iwdajoe0.CustomerIntInclude? customer,
+    _i7e4crca.CommentIntIncludeList? comments,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _customer = customer;
     _comments = comments;
   }
 
-  _i2.CustomerIntInclude? _customer;
+  _iwdajoe0.CustomerIntInclude? _customer;
 
-  _i3.CommentIntIncludeList? _comments;
+  _i7e4crca.CommentIntIncludeList? _comments;
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'customer': _customer,
     'comments': _comments,
   };
 
   @override
-  _i1.Table<_i1.UuidValue> get table => OrderUuid.t;
+  _is.Table<_is.UuidValue> get table => OrderUuid.t;
 }
 
-class OrderUuidIncludeList extends _i1.IncludeList {
-  @_i5.internal
+class OrderUuidIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   OrderUuidIncludeList.internal_({
-    _i1.WhereExpressionBuilder<OrderUuidTable>? where,
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(OrderUuid.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue> get table => OrderUuid.t;
+  _is.Table<_is.UuidValue> get table => OrderUuid.t;
 }
 
 class OrderUuidRepository {
@@ -368,16 +368,16 @@ class OrderUuidRepository {
   /// );
   /// ```
   Future<List<OrderUuid>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<OrderUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
     OrderUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<OrderUuid>(
       where: where?.call(OrderUuid.t),
@@ -410,15 +410,15 @@ class OrderUuidRepository {
   /// );
   /// ```
   Future<OrderUuid?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<OrderUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
     int? offset,
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
     OrderUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<OrderUuid>(
       where: where?.call(OrderUuid.t),
@@ -434,12 +434,12 @@ class OrderUuidRepository {
 
   /// Finds a single [OrderUuid] by its [id] or null if no such row exists.
   Future<OrderUuid?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     OrderUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<OrderUuid>(
       id,
@@ -465,9 +465,9 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<OrderUuid> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -483,9 +483,9 @@ class OrderUuidRepository {
   ///
   /// The returned [OrderUuid] will have its `id` field set.
   Future<OrderUuid> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<OrderUuid>(
       row,
@@ -514,12 +514,12 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<OrderUuid> rows, {
-    required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
-    _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<OrderUuidTable> conflictColumns,
+    _is.ColumnSelections<OrderUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<OrderUuid>(
@@ -546,12 +546,12 @@ class OrderUuidRepository {
   ///
   /// The returned [OrderUuid] will have its `id` field set.
   Future<OrderUuid?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid row, {
-    required _i1.ColumnSelections<OrderUuidTable> conflictColumns,
-    _i1.ColumnSelections<OrderUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<OrderUuidTable> conflictColumns,
+    _is.ColumnSelections<OrderUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<OrderUuidTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<OrderUuid>(
       row,
@@ -572,10 +572,10 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<OrderUuid> rows, {
-    _i1.ColumnSelections<OrderUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<OrderUuidTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<OrderUuid>(
@@ -590,10 +590,10 @@ class OrderUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<OrderUuid> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid row, {
-    _i1.ColumnSelections<OrderUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<OrderUuidTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<OrderUuid>(
       row,
@@ -605,10 +605,10 @@ class OrderUuidRepository {
   /// Updates a single [OrderUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<OrderUuid?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<OrderUuid>(
       id,
@@ -624,14 +624,14 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<OrderUuidTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<OrderUuidUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<OrderUuidTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<OrderUuid>(
@@ -658,11 +658,11 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<OrderUuid> rows, {
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<OrderUuid>(
@@ -676,9 +676,9 @@ class OrderUuidRepository {
 
   /// Deletes a single [OrderUuid].
   Future<OrderUuid> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<OrderUuid>(
       row,
@@ -695,11 +695,11 @@ class OrderUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<OrderUuid>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<OrderUuidTable> where,
-    _i1.OrderByBuilder<OrderUuidTable>? orderBy,
-    _i1.OrderByListBuilder<OrderUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<OrderUuidTable> where,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<OrderUuid>(
@@ -714,10 +714,10 @@ class OrderUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<OrderUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<OrderUuid>(
       where: where?.call(OrderUuid.t),
@@ -728,11 +728,11 @@ class OrderUuidRepository {
 
   /// Acquires row-level locks on [OrderUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<OrderUuidTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<OrderUuidTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<OrderUuid>(
       where: where(OrderUuid.t),
@@ -749,10 +749,10 @@ class OrderUuidAttachRepository {
   /// Creates a relation between this [OrderUuid] and the given [CommentInt]s
   /// by setting each [CommentInt]'s foreign key `orderId` to refer to this [OrderUuid].
   Future<void> comments(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid orderUuid,
-    List<_i3.CommentInt> commentInt, {
-    _i1.Transaction? transaction,
+    List<_i7e4crca.CommentInt> commentInt, {
+    _is.Transaction? transaction,
   }) async {
     if (commentInt.any((e) => e.id == null)) {
       throw ArgumentError.notNull('commentInt.id');
@@ -764,9 +764,9 @@ class OrderUuidAttachRepository {
     var $commentInt = commentInt
         .map((e) => e.copyWith(orderId: orderUuid.id))
         .toList();
-    await session.db.update<_i3.CommentInt>(
+    await session.db.update<_i7e4crca.CommentInt>(
       $commentInt,
-      columns: [_i3.CommentInt.t.orderId],
+      columns: [_i7e4crca.CommentInt.t.orderId],
       transaction: transaction,
     );
   }
@@ -778,10 +778,10 @@ class OrderUuidAttachRowRepository {
   /// Creates a relation between the given [OrderUuid] and [CustomerInt]
   /// by setting the [OrderUuid]'s foreign key `customerId` to refer to the [CustomerInt].
   Future<void> customer(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid orderUuid,
-    _i2.CustomerInt customer, {
-    _i1.Transaction? transaction,
+    _iwdajoe0.CustomerInt customer, {
+    _is.Transaction? transaction,
   }) async {
     if (orderUuid.id == null) {
       throw ArgumentError.notNull('orderUuid.id');
@@ -801,10 +801,10 @@ class OrderUuidAttachRowRepository {
   /// Creates a relation between this [OrderUuid] and the given [CommentInt]
   /// by setting the [CommentInt]'s foreign key `orderId` to refer to this [OrderUuid].
   Future<void> comments(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     OrderUuid orderUuid,
-    _i3.CommentInt commentInt, {
-    _i1.Transaction? transaction,
+    _i7e4crca.CommentInt commentInt, {
+    _is.Transaction? transaction,
   }) async {
     if (commentInt.id == null) {
       throw ArgumentError.notNull('commentInt.id');
@@ -814,9 +814,9 @@ class OrderUuidAttachRowRepository {
     }
 
     var $commentInt = commentInt.copyWith(orderId: orderUuid.id);
-    await session.db.updateRow<_i3.CommentInt>(
+    await session.db.updateRow<_i7e4crca.CommentInt>(
       $commentInt,
-      columns: [_i3.CommentInt.t.orderId],
+      columns: [_i7e4crca.CommentInt.t.orderId],
       transaction: transaction,
     );
   }

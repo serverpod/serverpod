@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i2;
+import 'package:serverpod_auth_client/src/protocol/protocol.dart' as _i44s17dh;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Provides a method of access for a user to authenticate with the server.
 abstract class AuthKey
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   AuthKey._({
     this.id,
     required this.userId,
@@ -40,7 +40,7 @@ abstract class AuthKey
       userId: jsonSerialization['userId'] as int,
       hash: jsonSerialization['hash'] as String,
       key: jsonSerialization['key'] as String?,
-      scopeNames: _i2.Protocol().deserialize<List<String>>(
+      scopeNames: _i44s17dh.Protocol().deserialize<List<String>>(
         jsonSerialization['scopeNames'],
       ),
       method: jsonSerialization['method'] as String,
@@ -70,7 +70,7 @@ abstract class AuthKey
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AuthKey copyWith({
     int? id,
     int? userId,
@@ -107,7 +107,7 @@ abstract class AuthKey
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -132,7 +132,7 @@ class _AuthKeyImpl extends AuthKey {
 
   /// Returns a shallow copy of this [AuthKey]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AuthKey copyWith({
     Object? id = _Undefined,

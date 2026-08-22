@@ -10,31 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UuidDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UuidDefaultMix._({
     this.id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _is.UuidValue? uuidDefaultAndDefaultModel,
+    _is.UuidValue? uuidDefaultAndDefaultPersist,
+    _is.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) : uuidDefaultAndDefaultModel =
            uuidDefaultAndDefaultModel ??
-           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+           _is.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
        uuidDefaultAndDefaultPersist =
            uuidDefaultAndDefaultPersist ??
-           _i1.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
+           _is.UuidValue.fromString('6fa459ea-ee8a-3ca4-894e-db77e160355e'),
        uuidDefaultModelAndDefaultPersist =
            uuidDefaultModelAndDefaultPersist ??
-           _i1.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
+           _is.UuidValue.fromString('d9428888-122b-11e1-b85c-61cd3cbb3210');
 
   factory UuidDefaultMix({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _is.UuidValue? uuidDefaultAndDefaultModel,
+    _is.UuidValue? uuidDefaultAndDefaultPersist,
+    _is.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) = _UuidDefaultMixImpl;
 
   factory UuidDefaultMix.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -43,19 +43,19 @@ abstract class UuidDefaultMix
       uuidDefaultAndDefaultModel:
           jsonSerialization['uuidDefaultAndDefaultModel'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultAndDefaultModel'],
             ),
       uuidDefaultAndDefaultPersist:
           jsonSerialization['uuidDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultAndDefaultPersist'],
             ),
       uuidDefaultModelAndDefaultPersist:
           jsonSerialization['uuidDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultModelAndDefaultPersist'],
             ),
     );
@@ -68,23 +68,23 @@ abstract class UuidDefaultMix
   @override
   int? id;
 
-  _i1.UuidValue uuidDefaultAndDefaultModel;
+  _is.UuidValue uuidDefaultAndDefaultModel;
 
-  _i1.UuidValue uuidDefaultAndDefaultPersist;
+  _is.UuidValue uuidDefaultAndDefaultPersist;
 
-  _i1.UuidValue uuidDefaultModelAndDefaultPersist;
+  _is.UuidValue uuidDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UuidDefaultMix copyWith({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _is.UuidValue? uuidDefaultAndDefaultModel,
+    _is.UuidValue? uuidDefaultAndDefaultPersist,
+    _is.UuidValue? uuidDefaultModelAndDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,11 +115,11 @@ abstract class UuidDefaultMix
   }
 
   static UuidDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
     UuidDefaultMixInclude? include,
   }) {
     return UuidDefaultMixIncludeList.internal_(
@@ -134,7 +134,7 @@ abstract class UuidDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -143,9 +143,9 @@ class _Undefined {}
 class _UuidDefaultMixImpl extends UuidDefaultMix {
   _UuidDefaultMixImpl({
     int? id,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _is.UuidValue? uuidDefaultAndDefaultModel,
+    _is.UuidValue? uuidDefaultAndDefaultPersist,
+    _is.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) : super._(
          id: id,
          uuidDefaultAndDefaultModel: uuidDefaultAndDefaultModel,
@@ -155,13 +155,13 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
 
   /// Returns a shallow copy of this [UuidDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UuidDefaultMix copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? uuidDefaultAndDefaultModel,
-    _i1.UuidValue? uuidDefaultAndDefaultPersist,
-    _i1.UuidValue? uuidDefaultModelAndDefaultPersist,
+    _is.UuidValue? uuidDefaultAndDefaultModel,
+    _is.UuidValue? uuidDefaultAndDefaultPersist,
+    _is.UuidValue? uuidDefaultModelAndDefaultPersist,
   }) {
     return UuidDefaultMix(
       id: id is int? ? id : this.id,
@@ -176,45 +176,45 @@ class _UuidDefaultMixImpl extends UuidDefaultMix {
   }
 }
 
-class UuidDefaultMixUpdateTable extends _i1.UpdateTable<UuidDefaultMixTable> {
+class UuidDefaultMixUpdateTable extends _is.UpdateTable<UuidDefaultMixTable> {
   UuidDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultModel(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> uuidDefaultAndDefaultModel(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.uuidDefaultAndDefaultModel,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultAndDefaultPersist(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> uuidDefaultAndDefaultPersist(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.uuidDefaultAndDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue>
-  uuidDefaultModelAndDefaultPersist(_i1.UuidValue value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue>
+  uuidDefaultModelAndDefaultPersist(_is.UuidValue value) => _is.ColumnValue(
     table.uuidDefaultModelAndDefaultPersist,
     value,
   );
 }
 
-class UuidDefaultMixTable extends _i1.Table<int?> {
+class UuidDefaultMixTable extends _is.Table<int?> {
   UuidDefaultMixTable({super.tableRelation})
     : super(tableName: 'uuid_default_mix') {
     updateTable = UuidDefaultMixUpdateTable(this);
-    uuidDefaultAndDefaultModel = _i1.ColumnUuid(
+    uuidDefaultAndDefaultModel = _is.ColumnUuid(
       'uuidDefaultAndDefaultModel',
       this,
       hasDefault: true,
     );
-    uuidDefaultAndDefaultPersist = _i1.ColumnUuid(
+    uuidDefaultAndDefaultPersist = _is.ColumnUuid(
       'uuidDefaultAndDefaultPersist',
       this,
       hasDefault: true,
     );
-    uuidDefaultModelAndDefaultPersist = _i1.ColumnUuid(
+    uuidDefaultModelAndDefaultPersist = _is.ColumnUuid(
       'uuidDefaultModelAndDefaultPersist',
       this,
       hasDefault: true,
@@ -223,14 +223,14 @@ class UuidDefaultMixTable extends _i1.Table<int?> {
 
   late final UuidDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnUuid uuidDefaultAndDefaultModel;
+  late final _is.ColumnUuid uuidDefaultAndDefaultModel;
 
-  late final _i1.ColumnUuid uuidDefaultAndDefaultPersist;
+  late final _is.ColumnUuid uuidDefaultAndDefaultPersist;
 
-  late final _i1.ColumnUuid uuidDefaultModelAndDefaultPersist;
+  late final _is.ColumnUuid uuidDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     uuidDefaultAndDefaultModel,
     uuidDefaultAndDefaultPersist,
@@ -238,40 +238,40 @@ class UuidDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class UuidDefaultMixInclude extends _i1.IncludeObject {
-  @_i2.internal
-  UuidDefaultMixInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class UuidDefaultMixInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  UuidDefaultMixInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => UuidDefaultMix.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UuidDefaultMix.t;
 }
 
-class UuidDefaultMixIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class UuidDefaultMixIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   UuidDefaultMixIncludeList.internal_({
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefaultMix.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UuidDefaultMix.t;
+  _is.Table<int?> get table => UuidDefaultMix.t;
 }
 
 class UuidDefaultMixRepository {
@@ -300,15 +300,15 @@ class UuidDefaultMixRepository {
   /// );
   /// ```
   Future<List<UuidDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
@@ -340,14 +340,14 @@ class UuidDefaultMixRepository {
   /// );
   /// ```
   Future<UuidDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
@@ -362,11 +362,11 @@ class UuidDefaultMixRepository {
 
   /// Finds a single [UuidDefaultMix] by its [id] or null if no such row exists.
   Future<UuidDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UuidDefaultMix>(
       id,
@@ -391,9 +391,9 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -409,9 +409,9 @@ class UuidDefaultMixRepository {
   ///
   /// The returned [UuidDefaultMix] will have its `id` field set.
   Future<UuidDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UuidDefaultMix>(
       row,
@@ -440,12 +440,12 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultMix> rows, {
-    required _i1.ColumnSelections<UuidDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<UuidDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UuidDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<UuidDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UuidDefaultMix>(
@@ -472,12 +472,12 @@ class UuidDefaultMixRepository {
   ///
   /// The returned [UuidDefaultMix] will have its `id` field set.
   Future<UuidDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultMix row, {
-    required _i1.ColumnSelections<UuidDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<UuidDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UuidDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<UuidDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UuidDefaultMix>(
       row,
@@ -498,10 +498,10 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultMix> rows, {
-    _i1.ColumnSelections<UuidDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UuidDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UuidDefaultMix>(
@@ -516,10 +516,10 @@ class UuidDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UuidDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultMix row, {
-    _i1.ColumnSelections<UuidDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UuidDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UuidDefaultMix>(
       row,
@@ -531,10 +531,10 @@ class UuidDefaultMixRepository {
   /// Updates a single [UuidDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UuidDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultMix>(
       id,
@@ -550,14 +550,14 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UuidDefaultMixUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<UuidDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UuidDefaultMix>(
@@ -584,11 +584,11 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultMix> rows, {
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UuidDefaultMix>(
@@ -602,9 +602,9 @@ class UuidDefaultMixRepository {
 
   /// Deletes a single [UuidDefaultMix].
   Future<UuidDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UuidDefaultMix>(
       row,
@@ -621,11 +621,11 @@ class UuidDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
-    _i1.OrderByBuilder<UuidDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UuidDefaultMix>(
@@ -640,10 +640,10 @@ class UuidDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UuidDefaultMix>(
       where: where?.call(UuidDefaultMix.t),
@@ -654,11 +654,11 @@ class UuidDefaultMixRepository {
 
   /// Acquires row-level locks on [UuidDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UuidDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UuidDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UuidDefaultMix>(
       where: where(UuidDefaultMix.t),

@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class Employee
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Employee._({
     this.id,
     required this.name,
@@ -47,11 +47,11 @@ abstract class Employee
   int departmentId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Employee]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Employee copyWith({
     int? id,
     String? name,
@@ -82,11 +82,11 @@ abstract class Employee
   }
 
   static EmployeeIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmployeeTable>? where,
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
   }) {
     return EmployeeIncludeList.internal_(
@@ -101,7 +101,7 @@ abstract class Employee
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -120,7 +120,7 @@ class _EmployeeImpl extends Employee {
 
   /// Returns a shallow copy of this [Employee]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Employee copyWith({
     Object? id = _Undefined,
@@ -135,28 +135,28 @@ class _EmployeeImpl extends Employee {
   }
 }
 
-class EmployeeUpdateTable extends _i1.UpdateTable<EmployeeTable> {
+class EmployeeUpdateTable extends _is.UpdateTable<EmployeeTable> {
   EmployeeUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> departmentId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> departmentId(int value) => _is.ColumnValue(
     table.departmentId,
     value,
   );
 }
 
-class EmployeeTable extends _i1.Table<int?> {
+class EmployeeTable extends _is.Table<int?> {
   EmployeeTable({super.tableRelation}) : super(tableName: 'employee') {
     updateTable = EmployeeUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    departmentId = _i1.ColumnInt(
+    departmentId = _is.ColumnInt(
       'fk_employee_department_id',
       this,
       fieldName: 'departmentId',
@@ -165,52 +165,52 @@ class EmployeeTable extends _i1.Table<int?> {
 
   late final EmployeeUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt departmentId;
+  late final _is.ColumnInt departmentId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     departmentId,
   ];
 }
 
-class EmployeeInclude extends _i1.IncludeObject {
-  @_i2.internal
-  EmployeeInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class EmployeeInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  EmployeeInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => Employee.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => Employee.t;
 }
 
-class EmployeeIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class EmployeeIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   EmployeeIncludeList.internal_({
-    _i1.WhereExpressionBuilder<EmployeeTable>? where,
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(Employee.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Employee.t;
+  _is.Table<int?> get table => Employee.t;
 }
 
 class EmployeeRepository {
@@ -239,15 +239,15 @@ class EmployeeRepository {
   /// );
   /// ```
   Future<List<Employee>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmployeeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Employee>(
       where: where?.call(Employee.t),
@@ -279,14 +279,14 @@ class EmployeeRepository {
   /// );
   /// ```
   Future<Employee?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmployeeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Employee>(
       where: where?.call(Employee.t),
@@ -301,11 +301,11 @@ class EmployeeRepository {
 
   /// Finds a single [Employee] by its [id] or null if no such row exists.
   Future<Employee?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Employee>(
       id,
@@ -330,9 +330,9 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Employee> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -348,9 +348,9 @@ class EmployeeRepository {
   ///
   /// The returned [Employee] will have its `id` field set.
   Future<Employee> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Employee row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Employee>(
       row,
@@ -379,12 +379,12 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Employee> rows, {
-    required _i1.ColumnSelections<EmployeeTable> conflictColumns,
-    _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmployeeTable> conflictColumns,
+    _is.ColumnSelections<EmployeeTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmployeeTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Employee>(
@@ -411,12 +411,12 @@ class EmployeeRepository {
   ///
   /// The returned [Employee] will have its `id` field set.
   Future<Employee?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Employee row, {
-    required _i1.ColumnSelections<EmployeeTable> conflictColumns,
-    _i1.ColumnSelections<EmployeeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmployeeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmployeeTable> conflictColumns,
+    _is.ColumnSelections<EmployeeTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmployeeTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Employee>(
       row,
@@ -437,10 +437,10 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Employee> rows, {
-    _i1.ColumnSelections<EmployeeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmployeeTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Employee>(
@@ -455,10 +455,10 @@ class EmployeeRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Employee> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Employee row, {
-    _i1.ColumnSelections<EmployeeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmployeeTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Employee>(
       row,
@@ -470,10 +470,10 @@ class EmployeeRepository {
   /// Updates a single [Employee] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Employee?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmployeeUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EmployeeUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Employee>(
       id,
@@ -489,14 +489,14 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmployeeUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EmployeeTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmployeeUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EmployeeTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Employee>(
@@ -523,11 +523,11 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Employee> rows, {
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Employee>(
@@ -541,9 +541,9 @@ class EmployeeRepository {
 
   /// Deletes a single [Employee].
   Future<Employee> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Employee row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Employee>(
       row,
@@ -560,11 +560,11 @@ class EmployeeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Employee>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmployeeTable> where,
-    _i1.OrderByBuilder<EmployeeTable>? orderBy,
-    _i1.OrderByListBuilder<EmployeeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmployeeTable> where,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Employee>(
@@ -579,10 +579,10 @@ class EmployeeRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmployeeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Employee>(
       where: where?.call(Employee.t),
@@ -593,11 +593,11 @@ class EmployeeRepository {
 
   /// Acquires row-level locks on [Employee] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmployeeTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmployeeTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Employee>(
       where: where(Employee.t),

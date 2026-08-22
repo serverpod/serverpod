@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../models_with_relations/many_to_many/student.dart' as _i2;
-import '../../models_with_relations/many_to_many/course.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i4;
+    as _i08l111i;
+import '../../models_with_relations/many_to_many/course.dart' as _iwlbbfis;
+import '../../models_with_relations/many_to_many/student.dart' as _i2rea1ue;
 
 abstract class Enrollment
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Enrollment._({
     this.id,
     required this.studentId,
@@ -30,9 +30,9 @@ abstract class Enrollment
   factory Enrollment({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   }) = _EnrollmentImpl;
 
   factory Enrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,13 +41,15 @@ abstract class Enrollment
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Student>(
+          : _i08l111i.Protocol().deserialize<_i2rea1ue.Student>(
               jsonSerialization['student'],
             ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Course>(jsonSerialization['course']),
+          : _i08l111i.Protocol().deserialize<_iwlbbfis.Course>(
+              jsonSerialization['course'],
+            ),
     );
   }
 
@@ -60,24 +62,24 @@ abstract class Enrollment
 
   int studentId;
 
-  _i2.Student? student;
+  _i2rea1ue.Student? student;
 
   int courseId;
 
-  _i3.Course? course;
+  _iwlbbfis.Course? course;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Enrollment copyWith({
     int? id,
     int? studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     int? courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -104,8 +106,8 @@ abstract class Enrollment
   }
 
   static EnrollmentInclude include({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i2rea1ue.StudentInclude? student,
+    _iwlbbfis.CourseInclude? course,
   }) {
     return EnrollmentInclude._(
       student: student,
@@ -114,11 +116,11 @@ abstract class Enrollment
   }
 
   static EnrollmentIncludeList includeList({
-    _i1.WhereExpressionBuilder<EnrollmentTable>? where,
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
     EnrollmentInclude? include,
   }) {
     return EnrollmentIncludeList._(
@@ -133,7 +135,7 @@ abstract class Enrollment
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -143,9 +145,9 @@ class _EnrollmentImpl extends Enrollment {
   _EnrollmentImpl({
     int? id,
     required int studentId,
-    _i2.Student? student,
+    _i2rea1ue.Student? student,
     required int courseId,
-    _i3.Course? course,
+    _iwlbbfis.Course? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -156,7 +158,7 @@ class _EnrollmentImpl extends Enrollment {
 
   /// Returns a shallow copy of this [Enrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Enrollment copyWith({
     Object? id = _Undefined,
@@ -168,35 +170,37 @@ class _EnrollmentImpl extends Enrollment {
     return Enrollment(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.Student? ? student : this.student?.copyWith(),
+      student: student is _i2rea1ue.Student?
+          ? student
+          : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.Course? ? course : this.course?.copyWith(),
+      course: course is _iwlbbfis.Course? ? course : this.course?.copyWith(),
     );
   }
 }
 
-class EnrollmentUpdateTable extends _i1.UpdateTable<EnrollmentTable> {
+class EnrollmentUpdateTable extends _is.UpdateTable<EnrollmentTable> {
   EnrollmentUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> studentId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> studentId(int value) => _is.ColumnValue(
     table.studentId,
     value,
   );
 
-  _i1.ColumnValue<int, int> courseId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> courseId(int value) => _is.ColumnValue(
     table.courseId,
     value,
   );
 }
 
-class EnrollmentTable extends _i1.Table<int?> {
+class EnrollmentTable extends _is.Table<int?> {
   EnrollmentTable({super.tableRelation}) : super(tableName: 'enrollment') {
     updateTable = EnrollmentUpdateTable(this);
-    studentId = _i1.ColumnInt(
+    studentId = _is.ColumnInt(
       'studentId',
       this,
     );
-    courseId = _i1.ColumnInt(
+    courseId = _is.ColumnInt(
       'courseId',
       this,
     );
@@ -204,49 +208,49 @@ class EnrollmentTable extends _i1.Table<int?> {
 
   late final EnrollmentUpdateTable updateTable;
 
-  late final _i1.ColumnInt studentId;
+  late final _is.ColumnInt studentId;
 
-  _i2.StudentTable? _student;
+  _i2rea1ue.StudentTable? _student;
 
-  late final _i1.ColumnInt courseId;
+  late final _is.ColumnInt courseId;
 
-  _i3.CourseTable? _course;
+  _iwlbbfis.CourseTable? _course;
 
-  _i2.StudentTable get student {
+  _i2rea1ue.StudentTable get student {
     if (_student != null) return _student!;
-    _student = _i1.createRelationTable(
+    _student = _is.createRelationTable(
       relationFieldName: 'student',
       field: Enrollment.t.studentId,
-      foreignField: _i2.Student.t.id,
+      foreignField: _i2rea1ue.Student.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.StudentTable(tableRelation: foreignTableRelation),
+          _i2rea1ue.StudentTable(tableRelation: foreignTableRelation),
     );
     return _student!;
   }
 
-  _i3.CourseTable get course {
+  _iwlbbfis.CourseTable get course {
     if (_course != null) return _course!;
-    _course = _i1.createRelationTable(
+    _course = _is.createRelationTable(
       relationFieldName: 'course',
       field: Enrollment.t.courseId,
-      foreignField: _i3.Course.t.id,
+      foreignField: _iwlbbfis.Course.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CourseTable(tableRelation: foreignTableRelation),
+          _iwlbbfis.CourseTable(tableRelation: foreignTableRelation),
     );
     return _course!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     studentId,
     courseId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'student') {
       return student;
     }
@@ -257,32 +261,32 @@ class EnrollmentTable extends _i1.Table<int?> {
   }
 }
 
-class EnrollmentInclude extends _i1.IncludeObject {
+class EnrollmentInclude extends _is.IncludeObject {
   EnrollmentInclude._({
-    _i2.StudentInclude? student,
-    _i3.CourseInclude? course,
+    _i2rea1ue.StudentInclude? student,
+    _iwlbbfis.CourseInclude? course,
   }) {
     _student = student;
     _course = course;
   }
 
-  _i2.StudentInclude? _student;
+  _i2rea1ue.StudentInclude? _student;
 
-  _i3.CourseInclude? _course;
+  _iwlbbfis.CourseInclude? _course;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'student': _student,
     'course': _course,
   };
 
   @override
-  _i1.Table<int?> get table => Enrollment.t;
+  _is.Table<int?> get table => Enrollment.t;
 }
 
-class EnrollmentIncludeList extends _i1.IncludeList {
+class EnrollmentIncludeList extends _is.IncludeList {
   EnrollmentIncludeList._({
-    _i1.WhereExpressionBuilder<EnrollmentTable>? where,
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -293,10 +297,10 @@ class EnrollmentIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Enrollment.t;
+  _is.Table<int?> get table => Enrollment.t;
 }
 
 class EnrollmentRepository {
@@ -327,16 +331,16 @@ class EnrollmentRepository {
   /// );
   /// ```
   Future<List<Enrollment>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnrollmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
     EnrollmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Enrollment>(
       where: where?.call(Enrollment.t),
@@ -369,15 +373,15 @@ class EnrollmentRepository {
   /// );
   /// ```
   Future<Enrollment?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnrollmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
     EnrollmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Enrollment>(
       where: where?.call(Enrollment.t),
@@ -393,12 +397,12 @@ class EnrollmentRepository {
 
   /// Finds a single [Enrollment] by its [id] or null if no such row exists.
   Future<Enrollment?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     EnrollmentInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Enrollment>(
       id,
@@ -424,9 +428,9 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Enrollment> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -442,9 +446,9 @@ class EnrollmentRepository {
   ///
   /// The returned [Enrollment] will have its `id` field set.
   Future<Enrollment> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Enrollment>(
       row,
@@ -473,12 +477,12 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Enrollment> rows, {
-    required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
-    _i1.ColumnSelections<EnrollmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnrollmentTable> conflictColumns,
+    _is.ColumnSelections<EnrollmentTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Enrollment>(
@@ -505,12 +509,12 @@ class EnrollmentRepository {
   ///
   /// The returned [Enrollment] will have its `id` field set.
   Future<Enrollment?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment row, {
-    required _i1.ColumnSelections<EnrollmentTable> conflictColumns,
-    _i1.ColumnSelections<EnrollmentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnrollmentTable> conflictColumns,
+    _is.ColumnSelections<EnrollmentTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnrollmentTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Enrollment>(
       row,
@@ -531,10 +535,10 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Enrollment> rows, {
-    _i1.ColumnSelections<EnrollmentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnrollmentTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Enrollment>(
@@ -549,10 +553,10 @@ class EnrollmentRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Enrollment> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment row, {
-    _i1.ColumnSelections<EnrollmentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnrollmentTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Enrollment>(
       row,
@@ -564,10 +568,10 @@ class EnrollmentRepository {
   /// Updates a single [Enrollment] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Enrollment?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Enrollment>(
       id,
@@ -583,14 +587,14 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EnrollmentTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EnrollmentUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EnrollmentTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Enrollment>(
@@ -617,11 +621,11 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Enrollment> rows, {
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Enrollment>(
@@ -635,9 +639,9 @@ class EnrollmentRepository {
 
   /// Deletes a single [Enrollment].
   Future<Enrollment> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Enrollment>(
       row,
@@ -654,11 +658,11 @@ class EnrollmentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Enrollment>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnrollmentTable> where,
-    _i1.OrderByBuilder<EnrollmentTable>? orderBy,
-    _i1.OrderByListBuilder<EnrollmentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnrollmentTable> where,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Enrollment>(
@@ -673,10 +677,10 @@ class EnrollmentRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnrollmentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Enrollment>(
       where: where?.call(Enrollment.t),
@@ -687,11 +691,11 @@ class EnrollmentRepository {
 
   /// Acquires row-level locks on [Enrollment] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnrollmentTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnrollmentTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Enrollment>(
       where: where(Enrollment.t),
@@ -708,10 +712,10 @@ class EnrollmentAttachRowRepository {
   /// Creates a relation between the given [Enrollment] and [Student]
   /// by setting the [Enrollment]'s foreign key `studentId` to refer to the [Student].
   Future<void> student(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment enrollment,
-    _i2.Student student, {
-    _i1.Transaction? transaction,
+    _i2rea1ue.Student student, {
+    _is.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');
@@ -731,10 +735,10 @@ class EnrollmentAttachRowRepository {
   /// Creates a relation between the given [Enrollment] and [Course]
   /// by setting the [Enrollment]'s foreign key `courseId` to refer to the [Course].
   Future<void> course(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Enrollment enrollment,
-    _i3.Course course, {
-    _i1.Transaction? transaction,
+    _iwlbbfis.Course course, {
+    _is.Transaction? transaction,
   }) async {
     if (enrollment.id == null) {
       throw ArgumentError.notNull('enrollment.id');

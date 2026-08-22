@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Just some simple data.
 abstract class SimpleData
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   SimpleData._({
     this.id,
     required this.num,
@@ -46,11 +46,11 @@ abstract class SimpleData
   int num;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SimpleData copyWith({
     int? id,
     int? num,
@@ -78,11 +78,11 @@ abstract class SimpleData
   }
 
   static SimpleDataIncludeList includeList({
-    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
   }) {
     return SimpleDataIncludeList.internal_(
@@ -97,7 +97,7 @@ abstract class SimpleData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -114,7 +114,7 @@ class _SimpleDataImpl extends SimpleData {
 
   /// Returns a shallow copy of this [SimpleData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SimpleData copyWith({
     Object? id = _Undefined,
@@ -127,19 +127,19 @@ class _SimpleDataImpl extends SimpleData {
   }
 }
 
-class SimpleDataUpdateTable extends _i1.UpdateTable<SimpleDataTable> {
+class SimpleDataUpdateTable extends _is.UpdateTable<SimpleDataTable> {
   SimpleDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> num(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> num(int value) => _is.ColumnValue(
     table.num,
     value,
   );
 }
 
-class SimpleDataTable extends _i1.Table<int?> {
+class SimpleDataTable extends _is.Table<int?> {
   SimpleDataTable({super.tableRelation}) : super(tableName: 'simple_data') {
     updateTable = SimpleDataUpdateTable(this);
-    num = _i1.ColumnInt(
+    num = _is.ColumnInt(
       'num',
       this,
     );
@@ -150,49 +150,49 @@ class SimpleDataTable extends _i1.Table<int?> {
   /// The only field of [SimpleData]
   ///
   /// Second Value Extra Text
-  late final _i1.ColumnInt num;
+  late final _is.ColumnInt num;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     num,
   ];
 }
 
-class SimpleDataInclude extends _i1.IncludeObject {
-  @_i2.internal
-  SimpleDataInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class SimpleDataInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  SimpleDataInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => SimpleData.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => SimpleData.t;
 }
 
-class SimpleDataIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class SimpleDataIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   SimpleDataIncludeList.internal_({
-    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SimpleData.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SimpleData.t;
+  _is.Table<int?> get table => SimpleData.t;
 }
 
 class SimpleDataRepository {
@@ -221,15 +221,15 @@ class SimpleDataRepository {
   /// );
   /// ```
   Future<List<SimpleData>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SimpleData>(
       where: where?.call(SimpleData.t),
@@ -261,14 +261,14 @@ class SimpleDataRepository {
   /// );
   /// ```
   Future<SimpleData?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SimpleData>(
       where: where?.call(SimpleData.t),
@@ -283,11 +283,11 @@ class SimpleDataRepository {
 
   /// Finds a single [SimpleData] by its [id] or null if no such row exists.
   Future<SimpleData?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SimpleData>(
       id,
@@ -312,9 +312,9 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SimpleData> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -330,9 +330,9 @@ class SimpleDataRepository {
   ///
   /// The returned [SimpleData] will have its `id` field set.
   Future<SimpleData> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SimpleData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SimpleData>(
       row,
@@ -361,12 +361,12 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SimpleData> rows, {
-    required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
-    _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SimpleDataTable> conflictColumns,
+    _is.ColumnSelections<SimpleDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SimpleData>(
@@ -393,12 +393,12 @@ class SimpleDataRepository {
   ///
   /// The returned [SimpleData] will have its `id` field set.
   Future<SimpleData?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SimpleData row, {
-    required _i1.ColumnSelections<SimpleDataTable> conflictColumns,
-    _i1.ColumnSelections<SimpleDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SimpleDataTable> conflictColumns,
+    _is.ColumnSelections<SimpleDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<SimpleDataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SimpleData>(
       row,
@@ -419,10 +419,10 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SimpleData> rows, {
-    _i1.ColumnSelections<SimpleDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SimpleDataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SimpleData>(
@@ -437,10 +437,10 @@ class SimpleDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SimpleData> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SimpleData row, {
-    _i1.ColumnSelections<SimpleDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SimpleDataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SimpleData>(
       row,
@@ -452,10 +452,10 @@ class SimpleDataRepository {
   /// Updates a single [SimpleData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SimpleData?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SimpleData>(
       id,
@@ -471,14 +471,14 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SimpleDataUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<SimpleDataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SimpleData>(
@@ -505,11 +505,11 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SimpleData> rows, {
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SimpleData>(
@@ -523,9 +523,9 @@ class SimpleDataRepository {
 
   /// Deletes a single [SimpleData].
   Future<SimpleData> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SimpleData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SimpleData>(
       row,
@@ -542,11 +542,11 @@ class SimpleDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SimpleData>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
-    _i1.OrderByBuilder<SimpleDataTable>? orderBy,
-    _i1.OrderByListBuilder<SimpleDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SimpleDataTable> where,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SimpleData>(
@@ -561,10 +561,10 @@ class SimpleDataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SimpleDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SimpleData>(
       where: where?.call(SimpleData.t),
@@ -575,11 +575,11 @@ class SimpleDataRepository {
 
   /// Acquires row-level locks on [SimpleData] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SimpleDataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SimpleDataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SimpleData>(
       where: where(SimpleData.t),

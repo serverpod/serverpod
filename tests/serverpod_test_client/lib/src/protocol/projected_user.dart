@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_address.dart' as _i2;
-import 'projected_order.dart' as _i3;
-import 'projected_json_field.dart' as _i4;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i5;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_address.dart' as _iegbxll6;
+import 'projected_json_field.dart' as _irlz4dmd;
+import 'projected_order.dart' as _i8r3x6pe;
 
 abstract class ProjectedUser
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedUser._({
     this.id,
     required this.name,
@@ -31,9 +31,9 @@ abstract class ProjectedUser
     int? id,
     required String name,
     required int addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   }) = _ProjectedUserImpl;
 
   factory ProjectedUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -43,17 +43,17 @@ abstract class ProjectedUser
       addressId: jsonSerialization['addressId'] as int,
       address: jsonSerialization['address'] == null
           ? null
-          : _i5.Protocol().deserialize<_i2.ProjectedAddress>(
+          : _iza9lbb5.Protocol().deserialize<_iegbxll6.ProjectedAddress>(
               jsonSerialization['address'],
             ),
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i5.Protocol().deserialize<List<_i3.ProjectedOrder>>(
+          : _iza9lbb5.Protocol().deserialize<List<_i8r3x6pe.ProjectedOrder>>(
               jsonSerialization['orders'],
             ),
       jsonField: jsonSerialization['jsonField'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.ProjectedJsonField>(
+          : _iza9lbb5.Protocol().deserialize<_irlz4dmd.ProjectedJsonField>(
               jsonSerialization['jsonField'],
             ),
     );
@@ -68,22 +68,22 @@ abstract class ProjectedUser
 
   int addressId;
 
-  _i2.ProjectedAddress? address;
+  _iegbxll6.ProjectedAddress? address;
 
-  List<_i3.ProjectedOrder>? orders;
+  List<_i8r3x6pe.ProjectedOrder>? orders;
 
-  _i4.ProjectedJsonField? jsonField;
+  _irlz4dmd.ProjectedJsonField? jsonField;
 
   /// Returns a shallow copy of this [ProjectedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedUser copyWith({
     int? id,
     String? name,
     int? addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +115,7 @@ abstract class ProjectedUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -126,9 +126,9 @@ class _ProjectedUserImpl extends ProjectedUser {
     int? id,
     required String name,
     required int addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   }) : super._(
          id: id,
          name: name,
@@ -140,7 +140,7 @@ class _ProjectedUserImpl extends ProjectedUser {
 
   /// Returns a shallow copy of this [ProjectedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedUser copyWith({
     Object? id = _Undefined,
@@ -154,13 +154,13 @@ class _ProjectedUserImpl extends ProjectedUser {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       addressId: addressId ?? this.addressId,
-      address: address is _i2.ProjectedAddress?
+      address: address is _iegbxll6.ProjectedAddress?
           ? address
           : this.address?.copyWith(),
-      orders: orders is List<_i3.ProjectedOrder>?
+      orders: orders is List<_i8r3x6pe.ProjectedOrder>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
-      jsonField: jsonField is _i4.ProjectedJsonField?
+      jsonField: jsonField is _irlz4dmd.ProjectedJsonField?
           ? jsonField
           : this.jsonField?.copyWith(),
     );

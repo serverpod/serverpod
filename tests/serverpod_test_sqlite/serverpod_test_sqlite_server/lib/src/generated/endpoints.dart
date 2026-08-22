@@ -10,122 +10,122 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/test_tools.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i4;
+    as _iais;
 import 'package:serverpod_test_shared_module_server/serverpod_test_shared_module_server.dart'
-    as _i5;
+    as _iyx9etqn;
 import 'package:serverpod_test_sqlite_server/src/generated/future_calls.dart'
-    as _i6;
+    as _il0f3y8p;
+import '../endpoints/test_tools.dart' as _itdztv0y;
 export 'future_calls.dart' show ServerpodFutureCallsGetter;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'testTools': _i2.TestToolsEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'testTools': _itdztv0y.TestToolsEndpoint()
         ..initialize(
           server,
           'testTools',
           null,
         ),
     };
-    connectors['testTools'] = _i1.EndpointConnector(
+    connectors['testTools'] = _is.EndpointConnector(
       name: 'testTools',
       endpoint: endpoints['testTools']!,
       methodConnectors: {
-        'createSimpleData': _i1.MethodConnector(
+        'createSimpleData': _is.MethodConnector(
           name: 'createSimpleData',
           params: {
-            'data': _i1.ParameterDescription(
+            'data': _is.ParameterDescription(
               name: 'data',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _itdztv0y.TestToolsEndpoint)
                   .createSimpleData(
                     session,
                     params['data'],
                   ),
         ),
-        'getAllSimpleData': _i1.MethodConnector(
+        'getAllSimpleData': _is.MethodConnector(
           name: 'getAllSimpleData',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _itdztv0y.TestToolsEndpoint)
                   .getAllSimpleData(session),
         ),
-        'createSimpleDatasInsideTransactions': _i1.MethodConnector(
+        'createSimpleDatasInsideTransactions': _is.MethodConnector(
           name: 'createSimpleDatasInsideTransactions',
           params: {
-            'data': _i1.ParameterDescription(
+            'data': _is.ParameterDescription(
               name: 'data',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _itdztv0y.TestToolsEndpoint)
                   .createSimpleDatasInsideTransactions(
                     session,
                     params['data'],
                   ),
         ),
-        'createSimpleDataAndThrowInsideTransaction': _i1.MethodConnector(
+        'createSimpleDataAndThrowInsideTransaction': _is.MethodConnector(
           name: 'createSimpleDataAndThrowInsideTransaction',
           params: {
-            'data': _i1.ParameterDescription(
+            'data': _is.ParameterDescription(
               name: 'data',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _itdztv0y.TestToolsEndpoint)
                   .createSimpleDataAndThrowInsideTransaction(
                     session,
                     params['data'],
                   ),
         ),
-        'createSimpleDatasInParallelTransactionCalls': _i1.MethodConnector(
+        'createSimpleDatasInParallelTransactionCalls': _is.MethodConnector(
           name: 'createSimpleDatasInParallelTransactionCalls',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['testTools'] as _i2.TestToolsEndpoint)
+              ) async => (endpoints['testTools'] as _itdztv0y.TestToolsEndpoint)
                   .createSimpleDatasInParallelTransactionCalls(session),
         ),
       },
     );
-    modules['serverpod_auth_core'] = _i3.Endpoints()
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i4.Endpoints()
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_test_shared_module'] = _i5.Endpoints()
+    modules['serverpod_test_shared_module'] = _iyx9etqn.Endpoints()
       ..initializeEndpoints(server);
   }
 
   @override
-  _i1.FutureCallDispatch? get futureCalls {
-    return _i6.FutureCalls();
+  _is.FutureCallDispatch? get futureCalls {
+    return _il0f3y8p.FutureCalls();
   }
 }

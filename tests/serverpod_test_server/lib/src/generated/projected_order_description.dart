@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'projected_order.dart';
 
 abstract class ProjectedOrderDescription
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedOrderDescription._({
     this.id,
     required this.description,
@@ -45,7 +45,7 @@ abstract class ProjectedOrderDescription
 
   /// Returns a shallow copy of this [ProjectedOrderDescription]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedOrderDescription copyWith({
     int? id,
     String? description,
@@ -78,11 +78,11 @@ abstract class ProjectedOrderDescription
   }
 
   static ProjectedOrderIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
   }) {
     return ProjectedOrder.includeList(
       where: where,
@@ -96,7 +96,7 @@ abstract class ProjectedOrderDescription
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -113,7 +113,7 @@ class _ProjectedOrderDescriptionImpl extends ProjectedOrderDescription {
 
   /// Returns a shallow copy of this [ProjectedOrderDescription]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedOrderDescription copyWith({
     Object? id = _Undefined,
@@ -152,15 +152,15 @@ class ProjectedOrderDescriptionRepository {
   /// );
   /// ```
   Future<List<ProjectedOrderDescription>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedOrder>(
@@ -198,14 +198,14 @@ class ProjectedOrderDescriptionRepository {
   /// );
   /// ```
   Future<ProjectedOrderDescription?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedOrder>(
@@ -223,11 +223,11 @@ class ProjectedOrderDescriptionRepository {
 
   /// Finds a single [ProjectedOrder] by its [id] or null if no such row exists.
   Future<ProjectedOrderDescription?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedOrder>(

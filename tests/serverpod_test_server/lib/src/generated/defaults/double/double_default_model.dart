@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DoubleDefaultModel
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DoubleDefaultModel._({
     this.id,
     double? doubleDefaultModel,
@@ -50,11 +50,11 @@ abstract class DoubleDefaultModel
   double doubleDefaultModelNull;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DoubleDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DoubleDefaultModel copyWith({
     int? id,
     double? doubleDefaultModel,
@@ -85,11 +85,11 @@ abstract class DoubleDefaultModel
   }
 
   static DoubleDefaultModelIncludeList includeList({
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
     DoubleDefaultModelInclude? include,
   }) {
     return DoubleDefaultModelIncludeList.internal_(
@@ -104,7 +104,7 @@ abstract class DoubleDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,7 +123,7 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
 
   /// Returns a shallow copy of this [DoubleDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DoubleDefaultModel copyWith({
     Object? id = _Undefined,
@@ -140,31 +140,31 @@ class _DoubleDefaultModelImpl extends DoubleDefaultModel {
 }
 
 class DoubleDefaultModelUpdateTable
-    extends _i1.UpdateTable<DoubleDefaultModelTable> {
+    extends _is.UpdateTable<DoubleDefaultModelTable> {
   DoubleDefaultModelUpdateTable(super.table);
 
-  _i1.ColumnValue<double, double> doubleDefaultModel(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> doubleDefaultModel(double value) =>
+      _is.ColumnValue(
         table.doubleDefaultModel,
         value,
       );
 
-  _i1.ColumnValue<double, double> doubleDefaultModelNull(double value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<double, double> doubleDefaultModelNull(double value) =>
+      _is.ColumnValue(
         table.doubleDefaultModelNull,
         value,
       );
 }
 
-class DoubleDefaultModelTable extends _i1.Table<int?> {
+class DoubleDefaultModelTable extends _is.Table<int?> {
   DoubleDefaultModelTable({super.tableRelation})
     : super(tableName: 'double_default_model') {
     updateTable = DoubleDefaultModelUpdateTable(this);
-    doubleDefaultModel = _i1.ColumnDouble(
+    doubleDefaultModel = _is.ColumnDouble(
       'doubleDefaultModel',
       this,
     );
-    doubleDefaultModelNull = _i1.ColumnDouble(
+    doubleDefaultModelNull = _is.ColumnDouble(
       'doubleDefaultModelNull',
       this,
     );
@@ -172,54 +172,54 @@ class DoubleDefaultModelTable extends _i1.Table<int?> {
 
   late final DoubleDefaultModelUpdateTable updateTable;
 
-  late final _i1.ColumnDouble doubleDefaultModel;
+  late final _is.ColumnDouble doubleDefaultModel;
 
-  late final _i1.ColumnDouble doubleDefaultModelNull;
+  late final _is.ColumnDouble doubleDefaultModelNull;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     doubleDefaultModel,
     doubleDefaultModelNull,
   ];
 }
 
-class DoubleDefaultModelInclude extends _i1.IncludeObject {
-  @_i2.internal
+class DoubleDefaultModelInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   DoubleDefaultModelInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DoubleDefaultModel.t;
+  _is.Table<int?> get table => DoubleDefaultModel.t;
 }
 
-class DoubleDefaultModelIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class DoubleDefaultModelIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   DoubleDefaultModelIncludeList.internal_({
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DoubleDefaultModel.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DoubleDefaultModel.t;
+  _is.Table<int?> get table => DoubleDefaultModel.t;
 }
 
 class DoubleDefaultModelRepository {
@@ -248,15 +248,15 @@ class DoubleDefaultModelRepository {
   /// );
   /// ```
   Future<List<DoubleDefaultModel>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
@@ -288,14 +288,14 @@ class DoubleDefaultModelRepository {
   /// );
   /// ```
   Future<DoubleDefaultModel?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
@@ -310,11 +310,11 @@ class DoubleDefaultModelRepository {
 
   /// Finds a single [DoubleDefaultModel] by its [id] or null if no such row exists.
   Future<DoubleDefaultModel?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DoubleDefaultModel>(
       id,
@@ -339,9 +339,9 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -357,9 +357,9 @@ class DoubleDefaultModelRepository {
   ///
   /// The returned [DoubleDefaultModel] will have its `id` field set.
   Future<DoubleDefaultModel> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DoubleDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DoubleDefaultModel>(
       row,
@@ -388,12 +388,12 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
-    required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DoubleDefaultModel>(
@@ -420,12 +420,12 @@ class DoubleDefaultModelRepository {
   ///
   /// The returned [DoubleDefaultModel] will have its `id` field set.
   Future<DoubleDefaultModel?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DoubleDefaultModel row, {
-    required _i1.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DoubleDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<DoubleDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DoubleDefaultModel>(
       row,
@@ -446,10 +446,10 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
-    _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DoubleDefaultModelTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DoubleDefaultModel>(
@@ -464,10 +464,10 @@ class DoubleDefaultModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DoubleDefaultModel> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DoubleDefaultModel row, {
-    _i1.ColumnSelections<DoubleDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DoubleDefaultModelTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DoubleDefaultModel>(
       row,
@@ -479,11 +479,11 @@ class DoubleDefaultModelRepository {
   /// Updates a single [DoubleDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DoubleDefaultModel?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
+    required _is.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DoubleDefaultModel>(
       id,
@@ -499,15 +499,15 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DoubleDefaultModelUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
+    required _is.WhereExpressionBuilder<DoubleDefaultModelTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DoubleDefaultModel>(
@@ -534,11 +534,11 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DoubleDefaultModel> rows, {
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DoubleDefaultModel>(
@@ -552,9 +552,9 @@ class DoubleDefaultModelRepository {
 
   /// Deletes a single [DoubleDefaultModel].
   Future<DoubleDefaultModel> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DoubleDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DoubleDefaultModel>(
       row,
@@ -571,11 +571,11 @@ class DoubleDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DoubleDefaultModel>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
-    _i1.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DoubleDefaultModelTable> where,
+    _is.OrderByBuilder<DoubleDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DoubleDefaultModel>(
@@ -590,10 +590,10 @@ class DoubleDefaultModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultModelTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DoubleDefaultModel>(
       where: where?.call(DoubleDefaultModel.t),
@@ -604,11 +604,11 @@ class DoubleDefaultModelRepository {
 
   /// Acquires row-level locks on [DoubleDefaultModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DoubleDefaultModelTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DoubleDefaultModelTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DoubleDefaultModel>(
       where: where(DoubleDefaultModel.t),

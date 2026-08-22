@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_student.dart' as _i2;
-import 'projected_course.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_course.dart' as _iotqocf1;
+import 'projected_student.dart' as _iprfievr;
 
 abstract class ProjectedEnrollment
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedEnrollment._({
     this.id,
     required this.studentId,
@@ -28,9 +28,9 @@ abstract class ProjectedEnrollment
   factory ProjectedEnrollment({
     int? id,
     required int studentId,
-    _i2.ProjectedStudent? student,
+    _iprfievr.ProjectedStudent? student,
     required int courseId,
-    _i3.ProjectedCourse? course,
+    _iotqocf1.ProjectedCourse? course,
   }) = _ProjectedEnrollmentImpl;
 
   factory ProjectedEnrollment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,13 +39,13 @@ abstract class ProjectedEnrollment
       studentId: jsonSerialization['studentId'] as int,
       student: jsonSerialization['student'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.ProjectedStudent>(
+          : _iza9lbb5.Protocol().deserialize<_iprfievr.ProjectedStudent>(
               jsonSerialization['student'],
             ),
       courseId: jsonSerialization['courseId'] as int,
       course: jsonSerialization['course'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.ProjectedCourse>(
+          : _iza9lbb5.Protocol().deserialize<_iotqocf1.ProjectedCourse>(
               jsonSerialization['course'],
             ),
     );
@@ -58,21 +58,21 @@ abstract class ProjectedEnrollment
 
   int studentId;
 
-  _i2.ProjectedStudent? student;
+  _iprfievr.ProjectedStudent? student;
 
   int courseId;
 
-  _i3.ProjectedCourse? course;
+  _iotqocf1.ProjectedCourse? course;
 
   /// Returns a shallow copy of this [ProjectedEnrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedEnrollment copyWith({
     int? id,
     int? studentId,
-    _i2.ProjectedStudent? student,
+    _iprfievr.ProjectedStudent? student,
     int? courseId,
-    _i3.ProjectedCourse? course,
+    _iotqocf1.ProjectedCourse? course,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +100,7 @@ abstract class ProjectedEnrollment
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,9 +110,9 @@ class _ProjectedEnrollmentImpl extends ProjectedEnrollment {
   _ProjectedEnrollmentImpl({
     int? id,
     required int studentId,
-    _i2.ProjectedStudent? student,
+    _iprfievr.ProjectedStudent? student,
     required int courseId,
-    _i3.ProjectedCourse? course,
+    _iotqocf1.ProjectedCourse? course,
   }) : super._(
          id: id,
          studentId: studentId,
@@ -123,7 +123,7 @@ class _ProjectedEnrollmentImpl extends ProjectedEnrollment {
 
   /// Returns a shallow copy of this [ProjectedEnrollment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedEnrollment copyWith({
     Object? id = _Undefined,
@@ -135,11 +135,13 @@ class _ProjectedEnrollmentImpl extends ProjectedEnrollment {
     return ProjectedEnrollment(
       id: id is int? ? id : this.id,
       studentId: studentId ?? this.studentId,
-      student: student is _i2.ProjectedStudent?
+      student: student is _iprfievr.ProjectedStudent?
           ? student
           : this.student?.copyWith(),
       courseId: courseId ?? this.courseId,
-      course: course is _i3.ProjectedCourse? ? course : this.course?.copyWith(),
+      course: course is _iotqocf1.ProjectedCourse?
+          ? course
+          : this.course?.copyWith(),
     );
   }
 }

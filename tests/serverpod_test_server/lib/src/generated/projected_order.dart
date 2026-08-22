@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProjectedOrder
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProjectedOrder._({
     this.id,
     required this.description,
@@ -51,11 +51,11 @@ abstract class ProjectedOrder
   final int? _projectedUserOrdersProjectedUserId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedOrder]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedOrder copyWith({
     int? id,
     String? description,
@@ -89,11 +89,11 @@ abstract class ProjectedOrder
   }
 
   static ProjectedOrderIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
     ProjectedOrderInclude? include,
   }) {
     return ProjectedOrderIncludeList.internal_(
@@ -108,7 +108,7 @@ abstract class ProjectedOrder
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -127,7 +127,7 @@ class _ProjectedOrderImpl extends ProjectedOrder {
 
   /// Returns a shallow copy of this [ProjectedOrder]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedOrder copyWith({
     Object? id = _Undefined,
@@ -175,39 +175,39 @@ class ProjectedOrderImplicit extends _ProjectedOrderImpl {
   final int? _projectedUserOrdersProjectedUserId;
 }
 
-class ProjectedOrderUpdateTable extends _i1.UpdateTable<ProjectedOrderTable> {
+class ProjectedOrderUpdateTable extends _is.UpdateTable<ProjectedOrderTable> {
   ProjectedOrderUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> description(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> description(String value) => _is.ColumnValue(
     table.description,
     value,
   );
 
-  _i1.ColumnValue<int, int> price(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> price(int value) => _is.ColumnValue(
     table.price,
     value,
   );
 
-  _i1.ColumnValue<int, int> $_projectedUserOrdersProjectedUserId(int? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<int, int> $_projectedUserOrdersProjectedUserId(int? value) =>
+      _is.ColumnValue(
         table.$_projectedUserOrdersProjectedUserId,
         value,
       );
 }
 
-class ProjectedOrderTable extends _i1.Table<int?> {
+class ProjectedOrderTable extends _is.Table<int?> {
   ProjectedOrderTable({super.tableRelation})
     : super(tableName: 'projected_order') {
     updateTable = ProjectedOrderUpdateTable(this);
-    description = _i1.ColumnString(
+    description = _is.ColumnString(
       'description',
       this,
     );
-    price = _i1.ColumnInt(
+    price = _is.ColumnInt(
       'price',
       this,
     );
-    $_projectedUserOrdersProjectedUserId = _i1.ColumnInt(
+    $_projectedUserOrdersProjectedUserId = _is.ColumnInt(
       '_projectedUserOrdersProjectedUserId',
       this,
     );
@@ -215,14 +215,14 @@ class ProjectedOrderTable extends _i1.Table<int?> {
 
   late final ProjectedOrderUpdateTable updateTable;
 
-  late final _i1.ColumnString description;
+  late final _is.ColumnString description;
 
-  late final _i1.ColumnInt price;
+  late final _is.ColumnInt price;
 
-  late final _i1.ColumnInt $_projectedUserOrdersProjectedUserId;
+  late final _is.ColumnInt $_projectedUserOrdersProjectedUserId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     description,
     price,
@@ -230,47 +230,47 @@ class ProjectedOrderTable extends _i1.Table<int?> {
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [
+  List<_is.Column> get managedColumns => [
     id,
     description,
     price,
   ];
 }
 
-class ProjectedOrderInclude extends _i1.IncludeObject {
-  @_i2.internal
-  ProjectedOrderInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class ProjectedOrderInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ProjectedOrderInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ProjectedOrder.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ProjectedOrder.t;
 }
 
-class ProjectedOrderIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ProjectedOrderIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ProjectedOrderIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedOrder.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProjectedOrder.t;
+  _is.Table<int?> get table => ProjectedOrder.t;
 }
 
 class ProjectedOrderRepository {
@@ -299,15 +299,15 @@ class ProjectedOrderRepository {
   /// );
   /// ```
   Future<List<ProjectedOrder>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProjectedOrder>(
       where: where?.call(ProjectedOrder.t),
@@ -339,14 +339,14 @@ class ProjectedOrderRepository {
   /// );
   /// ```
   Future<ProjectedOrder?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProjectedOrder>(
       where: where?.call(ProjectedOrder.t),
@@ -361,11 +361,11 @@ class ProjectedOrderRepository {
 
   /// Finds a single [ProjectedOrder] by its [id] or null if no such row exists.
   Future<ProjectedOrder?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProjectedOrder>(
       id,
@@ -390,9 +390,9 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedOrder> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -408,9 +408,9 @@ class ProjectedOrderRepository {
   ///
   /// The returned [ProjectedOrder] will have its `id` field set.
   Future<ProjectedOrder> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedOrder row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProjectedOrder>(
       row,
@@ -439,12 +439,12 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedOrder> rows, {
-    required _i1.ColumnSelections<ProjectedOrderTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedOrderTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedOrderTable> conflictColumns,
+    _is.ColumnSelections<ProjectedOrderTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ProjectedOrder>(
@@ -471,12 +471,12 @@ class ProjectedOrderRepository {
   ///
   /// The returned [ProjectedOrder] will have its `id` field set.
   Future<ProjectedOrder?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedOrder row, {
-    required _i1.ColumnSelections<ProjectedOrderTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedOrderTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedOrderTable> conflictColumns,
+    _is.ColumnSelections<ProjectedOrderTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ProjectedOrder>(
       row,
@@ -497,10 +497,10 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedOrder> rows, {
-    _i1.ColumnSelections<ProjectedOrderTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedOrderTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ProjectedOrder>(
@@ -515,10 +515,10 @@ class ProjectedOrderRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProjectedOrder> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedOrder row, {
-    _i1.ColumnSelections<ProjectedOrderTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedOrderTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProjectedOrder>(
       row,
@@ -530,10 +530,10 @@ class ProjectedOrderRepository {
   /// Updates a single [ProjectedOrder] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedOrder?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProjectedOrderUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ProjectedOrderUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProjectedOrder>(
       id,
@@ -549,14 +549,14 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProjectedOrderUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ProjectedOrderTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProjectedOrderUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ProjectedOrderTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProjectedOrder>(
@@ -583,11 +583,11 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedOrder> rows, {
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ProjectedOrder>(
@@ -601,9 +601,9 @@ class ProjectedOrderRepository {
 
   /// Deletes a single [ProjectedOrder].
   Future<ProjectedOrder> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedOrder row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProjectedOrder>(
       row,
@@ -620,11 +620,11 @@ class ProjectedOrderRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedOrder>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedOrderTable> where,
-    _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedOrderTable> where,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProjectedOrder>(
@@ -639,10 +639,10 @@ class ProjectedOrderRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProjectedOrder>(
       where: where?.call(ProjectedOrder.t),
@@ -653,11 +653,11 @@ class ProjectedOrderRepository {
 
   /// Acquires row-level locks on [ProjectedOrder] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedOrderTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedOrderTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProjectedOrder>(
       where: where(ProjectedOrder.t),

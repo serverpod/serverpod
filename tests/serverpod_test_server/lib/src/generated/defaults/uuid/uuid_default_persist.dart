@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UuidDefaultPersist
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UuidDefaultPersist._({
     this.id,
     this.uuidDefaultPersistRandom,
@@ -24,9 +24,9 @@ abstract class UuidDefaultPersist
 
   factory UuidDefaultPersist({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _is.UuidValue? uuidDefaultPersistRandom,
+    _is.UuidValue? uuidDefaultPersistRandomV7,
+    _is.UuidValue? uuidDefaultPersistStr,
   }) = _UuidDefaultPersistImpl;
 
   factory UuidDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,18 +35,18 @@ abstract class UuidDefaultPersist
       uuidDefaultPersistRandom:
           jsonSerialization['uuidDefaultPersistRandom'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistRandom'],
             ),
       uuidDefaultPersistRandomV7:
           jsonSerialization['uuidDefaultPersistRandomV7'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistRandomV7'],
             ),
       uuidDefaultPersistStr: jsonSerialization['uuidDefaultPersistStr'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultPersistStr'],
             ),
     );
@@ -59,23 +59,23 @@ abstract class UuidDefaultPersist
   @override
   int? id;
 
-  _i1.UuidValue? uuidDefaultPersistRandom;
+  _is.UuidValue? uuidDefaultPersistRandom;
 
-  _i1.UuidValue? uuidDefaultPersistRandomV7;
+  _is.UuidValue? uuidDefaultPersistRandomV7;
 
-  _i1.UuidValue? uuidDefaultPersistStr;
+  _is.UuidValue? uuidDefaultPersistStr;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UuidDefaultPersist copyWith({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _is.UuidValue? uuidDefaultPersistRandom,
+    _is.UuidValue? uuidDefaultPersistRandomV7,
+    _is.UuidValue? uuidDefaultPersistStr,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -110,11 +110,11 @@ abstract class UuidDefaultPersist
   }
 
   static UuidDefaultPersistIncludeList includeList({
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     UuidDefaultPersistInclude? include,
   }) {
     return UuidDefaultPersistIncludeList.internal_(
@@ -129,7 +129,7 @@ abstract class UuidDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -138,9 +138,9 @@ class _Undefined {}
 class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   _UuidDefaultPersistImpl({
     int? id,
-    _i1.UuidValue? uuidDefaultPersistRandom,
-    _i1.UuidValue? uuidDefaultPersistRandomV7,
-    _i1.UuidValue? uuidDefaultPersistStr,
+    _is.UuidValue? uuidDefaultPersistRandom,
+    _is.UuidValue? uuidDefaultPersistRandomV7,
+    _is.UuidValue? uuidDefaultPersistStr,
   }) : super._(
          id: id,
          uuidDefaultPersistRandom: uuidDefaultPersistRandom,
@@ -150,7 +150,7 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
 
   /// Returns a shallow copy of this [UuidDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UuidDefaultPersist copyWith({
     Object? id = _Undefined,
@@ -160,13 +160,13 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
   }) {
     return UuidDefaultPersist(
       id: id is int? ? id : this.id,
-      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _i1.UuidValue?
+      uuidDefaultPersistRandom: uuidDefaultPersistRandom is _is.UuidValue?
           ? uuidDefaultPersistRandom
           : this.uuidDefaultPersistRandom,
-      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _i1.UuidValue?
+      uuidDefaultPersistRandomV7: uuidDefaultPersistRandomV7 is _is.UuidValue?
           ? uuidDefaultPersistRandomV7
           : this.uuidDefaultPersistRandomV7,
-      uuidDefaultPersistStr: uuidDefaultPersistStr is _i1.UuidValue?
+      uuidDefaultPersistStr: uuidDefaultPersistStr is _is.UuidValue?
           ? uuidDefaultPersistStr
           : this.uuidDefaultPersistStr,
     );
@@ -174,46 +174,46 @@ class _UuidDefaultPersistImpl extends UuidDefaultPersist {
 }
 
 class UuidDefaultPersistUpdateTable
-    extends _i1.UpdateTable<UuidDefaultPersistTable> {
+    extends _is.UpdateTable<UuidDefaultPersistTable> {
   UuidDefaultPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandom(
-    _i1.UuidValue? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> uuidDefaultPersistRandom(
+    _is.UuidValue? value,
+  ) => _is.ColumnValue(
     table.uuidDefaultPersistRandom,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistRandomV7(
-    _i1.UuidValue? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> uuidDefaultPersistRandomV7(
+    _is.UuidValue? value,
+  ) => _is.ColumnValue(
     table.uuidDefaultPersistRandomV7,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> uuidDefaultPersistStr(
-    _i1.UuidValue? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> uuidDefaultPersistStr(
+    _is.UuidValue? value,
+  ) => _is.ColumnValue(
     table.uuidDefaultPersistStr,
     value,
   );
 }
 
-class UuidDefaultPersistTable extends _i1.Table<int?> {
+class UuidDefaultPersistTable extends _is.Table<int?> {
   UuidDefaultPersistTable({super.tableRelation})
     : super(tableName: 'uuid_default_persist') {
     updateTable = UuidDefaultPersistUpdateTable(this);
-    uuidDefaultPersistRandom = _i1.ColumnUuid(
+    uuidDefaultPersistRandom = _is.ColumnUuid(
       'uuidDefaultPersistRandom',
       this,
       hasDefault: true,
     );
-    uuidDefaultPersistRandomV7 = _i1.ColumnUuid(
+    uuidDefaultPersistRandomV7 = _is.ColumnUuid(
       'uuidDefaultPersistRandomV7',
       this,
       hasDefault: true,
     );
-    uuidDefaultPersistStr = _i1.ColumnUuid(
+    uuidDefaultPersistStr = _is.ColumnUuid(
       'uuidDefaultPersistStr',
       this,
       hasDefault: true,
@@ -222,14 +222,14 @@ class UuidDefaultPersistTable extends _i1.Table<int?> {
 
   late final UuidDefaultPersistUpdateTable updateTable;
 
-  late final _i1.ColumnUuid uuidDefaultPersistRandom;
+  late final _is.ColumnUuid uuidDefaultPersistRandom;
 
-  late final _i1.ColumnUuid uuidDefaultPersistRandomV7;
+  late final _is.ColumnUuid uuidDefaultPersistRandomV7;
 
-  late final _i1.ColumnUuid uuidDefaultPersistStr;
+  late final _is.ColumnUuid uuidDefaultPersistStr;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     uuidDefaultPersistRandom,
     uuidDefaultPersistRandomV7,
@@ -237,42 +237,42 @@ class UuidDefaultPersistTable extends _i1.Table<int?> {
   ];
 }
 
-class UuidDefaultPersistInclude extends _i1.IncludeObject {
-  @_i2.internal
+class UuidDefaultPersistInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   UuidDefaultPersistInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => UuidDefaultPersist.t;
+  _is.Table<int?> get table => UuidDefaultPersist.t;
 }
 
-class UuidDefaultPersistIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class UuidDefaultPersistIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   UuidDefaultPersistIncludeList.internal_({
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefaultPersist.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UuidDefaultPersist.t;
+  _is.Table<int?> get table => UuidDefaultPersist.t;
 }
 
 class UuidDefaultPersistRepository {
@@ -301,15 +301,15 @@ class UuidDefaultPersistRepository {
   /// );
   /// ```
   Future<List<UuidDefaultPersist>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
@@ -341,14 +341,14 @@ class UuidDefaultPersistRepository {
   /// );
   /// ```
   Future<UuidDefaultPersist?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
@@ -363,11 +363,11 @@ class UuidDefaultPersistRepository {
 
   /// Finds a single [UuidDefaultPersist] by its [id] or null if no such row exists.
   Future<UuidDefaultPersist?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UuidDefaultPersist>(
       id,
@@ -392,9 +392,9 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultPersist> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -410,9 +410,9 @@ class UuidDefaultPersistRepository {
   ///
   /// The returned [UuidDefaultPersist] will have its `id` field set.
   Future<UuidDefaultPersist> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UuidDefaultPersist>(
       row,
@@ -441,12 +441,12 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultPersist> rows, {
-    required _i1.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UuidDefaultPersist>(
@@ -473,12 +473,12 @@ class UuidDefaultPersistRepository {
   ///
   /// The returned [UuidDefaultPersist] will have its `id` field set.
   Future<UuidDefaultPersist?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultPersist row, {
-    required _i1.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UuidDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<UuidDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UuidDefaultPersist>(
       row,
@@ -499,10 +499,10 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultPersist> rows, {
-    _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UuidDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UuidDefaultPersist>(
@@ -517,10 +517,10 @@ class UuidDefaultPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UuidDefaultPersist> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultPersist row, {
-    _i1.ColumnSelections<UuidDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UuidDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UuidDefaultPersist>(
       row,
@@ -532,11 +532,11 @@ class UuidDefaultPersistRepository {
   /// Updates a single [UuidDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UuidDefaultPersist?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
+    required _is.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UuidDefaultPersist>(
       id,
@@ -552,15 +552,15 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UuidDefaultPersistUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    required _is.WhereExpressionBuilder<UuidDefaultPersistTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UuidDefaultPersist>(
@@ -587,11 +587,11 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UuidDefaultPersist> rows, {
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UuidDefaultPersist>(
@@ -605,9 +605,9 @@ class UuidDefaultPersistRepository {
 
   /// Deletes a single [UuidDefaultPersist].
   Future<UuidDefaultPersist> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UuidDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UuidDefaultPersist>(
       row,
@@ -624,11 +624,11 @@ class UuidDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UuidDefaultPersist>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
-    _i1.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UuidDefaultPersist>(
@@ -643,10 +643,10 @@ class UuidDefaultPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UuidDefaultPersist>(
       where: where?.call(UuidDefaultPersist.t),
@@ -657,11 +657,11 @@ class UuidDefaultPersistRepository {
 
   /// Acquires row-level locks on [UuidDefaultPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UuidDefaultPersistTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UuidDefaultPersistTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UuidDefaultPersist>(
       where: where(UuidDefaultPersist.t),

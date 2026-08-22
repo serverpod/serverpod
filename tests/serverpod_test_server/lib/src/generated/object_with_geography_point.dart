@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithGeographyPoint
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithGeographyPoint._({
     this.id,
     required this.point,
@@ -24,9 +24,9 @@ abstract class ObjectWithGeographyPoint
 
   factory ObjectWithGeographyPoint({
     int? id,
-    required _i1.GeographyPoint point,
-    required _i1.GeographyPoint pointIndexedGist,
-    required _i1.GeographyPoint pointIndexedSpgist,
+    required _is.GeographyPoint point,
+    required _is.GeographyPoint pointIndexedGist,
+    required _is.GeographyPoint pointIndexedSpgist,
   }) = _ObjectWithGeographyPointImpl;
 
   factory ObjectWithGeographyPoint.fromJson(
@@ -34,13 +34,13 @@ abstract class ObjectWithGeographyPoint
   ) {
     return ObjectWithGeographyPoint(
       id: jsonSerialization['id'] as int?,
-      point: _i1.GeographyPointJsonExtension.fromJson(
+      point: _is.GeographyPointJsonExtension.fromJson(
         jsonSerialization['point'],
       ),
-      pointIndexedGist: _i1.GeographyPointJsonExtension.fromJson(
+      pointIndexedGist: _is.GeographyPointJsonExtension.fromJson(
         jsonSerialization['pointIndexedGist'],
       ),
-      pointIndexedSpgist: _i1.GeographyPointJsonExtension.fromJson(
+      pointIndexedSpgist: _is.GeographyPointJsonExtension.fromJson(
         jsonSerialization['pointIndexedSpgist'],
       ),
     );
@@ -53,23 +53,23 @@ abstract class ObjectWithGeographyPoint
   @override
   int? id;
 
-  _i1.GeographyPoint point;
+  _is.GeographyPoint point;
 
-  _i1.GeographyPoint pointIndexedGist;
+  _is.GeographyPoint pointIndexedGist;
 
-  _i1.GeographyPoint pointIndexedSpgist;
+  _is.GeographyPoint pointIndexedSpgist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithGeographyPoint copyWith({
     int? id,
-    _i1.GeographyPoint? point,
-    _i1.GeographyPoint? pointIndexedGist,
-    _i1.GeographyPoint? pointIndexedSpgist,
+    _is.GeographyPoint? point,
+    _is.GeographyPoint? pointIndexedGist,
+    _is.GeographyPoint? pointIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,11 +98,11 @@ abstract class ObjectWithGeographyPoint
   }
 
   static ObjectWithGeographyPointIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     ObjectWithGeographyPointInclude? include,
   }) {
     return ObjectWithGeographyPointIncludeList.internal_(
@@ -117,7 +117,7 @@ abstract class ObjectWithGeographyPoint
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -126,9 +126,9 @@ class _Undefined {}
 class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
   _ObjectWithGeographyPointImpl({
     int? id,
-    required _i1.GeographyPoint point,
-    required _i1.GeographyPoint pointIndexedGist,
-    required _i1.GeographyPoint pointIndexedSpgist,
+    required _is.GeographyPoint point,
+    required _is.GeographyPoint pointIndexedGist,
+    required _is.GeographyPoint pointIndexedSpgist,
   }) : super._(
          id: id,
          point: point,
@@ -138,13 +138,13 @@ class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
 
   /// Returns a shallow copy of this [ObjectWithGeographyPoint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithGeographyPoint copyWith({
     Object? id = _Undefined,
-    _i1.GeographyPoint? point,
-    _i1.GeographyPoint? pointIndexedGist,
-    _i1.GeographyPoint? pointIndexedSpgist,
+    _is.GeographyPoint? point,
+    _is.GeographyPoint? pointIndexedGist,
+    _is.GeographyPoint? pointIndexedSpgist,
   }) {
     return ObjectWithGeographyPoint(
       id: id is int? ? id : this.id,
@@ -156,44 +156,44 @@ class _ObjectWithGeographyPointImpl extends ObjectWithGeographyPoint {
 }
 
 class ObjectWithGeographyPointUpdateTable
-    extends _i1.UpdateTable<ObjectWithGeographyPointTable> {
+    extends _is.UpdateTable<ObjectWithGeographyPointTable> {
   ObjectWithGeographyPointUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.GeographyPoint, _i1.GeographyPoint> point(
-    _i1.GeographyPoint value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPoint, _is.GeographyPoint> point(
+    _is.GeographyPoint value,
+  ) => _is.ColumnValue(
     table.point,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyPoint, _i1.GeographyPoint> pointIndexedGist(
-    _i1.GeographyPoint value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPoint, _is.GeographyPoint> pointIndexedGist(
+    _is.GeographyPoint value,
+  ) => _is.ColumnValue(
     table.pointIndexedGist,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyPoint, _i1.GeographyPoint> pointIndexedSpgist(
-    _i1.GeographyPoint value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPoint, _is.GeographyPoint> pointIndexedSpgist(
+    _is.GeographyPoint value,
+  ) => _is.ColumnValue(
     table.pointIndexedSpgist,
     value,
   );
 }
 
-class ObjectWithGeographyPointTable extends _i1.Table<int?> {
+class ObjectWithGeographyPointTable extends _is.Table<int?> {
   ObjectWithGeographyPointTable({super.tableRelation})
     : super(tableName: 'object_with_geography_point') {
     updateTable = ObjectWithGeographyPointUpdateTable(this);
-    point = _i1.ColumnGeographyPoint(
+    point = _is.ColumnGeographyPoint(
       'point',
       this,
     );
-    pointIndexedGist = _i1.ColumnGeographyPoint(
+    pointIndexedGist = _is.ColumnGeographyPoint(
       'pointIndexedGist',
       this,
     );
-    pointIndexedSpgist = _i1.ColumnGeographyPoint(
+    pointIndexedSpgist = _is.ColumnGeographyPoint(
       'pointIndexedSpgist',
       this,
     );
@@ -201,14 +201,14 @@ class ObjectWithGeographyPointTable extends _i1.Table<int?> {
 
   late final ObjectWithGeographyPointUpdateTable updateTable;
 
-  late final _i1.ColumnGeographyPoint point;
+  late final _is.ColumnGeographyPoint point;
 
-  late final _i1.ColumnGeographyPoint pointIndexedGist;
+  late final _is.ColumnGeographyPoint pointIndexedGist;
 
-  late final _i1.ColumnGeographyPoint pointIndexedSpgist;
+  late final _is.ColumnGeographyPoint pointIndexedSpgist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     point,
     pointIndexedGist,
@@ -216,42 +216,42 @@ class ObjectWithGeographyPointTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyPointInclude extends _i1.IncludeObject {
-  @_i2.internal
+class ObjectWithGeographyPointInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ObjectWithGeographyPointInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyPoint.t;
+  _is.Table<int?> get table => ObjectWithGeographyPoint.t;
 }
 
-class ObjectWithGeographyPointIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ObjectWithGeographyPointIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithGeographyPointIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyPoint.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyPoint.t;
+  _is.Table<int?> get table => ObjectWithGeographyPoint.t;
 }
 
 class ObjectWithGeographyPointRepository {
@@ -280,15 +280,15 @@ class ObjectWithGeographyPointRepository {
   /// );
   /// ```
   Future<List<ObjectWithGeographyPoint>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyPoint>(
       where: where?.call(ObjectWithGeographyPoint.t),
@@ -320,14 +320,14 @@ class ObjectWithGeographyPointRepository {
   /// );
   /// ```
   Future<ObjectWithGeographyPoint?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyPoint>(
       where: where?.call(ObjectWithGeographyPoint.t),
@@ -342,11 +342,11 @@ class ObjectWithGeographyPointRepository {
 
   /// Finds a single [ObjectWithGeographyPoint] by its [id] or null if no such row exists.
   Future<ObjectWithGeographyPoint?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithGeographyPoint>(
       id,
@@ -371,9 +371,9 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -389,9 +389,9 @@ class ObjectWithGeographyPointRepository {
   ///
   /// The returned [ObjectWithGeographyPoint] will have its `id` field set.
   Future<ObjectWithGeographyPoint> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPoint row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithGeographyPoint>(
       row,
@@ -420,13 +420,13 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
-    required _i1.ColumnSelections<ObjectWithGeographyPointTable>
+    required _is.ColumnSelections<ObjectWithGeographyPointTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyPointTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPointTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithGeographyPoint>(
@@ -453,13 +453,13 @@ class ObjectWithGeographyPointRepository {
   ///
   /// The returned [ObjectWithGeographyPoint] will have its `id` field set.
   Future<ObjectWithGeographyPoint?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPoint row, {
-    required _i1.ColumnSelections<ObjectWithGeographyPointTable>
+    required _is.ColumnSelections<ObjectWithGeographyPointTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyPointTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPointTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithGeographyPoint>(
       row,
@@ -480,10 +480,10 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
-    _i1.ColumnSelections<ObjectWithGeographyPointTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPointTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithGeographyPoint>(
@@ -498,10 +498,10 @@ class ObjectWithGeographyPointRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithGeographyPoint> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPoint row, {
-    _i1.ColumnSelections<ObjectWithGeographyPointTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPointTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithGeographyPoint>(
       row,
@@ -513,11 +513,11 @@ class ObjectWithGeographyPointRepository {
   /// Updates a single [ObjectWithGeographyPoint] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithGeographyPoint?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithGeographyPointUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithGeographyPointUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithGeographyPoint>(
       id,
@@ -533,15 +533,15 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithGeographyPointUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithGeographyPointUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyPoint>(
@@ -568,11 +568,11 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPoint> rows, {
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithGeographyPoint>(
@@ -586,9 +586,9 @@ class ObjectWithGeographyPointRepository {
 
   /// Deletes a single [ObjectWithGeographyPoint].
   Future<ObjectWithGeographyPoint> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPoint row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithGeographyPoint>(
       row,
@@ -605,11 +605,11 @@ class ObjectWithGeographyPointRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPoint>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
-    _i1.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyPoint>(
@@ -624,10 +624,10 @@ class ObjectWithGeographyPointRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyPoint>(
       where: where?.call(ObjectWithGeographyPoint.t),
@@ -638,11 +638,11 @@ class ObjectWithGeographyPointRepository {
 
   /// Acquires row-level locks on [ObjectWithGeographyPoint] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPointTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyPoint>(
       where: where(ObjectWithGeographyPoint.t),

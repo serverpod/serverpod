@@ -11,13 +11,13 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_author.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'projected_author.dart' as _iq5hz6n4;
 
 abstract class ProjectedArticle
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProjectedArticle._({
     this.id,
     required this.title,
@@ -31,7 +31,7 @@ abstract class ProjectedArticle
     int? id,
     required String title,
     required int authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     required String summary,
     required String content,
   }) = _ProjectedArticleImpl;
@@ -43,7 +43,7 @@ abstract class ProjectedArticle
       authorId: jsonSerialization['authorId'] as int,
       author: jsonSerialization['author'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ProjectedAuthor>(
+          : _igqrxdcj.Protocol().deserialize<_iq5hz6n4.ProjectedAuthor>(
               jsonSerialization['author'],
             ),
       summary: jsonSerialization['summary'] as String,
@@ -62,23 +62,23 @@ abstract class ProjectedArticle
 
   int authorId;
 
-  _i2.ProjectedAuthor? author;
+  _iq5hz6n4.ProjectedAuthor? author;
 
   String summary;
 
   String content;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedArticle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedArticle copyWith({
     int? id,
     String? title,
     int? authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     String? summary,
     String? content,
   });
@@ -108,16 +108,18 @@ abstract class ProjectedArticle
     };
   }
 
-  static ProjectedArticleInclude include({_i2.ProjectedAuthorInclude? author}) {
+  static ProjectedArticleInclude include({
+    _iq5hz6n4.ProjectedAuthorInclude? author,
+  }) {
     return ProjectedArticleInclude.internal_(author: author);
   }
 
   static ProjectedArticleIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     ProjectedArticleInclude? include,
   }) {
     return ProjectedArticleIncludeList.internal_(
@@ -132,7 +134,7 @@ abstract class ProjectedArticle
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -143,7 +145,7 @@ class _ProjectedArticleImpl extends ProjectedArticle {
     int? id,
     required String title,
     required int authorId,
-    _i2.ProjectedAuthor? author,
+    _iq5hz6n4.ProjectedAuthor? author,
     required String summary,
     required String content,
   }) : super._(
@@ -157,7 +159,7 @@ class _ProjectedArticleImpl extends ProjectedArticle {
 
   /// Returns a shallow copy of this [ProjectedArticle]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedArticle copyWith({
     Object? id = _Undefined,
@@ -171,7 +173,9 @@ class _ProjectedArticleImpl extends ProjectedArticle {
       id: id is int? ? id : this.id,
       title: title ?? this.title,
       authorId: authorId ?? this.authorId,
-      author: author is _i2.ProjectedAuthor? ? author : this.author?.copyWith(),
+      author: author is _iq5hz6n4.ProjectedAuthor?
+          ? author
+          : this.author?.copyWith(),
       summary: summary ?? this.summary,
       content: content ?? this.content,
     );
@@ -179,47 +183,47 @@ class _ProjectedArticleImpl extends ProjectedArticle {
 }
 
 class ProjectedArticleUpdateTable
-    extends _i1.UpdateTable<ProjectedArticleTable> {
+    extends _is.UpdateTable<ProjectedArticleTable> {
   ProjectedArticleUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> title(String value) => _is.ColumnValue(
     table.title,
     value,
   );
 
-  _i1.ColumnValue<int, int> authorId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> authorId(int value) => _is.ColumnValue(
     table.authorId,
     value,
   );
 
-  _i1.ColumnValue<String, String> summary(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> summary(String value) => _is.ColumnValue(
     table.summary,
     value,
   );
 
-  _i1.ColumnValue<String, String> content(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> content(String value) => _is.ColumnValue(
     table.content,
     value,
   );
 }
 
-class ProjectedArticleTable extends _i1.Table<int?> {
+class ProjectedArticleTable extends _is.Table<int?> {
   ProjectedArticleTable({super.tableRelation})
     : super(tableName: 'projected_article') {
     updateTable = ProjectedArticleUpdateTable(this);
-    title = _i1.ColumnString(
+    title = _is.ColumnString(
       'title',
       this,
     );
-    authorId = _i1.ColumnInt(
+    authorId = _is.ColumnInt(
       'authorId',
       this,
     );
-    summary = _i1.ColumnString(
+    summary = _is.ColumnString(
       'summary',
       this,
     );
-    content = _i1.ColumnString(
+    content = _is.ColumnString(
       'content',
       this,
     );
@@ -227,31 +231,31 @@ class ProjectedArticleTable extends _i1.Table<int?> {
 
   late final ProjectedArticleUpdateTable updateTable;
 
-  late final _i1.ColumnString title;
+  late final _is.ColumnString title;
 
-  late final _i1.ColumnInt authorId;
+  late final _is.ColumnInt authorId;
 
-  _i2.ProjectedAuthorTable? _author;
+  _iq5hz6n4.ProjectedAuthorTable? _author;
 
-  late final _i1.ColumnString summary;
+  late final _is.ColumnString summary;
 
-  late final _i1.ColumnString content;
+  late final _is.ColumnString content;
 
-  _i2.ProjectedAuthorTable get author {
+  _iq5hz6n4.ProjectedAuthorTable get author {
     if (_author != null) return _author!;
-    _author = _i1.createRelationTable(
+    _author = _is.createRelationTable(
       relationFieldName: 'author',
       field: ProjectedArticle.t.authorId,
-      foreignField: _i2.ProjectedAuthor.t.id,
+      foreignField: _iq5hz6n4.ProjectedAuthor.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ProjectedAuthorTable(tableRelation: foreignTableRelation),
+          _iq5hz6n4.ProjectedAuthorTable(tableRelation: foreignTableRelation),
     );
     return _author!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     title,
     authorId,
@@ -260,7 +264,7 @@ class ProjectedArticleTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'author') {
       return author;
     }
@@ -268,47 +272,47 @@ class ProjectedArticleTable extends _i1.Table<int?> {
   }
 }
 
-class ProjectedArticleInclude extends _i1.IncludeObject {
-  @_i4.internal
+class ProjectedArticleInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ProjectedArticleInclude.internal_({
-    _i2.ProjectedAuthorInclude? author,
-    List<_i1.Column>? this.selectedColumns,
+    _iq5hz6n4.ProjectedAuthorInclude? author,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _author = author;
   }
 
-  _i2.ProjectedAuthorInclude? _author;
+  _iq5hz6n4.ProjectedAuthorInclude? _author;
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {'author': _author};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ProjectedArticle.t;
+  Map<String, _is.Include?> get includes => {'author': _author};
+
+  @override
+  _is.Table<int?> get table => ProjectedArticle.t;
 }
 
-class ProjectedArticleIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class ProjectedArticleIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ProjectedArticleIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedArticle.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProjectedArticle.t;
+  _is.Table<int?> get table => ProjectedArticle.t;
 }
 
 class ProjectedArticleRepository {
@@ -339,16 +343,16 @@ class ProjectedArticleRepository {
   /// );
   /// ```
   Future<List<ProjectedArticle>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
     ProjectedArticleInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProjectedArticle>(
       where: where?.call(ProjectedArticle.t),
@@ -381,15 +385,15 @@ class ProjectedArticleRepository {
   /// );
   /// ```
   Future<ProjectedArticle?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
     ProjectedArticleInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProjectedArticle>(
       where: where?.call(ProjectedArticle.t),
@@ -405,12 +409,12 @@ class ProjectedArticleRepository {
 
   /// Finds a single [ProjectedArticle] by its [id] or null if no such row exists.
   Future<ProjectedArticle?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     ProjectedArticleInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProjectedArticle>(
       id,
@@ -436,9 +440,9 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedArticle> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -454,9 +458,9 @@ class ProjectedArticleRepository {
   ///
   /// The returned [ProjectedArticle] will have its `id` field set.
   Future<ProjectedArticle> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedArticle row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProjectedArticle>(
       row,
@@ -485,12 +489,12 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedArticle> rows, {
-    required _i1.ColumnSelections<ProjectedArticleTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedArticleTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedArticleTable> conflictColumns,
+    _is.ColumnSelections<ProjectedArticleTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ProjectedArticle>(
@@ -517,12 +521,12 @@ class ProjectedArticleRepository {
   ///
   /// The returned [ProjectedArticle] will have its `id` field set.
   Future<ProjectedArticle?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedArticle row, {
-    required _i1.ColumnSelections<ProjectedArticleTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedArticleTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedArticleTable> conflictColumns,
+    _is.ColumnSelections<ProjectedArticleTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ProjectedArticle>(
       row,
@@ -543,10 +547,10 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedArticle> rows, {
-    _i1.ColumnSelections<ProjectedArticleTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedArticleTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ProjectedArticle>(
@@ -561,10 +565,10 @@ class ProjectedArticleRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProjectedArticle> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedArticle row, {
-    _i1.ColumnSelections<ProjectedArticleTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedArticleTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProjectedArticle>(
       row,
@@ -576,11 +580,11 @@ class ProjectedArticleRepository {
   /// Updates a single [ProjectedArticle] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedArticle?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProjectedArticleUpdateTable>
+    required _is.ColumnValueListBuilder<ProjectedArticleUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProjectedArticle>(
       id,
@@ -596,15 +600,15 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProjectedArticleUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProjectedArticleUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
+    required _is.WhereExpressionBuilder<ProjectedArticleTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProjectedArticle>(
@@ -631,11 +635,11 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedArticle> rows, {
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ProjectedArticle>(
@@ -649,9 +653,9 @@ class ProjectedArticleRepository {
 
   /// Deletes a single [ProjectedArticle].
   Future<ProjectedArticle> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedArticle row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProjectedArticle>(
       row,
@@ -668,11 +672,11 @@ class ProjectedArticleRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedArticle>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedArticleTable> where,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProjectedArticle>(
@@ -687,10 +691,10 @@ class ProjectedArticleRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProjectedArticle>(
       where: where?.call(ProjectedArticle.t),
@@ -701,11 +705,11 @@ class ProjectedArticleRepository {
 
   /// Acquires row-level locks on [ProjectedArticle] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedArticleTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProjectedArticle>(
       where: where(ProjectedArticle.t),
@@ -722,10 +726,10 @@ class ProjectedArticleAttachRowRepository {
   /// Creates a relation between the given [ProjectedArticle] and [ProjectedAuthor]
   /// by setting the [ProjectedArticle]'s foreign key `authorId` to refer to the [ProjectedAuthor].
   Future<void> author(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedArticle projectedArticle,
-    _i2.ProjectedAuthor author, {
-    _i1.Transaction? transaction,
+    _iq5hz6n4.ProjectedAuthor author, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedArticle.id == null) {
       throw ArgumentError.notNull('projectedArticle.id');

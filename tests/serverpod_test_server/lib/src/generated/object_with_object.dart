@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectWithObject
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithObject._({
     this.id,
     required this.data,
@@ -32,60 +32,63 @@ abstract class ObjectWithObject
 
   factory ObjectWithObject({
     int? id,
-    required _i2.SimpleData data,
-    _i2.SimpleData? nullableData,
-    required List<_i2.SimpleData> dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    required List<_i2.SimpleData?> listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    required _i0zisc0t.SimpleData data,
+    _i0zisc0t.SimpleData? nullableData,
+    required List<_i0zisc0t.SimpleData> dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    required List<_i0zisc0t.SimpleData?> listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   }) = _ObjectWithObjectImpl;
 
   factory ObjectWithObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithObject(
       id: jsonSerialization['id'] as int?,
-      data: _i3.Protocol().deserialize<_i2.SimpleData>(
+      data: _igqrxdcj.Protocol().deserialize<_i0zisc0t.SimpleData>(
         jsonSerialization['data'],
       ),
       nullableData: jsonSerialization['nullableData'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SimpleData>(
+          : _igqrxdcj.Protocol().deserialize<_i0zisc0t.SimpleData>(
               jsonSerialization['nullableData'],
             ),
-      dataList: _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+      dataList: _igqrxdcj.Protocol().deserialize<List<_i0zisc0t.SimpleData>>(
         jsonSerialization['dataList'],
       ),
       nullableDataList: jsonSerialization['nullableDataList'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.SimpleData>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i0zisc0t.SimpleData>>(
               jsonSerialization['nullableDataList'],
             ),
-      listWithNullableData: _i3.Protocol().deserialize<List<_i2.SimpleData?>>(
-        jsonSerialization['listWithNullableData'],
-      ),
+      listWithNullableData: _igqrxdcj.Protocol()
+          .deserialize<List<_i0zisc0t.SimpleData?>>(
+            jsonSerialization['listWithNullableData'],
+          ),
       nullableListWithNullableData:
           jsonSerialization['nullableListWithNullableData'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.SimpleData?>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i0zisc0t.SimpleData?>>(
               jsonSerialization['nullableListWithNullableData'],
             ),
       nestedDataList: jsonSerialization['nestedDataList'] == null
           ? null
-          : _i3.Protocol().deserialize<List<List<_i2.SimpleData>>>(
+          : _igqrxdcj.Protocol().deserialize<List<List<_i0zisc0t.SimpleData>>>(
               jsonSerialization['nestedDataList'],
             ),
       nestedDataListInMap: jsonSerialization['nestedDataListInMap'] == null
           ? null
-          : _i3.Protocol().deserialize<
-              Map<String, List<List<Map<int, _i2.SimpleData>>?>>
+          : _igqrxdcj.Protocol().deserialize<
+              Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>
             >(jsonSerialization['nestedDataListInMap']),
       nestedDataMap: jsonSerialization['nestedDataMap'] == null
           ? null
-          : _i3.Protocol().deserialize<Map<String, Map<int, _i2.SimpleData>>>(
-              jsonSerialization['nestedDataMap'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, Map<int, _i0zisc0t.SimpleData>>>(
+                  jsonSerialization['nestedDataMap'],
+                ),
     );
   }
 
@@ -96,41 +99,42 @@ abstract class ObjectWithObject
   @override
   int? id;
 
-  _i2.SimpleData data;
+  _i0zisc0t.SimpleData data;
 
-  _i2.SimpleData? nullableData;
+  _i0zisc0t.SimpleData? nullableData;
 
-  List<_i2.SimpleData> dataList;
+  List<_i0zisc0t.SimpleData> dataList;
 
-  List<_i2.SimpleData>? nullableDataList;
+  List<_i0zisc0t.SimpleData>? nullableDataList;
 
-  List<_i2.SimpleData?> listWithNullableData;
+  List<_i0zisc0t.SimpleData?> listWithNullableData;
 
-  List<_i2.SimpleData?>? nullableListWithNullableData;
+  List<_i0zisc0t.SimpleData?>? nullableListWithNullableData;
 
-  List<List<_i2.SimpleData>>? nestedDataList;
+  List<List<_i0zisc0t.SimpleData>>? nestedDataList;
 
-  Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap;
+  Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>? nestedDataListInMap;
 
-  Map<String, Map<int, _i2.SimpleData>>? nestedDataMap;
+  Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithObject copyWith({
     int? id,
-    _i2.SimpleData? data,
-    _i2.SimpleData? nullableData,
-    List<_i2.SimpleData>? dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    List<_i2.SimpleData?>? listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    _i0zisc0t.SimpleData? data,
+    _i0zisc0t.SimpleData? nullableData,
+    List<_i0zisc0t.SimpleData>? dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    List<_i0zisc0t.SimpleData?>? listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -217,11 +221,11 @@ abstract class ObjectWithObject
   }
 
   static ObjectWithObjectIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
   }) {
     return ObjectWithObjectIncludeList.internal_(
@@ -236,7 +240,7 @@ abstract class ObjectWithObject
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -245,15 +249,16 @@ class _Undefined {}
 class _ObjectWithObjectImpl extends ObjectWithObject {
   _ObjectWithObjectImpl({
     int? id,
-    required _i2.SimpleData data,
-    _i2.SimpleData? nullableData,
-    required List<_i2.SimpleData> dataList,
-    List<_i2.SimpleData>? nullableDataList,
-    required List<_i2.SimpleData?> listWithNullableData,
-    List<_i2.SimpleData?>? nullableListWithNullableData,
-    List<List<_i2.SimpleData>>? nestedDataList,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? nestedDataListInMap,
-    Map<String, Map<int, _i2.SimpleData>>? nestedDataMap,
+    required _i0zisc0t.SimpleData data,
+    _i0zisc0t.SimpleData? nullableData,
+    required List<_i0zisc0t.SimpleData> dataList,
+    List<_i0zisc0t.SimpleData>? nullableDataList,
+    required List<_i0zisc0t.SimpleData?> listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? nullableListWithNullableData,
+    List<List<_i0zisc0t.SimpleData>>? nestedDataList,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+    nestedDataListInMap,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>? nestedDataMap,
   }) : super._(
          id: id,
          data: data,
@@ -269,15 +274,15 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 
   /// Returns a shallow copy of this [ObjectWithObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithObject copyWith({
     Object? id = _Undefined,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
     Object? nullableData = _Undefined,
-    List<_i2.SimpleData>? dataList,
+    List<_i0zisc0t.SimpleData>? dataList,
     Object? nullableDataList = _Undefined,
-    List<_i2.SimpleData?>? listWithNullableData,
+    List<_i0zisc0t.SimpleData?>? listWithNullableData,
     Object? nullableListWithNullableData = _Undefined,
     Object? nestedDataList = _Undefined,
     Object? nestedDataListInMap = _Undefined,
@@ -286,30 +291,30 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
     return ObjectWithObject(
       id: id is int? ? id : this.id,
       data: data ?? this.data.copyWith(),
-      nullableData: nullableData is _i2.SimpleData?
+      nullableData: nullableData is _i0zisc0t.SimpleData?
           ? nullableData
           : this.nullableData?.copyWith(),
       dataList: dataList ?? this.dataList.map((e0) => e0.copyWith()).toList(),
-      nullableDataList: nullableDataList is List<_i2.SimpleData>?
+      nullableDataList: nullableDataList is List<_i0zisc0t.SimpleData>?
           ? nullableDataList
           : this.nullableDataList?.map((e0) => e0.copyWith()).toList(),
       listWithNullableData:
           listWithNullableData ??
           this.listWithNullableData.map((e0) => e0?.copyWith()).toList(),
       nullableListWithNullableData:
-          nullableListWithNullableData is List<_i2.SimpleData?>?
+          nullableListWithNullableData is List<_i0zisc0t.SimpleData?>?
           ? nullableListWithNullableData
           : this.nullableListWithNullableData
                 ?.map((e0) => e0?.copyWith())
                 .toList(),
-      nestedDataList: nestedDataList is List<List<_i2.SimpleData>>?
+      nestedDataList: nestedDataList is List<List<_i0zisc0t.SimpleData>>?
           ? nestedDataList
           : this.nestedDataList
                 ?.map((e0) => e0.map((e1) => e1.copyWith()).toList())
                 .toList(),
       nestedDataListInMap:
           nestedDataListInMap
-              is Map<String, List<List<Map<int, _i2.SimpleData>>?>>?
+              is Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
           ? nestedDataListInMap
           : this.nestedDataListInMap?.map(
               (
@@ -336,7 +341,8 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
                     .toList(),
               ),
             ),
-      nestedDataMap: nestedDataMap is Map<String, Map<int, _i2.SimpleData>>?
+      nestedDataMap:
+          nestedDataMap is Map<String, Map<int, _i0zisc0t.SimpleData>>?
           ? nestedDataMap
           : this.nestedDataMap?.map(
               (
@@ -360,118 +366,121 @@ class _ObjectWithObjectImpl extends ObjectWithObject {
 }
 
 class ObjectWithObjectUpdateTable
-    extends _i1.UpdateTable<ObjectWithObjectTable> {
+    extends _is.UpdateTable<ObjectWithObjectTable> {
   ObjectWithObjectUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> data(_i2.SimpleData value) =>
-      _i1.ColumnValue(
-        table.data,
-        value,
-      );
+  _is.ColumnValue<_i0zisc0t.SimpleData, _i0zisc0t.SimpleData> data(
+    _i0zisc0t.SimpleData value,
+  ) => _is.ColumnValue(
+    table.data,
+    value,
+  );
 
-  _i1.ColumnValue<_i2.SimpleData, _i2.SimpleData> nullableData(
-    _i2.SimpleData? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_i0zisc0t.SimpleData, _i0zisc0t.SimpleData> nullableData(
+    _i0zisc0t.SimpleData? value,
+  ) => _is.ColumnValue(
     table.nullableData,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.SimpleData>, List<_i2.SimpleData>> dataList(
-    List<_i2.SimpleData> value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<List<_i0zisc0t.SimpleData>, List<_i0zisc0t.SimpleData>>
+  dataList(List<_i0zisc0t.SimpleData> value) => _is.ColumnValue(
     table.dataList,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.SimpleData>, List<_i2.SimpleData>> nullableDataList(
-    List<_i2.SimpleData>? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<List<_i0zisc0t.SimpleData>, List<_i0zisc0t.SimpleData>>
+  nullableDataList(List<_i0zisc0t.SimpleData>? value) => _is.ColumnValue(
     table.nullableDataList,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.SimpleData?>, List<_i2.SimpleData?>>
-  listWithNullableData(List<_i2.SimpleData?> value) => _i1.ColumnValue(
+  _is.ColumnValue<List<_i0zisc0t.SimpleData?>, List<_i0zisc0t.SimpleData?>>
+  listWithNullableData(List<_i0zisc0t.SimpleData?> value) => _is.ColumnValue(
     table.listWithNullableData,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.SimpleData?>, List<_i2.SimpleData?>>
-  nullableListWithNullableData(List<_i2.SimpleData?>? value) => _i1.ColumnValue(
-    table.nullableListWithNullableData,
-    value,
-  );
+  _is.ColumnValue<List<_i0zisc0t.SimpleData?>, List<_i0zisc0t.SimpleData?>>
+  nullableListWithNullableData(List<_i0zisc0t.SimpleData?>? value) =>
+      _is.ColumnValue(
+        table.nullableListWithNullableData,
+        value,
+      );
 
-  _i1.ColumnValue<List<List<_i2.SimpleData>>, List<List<_i2.SimpleData>>>
-  nestedDataList(List<List<_i2.SimpleData>>? value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    List<List<_i0zisc0t.SimpleData>>,
+    List<List<_i0zisc0t.SimpleData>>
+  >
+  nestedDataList(List<List<_i0zisc0t.SimpleData>>? value) => _is.ColumnValue(
     table.nestedDataList,
     value,
   );
 
-  _i1.ColumnValue<
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>,
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>
+  _is.ColumnValue<
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>,
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>
   >
   nestedDataListInMap(
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>? value,
-  ) => _i1.ColumnValue(
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>? value,
+  ) => _is.ColumnValue(
     table.nestedDataListInMap,
     value,
   );
 
-  _i1.ColumnValue<
-    Map<String, Map<int, _i2.SimpleData>>,
-    Map<String, Map<int, _i2.SimpleData>>
+  _is.ColumnValue<
+    Map<String, Map<int, _i0zisc0t.SimpleData>>,
+    Map<String, Map<int, _i0zisc0t.SimpleData>>
   >
-  nestedDataMap(Map<String, Map<int, _i2.SimpleData>>? value) =>
-      _i1.ColumnValue(
+  nestedDataMap(Map<String, Map<int, _i0zisc0t.SimpleData>>? value) =>
+      _is.ColumnValue(
         table.nestedDataMap,
         value,
       );
 }
 
-class ObjectWithObjectTable extends _i1.Table<int?> {
+class ObjectWithObjectTable extends _is.Table<int?> {
   ObjectWithObjectTable({super.tableRelation})
     : super(tableName: 'object_with_object') {
     updateTable = ObjectWithObjectUpdateTable(this);
-    data = _i1.ColumnSerializable<_i2.SimpleData>(
+    data = _is.ColumnSerializable<_i0zisc0t.SimpleData>(
       'data',
       this,
     );
-    nullableData = _i1.ColumnSerializable<_i2.SimpleData>(
+    nullableData = _is.ColumnSerializable<_i0zisc0t.SimpleData>(
       'nullableData',
       this,
     );
-    dataList = _i1.ColumnSerializable<List<_i2.SimpleData>>(
+    dataList = _is.ColumnSerializable<List<_i0zisc0t.SimpleData>>(
       'dataList',
       this,
     );
-    nullableDataList = _i1.ColumnSerializable<List<_i2.SimpleData>>(
+    nullableDataList = _is.ColumnSerializable<List<_i0zisc0t.SimpleData>>(
       'nullableDataList',
       this,
     );
-    listWithNullableData = _i1.ColumnSerializable<List<_i2.SimpleData?>>(
+    listWithNullableData = _is.ColumnSerializable<List<_i0zisc0t.SimpleData?>>(
       'listWithNullableData',
       this,
     );
     nullableListWithNullableData =
-        _i1.ColumnSerializable<List<_i2.SimpleData?>>(
+        _is.ColumnSerializable<List<_i0zisc0t.SimpleData?>>(
           'nullableListWithNullableData',
           this,
         );
-    nestedDataList = _i1.ColumnSerializable<List<List<_i2.SimpleData>>>(
+    nestedDataList = _is.ColumnSerializable<List<List<_i0zisc0t.SimpleData>>>(
       'nestedDataList',
       this,
     );
     nestedDataListInMap =
-        _i1.ColumnSerializable<
-          Map<String, List<List<Map<int, _i2.SimpleData>>?>>
+        _is.ColumnSerializable<
+          Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>
         >(
           'nestedDataListInMap',
           this,
         );
     nestedDataMap =
-        _i1.ColumnSerializable<Map<String, Map<int, _i2.SimpleData>>>(
+        _is.ColumnSerializable<Map<String, Map<int, _i0zisc0t.SimpleData>>>(
           'nestedDataMap',
           this,
         );
@@ -479,31 +488,34 @@ class ObjectWithObjectTable extends _i1.Table<int?> {
 
   late final ObjectWithObjectUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<_i2.SimpleData> data;
+  late final _is.ColumnSerializable<_i0zisc0t.SimpleData> data;
 
-  late final _i1.ColumnSerializable<_i2.SimpleData> nullableData;
+  late final _is.ColumnSerializable<_i0zisc0t.SimpleData> nullableData;
 
-  late final _i1.ColumnSerializable<List<_i2.SimpleData>> dataList;
+  late final _is.ColumnSerializable<List<_i0zisc0t.SimpleData>> dataList;
 
-  late final _i1.ColumnSerializable<List<_i2.SimpleData>> nullableDataList;
+  late final _is.ColumnSerializable<List<_i0zisc0t.SimpleData>>
+  nullableDataList;
 
-  late final _i1.ColumnSerializable<List<_i2.SimpleData?>> listWithNullableData;
+  late final _is.ColumnSerializable<List<_i0zisc0t.SimpleData?>>
+  listWithNullableData;
 
-  late final _i1.ColumnSerializable<List<_i2.SimpleData?>>
+  late final _is.ColumnSerializable<List<_i0zisc0t.SimpleData?>>
   nullableListWithNullableData;
 
-  late final _i1.ColumnSerializable<List<List<_i2.SimpleData>>> nestedDataList;
+  late final _is.ColumnSerializable<List<List<_i0zisc0t.SimpleData>>>
+  nestedDataList;
 
-  late final _i1.ColumnSerializable<
-    Map<String, List<List<Map<int, _i2.SimpleData>>?>>
+  late final _is.ColumnSerializable<
+    Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>
   >
   nestedDataListInMap;
 
-  late final _i1.ColumnSerializable<Map<String, Map<int, _i2.SimpleData>>>
+  late final _is.ColumnSerializable<Map<String, Map<int, _i0zisc0t.SimpleData>>>
   nestedDataMap;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     data,
     nullableData,
@@ -517,40 +529,40 @@ class ObjectWithObjectTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithObjectInclude extends _i1.IncludeObject {
-  @_i4.internal
-  ObjectWithObjectInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class ObjectWithObjectInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ObjectWithObjectInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ObjectWithObject.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithObject.t;
 }
 
-class ObjectWithObjectIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class ObjectWithObjectIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithObjectIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithObject.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithObject.t;
+  _is.Table<int?> get table => ObjectWithObject.t;
 }
 
 class ObjectWithObjectRepository {
@@ -579,15 +591,15 @@ class ObjectWithObjectRepository {
   /// );
   /// ```
   Future<List<ObjectWithObject>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
@@ -619,14 +631,14 @@ class ObjectWithObjectRepository {
   /// );
   /// ```
   Future<ObjectWithObject?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
@@ -641,11 +653,11 @@ class ObjectWithObjectRepository {
 
   /// Finds a single [ObjectWithObject] by its [id] or null if no such row exists.
   Future<ObjectWithObject?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithObject>(
       id,
@@ -670,9 +682,9 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithObject> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -688,9 +700,9 @@ class ObjectWithObjectRepository {
   ///
   /// The returned [ObjectWithObject] will have its `id` field set.
   Future<ObjectWithObject> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithObject row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithObject>(
       row,
@@ -719,12 +731,12 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithObject> rows, {
-    required _i1.ColumnSelections<ObjectWithObjectTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithObjectTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithObjectTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithObjectTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithObject>(
@@ -751,12 +763,12 @@ class ObjectWithObjectRepository {
   ///
   /// The returned [ObjectWithObject] will have its `id` field set.
   Future<ObjectWithObject?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithObject row, {
-    required _i1.ColumnSelections<ObjectWithObjectTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithObjectTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithObjectTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithObjectTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithObject>(
       row,
@@ -777,10 +789,10 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithObject> rows, {
-    _i1.ColumnSelections<ObjectWithObjectTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithObjectTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithObject>(
@@ -795,10 +807,10 @@ class ObjectWithObjectRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithObject> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithObject row, {
-    _i1.ColumnSelections<ObjectWithObjectTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithObjectTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithObject>(
       row,
@@ -810,11 +822,11 @@ class ObjectWithObjectRepository {
   /// Updates a single [ObjectWithObject] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithObject?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithObject>(
       id,
@@ -830,15 +842,15 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithObjectUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithObjectTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithObject>(
@@ -865,11 +877,11 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithObject> rows, {
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithObject>(
@@ -883,9 +895,9 @@ class ObjectWithObjectRepository {
 
   /// Deletes a single [ObjectWithObject].
   Future<ObjectWithObject> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithObject row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithObject>(
       row,
@@ -902,11 +914,11 @@ class ObjectWithObjectRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithObject>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
-    _i1.OrderByBuilder<ObjectWithObjectTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithObjectTable> where,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithObject>(
@@ -921,10 +933,10 @@ class ObjectWithObjectRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithObject>(
       where: where?.call(ObjectWithObject.t),
@@ -935,11 +947,11 @@ class ObjectWithObjectRepository {
 
   /// Acquires row-level locks on [ObjectWithObject] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithObjectTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithObjectTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithObject>(
       where: where(ObjectWithObject.t),

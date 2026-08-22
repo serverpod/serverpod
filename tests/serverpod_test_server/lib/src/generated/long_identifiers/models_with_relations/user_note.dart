@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UserNote
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UserNote._({
     this.id,
     required this.name,
@@ -47,11 +47,11 @@ abstract class UserNote
   final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserNote copyWith({
     int? id,
     String? name,
@@ -83,11 +83,11 @@ abstract class UserNote
   }
 
   static UserNoteIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
   }) {
     return UserNoteIncludeList.internal_(
@@ -102,7 +102,7 @@ abstract class UserNote
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -119,7 +119,7 @@ class _UserNoteImpl extends UserNote {
 
   /// Returns a shallow copy of this [UserNote]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserNote copyWith({
     Object? id = _Undefined,
@@ -162,31 +162,31 @@ class UserNoteImplicit extends _UserNoteImpl {
   final int? _userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 }
 
-class UserNoteUpdateTable extends _i1.UpdateTable<UserNoteTable> {
+class UserNoteUpdateTable extends _is.UpdateTable<UserNoteTable> {
   UserNoteUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int>
+  _is.ColumnValue<int, int>
   $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId(int? value) =>
-      _i1.ColumnValue(
+      _is.ColumnValue(
         table.$_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
         value,
       );
 }
 
-class UserNoteTable extends _i1.Table<int?> {
+class UserNoteTable extends _is.Table<int?> {
   UserNoteTable({super.tableRelation}) : super(tableName: 'user_note') {
     updateTable = UserNoteUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
     $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId =
-        _i1.ColumnInt(
+        _is.ColumnInt(
           '_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId',
           this,
         );
@@ -194,59 +194,59 @@ class UserNoteTable extends _i1.Table<int?> {
 
   late final UserNoteUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt
+  late final _is.ColumnInt
   $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     $_userNoteCollectionsUsernotespropertynameUserNoteCollectionsId,
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [
+  List<_is.Column> get managedColumns => [
     id,
     name,
   ];
 }
 
-class UserNoteInclude extends _i1.IncludeObject {
-  @_i2.internal
-  UserNoteInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class UserNoteInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  UserNoteInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => UserNote.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserNote.t;
 }
 
-class UserNoteIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class UserNoteIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   UserNoteIncludeList.internal_({
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UserNote.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UserNote.t;
+  _is.Table<int?> get table => UserNote.t;
 }
 
 class UserNoteRepository {
@@ -275,15 +275,15 @@ class UserNoteRepository {
   /// );
   /// ```
   Future<List<UserNote>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserNote>(
       where: where?.call(UserNote.t),
@@ -315,14 +315,14 @@ class UserNoteRepository {
   /// );
   /// ```
   Future<UserNote?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserNote>(
       where: where?.call(UserNote.t),
@@ -337,11 +337,11 @@ class UserNoteRepository {
 
   /// Finds a single [UserNote] by its [id] or null if no such row exists.
   Future<UserNote?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserNote>(
       id,
@@ -366,9 +366,9 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserNote> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -384,9 +384,9 @@ class UserNoteRepository {
   ///
   /// The returned [UserNote] will have its `id` field set.
   Future<UserNote> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserNote row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserNote>(
       row,
@@ -415,12 +415,12 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserNote> rows, {
-    required _i1.ColumnSelections<UserNoteTable> conflictColumns,
-    _i1.ColumnSelections<UserNoteTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserNoteTable> conflictColumns,
+    _is.ColumnSelections<UserNoteTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserNoteTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UserNote>(
@@ -447,12 +447,12 @@ class UserNoteRepository {
   ///
   /// The returned [UserNote] will have its `id` field set.
   Future<UserNote?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserNote row, {
-    required _i1.ColumnSelections<UserNoteTable> conflictColumns,
-    _i1.ColumnSelections<UserNoteTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserNoteTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserNoteTable> conflictColumns,
+    _is.ColumnSelections<UserNoteTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserNoteTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserNote>(
       row,
@@ -473,10 +473,10 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserNote> rows, {
-    _i1.ColumnSelections<UserNoteTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserNoteTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UserNote>(
@@ -491,10 +491,10 @@ class UserNoteRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserNote> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserNote row, {
-    _i1.ColumnSelections<UserNoteTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserNoteTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UserNote>(
       row,
@@ -506,10 +506,10 @@ class UserNoteRepository {
   /// Updates a single [UserNote] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserNote?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UserNoteUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<UserNoteUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UserNote>(
       id,
@@ -525,14 +525,14 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UserNoteUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<UserNoteTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UserNoteUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<UserNoteTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserNote>(
@@ -559,11 +559,11 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserNote> rows, {
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UserNote>(
@@ -577,9 +577,9 @@ class UserNoteRepository {
 
   /// Deletes a single [UserNote].
   Future<UserNote> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserNote row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UserNote>(
       row,
@@ -596,11 +596,11 @@ class UserNoteRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserNote>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserNoteTable> where,
-    _i1.OrderByBuilder<UserNoteTable>? orderBy,
-    _i1.OrderByListBuilder<UserNoteTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserNoteTable> where,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserNote>(
@@ -615,10 +615,10 @@ class UserNoteRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserNoteTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UserNote>(
       where: where?.call(UserNote.t),
@@ -629,11 +629,11 @@ class UserNoteRepository {
 
   /// Acquires row-level locks on [UserNote] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserNoteTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserNoteTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserNote>(
       where: where(UserNote.t),

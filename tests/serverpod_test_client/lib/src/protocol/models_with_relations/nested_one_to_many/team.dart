@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/arena.dart' as _i2;
-import '../../models_with_relations/nested_one_to_many/player.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/nested_one_to_many/arena.dart' as _iv085ahk;
+import '../../models_with_relations/nested_one_to_many/player.dart'
+    as _i9mhudyy;
 
 abstract class Team
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Team._({
     this.id,
     required this.name,
@@ -29,8 +30,8 @@ abstract class Team
     int? id,
     required String name,
     int? arenaId,
-    _i2.Arena? arena,
-    List<_i3.Player>? players,
+    _iv085ahk.Arena? arena,
+    List<_i9mhudyy.Player>? players,
   }) = _TeamImpl;
 
   factory Team.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -40,10 +41,12 @@ abstract class Team
       arenaId: jsonSerialization['arenaId'] as int?,
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Arena>(jsonSerialization['arena']),
+          : _iza9lbb5.Protocol().deserialize<_iv085ahk.Arena>(
+              jsonSerialization['arena'],
+            ),
       players: jsonSerialization['players'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Player>>(
+          : _iza9lbb5.Protocol().deserialize<List<_i9mhudyy.Player>>(
               jsonSerialization['players'],
             ),
     );
@@ -58,19 +61,19 @@ abstract class Team
 
   int? arenaId;
 
-  _i2.Arena? arena;
+  _iv085ahk.Arena? arena;
 
-  List<_i3.Player>? players;
+  List<_i9mhudyy.Player>? players;
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Team copyWith({
     int? id,
     String? name,
     int? arenaId,
-    _i2.Arena? arena,
-    List<_i3.Player>? players,
+    _iv085ahk.Arena? arena,
+    List<_i9mhudyy.Player>? players,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -100,7 +103,7 @@ abstract class Team
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -111,8 +114,8 @@ class _TeamImpl extends Team {
     int? id,
     required String name,
     int? arenaId,
-    _i2.Arena? arena,
-    List<_i3.Player>? players,
+    _iv085ahk.Arena? arena,
+    List<_i9mhudyy.Player>? players,
   }) : super._(
          id: id,
          name: name,
@@ -123,7 +126,7 @@ class _TeamImpl extends Team {
 
   /// Returns a shallow copy of this [Team]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Team copyWith({
     Object? id = _Undefined,
@@ -136,8 +139,8 @@ class _TeamImpl extends Team {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       arenaId: arenaId is int? ? arenaId : this.arenaId,
-      arena: arena is _i2.Arena? ? arena : this.arena?.copyWith(),
-      players: players is List<_i3.Player>?
+      arena: arena is _iv085ahk.Arena? ? arena : this.arena?.copyWith(),
+      players: players is List<_i9mhudyy.Player>?
           ? players
           : this.players?.map((e0) => e0.copyWith()).toList(),
     );

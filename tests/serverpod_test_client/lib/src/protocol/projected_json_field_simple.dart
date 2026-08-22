@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ProjectedJsonFieldSimple
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedJsonFieldSimple._({
     required this.text,
     required this.value,
@@ -39,7 +39,7 @@ abstract class ProjectedJsonFieldSimple
 
   /// Returns a shallow copy of this [ProjectedJsonFieldSimple]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedJsonFieldSimple copyWith({
     String? text,
     int? value,
@@ -64,7 +64,7 @@ abstract class ProjectedJsonFieldSimple
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -79,7 +79,7 @@ class _ProjectedJsonFieldSimpleImpl extends ProjectedJsonFieldSimple {
 
   /// Returns a shallow copy of this [ProjectedJsonFieldSimple]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedJsonFieldSimple copyWith({
     String? text,

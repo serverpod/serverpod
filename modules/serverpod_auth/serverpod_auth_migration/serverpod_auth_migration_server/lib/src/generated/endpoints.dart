@@ -10,24 +10,25 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/serverpod_auth_bridge_server.dart'
-    as _i2;
+    as _iabs;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i4;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i5;
+    as _iais;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    modules['serverpod_auth_bridge'] = _i2.Endpoints()
+  void initializeEndpoints(_is.Server server) {
+    modules['serverpod_auth_bridge'] = _iabs.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_core'] = _i3.Endpoints()
+    modules['serverpod_auth_core'] = _iacs.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth_idp'] = _i4.Endpoints()
+    modules['serverpod_auth_idp'] = _iais.Endpoints()
       ..initializeEndpoints(server);
-    modules['serverpod_auth'] = _i5.Endpoints()..initializeEndpoints(server);
+    modules['serverpod_auth'] = _i1n3uhu0.Endpoints()
+      ..initializeEndpoints(server);
   }
 }

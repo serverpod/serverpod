@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
 import '../../../models_with_relations/self_relation/one_to_many/cat.dart'
-    as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+    as _iayhscrz;
 
-abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Cat._({
     this.id,
     required this.name,
@@ -30,8 +31,8 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     int? id,
     required String name,
     int? motherId,
-    _i3.Cat? mother,
-    List<_i3.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   }) = _CatImpl;
 
   factory Cat.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,10 +42,12 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       motherId: jsonSerialization['motherId'] as int?,
       mother: jsonSerialization['mother'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Cat>(jsonSerialization['mother']),
+          : _i0ntutnq.Protocol().deserialize<_iayhscrz.Cat>(
+              jsonSerialization['mother'],
+            ),
       kittens: jsonSerialization['kittens'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Cat>>(
+          : _i0ntutnq.Protocol().deserialize<List<_iayhscrz.Cat>>(
               jsonSerialization['kittens'],
             ),
     );
@@ -61,22 +64,22 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   int? motherId;
 
-  _i3.Cat? mother;
+  _iayhscrz.Cat? mother;
 
-  List<_i3.Cat>? kittens;
+  List<_iayhscrz.Cat>? kittens;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Cat copyWith({
     int? id,
     String? name,
     int? motherId,
-    _i3.Cat? mother,
-    List<_i3.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -105,8 +108,8 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   }
 
   static CatInclude include({
-    _i3.CatInclude? mother,
-    _i3.CatIncludeList? kittens,
+    _iayhscrz.CatInclude? mother,
+    _iayhscrz.CatIncludeList? kittens,
   }) {
     return CatInclude._(
       mother: mother,
@@ -115,11 +118,11 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   }
 
   static CatIncludeList includeList({
-    _i1.WhereExpressionBuilder<CatTable>? where,
+    _isd.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
   }) {
     return CatIncludeList._(
@@ -134,7 +137,7 @@ abstract class Cat implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -145,8 +148,8 @@ class _CatImpl extends Cat {
     int? id,
     required String name,
     int? motherId,
-    _i3.Cat? mother,
-    List<_i3.Cat>? kittens,
+    _iayhscrz.Cat? mother,
+    List<_iayhscrz.Cat>? kittens,
   }) : super._(
          id: id,
          name: name,
@@ -157,7 +160,7 @@ class _CatImpl extends Cat {
 
   /// Returns a shallow copy of this [Cat]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Cat copyWith({
     Object? id = _Undefined,
@@ -170,36 +173,36 @@ class _CatImpl extends Cat {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       motherId: motherId is int? ? motherId : this.motherId,
-      mother: mother is _i3.Cat? ? mother : this.mother?.copyWith(),
-      kittens: kittens is List<_i3.Cat>?
+      mother: mother is _iayhscrz.Cat? ? mother : this.mother?.copyWith(),
+      kittens: kittens is List<_iayhscrz.Cat>?
           ? kittens
           : this.kittens?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class CatUpdateTable extends _i1.UpdateTable<CatTable> {
+class CatUpdateTable extends _isd.UpdateTable<CatTable> {
   CatUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> motherId(int? value) => _i1.ColumnValue(
+  _isd.ColumnValue<int, int> motherId(int? value) => _isd.ColumnValue(
     table.motherId,
     value,
   );
 }
 
-class CatTable extends _i1.Table<int?> {
+class CatTable extends _isd.Table<int?> {
   CatTable({super.tableRelation}) : super(tableName: 'cat') {
     updateTable = CatUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
-    motherId = _i1.ColumnInt(
+    motherId = _isd.ColumnInt(
       'motherId',
       this,
     );
@@ -207,55 +210,55 @@ class CatTable extends _i1.Table<int?> {
 
   late final CatUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  late final _i1.ColumnInt motherId;
+  late final _isd.ColumnInt motherId;
 
-  _i3.CatTable? _mother;
+  _iayhscrz.CatTable? _mother;
 
-  _i3.CatTable? ___kittens;
+  _iayhscrz.CatTable? ___kittens;
 
-  _i1.ManyRelation<_i3.CatTable>? _kittens;
+  _isd.ManyRelation<_iayhscrz.CatTable>? _kittens;
 
-  _i3.CatTable get mother {
+  _iayhscrz.CatTable get mother {
     if (_mother != null) return _mother!;
-    _mother = _i1.createRelationTable(
+    _mother = _isd.createRelationTable(
       relationFieldName: 'mother',
       field: Cat.t.motherId,
-      foreignField: _i3.Cat.t.id,
+      foreignField: _iayhscrz.Cat.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CatTable(tableRelation: foreignTableRelation),
+          _iayhscrz.CatTable(tableRelation: foreignTableRelation),
     );
     return _mother!;
   }
 
-  _i3.CatTable get __kittens {
+  _iayhscrz.CatTable get __kittens {
     if (___kittens != null) return ___kittens!;
-    ___kittens = _i1.createRelationTable(
+    ___kittens = _isd.createRelationTable(
       relationFieldName: '__kittens',
       field: Cat.t.id,
-      foreignField: _i3.Cat.t.motherId,
+      foreignField: _iayhscrz.Cat.t.motherId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CatTable(tableRelation: foreignTableRelation),
+          _iayhscrz.CatTable(tableRelation: foreignTableRelation),
     );
     return ___kittens!;
   }
 
-  _i1.ManyRelation<_i3.CatTable> get kittens {
+  _isd.ManyRelation<_iayhscrz.CatTable> get kittens {
     if (_kittens != null) return _kittens!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _isd.createRelationTable(
       relationFieldName: 'kittens',
       field: Cat.t.id,
-      foreignField: _i3.Cat.t.motherId,
+      foreignField: _iayhscrz.Cat.t.motherId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CatTable(tableRelation: foreignTableRelation),
+          _iayhscrz.CatTable(tableRelation: foreignTableRelation),
     );
-    _kittens = _i1.ManyRelation<_i3.CatTable>(
+    _kittens = _isd.ManyRelation<_iayhscrz.CatTable>(
       tableWithRelations: relationTable,
-      table: _i3.CatTable(
+      table: _iayhscrz.CatTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -263,14 +266,14 @@ class CatTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
     motherId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _isd.Table? getRelationTable(String relationField) {
     if (relationField == 'mother') {
       return mother;
     }
@@ -281,32 +284,32 @@ class CatTable extends _i1.Table<int?> {
   }
 }
 
-class CatInclude extends _i1.IncludeObject {
+class CatInclude extends _isd.IncludeObject {
   CatInclude._({
-    _i3.CatInclude? mother,
-    _i3.CatIncludeList? kittens,
+    _iayhscrz.CatInclude? mother,
+    _iayhscrz.CatIncludeList? kittens,
   }) {
     _mother = mother;
     _kittens = kittens;
   }
 
-  _i3.CatInclude? _mother;
+  _iayhscrz.CatInclude? _mother;
 
-  _i3.CatIncludeList? _kittens;
+  _iayhscrz.CatIncludeList? _kittens;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _isd.Include?> get includes => {
     'mother': _mother,
     'kittens': _kittens,
   };
 
   @override
-  _i1.Table<int?> get table => Cat.t;
+  _isd.Table<int?> get table => Cat.t;
 }
 
-class CatIncludeList extends _i1.IncludeList {
+class CatIncludeList extends _isd.IncludeList {
   CatIncludeList._({
-    _i1.WhereExpressionBuilder<CatTable>? where,
+    _isd.WhereExpressionBuilder<CatTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -317,10 +320,10 @@ class CatIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Cat.t;
+  _isd.Table<int?> get table => Cat.t;
 }
 
 class CatRepository {
@@ -357,16 +360,16 @@ class CatRepository {
   /// );
   /// ```
   Future<List<Cat>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
     CatInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Cat>(
       where: where?.call(Cat.t),
@@ -399,15 +402,15 @@ class CatRepository {
   /// );
   /// ```
   Future<Cat?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
     CatInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Cat>(
       where: where?.call(Cat.t),
@@ -423,12 +426,12 @@ class CatRepository {
 
   /// Finds a single [Cat] by its [id] or null if no such row exists.
   Future<Cat?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     CatInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Cat>(
       id,
@@ -454,9 +457,9 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Cat> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -472,9 +475,9 @@ class CatRepository {
   ///
   /// The returned [Cat] will have its `id` field set.
   Future<Cat> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Cat>(
       row,
@@ -503,12 +506,12 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Cat> rows, {
-    required _i1.ColumnSelections<CatTable> conflictColumns,
-    _i1.ColumnSelections<CatTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CatTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<CatTable> conflictColumns,
+    _isd.ColumnSelections<CatTable>? updateColumns,
+    _isd.WhereExpressionBuilder<CatTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Cat>(
@@ -535,12 +538,12 @@ class CatRepository {
   ///
   /// The returned [Cat] will have its `id` field set.
   Future<Cat?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat row, {
-    required _i1.ColumnSelections<CatTable> conflictColumns,
-    _i1.ColumnSelections<CatTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CatTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<CatTable> conflictColumns,
+    _isd.ColumnSelections<CatTable>? updateColumns,
+    _isd.WhereExpressionBuilder<CatTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Cat>(
       row,
@@ -561,10 +564,10 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Cat> rows, {
-    _i1.ColumnSelections<CatTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<CatTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Cat>(
@@ -579,10 +582,10 @@ class CatRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Cat> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat row, {
-    _i1.ColumnSelections<CatTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<CatTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Cat>(
       row,
@@ -594,10 +597,10 @@ class CatRepository {
   /// Updates a single [Cat] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Cat?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<CatUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Cat>(
       id,
@@ -613,14 +616,14 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CatUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CatTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<CatUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<CatTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Cat>(
@@ -647,11 +650,11 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Cat> rows, {
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Cat>(
@@ -665,9 +668,9 @@ class CatRepository {
 
   /// Deletes a single [Cat].
   Future<Cat> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Cat>(
       row,
@@ -684,11 +687,11 @@ class CatRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Cat>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CatTable> where,
-    _i1.OrderByBuilder<CatTable>? orderBy,
-    _i1.OrderByListBuilder<CatTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<CatTable> where,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Cat>(
@@ -703,10 +706,10 @@ class CatRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CatTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Cat>(
       where: where?.call(Cat.t),
@@ -717,11 +720,11 @@ class CatRepository {
 
   /// Acquires row-level locks on [Cat] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CatTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<CatTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Cat>(
       where: where(Cat.t),
@@ -738,10 +741,10 @@ class CatAttachRepository {
   /// Creates a relation between this [Cat] and the given [Cat]s
   /// by setting each [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat cat,
-    List<_i3.Cat> nestedCat, {
-    _i1.Transaction? transaction,
+    List<_iayhscrz.Cat> nestedCat, {
+    _isd.Transaction? transaction,
   }) async {
     if (nestedCat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('nestedCat.id');
@@ -753,9 +756,9 @@ class CatAttachRepository {
     var $nestedCat = nestedCat
         .map((e) => e.copyWith(motherId: cat.id))
         .toList();
-    await session.db.update<_i3.Cat>(
+    await session.db.update<_iayhscrz.Cat>(
       $nestedCat,
-      columns: [_i3.Cat.t.motherId],
+      columns: [_iayhscrz.Cat.t.motherId],
       transaction: transaction,
     );
   }
@@ -767,10 +770,10 @@ class CatAttachRowRepository {
   /// Creates a relation between the given [Cat] and [Cat]
   /// by setting the [Cat]'s foreign key `motherId` to refer to the [Cat].
   Future<void> mother(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat cat,
-    _i3.Cat mother, {
-    _i1.Transaction? transaction,
+    _iayhscrz.Cat mother, {
+    _isd.Transaction? transaction,
   }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
@@ -790,10 +793,10 @@ class CatAttachRowRepository {
   /// Creates a relation between this [Cat] and the given [Cat]
   /// by setting the [Cat]'s foreign key `motherId` to refer to this [Cat].
   Future<void> kittens(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat cat,
-    _i3.Cat nestedCat, {
-    _i1.Transaction? transaction,
+    _iayhscrz.Cat nestedCat, {
+    _isd.Transaction? transaction,
   }) async {
     if (nestedCat.id == null) {
       throw ArgumentError.notNull('nestedCat.id');
@@ -803,9 +806,9 @@ class CatAttachRowRepository {
     }
 
     var $nestedCat = nestedCat.copyWith(motherId: cat.id);
-    await session.db.updateRow<_i3.Cat>(
+    await session.db.updateRow<_iayhscrz.Cat>(
       $nestedCat,
-      columns: [_i3.Cat.t.motherId],
+      columns: [_iayhscrz.Cat.t.motherId],
       transaction: transaction,
     );
   }
@@ -820,18 +823,18 @@ class CatDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> kittens(
-    _i1.DatabaseSession session,
-    List<_i3.Cat> cat, {
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session,
+    List<_iayhscrz.Cat> cat, {
+    _isd.Transaction? transaction,
   }) async {
     if (cat.any((e) => e.id == null)) {
       throw ArgumentError.notNull('cat.id');
     }
 
     var $cat = cat.map((e) => e.copyWith(motherId: null)).toList();
-    await session.db.update<_i3.Cat>(
+    await session.db.update<_iayhscrz.Cat>(
       $cat,
-      columns: [_i3.Cat.t.motherId],
+      columns: [_iayhscrz.Cat.t.motherId],
       transaction: transaction,
     );
   }
@@ -846,9 +849,9 @@ class CatDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> mother(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Cat cat, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
@@ -868,18 +871,18 @@ class CatDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> kittens(
-    _i1.DatabaseSession session,
-    _i3.Cat cat, {
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session,
+    _iayhscrz.Cat cat, {
+    _isd.Transaction? transaction,
   }) async {
     if (cat.id == null) {
       throw ArgumentError.notNull('cat.id');
     }
 
     var $cat = cat.copyWith(motherId: null);
-    await session.db.updateRow<_i3.Cat>(
+    await session.db.updateRow<_iayhscrz.Cat>(
       $cat,
-      columns: [_i3.Cat.t.motherId],
+      columns: [_iayhscrz.Cat.t.motherId],
       transaction: transaction,
     );
   }

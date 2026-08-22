@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UpsertTestModel
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UpsertTestModel._({
     this.id,
     required this.code,
@@ -52,11 +52,11 @@ abstract class UpsertTestModel
   int value;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UpsertTestModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UpsertTestModel copyWith({
     int? id,
     String? code,
@@ -90,11 +90,11 @@ abstract class UpsertTestModel
   }
 
   static UpsertTestModelIncludeList includeList({
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
   }) {
     return UpsertTestModelIncludeList.internal_(
@@ -109,7 +109,7 @@ abstract class UpsertTestModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +130,7 @@ class _UpsertTestModelImpl extends UpsertTestModel {
 
   /// Returns a shallow copy of this [UpsertTestModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UpsertTestModel copyWith({
     Object? id = _Undefined,
@@ -147,38 +147,38 @@ class _UpsertTestModelImpl extends UpsertTestModel {
   }
 }
 
-class UpsertTestModelUpdateTable extends _i1.UpdateTable<UpsertTestModelTable> {
+class UpsertTestModelUpdateTable extends _is.UpdateTable<UpsertTestModelTable> {
   UpsertTestModelUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> code(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> code(String value) => _is.ColumnValue(
     table.code,
     value,
   );
 
-  _i1.ColumnValue<String, String> category(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> category(String value) => _is.ColumnValue(
     table.category,
     value,
   );
 
-  _i1.ColumnValue<int, int> value(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> value(int value) => _is.ColumnValue(
     table.value,
     value,
   );
 }
 
-class UpsertTestModelTable extends _i1.Table<int?> {
+class UpsertTestModelTable extends _is.Table<int?> {
   UpsertTestModelTable({super.tableRelation})
     : super(tableName: 'upsert_test_model') {
     updateTable = UpsertTestModelUpdateTable(this);
-    code = _i1.ColumnString(
+    code = _is.ColumnString(
       'code',
       this,
     );
-    category = _i1.ColumnString(
+    category = _is.ColumnString(
       'category',
       this,
     );
-    value = _i1.ColumnInt(
+    value = _is.ColumnInt(
       'value',
       this,
     );
@@ -186,14 +186,14 @@ class UpsertTestModelTable extends _i1.Table<int?> {
 
   late final UpsertTestModelUpdateTable updateTable;
 
-  late final _i1.ColumnString code;
+  late final _is.ColumnString code;
 
-  late final _i1.ColumnString category;
+  late final _is.ColumnString category;
 
-  late final _i1.ColumnInt value;
+  late final _is.ColumnInt value;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     code,
     category,
@@ -201,40 +201,40 @@ class UpsertTestModelTable extends _i1.Table<int?> {
   ];
 }
 
-class UpsertTestModelInclude extends _i1.IncludeObject {
-  @_i2.internal
-  UpsertTestModelInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class UpsertTestModelInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  UpsertTestModelInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => UpsertTestModel.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UpsertTestModel.t;
 }
 
-class UpsertTestModelIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class UpsertTestModelIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   UpsertTestModelIncludeList.internal_({
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(UpsertTestModel.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UpsertTestModel.t;
+  _is.Table<int?> get table => UpsertTestModel.t;
 }
 
 class UpsertTestModelRepository {
@@ -263,15 +263,15 @@ class UpsertTestModelRepository {
   /// );
   /// ```
   Future<List<UpsertTestModel>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UpsertTestModel>(
       where: where?.call(UpsertTestModel.t),
@@ -303,14 +303,14 @@ class UpsertTestModelRepository {
   /// );
   /// ```
   Future<UpsertTestModel?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UpsertTestModel>(
       where: where?.call(UpsertTestModel.t),
@@ -325,11 +325,11 @@ class UpsertTestModelRepository {
 
   /// Finds a single [UpsertTestModel] by its [id] or null if no such row exists.
   Future<UpsertTestModel?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UpsertTestModel>(
       id,
@@ -354,9 +354,9 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UpsertTestModel> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -372,9 +372,9 @@ class UpsertTestModelRepository {
   ///
   /// The returned [UpsertTestModel] will have its `id` field set.
   Future<UpsertTestModel> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UpsertTestModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UpsertTestModel>(
       row,
@@ -403,12 +403,12 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UpsertTestModel> rows, {
-    required _i1.ColumnSelections<UpsertTestModelTable> conflictColumns,
-    _i1.ColumnSelections<UpsertTestModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UpsertTestModelTable> conflictColumns,
+    _is.ColumnSelections<UpsertTestModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UpsertTestModel>(
@@ -435,12 +435,12 @@ class UpsertTestModelRepository {
   ///
   /// The returned [UpsertTestModel] will have its `id` field set.
   Future<UpsertTestModel?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UpsertTestModel row, {
-    required _i1.ColumnSelections<UpsertTestModelTable> conflictColumns,
-    _i1.ColumnSelections<UpsertTestModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UpsertTestModelTable> conflictColumns,
+    _is.ColumnSelections<UpsertTestModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UpsertTestModel>(
       row,
@@ -461,10 +461,10 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UpsertTestModel> rows, {
-    _i1.ColumnSelections<UpsertTestModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UpsertTestModelTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UpsertTestModel>(
@@ -479,10 +479,10 @@ class UpsertTestModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UpsertTestModel> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UpsertTestModel row, {
-    _i1.ColumnSelections<UpsertTestModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UpsertTestModelTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UpsertTestModel>(
       row,
@@ -494,11 +494,11 @@ class UpsertTestModelRepository {
   /// Updates a single [UpsertTestModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UpsertTestModel?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UpsertTestModelUpdateTable>
+    required _is.ColumnValueListBuilder<UpsertTestModelUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UpsertTestModel>(
       id,
@@ -514,15 +514,15 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UpsertTestModelUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UpsertTestModelUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<UpsertTestModelTable> where,
+    required _is.WhereExpressionBuilder<UpsertTestModelTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UpsertTestModel>(
@@ -549,11 +549,11 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UpsertTestModel> rows, {
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UpsertTestModel>(
@@ -567,9 +567,9 @@ class UpsertTestModelRepository {
 
   /// Deletes a single [UpsertTestModel].
   Future<UpsertTestModel> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UpsertTestModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UpsertTestModel>(
       row,
@@ -586,11 +586,11 @@ class UpsertTestModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UpsertTestModel>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UpsertTestModelTable> where,
-    _i1.OrderByBuilder<UpsertTestModelTable>? orderBy,
-    _i1.OrderByListBuilder<UpsertTestModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UpsertTestModelTable> where,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UpsertTestModel>(
@@ -605,10 +605,10 @@ class UpsertTestModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UpsertTestModel>(
       where: where?.call(UpsertTestModel.t),
@@ -619,11 +619,11 @@ class UpsertTestModelRepository {
 
   /// Acquires row-level locks on [UpsertTestModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UpsertTestModelTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UpsertTestModelTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UpsertTestModel>(
       where: where(UpsertTestModel.t),

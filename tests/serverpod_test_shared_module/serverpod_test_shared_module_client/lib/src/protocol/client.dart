@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-class Caller extends _i1.ModuleEndpointCaller {
-  Caller(_i1.ServerpodClientShared client) : super(client) {}
+class Caller extends _isc.ModuleEndpointCaller {
+  Caller(_isc.ServerpodClientShared client) : super(client) {}
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {};
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {};
 }

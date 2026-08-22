@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class TableWithExplicitColumnName
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   TableWithExplicitColumnName._({
     this.id,
     required this.userName,
@@ -49,11 +49,11 @@ abstract class TableWithExplicitColumnName
   String? description;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [TableWithExplicitColumnName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TableWithExplicitColumnName copyWith({
     int? id,
     String? userName,
@@ -84,11 +84,11 @@ abstract class TableWithExplicitColumnName
   }
 
   static TableWithExplicitColumnNameIncludeList includeList({
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
     TableWithExplicitColumnNameInclude? include,
   }) {
     return TableWithExplicitColumnNameIncludeList.internal_(
@@ -103,7 +103,7 @@ abstract class TableWithExplicitColumnName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -122,7 +122,7 @@ class _TableWithExplicitColumnNameImpl extends TableWithExplicitColumnName {
 
   /// Returns a shallow copy of this [TableWithExplicitColumnName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TableWithExplicitColumnName copyWith({
     Object? id = _Undefined,
@@ -138,30 +138,30 @@ class _TableWithExplicitColumnNameImpl extends TableWithExplicitColumnName {
 }
 
 class TableWithExplicitColumnNameUpdateTable
-    extends _i1.UpdateTable<TableWithExplicitColumnNameTable> {
+    extends _is.UpdateTable<TableWithExplicitColumnNameTable> {
   TableWithExplicitColumnNameUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> userName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userName(String value) => _is.ColumnValue(
     table.userName,
     value,
   );
 
-  _i1.ColumnValue<String, String> description(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> description(String? value) => _is.ColumnValue(
     table.description,
     value,
   );
 }
 
-class TableWithExplicitColumnNameTable extends _i1.Table<int?> {
+class TableWithExplicitColumnNameTable extends _is.Table<int?> {
   TableWithExplicitColumnNameTable({super.tableRelation})
     : super(tableName: 'table_with_explicit_column_names') {
     updateTable = TableWithExplicitColumnNameUpdateTable(this);
-    userName = _i1.ColumnString(
+    userName = _is.ColumnString(
       'user_name',
       this,
       fieldName: 'userName',
     );
-    description = _i1.ColumnString(
+    description = _is.ColumnString(
       'user_description',
       this,
       hasDefault: true,
@@ -171,54 +171,54 @@ class TableWithExplicitColumnNameTable extends _i1.Table<int?> {
 
   late final TableWithExplicitColumnNameUpdateTable updateTable;
 
-  late final _i1.ColumnString userName;
+  late final _is.ColumnString userName;
 
-  late final _i1.ColumnString description;
+  late final _is.ColumnString description;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userName,
     description,
   ];
 }
 
-class TableWithExplicitColumnNameInclude extends _i1.IncludeObject {
-  @_i2.internal
+class TableWithExplicitColumnNameInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   TableWithExplicitColumnNameInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => TableWithExplicitColumnName.t;
+  _is.Table<int?> get table => TableWithExplicitColumnName.t;
 }
 
-class TableWithExplicitColumnNameIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class TableWithExplicitColumnNameIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   TableWithExplicitColumnNameIncludeList.internal_({
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(TableWithExplicitColumnName.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => TableWithExplicitColumnName.t;
+  _is.Table<int?> get table => TableWithExplicitColumnName.t;
 }
 
 class TableWithExplicitColumnNameRepository {
@@ -247,15 +247,15 @@ class TableWithExplicitColumnNameRepository {
   /// );
   /// ```
   Future<List<TableWithExplicitColumnName>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TableWithExplicitColumnName>(
       where: where?.call(TableWithExplicitColumnName.t),
@@ -287,14 +287,14 @@ class TableWithExplicitColumnNameRepository {
   /// );
   /// ```
   Future<TableWithExplicitColumnName?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? offset,
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TableWithExplicitColumnName>(
       where: where?.call(TableWithExplicitColumnName.t),
@@ -309,11 +309,11 @@ class TableWithExplicitColumnNameRepository {
 
   /// Finds a single [TableWithExplicitColumnName] by its [id] or null if no such row exists.
   Future<TableWithExplicitColumnName?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<TableWithExplicitColumnName>(
       id,
@@ -338,9 +338,9 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -356,9 +356,9 @@ class TableWithExplicitColumnNameRepository {
   ///
   /// The returned [TableWithExplicitColumnName] will have its `id` field set.
   Future<TableWithExplicitColumnName> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TableWithExplicitColumnName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<TableWithExplicitColumnName>(
       row,
@@ -387,13 +387,13 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
-    required _i1.ColumnSelections<TableWithExplicitColumnNameTable>
+    required _is.ColumnSelections<TableWithExplicitColumnNameTable>
     conflictColumns,
-    _i1.ColumnSelections<TableWithExplicitColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TableWithExplicitColumnNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<TableWithExplicitColumnName>(
@@ -420,13 +420,13 @@ class TableWithExplicitColumnNameRepository {
   ///
   /// The returned [TableWithExplicitColumnName] will have its `id` field set.
   Future<TableWithExplicitColumnName?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TableWithExplicitColumnName row, {
-    required _i1.ColumnSelections<TableWithExplicitColumnNameTable>
+    required _is.ColumnSelections<TableWithExplicitColumnNameTable>
     conflictColumns,
-    _i1.ColumnSelections<TableWithExplicitColumnNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TableWithExplicitColumnNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<TableWithExplicitColumnName>(
       row,
@@ -447,10 +447,10 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
-    _i1.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<TableWithExplicitColumnName>(
@@ -465,10 +465,10 @@ class TableWithExplicitColumnNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TableWithExplicitColumnName> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TableWithExplicitColumnName row, {
-    _i1.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TableWithExplicitColumnNameTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<TableWithExplicitColumnName>(
       row,
@@ -480,11 +480,11 @@ class TableWithExplicitColumnNameRepository {
   /// Updates a single [TableWithExplicitColumnName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TableWithExplicitColumnName?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
+    required _is.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<TableWithExplicitColumnName>(
       id,
@@ -500,15 +500,15 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<TableWithExplicitColumnNameUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
+    required _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<TableWithExplicitColumnName>(
@@ -535,11 +535,11 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TableWithExplicitColumnName> rows, {
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<TableWithExplicitColumnName>(
@@ -553,9 +553,9 @@ class TableWithExplicitColumnNameRepository {
 
   /// Deletes a single [TableWithExplicitColumnName].
   Future<TableWithExplicitColumnName> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TableWithExplicitColumnName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<TableWithExplicitColumnName>(
       row,
@@ -572,11 +572,11 @@ class TableWithExplicitColumnNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TableWithExplicitColumnName>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
-    _i1.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
-    _i1.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TableWithExplicitColumnName>(
@@ -591,10 +591,10 @@ class TableWithExplicitColumnNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<TableWithExplicitColumnName>(
       where: where?.call(TableWithExplicitColumnName.t),
@@ -605,11 +605,11 @@ class TableWithExplicitColumnNameRepository {
 
   /// Acquires row-level locks on [TableWithExplicitColumnName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TableWithExplicitColumnName>(
       where: where(TableWithExplicitColumnName.t),

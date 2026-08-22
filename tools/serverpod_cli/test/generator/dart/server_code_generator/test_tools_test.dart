@@ -68,23 +68,23 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
-              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -170,7 +170,7 @@ void main() {
             testToolsFile,
             matches(
               RegExp(
-                r'_i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride',
+                r'_i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride',
               ),
             ),
           );
@@ -187,7 +187,7 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n',
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i[a-z0-9]+\.InternalTestEndpoints \{\n',
             ),
           );
         },
@@ -251,19 +251,19 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -378,23 +378,23 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
-              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -479,7 +479,7 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n',
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i[a-z0-9]+\.InternalTestEndpoints \{\n',
             ),
           );
         },
@@ -531,23 +531,23 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
-              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -636,7 +636,7 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i\d\.InternalTestEndpoints \{\n',
+              r'class _InternalTestEndpoints extends TestEndpoints\n\s*implements _i[a-z0-9]+\.InternalTestEndpoints \{\n',
             ),
           );
         },
@@ -692,7 +692,10 @@ void main() {
         expect(
           testToolsFile,
           matches(
-            r'Future<String> futureMethod\(_i\d\.TestSessionBuilder sessionBuilder\) async \{',
+            // Whitespace tolerant: the parameter list wraps or not depending
+            // on how long the generated import prefix is.
+            r'Future<String> futureMethod\(\s*'
+            r'_i[a-z0-9]+\.TestSessionBuilder sessionBuilder,?\s*\) async \{',
           ),
         );
       });
@@ -753,7 +756,7 @@ void main() {
         expect(
           testToolsFile,
           matches(
-            r'Stream<String> streamMethod\(_i\d\.TestSessionBuilder sessionBuilder\) \{',
+            r'Stream<String> streamMethod\(_i[a-z0-9]+\.TestSessionBuilder sessionBuilder\) \{',
           ),
         );
       });
@@ -824,7 +827,7 @@ void main() {
           testToolsFile,
           contains(
             '  Future<String> nonStreamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder, {\n'
+            '    _ist.TestSessionBuilder sessionBuilder, {\n'
             '    required String stringParam,\n'
             '  }) async {\n',
           ),
@@ -896,7 +899,7 @@ void main() {
           testToolsFile,
           contains(
             '  Future<String> nonStreamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder, [\n'
+            '    _ist.TestSessionBuilder sessionBuilder, [\n'
             '    String? stringParam,\n'
             '  ]) async {',
           ),
@@ -969,7 +972,7 @@ void main() {
           testToolsFile,
           contains(
             '  Future<String> nonStreamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder, {\n'
+            '    _ist.TestSessionBuilder sessionBuilder, {\n'
             '    String? stringParam,\n'
             '  }) async {\n',
           ),
@@ -1039,7 +1042,7 @@ void main() {
           testToolsFile,
           contains(
             '  Future<String> streamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder,\n'
+            '    _ist.TestSessionBuilder sessionBuilder,\n'
             '    Stream<String> streamParam,\n'
             '  ) async {',
           ),
@@ -1114,7 +1117,7 @@ void main() {
           testToolsFile,
           contains(
             '  Future<String> streamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder, {\n'
+            '    _ist.TestSessionBuilder sessionBuilder, {\n'
             '    required Stream<String> streamParam,\n'
             '  }) async {',
           ),
@@ -1191,7 +1194,7 @@ void main() {
           testToolsFile,
           contains(
             '  Stream<String> streamMethod(\n'
-            '    _i1.TestSessionBuilder sessionBuilder,\n'
+            '    _ist.TestSessionBuilder sessionBuilder,\n'
             '    Stream<String> streamParam,\n'
             '  ) {',
           ),
@@ -1903,23 +1906,23 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
-              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -1987,23 +1990,23 @@ void main() {
           expect(
             testToolsFile,
             matches(
-              r'@_i\d\.isTestGroup\n'
+              r'@_i[a-z0-9]+\.isTestGroup\n'
               r'void withServerpod\(\n'
               r'  String testGroupName,\n'
-              r'  _i\d\.TestClosure<TestEndpoints> testClosure, \{\n'
+              r'  _i[a-z0-9]+\.TestClosure<TestEndpoints> testClosure, \{\n'
               r'  bool\? applyMigrations,\n'
-              r'  _i\d\.ServerpodConfig Function\(_i\d\.ServerpodConfig\)\? configOverride,\n'
-              r'  _i\d\.DatabaseInterceptor\? databaseInterceptor,\n'
+              r'  _i[a-z0-9]+\.ServerpodConfig Function\(_i[a-z0-9]+\.ServerpodConfig\)\? configOverride,\n'
+              r'  _i[a-z0-9]+\.DatabaseInterceptor\? databaseInterceptor,\n'
               r'  bool\? enableSessionLogging,\n'
-              r'  _i\d\.ExperimentalFeatures\? experimentalFeatures,\n'
-              r'  _i\d\.RollbackDatabase\? rollbackDatabase,\n'
+              r'  _i[a-z0-9]+\.ExperimentalFeatures\? experimentalFeatures,\n'
+              r'  _i[a-z0-9]+\.RollbackDatabase\? rollbackDatabase,\n'
               r'  String\? runMode,\n'
-              r'  _i\d\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
-              r'  _i\d\.Directory\? serverDirectory,\n'
-              r'  _i\d\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
+              r'  _i[a-z0-9]+\.RuntimeParametersListBuilder\? runtimeParametersBuilder,\n'
+              r'  _i[a-z0-9]+\.Directory\? serverDirectory,\n'
+              r'  _i[a-z0-9]+\.ServerpodLoggingMode\? serverpodLoggingMode,\n'
               r'  Duration\? serverpodStartTimeout,\n'
               r'  List<String>\? testGroupTagsOverride,\n'
-              r'  _i\d\.TestServerOutputMode\? testServerOutputMode,\n'
+              r'  _i[a-z0-9]+\.TestServerOutputMode\? testServerOutputMode,\n'
               r'\}\)',
             ),
           );
@@ -2041,7 +2044,7 @@ void main() {
             matches(
               r'class _TestingFutureCall \{\n'
               r'  Future<void> sayHello\(\n'
-              r'    _i\d.TestSessionBuilder sessionBuilder,\n'
+              r'    _i[a-z0-9]+.TestSessionBuilder sessionBuilder,\n'
               r'    String name,\n'
               r'  \) async \{\n',
             ),

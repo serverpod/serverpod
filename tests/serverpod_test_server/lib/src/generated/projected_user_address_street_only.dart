@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_address.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'projected_address.dart' as _iegbxll6;
 import 'projected_user.dart';
 
 abstract class ProjectedUserAddressStreetOnly
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserAddressStreetOnly._({
     this.id,
     required this.name,
@@ -54,7 +54,7 @@ abstract class ProjectedUserAddressStreetOnly
 
   /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserAddressStreetOnly copyWith({
     int? id,
     String? name,
@@ -86,18 +86,18 @@ abstract class ProjectedUserAddressStreetOnly
         ProjectedUser.t.id,
         ProjectedUser.t.name,
       ],
-      address: _i2.ProjectedAddressInclude.internal_(
-        selectedColumns: [_i2.ProjectedAddress.t.street],
+      address: _iegbxll6.ProjectedAddressInclude.internal_(
+        selectedColumns: [_iegbxll6.ProjectedAddress.t.street],
       ),
     );
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -111,7 +111,7 @@ abstract class ProjectedUserAddressStreetOnly
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -131,7 +131,7 @@ class _ProjectedUserAddressStreetOnlyImpl
 
   /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserAddressStreetOnly copyWith({
     Object? id = _Undefined,
@@ -172,15 +172,15 @@ class ProjectedUserAddressStreetOnlyRepository {
   /// );
   /// ```
   Future<List<ProjectedUserAddressStreetOnly>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -219,14 +219,14 @@ class ProjectedUserAddressStreetOnlyRepository {
   /// );
   /// ```
   Future<ProjectedUserAddressStreetOnly?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -246,11 +246,11 @@ class ProjectedUserAddressStreetOnlyRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserAddressStreetOnly?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

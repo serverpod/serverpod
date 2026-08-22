@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class EnumDefaultPersist
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EnumDefaultPersist._({
     this.id,
     this.byNameEnumDefaultPersist,
@@ -24,8 +24,8 @@ abstract class EnumDefaultPersist
 
   factory EnumDefaultPersist({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   }) = _EnumDefaultPersistImpl;
 
   factory EnumDefaultPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,13 +34,13 @@ abstract class EnumDefaultPersist
       byNameEnumDefaultPersist:
           jsonSerialization['byNameEnumDefaultPersist'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultPersist'] as String),
             ),
       byIndexEnumDefaultPersist:
           jsonSerialization['byIndexEnumDefaultPersist'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefaultPersist'] as int),
             ),
     );
@@ -53,20 +53,20 @@ abstract class EnumDefaultPersist
   @override
   int? id;
 
-  _i2.ByNameEnum? byNameEnumDefaultPersist;
+  _iwklobdz.ByNameEnum? byNameEnumDefaultPersist;
 
-  _i3.ByIndexEnum? byIndexEnumDefaultPersist;
+  _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EnumDefaultPersist copyWith({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -97,11 +97,11 @@ abstract class EnumDefaultPersist
   }
 
   static EnumDefaultPersistIncludeList includeList({
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     EnumDefaultPersistInclude? include,
   }) {
     return EnumDefaultPersistIncludeList._(
@@ -116,7 +116,7 @@ abstract class EnumDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -125,8 +125,8 @@ class _Undefined {}
 class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   _EnumDefaultPersistImpl({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefaultPersist,
-    _i3.ByIndexEnum? byIndexEnumDefaultPersist,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultPersist,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultPersist,
   }) : super._(
          id: id,
          byNameEnumDefaultPersist: byNameEnumDefaultPersist,
@@ -135,7 +135,7 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
 
   /// Returns a shallow copy of this [EnumDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EnumDefaultPersist copyWith({
     Object? id = _Undefined,
@@ -144,10 +144,12 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
   }) {
     return EnumDefaultPersist(
       id: id is int? ? id : this.id,
-      byNameEnumDefaultPersist: byNameEnumDefaultPersist is _i2.ByNameEnum?
+      byNameEnumDefaultPersist:
+          byNameEnumDefaultPersist is _iwklobdz.ByNameEnum?
           ? byNameEnumDefaultPersist
           : this.byNameEnumDefaultPersist,
-      byIndexEnumDefaultPersist: byIndexEnumDefaultPersist is _i3.ByIndexEnum?
+      byIndexEnumDefaultPersist:
+          byIndexEnumDefaultPersist is _ido5z594.ByIndexEnum?
           ? byIndexEnumDefaultPersist
           : this.byIndexEnumDefaultPersist,
     );
@@ -155,69 +157,67 @@ class _EnumDefaultPersistImpl extends EnumDefaultPersist {
 }
 
 class EnumDefaultPersistUpdateTable
-    extends _i1.UpdateTable<EnumDefaultPersistTable> {
+    extends _is.UpdateTable<EnumDefaultPersistTable> {
   EnumDefaultPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultPersist(
-    _i2.ByNameEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum>
+  byNameEnumDefaultPersist(_iwklobdz.ByNameEnum? value) => _is.ColumnValue(
     table.byNameEnumDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultPersist(
-    _i3.ByIndexEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ido5z594.ByIndexEnum, _ido5z594.ByIndexEnum>
+  byIndexEnumDefaultPersist(_ido5z594.ByIndexEnum? value) => _is.ColumnValue(
     table.byIndexEnumDefaultPersist,
     value,
   );
 }
 
-class EnumDefaultPersistTable extends _i1.Table<int?> {
+class EnumDefaultPersistTable extends _is.Table<int?> {
   EnumDefaultPersistTable({super.tableRelation})
     : super(tableName: 'enum_default_persist') {
     updateTable = EnumDefaultPersistUpdateTable(this);
-    byNameEnumDefaultPersist = _i1.ColumnEnum(
+    byNameEnumDefaultPersist = _is.ColumnEnum(
       'byNameEnumDefaultPersist',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    byIndexEnumDefaultPersist = _i1.ColumnEnum(
+    byIndexEnumDefaultPersist = _is.ColumnEnum(
       'byIndexEnumDefaultPersist',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
       hasDefault: true,
     );
   }
 
   late final EnumDefaultPersistUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultPersist;
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum> byNameEnumDefaultPersist;
 
-  late final _i1.ColumnEnum<_i3.ByIndexEnum> byIndexEnumDefaultPersist;
+  late final _is.ColumnEnum<_ido5z594.ByIndexEnum> byIndexEnumDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     byNameEnumDefaultPersist,
     byIndexEnumDefaultPersist,
   ];
 }
 
-class EnumDefaultPersistInclude extends _i1.IncludeObject {
+class EnumDefaultPersistInclude extends _is.IncludeObject {
   EnumDefaultPersistInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EnumDefaultPersist.t;
+  _is.Table<int?> get table => EnumDefaultPersist.t;
 }
 
-class EnumDefaultPersistIncludeList extends _i1.IncludeList {
+class EnumDefaultPersistIncludeList extends _is.IncludeList {
   EnumDefaultPersistIncludeList._({
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -228,10 +228,10 @@ class EnumDefaultPersistIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EnumDefaultPersist.t;
+  _is.Table<int?> get table => EnumDefaultPersist.t;
 }
 
 class EnumDefaultPersistRepository {
@@ -260,15 +260,15 @@ class EnumDefaultPersistRepository {
   /// );
   /// ```
   Future<List<EnumDefaultPersist>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
@@ -300,14 +300,14 @@ class EnumDefaultPersistRepository {
   /// );
   /// ```
   Future<EnumDefaultPersist?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
@@ -322,11 +322,11 @@ class EnumDefaultPersistRepository {
 
   /// Finds a single [EnumDefaultPersist] by its [id] or null if no such row exists.
   Future<EnumDefaultPersist?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EnumDefaultPersist>(
       id,
@@ -351,9 +351,9 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -369,9 +369,9 @@ class EnumDefaultPersistRepository {
   ///
   /// The returned [EnumDefaultPersist] will have its `id` field set.
   Future<EnumDefaultPersist> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EnumDefaultPersist>(
       row,
@@ -400,12 +400,12 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
-    required _i1.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EnumDefaultPersist>(
@@ -432,12 +432,12 @@ class EnumDefaultPersistRepository {
   ///
   /// The returned [EnumDefaultPersist] will have its `id` field set.
   Future<EnumDefaultPersist?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultPersist row, {
-    required _i1.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultPersistTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefaultPersist>(
       row,
@@ -458,10 +458,10 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
-    _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EnumDefaultPersist>(
@@ -476,10 +476,10 @@ class EnumDefaultPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnumDefaultPersist> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultPersist row, {
-    _i1.ColumnSelections<EnumDefaultPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultPersistTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EnumDefaultPersist>(
       row,
@@ -491,11 +491,11 @@ class EnumDefaultPersistRepository {
   /// Updates a single [EnumDefaultPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefaultPersist?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+    required _is.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefaultPersist>(
       id,
@@ -511,15 +511,15 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EnumDefaultPersistUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    required _is.WhereExpressionBuilder<EnumDefaultPersistTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefaultPersist>(
@@ -546,11 +546,11 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefaultPersist> rows, {
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EnumDefaultPersist>(
@@ -564,9 +564,9 @@ class EnumDefaultPersistRepository {
 
   /// Deletes a single [EnumDefaultPersist].
   Future<EnumDefaultPersist> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefaultPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EnumDefaultPersist>(
       row,
@@ -583,11 +583,11 @@ class EnumDefaultPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefaultPersist>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
-    _i1.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefaultPersist>(
@@ -602,10 +602,10 @@ class EnumDefaultPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EnumDefaultPersist>(
       where: where?.call(EnumDefaultPersist.t),
@@ -616,11 +616,11 @@ class EnumDefaultPersistRepository {
 
   /// Acquires row-level locks on [EnumDefaultPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultPersistTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultPersistTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnumDefaultPersist>(
       where: where(EnumDefaultPersist.t),

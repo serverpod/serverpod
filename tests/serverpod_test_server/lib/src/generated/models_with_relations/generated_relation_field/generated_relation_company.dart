@@ -11,16 +11,16 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../models_with_relations/generated_relation_field/generated_relation_office.dart'
-    as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/generated_relation_field/generated_relation_employee.dart'
-    as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
-import 'package:meta/meta.dart' as _i5;
+    as _inw8ul07;
+import '../../models_with_relations/generated_relation_field/generated_relation_office.dart'
+    as _im57bsix;
 
 abstract class GeneratedRelationCompany
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   GeneratedRelationCompany._({
     this.id,
     required this.name,
@@ -31,8 +31,8 @@ abstract class GeneratedRelationCompany
   factory GeneratedRelationCompany({
     int? id,
     required String name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   }) = _GeneratedRelationCompanyImpl;
 
   factory GeneratedRelationCompany.fromJson(
@@ -43,14 +43,15 @@ abstract class GeneratedRelationCompany
       name: jsonSerialization['name'] as String,
       office: jsonSerialization['office'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.GeneratedRelationOffice>(
+          : _igqrxdcj.Protocol().deserialize<_im57bsix.GeneratedRelationOffice>(
               jsonSerialization['office'],
             ),
       employees: jsonSerialization['employees'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.GeneratedRelationEmployee>>(
-              jsonSerialization['employees'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<List<_inw8ul07.GeneratedRelationEmployee>>(
+                  jsonSerialization['employees'],
+                ),
     );
   }
 
@@ -63,21 +64,21 @@ abstract class GeneratedRelationCompany
 
   String name;
 
-  _i2.GeneratedRelationOffice? office;
+  _im57bsix.GeneratedRelationOffice? office;
 
-  List<_i3.GeneratedRelationEmployee>? employees;
+  List<_inw8ul07.GeneratedRelationEmployee>? employees;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [GeneratedRelationCompany]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   GeneratedRelationCompany copyWith({
     int? id,
     String? name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,8 +107,8 @@ abstract class GeneratedRelationCompany
   }
 
   static GeneratedRelationCompanyInclude include({
-    _i2.GeneratedRelationOfficeInclude? office,
-    _i3.GeneratedRelationEmployeeIncludeList? employees,
+    _im57bsix.GeneratedRelationOfficeInclude? office,
+    _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
   }) {
     return GeneratedRelationCompanyInclude.internal_(
       office: office,
@@ -116,11 +117,11 @@ abstract class GeneratedRelationCompany
   }
 
   static GeneratedRelationCompanyIncludeList includeList({
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
     GeneratedRelationCompanyInclude? include,
   }) {
     return GeneratedRelationCompanyIncludeList.internal_(
@@ -135,7 +136,7 @@ abstract class GeneratedRelationCompany
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -145,8 +146,8 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
   _GeneratedRelationCompanyImpl({
     int? id,
     required String name,
-    _i2.GeneratedRelationOffice? office,
-    List<_i3.GeneratedRelationEmployee>? employees,
+    _im57bsix.GeneratedRelationOffice? office,
+    List<_inw8ul07.GeneratedRelationEmployee>? employees,
   }) : super._(
          id: id,
          name: name,
@@ -156,7 +157,7 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
 
   /// Returns a shallow copy of this [GeneratedRelationCompany]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   GeneratedRelationCompany copyWith({
     Object? id = _Undefined,
@@ -167,10 +168,10 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
     return GeneratedRelationCompany(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      office: office is _i2.GeneratedRelationOffice?
+      office: office is _im57bsix.GeneratedRelationOffice?
           ? office
           : this.office?.copyWith(),
-      employees: employees is List<_i3.GeneratedRelationEmployee>?
+      employees: employees is List<_inw8ul07.GeneratedRelationEmployee>?
           ? employees
           : this.employees?.map((e0) => e0.copyWith()).toList(),
     );
@@ -178,20 +179,20 @@ class _GeneratedRelationCompanyImpl extends GeneratedRelationCompany {
 }
 
 class GeneratedRelationCompanyUpdateTable
-    extends _i1.UpdateTable<GeneratedRelationCompanyTable> {
+    extends _is.UpdateTable<GeneratedRelationCompanyTable> {
   GeneratedRelationCompanyUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 }
 
-class GeneratedRelationCompanyTable extends _i1.Table<int?> {
+class GeneratedRelationCompanyTable extends _is.Table<int?> {
   GeneratedRelationCompanyTable({super.tableRelation})
     : super(tableName: 'generated_relation_company') {
     updateTable = GeneratedRelationCompanyUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
@@ -199,55 +200,59 @@ class GeneratedRelationCompanyTable extends _i1.Table<int?> {
 
   late final GeneratedRelationCompanyUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  _i2.GeneratedRelationOfficeTable? _office;
+  _im57bsix.GeneratedRelationOfficeTable? _office;
 
-  _i3.GeneratedRelationEmployeeTable? ___employees;
+  _inw8ul07.GeneratedRelationEmployeeTable? ___employees;
 
-  _i1.ManyRelation<_i3.GeneratedRelationEmployeeTable>? _employees;
+  _is.ManyRelation<_inw8ul07.GeneratedRelationEmployeeTable>? _employees;
 
-  _i2.GeneratedRelationOfficeTable get office {
+  _im57bsix.GeneratedRelationOfficeTable get office {
     if (_office != null) return _office!;
-    _office = _i1.createRelationTable(
+    _office = _is.createRelationTable(
       relationFieldName: 'office',
       field: GeneratedRelationCompany.t.id,
-      foreignField: _i2.GeneratedRelationOffice.t.customCompanyId,
+      foreignField: _im57bsix.GeneratedRelationOffice.t.customCompanyId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.GeneratedRelationOfficeTable(tableRelation: foreignTableRelation),
+          _im57bsix.GeneratedRelationOfficeTable(
+            tableRelation: foreignTableRelation,
+          ),
     );
     return _office!;
   }
 
-  _i3.GeneratedRelationEmployeeTable get __employees {
+  _inw8ul07.GeneratedRelationEmployeeTable get __employees {
     if (___employees != null) return ___employees!;
-    ___employees = _i1.createRelationTable(
+    ___employees = _is.createRelationTable(
       relationFieldName: '__employees',
       field: GeneratedRelationCompany.t.id,
-      foreignField: _i3.GeneratedRelationEmployee.t.customCompanyId,
+      foreignField: _inw8ul07.GeneratedRelationEmployee.t.customCompanyId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) => _i3.GeneratedRelationEmployeeTable(
-        tableRelation: foreignTableRelation,
-      ),
+      createTable: (foreignTableRelation) =>
+          _inw8ul07.GeneratedRelationEmployeeTable(
+            tableRelation: foreignTableRelation,
+          ),
     );
     return ___employees!;
   }
 
-  _i1.ManyRelation<_i3.GeneratedRelationEmployeeTable> get employees {
+  _is.ManyRelation<_inw8ul07.GeneratedRelationEmployeeTable> get employees {
     if (_employees != null) return _employees!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'employees',
       field: GeneratedRelationCompany.t.id,
-      foreignField: _i3.GeneratedRelationEmployee.t.customCompanyId,
+      foreignField: _inw8ul07.GeneratedRelationEmployee.t.customCompanyId,
       tableRelation: tableRelation,
-      createTable: (foreignTableRelation) => _i3.GeneratedRelationEmployeeTable(
-        tableRelation: foreignTableRelation,
-      ),
+      createTable: (foreignTableRelation) =>
+          _inw8ul07.GeneratedRelationEmployeeTable(
+            tableRelation: foreignTableRelation,
+          ),
     );
-    _employees = _i1.ManyRelation<_i3.GeneratedRelationEmployeeTable>(
+    _employees = _is.ManyRelation<_inw8ul07.GeneratedRelationEmployeeTable>(
       tableWithRelations: relationTable,
-      table: _i3.GeneratedRelationEmployeeTable(
+      table: _inw8ul07.GeneratedRelationEmployeeTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -255,13 +260,13 @@ class GeneratedRelationCompanyTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'office') {
       return office;
     }
@@ -272,54 +277,54 @@ class GeneratedRelationCompanyTable extends _i1.Table<int?> {
   }
 }
 
-class GeneratedRelationCompanyInclude extends _i1.IncludeObject {
-  @_i5.internal
+class GeneratedRelationCompanyInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   GeneratedRelationCompanyInclude.internal_({
-    _i2.GeneratedRelationOfficeInclude? office,
-    _i3.GeneratedRelationEmployeeIncludeList? employees,
-    List<_i1.Column>? this.selectedColumns,
+    _im57bsix.GeneratedRelationOfficeInclude? office,
+    _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _office = office;
     _employees = employees;
   }
 
-  _i2.GeneratedRelationOfficeInclude? _office;
+  _im57bsix.GeneratedRelationOfficeInclude? _office;
 
-  _i3.GeneratedRelationEmployeeIncludeList? _employees;
+  _inw8ul07.GeneratedRelationEmployeeIncludeList? _employees;
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'office': _office,
     'employees': _employees,
   };
 
   @override
-  _i1.Table<int?> get table => GeneratedRelationCompany.t;
+  _is.Table<int?> get table => GeneratedRelationCompany.t;
 }
 
-class GeneratedRelationCompanyIncludeList extends _i1.IncludeList {
-  @_i5.internal
+class GeneratedRelationCompanyIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   GeneratedRelationCompanyIncludeList.internal_({
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationCompany.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => GeneratedRelationCompany.t;
+  _is.Table<int?> get table => GeneratedRelationCompany.t;
 }
 
 class GeneratedRelationCompanyRepository {
@@ -354,16 +359,16 @@ class GeneratedRelationCompanyRepository {
   /// );
   /// ```
   Future<List<GeneratedRelationCompany>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
     GeneratedRelationCompanyInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GeneratedRelationCompany>(
       where: where?.call(GeneratedRelationCompany.t),
@@ -396,15 +401,15 @@ class GeneratedRelationCompanyRepository {
   /// );
   /// ```
   Future<GeneratedRelationCompany?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
     GeneratedRelationCompanyInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GeneratedRelationCompany>(
       where: where?.call(GeneratedRelationCompany.t),
@@ -420,12 +425,12 @@ class GeneratedRelationCompanyRepository {
 
   /// Finds a single [GeneratedRelationCompany] by its [id] or null if no such row exists.
   Future<GeneratedRelationCompany?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     GeneratedRelationCompanyInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GeneratedRelationCompany>(
       id,
@@ -451,9 +456,9 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GeneratedRelationCompany> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -469,9 +474,9 @@ class GeneratedRelationCompanyRepository {
   ///
   /// The returned [GeneratedRelationCompany] will have its `id` field set.
   Future<GeneratedRelationCompany> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<GeneratedRelationCompany>(
       row,
@@ -500,13 +505,13 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GeneratedRelationCompany> rows, {
-    required _i1.ColumnSelections<GeneratedRelationCompanyTable>
+    required _is.ColumnSelections<GeneratedRelationCompanyTable>
     conflictColumns,
-    _i1.ColumnSelections<GeneratedRelationCompanyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GeneratedRelationCompanyTable>? updateColumns,
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<GeneratedRelationCompany>(
@@ -533,13 +538,13 @@ class GeneratedRelationCompanyRepository {
   ///
   /// The returned [GeneratedRelationCompany] will have its `id` field set.
   Future<GeneratedRelationCompany?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany row, {
-    required _i1.ColumnSelections<GeneratedRelationCompanyTable>
+    required _is.ColumnSelections<GeneratedRelationCompanyTable>
     conflictColumns,
-    _i1.ColumnSelections<GeneratedRelationCompanyTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GeneratedRelationCompanyTable>? updateColumns,
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GeneratedRelationCompany>(
       row,
@@ -560,10 +565,10 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GeneratedRelationCompany> rows, {
-    _i1.ColumnSelections<GeneratedRelationCompanyTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GeneratedRelationCompanyTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<GeneratedRelationCompany>(
@@ -578,10 +583,10 @@ class GeneratedRelationCompanyRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GeneratedRelationCompany> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany row, {
-    _i1.ColumnSelections<GeneratedRelationCompanyTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GeneratedRelationCompanyTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<GeneratedRelationCompany>(
       row,
@@ -593,11 +598,11 @@ class GeneratedRelationCompanyRepository {
   /// Updates a single [GeneratedRelationCompany] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GeneratedRelationCompany?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<GeneratedRelationCompanyUpdateTable>
+    required _is.ColumnValueListBuilder<GeneratedRelationCompanyUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<GeneratedRelationCompany>(
       id,
@@ -613,15 +618,15 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<GeneratedRelationCompanyUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<GeneratedRelationCompanyUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
+    required _is.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GeneratedRelationCompany>(
@@ -648,11 +653,11 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GeneratedRelationCompany> rows, {
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<GeneratedRelationCompany>(
@@ -666,9 +671,9 @@ class GeneratedRelationCompanyRepository {
 
   /// Deletes a single [GeneratedRelationCompany].
   Future<GeneratedRelationCompany> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<GeneratedRelationCompany>(
       row,
@@ -685,11 +690,11 @@ class GeneratedRelationCompanyRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GeneratedRelationCompany>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
-    _i1.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
-    _i1.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GeneratedRelationCompany>(
@@ -704,10 +709,10 @@ class GeneratedRelationCompanyRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<GeneratedRelationCompany>(
       where: where?.call(GeneratedRelationCompany.t),
@@ -718,11 +723,11 @@ class GeneratedRelationCompanyRepository {
 
   /// Acquires row-level locks on [GeneratedRelationCompany] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GeneratedRelationCompanyTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GeneratedRelationCompany>(
       where: where(GeneratedRelationCompany.t),
@@ -739,10 +744,10 @@ class GeneratedRelationCompanyAttachRepository {
   /// Creates a relation between this [GeneratedRelationCompany] and the given [GeneratedRelationEmployee]s
   /// by setting each [GeneratedRelationEmployee]'s foreign key `customCompanyId` to refer to this [GeneratedRelationCompany].
   Future<void> employees(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany generatedRelationCompany,
-    List<_i3.GeneratedRelationEmployee> generatedRelationEmployee, {
-    _i1.Transaction? transaction,
+    List<_inw8ul07.GeneratedRelationEmployee> generatedRelationEmployee, {
+    _is.Transaction? transaction,
   }) async {
     if (generatedRelationEmployee.any((e) => e.id == null)) {
       throw ArgumentError.notNull('generatedRelationEmployee.id');
@@ -754,9 +759,9 @@ class GeneratedRelationCompanyAttachRepository {
     var $generatedRelationEmployee = generatedRelationEmployee
         .map((e) => e.copyWith(customCompanyId: generatedRelationCompany.id))
         .toList();
-    await session.db.update<_i3.GeneratedRelationEmployee>(
+    await session.db.update<_inw8ul07.GeneratedRelationEmployee>(
       $generatedRelationEmployee,
-      columns: [_i3.GeneratedRelationEmployee.t.customCompanyId],
+      columns: [_inw8ul07.GeneratedRelationEmployee.t.customCompanyId],
       transaction: transaction,
     );
   }
@@ -768,10 +773,10 @@ class GeneratedRelationCompanyAttachRowRepository {
   /// Creates a relation between the given [GeneratedRelationCompany] and [GeneratedRelationOffice]
   /// by setting the [GeneratedRelationCompany]'s foreign key `id` to refer to the [GeneratedRelationOffice].
   Future<void> office(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany generatedRelationCompany,
-    _i2.GeneratedRelationOffice office, {
-    _i1.Transaction? transaction,
+    _im57bsix.GeneratedRelationOffice office, {
+    _is.Transaction? transaction,
   }) async {
     if (office.id == null) {
       throw ArgumentError.notNull('office.id');
@@ -781,9 +786,9 @@ class GeneratedRelationCompanyAttachRowRepository {
     }
 
     var $office = office.copyWith(customCompanyId: generatedRelationCompany.id);
-    await session.db.updateRow<_i2.GeneratedRelationOffice>(
+    await session.db.updateRow<_im57bsix.GeneratedRelationOffice>(
       $office,
-      columns: [_i2.GeneratedRelationOffice.t.customCompanyId],
+      columns: [_im57bsix.GeneratedRelationOffice.t.customCompanyId],
       transaction: transaction,
     );
   }
@@ -791,10 +796,10 @@ class GeneratedRelationCompanyAttachRowRepository {
   /// Creates a relation between this [GeneratedRelationCompany] and the given [GeneratedRelationEmployee]
   /// by setting the [GeneratedRelationEmployee]'s foreign key `customCompanyId` to refer to this [GeneratedRelationCompany].
   Future<void> employees(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany generatedRelationCompany,
-    _i3.GeneratedRelationEmployee generatedRelationEmployee, {
-    _i1.Transaction? transaction,
+    _inw8ul07.GeneratedRelationEmployee generatedRelationEmployee, {
+    _is.Transaction? transaction,
   }) async {
     if (generatedRelationEmployee.id == null) {
       throw ArgumentError.notNull('generatedRelationEmployee.id');
@@ -806,9 +811,9 @@ class GeneratedRelationCompanyAttachRowRepository {
     var $generatedRelationEmployee = generatedRelationEmployee.copyWith(
       customCompanyId: generatedRelationCompany.id,
     );
-    await session.db.updateRow<_i3.GeneratedRelationEmployee>(
+    await session.db.updateRow<_inw8ul07.GeneratedRelationEmployee>(
       $generatedRelationEmployee,
-      columns: [_i3.GeneratedRelationEmployee.t.customCompanyId],
+      columns: [_inw8ul07.GeneratedRelationEmployee.t.customCompanyId],
       transaction: transaction,
     );
   }
@@ -823,9 +828,9 @@ class GeneratedRelationCompanyDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> office(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GeneratedRelationCompany generatedRelationCompany, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     var $office = generatedRelationCompany.office;
 
@@ -840,9 +845,9 @@ class GeneratedRelationCompanyDetachRowRepository {
     }
 
     var $$office = $office.copyWith(customCompanyId: null);
-    await session.db.updateRow<_i2.GeneratedRelationOffice>(
+    await session.db.updateRow<_im57bsix.GeneratedRelationOffice>(
       $$office,
-      columns: [_i2.GeneratedRelationOffice.t.customCompanyId],
+      columns: [_im57bsix.GeneratedRelationOffice.t.customCompanyId],
       transaction: transaction,
     );
   }

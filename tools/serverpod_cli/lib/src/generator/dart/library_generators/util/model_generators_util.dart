@@ -1,4 +1,3 @@
-import 'package:code_builder/code_builder.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
@@ -7,11 +6,9 @@ import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_
 
 /// Represents a single entry in the [ModelAllocatorContext],
 /// containing a model and its corresponding allocator.
-/// On classes that are not part of a sealed hierarchy
-/// the allocator should be null.
 class ModelAllocatorEntry {
   final SerializableModelDefinition model;
-  final Allocator? allocator;
+  final AssigningAllocator allocator;
 
   ModelAllocatorEntry({
     required this.model,
@@ -31,10 +28,14 @@ class ModelAllocatorContext {
 
   /// Factory constructor to build a [ModelAllocatorContext]
   /// from a list of models and a configuration.
+  ///
+  /// [resolveUrl] is forwarded to the allocators, see
+  /// [StableImportAllocator.new].
   factory ModelAllocatorContext.build(
     List<SerializableModelDefinition> models,
-    GeneratorConfig config,
-  ) {
+    GeneratorConfig config, {
+    UrlResolver? resolveUrl,
+  }) {
     var entries = <ModelAllocatorEntry>[];
 
     var sealedHierarchies = _getSealedHierarchies(models);
@@ -45,6 +46,7 @@ class ModelAllocatorContext {
       if (topNode != null) {
         var importCollector = ImportCollector(
           topNode.getFullFilePath(config, serverCode: false),
+          resolveUrl: resolveUrl,
         );
 
         for (var model in sealedHierarchy) {
@@ -71,7 +73,10 @@ class ModelAllocatorContext {
 
     for (var model in modelsWithoutSealedHierarchies) {
       entries.add(
-        ModelAllocatorEntry(model: model, allocator: null),
+        ModelAllocatorEntry(
+          model: model,
+          allocator: StableImportAllocator(resolveUrl: resolveUrl),
+        ),
       );
     }
 
@@ -98,6 +103,14 @@ class ModelAllocatorContext {
 
   /// Returns a list of sealed hierarchies.
   /// Each hierarchy is represented by a list of classes.
+  ///
+  /// The top node comes last. Everything in a sealed hierarchy is emitted into
+  /// the top node's library, which is the one that writes the import
+  /// directives for all of them.
+  ///
+  /// Generation order is not a correctness requirement: prefixes are assigned
+  /// from the complete set of imports the hierarchy needs, which every member
+  /// contributes to before any of them is generated.
   static Iterable<Iterable<ClassDefinition>> _getSealedHierarchies(
     List<SerializableModelDefinition> models,
   ) {

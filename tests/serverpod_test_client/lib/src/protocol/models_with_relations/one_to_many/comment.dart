@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/one_to_many/order.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
 
 abstract class Comment
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Comment._({
     this.id,
     required this.description,
@@ -27,7 +27,7 @@ abstract class Comment
     int? id,
     required String description,
     required int orderId,
-    _i2.Order? order,
+    _ig920ya2.Order? order,
   }) = _CommentImpl;
 
   factory Comment.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,9 @@ abstract class Comment
       orderId: jsonSerialization['orderId'] as int,
       order: jsonSerialization['order'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Order>(jsonSerialization['order']),
+          : _iza9lbb5.Protocol().deserialize<_ig920ya2.Order>(
+              jsonSerialization['order'],
+            ),
     );
   }
 
@@ -50,16 +52,16 @@ abstract class Comment
 
   int orderId;
 
-  _i2.Order? order;
+  _ig920ya2.Order? order;
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Comment copyWith({
     int? id,
     String? description,
     int? orderId,
-    _i2.Order? order,
+    _ig920ya2.Order? order,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -85,7 +87,7 @@ abstract class Comment
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +98,7 @@ class _CommentImpl extends Comment {
     int? id,
     required String description,
     required int orderId,
-    _i2.Order? order,
+    _ig920ya2.Order? order,
   }) : super._(
          id: id,
          description: description,
@@ -106,7 +108,7 @@ class _CommentImpl extends Comment {
 
   /// Returns a shallow copy of this [Comment]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Comment copyWith({
     Object? id = _Undefined,
@@ -118,7 +120,7 @@ class _CommentImpl extends Comment {
       id: id is int? ? id : this.id,
       description: description ?? this.description,
       orderId: orderId ?? this.orderId,
-      order: order is _i2.Order? ? order : this.order?.copyWith(),
+      order: order is _ig920ya2.Order? ? order : this.order?.copyWith(),
     );
   }
 }

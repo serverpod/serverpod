@@ -10,23 +10,23 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class DefaultException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   DefaultException._({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
     double? defaultDouble,
     Duration? defaultDuration,
-    _i2.ByNameEnum? defaultEnum,
+    _iwklobdz.ByNameEnum? defaultEnum,
     int? defaultInteger,
     String? defaultString,
-    _i1.UuidValue? defaultUuid,
+    _is.UuidValue? defaultUuid,
     String? defaultModelField,
     String? defaultMixField,
   }) : defaultBoolean = defaultBoolean ?? true,
@@ -39,10 +39,10 @@ abstract class DefaultException
              hours: 2,
              minutes: 30,
            ),
-       defaultEnum = defaultEnum ?? _i2.ByNameEnum.byName1,
+       defaultEnum = defaultEnum ?? _iwklobdz.ByNameEnum.byName1,
        defaultInteger = defaultInteger ?? 10,
        defaultString = defaultString ?? 'Default error message',
-       defaultUuid = defaultUuid ?? const _i1.Uuid().v4obj(),
+       defaultUuid = defaultUuid ?? const _is.Uuid().v4obj(),
        defaultModelField = defaultModelField ?? 'Model specific message',
        defaultMixField = defaultMixField ?? 'Model specific mix message';
 
@@ -51,10 +51,10 @@ abstract class DefaultException
     DateTime? defaultDateTime,
     double? defaultDouble,
     Duration? defaultDuration,
-    _i2.ByNameEnum? defaultEnum,
+    _iwklobdz.ByNameEnum? defaultEnum,
     int? defaultInteger,
     String? defaultString,
-    _i1.UuidValue? defaultUuid,
+    _is.UuidValue? defaultUuid,
     String? defaultModelField,
     String? defaultMixField,
   }) = _DefaultExceptionImpl;
@@ -63,28 +63,28 @@ abstract class DefaultException
     return DefaultException(
       defaultBoolean: jsonSerialization['defaultBoolean'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['defaultBoolean']),
+          : _is.BoolJsonExtension.fromJson(jsonSerialization['defaultBoolean']),
       defaultDateTime: jsonSerialization['defaultDateTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['defaultDateTime'],
             ),
       defaultDouble: (jsonSerialization['defaultDouble'] as num?)?.toDouble(),
       defaultDuration: jsonSerialization['defaultDuration'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['defaultDuration'],
             ),
       defaultEnum: jsonSerialization['defaultEnum'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['defaultEnum'] as String),
             ),
       defaultInteger: jsonSerialization['defaultInteger'] as int?,
       defaultString: jsonSerialization['defaultString'] as String?,
       defaultUuid: jsonSerialization['defaultUuid'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(
               jsonSerialization['defaultUuid'],
             ),
       defaultModelField: jsonSerialization['defaultModelField'] as String?,
@@ -100,13 +100,13 @@ abstract class DefaultException
 
   Duration defaultDuration;
 
-  _i2.ByNameEnum defaultEnum;
+  _iwklobdz.ByNameEnum defaultEnum;
 
   int defaultInteger;
 
   String defaultString;
 
-  _i1.UuidValue defaultUuid;
+  _is.UuidValue defaultUuid;
 
   String defaultModelField;
 
@@ -114,16 +114,16 @@ abstract class DefaultException
 
   /// Returns a shallow copy of this [DefaultException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DefaultException copyWith({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
     double? defaultDouble,
     Duration? defaultDuration,
-    _i2.ByNameEnum? defaultEnum,
+    _iwklobdz.ByNameEnum? defaultEnum,
     int? defaultInteger,
     String? defaultString,
-    _i1.UuidValue? defaultUuid,
+    _is.UuidValue? defaultUuid,
     String? defaultModelField,
     String? defaultMixField,
   });
@@ -173,10 +173,10 @@ class _DefaultExceptionImpl extends DefaultException {
     DateTime? defaultDateTime,
     double? defaultDouble,
     Duration? defaultDuration,
-    _i2.ByNameEnum? defaultEnum,
+    _iwklobdz.ByNameEnum? defaultEnum,
     int? defaultInteger,
     String? defaultString,
-    _i1.UuidValue? defaultUuid,
+    _is.UuidValue? defaultUuid,
     String? defaultModelField,
     String? defaultMixField,
   }) : super._(
@@ -194,17 +194,17 @@ class _DefaultExceptionImpl extends DefaultException {
 
   /// Returns a shallow copy of this [DefaultException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DefaultException copyWith({
     bool? defaultBoolean,
     DateTime? defaultDateTime,
     double? defaultDouble,
     Duration? defaultDuration,
-    _i2.ByNameEnum? defaultEnum,
+    _iwklobdz.ByNameEnum? defaultEnum,
     int? defaultInteger,
     String? defaultString,
-    _i1.UuidValue? defaultUuid,
+    _is.UuidValue? defaultUuid,
     String? defaultModelField,
     String? defaultMixField,
   }) {

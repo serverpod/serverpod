@@ -246,7 +246,7 @@ void main() {
             clientProtocolSource,
             matches(
               RegExp(
-                r'class Protocol extends _i\d+\.DatabaseSerializationManager',
+                r'class Protocol extends _i[a-z0-9]+\.DatabaseSerializationManager',
               ),
             ),
           );
@@ -327,7 +327,7 @@ void main() {
             serverProtocolSource,
             matches(
               RegExp(
-                r'class Protocol extends _i\d+\.DatabaseSerializationManager',
+                r'class Protocol extends _i[a-z0-9]+\.DatabaseSerializationManager',
               ),
             ),
           );

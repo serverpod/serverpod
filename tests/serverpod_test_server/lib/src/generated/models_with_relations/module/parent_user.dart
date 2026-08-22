@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ParentUser
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ParentUser._({
     this.id,
     this.name,
@@ -47,11 +47,11 @@ abstract class ParentUser
   int? userInfoId;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ParentUser copyWith({
     int? id,
     String? name,
@@ -82,11 +82,11 @@ abstract class ParentUser
   }
 
   static ParentUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ParentUserTable>? where,
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
     ParentUserInclude? include,
   }) {
     return ParentUserIncludeList.internal_(
@@ -101,7 +101,7 @@ abstract class ParentUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -120,7 +120,7 @@ class _ParentUserImpl extends ParentUser {
 
   /// Returns a shallow copy of this [ParentUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ParentUser copyWith({
     Object? id = _Undefined,
@@ -135,28 +135,28 @@ class _ParentUserImpl extends ParentUser {
   }
 }
 
-class ParentUserUpdateTable extends _i1.UpdateTable<ParentUserTable> {
+class ParentUserUpdateTable extends _is.UpdateTable<ParentUserTable> {
   ParentUserUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String? value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> userInfoId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userInfoId(int? value) => _is.ColumnValue(
     table.userInfoId,
     value,
   );
 }
 
-class ParentUserTable extends _i1.Table<int?> {
+class ParentUserTable extends _is.Table<int?> {
   ParentUserTable({super.tableRelation}) : super(tableName: 'parent_user') {
     updateTable = ParentUserUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    userInfoId = _i1.ColumnInt(
+    userInfoId = _is.ColumnInt(
       'userInfoId',
       this,
     );
@@ -164,52 +164,52 @@ class ParentUserTable extends _i1.Table<int?> {
 
   late final ParentUserUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt userInfoId;
+  late final _is.ColumnInt userInfoId;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     userInfoId,
   ];
 }
 
-class ParentUserInclude extends _i1.IncludeObject {
-  @_i2.internal
-  ParentUserInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class ParentUserInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ParentUserInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ParentUser.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ParentUser.t;
 }
 
-class ParentUserIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ParentUserIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ParentUserIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ParentUserTable>? where,
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ParentUser.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ParentUser.t;
+  _is.Table<int?> get table => ParentUser.t;
 }
 
 class ParentUserRepository {
@@ -238,15 +238,15 @@ class ParentUserRepository {
   /// );
   /// ```
   Future<List<ParentUser>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ParentUser>(
       where: where?.call(ParentUser.t),
@@ -278,14 +278,14 @@ class ParentUserRepository {
   /// );
   /// ```
   Future<ParentUser?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ParentUser>(
       where: where?.call(ParentUser.t),
@@ -300,11 +300,11 @@ class ParentUserRepository {
 
   /// Finds a single [ParentUser] by its [id] or null if no such row exists.
   Future<ParentUser?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ParentUser>(
       id,
@@ -329,9 +329,9 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentUser> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -347,9 +347,9 @@ class ParentUserRepository {
   ///
   /// The returned [ParentUser] will have its `id` field set.
   Future<ParentUser> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ParentUser>(
       row,
@@ -378,12 +378,12 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentUser> rows, {
-    required _i1.ColumnSelections<ParentUserTable> conflictColumns,
-    _i1.ColumnSelections<ParentUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ParentUserTable> conflictColumns,
+    _is.ColumnSelections<ParentUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<ParentUserTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ParentUser>(
@@ -410,12 +410,12 @@ class ParentUserRepository {
   ///
   /// The returned [ParentUser] will have its `id` field set.
   Future<ParentUser?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentUser row, {
-    required _i1.ColumnSelections<ParentUserTable> conflictColumns,
-    _i1.ColumnSelections<ParentUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ParentUserTable> conflictColumns,
+    _is.ColumnSelections<ParentUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<ParentUserTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ParentUser>(
       row,
@@ -436,10 +436,10 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentUser> rows, {
-    _i1.ColumnSelections<ParentUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ParentUserTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ParentUser>(
@@ -454,10 +454,10 @@ class ParentUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ParentUser> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentUser row, {
-    _i1.ColumnSelections<ParentUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ParentUserTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ParentUser>(
       row,
@@ -469,10 +469,10 @@ class ParentUserRepository {
   /// Updates a single [ParentUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ParentUser?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ParentUser>(
       id,
@@ -488,14 +488,14 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ParentUserTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ParentUserUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ParentUserTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ParentUser>(
@@ -522,11 +522,11 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentUser> rows, {
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ParentUser>(
@@ -540,9 +540,9 @@ class ParentUserRepository {
 
   /// Deletes a single [ParentUser].
   Future<ParentUser> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ParentUser>(
       row,
@@ -559,11 +559,11 @@ class ParentUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentUser>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ParentUserTable> where,
-    _i1.OrderByBuilder<ParentUserTable>? orderBy,
-    _i1.OrderByListBuilder<ParentUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ParentUserTable> where,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ParentUser>(
@@ -578,10 +578,10 @@ class ParentUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ParentUser>(
       where: where?.call(ParentUser.t),
@@ -592,11 +592,11 @@ class ParentUserRepository {
 
   /// Acquires row-level locks on [ParentUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ParentUserTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ParentUserTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ParentUser>(
       where: where(ParentUser.t),

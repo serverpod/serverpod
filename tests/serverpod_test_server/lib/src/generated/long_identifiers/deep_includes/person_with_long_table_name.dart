@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../long_identifiers/deep_includes/organization_with_long_table_name.dart'
-    as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+    as _imc5i9r4;
 
 abstract class PersonWithLongTableName
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   PersonWithLongTableName._({
     this.id,
     required this.name,
@@ -30,7 +30,7 @@ abstract class PersonWithLongTableName
     int? id,
     required String name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   }) = _PersonWithLongTableNameImpl;
 
   factory PersonWithLongTableName.fromJson(
@@ -42,9 +42,10 @@ abstract class PersonWithLongTableName
       organizationId: jsonSerialization['organizationId'] as int?,
       organization: jsonSerialization['organization'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.OrganizationWithLongTableName>(
-              jsonSerialization['organization'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<_imc5i9r4.OrganizationWithLongTableName>(
+                  jsonSerialization['organization'],
+                ),
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
           jsonSerialization['_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id']
               as int?,
@@ -62,21 +63,21 @@ abstract class PersonWithLongTableName
 
   int? organizationId;
 
-  _i2.OrganizationWithLongTableName? organization;
+  _imc5i9r4.OrganizationWithLongTableName? organization;
 
   final int? _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PersonWithLongTableName copyWith({
     int? id,
     String? name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,17 +107,17 @@ abstract class PersonWithLongTableName
   }
 
   static PersonWithLongTableNameInclude include({
-    _i2.OrganizationWithLongTableNameInclude? organization,
+    _imc5i9r4.OrganizationWithLongTableNameInclude? organization,
   }) {
     return PersonWithLongTableNameInclude.internal_(organization: organization);
   }
 
   static PersonWithLongTableNameIncludeList includeList({
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
     PersonWithLongTableNameInclude? include,
   }) {
     return PersonWithLongTableNameIncludeList.internal_(
@@ -131,7 +132,7 @@ abstract class PersonWithLongTableName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -142,7 +143,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
     int? id,
     required String name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
   }) : super._(
          id: id,
          name: name,
@@ -152,7 +153,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
 
   /// Returns a shallow copy of this [PersonWithLongTableName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PersonWithLongTableName copyWith({
     Object? id = _Undefined,
@@ -166,7 +167,7 @@ class _PersonWithLongTableNameImpl extends PersonWithLongTableName {
       organizationId: organizationId is int?
           ? organizationId
           : this.organizationId,
-      organization: organization is _i2.OrganizationWithLongTableName?
+      organization: organization is _imc5i9r4.OrganizationWithLongTableName?
           ? organization
           : this.organization?.copyWith(),
       $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id:
@@ -180,7 +181,7 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
     int? id,
     required String name,
     int? organizationId,
-    _i2.OrganizationWithLongTableName? organization,
+    _imc5i9r4.OrganizationWithLongTableName? organization,
     int? $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
   }) : _cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
            $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
@@ -210,42 +211,42 @@ class PersonWithLongTableNameImplicit extends _PersonWithLongTableNameImpl {
 }
 
 class PersonWithLongTableNameUpdateTable
-    extends _i1.UpdateTable<PersonWithLongTableNameTable> {
+    extends _is.UpdateTable<PersonWithLongTableNameTable> {
   PersonWithLongTableNameUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> organizationId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> organizationId(int? value) => _is.ColumnValue(
     table.organizationId,
     value,
   );
 
-  _i1.ColumnValue<int, int>
+  _is.ColumnValue<int, int>
   $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id(
     int? value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.$_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id,
     value,
   );
 }
 
-class PersonWithLongTableNameTable extends _i1.Table<int?> {
+class PersonWithLongTableNameTable extends _is.Table<int?> {
   PersonWithLongTableNameTable({super.tableRelation})
     : super(tableName: 'person_with_long_table_name_that_is_still_valid') {
     updateTable = PersonWithLongTableNameUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    organizationId = _i1.ColumnInt(
+    organizationId = _is.ColumnInt(
       'organizationId',
       this,
     );
     $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id =
-        _i1.ColumnInt(
+        _is.ColumnInt(
           '_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id',
           this,
         );
@@ -253,24 +254,24 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
 
   late final PersonWithLongTableNameUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt organizationId;
+  late final _is.ColumnInt organizationId;
 
-  _i2.OrganizationWithLongTableNameTable? _organization;
+  _imc5i9r4.OrganizationWithLongTableNameTable? _organization;
 
-  late final _i1.ColumnInt
+  late final _is.ColumnInt
   $_cityWithLongTableNameThatIsStillValidCitizensCityWithLon4fe0Id;
 
-  _i2.OrganizationWithLongTableNameTable get organization {
+  _imc5i9r4.OrganizationWithLongTableNameTable get organization {
     if (_organization != null) return _organization!;
-    _organization = _i1.createRelationTable(
+    _organization = _is.createRelationTable(
       relationFieldName: 'organization',
       field: PersonWithLongTableName.t.organizationId,
-      foreignField: _i2.OrganizationWithLongTableName.t.id,
+      foreignField: _imc5i9r4.OrganizationWithLongTableName.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.OrganizationWithLongTableNameTable(
+          _imc5i9r4.OrganizationWithLongTableNameTable(
             tableRelation: foreignTableRelation,
           ),
     );
@@ -278,7 +279,7 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     organizationId,
@@ -286,14 +287,14 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
   ];
 
   @override
-  List<_i1.Column> get managedColumns => [
+  List<_is.Column> get managedColumns => [
     id,
     name,
     organizationId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'organization') {
       return organization;
     }
@@ -301,47 +302,47 @@ class PersonWithLongTableNameTable extends _i1.Table<int?> {
   }
 }
 
-class PersonWithLongTableNameInclude extends _i1.IncludeObject {
-  @_i4.internal
+class PersonWithLongTableNameInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   PersonWithLongTableNameInclude.internal_({
-    _i2.OrganizationWithLongTableNameInclude? organization,
-    List<_i1.Column>? this.selectedColumns,
+    _imc5i9r4.OrganizationWithLongTableNameInclude? organization,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _organization = organization;
   }
 
-  _i2.OrganizationWithLongTableNameInclude? _organization;
+  _imc5i9r4.OrganizationWithLongTableNameInclude? _organization;
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {'organization': _organization};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => PersonWithLongTableName.t;
+  Map<String, _is.Include?> get includes => {'organization': _organization};
+
+  @override
+  _is.Table<int?> get table => PersonWithLongTableName.t;
 }
 
-class PersonWithLongTableNameIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class PersonWithLongTableNameIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   PersonWithLongTableNameIncludeList.internal_({
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(PersonWithLongTableName.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => PersonWithLongTableName.t;
+  _is.Table<int?> get table => PersonWithLongTableName.t;
 }
 
 class PersonWithLongTableNameRepository {
@@ -374,16 +375,16 @@ class PersonWithLongTableNameRepository {
   /// );
   /// ```
   Future<List<PersonWithLongTableName>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
@@ -416,15 +417,15 @@ class PersonWithLongTableNameRepository {
   /// );
   /// ```
   Future<PersonWithLongTableName?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
@@ -440,12 +441,12 @@ class PersonWithLongTableNameRepository {
 
   /// Finds a single [PersonWithLongTableName] by its [id] or null if no such row exists.
   Future<PersonWithLongTableName?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     PersonWithLongTableNameInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PersonWithLongTableName>(
       id,
@@ -471,9 +472,9 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PersonWithLongTableName> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -489,9 +490,9 @@ class PersonWithLongTableNameRepository {
   ///
   /// The returned [PersonWithLongTableName] will have its `id` field set.
   Future<PersonWithLongTableName> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PersonWithLongTableName>(
       row,
@@ -520,12 +521,12 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PersonWithLongTableName> rows, {
-    required _i1.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
-    _i1.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
+    _is.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<PersonWithLongTableName>(
@@ -552,12 +553,12 @@ class PersonWithLongTableNameRepository {
   ///
   /// The returned [PersonWithLongTableName] will have its `id` field set.
   Future<PersonWithLongTableName?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName row, {
-    required _i1.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
-    _i1.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PersonWithLongTableNameTable> conflictColumns,
+    _is.ColumnSelections<PersonWithLongTableNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<PersonWithLongTableName>(
       row,
@@ -578,10 +579,10 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PersonWithLongTableName> rows, {
-    _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PersonWithLongTableNameTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<PersonWithLongTableName>(
@@ -596,10 +597,10 @@ class PersonWithLongTableNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PersonWithLongTableName> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName row, {
-    _i1.ColumnSelections<PersonWithLongTableNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PersonWithLongTableNameTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PersonWithLongTableName>(
       row,
@@ -611,11 +612,11 @@ class PersonWithLongTableNameRepository {
   /// Updates a single [PersonWithLongTableName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PersonWithLongTableName?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
+    required _is.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PersonWithLongTableName>(
       id,
@@ -631,15 +632,15 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PersonWithLongTableNameUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    required _is.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<PersonWithLongTableName>(
@@ -666,11 +667,11 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PersonWithLongTableName> rows, {
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<PersonWithLongTableName>(
@@ -684,9 +685,9 @@ class PersonWithLongTableNameRepository {
 
   /// Deletes a single [PersonWithLongTableName].
   Future<PersonWithLongTableName> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PersonWithLongTableName>(
       row,
@@ -703,11 +704,11 @@ class PersonWithLongTableNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PersonWithLongTableName>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
-    _i1.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
-    _i1.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    _is.OrderByBuilder<PersonWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<PersonWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PersonWithLongTableName>(
@@ -722,10 +723,10 @@ class PersonWithLongTableNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PersonWithLongTableName>(
       where: where?.call(PersonWithLongTableName.t),
@@ -736,11 +737,11 @@ class PersonWithLongTableNameRepository {
 
   /// Acquires row-level locks on [PersonWithLongTableName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PersonWithLongTableNameTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PersonWithLongTableName>(
       where: where(PersonWithLongTableName.t),
@@ -757,10 +758,10 @@ class PersonWithLongTableNameAttachRowRepository {
   /// Creates a relation between the given [PersonWithLongTableName] and [OrganizationWithLongTableName]
   /// by setting the [PersonWithLongTableName]'s foreign key `organizationId` to refer to the [OrganizationWithLongTableName].
   Future<void> organization(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName personWithLongTableName,
-    _i2.OrganizationWithLongTableName organization, {
-    _i1.Transaction? transaction,
+    _imc5i9r4.OrganizationWithLongTableName organization, {
+    _is.Transaction? transaction,
   }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');
@@ -789,9 +790,9 @@ class PersonWithLongTableNameDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> organization(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PersonWithLongTableName personWithLongTableName, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (personWithLongTableName.id == null) {
       throw ArgumentError.notNull('personWithLongTableName.id');

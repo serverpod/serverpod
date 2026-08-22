@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_enrollment.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_enrollment.dart' as _i3lw6w5n;
 
 abstract class ProjectedStudent
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedStudent._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class ProjectedStudent
   factory ProjectedStudent({
     int? id,
     required String name,
-    List<_i2.ProjectedEnrollment>? enrollments,
+    List<_i3lw6w5n.ProjectedEnrollment>? enrollments,
   }) = _ProjectedStudentImpl;
 
   factory ProjectedStudent.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,9 +34,10 @@ abstract class ProjectedStudent
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ProjectedEnrollment>>(
-              jsonSerialization['enrollments'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_i3lw6w5n.ProjectedEnrollment>>(
+                  jsonSerialization['enrollments'],
+                ),
     );
   }
 
@@ -47,15 +48,15 @@ abstract class ProjectedStudent
 
   String name;
 
-  List<_i2.ProjectedEnrollment>? enrollments;
+  List<_i3lw6w5n.ProjectedEnrollment>? enrollments;
 
   /// Returns a shallow copy of this [ProjectedStudent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedStudent copyWith({
     int? id,
     String? name,
-    List<_i2.ProjectedEnrollment>? enrollments,
+    List<_i3lw6w5n.ProjectedEnrollment>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +84,7 @@ abstract class ProjectedStudent
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -93,7 +94,7 @@ class _ProjectedStudentImpl extends ProjectedStudent {
   _ProjectedStudentImpl({
     int? id,
     required String name,
-    List<_i2.ProjectedEnrollment>? enrollments,
+    List<_i3lw6w5n.ProjectedEnrollment>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -102,7 +103,7 @@ class _ProjectedStudentImpl extends ProjectedStudent {
 
   /// Returns a shallow copy of this [ProjectedStudent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedStudent copyWith({
     Object? id = _Undefined,
@@ -112,7 +113,7 @@ class _ProjectedStudentImpl extends ProjectedStudent {
     return ProjectedStudent(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.ProjectedEnrollment>?
+      enrollments: enrollments is List<_i3lw6w5n.ProjectedEnrollment>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );

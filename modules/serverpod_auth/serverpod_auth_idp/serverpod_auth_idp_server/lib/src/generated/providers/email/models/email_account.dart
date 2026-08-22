@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured email account to be used for logins.
 abstract class EmailAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   EmailAccount._({
     this.id,
     required this.authUserId,
@@ -29,9 +30,9 @@ abstract class EmailAccount
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory EmailAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     required String email,
     required String passwordHash,
@@ -41,18 +42,18 @@ abstract class EmailAccount
     return EmailAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       email: jsonSerialization['email'] as String,
       passwordHash: jsonSerialization['passwordHash'] as String,
     );
@@ -63,12 +64,12 @@ abstract class EmailAccount
   static const db = EmailAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The time when this authentication was created.
   DateTime createdAt;
@@ -84,15 +85,15 @@ abstract class EmailAccount
   String passwordHash;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     String? email,
     String? passwordHash,
@@ -115,16 +116,16 @@ abstract class EmailAccount
     return {};
   }
 
-  static EmailAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static EmailAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return EmailAccountInclude._(authUser: authUser);
   }
 
   static EmailAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     EmailAccountInclude? include,
   }) {
     return EmailAccountIncludeList._(
@@ -139,7 +140,7 @@ abstract class EmailAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,9 +148,9 @@ class _Undefined {}
 
 class _EmailAccountImpl extends EmailAccount {
   _EmailAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? createdAt,
     required String email,
     required String passwordHash,
@@ -164,20 +165,20 @@ class _EmailAccountImpl extends EmailAccount {
 
   /// Returns a shallow copy of this [EmailAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     DateTime? createdAt,
     String? email,
     String? passwordHash,
   }) {
     return EmailAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       createdAt: createdAt ?? this.createdAt,
@@ -187,50 +188,50 @@ class _EmailAccountImpl extends EmailAccount {
   }
 }
 
-class EmailAccountUpdateTable extends _i1.UpdateTable<EmailAccountTable> {
+class EmailAccountUpdateTable extends _is.UpdateTable<EmailAccountTable> {
   EmailAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> passwordHash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> passwordHash(String value) => _is.ColumnValue(
     table.passwordHash,
     value,
   );
 }
 
-class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
+class EmailAccountTable extends _is.Table<_is.UuidValue?> {
   EmailAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_email_account') {
     updateTable = EmailAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    passwordHash = _i1.ColumnString(
+    passwordHash = _is.ColumnString(
       'passwordHash',
       this,
     );
@@ -238,39 +239,39 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final EmailAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The email of the user.
   ///
   /// Stored in lower-case.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The hashed password of the user.
   ///
   /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
-  late final _i1.ColumnString passwordHash;
+  late final _is.ColumnString passwordHash;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: EmailAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     createdAt,
@@ -279,7 +280,7 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -287,23 +288,23 @@ class EmailAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class EmailAccountInclude extends _i1.IncludeObject {
-  EmailAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class EmailAccountInclude extends _is.IncludeObject {
+  EmailAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccount.t;
+  _is.Table<_is.UuidValue?> get table => EmailAccount.t;
 }
 
-class EmailAccountIncludeList extends _i1.IncludeList {
+class EmailAccountIncludeList extends _is.IncludeList {
   EmailAccountIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -314,10 +315,10 @@ class EmailAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => EmailAccount.t;
+  _is.Table<_is.UuidValue?> get table => EmailAccount.t;
 }
 
 class EmailAccountRepository {
@@ -348,16 +349,16 @@ class EmailAccountRepository {
   /// );
   /// ```
   Future<List<EmailAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
     EmailAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAccount>(
       where: where?.call(EmailAccount.t),
@@ -390,15 +391,15 @@ class EmailAccountRepository {
   /// );
   /// ```
   Future<EmailAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
     EmailAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAccount>(
       where: where?.call(EmailAccount.t),
@@ -414,12 +415,12 @@ class EmailAccountRepository {
 
   /// Finds a single [EmailAccount] by its [id] or null if no such row exists.
   Future<EmailAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     EmailAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailAccount>(
       id,
@@ -445,9 +446,9 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -463,9 +464,9 @@ class EmailAccountRepository {
   ///
   /// The returned [EmailAccount] will have its `id` field set.
   Future<EmailAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailAccount>(
       row,
@@ -494,12 +495,12 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccount> rows, {
-    required _i1.ColumnSelections<EmailAccountTable> conflictColumns,
-    _i1.ColumnSelections<EmailAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAccountTable> conflictColumns,
+    _is.ColumnSelections<EmailAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailAccount>(
@@ -526,12 +527,12 @@ class EmailAccountRepository {
   ///
   /// The returned [EmailAccount] will have its `id` field set.
   Future<EmailAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccount row, {
-    required _i1.ColumnSelections<EmailAccountTable> conflictColumns,
-    _i1.ColumnSelections<EmailAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAccountTable> conflictColumns,
+    _is.ColumnSelections<EmailAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailAccount>(
       row,
@@ -552,10 +553,10 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccount> rows, {
-    _i1.ColumnSelections<EmailAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailAccount>(
@@ -570,10 +571,10 @@ class EmailAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccount row, {
-    _i1.ColumnSelections<EmailAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailAccount>(
       row,
@@ -585,10 +586,10 @@ class EmailAccountRepository {
   /// Updates a single [EmailAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAccount>(
       id,
@@ -604,14 +605,14 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EmailAccountTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailAccountUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EmailAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAccount>(
@@ -638,11 +639,11 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAccount> rows, {
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailAccount>(
@@ -656,9 +657,9 @@ class EmailAccountRepository {
 
   /// Deletes a single [EmailAccount].
   Future<EmailAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailAccount>(
       row,
@@ -675,11 +676,11 @@ class EmailAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAccountTable> where,
-    _i1.OrderByBuilder<EmailAccountTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAccountTable> where,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAccount>(
@@ -694,10 +695,10 @@ class EmailAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAccount>(
       where: where?.call(EmailAccount.t),
@@ -708,11 +709,11 @@ class EmailAccountRepository {
 
   /// Acquires row-level locks on [EmailAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAccount>(
       where: where(EmailAccount.t),
@@ -729,10 +730,10 @@ class EmailAccountAttachRowRepository {
   /// Creates a relation between the given [EmailAccount] and [AuthUser]
   /// by setting the [EmailAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAccount emailAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (emailAccount.id == null) {
       throw ArgumentError.notNull('emailAccount.id');

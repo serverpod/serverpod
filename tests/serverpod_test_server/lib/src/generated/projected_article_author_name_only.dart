@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_author.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'projected_author.dart' as _iq5hz6n4;
 import 'projected_article.dart';
 
 abstract class ProjectedArticleAuthorNameOnly
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedArticleAuthorNameOnly._({
     this.id,
     required this.title,
@@ -59,7 +59,7 @@ abstract class ProjectedArticleAuthorNameOnly
 
   /// Returns a shallow copy of this [ProjectedArticleAuthorNameOnly]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedArticleAuthorNameOnly copyWith({
     int? id,
     String? title,
@@ -95,18 +95,18 @@ abstract class ProjectedArticleAuthorNameOnly
         ProjectedArticle.t.title,
         ProjectedArticle.t.summary,
       ],
-      author: _i2.ProjectedAuthorInclude.internal_(
-        selectedColumns: [_i2.ProjectedAuthor.t.name],
+      author: _iq5hz6n4.ProjectedAuthorInclude.internal_(
+        selectedColumns: [_iq5hz6n4.ProjectedAuthor.t.name],
       ),
     );
   }
 
   static ProjectedArticleIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
   }) {
     return ProjectedArticle.includeList(
       where: where,
@@ -120,7 +120,7 @@ abstract class ProjectedArticleAuthorNameOnly
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -142,7 +142,7 @@ class _ProjectedArticleAuthorNameOnlyImpl
 
   /// Returns a shallow copy of this [ProjectedArticleAuthorNameOnly]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedArticleAuthorNameOnly copyWith({
     Object? id = _Undefined,
@@ -185,15 +185,15 @@ class ProjectedArticleAuthorNameOnlyRepository {
   /// );
   /// ```
   Future<List<ProjectedArticleAuthorNameOnly>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedArticle>(
@@ -232,14 +232,14 @@ class ProjectedArticleAuthorNameOnlyRepository {
   /// );
   /// ```
   Future<ProjectedArticleAuthorNameOnly?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedArticle>(
@@ -259,11 +259,11 @@ class ProjectedArticleAuthorNameOnlyRepository {
 
   /// Finds a single [ProjectedArticle] by its [id] or null if no such row exists.
   Future<ProjectedArticleAuthorNameOnly?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedArticle>(

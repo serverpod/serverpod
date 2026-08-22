@@ -11,15 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_address.dart' as _i2;
-import 'projected_order.dart' as _i3;
-import 'projected_json_field.dart' as _i4;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i5;
-import 'package:meta/meta.dart' as _i6;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'projected_address.dart' as _iegbxll6;
+import 'projected_json_field.dart' as _irlz4dmd;
+import 'projected_order.dart' as _i8r3x6pe;
 
 abstract class ProjectedUser
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProjectedUser._({
     this.id,
     required this.name,
@@ -33,9 +33,9 @@ abstract class ProjectedUser
     int? id,
     required String name,
     required int addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   }) = _ProjectedUserImpl;
 
   factory ProjectedUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -45,17 +45,17 @@ abstract class ProjectedUser
       addressId: jsonSerialization['addressId'] as int,
       address: jsonSerialization['address'] == null
           ? null
-          : _i5.Protocol().deserialize<_i2.ProjectedAddress>(
+          : _igqrxdcj.Protocol().deserialize<_iegbxll6.ProjectedAddress>(
               jsonSerialization['address'],
             ),
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i5.Protocol().deserialize<List<_i3.ProjectedOrder>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i8r3x6pe.ProjectedOrder>>(
               jsonSerialization['orders'],
             ),
       jsonField: jsonSerialization['jsonField'] == null
           ? null
-          : _i5.Protocol().deserialize<_i4.ProjectedJsonField>(
+          : _igqrxdcj.Protocol().deserialize<_irlz4dmd.ProjectedJsonField>(
               jsonSerialization['jsonField'],
             ),
     );
@@ -72,25 +72,25 @@ abstract class ProjectedUser
 
   int addressId;
 
-  _i2.ProjectedAddress? address;
+  _iegbxll6.ProjectedAddress? address;
 
-  List<_i3.ProjectedOrder>? orders;
+  List<_i8r3x6pe.ProjectedOrder>? orders;
 
-  _i4.ProjectedJsonField? jsonField;
+  _irlz4dmd.ProjectedJsonField? jsonField;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUser copyWith({
     int? id,
     String? name,
     int? addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -121,8 +121,8 @@ abstract class ProjectedUser
   }
 
   static ProjectedUserInclude include({
-    _i2.ProjectedAddressInclude? address,
-    _i3.ProjectedOrderIncludeList? orders,
+    _iegbxll6.ProjectedAddressInclude? address,
+    _i8r3x6pe.ProjectedOrderIncludeList? orders,
   }) {
     return ProjectedUserInclude.internal_(
       address: address,
@@ -131,11 +131,11 @@ abstract class ProjectedUser
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
     ProjectedUserInclude? include,
   }) {
     return ProjectedUserIncludeList.internal_(
@@ -150,7 +150,7 @@ abstract class ProjectedUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -161,9 +161,9 @@ class _ProjectedUserImpl extends ProjectedUser {
     int? id,
     required String name,
     required int addressId,
-    _i2.ProjectedAddress? address,
-    List<_i3.ProjectedOrder>? orders,
-    _i4.ProjectedJsonField? jsonField,
+    _iegbxll6.ProjectedAddress? address,
+    List<_i8r3x6pe.ProjectedOrder>? orders,
+    _irlz4dmd.ProjectedJsonField? jsonField,
   }) : super._(
          id: id,
          name: name,
@@ -175,7 +175,7 @@ class _ProjectedUserImpl extends ProjectedUser {
 
   /// Returns a shallow copy of this [ProjectedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUser copyWith({
     Object? id = _Undefined,
@@ -189,53 +189,52 @@ class _ProjectedUserImpl extends ProjectedUser {
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       addressId: addressId ?? this.addressId,
-      address: address is _i2.ProjectedAddress?
+      address: address is _iegbxll6.ProjectedAddress?
           ? address
           : this.address?.copyWith(),
-      orders: orders is List<_i3.ProjectedOrder>?
+      orders: orders is List<_i8r3x6pe.ProjectedOrder>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
-      jsonField: jsonField is _i4.ProjectedJsonField?
+      jsonField: jsonField is _irlz4dmd.ProjectedJsonField?
           ? jsonField
           : this.jsonField?.copyWith(),
     );
   }
 }
 
-class ProjectedUserUpdateTable extends _i1.UpdateTable<ProjectedUserTable> {
+class ProjectedUserUpdateTable extends _is.UpdateTable<ProjectedUserTable> {
   ProjectedUserUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> addressId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> addressId(int value) => _is.ColumnValue(
     table.addressId,
     value,
   );
 
-  _i1.ColumnValue<_i4.ProjectedJsonField, _i4.ProjectedJsonField> jsonField(
-    _i4.ProjectedJsonField? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_irlz4dmd.ProjectedJsonField, _irlz4dmd.ProjectedJsonField>
+  jsonField(_irlz4dmd.ProjectedJsonField? value) => _is.ColumnValue(
     table.jsonField,
     value,
   );
 }
 
-class ProjectedUserTable extends _i1.Table<int?> {
+class ProjectedUserTable extends _is.Table<int?> {
   ProjectedUserTable({super.tableRelation})
     : super(tableName: 'projected_user') {
     updateTable = ProjectedUserUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    addressId = _i1.ColumnInt(
+    addressId = _is.ColumnInt(
       'addressId',
       this,
     );
-    jsonField = _i1.ColumnSerializable<_i4.ProjectedJsonField>(
+    jsonField = _is.ColumnSerializable<_irlz4dmd.ProjectedJsonField>(
       'jsonField',
       this,
     );
@@ -243,57 +242,59 @@ class ProjectedUserTable extends _i1.Table<int?> {
 
   late final ProjectedUserUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt addressId;
+  late final _is.ColumnInt addressId;
 
-  _i2.ProjectedAddressTable? _address;
+  _iegbxll6.ProjectedAddressTable? _address;
 
-  _i3.ProjectedOrderTable? ___orders;
+  _i8r3x6pe.ProjectedOrderTable? ___orders;
 
-  _i1.ManyRelation<_i3.ProjectedOrderTable>? _orders;
+  _is.ManyRelation<_i8r3x6pe.ProjectedOrderTable>? _orders;
 
-  late final _i1.ColumnSerializable<_i4.ProjectedJsonField> jsonField;
+  late final _is.ColumnSerializable<_irlz4dmd.ProjectedJsonField> jsonField;
 
-  _i2.ProjectedAddressTable get address {
+  _iegbxll6.ProjectedAddressTable get address {
     if (_address != null) return _address!;
-    _address = _i1.createRelationTable(
+    _address = _is.createRelationTable(
       relationFieldName: 'address',
       field: ProjectedUser.t.addressId,
-      foreignField: _i2.ProjectedAddress.t.id,
+      foreignField: _iegbxll6.ProjectedAddress.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ProjectedAddressTable(tableRelation: foreignTableRelation),
+          _iegbxll6.ProjectedAddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
 
-  _i3.ProjectedOrderTable get __orders {
+  _i8r3x6pe.ProjectedOrderTable get __orders {
     if (___orders != null) return ___orders!;
-    ___orders = _i1.createRelationTable(
+    ___orders = _is.createRelationTable(
       relationFieldName: '__orders',
       field: ProjectedUser.t.id,
-      foreignField: _i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      foreignField:
+          _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.ProjectedOrderTable(tableRelation: foreignTableRelation),
+          _i8r3x6pe.ProjectedOrderTable(tableRelation: foreignTableRelation),
     );
     return ___orders!;
   }
 
-  _i1.ManyRelation<_i3.ProjectedOrderTable> get orders {
+  _is.ManyRelation<_i8r3x6pe.ProjectedOrderTable> get orders {
     if (_orders != null) return _orders!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'orders',
       field: ProjectedUser.t.id,
-      foreignField: _i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      foreignField:
+          _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.ProjectedOrderTable(tableRelation: foreignTableRelation),
+          _i8r3x6pe.ProjectedOrderTable(tableRelation: foreignTableRelation),
     );
-    _orders = _i1.ManyRelation<_i3.ProjectedOrderTable>(
+    _orders = _is.ManyRelation<_i8r3x6pe.ProjectedOrderTable>(
       tableWithRelations: relationTable,
-      table: _i3.ProjectedOrderTable(
+      table: _i8r3x6pe.ProjectedOrderTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -301,7 +302,7 @@ class ProjectedUserTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     addressId,
@@ -309,7 +310,7 @@ class ProjectedUserTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'address') {
       return address;
     }
@@ -320,54 +321,54 @@ class ProjectedUserTable extends _i1.Table<int?> {
   }
 }
 
-class ProjectedUserInclude extends _i1.IncludeObject {
-  @_i6.internal
+class ProjectedUserInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ProjectedUserInclude.internal_({
-    _i2.ProjectedAddressInclude? address,
-    _i3.ProjectedOrderIncludeList? orders,
-    List<_i1.Column>? this.selectedColumns,
+    _iegbxll6.ProjectedAddressInclude? address,
+    _i8r3x6pe.ProjectedOrderIncludeList? orders,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _address = address;
     _orders = orders;
   }
 
-  _i2.ProjectedAddressInclude? _address;
+  _iegbxll6.ProjectedAddressInclude? _address;
 
-  _i3.ProjectedOrderIncludeList? _orders;
+  _i8r3x6pe.ProjectedOrderIncludeList? _orders;
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'address': _address,
     'orders': _orders,
   };
 
   @override
-  _i1.Table<int?> get table => ProjectedUser.t;
+  _is.Table<int?> get table => ProjectedUser.t;
 }
 
-class ProjectedUserIncludeList extends _i1.IncludeList {
-  @_i6.internal
+class ProjectedUserIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ProjectedUserIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedUser.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProjectedUser.t;
+  _is.Table<int?> get table => ProjectedUser.t;
 }
 
 class ProjectedUserRepository {
@@ -404,16 +405,16 @@ class ProjectedUserRepository {
   /// );
   /// ```
   Future<List<ProjectedUser>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
     ProjectedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProjectedUser>(
       where: where?.call(ProjectedUser.t),
@@ -446,15 +447,15 @@ class ProjectedUserRepository {
   /// );
   /// ```
   Future<ProjectedUser?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
     ProjectedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProjectedUser>(
       where: where?.call(ProjectedUser.t),
@@ -470,12 +471,12 @@ class ProjectedUserRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUser?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     ProjectedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProjectedUser>(
       id,
@@ -501,9 +502,9 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedUser> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -519,9 +520,9 @@ class ProjectedUserRepository {
   ///
   /// The returned [ProjectedUser] will have its `id` field set.
   Future<ProjectedUser> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProjectedUser>(
       row,
@@ -550,12 +551,12 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedUser> rows, {
-    required _i1.ColumnSelections<ProjectedUserTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedUserTable> conflictColumns,
+    _is.ColumnSelections<ProjectedUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ProjectedUser>(
@@ -582,12 +583,12 @@ class ProjectedUserRepository {
   ///
   /// The returned [ProjectedUser] will have its `id` field set.
   Future<ProjectedUser?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser row, {
-    required _i1.ColumnSelections<ProjectedUserTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedUserTable> conflictColumns,
+    _is.ColumnSelections<ProjectedUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ProjectedUser>(
       row,
@@ -608,10 +609,10 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedUser> rows, {
-    _i1.ColumnSelections<ProjectedUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedUserTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ProjectedUser>(
@@ -626,10 +627,10 @@ class ProjectedUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProjectedUser> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser row, {
-    _i1.ColumnSelections<ProjectedUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedUserTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProjectedUser>(
       row,
@@ -641,10 +642,10 @@ class ProjectedUserRepository {
   /// Updates a single [ProjectedUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedUser?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProjectedUserUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ProjectedUserUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProjectedUser>(
       id,
@@ -660,14 +661,14 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProjectedUserUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ProjectedUserTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProjectedUserUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ProjectedUserTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProjectedUser>(
@@ -694,11 +695,11 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedUser> rows, {
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ProjectedUser>(
@@ -712,9 +713,9 @@ class ProjectedUserRepository {
 
   /// Deletes a single [ProjectedUser].
   Future<ProjectedUser> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProjectedUser>(
       row,
@@ -731,11 +732,11 @@ class ProjectedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedUser>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedUserTable> where,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedUserTable> where,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProjectedUser>(
@@ -750,10 +751,10 @@ class ProjectedUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProjectedUser>(
       where: where?.call(ProjectedUser.t),
@@ -764,11 +765,11 @@ class ProjectedUserRepository {
 
   /// Acquires row-level locks on [ProjectedUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedUserTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedUserTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProjectedUser>(
       where: where(ProjectedUser.t),
@@ -785,10 +786,10 @@ class ProjectedUserAttachRepository {
   /// Creates a relation between this [ProjectedUser] and the given [ProjectedOrder]s
   /// by setting each [ProjectedOrder]'s foreign key `_projectedUserOrdersProjectedUserId` to refer to this [ProjectedUser].
   Future<void> orders(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser projectedUser,
-    List<_i3.ProjectedOrder> projectedOrder, {
-    _i1.Transaction? transaction,
+    List<_i8r3x6pe.ProjectedOrder> projectedOrder, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedOrder.any((e) => e.id == null)) {
       throw ArgumentError.notNull('projectedOrder.id');
@@ -799,15 +800,17 @@ class ProjectedUserAttachRepository {
 
     var $projectedOrder = projectedOrder
         .map(
-          (e) => _i3.ProjectedOrderImplicit(
+          (e) => _i8r3x6pe.ProjectedOrderImplicit(
             e,
             $_projectedUserOrdersProjectedUserId: projectedUser.id,
           ),
         )
         .toList();
-    await session.db.update<_i3.ProjectedOrder>(
+    await session.db.update<_i8r3x6pe.ProjectedOrder>(
       $projectedOrder,
-      columns: [_i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId],
+      columns: [
+        _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      ],
       transaction: transaction,
     );
   }
@@ -819,10 +822,10 @@ class ProjectedUserAttachRowRepository {
   /// Creates a relation between the given [ProjectedUser] and [ProjectedAddress]
   /// by setting the [ProjectedUser]'s foreign key `addressId` to refer to the [ProjectedAddress].
   Future<void> address(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser projectedUser,
-    _i2.ProjectedAddress address, {
-    _i1.Transaction? transaction,
+    _iegbxll6.ProjectedAddress address, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedUser.id == null) {
       throw ArgumentError.notNull('projectedUser.id');
@@ -842,10 +845,10 @@ class ProjectedUserAttachRowRepository {
   /// Creates a relation between this [ProjectedUser] and the given [ProjectedOrder]
   /// by setting the [ProjectedOrder]'s foreign key `_projectedUserOrdersProjectedUserId` to refer to this [ProjectedUser].
   Future<void> orders(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedUser projectedUser,
-    _i3.ProjectedOrder projectedOrder, {
-    _i1.Transaction? transaction,
+    _i8r3x6pe.ProjectedOrder projectedOrder, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedOrder.id == null) {
       throw ArgumentError.notNull('projectedOrder.id');
@@ -854,13 +857,15 @@ class ProjectedUserAttachRowRepository {
       throw ArgumentError.notNull('projectedUser.id');
     }
 
-    var $projectedOrder = _i3.ProjectedOrderImplicit(
+    var $projectedOrder = _i8r3x6pe.ProjectedOrderImplicit(
       projectedOrder,
       $_projectedUserOrdersProjectedUserId: projectedUser.id,
     );
-    await session.db.updateRow<_i3.ProjectedOrder>(
+    await session.db.updateRow<_i8r3x6pe.ProjectedOrder>(
       $projectedOrder,
-      columns: [_i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId],
+      columns: [
+        _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      ],
       transaction: transaction,
     );
   }
@@ -875,9 +880,9 @@ class ProjectedUserDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> orders(
-    _i1.DatabaseSession session,
-    List<_i3.ProjectedOrder> projectedOrder, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    List<_i8r3x6pe.ProjectedOrder> projectedOrder, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedOrder.any((e) => e.id == null)) {
       throw ArgumentError.notNull('projectedOrder.id');
@@ -885,15 +890,17 @@ class ProjectedUserDetachRepository {
 
     var $projectedOrder = projectedOrder
         .map(
-          (e) => _i3.ProjectedOrderImplicit(
+          (e) => _i8r3x6pe.ProjectedOrderImplicit(
             e,
             $_projectedUserOrdersProjectedUserId: null,
           ),
         )
         .toList();
-    await session.db.update<_i3.ProjectedOrder>(
+    await session.db.update<_i8r3x6pe.ProjectedOrder>(
       $projectedOrder,
-      columns: [_i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId],
+      columns: [
+        _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      ],
       transaction: transaction,
     );
   }
@@ -908,21 +915,23 @@ class ProjectedUserDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> orders(
-    _i1.DatabaseSession session,
-    _i3.ProjectedOrder projectedOrder, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _i8r3x6pe.ProjectedOrder projectedOrder, {
+    _is.Transaction? transaction,
   }) async {
     if (projectedOrder.id == null) {
       throw ArgumentError.notNull('projectedOrder.id');
     }
 
-    var $projectedOrder = _i3.ProjectedOrderImplicit(
+    var $projectedOrder = _i8r3x6pe.ProjectedOrderImplicit(
       projectedOrder,
       $_projectedUserOrdersProjectedUserId: null,
     );
-    await session.db.updateRow<_i3.ProjectedOrder>(
+    await session.db.updateRow<_i8r3x6pe.ProjectedOrder>(
       $projectedOrder,
-      columns: [_i3.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId],
+      columns: [
+        _i8r3x6pe.ProjectedOrder.t.$_projectedUserOrdersProjectedUserId,
+      ],
       transaction: transaction,
     );
   }

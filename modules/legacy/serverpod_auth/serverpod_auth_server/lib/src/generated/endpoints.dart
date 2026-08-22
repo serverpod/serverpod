@@ -10,270 +10,275 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/admin_endpoint.dart' as _i2;
-import '../endpoints/apple_endpoint.dart' as _i3;
-import '../endpoints/email_endpoint.dart' as _i4;
-import '../endpoints/firebase_endpoint.dart' as _i5;
-import '../endpoints/google_endpoint.dart' as _i6;
-import '../endpoints/status_endpoint.dart' as _i7;
-import '../endpoints/user_endpoint.dart' as _i8;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_server/src/generated/apple_auth_info.dart'
-    as _i9;
-import 'dart:typed_data' as _i10;
+    as _idx01old;
+import '../endpoints/admin_endpoint.dart' as _i5t1w2d2;
+import '../endpoints/apple_endpoint.dart' as _i9swvpdc;
+import '../endpoints/email_endpoint.dart' as _i5tf3zut;
+import '../endpoints/firebase_endpoint.dart' as _inw80j1s;
+import '../endpoints/google_endpoint.dart' as _i3p8780q;
+import '../endpoints/status_endpoint.dart' as _iv1cbiab;
+import '../endpoints/user_endpoint.dart' as _iymy5306;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'admin': _i2.AdminEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'admin': _i5t1w2d2.AdminEndpoint()
         ..initialize(
           server,
           'admin',
           'serverpod_auth',
         ),
-      'apple': _i3.AppleEndpoint()
+      'apple': _i9swvpdc.AppleEndpoint()
         ..initialize(
           server,
           'apple',
           'serverpod_auth',
         ),
-      'email': _i4.EmailEndpoint()
+      'email': _i5tf3zut.EmailEndpoint()
         ..initialize(
           server,
           'email',
           'serverpod_auth',
         ),
-      'firebase': _i5.FirebaseEndpoint()
+      'firebase': _inw80j1s.FirebaseEndpoint()
         ..initialize(
           server,
           'firebase',
           'serverpod_auth',
         ),
-      'google': _i6.GoogleEndpoint()
+      'google': _i3p8780q.GoogleEndpoint()
         ..initialize(
           server,
           'google',
           'serverpod_auth',
         ),
-      'status': _i7.StatusEndpoint()
+      'status': _iv1cbiab.StatusEndpoint()
         ..initialize(
           server,
           'status',
           'serverpod_auth',
         ),
-      'user': _i8.UserEndpoint()
+      'user': _iymy5306.UserEndpoint()
         ..initialize(
           server,
           'user',
           'serverpod_auth',
         ),
     };
-    connectors['admin'] = _i1.EndpointConnector(
+    connectors['admin'] = _is.EndpointConnector(
       name: 'admin',
       endpoint: endpoints['admin']!,
       methodConnectors: {
-        'getUserInfo': _i1.MethodConnector(
+        'getUserInfo': _is.MethodConnector(
           name: 'getUserInfo',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).getUserInfo(
-                session,
-                params['userId'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i5t1w2d2.AdminEndpoint).getUserInfo(
+                    session,
+                    params['userId'],
+                  ),
         ),
-        'blockUser': _i1.MethodConnector(
+        'blockUser': _is.MethodConnector(
           name: 'blockUser',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).blockUser(
-                session,
-                params['userId'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i5t1w2d2.AdminEndpoint).blockUser(
+                    session,
+                    params['userId'],
+                  ),
         ),
-        'unblockUser': _i1.MethodConnector(
+        'unblockUser': _is.MethodConnector(
           name: 'unblockUser',
           params: {
-            'userId': _i1.ParameterDescription(
+            'userId': _is.ParameterDescription(
               name: 'userId',
-              type: _i1.getType<int>(),
+              type: _is.getType<int>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['admin'] as _i2.AdminEndpoint).unblockUser(
-                session,
-                params['userId'],
-              ),
+              ) async =>
+                  (endpoints['admin'] as _i5t1w2d2.AdminEndpoint).unblockUser(
+                    session,
+                    params['userId'],
+                  ),
         ),
       },
     );
-    connectors['apple'] = _i1.EndpointConnector(
+    connectors['apple'] = _is.EndpointConnector(
       name: 'apple',
       endpoint: endpoints['apple']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
+        'authenticate': _is.MethodConnector(
           name: 'authenticate',
           params: {
-            'authInfo': _i1.ParameterDescription(
+            'authInfo': _is.ParameterDescription(
               name: 'authInfo',
-              type: _i1.getType<_i9.AppleAuthInfo>(),
+              type: _is.getType<_idx01old.AppleAuthInfo>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['apple'] as _i3.AppleEndpoint).authenticate(
-                session,
-                params['authInfo'],
-              ),
+              ) async =>
+                  (endpoints['apple'] as _i9swvpdc.AppleEndpoint).authenticate(
+                    session,
+                    params['authInfo'],
+                  ),
         ),
       },
     );
-    connectors['email'] = _i1.EndpointConnector(
+    connectors['email'] = _is.EndpointConnector(
       name: 'email',
       endpoint: endpoints['email']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
+        'authenticate': _is.MethodConnector(
           name: 'authenticate',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
-                Map<String, dynamic> params,
-              ) async => (endpoints['email'] as _i4.EmailEndpoint).authenticate(
-                session,
-                params['email'],
-                params['password'],
-              ),
-        ),
-        'changePassword': _i1.MethodConnector(
-          name: 'changePassword',
-          params: {
-            'oldPassword': _i1.ParameterDescription(
-              name: 'oldPassword',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-            'newPassword': _i1.ParameterDescription(
-              name: 'newPassword',
-              type: _i1.getType<String>(),
-              nullable: false,
-            ),
-          },
-          call:
-              (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['email'] as _i4.EmailEndpoint).changePassword(
+                  (endpoints['email'] as _i5tf3zut.EmailEndpoint).authenticate(
+                    session,
+                    params['email'],
+                    params['password'],
+                  ),
+        ),
+        'changePassword': _is.MethodConnector(
+          name: 'changePassword',
+          params: {
+            'oldPassword': _is.ParameterDescription(
+              name: 'oldPassword',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+            'newPassword': _is.ParameterDescription(
+              name: 'newPassword',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['email'] as _i5tf3zut.EmailEndpoint)
+                  .changePassword(
                     session,
                     params['oldPassword'],
                     params['newPassword'],
                   ),
         ),
-        'initiatePasswordReset': _i1.MethodConnector(
+        'initiatePasswordReset': _is.MethodConnector(
           name: 'initiatePasswordReset',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['email'] as _i4.EmailEndpoint)
+              ) async => (endpoints['email'] as _i5tf3zut.EmailEndpoint)
                   .initiatePasswordReset(
                     session,
                     params['email'],
                   ),
         ),
-        'resetPassword': _i1.MethodConnector(
+        'resetPassword': _is.MethodConnector(
           name: 'resetPassword',
           params: {
-            'verificationCode': _i1.ParameterDescription(
+            'verificationCode': _is.ParameterDescription(
               name: 'verificationCode',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['email'] as _i4.EmailEndpoint).resetPassword(
+                  (endpoints['email'] as _i5tf3zut.EmailEndpoint).resetPassword(
                     session,
                     params['verificationCode'],
                     params['password'],
                   ),
         ),
-        'createAccountRequest': _i1.MethodConnector(
+        'createAccountRequest': _is.MethodConnector(
           name: 'createAccountRequest',
           params: {
-            'userName': _i1.ParameterDescription(
+            'userName': _is.ParameterDescription(
               name: 'userName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'password': _i1.ParameterDescription(
+            'password': _is.ParameterDescription(
               name: 'password',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['email'] as _i4.EmailEndpoint)
+              ) async => (endpoints['email'] as _i5tf3zut.EmailEndpoint)
                   .createAccountRequest(
                     session,
                     params['userName'],
@@ -281,26 +286,26 @@ class Endpoints extends _i1.EndpointDispatch {
                     params['password'],
                   ),
         ),
-        'createAccount': _i1.MethodConnector(
+        'createAccount': _is.MethodConnector(
           name: 'createAccount',
           params: {
-            'email': _i1.ParameterDescription(
+            'email': _is.ParameterDescription(
               name: 'email',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'verificationCode': _i1.ParameterDescription(
+            'verificationCode': _is.ParameterDescription(
               name: 'verificationCode',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['email'] as _i4.EmailEndpoint).createAccount(
+                  (endpoints['email'] as _i5tf3zut.EmailEndpoint).createAccount(
                     session,
                     params['email'],
                     params['verificationCode'],
@@ -308,74 +313,74 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['firebase'] = _i1.EndpointConnector(
+    connectors['firebase'] = _is.EndpointConnector(
       name: 'firebase',
       endpoint: endpoints['firebase']!,
       methodConnectors: {
-        'authenticate': _i1.MethodConnector(
+        'authenticate': _is.MethodConnector(
           name: 'authenticate',
           params: {
-            'idToken': _i1.ParameterDescription(
+            'idToken': _is.ParameterDescription(
               name: 'idToken',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async =>
-                  (endpoints['firebase'] as _i5.FirebaseEndpoint).authenticate(
+              ) async => (endpoints['firebase'] as _inw80j1s.FirebaseEndpoint)
+                  .authenticate(
                     session,
                     params['idToken'],
                   ),
         ),
       },
     );
-    connectors['google'] = _i1.EndpointConnector(
+    connectors['google'] = _is.EndpointConnector(
       name: 'google',
       endpoint: endpoints['google']!,
       methodConnectors: {
-        'authenticateWithServerAuthCode': _i1.MethodConnector(
+        'authenticateWithServerAuthCode': _is.MethodConnector(
           name: 'authenticateWithServerAuthCode',
           params: {
-            'authenticationCode': _i1.ParameterDescription(
+            'authenticationCode': _is.ParameterDescription(
               name: 'authenticationCode',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
-            'redirectUri': _i1.ParameterDescription(
+            'redirectUri': _is.ParameterDescription(
               name: 'redirectUri',
-              type: _i1.getType<String?>(),
+              type: _is.getType<String?>(),
               nullable: true,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['google'] as _i6.GoogleEndpoint)
+              ) async => (endpoints['google'] as _i3p8780q.GoogleEndpoint)
                   .authenticateWithServerAuthCode(
                     session,
                     params['authenticationCode'],
                     params['redirectUri'],
                   ),
         ),
-        'authenticateWithIdToken': _i1.MethodConnector(
+        'authenticateWithIdToken': _is.MethodConnector(
           name: 'authenticateWithIdToken',
           params: {
-            'idToken': _i1.ParameterDescription(
+            'idToken': _is.ParameterDescription(
               name: 'idToken',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['google'] as _i6.GoogleEndpoint)
+              ) async => (endpoints['google'] as _i3p8780q.GoogleEndpoint)
                   .authenticateWithIdToken(
                     session,
                     params['idToken'],
@@ -383,130 +388,132 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['status'] = _i1.EndpointConnector(
+    connectors['status'] = _is.EndpointConnector(
       name: 'status',
       endpoint: endpoints['status']!,
       methodConnectors: {
-        'isSignedIn': _i1.MethodConnector(
+        'isSignedIn': _is.MethodConnector(
           name: 'isSignedIn',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i7.StatusEndpoint).isSignedIn(
-                session,
-              ),
+              ) async => (endpoints['status'] as _iv1cbiab.StatusEndpoint)
+                  .isSignedIn(session),
         ),
-        'signOutDevice': _i1.MethodConnector(
+        'signOutDevice': _is.MethodConnector(
           name: 'signOutDevice',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i7.StatusEndpoint)
+              ) async => (endpoints['status'] as _iv1cbiab.StatusEndpoint)
                   .signOutDevice(session),
         ),
-        'signOutAllDevices': _i1.MethodConnector(
+        'signOutAllDevices': _is.MethodConnector(
           name: 'signOutAllDevices',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i7.StatusEndpoint)
+              ) async => (endpoints['status'] as _iv1cbiab.StatusEndpoint)
                   .signOutAllDevices(session),
         ),
-        'getUserInfo': _i1.MethodConnector(
+        'getUserInfo': _is.MethodConnector(
           name: 'getUserInfo',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i7.StatusEndpoint)
+              ) async => (endpoints['status'] as _iv1cbiab.StatusEndpoint)
                   .getUserInfo(session),
         ),
-        'getUserSettingsConfig': _i1.MethodConnector(
+        'getUserSettingsConfig': _is.MethodConnector(
           name: 'getUserSettingsConfig',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['status'] as _i7.StatusEndpoint)
+              ) async => (endpoints['status'] as _iv1cbiab.StatusEndpoint)
                   .getUserSettingsConfig(session),
         ),
       },
     );
-    connectors['user'] = _i1.EndpointConnector(
+    connectors['user'] = _is.EndpointConnector(
       name: 'user',
       endpoint: endpoints['user']!,
       methodConnectors: {
-        'removeUserImage': _i1.MethodConnector(
+        'removeUserImage': _is.MethodConnector(
           name: 'removeUserImage',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint)
+              ) async => (endpoints['user'] as _iymy5306.UserEndpoint)
                   .removeUserImage(session),
         ),
-        'setUserImage': _i1.MethodConnector(
+        'setUserImage': _is.MethodConnector(
           name: 'setUserImage',
           params: {
-            'image': _i1.ParameterDescription(
+            'image': _is.ParameterDescription(
               name: 'image',
-              type: _i1.getType<_i10.ByteData>(),
+              type: _is.getType<_idt.ByteData>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).setUserImage(
-                session,
-                params['image'],
-              ),
+              ) async =>
+                  (endpoints['user'] as _iymy5306.UserEndpoint).setUserImage(
+                    session,
+                    params['image'],
+                  ),
         ),
-        'changeUserName': _i1.MethodConnector(
+        'changeUserName': _is.MethodConnector(
           name: 'changeUserName',
           params: {
-            'userName': _i1.ParameterDescription(
+            'userName': _is.ParameterDescription(
               name: 'userName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).changeUserName(
-                session,
-                params['userName'],
-              ),
+              ) async =>
+                  (endpoints['user'] as _iymy5306.UserEndpoint).changeUserName(
+                    session,
+                    params['userName'],
+                  ),
         ),
-        'changeFullName': _i1.MethodConnector(
+        'changeFullName': _is.MethodConnector(
           name: 'changeFullName',
           params: {
-            'fullName': _i1.ParameterDescription(
+            'fullName': _is.ParameterDescription(
               name: 'fullName',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['user'] as _i8.UserEndpoint).changeFullName(
-                session,
-                params['fullName'],
-              ),
+              ) async =>
+                  (endpoints['user'] as _iymy5306.UserEndpoint).changeFullName(
+                    session,
+                    params['fullName'],
+                  ),
         ),
       },
     );

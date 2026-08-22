@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProjectedAddress
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ProjectedAddress._({
     this.id,
     required this.street,
@@ -52,11 +52,11 @@ abstract class ProjectedAddress
   String country;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedAddress copyWith({
     int? id,
     String? street,
@@ -90,11 +90,11 @@ abstract class ProjectedAddress
   }
 
   static ProjectedAddressIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     ProjectedAddressInclude? include,
   }) {
     return ProjectedAddressIncludeList.internal_(
@@ -109,7 +109,7 @@ abstract class ProjectedAddress
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +130,7 @@ class _ProjectedAddressImpl extends ProjectedAddress {
 
   /// Returns a shallow copy of this [ProjectedAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedAddress copyWith({
     Object? id = _Undefined,
@@ -148,38 +148,38 @@ class _ProjectedAddressImpl extends ProjectedAddress {
 }
 
 class ProjectedAddressUpdateTable
-    extends _i1.UpdateTable<ProjectedAddressTable> {
+    extends _is.UpdateTable<ProjectedAddressTable> {
   ProjectedAddressUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> street(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> street(String value) => _is.ColumnValue(
     table.street,
     value,
   );
 
-  _i1.ColumnValue<String, String> state(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> state(String value) => _is.ColumnValue(
     table.state,
     value,
   );
 
-  _i1.ColumnValue<String, String> country(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> country(String value) => _is.ColumnValue(
     table.country,
     value,
   );
 }
 
-class ProjectedAddressTable extends _i1.Table<int?> {
+class ProjectedAddressTable extends _is.Table<int?> {
   ProjectedAddressTable({super.tableRelation})
     : super(tableName: 'projected_addresses') {
     updateTable = ProjectedAddressUpdateTable(this);
-    street = _i1.ColumnString(
+    street = _is.ColumnString(
       'street',
       this,
     );
-    state = _i1.ColumnString(
+    state = _is.ColumnString(
       'state',
       this,
     );
-    country = _i1.ColumnString(
+    country = _is.ColumnString(
       'country',
       this,
     );
@@ -187,14 +187,14 @@ class ProjectedAddressTable extends _i1.Table<int?> {
 
   late final ProjectedAddressUpdateTable updateTable;
 
-  late final _i1.ColumnString street;
+  late final _is.ColumnString street;
 
-  late final _i1.ColumnString state;
+  late final _is.ColumnString state;
 
-  late final _i1.ColumnString country;
+  late final _is.ColumnString country;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     street,
     state,
@@ -202,40 +202,40 @@ class ProjectedAddressTable extends _i1.Table<int?> {
   ];
 }
 
-class ProjectedAddressInclude extends _i1.IncludeObject {
-  @_i2.internal
-  ProjectedAddressInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class ProjectedAddressInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  ProjectedAddressInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ProjectedAddress.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ProjectedAddress.t;
 }
 
-class ProjectedAddressIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ProjectedAddressIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ProjectedAddressIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedAddress.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ProjectedAddress.t;
+  _is.Table<int?> get table => ProjectedAddress.t;
 }
 
 class ProjectedAddressRepository {
@@ -264,15 +264,15 @@ class ProjectedAddressRepository {
   /// );
   /// ```
   Future<List<ProjectedAddress>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ProjectedAddress>(
       where: where?.call(ProjectedAddress.t),
@@ -304,14 +304,14 @@ class ProjectedAddressRepository {
   /// );
   /// ```
   Future<ProjectedAddress?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ProjectedAddress>(
       where: where?.call(ProjectedAddress.t),
@@ -326,11 +326,11 @@ class ProjectedAddressRepository {
 
   /// Finds a single [ProjectedAddress] by its [id] or null if no such row exists.
   Future<ProjectedAddress?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ProjectedAddress>(
       id,
@@ -355,9 +355,9 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedAddress> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -373,9 +373,9 @@ class ProjectedAddressRepository {
   ///
   /// The returned [ProjectedAddress] will have its `id` field set.
   Future<ProjectedAddress> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedAddress row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ProjectedAddress>(
       row,
@@ -404,12 +404,12 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedAddress> rows, {
-    required _i1.ColumnSelections<ProjectedAddressTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedAddressTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedAddressTable> conflictColumns,
+    _is.ColumnSelections<ProjectedAddressTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ProjectedAddress>(
@@ -436,12 +436,12 @@ class ProjectedAddressRepository {
   ///
   /// The returned [ProjectedAddress] will have its `id` field set.
   Future<ProjectedAddress?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedAddress row, {
-    required _i1.ColumnSelections<ProjectedAddressTable> conflictColumns,
-    _i1.ColumnSelections<ProjectedAddressTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ProjectedAddressTable> conflictColumns,
+    _is.ColumnSelections<ProjectedAddressTable>? updateColumns,
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ProjectedAddress>(
       row,
@@ -462,10 +462,10 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedAddress> rows, {
-    _i1.ColumnSelections<ProjectedAddressTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedAddressTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ProjectedAddress>(
@@ -480,10 +480,10 @@ class ProjectedAddressRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ProjectedAddress> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedAddress row, {
-    _i1.ColumnSelections<ProjectedAddressTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ProjectedAddressTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ProjectedAddress>(
       row,
@@ -495,11 +495,11 @@ class ProjectedAddressRepository {
   /// Updates a single [ProjectedAddress] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedAddress?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ProjectedAddressUpdateTable>
+    required _is.ColumnValueListBuilder<ProjectedAddressUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ProjectedAddress>(
       id,
@@ -515,15 +515,15 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ProjectedAddressUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ProjectedAddressUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ProjectedAddressTable> where,
+    required _is.WhereExpressionBuilder<ProjectedAddressTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ProjectedAddress>(
@@ -550,11 +550,11 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ProjectedAddress> rows, {
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ProjectedAddress>(
@@ -568,9 +568,9 @@ class ProjectedAddressRepository {
 
   /// Deletes a single [ProjectedAddress].
   Future<ProjectedAddress> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ProjectedAddress row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ProjectedAddress>(
       row,
@@ -587,11 +587,11 @@ class ProjectedAddressRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ProjectedAddress>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedAddressTable> where,
-    _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedAddressTable> where,
+    _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ProjectedAddress>(
@@ -606,10 +606,10 @@ class ProjectedAddressRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ProjectedAddress>(
       where: where?.call(ProjectedAddress.t),
@@ -620,11 +620,11 @@ class ProjectedAddressRepository {
 
   /// Acquires row-level locks on [ProjectedAddress] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ProjectedAddressTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ProjectedAddressTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ProjectedAddress>(
       where: where(ProjectedAddress.t),

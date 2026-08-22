@@ -74,8 +74,8 @@ void main() {
             isNot(
               matches(
                 r'  @override\n'
-                r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
-                r'    return _i\d.FutureCalls\(\);\n'
+                r'  _i[a-z0-9]+.FutureCallDispatch\? get futureCalls \{\n'
+                r'    return _i[a-z0-9]+.FutureCalls\(\);\n'
                 r'  \}\n',
               ),
             ),
@@ -161,8 +161,8 @@ void main() {
             endpointsFile,
             matches(
               r'  @override\n'
-              r'  _i\d.FutureCallDispatch\? get futureCalls \{\n'
-              r'    return _i\d.FutureCalls\(\);\n'
+              r'  _i[a-z0-9]+.FutureCallDispatch\? get futureCalls \{\n'
+              r'    return _i[a-z0-9]+.FutureCalls\(\);\n'
               r'  \}\n',
             ),
           );
@@ -176,7 +176,7 @@ void main() {
             expect(
               futureCallsFile,
               matches(
-                r'var registeredFutureCalls = <String, _i\d.InvokableFutureCall>\{\n'
+                r'var registeredFutureCalls = <String, _i[a-z0-9]+.InvokableFutureCall>\{\n'
                 r"      \'TestingSayHelloFutureCall\': TestingSayHelloFutureCall\(\),\n"
                 r'    \};\n',
               ),
@@ -214,7 +214,7 @@ void main() {
                 futureCallsFile,
                 matches(
                   r'class _RecurringFutureCallDispatchImpl\n'
-                  r'    extends _i\d.RecurringFutureCallDispatch<_FutureCallRef> \{\n',
+                  r'    extends _i[a-z0-9]+.RecurringFutureCallDispatch<_FutureCallRef> \{\n',
                 ),
               );
             },
@@ -230,7 +230,7 @@ void main() {
                     futureCallsFile,
                     matches(
                       r'class _RecurringFutureCallDispatchImpl\n'
-                      r'    extends _i\d.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
+                      r'    extends _i[a-z0-9]+.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
                       r'[\s\S]*'
                       r'  \@override\n'
                       r'  _FutureCallRef cron\(String cronExpression\) \{\n',
@@ -246,7 +246,7 @@ void main() {
                     futureCallsFile,
                     matches(
                       r'class _RecurringFutureCallDispatchImpl\n'
-                      r'    extends _i\d.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
+                      r'    extends _i[a-z0-9]+.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
                       r'[\s\S]*'
                       r'  \@override\n'
                       r'  _FutureCallRef cron\(String cronExpression\) \{\n'
@@ -255,10 +255,10 @@ void main() {
                       r'        return _futureCallManager.scheduleFutureCall\(\n'
                       r'          name,\n'
                       r'          object,\n'
-                      r'          _i\d.Cron.parse\(cronExpression\).nextTime\(\),\n'
+                      r'          _i[a-z0-9]+.Cron.parse\(cronExpression\).nextTime\(\),\n'
                       r'          _serverId,\n'
                       r'          _identifier,\n'
-                      r'          scheduling: _i\d.CronFutureCallScheduling\(cron: cronExpression\),\n'
+                      r'          scheduling: _i[a-z0-9]+.CronFutureCallScheduling\(cron: cronExpression\),\n'
                       r'        \);\n'
                       r'      \},\n'
                       r'    \);\n'
@@ -275,7 +275,7 @@ void main() {
                     futureCallsFile,
                     matches(
                       r'class _RecurringFutureCallDispatchImpl\n'
-                      r'    extends _i\d.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
+                      r'    extends _i[a-z0-9]+.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
                       r'[\s\S]*'
                       r'  \@override\n'
                       r'  _FutureCallRef every\(\n'
@@ -294,14 +294,14 @@ void main() {
                     futureCallsFile,
                     matches(
                       r'class _RecurringFutureCallDispatchImpl\n'
-                      r'    extends _i\d.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
+                      r'    extends _i[a-z0-9]+.RecurringFutureCallDispatch<_FutureCallRef> \{\n'
                       r'[\s\S]*'
                       r'  \@override\n'
                       r'  _FutureCallRef every\(\n'
                       r'    Duration interval, \{\n'
                       r'    DateTime\? start,\n'
                       r'  \}\) \{\n'
-                      r'    final now = _i\d.clock.now\(\).toUtc\(\);\n'
+                      r'    final now = _i[a-z0-9]+.clock.now\(\).toUtc\(\);\n'
                       r'    return _FutureCallRef\(\n'
                       r'      \(name, object\) \{\n'
                       r'        return _futureCallManager.scheduleFutureCall\(\n'
@@ -310,7 +310,7 @@ void main() {
                       r'          start \?\? now.add\(interval\),\n'
                       r'          _serverId,\n'
                       r'          _identifier,\n'
-                      r'          scheduling: _i\d.IntervalFutureCallScheduling\(\n'
+                      r'          scheduling: _i[a-z0-9]+.IntervalFutureCallScheduling\(\n'
                       r'            interval: interval,\n'
                       r'            start: start,\n'
                       r'          \),\n'
@@ -421,7 +421,7 @@ void main() {
             expect(
               futureCallsFile,
               matches(
-                r'var registeredFutureCalls = <String, _i\d.InvokableFutureCall>\{\n'
+                r'var registeredFutureCalls = <String, _i[a-z0-9]+.InvokableFutureCall>\{\n'
                 r"      \'Testing1SayHelloFutureCall\': Testing1SayHelloFutureCall\(\),\n"
                 r"      \'Testing2SayByeFutureCall\': Testing2SayByeFutureCall\(\),\n"
                 r'    \};\n',

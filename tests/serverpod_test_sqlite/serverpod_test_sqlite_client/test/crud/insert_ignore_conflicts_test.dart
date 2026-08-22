@@ -75,7 +75,7 @@ void main() {
     );
 
     test(
-      'when inserting a conflicting row without ignoreConflicts then a DatabaseQueryException is thrown.',
+      'when inserting a conflicting row without ignoreConflicts then a DatabaseUniqueViolationException is thrown.',
       () async {
         expect(
           UniqueData.db.insert(
@@ -83,7 +83,7 @@ void main() {
             [UniqueData(number: 2, email: 'existing@serverpod.dev')],
           ),
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (e) => e.code,
               'code',
               SqliteErrorCode.uniqueViolation,

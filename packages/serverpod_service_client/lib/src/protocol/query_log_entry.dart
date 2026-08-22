@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// A log entry for a database query.
 abstract class QueryLogEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   QueryLogEntry._({
     this.id,
     required this.serverId,
@@ -54,7 +54,7 @@ abstract class QueryLogEntry
       numRows: jsonSerialization['numRows'] as int?,
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+      slow: _isc.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -98,7 +98,7 @@ abstract class QueryLogEntry
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   QueryLogEntry copyWith({
     int? id,
     String? serverId,
@@ -150,7 +150,7 @@ abstract class QueryLogEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -185,7 +185,7 @@ class _QueryLogEntryImpl extends QueryLogEntry {
 
   /// Returns a shallow copy of this [QueryLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   QueryLogEntry copyWith({
     Object? id = _Undefined,

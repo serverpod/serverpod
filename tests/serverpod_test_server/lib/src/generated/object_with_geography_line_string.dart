@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithGeographyLineString
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithGeographyLineString._({
     this.id,
     required this.lineString,
@@ -24,9 +24,9 @@ abstract class ObjectWithGeographyLineString
 
   factory ObjectWithGeographyLineString({
     int? id,
-    required _i1.GeographyLineString lineString,
-    required _i1.GeographyLineString lineStringIndexedGist,
-    required _i1.GeographyLineString lineStringIndexedSpgist,
+    required _is.GeographyLineString lineString,
+    required _is.GeographyLineString lineStringIndexedGist,
+    required _is.GeographyLineString lineStringIndexedSpgist,
   }) = _ObjectWithGeographyLineStringImpl;
 
   factory ObjectWithGeographyLineString.fromJson(
@@ -34,13 +34,13 @@ abstract class ObjectWithGeographyLineString
   ) {
     return ObjectWithGeographyLineString(
       id: jsonSerialization['id'] as int?,
-      lineString: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineString: _is.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineString'],
       ),
-      lineStringIndexedGist: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineStringIndexedGist: _is.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineStringIndexedGist'],
       ),
-      lineStringIndexedSpgist: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineStringIndexedSpgist: _is.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineStringIndexedSpgist'],
       ),
     );
@@ -53,23 +53,23 @@ abstract class ObjectWithGeographyLineString
   @override
   int? id;
 
-  _i1.GeographyLineString lineString;
+  _is.GeographyLineString lineString;
 
-  _i1.GeographyLineString lineStringIndexedGist;
+  _is.GeographyLineString lineStringIndexedGist;
 
-  _i1.GeographyLineString lineStringIndexedSpgist;
+  _is.GeographyLineString lineStringIndexedSpgist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithGeographyLineString]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithGeographyLineString copyWith({
     int? id,
-    _i1.GeographyLineString? lineString,
-    _i1.GeographyLineString? lineStringIndexedGist,
-    _i1.GeographyLineString? lineStringIndexedSpgist,
+    _is.GeographyLineString? lineString,
+    _is.GeographyLineString? lineStringIndexedGist,
+    _is.GeographyLineString? lineStringIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -98,11 +98,11 @@ abstract class ObjectWithGeographyLineString
   }
 
   static ObjectWithGeographyLineStringIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
   }) {
     return ObjectWithGeographyLineStringIncludeList.internal_(
@@ -117,7 +117,7 @@ abstract class ObjectWithGeographyLineString
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -126,9 +126,9 @@ class _Undefined {}
 class _ObjectWithGeographyLineStringImpl extends ObjectWithGeographyLineString {
   _ObjectWithGeographyLineStringImpl({
     int? id,
-    required _i1.GeographyLineString lineString,
-    required _i1.GeographyLineString lineStringIndexedGist,
-    required _i1.GeographyLineString lineStringIndexedSpgist,
+    required _is.GeographyLineString lineString,
+    required _is.GeographyLineString lineStringIndexedGist,
+    required _is.GeographyLineString lineStringIndexedSpgist,
   }) : super._(
          id: id,
          lineString: lineString,
@@ -138,13 +138,13 @@ class _ObjectWithGeographyLineStringImpl extends ObjectWithGeographyLineString {
 
   /// Returns a shallow copy of this [ObjectWithGeographyLineString]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithGeographyLineString copyWith({
     Object? id = _Undefined,
-    _i1.GeographyLineString? lineString,
-    _i1.GeographyLineString? lineStringIndexedGist,
-    _i1.GeographyLineString? lineStringIndexedSpgist,
+    _is.GeographyLineString? lineString,
+    _is.GeographyLineString? lineStringIndexedGist,
+    _is.GeographyLineString? lineStringIndexedSpgist,
   }) {
     return ObjectWithGeographyLineString(
       id: id is int? ? id : this.id,
@@ -158,42 +158,42 @@ class _ObjectWithGeographyLineStringImpl extends ObjectWithGeographyLineString {
 }
 
 class ObjectWithGeographyLineStringUpdateTable
-    extends _i1.UpdateTable<ObjectWithGeographyLineStringTable> {
+    extends _is.UpdateTable<ObjectWithGeographyLineStringTable> {
   ObjectWithGeographyLineStringUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString> lineString(
-    _i1.GeographyLineString value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyLineString, _is.GeographyLineString> lineString(
+    _is.GeographyLineString value,
+  ) => _is.ColumnValue(
     table.lineString,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString>
-  lineStringIndexedGist(_i1.GeographyLineString value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyLineString, _is.GeographyLineString>
+  lineStringIndexedGist(_is.GeographyLineString value) => _is.ColumnValue(
     table.lineStringIndexedGist,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyLineString, _i1.GeographyLineString>
-  lineStringIndexedSpgist(_i1.GeographyLineString value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyLineString, _is.GeographyLineString>
+  lineStringIndexedSpgist(_is.GeographyLineString value) => _is.ColumnValue(
     table.lineStringIndexedSpgist,
     value,
   );
 }
 
-class ObjectWithGeographyLineStringTable extends _i1.Table<int?> {
+class ObjectWithGeographyLineStringTable extends _is.Table<int?> {
   ObjectWithGeographyLineStringTable({super.tableRelation})
     : super(tableName: 'object_with_geography_line_string') {
     updateTable = ObjectWithGeographyLineStringUpdateTable(this);
-    lineString = _i1.ColumnGeographyLineString(
+    lineString = _is.ColumnGeographyLineString(
       'lineString',
       this,
     );
-    lineStringIndexedGist = _i1.ColumnGeographyLineString(
+    lineStringIndexedGist = _is.ColumnGeographyLineString(
       'lineStringIndexedGist',
       this,
     );
-    lineStringIndexedSpgist = _i1.ColumnGeographyLineString(
+    lineStringIndexedSpgist = _is.ColumnGeographyLineString(
       'lineStringIndexedSpgist',
       this,
     );
@@ -201,14 +201,14 @@ class ObjectWithGeographyLineStringTable extends _i1.Table<int?> {
 
   late final ObjectWithGeographyLineStringUpdateTable updateTable;
 
-  late final _i1.ColumnGeographyLineString lineString;
+  late final _is.ColumnGeographyLineString lineString;
 
-  late final _i1.ColumnGeographyLineString lineStringIndexedGist;
+  late final _is.ColumnGeographyLineString lineStringIndexedGist;
 
-  late final _i1.ColumnGeographyLineString lineStringIndexedSpgist;
+  late final _is.ColumnGeographyLineString lineStringIndexedSpgist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     lineString,
     lineStringIndexedGist,
@@ -216,42 +216,42 @@ class ObjectWithGeographyLineStringTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyLineStringInclude extends _i1.IncludeObject {
-  @_i2.internal
+class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ObjectWithGeographyLineStringInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyLineString.t;
+  _is.Table<int?> get table => ObjectWithGeographyLineString.t;
 }
 
-class ObjectWithGeographyLineStringIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithGeographyLineStringIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyLineString.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyLineString.t;
+  _is.Table<int?> get table => ObjectWithGeographyLineString.t;
 }
 
 class ObjectWithGeographyLineStringRepository {
@@ -280,15 +280,15 @@ class ObjectWithGeographyLineStringRepository {
   /// );
   /// ```
   Future<List<ObjectWithGeographyLineString>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyLineString>(
       where: where?.call(ObjectWithGeographyLineString.t),
@@ -320,14 +320,14 @@ class ObjectWithGeographyLineStringRepository {
   /// );
   /// ```
   Future<ObjectWithGeographyLineString?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyLineString>(
       where: where?.call(ObjectWithGeographyLineString.t),
@@ -342,11 +342,11 @@ class ObjectWithGeographyLineStringRepository {
 
   /// Finds a single [ObjectWithGeographyLineString] by its [id] or null if no such row exists.
   Future<ObjectWithGeographyLineString?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithGeographyLineString>(
       id,
@@ -371,9 +371,9 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyLineString> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -389,9 +389,9 @@ class ObjectWithGeographyLineStringRepository {
   ///
   /// The returned [ObjectWithGeographyLineString] will have its `id` field set.
   Future<ObjectWithGeographyLineString> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyLineString row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithGeographyLineString>(
       row,
@@ -420,13 +420,13 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyLineString> rows, {
-    required _i1.ColumnSelections<ObjectWithGeographyLineStringTable>
+    required _is.ColumnSelections<ObjectWithGeographyLineStringTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithGeographyLineString>(
@@ -453,13 +453,13 @@ class ObjectWithGeographyLineStringRepository {
   ///
   /// The returned [ObjectWithGeographyLineString] will have its `id` field set.
   Future<ObjectWithGeographyLineString?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyLineString row, {
-    required _i1.ColumnSelections<ObjectWithGeographyLineStringTable>
+    required _is.ColumnSelections<ObjectWithGeographyLineStringTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyLineStringTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithGeographyLineString>(
       row,
@@ -480,10 +480,10 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyLineString> rows, {
-    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyLineStringTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithGeographyLineString>(
@@ -498,10 +498,10 @@ class ObjectWithGeographyLineStringRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithGeographyLineString> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyLineString row, {
-    _i1.ColumnSelections<ObjectWithGeographyLineStringTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyLineStringTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithGeographyLineString>(
       row,
@@ -513,13 +513,13 @@ class ObjectWithGeographyLineStringRepository {
   /// Updates a single [ObjectWithGeographyLineString] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithGeographyLineString?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<
+    required _is.ColumnValueListBuilder<
       ObjectWithGeographyLineStringUpdateTable
     >
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithGeographyLineString>(
       id,
@@ -535,18 +535,18 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<
       ObjectWithGeographyLineStringUpdateTable
     >
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
+    required _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyLineString>(
@@ -573,11 +573,11 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyLineString> rows, {
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithGeographyLineString>(
@@ -591,9 +591,9 @@ class ObjectWithGeographyLineStringRepository {
 
   /// Deletes a single [ObjectWithGeographyLineString].
   Future<ObjectWithGeographyLineString> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyLineString row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithGeographyLineString>(
       row,
@@ -610,12 +610,12 @@ class ObjectWithGeographyLineStringRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyLineString>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
     where,
-    _i1.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyLineString>(
@@ -630,10 +630,10 @@ class ObjectWithGeographyLineStringRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyLineString>(
       where: where?.call(ObjectWithGeographyLineString.t),
@@ -644,12 +644,12 @@ class ObjectWithGeographyLineStringRepository {
 
   /// Acquires row-level locks on [ObjectWithGeographyLineString] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyLineString>(
       where: where(ObjectWithGeographyLineString.t),

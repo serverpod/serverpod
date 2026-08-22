@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_json_field_simple.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'projected_json_field_simple.dart' as _i37n7uc1;
 
 abstract class ProjectedUserSimpleJson
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedUserSimpleJson._({
     this.id,
     required this.name,
@@ -24,7 +24,7 @@ abstract class ProjectedUserSimpleJson
   factory ProjectedUserSimpleJson({
     int? id,
     required String name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) = _ProjectedUserSimpleJsonImpl;
 
   factory ProjectedUserSimpleJson.fromJson(
@@ -35,7 +35,7 @@ abstract class ProjectedUserSimpleJson
       name: jsonSerialization['name'] as String,
       jsonField: jsonSerialization['jsonField'] == null
           ? null
-          : _i2.ProjectedJsonFieldSimple.fromJson(
+          : _i37n7uc1.ProjectedJsonFieldSimple.fromJson(
               jsonSerialization['jsonField'],
             ),
     );
@@ -48,15 +48,15 @@ abstract class ProjectedUserSimpleJson
 
   String name;
 
-  _i2.ProjectedJsonFieldSimple? jsonField;
+  _i37n7uc1.ProjectedJsonFieldSimple? jsonField;
 
   /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedUserSimpleJson copyWith({
     int? id,
     String? name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -77,8 +77,8 @@ abstract class ProjectedUserSimpleJson
       if (jsonField != null)
         'jsonField':
             // ignore: unnecessary_type_check
-            jsonField is _i1.ProtocolSerialization
-            ? (jsonField as _i1.ProtocolSerialization).toJsonForProtocol()
+            jsonField is _isc.ProtocolSerialization
+            ? (jsonField as _isc.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               jsonField?.toJson(),
@@ -87,7 +87,7 @@ abstract class ProjectedUserSimpleJson
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -97,7 +97,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
   _ProjectedUserSimpleJsonImpl({
     int? id,
     required String name,
-    _i2.ProjectedJsonFieldSimple? jsonField,
+    _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) : super._(
          id: id,
          name: name,
@@ -106,7 +106,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
 
   /// Returns a shallow copy of this [ProjectedUserSimpleJson]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedUserSimpleJson copyWith({
     Object? id = _Undefined,
@@ -116,7 +116,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
     return ProjectedUserSimpleJson(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      jsonField: jsonField is _i2.ProjectedJsonFieldSimple?
+      jsonField: jsonField is _i37n7uc1.ProjectedJsonFieldSimple?
           ? jsonField
           : this.jsonField?.copyWith(),
     );

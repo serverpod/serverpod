@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'test_enum_enhanced.dart' as _i2;
-import 'test_enum_enhanced_by_name.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import 'test_enum_enhanced.dart' as _it39smib;
+import 'test_enum_enhanced_by_name.dart' as _izw460bh;
 
 abstract class ObjectWithEnumEnhanced
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithEnumEnhanced._({
     this.id,
     required this.byIndex,
@@ -29,12 +30,12 @@ abstract class ObjectWithEnumEnhanced
 
   factory ObjectWithEnumEnhanced({
     int? id,
-    required _i2.TestEnumEnhanced byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    required List<_i2.TestEnumEnhanced> byIndexList,
-    required _i3.TestEnumEnhancedByName byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    required List<_i3.TestEnumEnhancedByName> byNameList,
+    required _it39smib.TestEnumEnhanced byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    required List<_it39smib.TestEnumEnhanced> byIndexList,
+    required _izw460bh.TestEnumEnhancedByName byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    required List<_izw460bh.TestEnumEnhancedByName> byNameList,
   }) = _ObjectWithEnumEnhancedImpl;
 
   factory ObjectWithEnumEnhanced.fromJson(
@@ -42,28 +43,30 @@ abstract class ObjectWithEnumEnhanced
   ) {
     return ObjectWithEnumEnhanced(
       id: jsonSerialization['id'] as int?,
-      byIndex: _i2.TestEnumEnhanced.fromJson(
+      byIndex: _it39smib.TestEnumEnhanced.fromJson(
         (jsonSerialization['byIndex'] as int),
       ),
       nullableByIndex: jsonSerialization['nullableByIndex'] == null
           ? null
-          : _i2.TestEnumEnhanced.fromJson(
+          : _it39smib.TestEnumEnhanced.fromJson(
               (jsonSerialization['nullableByIndex'] as int),
             ),
-      byIndexList: _i4.Protocol().deserialize<List<_i2.TestEnumEnhanced>>(
-        jsonSerialization['byIndexList'],
-      ),
-      byName: _i3.TestEnumEnhancedByName.fromJson(
+      byIndexList: _i0ntutnq.Protocol()
+          .deserialize<List<_it39smib.TestEnumEnhanced>>(
+            jsonSerialization['byIndexList'],
+          ),
+      byName: _izw460bh.TestEnumEnhancedByName.fromJson(
         (jsonSerialization['byName'] as String),
       ),
       nullableByName: jsonSerialization['nullableByName'] == null
           ? null
-          : _i3.TestEnumEnhancedByName.fromJson(
+          : _izw460bh.TestEnumEnhancedByName.fromJson(
               (jsonSerialization['nullableByName'] as String),
             ),
-      byNameList: _i4.Protocol().deserialize<List<_i3.TestEnumEnhancedByName>>(
-        jsonSerialization['byNameList'],
-      ),
+      byNameList: _i0ntutnq.Protocol()
+          .deserialize<List<_izw460bh.TestEnumEnhancedByName>>(
+            jsonSerialization['byNameList'],
+          ),
     );
   }
 
@@ -72,29 +75,29 @@ abstract class ObjectWithEnumEnhanced
   /// the id will be null.
   int? id;
 
-  _i2.TestEnumEnhanced byIndex;
+  _it39smib.TestEnumEnhanced byIndex;
 
-  _i2.TestEnumEnhanced? nullableByIndex;
+  _it39smib.TestEnumEnhanced? nullableByIndex;
 
-  List<_i2.TestEnumEnhanced> byIndexList;
+  List<_it39smib.TestEnumEnhanced> byIndexList;
 
-  _i3.TestEnumEnhancedByName byName;
+  _izw460bh.TestEnumEnhancedByName byName;
 
-  _i3.TestEnumEnhancedByName? nullableByName;
+  _izw460bh.TestEnumEnhancedByName? nullableByName;
 
-  List<_i3.TestEnumEnhancedByName> byNameList;
+  List<_izw460bh.TestEnumEnhancedByName> byNameList;
 
   /// Returns a shallow copy of this [ObjectWithEnumEnhanced]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithEnumEnhanced copyWith({
     int? id,
-    _i2.TestEnumEnhanced? byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    List<_i2.TestEnumEnhanced>? byIndexList,
-    _i3.TestEnumEnhancedByName? byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    List<_i3.TestEnumEnhancedByName>? byNameList,
+    _it39smib.TestEnumEnhanced? byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    List<_it39smib.TestEnumEnhanced>? byIndexList,
+    _izw460bh.TestEnumEnhancedByName? byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    List<_izw460bh.TestEnumEnhancedByName>? byNameList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,7 +129,7 @@ abstract class ObjectWithEnumEnhanced
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -135,12 +138,12 @@ class _Undefined {}
 class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
   _ObjectWithEnumEnhancedImpl({
     int? id,
-    required _i2.TestEnumEnhanced byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    required List<_i2.TestEnumEnhanced> byIndexList,
-    required _i3.TestEnumEnhancedByName byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    required List<_i3.TestEnumEnhancedByName> byNameList,
+    required _it39smib.TestEnumEnhanced byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    required List<_it39smib.TestEnumEnhanced> byIndexList,
+    required _izw460bh.TestEnumEnhancedByName byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    required List<_izw460bh.TestEnumEnhancedByName> byNameList,
   }) : super._(
          id: id,
          byIndex: byIndex,
@@ -153,26 +156,26 @@ class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
 
   /// Returns a shallow copy of this [ObjectWithEnumEnhanced]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithEnumEnhanced copyWith({
     Object? id = _Undefined,
-    _i2.TestEnumEnhanced? byIndex,
+    _it39smib.TestEnumEnhanced? byIndex,
     Object? nullableByIndex = _Undefined,
-    List<_i2.TestEnumEnhanced>? byIndexList,
-    _i3.TestEnumEnhancedByName? byName,
+    List<_it39smib.TestEnumEnhanced>? byIndexList,
+    _izw460bh.TestEnumEnhancedByName? byName,
     Object? nullableByName = _Undefined,
-    List<_i3.TestEnumEnhancedByName>? byNameList,
+    List<_izw460bh.TestEnumEnhancedByName>? byNameList,
   }) {
     return ObjectWithEnumEnhanced(
       id: id is int? ? id : this.id,
       byIndex: byIndex ?? this.byIndex,
-      nullableByIndex: nullableByIndex is _i2.TestEnumEnhanced?
+      nullableByIndex: nullableByIndex is _it39smib.TestEnumEnhanced?
           ? nullableByIndex
           : this.nullableByIndex,
       byIndexList: byIndexList ?? this.byIndexList.map((e0) => e0).toList(),
       byName: byName ?? this.byName,
-      nullableByName: nullableByName is _i3.TestEnumEnhancedByName?
+      nullableByName: nullableByName is _izw460bh.TestEnumEnhancedByName?
           ? nullableByName
           : this.nullableByName,
       byNameList: byNameList ?? this.byNameList.map((e0) => e0).toList(),

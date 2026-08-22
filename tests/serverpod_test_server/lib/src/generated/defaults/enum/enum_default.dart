@@ -10,31 +10,33 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../defaults/enum/enums/by_name_enum.dart' as _i2;
-import '../../defaults/enum/enums/by_index_enum.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../defaults/enum/enums/by_index_enum.dart' as _ido5z594;
+import '../../defaults/enum/enums/by_name_enum.dart' as _iwklobdz;
 
 abstract class EnumDefault
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EnumDefault._({
     this.id,
-    _i2.ByNameEnum? byNameEnumDefault,
-    _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i3.ByIndexEnum? byIndexEnumDefault,
-    _i3.ByIndexEnum? byIndexEnumDefaultNull,
-  }) : byNameEnumDefault = byNameEnumDefault ?? _i2.ByNameEnum.byName1,
-       byNameEnumDefaultNull = byNameEnumDefaultNull ?? _i2.ByNameEnum.byName2,
-       byIndexEnumDefault = byIndexEnumDefault ?? _i3.ByIndexEnum.byIndex1,
+    _iwklobdz.ByNameEnum? byNameEnumDefault,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefault,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultNull,
+  }) : byNameEnumDefault = byNameEnumDefault ?? _iwklobdz.ByNameEnum.byName1,
+       byNameEnumDefaultNull =
+           byNameEnumDefaultNull ?? _iwklobdz.ByNameEnum.byName2,
+       byIndexEnumDefault =
+           byIndexEnumDefault ?? _ido5z594.ByIndexEnum.byIndex1,
        byIndexEnumDefaultNull =
-           byIndexEnumDefaultNull ?? _i3.ByIndexEnum.byIndex2;
+           byIndexEnumDefaultNull ?? _ido5z594.ByIndexEnum.byIndex2;
 
   factory EnumDefault({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefault,
-    _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i3.ByIndexEnum? byIndexEnumDefault,
-    _i3.ByIndexEnum? byIndexEnumDefaultNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefault,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefault,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultNull,
   }) = _EnumDefaultImpl;
 
   factory EnumDefault.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,23 +44,23 @@ abstract class EnumDefault
       id: jsonSerialization['id'] as int?,
       byNameEnumDefault: jsonSerialization['byNameEnumDefault'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefault'] as String),
             ),
       byNameEnumDefaultNull: jsonSerialization['byNameEnumDefaultNull'] == null
           ? null
-          : _i2.ByNameEnum.fromJson(
+          : _iwklobdz.ByNameEnum.fromJson(
               (jsonSerialization['byNameEnumDefaultNull'] as String),
             ),
       byIndexEnumDefault: jsonSerialization['byIndexEnumDefault'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefault'] as int),
             ),
       byIndexEnumDefaultNull:
           jsonSerialization['byIndexEnumDefaultNull'] == null
           ? null
-          : _i3.ByIndexEnum.fromJson(
+          : _ido5z594.ByIndexEnum.fromJson(
               (jsonSerialization['byIndexEnumDefaultNull'] as int),
             ),
     );
@@ -71,26 +73,26 @@ abstract class EnumDefault
   @override
   int? id;
 
-  _i2.ByNameEnum byNameEnumDefault;
+  _iwklobdz.ByNameEnum byNameEnumDefault;
 
-  _i2.ByNameEnum? byNameEnumDefaultNull;
+  _iwklobdz.ByNameEnum? byNameEnumDefaultNull;
 
-  _i3.ByIndexEnum byIndexEnumDefault;
+  _ido5z594.ByIndexEnum byIndexEnumDefault;
 
-  _i3.ByIndexEnum? byIndexEnumDefaultNull;
+  _ido5z594.ByIndexEnum? byIndexEnumDefaultNull;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EnumDefault copyWith({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefault,
-    _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i3.ByIndexEnum? byIndexEnumDefault,
-    _i3.ByIndexEnum? byIndexEnumDefaultNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefault,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefault,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultNull,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -125,11 +127,11 @@ abstract class EnumDefault
   }
 
   static EnumDefaultIncludeList includeList({
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
     EnumDefaultInclude? include,
   }) {
     return EnumDefaultIncludeList.internal_(
@@ -144,7 +146,7 @@ abstract class EnumDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -153,10 +155,10 @@ class _Undefined {}
 class _EnumDefaultImpl extends EnumDefault {
   _EnumDefaultImpl({
     int? id,
-    _i2.ByNameEnum? byNameEnumDefault,
-    _i2.ByNameEnum? byNameEnumDefaultNull,
-    _i3.ByIndexEnum? byIndexEnumDefault,
-    _i3.ByIndexEnum? byIndexEnumDefaultNull,
+    _iwklobdz.ByNameEnum? byNameEnumDefault,
+    _iwklobdz.ByNameEnum? byNameEnumDefaultNull,
+    _ido5z594.ByIndexEnum? byIndexEnumDefault,
+    _ido5z594.ByIndexEnum? byIndexEnumDefaultNull,
   }) : super._(
          id: id,
          byNameEnumDefault: byNameEnumDefault,
@@ -167,102 +169,99 @@ class _EnumDefaultImpl extends EnumDefault {
 
   /// Returns a shallow copy of this [EnumDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EnumDefault copyWith({
     Object? id = _Undefined,
-    _i2.ByNameEnum? byNameEnumDefault,
+    _iwklobdz.ByNameEnum? byNameEnumDefault,
     Object? byNameEnumDefaultNull = _Undefined,
-    _i3.ByIndexEnum? byIndexEnumDefault,
+    _ido5z594.ByIndexEnum? byIndexEnumDefault,
     Object? byIndexEnumDefaultNull = _Undefined,
   }) {
     return EnumDefault(
       id: id is int? ? id : this.id,
       byNameEnumDefault: byNameEnumDefault ?? this.byNameEnumDefault,
-      byNameEnumDefaultNull: byNameEnumDefaultNull is _i2.ByNameEnum?
+      byNameEnumDefaultNull: byNameEnumDefaultNull is _iwklobdz.ByNameEnum?
           ? byNameEnumDefaultNull
           : this.byNameEnumDefaultNull,
       byIndexEnumDefault: byIndexEnumDefault ?? this.byIndexEnumDefault,
-      byIndexEnumDefaultNull: byIndexEnumDefaultNull is _i3.ByIndexEnum?
+      byIndexEnumDefaultNull: byIndexEnumDefaultNull is _ido5z594.ByIndexEnum?
           ? byIndexEnumDefaultNull
           : this.byIndexEnumDefaultNull,
     );
   }
 }
 
-class EnumDefaultUpdateTable extends _i1.UpdateTable<EnumDefaultTable> {
+class EnumDefaultUpdateTable extends _is.UpdateTable<EnumDefaultTable> {
   EnumDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefault(
-    _i2.ByNameEnum value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum> byNameEnumDefault(
+    _iwklobdz.ByNameEnum value,
+  ) => _is.ColumnValue(
     table.byNameEnumDefault,
     value,
   );
 
-  _i1.ColumnValue<_i2.ByNameEnum, _i2.ByNameEnum> byNameEnumDefaultNull(
-    _i2.ByNameEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_iwklobdz.ByNameEnum, _iwklobdz.ByNameEnum>
+  byNameEnumDefaultNull(_iwklobdz.ByNameEnum? value) => _is.ColumnValue(
     table.byNameEnumDefaultNull,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefault(
-    _i3.ByIndexEnum value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ido5z594.ByIndexEnum, _ido5z594.ByIndexEnum>
+  byIndexEnumDefault(_ido5z594.ByIndexEnum value) => _is.ColumnValue(
     table.byIndexEnumDefault,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByIndexEnum, _i3.ByIndexEnum> byIndexEnumDefaultNull(
-    _i3.ByIndexEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ido5z594.ByIndexEnum, _ido5z594.ByIndexEnum>
+  byIndexEnumDefaultNull(_ido5z594.ByIndexEnum? value) => _is.ColumnValue(
     table.byIndexEnumDefaultNull,
     value,
   );
 }
 
-class EnumDefaultTable extends _i1.Table<int?> {
+class EnumDefaultTable extends _is.Table<int?> {
   EnumDefaultTable({super.tableRelation}) : super(tableName: 'enum_default') {
     updateTable = EnumDefaultUpdateTable(this);
-    byNameEnumDefault = _i1.ColumnEnum(
+    byNameEnumDefault = _is.ColumnEnum(
       'byNameEnumDefault',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    byNameEnumDefaultNull = _i1.ColumnEnum(
+    byNameEnumDefaultNull = _is.ColumnEnum(
       'byNameEnumDefaultNull',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
       hasDefault: true,
     );
-    byIndexEnumDefault = _i1.ColumnEnum(
+    byIndexEnumDefault = _is.ColumnEnum(
       'byIndexEnumDefault',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
       hasDefault: true,
     );
-    byIndexEnumDefaultNull = _i1.ColumnEnum(
+    byIndexEnumDefaultNull = _is.ColumnEnum(
       'byIndexEnumDefaultNull',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
       hasDefault: true,
     );
   }
 
   late final EnumDefaultUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefault;
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum> byNameEnumDefault;
 
-  late final _i1.ColumnEnum<_i2.ByNameEnum> byNameEnumDefaultNull;
+  late final _is.ColumnEnum<_iwklobdz.ByNameEnum> byNameEnumDefaultNull;
 
-  late final _i1.ColumnEnum<_i3.ByIndexEnum> byIndexEnumDefault;
+  late final _is.ColumnEnum<_ido5z594.ByIndexEnum> byIndexEnumDefault;
 
-  late final _i1.ColumnEnum<_i3.ByIndexEnum> byIndexEnumDefaultNull;
+  late final _is.ColumnEnum<_ido5z594.ByIndexEnum> byIndexEnumDefaultNull;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     byNameEnumDefault,
     byNameEnumDefaultNull,
@@ -271,40 +270,40 @@ class EnumDefaultTable extends _i1.Table<int?> {
   ];
 }
 
-class EnumDefaultInclude extends _i1.IncludeObject {
-  @_i4.internal
-  EnumDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class EnumDefaultInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  EnumDefaultInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => EnumDefault.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EnumDefault.t;
 }
 
-class EnumDefaultIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class EnumDefaultIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   EnumDefaultIncludeList.internal_({
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefault.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EnumDefault.t;
+  _is.Table<int?> get table => EnumDefault.t;
 }
 
 class EnumDefaultRepository {
@@ -333,15 +332,15 @@ class EnumDefaultRepository {
   /// );
   /// ```
   Future<List<EnumDefault>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EnumDefault>(
       where: where?.call(EnumDefault.t),
@@ -373,14 +372,14 @@ class EnumDefaultRepository {
   /// );
   /// ```
   Future<EnumDefault?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EnumDefault>(
       where: where?.call(EnumDefault.t),
@@ -395,11 +394,11 @@ class EnumDefaultRepository {
 
   /// Finds a single [EnumDefault] by its [id] or null if no such row exists.
   Future<EnumDefault?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EnumDefault>(
       id,
@@ -424,9 +423,9 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefault> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -442,9 +441,9 @@ class EnumDefaultRepository {
   ///
   /// The returned [EnumDefault] will have its `id` field set.
   Future<EnumDefault> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EnumDefault>(
       row,
@@ -473,12 +472,12 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefault> rows, {
-    required _i1.ColumnSelections<EnumDefaultTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EnumDefault>(
@@ -505,12 +504,12 @@ class EnumDefaultRepository {
   ///
   /// The returned [EnumDefault] will have its `id` field set.
   Future<EnumDefault?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefault row, {
-    required _i1.ColumnSelections<EnumDefaultTable> conflictColumns,
-    _i1.ColumnSelections<EnumDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EnumDefaultTable> conflictColumns,
+    _is.ColumnSelections<EnumDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<EnumDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EnumDefault>(
       row,
@@ -531,10 +530,10 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefault> rows, {
-    _i1.ColumnSelections<EnumDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EnumDefault>(
@@ -549,10 +548,10 @@ class EnumDefaultRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EnumDefault> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefault row, {
-    _i1.ColumnSelections<EnumDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EnumDefaultTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EnumDefault>(
       row,
@@ -564,10 +563,10 @@ class EnumDefaultRepository {
   /// Updates a single [EnumDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EnumDefault?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EnumDefault>(
       id,
@@ -583,14 +582,14 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EnumDefaultUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EnumDefaultTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EnumDefault>(
@@ -617,11 +616,11 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EnumDefault> rows, {
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EnumDefault>(
@@ -635,9 +634,9 @@ class EnumDefaultRepository {
 
   /// Deletes a single [EnumDefault].
   Future<EnumDefault> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EnumDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EnumDefault>(
       row,
@@ -654,11 +653,11 @@ class EnumDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EnumDefault>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
-    _i1.OrderByBuilder<EnumDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<EnumDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultTable> where,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EnumDefault>(
@@ -673,10 +672,10 @@ class EnumDefaultRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EnumDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EnumDefault>(
       where: where?.call(EnumDefault.t),
@@ -687,11 +686,11 @@ class EnumDefaultRepository {
 
   /// Acquires row-level locks on [EnumDefault] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EnumDefaultTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EnumDefaultTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EnumDefault>(
       where: where(EnumDefault.t),

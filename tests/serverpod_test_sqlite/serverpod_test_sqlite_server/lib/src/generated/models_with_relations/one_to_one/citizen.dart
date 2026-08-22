@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../models_with_relations/one_to_one/address.dart' as _i2;
-import '../../models_with_relations/one_to_one/company.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i4;
+    as _i08l111i;
+import '../../models_with_relations/one_to_one/address.dart' as _i5rzbc0r;
+import '../../models_with_relations/one_to_one/company.dart' as _i2fdza8t;
 
 abstract class Citizen
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Citizen._({
     this.id,
     required this.name,
@@ -32,11 +32,11 @@ abstract class Citizen
   factory Citizen({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i5rzbc0r.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i2fdza8t.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i2fdza8t.Company? oldCompany,
   }) = _CitizenImpl;
 
   factory Citizen.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -45,19 +45,19 @@ abstract class Citizen
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.Address>(
+          : _i08l111i.Protocol().deserialize<_i5rzbc0r.Address>(
               jsonSerialization['address'],
             ),
       companyId: jsonSerialization['companyId'] as int,
       company: jsonSerialization['company'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i08l111i.Protocol().deserialize<_i2fdza8t.Company>(
               jsonSerialization['company'],
             ),
       oldCompanyId: jsonSerialization['oldCompanyId'] as int?,
       oldCompany: jsonSerialization['oldCompany'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.Company>(
+          : _i08l111i.Protocol().deserialize<_i2fdza8t.Company>(
               jsonSerialization['oldCompany'],
             ),
     );
@@ -72,30 +72,30 @@ abstract class Citizen
 
   String name;
 
-  _i2.Address? address;
+  _i5rzbc0r.Address? address;
 
   int companyId;
 
-  _i3.Company? company;
+  _i2fdza8t.Company? company;
 
   int? oldCompanyId;
 
-  _i3.Company? oldCompany;
+  _i2fdza8t.Company? oldCompany;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Citizen copyWith({
     int? id,
     String? name,
-    _i2.Address? address,
+    _i5rzbc0r.Address? address,
     int? companyId,
-    _i3.Company? company,
+    _i2fdza8t.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i2fdza8t.Company? oldCompany,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -126,9 +126,9 @@ abstract class Citizen
   }
 
   static CitizenInclude include({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i5rzbc0r.AddressInclude? address,
+    _i2fdza8t.CompanyInclude? company,
+    _i2fdza8t.CompanyInclude? oldCompany,
   }) {
     return CitizenInclude._(
       address: address,
@@ -138,11 +138,11 @@ abstract class Citizen
   }
 
   static CitizenIncludeList includeList({
-    _i1.WhereExpressionBuilder<CitizenTable>? where,
+    _is.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
     return CitizenIncludeList._(
@@ -157,7 +157,7 @@ abstract class Citizen
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -167,11 +167,11 @@ class _CitizenImpl extends Citizen {
   _CitizenImpl({
     int? id,
     required String name,
-    _i2.Address? address,
+    _i5rzbc0r.Address? address,
     required int companyId,
-    _i3.Company? company,
+    _i2fdza8t.Company? company,
     int? oldCompanyId,
-    _i3.Company? oldCompany,
+    _i2fdza8t.Company? oldCompany,
   }) : super._(
          id: id,
          name: name,
@@ -184,7 +184,7 @@ class _CitizenImpl extends Citizen {
 
   /// Returns a shallow copy of this [Citizen]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Citizen copyWith({
     Object? id = _Undefined,
@@ -198,48 +198,52 @@ class _CitizenImpl extends Citizen {
     return Citizen(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.Address? ? address : this.address?.copyWith(),
+      address: address is _i5rzbc0r.Address?
+          ? address
+          : this.address?.copyWith(),
       companyId: companyId ?? this.companyId,
-      company: company is _i3.Company? ? company : this.company?.copyWith(),
+      company: company is _i2fdza8t.Company?
+          ? company
+          : this.company?.copyWith(),
       oldCompanyId: oldCompanyId is int? ? oldCompanyId : this.oldCompanyId,
-      oldCompany: oldCompany is _i3.Company?
+      oldCompany: oldCompany is _i2fdza8t.Company?
           ? oldCompany
           : this.oldCompany?.copyWith(),
     );
   }
 }
 
-class CitizenUpdateTable extends _i1.UpdateTable<CitizenTable> {
+class CitizenUpdateTable extends _is.UpdateTable<CitizenTable> {
   CitizenUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> companyId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> companyId(int value) => _is.ColumnValue(
     table.companyId,
     value,
   );
 
-  _i1.ColumnValue<int, int> oldCompanyId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> oldCompanyId(int? value) => _is.ColumnValue(
     table.oldCompanyId,
     value,
   );
 }
 
-class CitizenTable extends _i1.Table<int?> {
+class CitizenTable extends _is.Table<int?> {
   CitizenTable({super.tableRelation}) : super(tableName: 'citizen') {
     updateTable = CitizenUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    companyId = _i1.ColumnInt(
+    companyId = _is.ColumnInt(
       'companyId',
       this,
     );
-    oldCompanyId = _i1.ColumnInt(
+    oldCompanyId = _is.ColumnInt(
       'oldCompanyId',
       this,
     );
@@ -247,59 +251,59 @@ class CitizenTable extends _i1.Table<int?> {
 
   late final CitizenUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  _i2.AddressTable? _address;
+  _i5rzbc0r.AddressTable? _address;
 
-  late final _i1.ColumnInt companyId;
+  late final _is.ColumnInt companyId;
 
-  _i3.CompanyTable? _company;
+  _i2fdza8t.CompanyTable? _company;
 
-  late final _i1.ColumnInt oldCompanyId;
+  late final _is.ColumnInt oldCompanyId;
 
-  _i3.CompanyTable? _oldCompany;
+  _i2fdza8t.CompanyTable? _oldCompany;
 
-  _i2.AddressTable get address {
+  _i5rzbc0r.AddressTable get address {
     if (_address != null) return _address!;
-    _address = _i1.createRelationTable(
+    _address = _is.createRelationTable(
       relationFieldName: 'address',
       field: Citizen.t.id,
-      foreignField: _i2.Address.t.inhabitantId,
+      foreignField: _i5rzbc0r.Address.t.inhabitantId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AddressTable(tableRelation: foreignTableRelation),
+          _i5rzbc0r.AddressTable(tableRelation: foreignTableRelation),
     );
     return _address!;
   }
 
-  _i3.CompanyTable get company {
+  _i2fdza8t.CompanyTable get company {
     if (_company != null) return _company!;
-    _company = _i1.createRelationTable(
+    _company = _is.createRelationTable(
       relationFieldName: 'company',
       field: Citizen.t.companyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i2fdza8t.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i2fdza8t.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _company!;
   }
 
-  _i3.CompanyTable get oldCompany {
+  _i2fdza8t.CompanyTable get oldCompany {
     if (_oldCompany != null) return _oldCompany!;
-    _oldCompany = _i1.createRelationTable(
+    _oldCompany = _is.createRelationTable(
       relationFieldName: 'oldCompany',
       field: Citizen.t.oldCompanyId,
-      foreignField: _i3.Company.t.id,
+      foreignField: _i2fdza8t.Company.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.CompanyTable(tableRelation: foreignTableRelation),
+          _i2fdza8t.CompanyTable(tableRelation: foreignTableRelation),
     );
     return _oldCompany!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     companyId,
@@ -307,7 +311,7 @@ class CitizenTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'address') {
       return address;
     }
@@ -321,37 +325,37 @@ class CitizenTable extends _i1.Table<int?> {
   }
 }
 
-class CitizenInclude extends _i1.IncludeObject {
+class CitizenInclude extends _is.IncludeObject {
   CitizenInclude._({
-    _i2.AddressInclude? address,
-    _i3.CompanyInclude? company,
-    _i3.CompanyInclude? oldCompany,
+    _i5rzbc0r.AddressInclude? address,
+    _i2fdza8t.CompanyInclude? company,
+    _i2fdza8t.CompanyInclude? oldCompany,
   }) {
     _address = address;
     _company = company;
     _oldCompany = oldCompany;
   }
 
-  _i2.AddressInclude? _address;
+  _i5rzbc0r.AddressInclude? _address;
 
-  _i3.CompanyInclude? _company;
+  _i2fdza8t.CompanyInclude? _company;
 
-  _i3.CompanyInclude? _oldCompany;
+  _i2fdza8t.CompanyInclude? _oldCompany;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'address': _address,
     'company': _company,
     'oldCompany': _oldCompany,
   };
 
   @override
-  _i1.Table<int?> get table => Citizen.t;
+  _is.Table<int?> get table => Citizen.t;
 }
 
-class CitizenIncludeList extends _i1.IncludeList {
+class CitizenIncludeList extends _is.IncludeList {
   CitizenIncludeList._({
-    _i1.WhereExpressionBuilder<CitizenTable>? where,
+    _is.WhereExpressionBuilder<CitizenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -362,10 +366,10 @@ class CitizenIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Citizen.t;
+  _is.Table<int?> get table => Citizen.t;
 }
 
 class CitizenRepository {
@@ -398,16 +402,16 @@ class CitizenRepository {
   /// );
   /// ```
   Future<List<Citizen>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CitizenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
     CitizenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Citizen>(
       where: where?.call(Citizen.t),
@@ -440,15 +444,15 @@ class CitizenRepository {
   /// );
   /// ```
   Future<Citizen?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CitizenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
     CitizenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Citizen>(
       where: where?.call(Citizen.t),
@@ -464,12 +468,12 @@ class CitizenRepository {
 
   /// Finds a single [Citizen] by its [id] or null if no such row exists.
   Future<Citizen?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     CitizenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Citizen>(
       id,
@@ -495,9 +499,9 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Citizen> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -513,9 +517,9 @@ class CitizenRepository {
   ///
   /// The returned [Citizen] will have its `id` field set.
   Future<Citizen> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Citizen>(
       row,
@@ -544,12 +548,12 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Citizen> rows, {
-    required _i1.ColumnSelections<CitizenTable> conflictColumns,
-    _i1.ColumnSelections<CitizenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CitizenTable> conflictColumns,
+    _is.ColumnSelections<CitizenTable>? updateColumns,
+    _is.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Citizen>(
@@ -576,12 +580,12 @@ class CitizenRepository {
   ///
   /// The returned [Citizen] will have its `id` field set.
   Future<Citizen?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen row, {
-    required _i1.ColumnSelections<CitizenTable> conflictColumns,
-    _i1.ColumnSelections<CitizenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CitizenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CitizenTable> conflictColumns,
+    _is.ColumnSelections<CitizenTable>? updateColumns,
+    _is.WhereExpressionBuilder<CitizenTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Citizen>(
       row,
@@ -602,10 +606,10 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Citizen> rows, {
-    _i1.ColumnSelections<CitizenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CitizenTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Citizen>(
@@ -620,10 +624,10 @@ class CitizenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Citizen> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen row, {
-    _i1.ColumnSelections<CitizenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CitizenTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Citizen>(
       row,
@@ -635,10 +639,10 @@ class CitizenRepository {
   /// Updates a single [Citizen] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Citizen?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Citizen>(
       id,
@@ -654,14 +658,14 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CitizenTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<CitizenUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<CitizenTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Citizen>(
@@ -688,11 +692,11 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Citizen> rows, {
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Citizen>(
@@ -706,9 +710,9 @@ class CitizenRepository {
 
   /// Deletes a single [Citizen].
   Future<Citizen> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Citizen>(
       row,
@@ -725,11 +729,11 @@ class CitizenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Citizen>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CitizenTable> where,
-    _i1.OrderByBuilder<CitizenTable>? orderBy,
-    _i1.OrderByListBuilder<CitizenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CitizenTable> where,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Citizen>(
@@ -744,10 +748,10 @@ class CitizenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CitizenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Citizen>(
       where: where?.call(Citizen.t),
@@ -758,11 +762,11 @@ class CitizenRepository {
 
   /// Acquires row-level locks on [Citizen] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CitizenTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CitizenTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Citizen>(
       where: where(Citizen.t),
@@ -779,10 +783,10 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Address]
   /// by setting the [Citizen]'s foreign key `id` to refer to the [Address].
   Future<void> address(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen citizen,
-    _i2.Address address, {
-    _i1.Transaction? transaction,
+    _i5rzbc0r.Address address, {
+    _is.Transaction? transaction,
   }) async {
     if (address.id == null) {
       throw ArgumentError.notNull('address.id');
@@ -792,9 +796,9 @@ class CitizenAttachRowRepository {
     }
 
     var $address = address.copyWith(inhabitantId: citizen.id);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i5rzbc0r.Address>(
       $address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i5rzbc0r.Address.t.inhabitantId],
       transaction: transaction,
     );
   }
@@ -802,10 +806,10 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `companyId` to refer to the [Company].
   Future<void> company(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen citizen,
-    _i3.Company company, {
-    _i1.Transaction? transaction,
+    _i2fdza8t.Company company, {
+    _is.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');
@@ -825,10 +829,10 @@ class CitizenAttachRowRepository {
   /// Creates a relation between the given [Citizen] and [Company]
   /// by setting the [Citizen]'s foreign key `oldCompanyId` to refer to the [Company].
   Future<void> oldCompany(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen citizen,
-    _i3.Company oldCompany, {
-    _i1.Transaction? transaction,
+    _i2fdza8t.Company oldCompany, {
+    _is.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');
@@ -855,9 +859,9 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> address(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen citizen, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     var $address = citizen.address;
 
@@ -872,9 +876,9 @@ class CitizenDetachRowRepository {
     }
 
     var $$address = $address.copyWith(inhabitantId: null);
-    await session.db.updateRow<_i2.Address>(
+    await session.db.updateRow<_i5rzbc0r.Address>(
       $$address,
-      columns: [_i2.Address.t.inhabitantId],
+      columns: [_i5rzbc0r.Address.t.inhabitantId],
       transaction: transaction,
     );
   }
@@ -885,9 +889,9 @@ class CitizenDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> oldCompany(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Citizen citizen, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (citizen.id == null) {
       throw ArgumentError.notNull('citizen.id');

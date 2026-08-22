@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class MaxFieldName
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   MaxFieldName._({
     this.id,
     required this.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -45,11 +45,11 @@ abstract class MaxFieldName
   String thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MaxFieldName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MaxFieldName copyWith({
     int? id,
     String? thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
@@ -79,11 +79,11 @@ abstract class MaxFieldName
   }
 
   static MaxFieldNameIncludeList includeList({
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     MaxFieldNameInclude? include,
   }) {
     return MaxFieldNameIncludeList.internal_(
@@ -98,7 +98,7 @@ abstract class MaxFieldName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -117,7 +117,7 @@ class _MaxFieldNameImpl extends MaxFieldName {
 
   /// Returns a shallow copy of this [MaxFieldName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MaxFieldName copyWith({
     Object? id = _Undefined,
@@ -132,23 +132,23 @@ class _MaxFieldNameImpl extends MaxFieldName {
   }
 }
 
-class MaxFieldNameUpdateTable extends _i1.UpdateTable<MaxFieldNameTable> {
+class MaxFieldNameUpdateTable extends _is.UpdateTable<MaxFieldNameTable> {
   MaxFieldNameUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String>
+  _is.ColumnValue<String, String>
   thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo(String value) =>
-      _i1.ColumnValue(
+      _is.ColumnValue(
         table.thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
         value,
       );
 }
 
-class MaxFieldNameTable extends _i1.Table<int?> {
+class MaxFieldNameTable extends _is.Table<int?> {
   MaxFieldNameTable({super.tableRelation})
     : super(tableName: 'max_field_name') {
     updateTable = MaxFieldNameUpdateTable(this);
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo =
-        _i1.ColumnString(
+        _is.ColumnString(
           'thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo',
           this,
         );
@@ -156,50 +156,50 @@ class MaxFieldNameTable extends _i1.Table<int?> {
 
   late final MaxFieldNameUpdateTable updateTable;
 
-  late final _i1.ColumnString
+  late final _is.ColumnString
   thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     thisFieldIsExactly61CharactersLongAndIsThereforeValidAsNameFo,
   ];
 }
 
-class MaxFieldNameInclude extends _i1.IncludeObject {
-  @_i2.internal
-  MaxFieldNameInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class MaxFieldNameInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  MaxFieldNameInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => MaxFieldName.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => MaxFieldName.t;
 }
 
-class MaxFieldNameIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class MaxFieldNameIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   MaxFieldNameIncludeList.internal_({
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(MaxFieldName.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MaxFieldName.t;
+  _is.Table<int?> get table => MaxFieldName.t;
 }
 
 class MaxFieldNameRepository {
@@ -228,15 +228,15 @@ class MaxFieldNameRepository {
   /// );
   /// ```
   Future<List<MaxFieldName>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
@@ -268,14 +268,14 @@ class MaxFieldNameRepository {
   /// );
   /// ```
   Future<MaxFieldName?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? offset,
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
@@ -290,11 +290,11 @@ class MaxFieldNameRepository {
 
   /// Finds a single [MaxFieldName] by its [id] or null if no such row exists.
   Future<MaxFieldName?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MaxFieldName>(
       id,
@@ -319,9 +319,9 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MaxFieldName> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -337,9 +337,9 @@ class MaxFieldNameRepository {
   ///
   /// The returned [MaxFieldName] will have its `id` field set.
   Future<MaxFieldName> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MaxFieldName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<MaxFieldName>(
       row,
@@ -368,12 +368,12 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MaxFieldName> rows, {
-    required _i1.ColumnSelections<MaxFieldNameTable> conflictColumns,
-    _i1.ColumnSelections<MaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MaxFieldNameTable> conflictColumns,
+    _is.ColumnSelections<MaxFieldNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<MaxFieldName>(
@@ -400,12 +400,12 @@ class MaxFieldNameRepository {
   ///
   /// The returned [MaxFieldName] will have its `id` field set.
   Future<MaxFieldName?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MaxFieldName row, {
-    required _i1.ColumnSelections<MaxFieldNameTable> conflictColumns,
-    _i1.ColumnSelections<MaxFieldNameTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MaxFieldNameTable> conflictColumns,
+    _is.ColumnSelections<MaxFieldNameTable>? updateColumns,
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MaxFieldName>(
       row,
@@ -426,10 +426,10 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MaxFieldName> rows, {
-    _i1.ColumnSelections<MaxFieldNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MaxFieldNameTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<MaxFieldName>(
@@ -444,10 +444,10 @@ class MaxFieldNameRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MaxFieldName> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MaxFieldName row, {
-    _i1.ColumnSelections<MaxFieldNameTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MaxFieldNameTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<MaxFieldName>(
       row,
@@ -459,10 +459,10 @@ class MaxFieldNameRepository {
   /// Updates a single [MaxFieldName] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MaxFieldName?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<MaxFieldName>(
       id,
@@ -478,14 +478,14 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<MaxFieldNameUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<MaxFieldNameTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MaxFieldName>(
@@ -512,11 +512,11 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MaxFieldName> rows, {
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<MaxFieldName>(
@@ -530,9 +530,9 @@ class MaxFieldNameRepository {
 
   /// Deletes a single [MaxFieldName].
   Future<MaxFieldName> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MaxFieldName row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<MaxFieldName>(
       row,
@@ -549,11 +549,11 @@ class MaxFieldNameRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MaxFieldName>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
-    _i1.OrderByBuilder<MaxFieldNameTable>? orderBy,
-    _i1.OrderByListBuilder<MaxFieldNameTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MaxFieldNameTable> where,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MaxFieldName>(
@@ -568,10 +568,10 @@ class MaxFieldNameRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<MaxFieldName>(
       where: where?.call(MaxFieldName.t),
@@ -582,11 +582,11 @@ class MaxFieldNameRepository {
 
   /// Acquires row-level locks on [MaxFieldName] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MaxFieldNameTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MaxFieldNameTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MaxFieldName>(
       where: where(MaxFieldName.t),

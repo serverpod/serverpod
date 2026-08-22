@@ -10,20 +10,20 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import 'dart:async' as _i3;
+import 'dart:async' as _ida;
+import 'dart:typed_data' as _idt;
+import 'package:auth_client/src/protocol/greeting.dart' as _ihepasy4;
+import 'package:http/http.dart' as _i85jenna;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i4;
-import 'dart:typed_data' as _i5;
-import 'package:auth_client/src/protocol/greeting.dart' as _i6;
-import 'package:http/http.dart' as _i7;
-import 'protocol.dart' as _i8;
+    as _iacc;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _iaic;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'protocol.dart' as _il2as5qe;
 
 /// {@category Endpoint}
-class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
-  EndpointAnonymousIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointAnonymousIdp extends _iaic.EndpointAnonymousIdpBase {
+  EndpointAnonymousIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'anonymousIdp';
@@ -33,8 +33,8 @@ class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
   /// Invokes the [AnonymousIdp.beforeAnonymousAccount] callback if configured,
   /// which may prevent account creation if the endpoint is protected.
   @override
-  _i3.Future<_i4.AuthSuccess> login({String? token}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({String? token}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'anonymousIdp',
         'login',
         {'token': token},
@@ -42,8 +42,8 @@ class EndpointAnonymousIdp extends _i1.EndpointAnonymousIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
-  EndpointAppleIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointAppleIdp extends _iaic.EndpointAppleIdpBase {
+  EndpointAppleIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'appleIdp';
@@ -57,13 +57,13 @@ class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
   ///
   /// Returns a session for the user upon successful login.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String identityToken,
     required String authorizationCode,
     required bool isNativeApplePlatformSignIn,
     String? firstName,
     String? lastName,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'appleIdp',
     'login',
     {
@@ -76,7 +76,7 @@ class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'appleIdp',
     'hasAccount',
     {},
@@ -84,8 +84,8 @@ class EndpointAppleIdp extends _i1.EndpointAppleIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
-  EndpointEmailIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointEmailIdp extends _iaic.EndpointEmailIdpBase {
+  EndpointEmailIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'emailIdp';
@@ -100,10 +100,10 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -123,8 +123,8 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   /// registration. If the email is already registered, the returned ID will not
   /// be valid.
   @override
-  _i3.Future<_i2.UuidValue> startRegistration({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startRegistration({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'emailIdp',
         'startRegistration',
         {'email': email},
@@ -141,8 +141,8 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   /// - [EmailAccountRequestExceptionReason.invalid] if no request exists
   ///   for the given [accountRequestId] or [verificationCode] is invalid.
   @override
-  _i3.Future<String> verifyRegistrationCode({
-    required _i2.UuidValue accountRequestId,
+  _ida.Future<String> verifyRegistrationCode({
+    required _isc.UuidValue accountRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'emailIdp',
@@ -168,10 +168,10 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i3.Future<_i4.AuthSuccess> finishRegistration({
+  _ida.Future<_iacc.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -194,8 +194,8 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   ///   made too many attempts trying to request a password reset.
   ///
   @override
-  _i3.Future<_i2.UuidValue> startPasswordReset({required String email}) =>
-      caller.callServerEndpoint<_i2.UuidValue>(
+  _ida.Future<_isc.UuidValue> startPasswordReset({required String email}) =>
+      caller.callServerEndpoint<_isc.UuidValue>(
         'emailIdp',
         'startPasswordReset',
         {'email': email},
@@ -216,8 +216,8 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   /// should be overridden to return credentials for the next step instead
   /// of the credentials for setting the password.
   @override
-  _i3.Future<String> verifyPasswordResetCode({
-    required _i2.UuidValue passwordResetRequestId,
+  _ida.Future<String> verifyPasswordResetCode({
+    required _isc.UuidValue passwordResetRequestId,
     required String verificationCode,
   }) => caller.callServerEndpoint<String>(
     'emailIdp',
@@ -243,7 +243,7 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i3.Future<void> finishPasswordReset({
+  _ida.Future<void> finishPasswordReset({
     required String finishPasswordResetToken,
     required String newPassword,
   }) => caller.callServerEndpoint<void>(
@@ -256,7 +256,7 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'emailIdp',
     'hasAccount',
     {},
@@ -264,8 +264,8 @@ class EndpointEmailIdp extends _i1.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
-  EndpointFacebookIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointFacebookIdp extends _iaic.EndpointFacebookIdpBase {
+  EndpointFacebookIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'facebookIdp';
@@ -276,15 +276,15 @@ class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
   /// If the access token is invalid or expired, the
   /// [FacebookAccessTokenVerificationException] will be thrown.
   @override
-  _i3.Future<_i4.AuthSuccess> login({required String accessToken}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({required String accessToken}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'facebookIdp',
         'login',
         {'accessToken': accessToken},
       );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'facebookIdp',
     'hasAccount',
     {},
@@ -292,8 +292,8 @@ class EndpointFacebookIdp extends _i1.EndpointFacebookIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
-  EndpointFirebaseIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointFirebaseIdp extends _iaic.EndpointFirebaseIdpBase {
+  EndpointFirebaseIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'firebaseIdp';
@@ -303,15 +303,15 @@ class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({required String idToken}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({required String idToken}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'firebaseIdp',
         'login',
         {'idToken': idToken},
       );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'firebaseIdp',
     'hasAccount',
     {},
@@ -319,8 +319,8 @@ class EndpointFirebaseIdp extends _i1.EndpointFirebaseIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
-  EndpointGitHubIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointGitHubIdp extends _iaic.EndpointGitHubIdpBase {
+  EndpointGitHubIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'gitHubIdp';
@@ -334,11 +334,11 @@ class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'gitHubIdp',
     'login',
     {
@@ -349,7 +349,7 @@ class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'gitHubIdp',
     'hasAccount',
     {},
@@ -357,8 +357,8 @@ class EndpointGitHubIdp extends _i1.EndpointGitHubIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
-  EndpointGoogleIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointGoogleIdp extends _iaic.EndpointGoogleIdpBase {
+  EndpointGoogleIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'googleIdp';
@@ -368,10 +368,10 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleIdp',
     'login',
     {
@@ -388,11 +388,11 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> loginWithCode({
+  _ida.Future<_iacc.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'googleIdp',
     'loginWithCode',
     {
@@ -403,7 +403,7 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'googleIdp',
     'hasAccount',
     {},
@@ -413,8 +413,8 @@ class EndpointGoogleIdp extends _i1.EndpointGoogleIdpBase {
 /// By extending [core.RefreshJwtTokensEndpoint], the JWT token refresh endpoint
 /// is made available on the server and enables automatic token refresh on the client.
 /// {@category Endpoint}
-class EndpointRefreshJwtTokens extends _i4.EndpointRefreshJwtTokens {
-  EndpointRefreshJwtTokens(_i2.EndpointCaller caller) : super(caller);
+class EndpointRefreshJwtTokens extends _iacc.EndpointRefreshJwtTokens {
+  EndpointRefreshJwtTokens(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'refreshJwtTokens';
@@ -443,8 +443,8 @@ class EndpointRefreshJwtTokens extends _i4.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i3.Future<_i4.AuthSuccess> refreshAccessToken({String? refreshToken}) =>
-      caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> refreshAccessToken({String? refreshToken}) =>
+      caller.callServerEndpoint<_iacc.AuthSuccess>(
         'refreshJwtTokens',
         'refreshAccessToken',
         {'refreshToken': refreshToken},
@@ -453,8 +453,8 @@ class EndpointRefreshJwtTokens extends _i4.EndpointRefreshJwtTokens {
 }
 
 /// {@category Endpoint}
-class EndpointMicrosoftIdp extends _i1.EndpointMicrosoftIdpBase {
-  EndpointMicrosoftIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointMicrosoftIdp extends _iaic.EndpointMicrosoftIdpBase {
+  EndpointMicrosoftIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'microsoftIdp';
@@ -473,12 +473,12 @@ class EndpointMicrosoftIdp extends _i1.EndpointMicrosoftIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
+  _ida.Future<_iacc.AuthSuccess> login({
     required String code,
     required String codeVerifier,
     required String redirectUri,
     required bool isWebPlatform,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'microsoftIdp',
     'login',
     {
@@ -490,7 +490,7 @@ class EndpointMicrosoftIdp extends _i1.EndpointMicrosoftIdpBase {
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'microsoftIdp',
     'hasAccount',
     {},
@@ -498,16 +498,17 @@ class EndpointMicrosoftIdp extends _i1.EndpointMicrosoftIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
-  EndpointPasskeyIdp(_i2.EndpointCaller caller) : super(caller);
+class EndpointPasskeyIdp extends _iaic.EndpointPasskeyIdpBase {
+  EndpointPasskeyIdp(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'passkeyIdp';
 
   /// Returns a new challenge to be used for a login or registration request.
   @override
-  _i3.Future<({_i5.ByteData challenge, _i2.UuidValue id})> createChallenge() =>
-      caller.callServerEndpoint<({_i5.ByteData challenge, _i2.UuidValue id})>(
+  _ida.Future<({_idt.ByteData challenge, _isc.UuidValue id})>
+  createChallenge() =>
+      caller.callServerEndpoint<({_idt.ByteData challenge, _isc.UuidValue id})>(
         'passkeyIdp',
         'createChallenge',
         {},
@@ -517,8 +518,8 @@ class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
   ///
   /// Throws if the user is not authenticated.
   @override
-  _i3.Future<void> register({
-    required _i1.PasskeyRegistrationRequest registrationRequest,
+  _ida.Future<void> register({
+    required _iaic.PasskeyRegistrationRequest registrationRequest,
   }) => caller.callServerEndpoint<void>(
     'passkeyIdp',
     'register',
@@ -527,16 +528,16 @@ class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
 
   /// Authenticates the user related to the given Passkey.
   @override
-  _i3.Future<_i4.AuthSuccess> login({
-    required _i1.PasskeyLoginRequest loginRequest,
-  }) => caller.callServerEndpoint<_i4.AuthSuccess>(
+  _ida.Future<_iacc.AuthSuccess> login({
+    required _iaic.PasskeyLoginRequest loginRequest,
+  }) => caller.callServerEndpoint<_iacc.AuthSuccess>(
     'passkeyIdp',
     'login',
     {'loginRequest': loginRequest},
   );
 
   @override
-  _i3.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
+  _ida.Future<bool> hasAccount() => caller.callServerEndpoint<bool>(
     'passkeyIdp',
     'hasAccount',
     {},
@@ -546,15 +547,15 @@ class EndpointPasskeyIdp extends _i1.EndpointPasskeyIdpBase {
 /// This is an example endpoint that returns a greeting message through
 /// its [hello] method.
 /// {@category Endpoint}
-class EndpointGreeting extends _i2.EndpointRef {
-  EndpointGreeting(_i2.EndpointCaller caller) : super(caller);
+class EndpointGreeting extends _isc.EndpointRef {
+  EndpointGreeting(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'greeting';
 
   /// Returns a personalized greeting message: "Hello {name}".
-  _i3.Future<_i6.Greeting> hello(String name) =>
-      caller.callServerEndpoint<_i6.Greeting>(
+  _ida.Future<_ihepasy4.Greeting> hello(String name) =>
+      caller.callServerEndpoint<_ihepasy4.Greeting>(
         'greeting',
         'hello',
         {'name': name},
@@ -563,33 +564,33 @@ class EndpointGreeting extends _i2.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    serverpod_auth_idp = _i1.Caller(client);
-    serverpod_auth_core = _i4.Caller(client);
+    serverpod_auth_idp = _iaic.Caller(client);
+    serverpod_auth_core = _iacc.Caller(client);
   }
 
-  late final _i1.Caller serverpod_auth_idp;
+  late final _iaic.Caller serverpod_auth_idp;
 
-  late final _i4.Caller serverpod_auth_core;
+  late final _iacc.Caller serverpod_auth_core;
 }
 
-class Client extends _i2.ServerpodClientShared {
+class Client extends _isc.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i2.MethodCallContext,
+      _isc.MethodCallContext,
       Object,
       StackTrace,
     )?
     onFailedCall,
-    Function(_i2.MethodCallContext)? onSucceededCall,
+    Function(_isc.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i7.Client? httpClientOverride,
+    _i85jenna.Client? httpClientOverride,
   }) : super(
          host,
-         _i8.Protocol(),
+         _il2as5qe.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -638,7 +639,7 @@ class Client extends _i2.ServerpodClientShared {
   late final Modules modules;
 
   @override
-  Map<String, _i2.EndpointRef> get endpointRefLookup => {
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {
     'anonymousIdp': anonymousIdp,
     'appleIdp': appleIdp,
     'emailIdp': emailIdp,
@@ -653,7 +654,7 @@ class Client extends _i2.ServerpodClientShared {
   };
 
   @override
-  Map<String, _i2.ModuleEndpointCaller> get moduleLookup => {
+  Map<String, _isc.ModuleEndpointCaller> get moduleLookup => {
     'serverpod_auth_idp': modules.serverpod_auth_idp,
     'serverpod_auth_core': modules.serverpod_auth_core,
   };

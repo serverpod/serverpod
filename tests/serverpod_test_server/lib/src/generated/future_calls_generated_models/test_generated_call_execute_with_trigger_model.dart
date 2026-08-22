@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_server/src/generated/my_trigger_type.dart'
-    as _i2;
+    as _icum80ls;
 
 abstract class TestGeneratedCallExecuteWithTriggerModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   TestGeneratedCallExecuteWithTriggerModel._({
     required this.entityId,
     required this.triggerType,
@@ -23,7 +23,7 @@ abstract class TestGeneratedCallExecuteWithTriggerModel
 
   factory TestGeneratedCallExecuteWithTriggerModel({
     required String entityId,
-    required _i2.MyTriggerType triggerType,
+    required _icum80ls.MyTriggerType triggerType,
   }) = _TestGeneratedCallExecuteWithTriggerModelImpl;
 
   factory TestGeneratedCallExecuteWithTriggerModel.fromJson(
@@ -31,7 +31,7 @@ abstract class TestGeneratedCallExecuteWithTriggerModel
   ) {
     return TestGeneratedCallExecuteWithTriggerModel(
       entityId: jsonSerialization['entityId'] as String,
-      triggerType: _i2.MyTriggerType.fromJson(
+      triggerType: _icum80ls.MyTriggerType.fromJson(
         (jsonSerialization['triggerType'] as String),
       ),
     );
@@ -39,14 +39,14 @@ abstract class TestGeneratedCallExecuteWithTriggerModel
 
   String entityId;
 
-  _i2.MyTriggerType triggerType;
+  _icum80ls.MyTriggerType triggerType;
 
   /// Returns a shallow copy of this [TestGeneratedCallExecuteWithTriggerModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TestGeneratedCallExecuteWithTriggerModel copyWith({
     String? entityId,
-    _i2.MyTriggerType? triggerType,
+    _icum80ls.MyTriggerType? triggerType,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -64,7 +64,7 @@ abstract class TestGeneratedCallExecuteWithTriggerModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -72,7 +72,7 @@ class _TestGeneratedCallExecuteWithTriggerModelImpl
     extends TestGeneratedCallExecuteWithTriggerModel {
   _TestGeneratedCallExecuteWithTriggerModelImpl({
     required String entityId,
-    required _i2.MyTriggerType triggerType,
+    required _icum80ls.MyTriggerType triggerType,
   }) : super._(
          entityId: entityId,
          triggerType: triggerType,
@@ -80,11 +80,11 @@ class _TestGeneratedCallExecuteWithTriggerModelImpl
 
   /// Returns a shallow copy of this [TestGeneratedCallExecuteWithTriggerModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TestGeneratedCallExecuteWithTriggerModel copyWith({
     String? entityId,
-    _i2.MyTriggerType? triggerType,
+    _icum80ls.MyTriggerType? triggerType,
   }) {
     return TestGeneratedCallExecuteWithTriggerModel(
       entityId: entityId ?? this.entityId,

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'test_enum.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i3;
+    as _i08l111i;
+import 'test_enum.dart' as _ionapfu9;
 
 abstract class ObjectWithEnum
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithEnum._({
     this.id,
     required this.testEnum,
@@ -28,29 +28,35 @@ abstract class ObjectWithEnum
 
   factory ObjectWithEnum({
     int? id,
-    required _i2.TestEnum testEnum,
-    _i2.TestEnum? nullableEnum,
-    required List<_i2.TestEnum> enumList,
-    required List<_i2.TestEnum?> nullableEnumList,
-    required List<List<_i2.TestEnum>> enumListList,
+    required _ionapfu9.TestEnum testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    required List<_ionapfu9.TestEnum> enumList,
+    required List<_ionapfu9.TestEnum?> nullableEnumList,
+    required List<List<_ionapfu9.TestEnum>> enumListList,
   }) = _ObjectWithEnumImpl;
 
   factory ObjectWithEnum.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithEnum(
       id: jsonSerialization['id'] as int?,
-      testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
+      testEnum: _ionapfu9.TestEnum.fromJson(
+        (jsonSerialization['testEnum'] as int),
+      ),
       nullableEnum: jsonSerialization['nullableEnum'] == null
           ? null
-          : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
-      enumList: _i3.Protocol().deserialize<List<_i2.TestEnum>>(
+          : _ionapfu9.TestEnum.fromJson(
+              (jsonSerialization['nullableEnum'] as int),
+            ),
+      enumList: _i08l111i.Protocol().deserialize<List<_ionapfu9.TestEnum>>(
         jsonSerialization['enumList'],
       ),
-      nullableEnumList: _i3.Protocol().deserialize<List<_i2.TestEnum?>>(
-        jsonSerialization['nullableEnumList'],
-      ),
-      enumListList: _i3.Protocol().deserialize<List<List<_i2.TestEnum>>>(
-        jsonSerialization['enumListList'],
-      ),
+      nullableEnumList: _i08l111i.Protocol()
+          .deserialize<List<_ionapfu9.TestEnum?>>(
+            jsonSerialization['nullableEnumList'],
+          ),
+      enumListList: _i08l111i.Protocol()
+          .deserialize<List<List<_ionapfu9.TestEnum>>>(
+            jsonSerialization['enumListList'],
+          ),
     );
   }
 
@@ -61,29 +67,29 @@ abstract class ObjectWithEnum
   @override
   int? id;
 
-  _i2.TestEnum testEnum;
+  _ionapfu9.TestEnum testEnum;
 
-  _i2.TestEnum? nullableEnum;
+  _ionapfu9.TestEnum? nullableEnum;
 
-  List<_i2.TestEnum> enumList;
+  List<_ionapfu9.TestEnum> enumList;
 
-  List<_i2.TestEnum?> nullableEnumList;
+  List<_ionapfu9.TestEnum?> nullableEnumList;
 
-  List<List<_i2.TestEnum>> enumListList;
+  List<List<_ionapfu9.TestEnum>> enumListList;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithEnum copyWith({
     int? id,
-    _i2.TestEnum? testEnum,
-    _i2.TestEnum? nullableEnum,
-    List<_i2.TestEnum>? enumList,
-    List<_i2.TestEnum?>? nullableEnumList,
-    List<List<_i2.TestEnum>>? enumListList,
+    _ionapfu9.TestEnum? testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    List<_ionapfu9.TestEnum>? enumList,
+    List<_ionapfu9.TestEnum?>? nullableEnumList,
+    List<List<_ionapfu9.TestEnum>>? enumListList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -124,11 +130,11 @@ abstract class ObjectWithEnum
   }
 
   static ObjectWithEnumIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
     ObjectWithEnumInclude? include,
   }) {
     return ObjectWithEnumIncludeList._(
@@ -143,7 +149,7 @@ abstract class ObjectWithEnum
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -152,11 +158,11 @@ class _Undefined {}
 class _ObjectWithEnumImpl extends ObjectWithEnum {
   _ObjectWithEnumImpl({
     int? id,
-    required _i2.TestEnum testEnum,
-    _i2.TestEnum? nullableEnum,
-    required List<_i2.TestEnum> enumList,
-    required List<_i2.TestEnum?> nullableEnumList,
-    required List<List<_i2.TestEnum>> enumListList,
+    required _ionapfu9.TestEnum testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    required List<_ionapfu9.TestEnum> enumList,
+    required List<_ionapfu9.TestEnum?> nullableEnumList,
+    required List<List<_ionapfu9.TestEnum>> enumListList,
   }) : super._(
          id: id,
          testEnum: testEnum,
@@ -168,20 +174,20 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,
-    _i2.TestEnum? testEnum,
+    _ionapfu9.TestEnum? testEnum,
     Object? nullableEnum = _Undefined,
-    List<_i2.TestEnum>? enumList,
-    List<_i2.TestEnum?>? nullableEnumList,
-    List<List<_i2.TestEnum>>? enumListList,
+    List<_ionapfu9.TestEnum>? enumList,
+    List<_ionapfu9.TestEnum?>? nullableEnumList,
+    List<List<_ionapfu9.TestEnum>>? enumListList,
   }) {
     return ObjectWithEnum(
       id: id is int? ? id : this.id,
       testEnum: testEnum ?? this.testEnum,
-      nullableEnum: nullableEnum is _i2.TestEnum?
+      nullableEnum: nullableEnum is _ionapfu9.TestEnum?
           ? nullableEnum
           : this.nullableEnum,
       enumList: enumList ?? this.enumList.map((e0) => e0).toList(),
@@ -194,66 +200,69 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
   }
 }
 
-class ObjectWithEnumUpdateTable extends _i1.UpdateTable<ObjectWithEnumTable> {
+class ObjectWithEnumUpdateTable extends _is.UpdateTable<ObjectWithEnumTable> {
   ObjectWithEnumUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> testEnum(_i2.TestEnum value) =>
-      _i1.ColumnValue(
-        table.testEnum,
-        value,
-      );
+  _is.ColumnValue<_ionapfu9.TestEnum, _ionapfu9.TestEnum> testEnum(
+    _ionapfu9.TestEnum value,
+  ) => _is.ColumnValue(
+    table.testEnum,
+    value,
+  );
 
-  _i1.ColumnValue<_i2.TestEnum, _i2.TestEnum> nullableEnum(
-    _i2.TestEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ionapfu9.TestEnum, _ionapfu9.TestEnum> nullableEnum(
+    _ionapfu9.TestEnum? value,
+  ) => _is.ColumnValue(
     table.nullableEnum,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.TestEnum>, List<_i2.TestEnum>> enumList(
-    List<_i2.TestEnum> value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<List<_ionapfu9.TestEnum>, List<_ionapfu9.TestEnum>> enumList(
+    List<_ionapfu9.TestEnum> value,
+  ) => _is.ColumnValue(
     table.enumList,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.TestEnum?>, List<_i2.TestEnum?>> nullableEnumList(
-    List<_i2.TestEnum?> value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<List<_ionapfu9.TestEnum?>, List<_ionapfu9.TestEnum?>>
+  nullableEnumList(List<_ionapfu9.TestEnum?> value) => _is.ColumnValue(
     table.nullableEnumList,
     value,
   );
 
-  _i1.ColumnValue<List<List<_i2.TestEnum>>, List<List<_i2.TestEnum>>>
-  enumListList(List<List<_i2.TestEnum>> value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    List<List<_ionapfu9.TestEnum>>,
+    List<List<_ionapfu9.TestEnum>>
+  >
+  enumListList(List<List<_ionapfu9.TestEnum>> value) => _is.ColumnValue(
     table.enumListList,
     value,
   );
 }
 
-class ObjectWithEnumTable extends _i1.Table<int?> {
+class ObjectWithEnumTable extends _is.Table<int?> {
   ObjectWithEnumTable({super.tableRelation})
     : super(tableName: 'object_with_enum') {
     updateTable = ObjectWithEnumUpdateTable(this);
-    testEnum = _i1.ColumnEnum(
+    testEnum = _is.ColumnEnum(
       'testEnum',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
     );
-    nullableEnum = _i1.ColumnEnum(
+    nullableEnum = _is.ColumnEnum(
       'nullableEnum',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
     );
-    enumList = _i1.ColumnSerializable<List<_i2.TestEnum>>(
+    enumList = _is.ColumnSerializable<List<_ionapfu9.TestEnum>>(
       'enumList',
       this,
     );
-    nullableEnumList = _i1.ColumnSerializable<List<_i2.TestEnum?>>(
+    nullableEnumList = _is.ColumnSerializable<List<_ionapfu9.TestEnum?>>(
       'nullableEnumList',
       this,
     );
-    enumListList = _i1.ColumnSerializable<List<List<_i2.TestEnum>>>(
+    enumListList = _is.ColumnSerializable<List<List<_ionapfu9.TestEnum>>>(
       'enumListList',
       this,
     );
@@ -261,18 +270,19 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
 
   late final ObjectWithEnumUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.TestEnum> testEnum;
+  late final _is.ColumnEnum<_ionapfu9.TestEnum> testEnum;
 
-  late final _i1.ColumnEnum<_i2.TestEnum> nullableEnum;
+  late final _is.ColumnEnum<_ionapfu9.TestEnum> nullableEnum;
 
-  late final _i1.ColumnSerializable<List<_i2.TestEnum>> enumList;
+  late final _is.ColumnSerializable<List<_ionapfu9.TestEnum>> enumList;
 
-  late final _i1.ColumnSerializable<List<_i2.TestEnum?>> nullableEnumList;
+  late final _is.ColumnSerializable<List<_ionapfu9.TestEnum?>> nullableEnumList;
 
-  late final _i1.ColumnSerializable<List<List<_i2.TestEnum>>> enumListList;
+  late final _is.ColumnSerializable<List<List<_ionapfu9.TestEnum>>>
+  enumListList;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     testEnum,
     nullableEnum,
@@ -282,19 +292,19 @@ class ObjectWithEnumTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithEnumInclude extends _i1.IncludeObject {
+class ObjectWithEnumInclude extends _is.IncludeObject {
   ObjectWithEnumInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithEnum.t;
+  _is.Table<int?> get table => ObjectWithEnum.t;
 }
 
-class ObjectWithEnumIncludeList extends _i1.IncludeList {
+class ObjectWithEnumIncludeList extends _is.IncludeList {
   ObjectWithEnumIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -305,10 +315,10 @@ class ObjectWithEnumIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithEnum.t;
+  _is.Table<int?> get table => ObjectWithEnum.t;
 }
 
 class ObjectWithEnumRepository {
@@ -337,15 +347,15 @@ class ObjectWithEnumRepository {
   /// );
   /// ```
   Future<List<ObjectWithEnum>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
@@ -377,14 +387,14 @@ class ObjectWithEnumRepository {
   /// );
   /// ```
   Future<ObjectWithEnum?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
@@ -399,11 +409,11 @@ class ObjectWithEnumRepository {
 
   /// Finds a single [ObjectWithEnum] by its [id] or null if no such row exists.
   Future<ObjectWithEnum?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithEnum>(
       id,
@@ -428,9 +438,9 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnum> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -446,9 +456,9 @@ class ObjectWithEnumRepository {
   ///
   /// The returned [ObjectWithEnum] will have its `id` field set.
   Future<ObjectWithEnum> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnum row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithEnum>(
       row,
@@ -477,12 +487,12 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnum> rows, {
-    required _i1.ColumnSelections<ObjectWithEnumTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithEnumTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithEnumTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithEnumTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithEnum>(
@@ -509,12 +519,12 @@ class ObjectWithEnumRepository {
   ///
   /// The returned [ObjectWithEnum] will have its `id` field set.
   Future<ObjectWithEnum?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnum row, {
-    required _i1.ColumnSelections<ObjectWithEnumTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithEnumTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithEnumTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithEnumTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithEnum>(
       row,
@@ -535,10 +545,10 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnum> rows, {
-    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithEnumTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithEnum>(
@@ -553,10 +563,10 @@ class ObjectWithEnumRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithEnum> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnum row, {
-    _i1.ColumnSelections<ObjectWithEnumTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithEnumTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithEnum>(
       row,
@@ -568,10 +578,10 @@ class ObjectWithEnumRepository {
   /// Updates a single [ObjectWithEnum] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithEnum?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithEnum>(
       id,
@@ -587,14 +597,14 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithEnumUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ObjectWithEnumTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithEnum>(
@@ -621,11 +631,11 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnum> rows, {
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithEnum>(
@@ -639,9 +649,9 @@ class ObjectWithEnumRepository {
 
   /// Deletes a single [ObjectWithEnum].
   Future<ObjectWithEnum> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnum row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithEnum>(
       row,
@@ -658,11 +668,11 @@ class ObjectWithEnumRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnum>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
-    _i1.OrderByBuilder<ObjectWithEnumTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithEnumTable> where,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithEnum>(
@@ -677,10 +687,10 @@ class ObjectWithEnumRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithEnum>(
       where: where?.call(ObjectWithEnum.t),
@@ -691,11 +701,11 @@ class ObjectWithEnumRepository {
 
   /// Acquires row-level locks on [ObjectWithEnum] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithEnumTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithEnumTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithEnum>(
       where: where(ObjectWithEnum.t),

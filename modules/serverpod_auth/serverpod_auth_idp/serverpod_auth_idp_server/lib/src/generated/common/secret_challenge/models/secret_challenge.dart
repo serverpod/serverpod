@@ -10,19 +10,19 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Database entity for storing hashed verification codes used in challenge-based
 /// authentication flows.
 abstract class SecretChallenge
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   SecretChallenge._({
     this.id,
     required this.challengeCodeHash,
   });
 
   factory SecretChallenge({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String challengeCodeHash,
   }) = _SecretChallengeImpl;
 
@@ -30,7 +30,7 @@ abstract class SecretChallenge
     return SecretChallenge(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       challengeCodeHash: jsonSerialization['challengeCodeHash'] as String,
     );
   }
@@ -40,7 +40,7 @@ abstract class SecretChallenge
   static const db = SecretChallengeRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   /// The hash of the challenge code sent to the user.
   ///
@@ -48,13 +48,13 @@ abstract class SecretChallenge
   String challengeCodeHash;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SecretChallenge copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? challengeCodeHash,
   });
   @override
@@ -76,11 +76,11 @@ abstract class SecretChallenge
   }
 
   static SecretChallengeIncludeList includeList({
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
     SecretChallengeInclude? include,
   }) {
     return SecretChallengeIncludeList._(
@@ -95,7 +95,7 @@ abstract class SecretChallenge
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -103,7 +103,7 @@ class _Undefined {}
 
 class _SecretChallengeImpl extends SecretChallenge {
   _SecretChallengeImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String challengeCodeHash,
   }) : super._(
          id: id,
@@ -112,34 +112,34 @@ class _SecretChallengeImpl extends SecretChallenge {
 
   /// Returns a shallow copy of this [SecretChallenge]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SecretChallenge copyWith({
     Object? id = _Undefined,
     String? challengeCodeHash,
   }) {
     return SecretChallenge(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       challengeCodeHash: challengeCodeHash ?? this.challengeCodeHash,
     );
   }
 }
 
-class SecretChallengeUpdateTable extends _i1.UpdateTable<SecretChallengeTable> {
+class SecretChallengeUpdateTable extends _is.UpdateTable<SecretChallengeTable> {
   SecretChallengeUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> challengeCodeHash(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> challengeCodeHash(String value) =>
+      _is.ColumnValue(
         table.challengeCodeHash,
         value,
       );
 }
 
-class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
+class SecretChallengeTable extends _is.Table<_is.UuidValue?> {
   SecretChallengeTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_secret_challenge') {
     updateTable = SecretChallengeUpdateTable(this);
-    challengeCodeHash = _i1.ColumnString(
+    challengeCodeHash = _is.ColumnString(
       'challengeCodeHash',
       this,
     );
@@ -150,28 +150,28 @@ class SecretChallengeTable extends _i1.Table<_i1.UuidValue?> {
   /// The hash of the challenge code sent to the user.
   ///
   /// Stored in PHC format: $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}${base64Hash}
-  late final _i1.ColumnString challengeCodeHash;
+  late final _is.ColumnString challengeCodeHash;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     challengeCodeHash,
   ];
 }
 
-class SecretChallengeInclude extends _i1.IncludeObject {
+class SecretChallengeInclude extends _is.IncludeObject {
   SecretChallengeInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => SecretChallenge.t;
+  _is.Table<_is.UuidValue?> get table => SecretChallenge.t;
 }
 
-class SecretChallengeIncludeList extends _i1.IncludeList {
+class SecretChallengeIncludeList extends _is.IncludeList {
   SecretChallengeIncludeList._({
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -182,10 +182,10 @@ class SecretChallengeIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => SecretChallenge.t;
+  _is.Table<_is.UuidValue?> get table => SecretChallenge.t;
 }
 
 class SecretChallengeRepository {
@@ -214,15 +214,15 @@ class SecretChallengeRepository {
   /// );
   /// ```
   Future<List<SecretChallenge>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
@@ -254,14 +254,14 @@ class SecretChallengeRepository {
   /// );
   /// ```
   Future<SecretChallenge?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
@@ -276,11 +276,11 @@ class SecretChallengeRepository {
 
   /// Finds a single [SecretChallenge] by its [id] or null if no such row exists.
   Future<SecretChallenge?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SecretChallenge>(
       id,
@@ -305,9 +305,9 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SecretChallenge> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -323,9 +323,9 @@ class SecretChallengeRepository {
   ///
   /// The returned [SecretChallenge] will have its `id` field set.
   Future<SecretChallenge> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SecretChallenge row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SecretChallenge>(
       row,
@@ -354,12 +354,12 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SecretChallenge> rows, {
-    required _i1.ColumnSelections<SecretChallengeTable> conflictColumns,
-    _i1.ColumnSelections<SecretChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SecretChallengeTable> conflictColumns,
+    _is.ColumnSelections<SecretChallengeTable>? updateColumns,
+    _is.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SecretChallenge>(
@@ -386,12 +386,12 @@ class SecretChallengeRepository {
   ///
   /// The returned [SecretChallenge] will have its `id` field set.
   Future<SecretChallenge?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SecretChallenge row, {
-    required _i1.ColumnSelections<SecretChallengeTable> conflictColumns,
-    _i1.ColumnSelections<SecretChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SecretChallengeTable> conflictColumns,
+    _is.ColumnSelections<SecretChallengeTable>? updateColumns,
+    _is.WhereExpressionBuilder<SecretChallengeTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SecretChallenge>(
       row,
@@ -412,10 +412,10 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SecretChallenge> rows, {
-    _i1.ColumnSelections<SecretChallengeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SecretChallengeTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SecretChallenge>(
@@ -430,10 +430,10 @@ class SecretChallengeRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SecretChallenge> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SecretChallenge row, {
-    _i1.ColumnSelections<SecretChallengeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SecretChallengeTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SecretChallenge>(
       row,
@@ -445,11 +445,11 @@ class SecretChallengeRepository {
   /// Updates a single [SecretChallenge] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SecretChallenge?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<SecretChallengeUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SecretChallenge>(
       id,
@@ -465,15 +465,15 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SecretChallengeUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SecretChallengeUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
+    required _is.WhereExpressionBuilder<SecretChallengeTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SecretChallenge>(
@@ -500,11 +500,11 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SecretChallenge> rows, {
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SecretChallenge>(
@@ -518,9 +518,9 @@ class SecretChallengeRepository {
 
   /// Deletes a single [SecretChallenge].
   Future<SecretChallenge> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SecretChallenge row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SecretChallenge>(
       row,
@@ -537,11 +537,11 @@ class SecretChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SecretChallenge>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
-    _i1.OrderByBuilder<SecretChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<SecretChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SecretChallengeTable> where,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SecretChallenge>(
@@ -556,10 +556,10 @@ class SecretChallengeRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SecretChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SecretChallenge>(
       where: where?.call(SecretChallenge.t),
@@ -570,11 +570,11 @@ class SecretChallengeRepository {
 
   /// Acquires row-level locks on [SecretChallenge] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SecretChallengeTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SecretChallengeTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SecretChallenge>(
       where: where(SecretChallenge.t),

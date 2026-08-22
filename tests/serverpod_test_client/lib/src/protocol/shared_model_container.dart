@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
-import 'shared_model_subclass.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
+import 'shared_model_subclass.dart' as _iu5vt3uc;
 
 abstract class SharedModelContainer
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SharedModelContainer._({
     this.id,
     required this.sharedModel,
@@ -45,28 +45,28 @@ abstract class SharedModelContainer
 
   factory SharedModelContainer({
     int? id,
-    required _i2.SharedModel sharedModel,
-    required _i2.SharedModel sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    required _i2.SharedSubclass sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    required _i2.SharedEnum sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    required _i2.SharedSealedParent sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    required _i2.SharedSealedChild sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    required _i3.SharedModelSubclass sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    required List<_i2.SharedModel> sharedModelList,
-    required List<_i2.SharedModel?> sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    required Map<String, _i2.SharedModel> sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    required Map<String, _i2.SharedSubclass> sharedSubclassMap,
-    required Set<_i2.SharedModel> sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    required _ilwf0zl1.SharedModel sharedModel,
+    required _ilwf0zl1.SharedModel sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    required _ilwf0zl1.SharedSubclass sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    required _ilwf0zl1.SharedEnum sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    required _ilwf0zl1.SharedSealedParent sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    required _ilwf0zl1.SharedSealedChild sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    required _iu5vt3uc.SharedModelSubclass sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    required List<_ilwf0zl1.SharedModel> sharedModelList,
+    required List<_ilwf0zl1.SharedModel?> sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    required Map<String, _ilwf0zl1.SharedModel> sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    required Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap,
+    required Set<_ilwf0zl1.SharedModel> sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   }) = _SharedModelContainerImpl;
 
   factory SharedModelContainer.fromJson(
@@ -74,100 +74,109 @@ abstract class SharedModelContainer
   ) {
     return SharedModelContainer(
       id: jsonSerialization['id'] as int?,
-      sharedModel: _i4.Protocol().deserialize<_i2.SharedModel>(
+      sharedModel: _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedModel>(
         jsonSerialization['sharedModel'],
       ),
-      sharedModelWithModuleAlias: _i4.Protocol().deserialize<_i2.SharedModel>(
-        jsonSerialization['sharedModelWithModuleAlias'],
-      ),
+      sharedModelWithModuleAlias: _iza9lbb5.Protocol()
+          .deserialize<_ilwf0zl1.SharedModel>(
+            jsonSerialization['sharedModelWithModuleAlias'],
+          ),
       sharedModelNullable: jsonSerialization['sharedModelNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedModel>(
+          : _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedModel>(
               jsonSerialization['sharedModelNullable'],
             ),
       nonPersistedSharedModel:
           jsonSerialization['nonPersistedSharedModel'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedModel>(
+          : _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedModel>(
               jsonSerialization['nonPersistedSharedModel'],
             ),
-      sharedSubclass: _i4.Protocol().deserialize<_i2.SharedSubclass>(
-        jsonSerialization['sharedSubclass'],
-      ),
+      sharedSubclass: _iza9lbb5.Protocol()
+          .deserialize<_ilwf0zl1.SharedSubclass>(
+            jsonSerialization['sharedSubclass'],
+          ),
       sharedSubclassNullable:
           jsonSerialization['sharedSubclassNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSubclass>(
+          : _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedSubclass>(
               jsonSerialization['sharedSubclassNullable'],
             ),
-      sharedEnum: _i2.SharedEnum.fromJson(
+      sharedEnum: _ilwf0zl1.SharedEnum.fromJson(
         (jsonSerialization['sharedEnum'] as String),
       ),
       sharedEnumNullable: jsonSerialization['sharedEnumNullable'] == null
           ? null
-          : _i2.SharedEnum.fromJson(
+          : _ilwf0zl1.SharedEnum.fromJson(
               (jsonSerialization['sharedEnumNullable'] as String),
             ),
-      sharedSealedParent: _i4.Protocol().deserialize<_i2.SharedSealedParent>(
-        jsonSerialization['sharedSealedParent'],
-      ),
+      sharedSealedParent: _iza9lbb5.Protocol()
+          .deserialize<_ilwf0zl1.SharedSealedParent>(
+            jsonSerialization['sharedSealedParent'],
+          ),
       sharedSealedParentNullable:
           jsonSerialization['sharedSealedParentNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSealedParent>(
+          : _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedSealedParent>(
               jsonSerialization['sharedSealedParentNullable'],
             ),
-      sharedSealedChild: _i4.Protocol().deserialize<_i2.SharedSealedChild>(
-        jsonSerialization['sharedSealedChild'],
-      ),
+      sharedSealedChild: _iza9lbb5.Protocol()
+          .deserialize<_ilwf0zl1.SharedSealedChild>(
+            jsonSerialization['sharedSealedChild'],
+          ),
       sharedSealedChildNullable:
           jsonSerialization['sharedSealedChildNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSealedChild>(
+          : _iza9lbb5.Protocol().deserialize<_ilwf0zl1.SharedSealedChild>(
               jsonSerialization['sharedSealedChildNullable'],
             ),
-      sharedModelSubclass: _i4.Protocol().deserialize<_i3.SharedModelSubclass>(
-        jsonSerialization['sharedModelSubclass'],
-      ),
+      sharedModelSubclass: _iza9lbb5.Protocol()
+          .deserialize<_iu5vt3uc.SharedModelSubclass>(
+            jsonSerialization['sharedModelSubclass'],
+          ),
       sharedModelSubclassNullable:
           jsonSerialization['sharedModelSubclassNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.SharedModelSubclass>(
+          : _iza9lbb5.Protocol().deserialize<_iu5vt3uc.SharedModelSubclass>(
               jsonSerialization['sharedModelSubclassNullable'],
             ),
-      sharedModelList: _i4.Protocol().deserialize<List<_i2.SharedModel>>(
-        jsonSerialization['sharedModelList'],
-      ),
-      sharedModelNullableList: _i4.Protocol()
-          .deserialize<List<_i2.SharedModel?>>(
+      sharedModelList: _iza9lbb5.Protocol()
+          .deserialize<List<_ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelList'],
+          ),
+      sharedModelNullableList: _iza9lbb5.Protocol()
+          .deserialize<List<_ilwf0zl1.SharedModel?>>(
             jsonSerialization['sharedModelNullableList'],
           ),
       sharedModelListNullable:
           jsonSerialization['sharedModelListNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.SharedModel>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ilwf0zl1.SharedModel>>(
               jsonSerialization['sharedModelListNullable'],
             ),
-      sharedModelMap: _i4.Protocol().deserialize<Map<String, _i2.SharedModel>>(
-        jsonSerialization['sharedModelMap'],
-      ),
+      sharedModelMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelMap'],
+          ),
       sharedModelMapNullable:
           jsonSerialization['sharedModelMapNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<Map<String, _i2.SharedModel>>(
-              jsonSerialization['sharedModelMapNullable'],
-            ),
-      sharedSubclassMap: _i4.Protocol()
-          .deserialize<Map<String, _i2.SharedSubclass>>(
+          : _iza9lbb5.Protocol()
+                .deserialize<Map<String, _ilwf0zl1.SharedModel>>(
+                  jsonSerialization['sharedModelMapNullable'],
+                ),
+      sharedSubclassMap: _iza9lbb5.Protocol()
+          .deserialize<Map<String, _ilwf0zl1.SharedSubclass>>(
             jsonSerialization['sharedSubclassMap'],
           ),
-      sharedModelSet: _i4.Protocol().deserialize<Set<_i2.SharedModel>>(
-        jsonSerialization['sharedModelSet'],
-      ),
+      sharedModelSet: _iza9lbb5.Protocol()
+          .deserialize<Set<_ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelSet'],
+          ),
       sharedModelSetNullable:
           jsonSerialization['sharedModelSetNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<Set<_i2.SharedModel>>(
+          : _iza9lbb5.Protocol().deserialize<Set<_ilwf0zl1.SharedModel>>(
               jsonSerialization['sharedModelSetNullable'],
             ),
     );
@@ -178,77 +187,77 @@ abstract class SharedModelContainer
   /// the id will be null.
   int? id;
 
-  _i2.SharedModel sharedModel;
+  _ilwf0zl1.SharedModel sharedModel;
 
-  _i2.SharedModel sharedModelWithModuleAlias;
+  _ilwf0zl1.SharedModel sharedModelWithModuleAlias;
 
-  _i2.SharedModel? sharedModelNullable;
+  _ilwf0zl1.SharedModel? sharedModelNullable;
 
-  _i2.SharedModel? nonPersistedSharedModel;
+  _ilwf0zl1.SharedModel? nonPersistedSharedModel;
 
-  _i2.SharedSubclass sharedSubclass;
+  _ilwf0zl1.SharedSubclass sharedSubclass;
 
-  _i2.SharedSubclass? sharedSubclassNullable;
+  _ilwf0zl1.SharedSubclass? sharedSubclassNullable;
 
-  _i2.SharedEnum sharedEnum;
+  _ilwf0zl1.SharedEnum sharedEnum;
 
-  _i2.SharedEnum? sharedEnumNullable;
+  _ilwf0zl1.SharedEnum? sharedEnumNullable;
 
-  _i2.SharedSealedParent sharedSealedParent;
+  _ilwf0zl1.SharedSealedParent sharedSealedParent;
 
-  _i2.SharedSealedParent? sharedSealedParentNullable;
+  _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable;
 
-  _i2.SharedSealedChild sharedSealedChild;
+  _ilwf0zl1.SharedSealedChild sharedSealedChild;
 
-  _i2.SharedSealedChild? sharedSealedChildNullable;
+  _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable;
 
-  _i3.SharedModelSubclass sharedModelSubclass;
+  _iu5vt3uc.SharedModelSubclass sharedModelSubclass;
 
-  _i3.SharedModelSubclass? sharedModelSubclassNullable;
+  _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable;
 
-  List<_i2.SharedModel> sharedModelList;
+  List<_ilwf0zl1.SharedModel> sharedModelList;
 
-  List<_i2.SharedModel?> sharedModelNullableList;
+  List<_ilwf0zl1.SharedModel?> sharedModelNullableList;
 
-  List<_i2.SharedModel>? sharedModelListNullable;
+  List<_ilwf0zl1.SharedModel>? sharedModelListNullable;
 
-  Map<String, _i2.SharedModel> sharedModelMap;
+  Map<String, _ilwf0zl1.SharedModel> sharedModelMap;
 
-  Map<String, _i2.SharedModel>? sharedModelMapNullable;
+  Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable;
 
-  Map<String, _i2.SharedSubclass> sharedSubclassMap;
+  Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap;
 
-  Set<_i2.SharedModel> sharedModelSet;
+  Set<_ilwf0zl1.SharedModel> sharedModelSet;
 
-  Set<_i2.SharedModel>? sharedModelSetNullable;
+  Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable;
 
   /// Returns a shallow copy of this [SharedModelContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SharedModelContainer copyWith({
     int? id,
-    _i2.SharedModel? sharedModel,
-    _i2.SharedModel? sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    _i2.SharedSubclass? sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    _i2.SharedEnum? sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    _i2.SharedSealedParent? sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    _i2.SharedSealedChild? sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    _i3.SharedModelSubclass? sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    List<_i2.SharedModel>? sharedModelList,
-    List<_i2.SharedModel?>? sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    Map<String, _i2.SharedModel>? sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    Map<String, _i2.SharedSubclass>? sharedSubclassMap,
-    Set<_i2.SharedModel>? sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    _ilwf0zl1.SharedModel? sharedModel,
+    _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    _ilwf0zl1.SharedSubclass? sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    _ilwf0zl1.SharedEnum? sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    List<_ilwf0zl1.SharedModel>? sharedModelList,
+    List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -362,7 +371,7 @@ abstract class SharedModelContainer
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -371,28 +380,28 @@ class _Undefined {}
 class _SharedModelContainerImpl extends SharedModelContainer {
   _SharedModelContainerImpl({
     int? id,
-    required _i2.SharedModel sharedModel,
-    required _i2.SharedModel sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    required _i2.SharedSubclass sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    required _i2.SharedEnum sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    required _i2.SharedSealedParent sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    required _i2.SharedSealedChild sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    required _i3.SharedModelSubclass sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    required List<_i2.SharedModel> sharedModelList,
-    required List<_i2.SharedModel?> sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    required Map<String, _i2.SharedModel> sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    required Map<String, _i2.SharedSubclass> sharedSubclassMap,
-    required Set<_i2.SharedModel> sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    required _ilwf0zl1.SharedModel sharedModel,
+    required _ilwf0zl1.SharedModel sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    required _ilwf0zl1.SharedSubclass sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    required _ilwf0zl1.SharedEnum sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    required _ilwf0zl1.SharedSealedParent sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    required _ilwf0zl1.SharedSealedChild sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    required _iu5vt3uc.SharedModelSubclass sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    required List<_ilwf0zl1.SharedModel> sharedModelList,
+    required List<_ilwf0zl1.SharedModel?> sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    required Map<String, _ilwf0zl1.SharedModel> sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    required Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap,
+    required Set<_ilwf0zl1.SharedModel> sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   }) : super._(
          id: id,
          sharedModel: sharedModel,
@@ -421,31 +430,31 @@ class _SharedModelContainerImpl extends SharedModelContainer {
 
   /// Returns a shallow copy of this [SharedModelContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SharedModelContainer copyWith({
     Object? id = _Undefined,
-    _i2.SharedModel? sharedModel,
-    _i2.SharedModel? sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModel,
+    _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
     Object? sharedModelNullable = _Undefined,
     Object? nonPersistedSharedModel = _Undefined,
-    _i2.SharedSubclass? sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclass,
     Object? sharedSubclassNullable = _Undefined,
-    _i2.SharedEnum? sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnum,
     Object? sharedEnumNullable = _Undefined,
-    _i2.SharedSealedParent? sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParent,
     Object? sharedSealedParentNullable = _Undefined,
-    _i2.SharedSealedChild? sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChild,
     Object? sharedSealedChildNullable = _Undefined,
-    _i3.SharedModelSubclass? sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclass,
     Object? sharedModelSubclassNullable = _Undefined,
-    List<_i2.SharedModel>? sharedModelList,
-    List<_i2.SharedModel?>? sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelList,
+    List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
     Object? sharedModelListNullable = _Undefined,
-    Map<String, _i2.SharedModel>? sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
     Object? sharedModelMapNullable = _Undefined,
-    Map<String, _i2.SharedSubclass>? sharedSubclassMap,
-    Set<_i2.SharedModel>? sharedModelSet,
+    Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSet,
     Object? sharedModelSetNullable = _Undefined,
   }) {
     return SharedModelContainer(
@@ -454,35 +463,36 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelWithModuleAlias:
           sharedModelWithModuleAlias ??
           this.sharedModelWithModuleAlias.copyWith(),
-      sharedModelNullable: sharedModelNullable is _i2.SharedModel?
+      sharedModelNullable: sharedModelNullable is _ilwf0zl1.SharedModel?
           ? sharedModelNullable
           : this.sharedModelNullable?.copyWith(),
-      nonPersistedSharedModel: nonPersistedSharedModel is _i2.SharedModel?
+      nonPersistedSharedModel: nonPersistedSharedModel is _ilwf0zl1.SharedModel?
           ? nonPersistedSharedModel
           : this.nonPersistedSharedModel?.copyWith(),
       sharedSubclass: sharedSubclass ?? this.sharedSubclass.copyWith(),
-      sharedSubclassNullable: sharedSubclassNullable is _i2.SharedSubclass?
+      sharedSubclassNullable:
+          sharedSubclassNullable is _ilwf0zl1.SharedSubclass?
           ? sharedSubclassNullable
           : this.sharedSubclassNullable?.copyWith(),
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedEnumNullable: sharedEnumNullable is _i2.SharedEnum?
+      sharedEnumNullable: sharedEnumNullable is _ilwf0zl1.SharedEnum?
           ? sharedEnumNullable
           : this.sharedEnumNullable,
       sharedSealedParent:
           sharedSealedParent ?? this.sharedSealedParent.copyWith(),
       sharedSealedParentNullable:
-          sharedSealedParentNullable is _i2.SharedSealedParent?
+          sharedSealedParentNullable is _ilwf0zl1.SharedSealedParent?
           ? sharedSealedParentNullable
           : this.sharedSealedParentNullable?.copyWith(),
       sharedSealedChild: sharedSealedChild ?? this.sharedSealedChild.copyWith(),
       sharedSealedChildNullable:
-          sharedSealedChildNullable is _i2.SharedSealedChild?
+          sharedSealedChildNullable is _ilwf0zl1.SharedSealedChild?
           ? sharedSealedChildNullable
           : this.sharedSealedChildNullable?.copyWith(),
       sharedModelSubclass:
           sharedModelSubclass ?? this.sharedModelSubclass.copyWith(),
       sharedModelSubclassNullable:
-          sharedModelSubclassNullable is _i3.SharedModelSubclass?
+          sharedModelSubclassNullable is _iu5vt3uc.SharedModelSubclass?
           ? sharedModelSubclassNullable
           : this.sharedModelSubclassNullable?.copyWith(),
       sharedModelList:
@@ -491,7 +501,8 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelNullableList:
           sharedModelNullableList ??
           this.sharedModelNullableList.map((e0) => e0?.copyWith()).toList(),
-      sharedModelListNullable: sharedModelListNullable is List<_i2.SharedModel>?
+      sharedModelListNullable:
+          sharedModelListNullable is List<_ilwf0zl1.SharedModel>?
           ? sharedModelListNullable
           : this.sharedModelListNullable?.map((e0) => e0.copyWith()).toList(),
       sharedModelMap:
@@ -506,7 +517,7 @@ class _SharedModelContainerImpl extends SharedModelContainer {
             ),
           ),
       sharedModelMapNullable:
-          sharedModelMapNullable is Map<String, _i2.SharedModel>?
+          sharedModelMapNullable is Map<String, _ilwf0zl1.SharedModel>?
           ? sharedModelMapNullable
           : this.sharedModelMapNullable?.map(
               (
@@ -531,7 +542,8 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelSet:
           sharedModelSet ??
           this.sharedModelSet.map((e0) => e0.copyWith()).toSet(),
-      sharedModelSetNullable: sharedModelSetNullable is Set<_i2.SharedModel>?
+      sharedModelSetNullable:
+          sharedModelSetNullable is Set<_ilwf0zl1.SharedModel>?
           ? sharedModelSetNullable
           : this.sharedModelSetNullable?.map((e0) => e0.copyWith()).toSet(),
     );

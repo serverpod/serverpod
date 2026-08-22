@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../../protocol.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import '../../protocol.dart' as _iototaiw;
 
-abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
-    implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ChildClassExplicitColumn._({
     this.id,
     required super.nonTableParentField,
@@ -47,12 +47,12 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
   String childField;
 
   @override
-  _i2.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ChildClassExplicitColumn]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ChildClassExplicitColumn copyWith({
     int? id,
     String? nonTableParentField,
@@ -83,11 +83,11 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
   }
 
   static ChildClassExplicitColumnIncludeList includeList({
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
   }) {
     return ChildClassExplicitColumnIncludeList._(
@@ -102,7 +102,7 @@ abstract class ChildClassExplicitColumn extends _i1.NonTableParentClass
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -121,7 +121,7 @@ class _ChildClassExplicitColumnImpl extends ChildClassExplicitColumn {
 
   /// Returns a shallow copy of this [ChildClassExplicitColumn]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ChildClassExplicitColumn copyWith({
     Object? id = _Undefined,
@@ -137,31 +137,31 @@ class _ChildClassExplicitColumnImpl extends ChildClassExplicitColumn {
 }
 
 class ChildClassExplicitColumnUpdateTable
-    extends _i2.UpdateTable<ChildClassExplicitColumnTable> {
+    extends _is.UpdateTable<ChildClassExplicitColumnTable> {
   ChildClassExplicitColumnUpdateTable(super.table);
 
-  _i2.ColumnValue<String, String> nonTableParentField(String value) =>
-      _i2.ColumnValue(
+  _is.ColumnValue<String, String> nonTableParentField(String value) =>
+      _is.ColumnValue(
         table.nonTableParentField,
         value,
       );
 
-  _i2.ColumnValue<String, String> childField(String value) => _i2.ColumnValue(
+  _is.ColumnValue<String, String> childField(String value) => _is.ColumnValue(
     table.childField,
     value,
   );
 }
 
-class ChildClassExplicitColumnTable extends _i2.Table<int?> {
+class ChildClassExplicitColumnTable extends _is.Table<int?> {
   ChildClassExplicitColumnTable({super.tableRelation})
     : super(tableName: 'child_table_explicit_column') {
     updateTable = ChildClassExplicitColumnUpdateTable(this);
-    nonTableParentField = _i2.ColumnString(
+    nonTableParentField = _is.ColumnString(
       'non_table_parent_field',
       this,
       fieldName: 'nonTableParentField',
     );
-    childField = _i2.ColumnString(
+    childField = _is.ColumnString(
       'child_field',
       this,
       fieldName: 'childField',
@@ -170,31 +170,31 @@ class ChildClassExplicitColumnTable extends _i2.Table<int?> {
 
   late final ChildClassExplicitColumnUpdateTable updateTable;
 
-  late final _i2.ColumnString nonTableParentField;
+  late final _is.ColumnString nonTableParentField;
 
-  late final _i2.ColumnString childField;
+  late final _is.ColumnString childField;
 
   @override
-  List<_i2.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     nonTableParentField,
     childField,
   ];
 }
 
-class ChildClassExplicitColumnInclude extends _i2.IncludeObject {
+class ChildClassExplicitColumnInclude extends _is.IncludeObject {
   ChildClassExplicitColumnInclude._();
 
   @override
-  Map<String, _i2.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i2.Table<int?> get table => ChildClassExplicitColumn.t;
+  _is.Table<int?> get table => ChildClassExplicitColumn.t;
 }
 
-class ChildClassExplicitColumnIncludeList extends _i2.IncludeList {
+class ChildClassExplicitColumnIncludeList extends _is.IncludeList {
   ChildClassExplicitColumnIncludeList._({
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -205,10 +205,10 @@ class ChildClassExplicitColumnIncludeList extends _i2.IncludeList {
   }
 
   @override
-  Map<String, _i2.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i2.Table<int?> get table => ChildClassExplicitColumn.t;
+  _is.Table<int?> get table => ChildClassExplicitColumn.t;
 }
 
 class ChildClassExplicitColumnRepository {
@@ -237,15 +237,15 @@ class ChildClassExplicitColumnRepository {
   /// );
   /// ```
   Future<List<ChildClassExplicitColumn>> find(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
@@ -277,14 +277,14 @@ class ChildClassExplicitColumnRepository {
   /// );
   /// ```
   Future<ChildClassExplicitColumn?> findFirstRow(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     int? offset,
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
@@ -299,11 +299,11 @@ class ChildClassExplicitColumnRepository {
 
   /// Finds a single [ChildClassExplicitColumn] by its [id] or null if no such row exists.
   Future<ChildClassExplicitColumn?> findById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ChildClassExplicitColumn>(
       id,
@@ -328,9 +328,9 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> insert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildClassExplicitColumn> rows, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -346,9 +346,9 @@ class ChildClassExplicitColumnRepository {
   ///
   /// The returned [ChildClassExplicitColumn] will have its `id` field set.
   Future<ChildClassExplicitColumn> insertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildClassExplicitColumn row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ChildClassExplicitColumn>(
       row,
@@ -377,13 +377,13 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> upsert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildClassExplicitColumn> rows, {
-    required _i2.ColumnSelections<ChildClassExplicitColumnTable>
+    required _is.ColumnSelections<ChildClassExplicitColumnTable>
     conflictColumns,
-    _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ChildClassExplicitColumn>(
@@ -410,13 +410,13 @@ class ChildClassExplicitColumnRepository {
   ///
   /// The returned [ChildClassExplicitColumn] will have its `id` field set.
   Future<ChildClassExplicitColumn?> upsertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildClassExplicitColumn row, {
-    required _i2.ColumnSelections<ChildClassExplicitColumnTable>
+    required _is.ColumnSelections<ChildClassExplicitColumnTable>
     conflictColumns,
-    _i2.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildClassExplicitColumnTable>? updateColumns,
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ChildClassExplicitColumn>(
       row,
@@ -437,10 +437,10 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> update(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildClassExplicitColumn> rows, {
-    _i2.ColumnSelections<ChildClassExplicitColumnTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildClassExplicitColumnTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ChildClassExplicitColumn>(
@@ -455,10 +455,10 @@ class ChildClassExplicitColumnRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ChildClassExplicitColumn> updateRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildClassExplicitColumn row, {
-    _i2.ColumnSelections<ChildClassExplicitColumnTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<ChildClassExplicitColumnTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ChildClassExplicitColumn>(
       row,
@@ -470,11 +470,11 @@ class ChildClassExplicitColumnRepository {
   /// Updates a single [ChildClassExplicitColumn] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ChildClassExplicitColumn?> updateById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i2.ColumnValueListBuilder<ChildClassExplicitColumnUpdateTable>
+    required _is.ColumnValueListBuilder<ChildClassExplicitColumnUpdateTable>
     columnValues,
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ChildClassExplicitColumn>(
       id,
@@ -490,15 +490,15 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> updateWhere(
-    _i2.DatabaseSession session, {
-    required _i2.ColumnValueListBuilder<ChildClassExplicitColumnUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ChildClassExplicitColumnUpdateTable>
     columnValues,
-    required _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
+    required _is.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ChildClassExplicitColumn>(
@@ -525,11 +525,11 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> delete(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ChildClassExplicitColumn> rows, {
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ChildClassExplicitColumn>(
@@ -543,9 +543,9 @@ class ChildClassExplicitColumnRepository {
 
   /// Deletes a single [ChildClassExplicitColumn].
   Future<ChildClassExplicitColumn> deleteRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     ChildClassExplicitColumn row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ChildClassExplicitColumn>(
       row,
@@ -562,11 +562,11 @@ class ChildClassExplicitColumnRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ChildClassExplicitColumn>> deleteWhere(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
-    _i2.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
-    _i2.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ChildClassExplicitColumn>(
@@ -581,10 +581,10 @@ class ChildClassExplicitColumnRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     int? limit,
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ChildClassExplicitColumn>(
       where: where?.call(ChildClassExplicitColumn.t),
@@ -595,11 +595,11 @@ class ChildClassExplicitColumnRepository {
 
   /// Acquires row-level locks on [ChildClassExplicitColumn] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
-    required _i2.LockMode lockMode,
-    required _i2.Transaction transaction,
-    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ChildClassExplicitColumnTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ChildClassExplicitColumn>(
       where: where(ChildClassExplicitColumn.t),

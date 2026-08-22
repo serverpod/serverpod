@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class BigIntDefault
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   BigIntDefault._({
     this.id,
     BigInt? bigintDefaultStr,
@@ -35,12 +35,12 @@ abstract class BigIntDefault
       id: jsonSerialization['id'] as int?,
       bigintDefaultStr: jsonSerialization['bigintDefaultStr'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _is.BigIntJsonExtension.fromJson(
               jsonSerialization['bigintDefaultStr'],
             ),
       bigintDefaultStrNull: jsonSerialization['bigintDefaultStrNull'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _is.BigIntJsonExtension.fromJson(
               jsonSerialization['bigintDefaultStrNull'],
             ),
     );
@@ -58,11 +58,11 @@ abstract class BigIntDefault
   BigInt? bigintDefaultStrNull;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BigIntDefault copyWith({
     int? id,
     BigInt? bigintDefaultStr,
@@ -95,11 +95,11 @@ abstract class BigIntDefault
   }
 
   static BigIntDefaultIncludeList includeList({
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     BigIntDefaultInclude? include,
   }) {
     return BigIntDefaultIncludeList.internal_(
@@ -114,7 +114,7 @@ abstract class BigIntDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -133,7 +133,7 @@ class _BigIntDefaultImpl extends BigIntDefault {
 
   /// Returns a shallow copy of this [BigIntDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BigIntDefault copyWith({
     Object? id = _Undefined,
@@ -150,32 +150,32 @@ class _BigIntDefaultImpl extends BigIntDefault {
   }
 }
 
-class BigIntDefaultUpdateTable extends _i1.UpdateTable<BigIntDefaultTable> {
+class BigIntDefaultUpdateTable extends _is.UpdateTable<BigIntDefaultTable> {
   BigIntDefaultUpdateTable(super.table);
 
-  _i1.ColumnValue<BigInt, BigInt> bigintDefaultStr(BigInt value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<BigInt, BigInt> bigintDefaultStr(BigInt value) =>
+      _is.ColumnValue(
         table.bigintDefaultStr,
         value,
       );
 
-  _i1.ColumnValue<BigInt, BigInt> bigintDefaultStrNull(BigInt? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<BigInt, BigInt> bigintDefaultStrNull(BigInt? value) =>
+      _is.ColumnValue(
         table.bigintDefaultStrNull,
         value,
       );
 }
 
-class BigIntDefaultTable extends _i1.Table<int?> {
+class BigIntDefaultTable extends _is.Table<int?> {
   BigIntDefaultTable({super.tableRelation})
     : super(tableName: 'bigint_default') {
     updateTable = BigIntDefaultUpdateTable(this);
-    bigintDefaultStr = _i1.ColumnBigInt(
+    bigintDefaultStr = _is.ColumnBigInt(
       'bigintDefaultStr',
       this,
       hasDefault: true,
     );
-    bigintDefaultStrNull = _i1.ColumnBigInt(
+    bigintDefaultStrNull = _is.ColumnBigInt(
       'bigintDefaultStrNull',
       this,
       hasDefault: true,
@@ -184,52 +184,52 @@ class BigIntDefaultTable extends _i1.Table<int?> {
 
   late final BigIntDefaultUpdateTable updateTable;
 
-  late final _i1.ColumnBigInt bigintDefaultStr;
+  late final _is.ColumnBigInt bigintDefaultStr;
 
-  late final _i1.ColumnBigInt bigintDefaultStrNull;
+  late final _is.ColumnBigInt bigintDefaultStrNull;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     bigintDefaultStr,
     bigintDefaultStrNull,
   ];
 }
 
-class BigIntDefaultInclude extends _i1.IncludeObject {
-  @_i2.internal
-  BigIntDefaultInclude.internal_({List<_i1.Column>? this.selectedColumns}) {}
+class BigIntDefaultInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
+  BigIntDefaultInclude.internal_({List<_is.Column>? this.selectedColumns}) {}
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => BigIntDefault.t;
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BigIntDefault.t;
 }
 
-class BigIntDefaultIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class BigIntDefaultIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   BigIntDefaultIncludeList.internal_({
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefault.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => BigIntDefault.t;
+  _is.Table<int?> get table => BigIntDefault.t;
 }
 
 class BigIntDefaultRepository {
@@ -258,15 +258,15 @@ class BigIntDefaultRepository {
   /// );
   /// ```
   Future<List<BigIntDefault>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
@@ -298,14 +298,14 @@ class BigIntDefaultRepository {
   /// );
   /// ```
   Future<BigIntDefault?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
@@ -320,11 +320,11 @@ class BigIntDefaultRepository {
 
   /// Finds a single [BigIntDefault] by its [id] or null if no such row exists.
   Future<BigIntDefault?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BigIntDefault>(
       id,
@@ -349,9 +349,9 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefault> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -367,9 +367,9 @@ class BigIntDefaultRepository {
   ///
   /// The returned [BigIntDefault] will have its `id` field set.
   Future<BigIntDefault> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<BigIntDefault>(
       row,
@@ -398,12 +398,12 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefault> rows, {
-    required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
-    _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BigIntDefaultTable> conflictColumns,
+    _is.ColumnSelections<BigIntDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<BigIntDefault>(
@@ -430,12 +430,12 @@ class BigIntDefaultRepository {
   ///
   /// The returned [BigIntDefault] will have its `id` field set.
   Future<BigIntDefault?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefault row, {
-    required _i1.ColumnSelections<BigIntDefaultTable> conflictColumns,
-    _i1.ColumnSelections<BigIntDefaultTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BigIntDefaultTable> conflictColumns,
+    _is.ColumnSelections<BigIntDefaultTable>? updateColumns,
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BigIntDefault>(
       row,
@@ -456,10 +456,10 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefault> rows, {
-    _i1.ColumnSelections<BigIntDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BigIntDefaultTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<BigIntDefault>(
@@ -474,10 +474,10 @@ class BigIntDefaultRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BigIntDefault> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefault row, {
-    _i1.ColumnSelections<BigIntDefaultTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BigIntDefaultTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<BigIntDefault>(
       row,
@@ -489,10 +489,10 @@ class BigIntDefaultRepository {
   /// Updates a single [BigIntDefault] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BigIntDefault?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefault>(
       id,
@@ -508,14 +508,14 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BigIntDefaultUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<BigIntDefaultTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefault>(
@@ -542,11 +542,11 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefault> rows, {
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<BigIntDefault>(
@@ -560,9 +560,9 @@ class BigIntDefaultRepository {
 
   /// Deletes a single [BigIntDefault].
   Future<BigIntDefault> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefault row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<BigIntDefault>(
       row,
@@ -579,11 +579,11 @@ class BigIntDefaultRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefault>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
-    _i1.OrderByBuilder<BigIntDefaultTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BigIntDefaultTable> where,
+    _is.OrderByBuilder<BigIntDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefault>(
@@ -598,10 +598,10 @@ class BigIntDefaultRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<BigIntDefault>(
       where: where?.call(BigIntDefault.t),
@@ -612,11 +612,11 @@ class BigIntDefaultRepository {
 
   /// Acquires row-level locks on [BigIntDefault] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BigIntDefaultTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BigIntDefaultTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BigIntDefault>(
       where: where(BigIntDefault.t),

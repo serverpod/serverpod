@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// The definition of a (desired) index in the database.
 abstract class IndexDefinition
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   IndexDefinition._({
     required this.indexName,
     this.tableSpace,
@@ -34,15 +34,15 @@ abstract class IndexDefinition
   factory IndexDefinition({
     required String indexName,
     String? tableSpace,
-    required List<_i2.IndexElementDefinition> elements,
+    required List<_isd.IndexElementDefinition> elements,
     required String type,
     required bool isUnique,
     required bool isPrimary,
     bool? nullsDistinct,
     String? predicate,
-    _i2.GinOperatorClass? ginOperatorClass,
-    _i2.VectorDistanceFunction? vectorDistanceFunction,
-    _i2.ColumnType? vectorColumnType,
+    _isd.GinOperatorClass? ginOperatorClass,
+    _isd.VectorDistanceFunction? vectorDistanceFunction,
+    _isd.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) = _IndexDefinitionImpl;
 
@@ -50,35 +50,37 @@ abstract class IndexDefinition
     return IndexDefinition(
       indexName: jsonSerialization['indexName'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      elements: _i2.Protocol().deserialize<List<_i2.IndexElementDefinition>>(
+      elements: _isd.Protocol().deserialize<List<_isd.IndexElementDefinition>>(
         jsonSerialization['elements'],
       ),
       type: jsonSerialization['type'] as String,
-      isUnique: _i1.BoolJsonExtension.fromJson(jsonSerialization['isUnique']),
-      isPrimary: _i1.BoolJsonExtension.fromJson(jsonSerialization['isPrimary']),
+      isUnique: _iss.BoolJsonExtension.fromJson(jsonSerialization['isUnique']),
+      isPrimary: _iss.BoolJsonExtension.fromJson(
+        jsonSerialization['isPrimary'],
+      ),
       nullsDistinct: jsonSerialization['nullsDistinct'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['nullsDistinct']),
+          : _iss.BoolJsonExtension.fromJson(jsonSerialization['nullsDistinct']),
       predicate: jsonSerialization['predicate'] as String?,
       ginOperatorClass: jsonSerialization['ginOperatorClass'] == null
           ? null
-          : _i2.GinOperatorClass.fromJson(
+          : _isd.GinOperatorClass.fromJson(
               (jsonSerialization['ginOperatorClass'] as String),
             ),
       vectorDistanceFunction:
           jsonSerialization['vectorDistanceFunction'] == null
           ? null
-          : _i2.VectorDistanceFunction.fromJson(
+          : _isd.VectorDistanceFunction.fromJson(
               (jsonSerialization['vectorDistanceFunction'] as String),
             ),
       vectorColumnType: jsonSerialization['vectorColumnType'] == null
           ? null
-          : _i2.ColumnType.fromJson(
+          : _isd.ColumnType.fromJson(
               (jsonSerialization['vectorColumnType'] as int),
             ),
       parameters: jsonSerialization['parameters'] == null
           ? null
-          : _i2.Protocol().deserialize<Map<String, String>>(
+          : _isd.Protocol().deserialize<Map<String, String>>(
               jsonSerialization['parameters'],
             ),
     );
@@ -92,7 +94,7 @@ abstract class IndexDefinition
   String? tableSpace;
 
   /// The elements, that are a part of this index.
-  List<_i2.IndexElementDefinition> elements;
+  List<_isd.IndexElementDefinition> elements;
 
   /// The type of the index
   String type;
@@ -111,32 +113,32 @@ abstract class IndexDefinition
   String? predicate;
 
   /// The GIN index operator class, if it is a GIN index.
-  _i2.GinOperatorClass? ginOperatorClass;
+  _isd.GinOperatorClass? ginOperatorClass;
 
   /// The vector index distance function, if it is a vector index.
-  _i2.VectorDistanceFunction? vectorDistanceFunction;
+  _isd.VectorDistanceFunction? vectorDistanceFunction;
 
   /// The vector column type, if it is a vector index.
-  _i2.ColumnType? vectorColumnType;
+  _isd.ColumnType? vectorColumnType;
 
   /// Parameters for the index, if needed.
   Map<String, String>? parameters;
 
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   IndexDefinition copyWith({
     String? indexName,
     String? tableSpace,
-    List<_i2.IndexElementDefinition>? elements,
+    List<_isd.IndexElementDefinition>? elements,
     String? type,
     bool? isUnique,
     bool? isPrimary,
     bool? nullsDistinct,
     String? predicate,
-    _i2.GinOperatorClass? ginOperatorClass,
-    _i2.VectorDistanceFunction? vectorDistanceFunction,
-    _i2.ColumnType? vectorColumnType,
+    _isd.GinOperatorClass? ginOperatorClass,
+    _isd.VectorDistanceFunction? vectorDistanceFunction,
+    _isd.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   });
   @override
@@ -185,7 +187,7 @@ abstract class IndexDefinition
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -195,15 +197,15 @@ class _IndexDefinitionImpl extends IndexDefinition {
   _IndexDefinitionImpl({
     required String indexName,
     String? tableSpace,
-    required List<_i2.IndexElementDefinition> elements,
+    required List<_isd.IndexElementDefinition> elements,
     required String type,
     required bool isUnique,
     required bool isPrimary,
     bool? nullsDistinct,
     String? predicate,
-    _i2.GinOperatorClass? ginOperatorClass,
-    _i2.VectorDistanceFunction? vectorDistanceFunction,
-    _i2.ColumnType? vectorColumnType,
+    _isd.GinOperatorClass? ginOperatorClass,
+    _isd.VectorDistanceFunction? vectorDistanceFunction,
+    _isd.ColumnType? vectorColumnType,
     Map<String, String>? parameters,
   }) : super._(
          indexName: indexName,
@@ -222,12 +224,12 @@ class _IndexDefinitionImpl extends IndexDefinition {
 
   /// Returns a shallow copy of this [IndexDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   IndexDefinition copyWith({
     String? indexName,
     Object? tableSpace = _Undefined,
-    List<_i2.IndexElementDefinition>? elements,
+    List<_isd.IndexElementDefinition>? elements,
     String? type,
     bool? isUnique,
     bool? isPrimary,
@@ -249,14 +251,14 @@ class _IndexDefinitionImpl extends IndexDefinition {
           ? nullsDistinct
           : this.nullsDistinct,
       predicate: predicate is String? ? predicate : this.predicate,
-      ginOperatorClass: ginOperatorClass is _i2.GinOperatorClass?
+      ginOperatorClass: ginOperatorClass is _isd.GinOperatorClass?
           ? ginOperatorClass
           : this.ginOperatorClass,
       vectorDistanceFunction:
-          vectorDistanceFunction is _i2.VectorDistanceFunction?
+          vectorDistanceFunction is _isd.VectorDistanceFunction?
           ? vectorDistanceFunction
           : this.vectorDistanceFunction,
-      vectorColumnType: vectorColumnType is _i2.ColumnType?
+      vectorColumnType: vectorColumnType is _isd.ColumnType?
           ? vectorColumnType
           : this.vectorColumnType,
       parameters: parameters is Map<String, String>?

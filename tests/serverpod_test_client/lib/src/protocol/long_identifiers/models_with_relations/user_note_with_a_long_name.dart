@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UserNoteWithALongName
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserNoteWithALongName._({
     this.id,
     required this.name,
@@ -42,7 +42,7 @@ abstract class UserNoteWithALongName
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserNoteWithALongName copyWith({
     int? id,
     String? name,
@@ -67,7 +67,7 @@ abstract class UserNoteWithALongName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -84,7 +84,7 @@ class _UserNoteWithALongNameImpl extends UserNoteWithALongName {
 
   /// Returns a shallow copy of this [UserNoteWithALongName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserNoteWithALongName copyWith({
     Object? id = _Undefined,

@@ -69,7 +69,7 @@ void main() {
         await expectLater(
           duplicateInsert,
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (error) => error.code,
               'code',
               PgErrorCode.uniqueViolation,
@@ -134,7 +134,7 @@ void main() {
         await expectLater(
           duplicateInsert,
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (error) => error.code,
               'code',
               PgErrorCode.uniqueViolation,

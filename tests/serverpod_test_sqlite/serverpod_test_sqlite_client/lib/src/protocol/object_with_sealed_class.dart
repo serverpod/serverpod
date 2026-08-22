@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'inheritance/sealed_parent.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import 'inheritance/sealed_parent.dart' as _ij7m744x;
 
 abstract class ObjectWithSealedClass
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithSealedClass._({
     required this.sealedField,
     this.nullableSealedField,
@@ -23,42 +24,43 @@ abstract class ObjectWithSealedClass
   });
 
   factory ObjectWithSealedClass({
-    required _i2.SealedParent sealedField,
-    _i2.SealedParent? nullableSealedField,
-    required List<_i2.SealedParent> sealedList,
+    required _ij7m744x.SealedParent sealedField,
+    _ij7m744x.SealedParent? nullableSealedField,
+    required List<_ij7m744x.SealedParent> sealedList,
   }) = _ObjectWithSealedClassImpl;
 
   factory ObjectWithSealedClass.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return ObjectWithSealedClass(
-      sealedField: _i3.Protocol().deserialize<_i2.SealedParent>(
+      sealedField: _i0ntutnq.Protocol().deserialize<_ij7m744x.SealedParent>(
         jsonSerialization['sealedField'],
       ),
       nullableSealedField: jsonSerialization['nullableSealedField'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SealedParent>(
+          : _i0ntutnq.Protocol().deserialize<_ij7m744x.SealedParent>(
               jsonSerialization['nullableSealedField'],
             ),
-      sealedList: _i3.Protocol().deserialize<List<_i2.SealedParent>>(
-        jsonSerialization['sealedList'],
-      ),
+      sealedList: _i0ntutnq.Protocol()
+          .deserialize<List<_ij7m744x.SealedParent>>(
+            jsonSerialization['sealedList'],
+          ),
     );
   }
 
-  _i2.SealedParent sealedField;
+  _ij7m744x.SealedParent sealedField;
 
-  _i2.SealedParent? nullableSealedField;
+  _ij7m744x.SealedParent? nullableSealedField;
 
-  List<_i2.SealedParent> sealedList;
+  List<_ij7m744x.SealedParent> sealedList;
 
   /// Returns a shallow copy of this [ObjectWithSealedClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithSealedClass copyWith({
-    _i2.SealedParent? sealedField,
-    _i2.SealedParent? nullableSealedField,
-    List<_i2.SealedParent>? sealedList,
+    _ij7m744x.SealedParent? sealedField,
+    _ij7m744x.SealedParent? nullableSealedField,
+    List<_ij7m744x.SealedParent>? sealedList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,7 +88,7 @@ abstract class ObjectWithSealedClass
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -94,9 +96,9 @@ class _Undefined {}
 
 class _ObjectWithSealedClassImpl extends ObjectWithSealedClass {
   _ObjectWithSealedClassImpl({
-    required _i2.SealedParent sealedField,
-    _i2.SealedParent? nullableSealedField,
-    required List<_i2.SealedParent> sealedList,
+    required _ij7m744x.SealedParent sealedField,
+    _ij7m744x.SealedParent? nullableSealedField,
+    required List<_ij7m744x.SealedParent> sealedList,
   }) : super._(
          sealedField: sealedField,
          nullableSealedField: nullableSealedField,
@@ -105,16 +107,16 @@ class _ObjectWithSealedClassImpl extends ObjectWithSealedClass {
 
   /// Returns a shallow copy of this [ObjectWithSealedClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithSealedClass copyWith({
-    _i2.SealedParent? sealedField,
+    _ij7m744x.SealedParent? sealedField,
     Object? nullableSealedField = _Undefined,
-    List<_i2.SealedParent>? sealedList,
+    List<_ij7m744x.SealedParent>? sealedList,
   }) {
     return ObjectWithSealedClass(
       sealedField: sealedField ?? this.sealedField.copyWith(),
-      nullableSealedField: nullableSealedField is _i2.SealedParent?
+      nullableSealedField: nullableSealedField is _ij7m744x.SealedParent?
           ? nullableSealedField
           : this.nullableSealedField?.copyWith(),
       sealedList:

@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
-import '../../models_with_relations/one_to_many/order.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../models_with_relations/one_to_many/order.dart' as _ig920ya2;
 
 abstract class Customer
-    implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+    implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Customer._({
     this.id,
     required this.name,
@@ -27,7 +28,7 @@ abstract class Customer
   factory Customer({
     int? id,
     required String name,
-    List<_i3.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   }) = _CustomerImpl;
 
   factory Customer.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +37,7 @@ abstract class Customer
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Order>>(
+          : _i0ntutnq.Protocol().deserialize<List<_ig920ya2.Order>>(
               jsonSerialization['orders'],
             ),
     );
@@ -51,18 +52,18 @@ abstract class Customer
 
   String name;
 
-  List<_i3.Order>? orders;
+  List<_ig920ya2.Order>? orders;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Customer copyWith({
     int? id,
     String? name,
-    List<_i3.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,16 +87,16 @@ abstract class Customer
     };
   }
 
-  static CustomerInclude include({_i3.OrderIncludeList? orders}) {
+  static CustomerInclude include({_ig920ya2.OrderIncludeList? orders}) {
     return CustomerInclude._(orders: orders);
   }
 
   static CustomerIncludeList includeList({
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
   }) {
     return CustomerIncludeList._(
@@ -110,7 +111,7 @@ abstract class Customer
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -120,7 +121,7 @@ class _CustomerImpl extends Customer {
   _CustomerImpl({
     int? id,
     required String name,
-    List<_i3.Order>? orders,
+    List<_ig920ya2.Order>? orders,
   }) : super._(
          id: id,
          name: name,
@@ -129,7 +130,7 @@ class _CustomerImpl extends Customer {
 
   /// Returns a shallow copy of this [Customer]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Customer copyWith({
     Object? id = _Undefined,
@@ -139,26 +140,26 @@ class _CustomerImpl extends Customer {
     return Customer(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i3.Order>?
+      orders: orders is List<_ig920ya2.Order>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class CustomerUpdateTable extends _i1.UpdateTable<CustomerTable> {
+class CustomerUpdateTable extends _isd.UpdateTable<CustomerTable> {
   CustomerUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> name(String value) => _isd.ColumnValue(
     table.name,
     value,
   );
 }
 
-class CustomerTable extends _i1.Table<int?> {
+class CustomerTable extends _isd.Table<int?> {
   CustomerTable({super.tableRelation}) : super(tableName: 'customer') {
     updateTable = CustomerUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _isd.ColumnString(
       'name',
       this,
     );
@@ -166,38 +167,38 @@ class CustomerTable extends _i1.Table<int?> {
 
   late final CustomerUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _isd.ColumnString name;
 
-  _i3.OrderTable? ___orders;
+  _ig920ya2.OrderTable? ___orders;
 
-  _i1.ManyRelation<_i3.OrderTable>? _orders;
+  _isd.ManyRelation<_ig920ya2.OrderTable>? _orders;
 
-  _i3.OrderTable get __orders {
+  _ig920ya2.OrderTable get __orders {
     if (___orders != null) return ___orders!;
-    ___orders = _i1.createRelationTable(
+    ___orders = _isd.createRelationTable(
       relationFieldName: '__orders',
       field: Customer.t.id,
-      foreignField: _i3.Order.t.customerId,
+      foreignField: _ig920ya2.Order.t.customerId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.OrderTable(tableRelation: foreignTableRelation),
+          _ig920ya2.OrderTable(tableRelation: foreignTableRelation),
     );
     return ___orders!;
   }
 
-  _i1.ManyRelation<_i3.OrderTable> get orders {
+  _isd.ManyRelation<_ig920ya2.OrderTable> get orders {
     if (_orders != null) return _orders!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _isd.createRelationTable(
       relationFieldName: 'orders',
       field: Customer.t.id,
-      foreignField: _i3.Order.t.customerId,
+      foreignField: _ig920ya2.Order.t.customerId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.OrderTable(tableRelation: foreignTableRelation),
+          _ig920ya2.OrderTable(tableRelation: foreignTableRelation),
     );
-    _orders = _i1.ManyRelation<_i3.OrderTable>(
+    _orders = _isd.ManyRelation<_ig920ya2.OrderTable>(
       tableWithRelations: relationTable,
-      table: _i3.OrderTable(
+      table: _ig920ya2.OrderTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -205,13 +206,13 @@ class CustomerTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     name,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _isd.Table? getRelationTable(String relationField) {
     if (relationField == 'orders') {
       return __orders;
     }
@@ -219,23 +220,23 @@ class CustomerTable extends _i1.Table<int?> {
   }
 }
 
-class CustomerInclude extends _i1.IncludeObject {
-  CustomerInclude._({_i3.OrderIncludeList? orders}) {
+class CustomerInclude extends _isd.IncludeObject {
+  CustomerInclude._({_ig920ya2.OrderIncludeList? orders}) {
     _orders = orders;
   }
 
-  _i3.OrderIncludeList? _orders;
+  _ig920ya2.OrderIncludeList? _orders;
 
   @override
-  Map<String, _i1.Include?> get includes => {'orders': _orders};
+  Map<String, _isd.Include?> get includes => {'orders': _orders};
 
   @override
-  _i1.Table<int?> get table => Customer.t;
+  _isd.Table<int?> get table => Customer.t;
 }
 
-class CustomerIncludeList extends _i1.IncludeList {
+class CustomerIncludeList extends _isd.IncludeList {
   CustomerIncludeList._({
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -246,10 +247,10 @@ class CustomerIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Customer.t;
+  _isd.Table<int?> get table => Customer.t;
 }
 
 class CustomerRepository {
@@ -282,16 +283,16 @@ class CustomerRepository {
   /// );
   /// ```
   Future<List<Customer>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
     CustomerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Customer>(
       where: where?.call(Customer.t),
@@ -324,15 +325,15 @@ class CustomerRepository {
   /// );
   /// ```
   Future<Customer?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
     CustomerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Customer>(
       where: where?.call(Customer.t),
@@ -348,12 +349,12 @@ class CustomerRepository {
 
   /// Finds a single [Customer] by its [id] or null if no such row exists.
   Future<Customer?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     CustomerInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Customer>(
       id,
@@ -379,9 +380,9 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Customer> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -397,9 +398,9 @@ class CustomerRepository {
   ///
   /// The returned [Customer] will have its `id` field set.
   Future<Customer> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Customer>(
       row,
@@ -428,12 +429,12 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Customer> rows, {
-    required _i1.ColumnSelections<CustomerTable> conflictColumns,
-    _i1.ColumnSelections<CustomerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<CustomerTable> conflictColumns,
+    _isd.ColumnSelections<CustomerTable>? updateColumns,
+    _isd.WhereExpressionBuilder<CustomerTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Customer>(
@@ -460,12 +461,12 @@ class CustomerRepository {
   ///
   /// The returned [Customer] will have its `id` field set.
   Future<Customer?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer row, {
-    required _i1.ColumnSelections<CustomerTable> conflictColumns,
-    _i1.ColumnSelections<CustomerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CustomerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<CustomerTable> conflictColumns,
+    _isd.ColumnSelections<CustomerTable>? updateColumns,
+    _isd.WhereExpressionBuilder<CustomerTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Customer>(
       row,
@@ -486,10 +487,10 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Customer> rows, {
-    _i1.ColumnSelections<CustomerTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<CustomerTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Customer>(
@@ -504,10 +505,10 @@ class CustomerRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Customer> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer row, {
-    _i1.ColumnSelections<CustomerTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<CustomerTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Customer>(
       row,
@@ -519,10 +520,10 @@ class CustomerRepository {
   /// Updates a single [Customer] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Customer?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Customer>(
       id,
@@ -538,14 +539,14 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CustomerTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<CustomerUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<CustomerTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Customer>(
@@ -572,11 +573,11 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Customer> rows, {
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Customer>(
@@ -590,9 +591,9 @@ class CustomerRepository {
 
   /// Deletes a single [Customer].
   Future<Customer> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Customer>(
       row,
@@ -609,11 +610,11 @@ class CustomerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Customer>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CustomerTable> where,
-    _i1.OrderByBuilder<CustomerTable>? orderBy,
-    _i1.OrderByListBuilder<CustomerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<CustomerTable> where,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Customer>(
@@ -628,10 +629,10 @@ class CustomerRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CustomerTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Customer>(
       where: where?.call(Customer.t),
@@ -642,11 +643,11 @@ class CustomerRepository {
 
   /// Acquires row-level locks on [Customer] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CustomerTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<CustomerTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Customer>(
       where: where(Customer.t),
@@ -663,10 +664,10 @@ class CustomerAttachRepository {
   /// Creates a relation between this [Customer] and the given [Order]s
   /// by setting each [Order]'s foreign key `customerId` to refer to this [Customer].
   Future<void> orders(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer customer,
-    List<_i3.Order> order, {
-    _i1.Transaction? transaction,
+    List<_ig920ya2.Order> order, {
+    _isd.Transaction? transaction,
   }) async {
     if (order.any((e) => e.id == null)) {
       throw ArgumentError.notNull('order.id');
@@ -676,9 +677,9 @@ class CustomerAttachRepository {
     }
 
     var $order = order.map((e) => e.copyWith(customerId: customer.id)).toList();
-    await session.db.update<_i3.Order>(
+    await session.db.update<_ig920ya2.Order>(
       $order,
-      columns: [_i3.Order.t.customerId],
+      columns: [_ig920ya2.Order.t.customerId],
       transaction: transaction,
     );
   }
@@ -690,10 +691,10 @@ class CustomerAttachRowRepository {
   /// Creates a relation between this [Customer] and the given [Order]
   /// by setting the [Order]'s foreign key `customerId` to refer to this [Customer].
   Future<void> orders(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Customer customer,
-    _i3.Order order, {
-    _i1.Transaction? transaction,
+    _ig920ya2.Order order, {
+    _isd.Transaction? transaction,
   }) async {
     if (order.id == null) {
       throw ArgumentError.notNull('order.id');
@@ -703,9 +704,9 @@ class CustomerAttachRowRepository {
     }
 
     var $order = order.copyWith(customerId: customer.id);
-    await session.db.updateRow<_i3.Order>(
+    await session.db.updateRow<_ig920ya2.Order>(
       $order,
-      columns: [_i3.Order.t.customerId],
+      columns: [_ig920ya2.Order.t.customerId],
       transaction: transaction,
     );
   }

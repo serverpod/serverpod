@@ -11,13 +11,13 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'unique_data.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'unique_data.dart' as _iufhyrjh;
 
 abstract class RelatedUniqueData
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   RelatedUniqueData._({
     this.id,
     required this.uniqueDataId,
@@ -28,7 +28,7 @@ abstract class RelatedUniqueData
   factory RelatedUniqueData({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     required int number,
   }) = _RelatedUniqueDataImpl;
 
@@ -38,7 +38,7 @@ abstract class RelatedUniqueData
       uniqueDataId: jsonSerialization['uniqueDataId'] as int,
       uniqueData: jsonSerialization['uniqueData'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.UniqueData>(
+          : _igqrxdcj.Protocol().deserialize<_iufhyrjh.UniqueData>(
               jsonSerialization['uniqueData'],
             ),
       number: jsonSerialization['number'] as int,
@@ -54,20 +54,20 @@ abstract class RelatedUniqueData
 
   int uniqueDataId;
 
-  _i2.UniqueData? uniqueData;
+  _iufhyrjh.UniqueData? uniqueData;
 
   int number;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RelatedUniqueData copyWith({
     int? id,
     int? uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     int? number,
   });
   @override
@@ -92,16 +92,18 @@ abstract class RelatedUniqueData
     };
   }
 
-  static RelatedUniqueDataInclude include({_i2.UniqueDataInclude? uniqueData}) {
+  static RelatedUniqueDataInclude include({
+    _iufhyrjh.UniqueDataInclude? uniqueData,
+  }) {
     return RelatedUniqueDataInclude.internal_(uniqueData: uniqueData);
   }
 
   static RelatedUniqueDataIncludeList includeList({
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
   }) {
     return RelatedUniqueDataIncludeList.internal_(
@@ -116,7 +118,7 @@ abstract class RelatedUniqueData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -126,7 +128,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
   _RelatedUniqueDataImpl({
     int? id,
     required int uniqueDataId,
-    _i2.UniqueData? uniqueData,
+    _iufhyrjh.UniqueData? uniqueData,
     required int number,
   }) : super._(
          id: id,
@@ -137,7 +139,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
 
   /// Returns a shallow copy of this [RelatedUniqueData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RelatedUniqueData copyWith({
     Object? id = _Undefined,
@@ -148,7 +150,7 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
     return RelatedUniqueData(
       id: id is int? ? id : this.id,
       uniqueDataId: uniqueDataId ?? this.uniqueDataId,
-      uniqueData: uniqueData is _i2.UniqueData?
+      uniqueData: uniqueData is _iufhyrjh.UniqueData?
           ? uniqueData
           : this.uniqueData?.copyWith(),
       number: number ?? this.number,
@@ -157,29 +159,29 @@ class _RelatedUniqueDataImpl extends RelatedUniqueData {
 }
 
 class RelatedUniqueDataUpdateTable
-    extends _i1.UpdateTable<RelatedUniqueDataTable> {
+    extends _is.UpdateTable<RelatedUniqueDataTable> {
   RelatedUniqueDataUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> uniqueDataId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> uniqueDataId(int value) => _is.ColumnValue(
     table.uniqueDataId,
     value,
   );
 
-  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> number(int value) => _is.ColumnValue(
     table.number,
     value,
   );
 }
 
-class RelatedUniqueDataTable extends _i1.Table<int?> {
+class RelatedUniqueDataTable extends _is.Table<int?> {
   RelatedUniqueDataTable({super.tableRelation})
     : super(tableName: 'related_unique_data') {
     updateTable = RelatedUniqueDataUpdateTable(this);
-    uniqueDataId = _i1.ColumnInt(
+    uniqueDataId = _is.ColumnInt(
       'uniqueDataId',
       this,
     );
-    number = _i1.ColumnInt(
+    number = _is.ColumnInt(
       'number',
       this,
     );
@@ -187,34 +189,34 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
 
   late final RelatedUniqueDataUpdateTable updateTable;
 
-  late final _i1.ColumnInt uniqueDataId;
+  late final _is.ColumnInt uniqueDataId;
 
-  _i2.UniqueDataTable? _uniqueData;
+  _iufhyrjh.UniqueDataTable? _uniqueData;
 
-  late final _i1.ColumnInt number;
+  late final _is.ColumnInt number;
 
-  _i2.UniqueDataTable get uniqueData {
+  _iufhyrjh.UniqueDataTable get uniqueData {
     if (_uniqueData != null) return _uniqueData!;
-    _uniqueData = _i1.createRelationTable(
+    _uniqueData = _is.createRelationTable(
       relationFieldName: 'uniqueData',
       field: RelatedUniqueData.t.uniqueDataId,
-      foreignField: _i2.UniqueData.t.id,
+      foreignField: _iufhyrjh.UniqueData.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.UniqueDataTable(tableRelation: foreignTableRelation),
+          _iufhyrjh.UniqueDataTable(tableRelation: foreignTableRelation),
     );
     return _uniqueData!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     uniqueDataId,
     number,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'uniqueData') {
       return uniqueData;
     }
@@ -222,47 +224,47 @@ class RelatedUniqueDataTable extends _i1.Table<int?> {
   }
 }
 
-class RelatedUniqueDataInclude extends _i1.IncludeObject {
-  @_i4.internal
+class RelatedUniqueDataInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   RelatedUniqueDataInclude.internal_({
-    _i2.UniqueDataInclude? uniqueData,
-    List<_i1.Column>? this.selectedColumns,
+    _iufhyrjh.UniqueDataInclude? uniqueData,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _uniqueData = uniqueData;
   }
 
-  _i2.UniqueDataInclude? _uniqueData;
+  _iufhyrjh.UniqueDataInclude? _uniqueData;
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {'uniqueData': _uniqueData};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => RelatedUniqueData.t;
+  Map<String, _is.Include?> get includes => {'uniqueData': _uniqueData};
+
+  @override
+  _is.Table<int?> get table => RelatedUniqueData.t;
 }
 
-class RelatedUniqueDataIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class RelatedUniqueDataIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   RelatedUniqueDataIncludeList.internal_({
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(RelatedUniqueData.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => RelatedUniqueData.t;
+  _is.Table<int?> get table => RelatedUniqueData.t;
 }
 
 class RelatedUniqueDataRepository {
@@ -293,16 +295,16 @@ class RelatedUniqueDataRepository {
   /// );
   /// ```
   Future<List<RelatedUniqueData>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
     RelatedUniqueDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
@@ -335,15 +337,15 @@ class RelatedUniqueDataRepository {
   /// );
   /// ```
   Future<RelatedUniqueData?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
     RelatedUniqueDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
@@ -359,12 +361,12 @@ class RelatedUniqueDataRepository {
 
   /// Finds a single [RelatedUniqueData] by its [id] or null if no such row exists.
   Future<RelatedUniqueData?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     RelatedUniqueDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RelatedUniqueData>(
       id,
@@ -390,9 +392,9 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RelatedUniqueData> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -408,9 +410,9 @@ class RelatedUniqueDataRepository {
   ///
   /// The returned [RelatedUniqueData] will have its `id` field set.
   Future<RelatedUniqueData> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RelatedUniqueData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<RelatedUniqueData>(
       row,
@@ -439,12 +441,12 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RelatedUniqueData> rows, {
-    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
-    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _is.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<RelatedUniqueData>(
@@ -471,12 +473,12 @@ class RelatedUniqueDataRepository {
   ///
   /// The returned [RelatedUniqueData] will have its `id` field set.
   Future<RelatedUniqueData?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RelatedUniqueData row, {
-    required _i1.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
-    _i1.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<RelatedUniqueDataTable> conflictColumns,
+    _is.ColumnSelections<RelatedUniqueDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RelatedUniqueData>(
       row,
@@ -497,10 +499,10 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RelatedUniqueData> rows, {
-    _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RelatedUniqueDataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<RelatedUniqueData>(
@@ -515,10 +517,10 @@ class RelatedUniqueDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RelatedUniqueData> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RelatedUniqueData row, {
-    _i1.ColumnSelections<RelatedUniqueDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RelatedUniqueDataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<RelatedUniqueData>(
       row,
@@ -530,11 +532,11 @@ class RelatedUniqueDataRepository {
   /// Updates a single [RelatedUniqueData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RelatedUniqueData?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
+    required _is.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<RelatedUniqueData>(
       id,
@@ -550,15 +552,15 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<RelatedUniqueDataUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    required _is.WhereExpressionBuilder<RelatedUniqueDataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RelatedUniqueData>(
@@ -585,11 +587,11 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RelatedUniqueData> rows, {
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<RelatedUniqueData>(
@@ -603,9 +605,9 @@ class RelatedUniqueDataRepository {
 
   /// Deletes a single [RelatedUniqueData].
   Future<RelatedUniqueData> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RelatedUniqueData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<RelatedUniqueData>(
       row,
@@ -622,11 +624,11 @@ class RelatedUniqueDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RelatedUniqueData>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
-    _i1.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
-    _i1.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RelatedUniqueData>(
@@ -641,10 +643,10 @@ class RelatedUniqueDataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<RelatedUniqueData>(
       where: where?.call(RelatedUniqueData.t),
@@ -655,11 +657,11 @@ class RelatedUniqueDataRepository {
 
   /// Acquires row-level locks on [RelatedUniqueData] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RelatedUniqueDataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RelatedUniqueDataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RelatedUniqueData>(
       where: where(RelatedUniqueData.t),
@@ -676,10 +678,10 @@ class RelatedUniqueDataAttachRowRepository {
   /// Creates a relation between the given [RelatedUniqueData] and [UniqueData]
   /// by setting the [RelatedUniqueData]'s foreign key `uniqueDataId` to refer to the [UniqueData].
   Future<void> uniqueData(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RelatedUniqueData relatedUniqueData,
-    _i2.UniqueData uniqueData, {
-    _i1.Transaction? transaction,
+    _iufhyrjh.UniqueData uniqueData, {
+    _is.Transaction? transaction,
   }) async {
     if (relatedUniqueData.id == null) {
       throw ArgumentError.notNull('relatedUniqueData.id');

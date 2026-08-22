@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_address_street.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'projected_address_street.dart' as _iitz0x8d;
 
 abstract class ProjectedUserStreetAddress
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedUserStreetAddress._({
     this.id,
     required this.name,
@@ -24,7 +24,7 @@ abstract class ProjectedUserStreetAddress
   factory ProjectedUserStreetAddress({
     int? id,
     required String name,
-    _i2.ProjectedAddressStreet? address,
+    _iitz0x8d.ProjectedAddressStreet? address,
   }) = _ProjectedUserStreetAddressImpl;
 
   factory ProjectedUserStreetAddress.fromJson(
@@ -35,7 +35,9 @@ abstract class ProjectedUserStreetAddress
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
-          : _i2.ProjectedAddressStreet.fromJson(jsonSerialization['address']),
+          : _iitz0x8d.ProjectedAddressStreet.fromJson(
+              jsonSerialization['address'],
+            ),
     );
   }
 
@@ -46,15 +48,15 @@ abstract class ProjectedUserStreetAddress
 
   String name;
 
-  _i2.ProjectedAddressStreet? address;
+  _iitz0x8d.ProjectedAddressStreet? address;
 
   /// Returns a shallow copy of this [ProjectedUserStreetAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedUserStreetAddress copyWith({
     int? id,
     String? name,
-    _i2.ProjectedAddressStreet? address,
+    _iitz0x8d.ProjectedAddressStreet? address,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,8 +77,8 @@ abstract class ProjectedUserStreetAddress
       if (address != null)
         'address':
             // ignore: unnecessary_type_check
-            address is _i1.ProtocolSerialization
-            ? (address as _i1.ProtocolSerialization).toJsonForProtocol()
+            address is _isc.ProtocolSerialization
+            ? (address as _isc.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               address?.toJson(),
@@ -85,7 +87,7 @@ abstract class ProjectedUserStreetAddress
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +97,7 @@ class _ProjectedUserStreetAddressImpl extends ProjectedUserStreetAddress {
   _ProjectedUserStreetAddressImpl({
     int? id,
     required String name,
-    _i2.ProjectedAddressStreet? address,
+    _iitz0x8d.ProjectedAddressStreet? address,
   }) : super._(
          id: id,
          name: name,
@@ -104,7 +106,7 @@ class _ProjectedUserStreetAddressImpl extends ProjectedUserStreetAddress {
 
   /// Returns a shallow copy of this [ProjectedUserStreetAddress]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedUserStreetAddress copyWith({
     Object? id = _Undefined,
@@ -114,7 +116,7 @@ class _ProjectedUserStreetAddressImpl extends ProjectedUserStreetAddress {
     return ProjectedUserStreetAddress(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      address: address is _i2.ProjectedAddressStreet?
+      address: address is _iitz0x8d.ProjectedAddressStreet?
           ? address
           : this.address?.copyWith(),
     );

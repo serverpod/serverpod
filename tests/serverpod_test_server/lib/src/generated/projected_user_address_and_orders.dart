@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'projected_order_description.dart' as _i2;
-import 'projected_address_street.dart' as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'projected_address_street.dart' as _iitz0x8d;
+import 'projected_order_description.dart' as _id3wrdef;
 import 'projected_user.dart';
 
 abstract class ProjectedUserAddressAndOrders
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ProjectedUserAddressAndOrders._({
     this.id,
     required this.name,
@@ -28,8 +28,8 @@ abstract class ProjectedUserAddressAndOrders
   factory ProjectedUserAddressAndOrders({
     int? id,
     required String name,
-    List<_i2.ProjectedOrderDescription>? orders,
-    _i3.ProjectedAddressStreet? address,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
+    _iitz0x8d.ProjectedAddressStreet? address,
   }) = _ProjectedUserAddressAndOrdersImpl;
 
   factory ProjectedUserAddressAndOrders.fromJson(
@@ -40,12 +40,15 @@ abstract class ProjectedUserAddressAndOrders
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.ProjectedOrderDescription>>(
-              jsonSerialization['orders'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<List<_id3wrdef.ProjectedOrderDescription>>(
+                  jsonSerialization['orders'],
+                ),
       address: jsonSerialization['address'] == null
           ? null
-          : _i3.ProjectedAddressStreet.fromJson(jsonSerialization['address']),
+          : _iitz0x8d.ProjectedAddressStreet.fromJson(
+              jsonSerialization['address'],
+            ),
     );
   }
 
@@ -58,18 +61,18 @@ abstract class ProjectedUserAddressAndOrders
 
   String name;
 
-  List<_i2.ProjectedOrderDescription>? orders;
+  List<_id3wrdef.ProjectedOrderDescription>? orders;
 
-  _i3.ProjectedAddressStreet? address;
+  _iitz0x8d.ProjectedAddressStreet? address;
 
   /// Returns a shallow copy of this [ProjectedUserAddressAndOrders]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ProjectedUserAddressAndOrders copyWith({
     int? id,
     String? name,
-    List<_i2.ProjectedOrderDescription>? orders,
-    _i3.ProjectedAddressStreet? address,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
+    _iitz0x8d.ProjectedAddressStreet? address,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -93,8 +96,8 @@ abstract class ProjectedUserAddressAndOrders
         'orders': orders?.toJson(
           valueToJson: (v) =>
               // ignore: unnecessary_type_check
-              v is _i1.ProtocolSerialization
-              ? (v as _i1.ProtocolSerialization).toJsonForProtocol()
+              v is _is.ProtocolSerialization
+              ? (v as _is.ProtocolSerialization).toJsonForProtocol()
               :
                 // ignore: dead_code
                 v.toJson(),
@@ -102,8 +105,8 @@ abstract class ProjectedUserAddressAndOrders
       if (address != null)
         'address':
             // ignore: unnecessary_type_check
-            address is _i1.ProtocolSerialization
-            ? (address as _i1.ProtocolSerialization).toJsonForProtocol()
+            address is _is.ProtocolSerialization
+            ? (address as _is.ProtocolSerialization).toJsonForProtocol()
             :
               // ignore: dead_code
               address?.toJson(),
@@ -116,17 +119,17 @@ abstract class ProjectedUserAddressAndOrders
         ProjectedUser.t.id,
         ProjectedUser.t.name,
       ],
-      orders: _i2.ProjectedOrderDescription.includeList(),
-      address: _i3.ProjectedAddressStreet.include(),
+      orders: _id3wrdef.ProjectedOrderDescription.includeList(),
+      address: _iitz0x8d.ProjectedAddressStreet.include(),
     );
   }
 
   static ProjectedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
       where: where,
@@ -140,7 +143,7 @@ abstract class ProjectedUserAddressAndOrders
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -150,8 +153,8 @@ class _ProjectedUserAddressAndOrdersImpl extends ProjectedUserAddressAndOrders {
   _ProjectedUserAddressAndOrdersImpl({
     int? id,
     required String name,
-    List<_i2.ProjectedOrderDescription>? orders,
-    _i3.ProjectedAddressStreet? address,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
+    _iitz0x8d.ProjectedAddressStreet? address,
   }) : super._(
          id: id,
          name: name,
@@ -161,7 +164,7 @@ class _ProjectedUserAddressAndOrdersImpl extends ProjectedUserAddressAndOrders {
 
   /// Returns a shallow copy of this [ProjectedUserAddressAndOrders]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ProjectedUserAddressAndOrders copyWith({
     Object? id = _Undefined,
@@ -172,10 +175,10 @@ class _ProjectedUserAddressAndOrdersImpl extends ProjectedUserAddressAndOrders {
     return ProjectedUserAddressAndOrders(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.ProjectedOrderDescription>?
+      orders: orders is List<_id3wrdef.ProjectedOrderDescription>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
-      address: address is _i3.ProjectedAddressStreet?
+      address: address is _iitz0x8d.ProjectedAddressStreet?
           ? address
           : this.address?.copyWith(),
     );
@@ -208,15 +211,15 @@ class ProjectedUserAddressAndOrdersRepository {
   /// );
   /// ```
   Future<List<ProjectedUserAddressAndOrders>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findAsJson<ProjectedUser>(
@@ -255,14 +258,14 @@ class ProjectedUserAddressAndOrdersRepository {
   /// );
   /// ```
   Future<ProjectedUserAddressAndOrders?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findFirstRowAsJson<ProjectedUser>(
@@ -282,11 +285,11 @@ class ProjectedUserAddressAndOrdersRepository {
 
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserAddressAndOrders?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
         .findByIdAsJson<ProjectedUser>(

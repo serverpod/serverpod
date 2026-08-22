@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class NullsDistinctData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   NullsDistinctData._({
     this.id,
     required this.tenantId,
@@ -57,7 +57,7 @@ abstract class NullsDistinctData
 
   /// Returns a shallow copy of this [NullsDistinctData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   NullsDistinctData copyWith({
     int? id,
     int? tenantId,
@@ -91,7 +91,7 @@ abstract class NullsDistinctData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -114,7 +114,7 @@ class _NullsDistinctDataImpl extends NullsDistinctData {
 
   /// Returns a shallow copy of this [NullsDistinctData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   NullsDistinctData copyWith({
     Object? id = _Undefined,

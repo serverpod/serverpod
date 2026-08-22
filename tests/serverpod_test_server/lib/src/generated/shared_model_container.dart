@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
-import 'shared_model_subclass.dart' as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
-import 'package:meta/meta.dart' as _i5;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
+import 'shared_model_subclass.dart' as _iu5vt3uc;
 
 abstract class SharedModelContainer
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   SharedModelContainer._({
     this.id,
     required this.sharedModel,
@@ -47,29 +47,29 @@ abstract class SharedModelContainer
 
   factory SharedModelContainer({
     int? id,
-    required _i2.SharedModel sharedModel,
-    required _i2.SharedModel sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    _i2.SharedModel? serverOnlySharedModel,
-    required _i2.SharedSubclass sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    required _i2.SharedEnum sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    required _i2.SharedSealedParent sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    required _i2.SharedSealedChild sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    required _i3.SharedModelSubclass sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    required List<_i2.SharedModel> sharedModelList,
-    required List<_i2.SharedModel?> sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    required Map<String, _i2.SharedModel> sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    required Map<String, _i2.SharedSubclass> sharedSubclassMap,
-    required Set<_i2.SharedModel> sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    required _ilwf0zl1.SharedModel sharedModel,
+    required _ilwf0zl1.SharedModel sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    _ilwf0zl1.SharedModel? serverOnlySharedModel,
+    required _ilwf0zl1.SharedSubclass sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    required _ilwf0zl1.SharedEnum sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    required _ilwf0zl1.SharedSealedParent sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    required _ilwf0zl1.SharedSealedChild sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    required _iu5vt3uc.SharedModelSubclass sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    required List<_ilwf0zl1.SharedModel> sharedModelList,
+    required List<_ilwf0zl1.SharedModel?> sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    required Map<String, _ilwf0zl1.SharedModel> sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    required Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap,
+    required Set<_ilwf0zl1.SharedModel> sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   }) = _SharedModelContainerImpl;
 
   factory SharedModelContainer.fromJson(
@@ -77,105 +77,114 @@ abstract class SharedModelContainer
   ) {
     return SharedModelContainer(
       id: jsonSerialization['id'] as int?,
-      sharedModel: _i4.Protocol().deserialize<_i2.SharedModel>(
+      sharedModel: _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedModel>(
         jsonSerialization['sharedModel'],
       ),
-      sharedModelWithModuleAlias: _i4.Protocol().deserialize<_i2.SharedModel>(
-        jsonSerialization['sharedModelWithModuleAlias'],
-      ),
+      sharedModelWithModuleAlias: _igqrxdcj.Protocol()
+          .deserialize<_ilwf0zl1.SharedModel>(
+            jsonSerialization['sharedModelWithModuleAlias'],
+          ),
       sharedModelNullable: jsonSerialization['sharedModelNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedModel>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedModel>(
               jsonSerialization['sharedModelNullable'],
             ),
       nonPersistedSharedModel:
           jsonSerialization['nonPersistedSharedModel'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedModel>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedModel>(
               jsonSerialization['nonPersistedSharedModel'],
             ),
       serverOnlySharedModel: jsonSerialization['serverOnlySharedModel'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedModel>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedModel>(
               jsonSerialization['serverOnlySharedModel'],
             ),
-      sharedSubclass: _i4.Protocol().deserialize<_i2.SharedSubclass>(
-        jsonSerialization['sharedSubclass'],
-      ),
+      sharedSubclass: _igqrxdcj.Protocol()
+          .deserialize<_ilwf0zl1.SharedSubclass>(
+            jsonSerialization['sharedSubclass'],
+          ),
       sharedSubclassNullable:
           jsonSerialization['sharedSubclassNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSubclass>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedSubclass>(
               jsonSerialization['sharedSubclassNullable'],
             ),
-      sharedEnum: _i2.SharedEnum.fromJson(
+      sharedEnum: _ilwf0zl1.SharedEnum.fromJson(
         (jsonSerialization['sharedEnum'] as String),
       ),
       sharedEnumNullable: jsonSerialization['sharedEnumNullable'] == null
           ? null
-          : _i2.SharedEnum.fromJson(
+          : _ilwf0zl1.SharedEnum.fromJson(
               (jsonSerialization['sharedEnumNullable'] as String),
             ),
-      sharedSealedParent: _i4.Protocol().deserialize<_i2.SharedSealedParent>(
-        jsonSerialization['sharedSealedParent'],
-      ),
+      sharedSealedParent: _igqrxdcj.Protocol()
+          .deserialize<_ilwf0zl1.SharedSealedParent>(
+            jsonSerialization['sharedSealedParent'],
+          ),
       sharedSealedParentNullable:
           jsonSerialization['sharedSealedParentNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSealedParent>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedSealedParent>(
               jsonSerialization['sharedSealedParentNullable'],
             ),
-      sharedSealedChild: _i4.Protocol().deserialize<_i2.SharedSealedChild>(
-        jsonSerialization['sharedSealedChild'],
-      ),
+      sharedSealedChild: _igqrxdcj.Protocol()
+          .deserialize<_ilwf0zl1.SharedSealedChild>(
+            jsonSerialization['sharedSealedChild'],
+          ),
       sharedSealedChildNullable:
           jsonSerialization['sharedSealedChildNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.SharedSealedChild>(
+          : _igqrxdcj.Protocol().deserialize<_ilwf0zl1.SharedSealedChild>(
               jsonSerialization['sharedSealedChildNullable'],
             ),
-      sharedModelSubclass: _i4.Protocol().deserialize<_i3.SharedModelSubclass>(
-        jsonSerialization['sharedModelSubclass'],
-      ),
+      sharedModelSubclass: _igqrxdcj.Protocol()
+          .deserialize<_iu5vt3uc.SharedModelSubclass>(
+            jsonSerialization['sharedModelSubclass'],
+          ),
       sharedModelSubclassNullable:
           jsonSerialization['sharedModelSubclassNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.SharedModelSubclass>(
+          : _igqrxdcj.Protocol().deserialize<_iu5vt3uc.SharedModelSubclass>(
               jsonSerialization['sharedModelSubclassNullable'],
             ),
-      sharedModelList: _i4.Protocol().deserialize<List<_i2.SharedModel>>(
-        jsonSerialization['sharedModelList'],
-      ),
-      sharedModelNullableList: _i4.Protocol()
-          .deserialize<List<_i2.SharedModel?>>(
+      sharedModelList: _igqrxdcj.Protocol()
+          .deserialize<List<_ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelList'],
+          ),
+      sharedModelNullableList: _igqrxdcj.Protocol()
+          .deserialize<List<_ilwf0zl1.SharedModel?>>(
             jsonSerialization['sharedModelNullableList'],
           ),
       sharedModelListNullable:
           jsonSerialization['sharedModelListNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i2.SharedModel>>(
+          : _igqrxdcj.Protocol().deserialize<List<_ilwf0zl1.SharedModel>>(
               jsonSerialization['sharedModelListNullable'],
             ),
-      sharedModelMap: _i4.Protocol().deserialize<Map<String, _i2.SharedModel>>(
-        jsonSerialization['sharedModelMap'],
-      ),
+      sharedModelMap: _igqrxdcj.Protocol()
+          .deserialize<Map<String, _ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelMap'],
+          ),
       sharedModelMapNullable:
           jsonSerialization['sharedModelMapNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<Map<String, _i2.SharedModel>>(
-              jsonSerialization['sharedModelMapNullable'],
-            ),
-      sharedSubclassMap: _i4.Protocol()
-          .deserialize<Map<String, _i2.SharedSubclass>>(
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, _ilwf0zl1.SharedModel>>(
+                  jsonSerialization['sharedModelMapNullable'],
+                ),
+      sharedSubclassMap: _igqrxdcj.Protocol()
+          .deserialize<Map<String, _ilwf0zl1.SharedSubclass>>(
             jsonSerialization['sharedSubclassMap'],
           ),
-      sharedModelSet: _i4.Protocol().deserialize<Set<_i2.SharedModel>>(
-        jsonSerialization['sharedModelSet'],
-      ),
+      sharedModelSet: _igqrxdcj.Protocol()
+          .deserialize<Set<_ilwf0zl1.SharedModel>>(
+            jsonSerialization['sharedModelSet'],
+          ),
       sharedModelSetNullable:
           jsonSerialization['sharedModelSetNullable'] == null
           ? null
-          : _i4.Protocol().deserialize<Set<_i2.SharedModel>>(
+          : _igqrxdcj.Protocol().deserialize<Set<_ilwf0zl1.SharedModel>>(
               jsonSerialization['sharedModelSetNullable'],
             ),
     );
@@ -188,83 +197,83 @@ abstract class SharedModelContainer
   @override
   int? id;
 
-  _i2.SharedModel sharedModel;
+  _ilwf0zl1.SharedModel sharedModel;
 
-  _i2.SharedModel sharedModelWithModuleAlias;
+  _ilwf0zl1.SharedModel sharedModelWithModuleAlias;
 
-  _i2.SharedModel? sharedModelNullable;
+  _ilwf0zl1.SharedModel? sharedModelNullable;
 
-  _i2.SharedModel? nonPersistedSharedModel;
+  _ilwf0zl1.SharedModel? nonPersistedSharedModel;
 
-  _i2.SharedModel? serverOnlySharedModel;
+  _ilwf0zl1.SharedModel? serverOnlySharedModel;
 
-  _i2.SharedSubclass sharedSubclass;
+  _ilwf0zl1.SharedSubclass sharedSubclass;
 
-  _i2.SharedSubclass? sharedSubclassNullable;
+  _ilwf0zl1.SharedSubclass? sharedSubclassNullable;
 
-  _i2.SharedEnum sharedEnum;
+  _ilwf0zl1.SharedEnum sharedEnum;
 
-  _i2.SharedEnum? sharedEnumNullable;
+  _ilwf0zl1.SharedEnum? sharedEnumNullable;
 
-  _i2.SharedSealedParent sharedSealedParent;
+  _ilwf0zl1.SharedSealedParent sharedSealedParent;
 
-  _i2.SharedSealedParent? sharedSealedParentNullable;
+  _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable;
 
-  _i2.SharedSealedChild sharedSealedChild;
+  _ilwf0zl1.SharedSealedChild sharedSealedChild;
 
-  _i2.SharedSealedChild? sharedSealedChildNullable;
+  _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable;
 
-  _i3.SharedModelSubclass sharedModelSubclass;
+  _iu5vt3uc.SharedModelSubclass sharedModelSubclass;
 
-  _i3.SharedModelSubclass? sharedModelSubclassNullable;
+  _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable;
 
-  List<_i2.SharedModel> sharedModelList;
+  List<_ilwf0zl1.SharedModel> sharedModelList;
 
-  List<_i2.SharedModel?> sharedModelNullableList;
+  List<_ilwf0zl1.SharedModel?> sharedModelNullableList;
 
-  List<_i2.SharedModel>? sharedModelListNullable;
+  List<_ilwf0zl1.SharedModel>? sharedModelListNullable;
 
-  Map<String, _i2.SharedModel> sharedModelMap;
+  Map<String, _ilwf0zl1.SharedModel> sharedModelMap;
 
-  Map<String, _i2.SharedModel>? sharedModelMapNullable;
+  Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable;
 
-  Map<String, _i2.SharedSubclass> sharedSubclassMap;
+  Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap;
 
-  Set<_i2.SharedModel> sharedModelSet;
+  Set<_ilwf0zl1.SharedModel> sharedModelSet;
 
-  Set<_i2.SharedModel>? sharedModelSetNullable;
+  Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SharedModelContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SharedModelContainer copyWith({
     int? id,
-    _i2.SharedModel? sharedModel,
-    _i2.SharedModel? sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    _i2.SharedModel? serverOnlySharedModel,
-    _i2.SharedSubclass? sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    _i2.SharedEnum? sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    _i2.SharedSealedParent? sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    _i2.SharedSealedChild? sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    _i3.SharedModelSubclass? sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    List<_i2.SharedModel>? sharedModelList,
-    List<_i2.SharedModel?>? sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    Map<String, _i2.SharedModel>? sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    Map<String, _i2.SharedSubclass>? sharedSubclassMap,
-    Set<_i2.SharedModel>? sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    _ilwf0zl1.SharedModel? sharedModel,
+    _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    _ilwf0zl1.SharedModel? serverOnlySharedModel,
+    _ilwf0zl1.SharedSubclass? sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    _ilwf0zl1.SharedEnum? sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    List<_ilwf0zl1.SharedModel>? sharedModelList,
+    List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -383,11 +392,11 @@ abstract class SharedModelContainer
   }
 
   static SharedModelContainerIncludeList includeList({
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
   }) {
     return SharedModelContainerIncludeList.internal_(
@@ -402,7 +411,7 @@ abstract class SharedModelContainer
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -411,29 +420,29 @@ class _Undefined {}
 class _SharedModelContainerImpl extends SharedModelContainer {
   _SharedModelContainerImpl({
     int? id,
-    required _i2.SharedModel sharedModel,
-    required _i2.SharedModel sharedModelWithModuleAlias,
-    _i2.SharedModel? sharedModelNullable,
-    _i2.SharedModel? nonPersistedSharedModel,
-    _i2.SharedModel? serverOnlySharedModel,
-    required _i2.SharedSubclass sharedSubclass,
-    _i2.SharedSubclass? sharedSubclassNullable,
-    required _i2.SharedEnum sharedEnum,
-    _i2.SharedEnum? sharedEnumNullable,
-    required _i2.SharedSealedParent sharedSealedParent,
-    _i2.SharedSealedParent? sharedSealedParentNullable,
-    required _i2.SharedSealedChild sharedSealedChild,
-    _i2.SharedSealedChild? sharedSealedChildNullable,
-    required _i3.SharedModelSubclass sharedModelSubclass,
-    _i3.SharedModelSubclass? sharedModelSubclassNullable,
-    required List<_i2.SharedModel> sharedModelList,
-    required List<_i2.SharedModel?> sharedModelNullableList,
-    List<_i2.SharedModel>? sharedModelListNullable,
-    required Map<String, _i2.SharedModel> sharedModelMap,
-    Map<String, _i2.SharedModel>? sharedModelMapNullable,
-    required Map<String, _i2.SharedSubclass> sharedSubclassMap,
-    required Set<_i2.SharedModel> sharedModelSet,
-    Set<_i2.SharedModel>? sharedModelSetNullable,
+    required _ilwf0zl1.SharedModel sharedModel,
+    required _ilwf0zl1.SharedModel sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModelNullable,
+    _ilwf0zl1.SharedModel? nonPersistedSharedModel,
+    _ilwf0zl1.SharedModel? serverOnlySharedModel,
+    required _ilwf0zl1.SharedSubclass sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclassNullable,
+    required _ilwf0zl1.SharedEnum sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnumNullable,
+    required _ilwf0zl1.SharedSealedParent sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParentNullable,
+    required _ilwf0zl1.SharedSealedChild sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChildNullable,
+    required _iu5vt3uc.SharedModelSubclass sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclassNullable,
+    required List<_ilwf0zl1.SharedModel> sharedModelList,
+    required List<_ilwf0zl1.SharedModel?> sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelListNullable,
+    required Map<String, _ilwf0zl1.SharedModel> sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMapNullable,
+    required Map<String, _ilwf0zl1.SharedSubclass> sharedSubclassMap,
+    required Set<_ilwf0zl1.SharedModel> sharedModelSet,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSetNullable,
   }) : super._(
          id: id,
          sharedModel: sharedModel,
@@ -463,32 +472,32 @@ class _SharedModelContainerImpl extends SharedModelContainer {
 
   /// Returns a shallow copy of this [SharedModelContainer]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SharedModelContainer copyWith({
     Object? id = _Undefined,
-    _i2.SharedModel? sharedModel,
-    _i2.SharedModel? sharedModelWithModuleAlias,
+    _ilwf0zl1.SharedModel? sharedModel,
+    _ilwf0zl1.SharedModel? sharedModelWithModuleAlias,
     Object? sharedModelNullable = _Undefined,
     Object? nonPersistedSharedModel = _Undefined,
     Object? serverOnlySharedModel = _Undefined,
-    _i2.SharedSubclass? sharedSubclass,
+    _ilwf0zl1.SharedSubclass? sharedSubclass,
     Object? sharedSubclassNullable = _Undefined,
-    _i2.SharedEnum? sharedEnum,
+    _ilwf0zl1.SharedEnum? sharedEnum,
     Object? sharedEnumNullable = _Undefined,
-    _i2.SharedSealedParent? sharedSealedParent,
+    _ilwf0zl1.SharedSealedParent? sharedSealedParent,
     Object? sharedSealedParentNullable = _Undefined,
-    _i2.SharedSealedChild? sharedSealedChild,
+    _ilwf0zl1.SharedSealedChild? sharedSealedChild,
     Object? sharedSealedChildNullable = _Undefined,
-    _i3.SharedModelSubclass? sharedModelSubclass,
+    _iu5vt3uc.SharedModelSubclass? sharedModelSubclass,
     Object? sharedModelSubclassNullable = _Undefined,
-    List<_i2.SharedModel>? sharedModelList,
-    List<_i2.SharedModel?>? sharedModelNullableList,
+    List<_ilwf0zl1.SharedModel>? sharedModelList,
+    List<_ilwf0zl1.SharedModel?>? sharedModelNullableList,
     Object? sharedModelListNullable = _Undefined,
-    Map<String, _i2.SharedModel>? sharedModelMap,
+    Map<String, _ilwf0zl1.SharedModel>? sharedModelMap,
     Object? sharedModelMapNullable = _Undefined,
-    Map<String, _i2.SharedSubclass>? sharedSubclassMap,
-    Set<_i2.SharedModel>? sharedModelSet,
+    Map<String, _ilwf0zl1.SharedSubclass>? sharedSubclassMap,
+    Set<_ilwf0zl1.SharedModel>? sharedModelSet,
     Object? sharedModelSetNullable = _Undefined,
   }) {
     return SharedModelContainer(
@@ -497,38 +506,39 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelWithModuleAlias:
           sharedModelWithModuleAlias ??
           this.sharedModelWithModuleAlias.copyWith(),
-      sharedModelNullable: sharedModelNullable is _i2.SharedModel?
+      sharedModelNullable: sharedModelNullable is _ilwf0zl1.SharedModel?
           ? sharedModelNullable
           : this.sharedModelNullable?.copyWith(),
-      nonPersistedSharedModel: nonPersistedSharedModel is _i2.SharedModel?
+      nonPersistedSharedModel: nonPersistedSharedModel is _ilwf0zl1.SharedModel?
           ? nonPersistedSharedModel
           : this.nonPersistedSharedModel?.copyWith(),
-      serverOnlySharedModel: serverOnlySharedModel is _i2.SharedModel?
+      serverOnlySharedModel: serverOnlySharedModel is _ilwf0zl1.SharedModel?
           ? serverOnlySharedModel
           : this.serverOnlySharedModel?.copyWith(),
       sharedSubclass: sharedSubclass ?? this.sharedSubclass.copyWith(),
-      sharedSubclassNullable: sharedSubclassNullable is _i2.SharedSubclass?
+      sharedSubclassNullable:
+          sharedSubclassNullable is _ilwf0zl1.SharedSubclass?
           ? sharedSubclassNullable
           : this.sharedSubclassNullable?.copyWith(),
       sharedEnum: sharedEnum ?? this.sharedEnum,
-      sharedEnumNullable: sharedEnumNullable is _i2.SharedEnum?
+      sharedEnumNullable: sharedEnumNullable is _ilwf0zl1.SharedEnum?
           ? sharedEnumNullable
           : this.sharedEnumNullable,
       sharedSealedParent:
           sharedSealedParent ?? this.sharedSealedParent.copyWith(),
       sharedSealedParentNullable:
-          sharedSealedParentNullable is _i2.SharedSealedParent?
+          sharedSealedParentNullable is _ilwf0zl1.SharedSealedParent?
           ? sharedSealedParentNullable
           : this.sharedSealedParentNullable?.copyWith(),
       sharedSealedChild: sharedSealedChild ?? this.sharedSealedChild.copyWith(),
       sharedSealedChildNullable:
-          sharedSealedChildNullable is _i2.SharedSealedChild?
+          sharedSealedChildNullable is _ilwf0zl1.SharedSealedChild?
           ? sharedSealedChildNullable
           : this.sharedSealedChildNullable?.copyWith(),
       sharedModelSubclass:
           sharedModelSubclass ?? this.sharedModelSubclass.copyWith(),
       sharedModelSubclassNullable:
-          sharedModelSubclassNullable is _i3.SharedModelSubclass?
+          sharedModelSubclassNullable is _iu5vt3uc.SharedModelSubclass?
           ? sharedModelSubclassNullable
           : this.sharedModelSubclassNullable?.copyWith(),
       sharedModelList:
@@ -537,7 +547,8 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelNullableList:
           sharedModelNullableList ??
           this.sharedModelNullableList.map((e0) => e0?.copyWith()).toList(),
-      sharedModelListNullable: sharedModelListNullable is List<_i2.SharedModel>?
+      sharedModelListNullable:
+          sharedModelListNullable is List<_ilwf0zl1.SharedModel>?
           ? sharedModelListNullable
           : this.sharedModelListNullable?.map((e0) => e0.copyWith()).toList(),
       sharedModelMap:
@@ -552,7 +563,7 @@ class _SharedModelContainerImpl extends SharedModelContainer {
             ),
           ),
       sharedModelMapNullable:
-          sharedModelMapNullable is Map<String, _i2.SharedModel>?
+          sharedModelMapNullable is Map<String, _ilwf0zl1.SharedModel>?
           ? sharedModelMapNullable
           : this.sharedModelMapNullable?.map(
               (
@@ -577,7 +588,8 @@ class _SharedModelContainerImpl extends SharedModelContainer {
       sharedModelSet:
           sharedModelSet ??
           this.sharedModelSet.map((e0) => e0.copyWith()).toSet(),
-      sharedModelSetNullable: sharedModelSetNullable is Set<_i2.SharedModel>?
+      sharedModelSetNullable:
+          sharedModelSetNullable is Set<_ilwf0zl1.SharedModel>?
           ? sharedModelSetNullable
           : this.sharedModelSetNullable?.map((e0) => e0.copyWith()).toSet(),
     );
@@ -585,249 +597,258 @@ class _SharedModelContainerImpl extends SharedModelContainer {
 }
 
 class SharedModelContainerUpdateTable
-    extends _i1.UpdateTable<SharedModelContainerTable> {
+    extends _is.UpdateTable<SharedModelContainerTable> {
   SharedModelContainerUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.SharedModel, _i2.SharedModel> sharedModel(
-    _i2.SharedModel value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedModel, _ilwf0zl1.SharedModel> sharedModel(
+    _ilwf0zl1.SharedModel value,
+  ) => _is.ColumnValue(
     table.sharedModel,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedModel, _i2.SharedModel> sharedModelWithModuleAlias(
-    _i2.SharedModel value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedModel, _ilwf0zl1.SharedModel>
+  sharedModelWithModuleAlias(_ilwf0zl1.SharedModel value) => _is.ColumnValue(
     table.sharedModelWithModuleAlias,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedModel, _i2.SharedModel> sharedModelNullable(
-    _i2.SharedModel? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedModel, _ilwf0zl1.SharedModel>
+  sharedModelNullable(_ilwf0zl1.SharedModel? value) => _is.ColumnValue(
     table.sharedModelNullable,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedModel, _i2.SharedModel> serverOnlySharedModel(
-    _i2.SharedModel? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedModel, _ilwf0zl1.SharedModel>
+  serverOnlySharedModel(_ilwf0zl1.SharedModel? value) => _is.ColumnValue(
     table.serverOnlySharedModel,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedSubclass, _i2.SharedSubclass> sharedSubclass(
-    _i2.SharedSubclass value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedSubclass, _ilwf0zl1.SharedSubclass>
+  sharedSubclass(_ilwf0zl1.SharedSubclass value) => _is.ColumnValue(
     table.sharedSubclass,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedSubclass, _i2.SharedSubclass>
-  sharedSubclassNullable(_i2.SharedSubclass? value) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedSubclass, _ilwf0zl1.SharedSubclass>
+  sharedSubclassNullable(_ilwf0zl1.SharedSubclass? value) => _is.ColumnValue(
     table.sharedSubclassNullable,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedEnum, _i2.SharedEnum> sharedEnum(
-    _i2.SharedEnum value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedEnum, _ilwf0zl1.SharedEnum> sharedEnum(
+    _ilwf0zl1.SharedEnum value,
+  ) => _is.ColumnValue(
     table.sharedEnum,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedEnum, _i2.SharedEnum> sharedEnumNullable(
-    _i2.SharedEnum? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedEnum, _ilwf0zl1.SharedEnum>
+  sharedEnumNullable(_ilwf0zl1.SharedEnum? value) => _is.ColumnValue(
     table.sharedEnumNullable,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedSealedParent, _i2.SharedSealedParent>
-  sharedSealedParent(_i2.SharedSealedParent value) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedSealedParent, _ilwf0zl1.SharedSealedParent>
+  sharedSealedParent(_ilwf0zl1.SharedSealedParent value) => _is.ColumnValue(
     table.sharedSealedParent,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedSealedParent, _i2.SharedSealedParent>
-  sharedSealedParentNullable(_i2.SharedSealedParent? value) => _i1.ColumnValue(
-    table.sharedSealedParentNullable,
-    value,
-  );
+  _is.ColumnValue<_ilwf0zl1.SharedSealedParent, _ilwf0zl1.SharedSealedParent>
+  sharedSealedParentNullable(_ilwf0zl1.SharedSealedParent? value) =>
+      _is.ColumnValue(
+        table.sharedSealedParentNullable,
+        value,
+      );
 
-  _i1.ColumnValue<_i2.SharedSealedChild, _i2.SharedSealedChild>
-  sharedSealedChild(_i2.SharedSealedChild value) => _i1.ColumnValue(
+  _is.ColumnValue<_ilwf0zl1.SharedSealedChild, _ilwf0zl1.SharedSealedChild>
+  sharedSealedChild(_ilwf0zl1.SharedSealedChild value) => _is.ColumnValue(
     table.sharedSealedChild,
     value,
   );
 
-  _i1.ColumnValue<_i2.SharedSealedChild, _i2.SharedSealedChild>
-  sharedSealedChildNullable(_i2.SharedSealedChild? value) => _i1.ColumnValue(
-    table.sharedSealedChildNullable,
-    value,
-  );
+  _is.ColumnValue<_ilwf0zl1.SharedSealedChild, _ilwf0zl1.SharedSealedChild>
+  sharedSealedChildNullable(_ilwf0zl1.SharedSealedChild? value) =>
+      _is.ColumnValue(
+        table.sharedSealedChildNullable,
+        value,
+      );
 
-  _i1.ColumnValue<_i3.SharedModelSubclass, _i3.SharedModelSubclass>
-  sharedModelSubclass(_i3.SharedModelSubclass value) => _i1.ColumnValue(
+  _is.ColumnValue<_iu5vt3uc.SharedModelSubclass, _iu5vt3uc.SharedModelSubclass>
+  sharedModelSubclass(_iu5vt3uc.SharedModelSubclass value) => _is.ColumnValue(
     table.sharedModelSubclass,
     value,
   );
 
-  _i1.ColumnValue<_i3.SharedModelSubclass, _i3.SharedModelSubclass>
-  sharedModelSubclassNullable(_i3.SharedModelSubclass? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_iu5vt3uc.SharedModelSubclass, _iu5vt3uc.SharedModelSubclass>
+  sharedModelSubclassNullable(_iu5vt3uc.SharedModelSubclass? value) =>
+      _is.ColumnValue(
         table.sharedModelSubclassNullable,
         value,
       );
 
-  _i1.ColumnValue<List<_i2.SharedModel>, List<_i2.SharedModel>> sharedModelList(
-    List<_i2.SharedModel> value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<List<_ilwf0zl1.SharedModel>, List<_ilwf0zl1.SharedModel>>
+  sharedModelList(List<_ilwf0zl1.SharedModel> value) => _is.ColumnValue(
     table.sharedModelList,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.SharedModel?>, List<_i2.SharedModel?>>
-  sharedModelNullableList(List<_i2.SharedModel?> value) => _i1.ColumnValue(
-    table.sharedModelNullableList,
-    value,
-  );
+  _is.ColumnValue<List<_ilwf0zl1.SharedModel?>, List<_ilwf0zl1.SharedModel?>>
+  sharedModelNullableList(List<_ilwf0zl1.SharedModel?> value) =>
+      _is.ColumnValue(
+        table.sharedModelNullableList,
+        value,
+      );
 
-  _i1.ColumnValue<List<_i2.SharedModel>, List<_i2.SharedModel>>
-  sharedModelListNullable(List<_i2.SharedModel>? value) => _i1.ColumnValue(
-    table.sharedModelListNullable,
-    value,
-  );
+  _is.ColumnValue<List<_ilwf0zl1.SharedModel>, List<_ilwf0zl1.SharedModel>>
+  sharedModelListNullable(List<_ilwf0zl1.SharedModel>? value) =>
+      _is.ColumnValue(
+        table.sharedModelListNullable,
+        value,
+      );
 
-  _i1.ColumnValue<Map<String, _i2.SharedModel>, Map<String, _i2.SharedModel>>
-  sharedModelMap(Map<String, _i2.SharedModel> value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    Map<String, _ilwf0zl1.SharedModel>,
+    Map<String, _ilwf0zl1.SharedModel>
+  >
+  sharedModelMap(Map<String, _ilwf0zl1.SharedModel> value) => _is.ColumnValue(
     table.sharedModelMap,
     value,
   );
 
-  _i1.ColumnValue<Map<String, _i2.SharedModel>, Map<String, _i2.SharedModel>>
-  sharedModelMapNullable(Map<String, _i2.SharedModel>? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<
+    Map<String, _ilwf0zl1.SharedModel>,
+    Map<String, _ilwf0zl1.SharedModel>
+  >
+  sharedModelMapNullable(Map<String, _ilwf0zl1.SharedModel>? value) =>
+      _is.ColumnValue(
         table.sharedModelMapNullable,
         value,
       );
 
-  _i1.ColumnValue<
-    Map<String, _i2.SharedSubclass>,
-    Map<String, _i2.SharedSubclass>
+  _is.ColumnValue<
+    Map<String, _ilwf0zl1.SharedSubclass>,
+    Map<String, _ilwf0zl1.SharedSubclass>
   >
-  sharedSubclassMap(Map<String, _i2.SharedSubclass> value) => _i1.ColumnValue(
-    table.sharedSubclassMap,
-    value,
-  );
+  sharedSubclassMap(Map<String, _ilwf0zl1.SharedSubclass> value) =>
+      _is.ColumnValue(
+        table.sharedSubclassMap,
+        value,
+      );
 
-  _i1.ColumnValue<Set<_i2.SharedModel>, Set<_i2.SharedModel>> sharedModelSet(
-    Set<_i2.SharedModel> value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<Set<_ilwf0zl1.SharedModel>, Set<_ilwf0zl1.SharedModel>>
+  sharedModelSet(Set<_ilwf0zl1.SharedModel> value) => _is.ColumnValue(
     table.sharedModelSet,
     value,
   );
 
-  _i1.ColumnValue<Set<_i2.SharedModel>, Set<_i2.SharedModel>>
-  sharedModelSetNullable(Set<_i2.SharedModel>? value) => _i1.ColumnValue(
+  _is.ColumnValue<Set<_ilwf0zl1.SharedModel>, Set<_ilwf0zl1.SharedModel>>
+  sharedModelSetNullable(Set<_ilwf0zl1.SharedModel>? value) => _is.ColumnValue(
     table.sharedModelSetNullable,
     value,
   );
 }
 
-class SharedModelContainerTable extends _i1.Table<int?> {
+class SharedModelContainerTable extends _is.Table<int?> {
   SharedModelContainerTable({super.tableRelation})
     : super(tableName: 'shared_model_container') {
     updateTable = SharedModelContainerUpdateTable(this);
-    sharedModel = _i1.ColumnSerializable<_i2.SharedModel>(
+    sharedModel = _is.ColumnSerializable<_ilwf0zl1.SharedModel>(
       'sharedModel',
       this,
     );
-    sharedModelWithModuleAlias = _i1.ColumnSerializable<_i2.SharedModel>(
+    sharedModelWithModuleAlias = _is.ColumnSerializable<_ilwf0zl1.SharedModel>(
       'sharedModelWithModuleAlias',
       this,
     );
-    sharedModelNullable = _i1.ColumnSerializable<_i2.SharedModel>(
+    sharedModelNullable = _is.ColumnSerializable<_ilwf0zl1.SharedModel>(
       'sharedModelNullable',
       this,
     );
-    serverOnlySharedModel = _i1.ColumnSerializable<_i2.SharedModel>(
+    serverOnlySharedModel = _is.ColumnSerializable<_ilwf0zl1.SharedModel>(
       'serverOnlySharedModel',
       this,
     );
-    sharedSubclass = _i1.ColumnSerializable<_i2.SharedSubclass>(
+    sharedSubclass = _is.ColumnSerializable<_ilwf0zl1.SharedSubclass>(
       'sharedSubclass',
       this,
     );
-    sharedSubclassNullable = _i1.ColumnSerializable<_i2.SharedSubclass>(
+    sharedSubclassNullable = _is.ColumnSerializable<_ilwf0zl1.SharedSubclass>(
       'sharedSubclassNullable',
       this,
     );
-    sharedEnum = _i1.ColumnEnum(
+    sharedEnum = _is.ColumnEnum(
       'sharedEnum',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    sharedEnumNullable = _i1.ColumnEnum(
+    sharedEnumNullable = _is.ColumnEnum(
       'sharedEnumNullable',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    sharedSealedParent = _i1.ColumnSerializable<_i2.SharedSealedParent>(
+    sharedSealedParent = _is.ColumnSerializable<_ilwf0zl1.SharedSealedParent>(
       'sharedSealedParent',
       this,
     );
-    sharedSealedParentNullable = _i1.ColumnSerializable<_i2.SharedSealedParent>(
-      'sharedSealedParentNullable',
-      this,
-    );
-    sharedSealedChild = _i1.ColumnSerializable<_i2.SharedSealedChild>(
+    sharedSealedParentNullable =
+        _is.ColumnSerializable<_ilwf0zl1.SharedSealedParent>(
+          'sharedSealedParentNullable',
+          this,
+        );
+    sharedSealedChild = _is.ColumnSerializable<_ilwf0zl1.SharedSealedChild>(
       'sharedSealedChild',
       this,
     );
-    sharedSealedChildNullable = _i1.ColumnSerializable<_i2.SharedSealedChild>(
-      'sharedSealedChildNullable',
-      this,
-    );
-    sharedModelSubclass = _i1.ColumnSerializable<_i3.SharedModelSubclass>(
+    sharedSealedChildNullable =
+        _is.ColumnSerializable<_ilwf0zl1.SharedSealedChild>(
+          'sharedSealedChildNullable',
+          this,
+        );
+    sharedModelSubclass = _is.ColumnSerializable<_iu5vt3uc.SharedModelSubclass>(
       'sharedModelSubclass',
       this,
     );
     sharedModelSubclassNullable =
-        _i1.ColumnSerializable<_i3.SharedModelSubclass>(
+        _is.ColumnSerializable<_iu5vt3uc.SharedModelSubclass>(
           'sharedModelSubclassNullable',
           this,
         );
-    sharedModelList = _i1.ColumnSerializable<List<_i2.SharedModel>>(
+    sharedModelList = _is.ColumnSerializable<List<_ilwf0zl1.SharedModel>>(
       'sharedModelList',
       this,
     );
-    sharedModelNullableList = _i1.ColumnSerializable<List<_i2.SharedModel?>>(
-      'sharedModelNullableList',
-      this,
-    );
-    sharedModelListNullable = _i1.ColumnSerializable<List<_i2.SharedModel>>(
-      'sharedModelListNullable',
-      this,
-    );
-    sharedModelMap = _i1.ColumnSerializable<Map<String, _i2.SharedModel>>(
+    sharedModelNullableList =
+        _is.ColumnSerializable<List<_ilwf0zl1.SharedModel?>>(
+          'sharedModelNullableList',
+          this,
+        );
+    sharedModelListNullable =
+        _is.ColumnSerializable<List<_ilwf0zl1.SharedModel>>(
+          'sharedModelListNullable',
+          this,
+        );
+    sharedModelMap = _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedModel>>(
       'sharedModelMap',
       this,
     );
     sharedModelMapNullable =
-        _i1.ColumnSerializable<Map<String, _i2.SharedModel>>(
+        _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedModel>>(
           'sharedModelMapNullable',
           this,
         );
-    sharedSubclassMap = _i1.ColumnSerializable<Map<String, _i2.SharedSubclass>>(
-      'sharedSubclassMap',
-      this,
-    );
-    sharedModelSet = _i1.ColumnSerializable<Set<_i2.SharedModel>>(
+    sharedSubclassMap =
+        _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedSubclass>>(
+          'sharedSubclassMap',
+          this,
+        );
+    sharedModelSet = _is.ColumnSerializable<Set<_ilwf0zl1.SharedModel>>(
       'sharedModelSet',
       this,
     );
-    sharedModelSetNullable = _i1.ColumnSerializable<Set<_i2.SharedModel>>(
+    sharedModelSetNullable = _is.ColumnSerializable<Set<_ilwf0zl1.SharedModel>>(
       'sharedModelSetNullable',
       this,
     );
@@ -835,62 +856,68 @@ class SharedModelContainerTable extends _i1.Table<int?> {
 
   late final SharedModelContainerUpdateTable updateTable;
 
-  late final _i1.ColumnSerializable<_i2.SharedModel> sharedModel;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedModel> sharedModel;
 
-  late final _i1.ColumnSerializable<_i2.SharedModel> sharedModelWithModuleAlias;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedModel>
+  sharedModelWithModuleAlias;
 
-  late final _i1.ColumnSerializable<_i2.SharedModel> sharedModelNullable;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedModel> sharedModelNullable;
 
-  late final _i1.ColumnSerializable<_i2.SharedModel> serverOnlySharedModel;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedModel>
+  serverOnlySharedModel;
 
-  late final _i1.ColumnSerializable<_i2.SharedSubclass> sharedSubclass;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSubclass> sharedSubclass;
 
-  late final _i1.ColumnSerializable<_i2.SharedSubclass> sharedSubclassNullable;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSubclass>
+  sharedSubclassNullable;
 
-  late final _i1.ColumnEnum<_i2.SharedEnum> sharedEnum;
+  late final _is.ColumnEnum<_ilwf0zl1.SharedEnum> sharedEnum;
 
-  late final _i1.ColumnEnum<_i2.SharedEnum> sharedEnumNullable;
+  late final _is.ColumnEnum<_ilwf0zl1.SharedEnum> sharedEnumNullable;
 
-  late final _i1.ColumnSerializable<_i2.SharedSealedParent> sharedSealedParent;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSealedParent>
+  sharedSealedParent;
 
-  late final _i1.ColumnSerializable<_i2.SharedSealedParent>
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSealedParent>
   sharedSealedParentNullable;
 
-  late final _i1.ColumnSerializable<_i2.SharedSealedChild> sharedSealedChild;
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSealedChild>
+  sharedSealedChild;
 
-  late final _i1.ColumnSerializable<_i2.SharedSealedChild>
+  late final _is.ColumnSerializable<_ilwf0zl1.SharedSealedChild>
   sharedSealedChildNullable;
 
-  late final _i1.ColumnSerializable<_i3.SharedModelSubclass>
+  late final _is.ColumnSerializable<_iu5vt3uc.SharedModelSubclass>
   sharedModelSubclass;
 
-  late final _i1.ColumnSerializable<_i3.SharedModelSubclass>
+  late final _is.ColumnSerializable<_iu5vt3uc.SharedModelSubclass>
   sharedModelSubclassNullable;
 
-  late final _i1.ColumnSerializable<List<_i2.SharedModel>> sharedModelList;
+  late final _is.ColumnSerializable<List<_ilwf0zl1.SharedModel>>
+  sharedModelList;
 
-  late final _i1.ColumnSerializable<List<_i2.SharedModel?>>
+  late final _is.ColumnSerializable<List<_ilwf0zl1.SharedModel?>>
   sharedModelNullableList;
 
-  late final _i1.ColumnSerializable<List<_i2.SharedModel>>
+  late final _is.ColumnSerializable<List<_ilwf0zl1.SharedModel>>
   sharedModelListNullable;
 
-  late final _i1.ColumnSerializable<Map<String, _i2.SharedModel>>
+  late final _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedModel>>
   sharedModelMap;
 
-  late final _i1.ColumnSerializable<Map<String, _i2.SharedModel>>
+  late final _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedModel>>
   sharedModelMapNullable;
 
-  late final _i1.ColumnSerializable<Map<String, _i2.SharedSubclass>>
+  late final _is.ColumnSerializable<Map<String, _ilwf0zl1.SharedSubclass>>
   sharedSubclassMap;
 
-  late final _i1.ColumnSerializable<Set<_i2.SharedModel>> sharedModelSet;
+  late final _is.ColumnSerializable<Set<_ilwf0zl1.SharedModel>> sharedModelSet;
 
-  late final _i1.ColumnSerializable<Set<_i2.SharedModel>>
+  late final _is.ColumnSerializable<Set<_ilwf0zl1.SharedModel>>
   sharedModelSetNullable;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sharedModel,
     sharedModelWithModuleAlias,
@@ -917,42 +944,42 @@ class SharedModelContainerTable extends _i1.Table<int?> {
   ];
 }
 
-class SharedModelContainerInclude extends _i1.IncludeObject {
-  @_i5.internal
+class SharedModelContainerInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   SharedModelContainerInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => SharedModelContainer.t;
+  _is.Table<int?> get table => SharedModelContainer.t;
 }
 
-class SharedModelContainerIncludeList extends _i1.IncludeList {
-  @_i5.internal
+class SharedModelContainerIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   SharedModelContainerIncludeList.internal_({
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(SharedModelContainer.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SharedModelContainer.t;
+  _is.Table<int?> get table => SharedModelContainer.t;
 }
 
 class SharedModelContainerRepository {
@@ -981,15 +1008,15 @@ class SharedModelContainerRepository {
   /// );
   /// ```
   Future<List<SharedModelContainer>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SharedModelContainer>(
       where: where?.call(SharedModelContainer.t),
@@ -1021,14 +1048,14 @@ class SharedModelContainerRepository {
   /// );
   /// ```
   Future<SharedModelContainer?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SharedModelContainer>(
       where: where?.call(SharedModelContainer.t),
@@ -1043,11 +1070,11 @@ class SharedModelContainerRepository {
 
   /// Finds a single [SharedModelContainer] by its [id] or null if no such row exists.
   Future<SharedModelContainer?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SharedModelContainer>(
       id,
@@ -1072,9 +1099,9 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SharedModelContainer> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -1090,9 +1117,9 @@ class SharedModelContainerRepository {
   ///
   /// The returned [SharedModelContainer] will have its `id` field set.
   Future<SharedModelContainer> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SharedModelContainer row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SharedModelContainer>(
       row,
@@ -1121,12 +1148,12 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SharedModelContainer> rows, {
-    required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
-    _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SharedModelContainerTable> conflictColumns,
+    _is.ColumnSelections<SharedModelContainerTable>? updateColumns,
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SharedModelContainer>(
@@ -1153,12 +1180,12 @@ class SharedModelContainerRepository {
   ///
   /// The returned [SharedModelContainer] will have its `id` field set.
   Future<SharedModelContainer?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SharedModelContainer row, {
-    required _i1.ColumnSelections<SharedModelContainerTable> conflictColumns,
-    _i1.ColumnSelections<SharedModelContainerTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SharedModelContainerTable> conflictColumns,
+    _is.ColumnSelections<SharedModelContainerTable>? updateColumns,
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SharedModelContainer>(
       row,
@@ -1179,10 +1206,10 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SharedModelContainer> rows, {
-    _i1.ColumnSelections<SharedModelContainerTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SharedModelContainerTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SharedModelContainer>(
@@ -1197,10 +1224,10 @@ class SharedModelContainerRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SharedModelContainer> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SharedModelContainer row, {
-    _i1.ColumnSelections<SharedModelContainerTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SharedModelContainerTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SharedModelContainer>(
       row,
@@ -1212,11 +1239,11 @@ class SharedModelContainerRepository {
   /// Updates a single [SharedModelContainer] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SharedModelContainer?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SharedModelContainerUpdateTable>
+    required _is.ColumnValueListBuilder<SharedModelContainerUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SharedModelContainer>(
       id,
@@ -1232,15 +1259,15 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SharedModelContainerUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SharedModelContainerUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
+    required _is.WhereExpressionBuilder<SharedModelContainerTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SharedModelContainer>(
@@ -1267,11 +1294,11 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SharedModelContainer> rows, {
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SharedModelContainer>(
@@ -1285,9 +1312,9 @@ class SharedModelContainerRepository {
 
   /// Deletes a single [SharedModelContainer].
   Future<SharedModelContainer> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SharedModelContainer row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SharedModelContainer>(
       row,
@@ -1304,11 +1331,11 @@ class SharedModelContainerRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SharedModelContainer>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
-    _i1.OrderByBuilder<SharedModelContainerTable>? orderBy,
-    _i1.OrderByListBuilder<SharedModelContainerTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SharedModelContainerTable> where,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SharedModelContainer>(
@@ -1323,10 +1350,10 @@ class SharedModelContainerRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SharedModelContainer>(
       where: where?.call(SharedModelContainer.t),
@@ -1337,11 +1364,11 @@ class SharedModelContainerRepository {
 
   /// Acquires row-level locks on [SharedModelContainer] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SharedModelContainerTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SharedModelContainerTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SharedModelContainer>(
       where: where(SharedModelContainer.t),

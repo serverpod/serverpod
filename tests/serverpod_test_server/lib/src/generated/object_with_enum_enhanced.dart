@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'test_enum_enhanced.dart' as _i2;
-import 'test_enum_enhanced_by_name.dart' as _i3;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i4;
-import 'package:meta/meta.dart' as _i5;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'test_enum_enhanced.dart' as _it39smib;
+import 'test_enum_enhanced_by_name.dart' as _izw460bh;
 
 abstract class ObjectWithEnumEnhanced
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithEnumEnhanced._({
     this.id,
     required this.byIndex,
@@ -30,12 +30,12 @@ abstract class ObjectWithEnumEnhanced
 
   factory ObjectWithEnumEnhanced({
     int? id,
-    required _i2.TestEnumEnhanced byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    required List<_i2.TestEnumEnhanced> byIndexList,
-    required _i3.TestEnumEnhancedByName byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    required List<_i3.TestEnumEnhancedByName> byNameList,
+    required _it39smib.TestEnumEnhanced byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    required List<_it39smib.TestEnumEnhanced> byIndexList,
+    required _izw460bh.TestEnumEnhancedByName byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    required List<_izw460bh.TestEnumEnhancedByName> byNameList,
   }) = _ObjectWithEnumEnhancedImpl;
 
   factory ObjectWithEnumEnhanced.fromJson(
@@ -43,28 +43,30 @@ abstract class ObjectWithEnumEnhanced
   ) {
     return ObjectWithEnumEnhanced(
       id: jsonSerialization['id'] as int?,
-      byIndex: _i2.TestEnumEnhanced.fromJson(
+      byIndex: _it39smib.TestEnumEnhanced.fromJson(
         (jsonSerialization['byIndex'] as int),
       ),
       nullableByIndex: jsonSerialization['nullableByIndex'] == null
           ? null
-          : _i2.TestEnumEnhanced.fromJson(
+          : _it39smib.TestEnumEnhanced.fromJson(
               (jsonSerialization['nullableByIndex'] as int),
             ),
-      byIndexList: _i4.Protocol().deserialize<List<_i2.TestEnumEnhanced>>(
-        jsonSerialization['byIndexList'],
-      ),
-      byName: _i3.TestEnumEnhancedByName.fromJson(
+      byIndexList: _igqrxdcj.Protocol()
+          .deserialize<List<_it39smib.TestEnumEnhanced>>(
+            jsonSerialization['byIndexList'],
+          ),
+      byName: _izw460bh.TestEnumEnhancedByName.fromJson(
         (jsonSerialization['byName'] as String),
       ),
       nullableByName: jsonSerialization['nullableByName'] == null
           ? null
-          : _i3.TestEnumEnhancedByName.fromJson(
+          : _izw460bh.TestEnumEnhancedByName.fromJson(
               (jsonSerialization['nullableByName'] as String),
             ),
-      byNameList: _i4.Protocol().deserialize<List<_i3.TestEnumEnhancedByName>>(
-        jsonSerialization['byNameList'],
-      ),
+      byNameList: _igqrxdcj.Protocol()
+          .deserialize<List<_izw460bh.TestEnumEnhancedByName>>(
+            jsonSerialization['byNameList'],
+          ),
     );
   }
 
@@ -75,32 +77,32 @@ abstract class ObjectWithEnumEnhanced
   @override
   int? id;
 
-  _i2.TestEnumEnhanced byIndex;
+  _it39smib.TestEnumEnhanced byIndex;
 
-  _i2.TestEnumEnhanced? nullableByIndex;
+  _it39smib.TestEnumEnhanced? nullableByIndex;
 
-  List<_i2.TestEnumEnhanced> byIndexList;
+  List<_it39smib.TestEnumEnhanced> byIndexList;
 
-  _i3.TestEnumEnhancedByName byName;
+  _izw460bh.TestEnumEnhancedByName byName;
 
-  _i3.TestEnumEnhancedByName? nullableByName;
+  _izw460bh.TestEnumEnhancedByName? nullableByName;
 
-  List<_i3.TestEnumEnhancedByName> byNameList;
+  List<_izw460bh.TestEnumEnhancedByName> byNameList;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithEnumEnhanced]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithEnumEnhanced copyWith({
     int? id,
-    _i2.TestEnumEnhanced? byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    List<_i2.TestEnumEnhanced>? byIndexList,
-    _i3.TestEnumEnhancedByName? byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    List<_i3.TestEnumEnhancedByName>? byNameList,
+    _it39smib.TestEnumEnhanced? byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    List<_it39smib.TestEnumEnhanced>? byIndexList,
+    _izw460bh.TestEnumEnhancedByName? byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    List<_izw460bh.TestEnumEnhancedByName>? byNameList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -135,11 +137,11 @@ abstract class ObjectWithEnumEnhanced
   }
 
   static ObjectWithEnumEnhancedIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     ObjectWithEnumEnhancedInclude? include,
   }) {
     return ObjectWithEnumEnhancedIncludeList.internal_(
@@ -154,7 +156,7 @@ abstract class ObjectWithEnumEnhanced
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -163,12 +165,12 @@ class _Undefined {}
 class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
   _ObjectWithEnumEnhancedImpl({
     int? id,
-    required _i2.TestEnumEnhanced byIndex,
-    _i2.TestEnumEnhanced? nullableByIndex,
-    required List<_i2.TestEnumEnhanced> byIndexList,
-    required _i3.TestEnumEnhancedByName byName,
-    _i3.TestEnumEnhancedByName? nullableByName,
-    required List<_i3.TestEnumEnhancedByName> byNameList,
+    required _it39smib.TestEnumEnhanced byIndex,
+    _it39smib.TestEnumEnhanced? nullableByIndex,
+    required List<_it39smib.TestEnumEnhanced> byIndexList,
+    required _izw460bh.TestEnumEnhancedByName byName,
+    _izw460bh.TestEnumEnhancedByName? nullableByName,
+    required List<_izw460bh.TestEnumEnhancedByName> byNameList,
   }) : super._(
          id: id,
          byIndex: byIndex,
@@ -181,26 +183,26 @@ class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
 
   /// Returns a shallow copy of this [ObjectWithEnumEnhanced]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithEnumEnhanced copyWith({
     Object? id = _Undefined,
-    _i2.TestEnumEnhanced? byIndex,
+    _it39smib.TestEnumEnhanced? byIndex,
     Object? nullableByIndex = _Undefined,
-    List<_i2.TestEnumEnhanced>? byIndexList,
-    _i3.TestEnumEnhancedByName? byName,
+    List<_it39smib.TestEnumEnhanced>? byIndexList,
+    _izw460bh.TestEnumEnhancedByName? byName,
     Object? nullableByName = _Undefined,
-    List<_i3.TestEnumEnhancedByName>? byNameList,
+    List<_izw460bh.TestEnumEnhancedByName>? byNameList,
   }) {
     return ObjectWithEnumEnhanced(
       id: id is int? ? id : this.id,
       byIndex: byIndex ?? this.byIndex,
-      nullableByIndex: nullableByIndex is _i2.TestEnumEnhanced?
+      nullableByIndex: nullableByIndex is _it39smib.TestEnumEnhanced?
           ? nullableByIndex
           : this.nullableByIndex,
       byIndexList: byIndexList ?? this.byIndexList.map((e0) => e0).toList(),
       byName: byName ?? this.byName,
-      nullableByName: nullableByName is _i3.TestEnumEnhancedByName?
+      nullableByName: nullableByName is _izw460bh.TestEnumEnhancedByName?
           ? nullableByName
           : this.nullableByName,
       byNameList: byNameList ?? this.byNameList.map((e0) => e0).toList(),
@@ -209,80 +211,87 @@ class _ObjectWithEnumEnhancedImpl extends ObjectWithEnumEnhanced {
 }
 
 class ObjectWithEnumEnhancedUpdateTable
-    extends _i1.UpdateTable<ObjectWithEnumEnhancedTable> {
+    extends _is.UpdateTable<ObjectWithEnumEnhancedTable> {
   ObjectWithEnumEnhancedUpdateTable(super.table);
 
-  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced> byIndex(
-    _i2.TestEnumEnhanced value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_it39smib.TestEnumEnhanced, _it39smib.TestEnumEnhanced>
+  byIndex(_it39smib.TestEnumEnhanced value) => _is.ColumnValue(
     table.byIndex,
     value,
   );
 
-  _i1.ColumnValue<_i2.TestEnumEnhanced, _i2.TestEnumEnhanced> nullableByIndex(
-    _i2.TestEnumEnhanced? value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_it39smib.TestEnumEnhanced, _it39smib.TestEnumEnhanced>
+  nullableByIndex(_it39smib.TestEnumEnhanced? value) => _is.ColumnValue(
     table.nullableByIndex,
     value,
   );
 
-  _i1.ColumnValue<List<_i2.TestEnumEnhanced>, List<_i2.TestEnumEnhanced>>
-  byIndexList(List<_i2.TestEnumEnhanced> value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    List<_it39smib.TestEnumEnhanced>,
+    List<_it39smib.TestEnumEnhanced>
+  >
+  byIndexList(List<_it39smib.TestEnumEnhanced> value) => _is.ColumnValue(
     table.byIndexList,
     value,
   );
 
-  _i1.ColumnValue<_i3.TestEnumEnhancedByName, _i3.TestEnumEnhancedByName>
-  byName(_i3.TestEnumEnhancedByName value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _izw460bh.TestEnumEnhancedByName,
+    _izw460bh.TestEnumEnhancedByName
+  >
+  byName(_izw460bh.TestEnumEnhancedByName value) => _is.ColumnValue(
     table.byName,
     value,
   );
 
-  _i1.ColumnValue<_i3.TestEnumEnhancedByName, _i3.TestEnumEnhancedByName>
-  nullableByName(_i3.TestEnumEnhancedByName? value) => _i1.ColumnValue(
+  _is.ColumnValue<
+    _izw460bh.TestEnumEnhancedByName,
+    _izw460bh.TestEnumEnhancedByName
+  >
+  nullableByName(_izw460bh.TestEnumEnhancedByName? value) => _is.ColumnValue(
     table.nullableByName,
     value,
   );
 
-  _i1.ColumnValue<
-    List<_i3.TestEnumEnhancedByName>,
-    List<_i3.TestEnumEnhancedByName>
+  _is.ColumnValue<
+    List<_izw460bh.TestEnumEnhancedByName>,
+    List<_izw460bh.TestEnumEnhancedByName>
   >
-  byNameList(List<_i3.TestEnumEnhancedByName> value) => _i1.ColumnValue(
+  byNameList(List<_izw460bh.TestEnumEnhancedByName> value) => _is.ColumnValue(
     table.byNameList,
     value,
   );
 }
 
-class ObjectWithEnumEnhancedTable extends _i1.Table<int?> {
+class ObjectWithEnumEnhancedTable extends _is.Table<int?> {
   ObjectWithEnumEnhancedTable({super.tableRelation})
     : super(tableName: 'object_with_enum_enhanced') {
     updateTable = ObjectWithEnumEnhancedUpdateTable(this);
-    byIndex = _i1.ColumnEnum(
+    byIndex = _is.ColumnEnum(
       'byIndex',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
     );
-    nullableByIndex = _i1.ColumnEnum(
+    nullableByIndex = _is.ColumnEnum(
       'nullableByIndex',
       this,
-      _i1.EnumSerialization.byIndex,
+      _is.EnumSerialization.byIndex,
     );
-    byIndexList = _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>>(
+    byIndexList = _is.ColumnSerializable<List<_it39smib.TestEnumEnhanced>>(
       'byIndexList',
       this,
     );
-    byName = _i1.ColumnEnum(
+    byName = _is.ColumnEnum(
       'byName',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    nullableByName = _i1.ColumnEnum(
+    nullableByName = _is.ColumnEnum(
       'nullableByName',
       this,
-      _i1.EnumSerialization.byName,
+      _is.EnumSerialization.byName,
     );
-    byNameList = _i1.ColumnSerializable<List<_i3.TestEnumEnhancedByName>>(
+    byNameList = _is.ColumnSerializable<List<_izw460bh.TestEnumEnhancedByName>>(
       'byNameList',
       this,
     );
@@ -290,21 +299,22 @@ class ObjectWithEnumEnhancedTable extends _i1.Table<int?> {
 
   late final ObjectWithEnumEnhancedUpdateTable updateTable;
 
-  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> byIndex;
+  late final _is.ColumnEnum<_it39smib.TestEnumEnhanced> byIndex;
 
-  late final _i1.ColumnEnum<_i2.TestEnumEnhanced> nullableByIndex;
+  late final _is.ColumnEnum<_it39smib.TestEnumEnhanced> nullableByIndex;
 
-  late final _i1.ColumnSerializable<List<_i2.TestEnumEnhanced>> byIndexList;
+  late final _is.ColumnSerializable<List<_it39smib.TestEnumEnhanced>>
+  byIndexList;
 
-  late final _i1.ColumnEnum<_i3.TestEnumEnhancedByName> byName;
+  late final _is.ColumnEnum<_izw460bh.TestEnumEnhancedByName> byName;
 
-  late final _i1.ColumnEnum<_i3.TestEnumEnhancedByName> nullableByName;
+  late final _is.ColumnEnum<_izw460bh.TestEnumEnhancedByName> nullableByName;
 
-  late final _i1.ColumnSerializable<List<_i3.TestEnumEnhancedByName>>
+  late final _is.ColumnSerializable<List<_izw460bh.TestEnumEnhancedByName>>
   byNameList;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     byIndex,
     nullableByIndex,
@@ -315,42 +325,42 @@ class ObjectWithEnumEnhancedTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithEnumEnhancedInclude extends _i1.IncludeObject {
-  @_i5.internal
+class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ObjectWithEnumEnhancedInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithEnumEnhanced.t;
+  _is.Table<int?> get table => ObjectWithEnumEnhanced.t;
 }
 
-class ObjectWithEnumEnhancedIncludeList extends _i1.IncludeList {
-  @_i5.internal
+class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ObjectWithEnumEnhancedIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithEnumEnhanced.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithEnumEnhanced.t;
+  _is.Table<int?> get table => ObjectWithEnumEnhanced.t;
 }
 
 class ObjectWithEnumEnhancedRepository {
@@ -379,15 +389,15 @@ class ObjectWithEnumEnhancedRepository {
   /// );
   /// ```
   Future<List<ObjectWithEnumEnhanced>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithEnumEnhanced>(
       where: where?.call(ObjectWithEnumEnhanced.t),
@@ -419,14 +429,14 @@ class ObjectWithEnumEnhancedRepository {
   /// );
   /// ```
   Future<ObjectWithEnumEnhanced?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithEnumEnhanced>(
       where: where?.call(ObjectWithEnumEnhanced.t),
@@ -441,11 +451,11 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Finds a single [ObjectWithEnumEnhanced] by its [id] or null if no such row exists.
   Future<ObjectWithEnumEnhanced?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithEnumEnhanced>(
       id,
@@ -470,9 +480,9 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -488,9 +498,9 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// The returned [ObjectWithEnumEnhanced] will have its `id` field set.
   Future<ObjectWithEnumEnhanced> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithEnumEnhanced>(
       row,
@@ -519,12 +529,12 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
-    required _i1.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithEnumEnhanced>(
@@ -551,12 +561,12 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// The returned [ObjectWithEnumEnhanced] will have its `id` field set.
   Future<ObjectWithEnumEnhanced?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
-    required _i1.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
-    _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectWithEnumEnhancedTable> conflictColumns,
+    _is.ColumnSelections<ObjectWithEnumEnhancedTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithEnumEnhanced>(
       row,
@@ -577,10 +587,10 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
-    _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithEnumEnhanced>(
@@ -595,10 +605,10 @@ class ObjectWithEnumEnhancedRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithEnumEnhanced> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
-    _i1.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithEnumEnhancedTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithEnumEnhanced>(
       row,
@@ -610,11 +620,11 @@ class ObjectWithEnumEnhancedRepository {
   /// Updates a single [ObjectWithEnumEnhanced] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithEnumEnhanced?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithEnumEnhanced>(
       id,
@@ -630,15 +640,15 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithEnumEnhancedUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithEnumEnhanced>(
@@ -665,11 +675,11 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithEnumEnhanced> rows, {
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithEnumEnhanced>(
@@ -683,9 +693,9 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Deletes a single [ObjectWithEnumEnhanced].
   Future<ObjectWithEnumEnhanced> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithEnumEnhanced row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithEnumEnhanced>(
       row,
@@ -702,11 +712,11 @@ class ObjectWithEnumEnhancedRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithEnumEnhanced>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
-    _i1.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithEnumEnhanced>(
@@ -721,10 +731,10 @@ class ObjectWithEnumEnhancedRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithEnumEnhanced>(
       where: where?.call(ObjectWithEnumEnhanced.t),
@@ -735,11 +745,11 @@ class ObjectWithEnumEnhancedRepository {
 
   /// Acquires row-level locks on [ObjectWithEnumEnhanced] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithEnumEnhanced>(
       where: where(ObjectWithEnumEnhanced.t),

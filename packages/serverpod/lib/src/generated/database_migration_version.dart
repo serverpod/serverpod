@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod/serverpod.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 
 /// Represents a version of a database migration with a table.
 abstract class DatabaseMigrationVersion
-    extends _i1.DatabaseMigrationVersionModel
-    implements _i2.TableRow<int?>, _i2.ProtocolSerialization {
+    extends _isd.DatabaseMigrationVersionModel
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DatabaseMigrationVersion._({
     this.id,
     required super.module,
@@ -40,7 +40,7 @@ abstract class DatabaseMigrationVersion
       version: jsonSerialization['version'] as String,
       timestamp: jsonSerialization['timestamp'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['timestamp']),
     );
   }
 
@@ -52,12 +52,12 @@ abstract class DatabaseMigrationVersion
   int? id;
 
   @override
-  _i2.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   DatabaseMigrationVersion copyWith({
     int? id,
     String? module,
@@ -91,11 +91,11 @@ abstract class DatabaseMigrationVersion
   }
 
   static DatabaseMigrationVersionIncludeList includeList({
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
   }) {
     return DatabaseMigrationVersionIncludeList._(
@@ -110,7 +110,7 @@ abstract class DatabaseMigrationVersion
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -131,7 +131,7 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
 
   /// Returns a shallow copy of this [DatabaseMigrationVersion]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   DatabaseMigrationVersion copyWith({
     Object? id = _Undefined,
@@ -149,39 +149,39 @@ class _DatabaseMigrationVersionImpl extends DatabaseMigrationVersion {
 }
 
 class DatabaseMigrationVersionUpdateTable
-    extends _i2.UpdateTable<DatabaseMigrationVersionTable> {
+    extends _is.UpdateTable<DatabaseMigrationVersionTable> {
   DatabaseMigrationVersionUpdateTable(super.table);
 
-  _i2.ColumnValue<String, String> module(String value) => _i2.ColumnValue(
+  _is.ColumnValue<String, String> module(String value) => _is.ColumnValue(
     table.module,
     value,
   );
 
-  _i2.ColumnValue<String, String> version(String value) => _i2.ColumnValue(
+  _is.ColumnValue<String, String> version(String value) => _is.ColumnValue(
     table.version,
     value,
   );
 
-  _i2.ColumnValue<DateTime, DateTime> timestamp(DateTime? value) =>
-      _i2.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> timestamp(DateTime? value) =>
+      _is.ColumnValue(
         table.timestamp,
         value,
       );
 }
 
-class DatabaseMigrationVersionTable extends _i2.Table<int?> {
+class DatabaseMigrationVersionTable extends _is.Table<int?> {
   DatabaseMigrationVersionTable({super.tableRelation})
     : super(tableName: 'serverpod_migrations') {
     updateTable = DatabaseMigrationVersionUpdateTable(this);
-    module = _i2.ColumnString(
+    module = _is.ColumnString(
       'module',
       this,
     );
-    version = _i2.ColumnString(
+    version = _is.ColumnString(
       'version',
       this,
     );
-    timestamp = _i2.ColumnDateTime(
+    timestamp = _is.ColumnDateTime(
       'timestamp',
       this,
     );
@@ -190,16 +190,16 @@ class DatabaseMigrationVersionTable extends _i2.Table<int?> {
   late final DatabaseMigrationVersionUpdateTable updateTable;
 
   /// The module the migration belongs to.
-  late final _i2.ColumnString module;
+  late final _is.ColumnString module;
 
   /// The version of the migration.
-  late final _i2.ColumnString version;
+  late final _is.ColumnString version;
 
   /// The timestamp of the migration. Only set if the migration is applied.
-  late final _i2.ColumnDateTime timestamp;
+  late final _is.ColumnDateTime timestamp;
 
   @override
-  List<_i2.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     module,
     version,
@@ -207,19 +207,19 @@ class DatabaseMigrationVersionTable extends _i2.Table<int?> {
   ];
 }
 
-class DatabaseMigrationVersionInclude extends _i2.IncludeObject {
+class DatabaseMigrationVersionInclude extends _is.IncludeObject {
   DatabaseMigrationVersionInclude._();
 
   @override
-  Map<String, _i2.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i2.Table<int?> get table => DatabaseMigrationVersion.t;
+  _is.Table<int?> get table => DatabaseMigrationVersion.t;
 }
 
-class DatabaseMigrationVersionIncludeList extends _i2.IncludeList {
+class DatabaseMigrationVersionIncludeList extends _is.IncludeList {
   DatabaseMigrationVersionIncludeList._({
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -230,10 +230,10 @@ class DatabaseMigrationVersionIncludeList extends _i2.IncludeList {
   }
 
   @override
-  Map<String, _i2.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i2.Table<int?> get table => DatabaseMigrationVersion.t;
+  _is.Table<int?> get table => DatabaseMigrationVersion.t;
 }
 
 class DatabaseMigrationVersionRepository {
@@ -262,15 +262,15 @@ class DatabaseMigrationVersionRepository {
   /// );
   /// ```
   Future<List<DatabaseMigrationVersion>> find(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
@@ -302,14 +302,14 @@ class DatabaseMigrationVersionRepository {
   /// );
   /// ```
   Future<DatabaseMigrationVersion?> findFirstRow(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? offset,
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
@@ -324,11 +324,11 @@ class DatabaseMigrationVersionRepository {
 
   /// Finds a single [DatabaseMigrationVersion] by its [id] or null if no such row exists.
   Future<DatabaseMigrationVersion?> findById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i2.Transaction? transaction,
-    _i2.LockMode? lockMode,
-    _i2.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DatabaseMigrationVersion>(
       id,
@@ -353,9 +353,9 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> insert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -371,9 +371,9 @@ class DatabaseMigrationVersionRepository {
   ///
   /// The returned [DatabaseMigrationVersion] will have its `id` field set.
   Future<DatabaseMigrationVersion> insertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     DatabaseMigrationVersion row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DatabaseMigrationVersion>(
       row,
@@ -402,13 +402,13 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> upsert(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
-    required _i2.ColumnSelections<DatabaseMigrationVersionTable>
+    required _is.ColumnSelections<DatabaseMigrationVersionTable>
     conflictColumns,
-    _i2.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DatabaseMigrationVersion>(
@@ -435,13 +435,13 @@ class DatabaseMigrationVersionRepository {
   ///
   /// The returned [DatabaseMigrationVersion] will have its `id` field set.
   Future<DatabaseMigrationVersion?> upsertRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     DatabaseMigrationVersion row, {
-    required _i2.ColumnSelections<DatabaseMigrationVersionTable>
+    required _is.ColumnSelections<DatabaseMigrationVersionTable>
     conflictColumns,
-    _i2.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<DatabaseMigrationVersionTable>? updateColumns,
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DatabaseMigrationVersion>(
       row,
@@ -462,10 +462,10 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> update(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
-    _i2.ColumnSelections<DatabaseMigrationVersionTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<DatabaseMigrationVersionTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DatabaseMigrationVersion>(
@@ -480,10 +480,10 @@ class DatabaseMigrationVersionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DatabaseMigrationVersion> updateRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     DatabaseMigrationVersion row, {
-    _i2.ColumnSelections<DatabaseMigrationVersionTable>? columns,
-    _i2.Transaction? transaction,
+    _is.ColumnSelections<DatabaseMigrationVersionTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DatabaseMigrationVersion>(
       row,
@@ -495,11 +495,11 @@ class DatabaseMigrationVersionRepository {
   /// Updates a single [DatabaseMigrationVersion] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DatabaseMigrationVersion?> updateById(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i2.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+    required _is.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
     columnValues,
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DatabaseMigrationVersion>(
       id,
@@ -515,15 +515,15 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> updateWhere(
-    _i2.DatabaseSession session, {
-    required _i2.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DatabaseMigrationVersionUpdateTable>
     columnValues,
-    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    required _is.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
     int? limit,
     int? offset,
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DatabaseMigrationVersion>(
@@ -550,11 +550,11 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> delete(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DatabaseMigrationVersion> rows, {
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DatabaseMigrationVersion>(
@@ -568,9 +568,9 @@ class DatabaseMigrationVersionRepository {
 
   /// Deletes a single [DatabaseMigrationVersion].
   Future<DatabaseMigrationVersion> deleteRow(
-    _i2.DatabaseSession session,
+    _is.DatabaseSession session,
     DatabaseMigrationVersion row, {
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DatabaseMigrationVersion>(
       row,
@@ -587,11 +587,11 @@ class DatabaseMigrationVersionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DatabaseMigrationVersion>> deleteWhere(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
-    _i2.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
-    _i2.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
-    _i2.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DatabaseMigrationVersion>(
@@ -606,10 +606,10 @@ class DatabaseMigrationVersionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i2.DatabaseSession session, {
-    _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     int? limit,
-    _i2.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DatabaseMigrationVersion>(
       where: where?.call(DatabaseMigrationVersion.t),
@@ -620,11 +620,11 @@ class DatabaseMigrationVersionRepository {
 
   /// Acquires row-level locks on [DatabaseMigrationVersion] rows matching the [where] expression.
   Future<void> lockRows(
-    _i2.DatabaseSession session, {
-    required _i2.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
-    required _i2.LockMode lockMode,
-    required _i2.Transaction transaction,
-    _i2.LockBehavior lockBehavior = _i2.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DatabaseMigrationVersionTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DatabaseMigrationVersion>(
       where: where(DatabaseMigrationVersion.t),

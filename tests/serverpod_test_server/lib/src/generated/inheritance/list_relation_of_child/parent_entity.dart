@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../inheritance/list_relation_of_child/child_entity.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../inheritance/list_relation_of_child/child_entity.dart'
+    as _i41rqetj;
 
 abstract class ParentEntity
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ParentEntity._({
     this.id,
     this.children,
@@ -25,7 +26,7 @@ abstract class ParentEntity
 
   factory ParentEntity({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   }) = _ParentEntityImpl;
 
   factory ParentEntity.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -33,7 +34,7 @@ abstract class ParentEntity
       id: jsonSerialization['id'] as int?,
       children: jsonSerialization['children'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ChildEntity>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i41rqetj.ChildEntity>>(
               jsonSerialization['children'],
             ),
     );
@@ -46,17 +47,17 @@ abstract class ParentEntity
   @override
   int? id;
 
-  List<_i2.ChildEntity>? children;
+  List<_i41rqetj.ChildEntity>? children;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ParentEntity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ParentEntity copyWith({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,16 +79,18 @@ abstract class ParentEntity
     };
   }
 
-  static ParentEntityInclude include({_i2.ChildEntityIncludeList? children}) {
+  static ParentEntityInclude include({
+    _i41rqetj.ChildEntityIncludeList? children,
+  }) {
     return ParentEntityInclude.internal_(children: children);
   }
 
   static ParentEntityIncludeList includeList({
-    _i1.WhereExpressionBuilder<ParentEntityTable>? where,
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
   }) {
     return ParentEntityIncludeList.internal_(
@@ -102,7 +105,7 @@ abstract class ParentEntity
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -111,7 +114,7 @@ class _Undefined {}
 class _ParentEntityImpl extends ParentEntity {
   _ParentEntityImpl({
     int? id,
-    List<_i2.ChildEntity>? children,
+    List<_i41rqetj.ChildEntity>? children,
   }) : super._(
          id: id,
          children: children,
@@ -119,7 +122,7 @@ class _ParentEntityImpl extends ParentEntity {
 
   /// Returns a shallow copy of this [ParentEntity]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ParentEntity copyWith({
     Object? id = _Undefined,
@@ -127,54 +130,56 @@ class _ParentEntityImpl extends ParentEntity {
   }) {
     return ParentEntity(
       id: id is int? ? id : this.id,
-      children: children is List<_i2.ChildEntity>?
+      children: children is List<_i41rqetj.ChildEntity>?
           ? children
           : this.children?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class ParentEntityUpdateTable extends _i1.UpdateTable<ParentEntityTable> {
+class ParentEntityUpdateTable extends _is.UpdateTable<ParentEntityTable> {
   ParentEntityUpdateTable(super.table);
 }
 
-class ParentEntityTable extends _i1.Table<int?> {
+class ParentEntityTable extends _is.Table<int?> {
   ParentEntityTable({super.tableRelation}) : super(tableName: 'parent_entity') {
     updateTable = ParentEntityUpdateTable(this);
   }
 
   late final ParentEntityUpdateTable updateTable;
 
-  _i2.ChildEntityTable? ___children;
+  _i41rqetj.ChildEntityTable? ___children;
 
-  _i1.ManyRelation<_i2.ChildEntityTable>? _children;
+  _is.ManyRelation<_i41rqetj.ChildEntityTable>? _children;
 
-  _i2.ChildEntityTable get __children {
+  _i41rqetj.ChildEntityTable get __children {
     if (___children != null) return ___children!;
-    ___children = _i1.createRelationTable(
+    ___children = _is.createRelationTable(
       relationFieldName: '__children',
       field: ParentEntity.t.id,
-      foreignField: _i2.ChildEntity.t.$_parentEntityChildrenParentEntityId,
+      foreignField:
+          _i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChildEntityTable(tableRelation: foreignTableRelation),
+          _i41rqetj.ChildEntityTable(tableRelation: foreignTableRelation),
     );
     return ___children!;
   }
 
-  _i1.ManyRelation<_i2.ChildEntityTable> get children {
+  _is.ManyRelation<_i41rqetj.ChildEntityTable> get children {
     if (_children != null) return _children!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'children',
       field: ParentEntity.t.id,
-      foreignField: _i2.ChildEntity.t.$_parentEntityChildrenParentEntityId,
+      foreignField:
+          _i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ChildEntityTable(tableRelation: foreignTableRelation),
+          _i41rqetj.ChildEntityTable(tableRelation: foreignTableRelation),
     );
-    _children = _i1.ManyRelation<_i2.ChildEntityTable>(
+    _children = _is.ManyRelation<_i41rqetj.ChildEntityTable>(
       tableWithRelations: relationTable,
-      table: _i2.ChildEntityTable(
+      table: _i41rqetj.ChildEntityTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -182,10 +187,10 @@ class ParentEntityTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [id];
+  List<_is.Column> get columns => [id];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'children') {
       return __children;
     }
@@ -193,47 +198,47 @@ class ParentEntityTable extends _i1.Table<int?> {
   }
 }
 
-class ParentEntityInclude extends _i1.IncludeObject {
-  @_i4.internal
+class ParentEntityInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   ParentEntityInclude.internal_({
-    _i2.ChildEntityIncludeList? children,
-    List<_i1.Column>? this.selectedColumns,
+    _i41rqetj.ChildEntityIncludeList? children,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _children = children;
   }
 
-  _i2.ChildEntityIncludeList? _children;
+  _i41rqetj.ChildEntityIncludeList? _children;
 
-  final List<_i1.Column>? selectedColumns;
-
-  @override
-  Map<String, _i1.Include?> get includes => {'children': _children};
+  final List<_is.Column>? selectedColumns;
 
   @override
-  _i1.Table<int?> get table => ParentEntity.t;
+  Map<String, _is.Include?> get includes => {'children': _children};
+
+  @override
+  _is.Table<int?> get table => ParentEntity.t;
 }
 
-class ParentEntityIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class ParentEntityIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   ParentEntityIncludeList.internal_({
-    _i1.WhereExpressionBuilder<ParentEntityTable>? where,
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(ParentEntity.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ParentEntity.t;
+  _is.Table<int?> get table => ParentEntity.t;
 }
 
 class ParentEntityRepository {
@@ -270,16 +275,16 @@ class ParentEntityRepository {
   /// );
   /// ```
   Future<List<ParentEntity>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
     ParentEntityInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ParentEntity>(
       where: where?.call(ParentEntity.t),
@@ -312,15 +317,15 @@ class ParentEntityRepository {
   /// );
   /// ```
   Future<ParentEntity?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
     ParentEntityInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ParentEntity>(
       where: where?.call(ParentEntity.t),
@@ -336,12 +341,12 @@ class ParentEntityRepository {
 
   /// Finds a single [ParentEntity] by its [id] or null if no such row exists.
   Future<ParentEntity?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     ParentEntityInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ParentEntity>(
       id,
@@ -367,9 +372,9 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentEntity> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -385,9 +390,9 @@ class ParentEntityRepository {
   ///
   /// The returned [ParentEntity] will have its `id` field set.
   Future<ParentEntity> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ParentEntity>(
       row,
@@ -416,12 +421,12 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentEntity> rows, {
-    required _i1.ColumnSelections<ParentEntityTable> conflictColumns,
-    _i1.ColumnSelections<ParentEntityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ParentEntityTable> conflictColumns,
+    _is.ColumnSelections<ParentEntityTable>? updateColumns,
+    _is.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ParentEntity>(
@@ -448,12 +453,12 @@ class ParentEntityRepository {
   ///
   /// The returned [ParentEntity] will have its `id` field set.
   Future<ParentEntity?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity row, {
-    required _i1.ColumnSelections<ParentEntityTable> conflictColumns,
-    _i1.ColumnSelections<ParentEntityTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ParentEntityTable> conflictColumns,
+    _is.ColumnSelections<ParentEntityTable>? updateColumns,
+    _is.WhereExpressionBuilder<ParentEntityTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ParentEntity>(
       row,
@@ -474,10 +479,10 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentEntity> rows, {
-    _i1.ColumnSelections<ParentEntityTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ParentEntityTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ParentEntity>(
@@ -492,10 +497,10 @@ class ParentEntityRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ParentEntity> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity row, {
-    _i1.ColumnSelections<ParentEntityTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ParentEntityTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ParentEntity>(
       row,
@@ -507,10 +512,10 @@ class ParentEntityRepository {
   /// Updates a single [ParentEntity] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ParentEntity?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ParentEntityUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<ParentEntityUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ParentEntity>(
       id,
@@ -526,14 +531,14 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ParentEntityUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<ParentEntityTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ParentEntityUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<ParentEntityTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ParentEntity>(
@@ -560,11 +565,11 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ParentEntity> rows, {
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ParentEntity>(
@@ -578,9 +583,9 @@ class ParentEntityRepository {
 
   /// Deletes a single [ParentEntity].
   Future<ParentEntity> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ParentEntity>(
       row,
@@ -597,11 +602,11 @@ class ParentEntityRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ParentEntity>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ParentEntityTable> where,
-    _i1.OrderByBuilder<ParentEntityTable>? orderBy,
-    _i1.OrderByListBuilder<ParentEntityTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ParentEntityTable> where,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ParentEntity>(
@@ -616,10 +621,10 @@ class ParentEntityRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ParentEntityTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ParentEntity>(
       where: where?.call(ParentEntity.t),
@@ -630,11 +635,11 @@ class ParentEntityRepository {
 
   /// Acquires row-level locks on [ParentEntity] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ParentEntityTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ParentEntityTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ParentEntity>(
       where: where(ParentEntity.t),
@@ -651,10 +656,10 @@ class ParentEntityAttachRepository {
   /// Creates a relation between this [ParentEntity] and the given [ChildEntity]s
   /// by setting each [ChildEntity]'s foreign key `_parentEntityChildrenParentEntityId` to refer to this [ParentEntity].
   Future<void> children(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity parentEntity,
-    List<_i2.ChildEntity> childEntity, {
-    _i1.Transaction? transaction,
+    List<_i41rqetj.ChildEntity> childEntity, {
+    _is.Transaction? transaction,
   }) async {
     if (childEntity.any((e) => e.id == null)) {
       throw ArgumentError.notNull('childEntity.id');
@@ -665,15 +670,15 @@ class ParentEntityAttachRepository {
 
     var $childEntity = childEntity
         .map(
-          (e) => _i2.ChildEntityImplicit(
+          (e) => _i41rqetj.ChildEntityImplicit(
             e,
             $_parentEntityChildrenParentEntityId: parentEntity.id,
           ),
         )
         .toList();
-    await session.db.update<_i2.ChildEntity>(
+    await session.db.update<_i41rqetj.ChildEntity>(
       $childEntity,
-      columns: [_i2.ChildEntity.t.$_parentEntityChildrenParentEntityId],
+      columns: [_i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId],
       transaction: transaction,
     );
   }
@@ -685,10 +690,10 @@ class ParentEntityAttachRowRepository {
   /// Creates a relation between this [ParentEntity] and the given [ChildEntity]
   /// by setting the [ChildEntity]'s foreign key `_parentEntityChildrenParentEntityId` to refer to this [ParentEntity].
   Future<void> children(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ParentEntity parentEntity,
-    _i2.ChildEntity childEntity, {
-    _i1.Transaction? transaction,
+    _i41rqetj.ChildEntity childEntity, {
+    _is.Transaction? transaction,
   }) async {
     if (childEntity.id == null) {
       throw ArgumentError.notNull('childEntity.id');
@@ -697,13 +702,13 @@ class ParentEntityAttachRowRepository {
       throw ArgumentError.notNull('parentEntity.id');
     }
 
-    var $childEntity = _i2.ChildEntityImplicit(
+    var $childEntity = _i41rqetj.ChildEntityImplicit(
       childEntity,
       $_parentEntityChildrenParentEntityId: parentEntity.id,
     );
-    await session.db.updateRow<_i2.ChildEntity>(
+    await session.db.updateRow<_i41rqetj.ChildEntity>(
       $childEntity,
-      columns: [_i2.ChildEntity.t.$_parentEntityChildrenParentEntityId],
+      columns: [_i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId],
       transaction: transaction,
     );
   }
@@ -718,9 +723,9 @@ class ParentEntityDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> children(
-    _i1.DatabaseSession session,
-    List<_i2.ChildEntity> childEntity, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    List<_i41rqetj.ChildEntity> childEntity, {
+    _is.Transaction? transaction,
   }) async {
     if (childEntity.any((e) => e.id == null)) {
       throw ArgumentError.notNull('childEntity.id');
@@ -728,15 +733,15 @@ class ParentEntityDetachRepository {
 
     var $childEntity = childEntity
         .map(
-          (e) => _i2.ChildEntityImplicit(
+          (e) => _i41rqetj.ChildEntityImplicit(
             e,
             $_parentEntityChildrenParentEntityId: null,
           ),
         )
         .toList();
-    await session.db.update<_i2.ChildEntity>(
+    await session.db.update<_i41rqetj.ChildEntity>(
       $childEntity,
-      columns: [_i2.ChildEntity.t.$_parentEntityChildrenParentEntityId],
+      columns: [_i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId],
       transaction: transaction,
     );
   }
@@ -751,21 +756,21 @@ class ParentEntityDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> children(
-    _i1.DatabaseSession session,
-    _i2.ChildEntity childEntity, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _i41rqetj.ChildEntity childEntity, {
+    _is.Transaction? transaction,
   }) async {
     if (childEntity.id == null) {
       throw ArgumentError.notNull('childEntity.id');
     }
 
-    var $childEntity = _i2.ChildEntityImplicit(
+    var $childEntity = _i41rqetj.ChildEntityImplicit(
       childEntity,
       $_parentEntityChildrenParentEntityId: null,
     );
-    await session.db.updateRow<_i2.ChildEntity>(
+    await session.db.updateRow<_i41rqetj.ChildEntity>(
       $childEntity,
-      columns: [_i2.ChildEntity.t.$_parentEntityChildrenParentEntityId],
+      columns: [_i41rqetj.ChildEntity.t.$_parentEntityChildrenParentEntityId],
       transaction: transaction,
     );
   }

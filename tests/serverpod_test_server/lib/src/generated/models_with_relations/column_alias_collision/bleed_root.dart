@@ -11,11 +11,11 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 import '../../models_with_relations/column_alias_collision/bleed_child.dart'
-    as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
-import 'package:meta/meta.dart' as _i4;
+    as _i2rsfnut;
 
 /// Root model used to reproduce the include column-alias collision in
 /// https://github.com/serverpod/serverpod/issues/5287
@@ -30,7 +30,7 @@ import 'package:meta/meta.dart' as _i4;
 /// The two relations are declared with explicit `field=` foreign keys so the FK
 /// column names stay short (the long names only affect the relation aliases).
 abstract class BleedRoot
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   BleedRoot._({
     this.id,
     required this.name,
@@ -44,9 +44,9 @@ abstract class BleedRoot
     int? id,
     required String name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) = _BleedRootImpl;
 
   factory BleedRoot.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -58,7 +58,7 @@ abstract class BleedRoot
           jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun24'] ==
               null
           ? null
-          : _i3.Protocol().deserialize<_i2.BleedChild>(
+          : _igqrxdcj.Protocol().deserialize<_i2rsfnut.BleedChild>(
               jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun24'],
             ),
       secondChildId: jsonSerialization['secondChildId'] as int?,
@@ -66,7 +66,7 @@ abstract class BleedRoot
           jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun23'] ==
               null
           ? null
-          : _i3.Protocol().deserialize<_i2.BleedChild>(
+          : _igqrxdcj.Protocol().deserialize<_i2rsfnut.BleedChild>(
               jsonSerialization['childRelationWithExtremelyLongFieldNameForcingTrun23'],
             ),
     );
@@ -83,25 +83,25 @@ abstract class BleedRoot
 
   int? firstChildId;
 
-  _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24;
+  _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24;
 
   int? secondChildId;
 
-  _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23;
+  _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BleedRoot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BleedRoot copyWith({
     int? id,
     String? name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -140,8 +140,10 @@ abstract class BleedRoot
   }
 
   static BleedRootInclude include({
-    _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun24,
-    _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChildInclude?
+    childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChildInclude?
+    childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) {
     return BleedRootInclude.internal_(
       childRelationWithExtremelyLongFieldNameForcingTrun24:
@@ -152,11 +154,11 @@ abstract class BleedRoot
   }
 
   static BleedRootIncludeList includeList({
-    _i1.WhereExpressionBuilder<BleedRootTable>? where,
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
     BleedRootInclude? include,
   }) {
     return BleedRootIncludeList.internal_(
@@ -171,7 +173,7 @@ abstract class BleedRoot
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -182,9 +184,9 @@ class _BleedRootImpl extends BleedRoot {
     int? id,
     required String name,
     int? firstChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun24,
     int? secondChildId,
-    _i2.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _i2rsfnut.BleedChild? childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) : super._(
          id: id,
          name: name,
@@ -198,7 +200,7 @@ class _BleedRootImpl extends BleedRoot {
 
   /// Returns a shallow copy of this [BleedRoot]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BleedRoot copyWith({
     Object? id = _Undefined,
@@ -214,14 +216,14 @@ class _BleedRootImpl extends BleedRoot {
       firstChildId: firstChildId is int? ? firstChildId : this.firstChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24
-              is _i2.BleedChild?
+              is _i2rsfnut.BleedChild?
           ? childRelationWithExtremelyLongFieldNameForcingTrun24
           : this.childRelationWithExtremelyLongFieldNameForcingTrun24
                 ?.copyWith(),
       secondChildId: secondChildId is int? ? secondChildId : this.secondChildId,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
           childRelationWithExtremelyLongFieldNameForcingTrun23
-              is _i2.BleedChild?
+              is _i2rsfnut.BleedChild?
           ? childRelationWithExtremelyLongFieldNameForcingTrun23
           : this.childRelationWithExtremelyLongFieldNameForcingTrun23
                 ?.copyWith(),
@@ -229,37 +231,37 @@ class _BleedRootImpl extends BleedRoot {
   }
 }
 
-class BleedRootUpdateTable extends _i1.UpdateTable<BleedRootTable> {
+class BleedRootUpdateTable extends _is.UpdateTable<BleedRootTable> {
   BleedRootUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> firstChildId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> firstChildId(int? value) => _is.ColumnValue(
     table.firstChildId,
     value,
   );
 
-  _i1.ColumnValue<int, int> secondChildId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> secondChildId(int? value) => _is.ColumnValue(
     table.secondChildId,
     value,
   );
 }
 
-class BleedRootTable extends _i1.Table<int?> {
+class BleedRootTable extends _is.Table<int?> {
   BleedRootTable({super.tableRelation}) : super(tableName: 'bleed_root') {
     updateTable = BleedRootUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    firstChildId = _i1.ColumnInt(
+    firstChildId = _is.ColumnInt(
       'firstChildId',
       this,
     );
-    secondChildId = _i1.ColumnInt(
+    secondChildId = _is.ColumnInt(
       'secondChildId',
       this,
     );
@@ -267,50 +269,54 @@ class BleedRootTable extends _i1.Table<int?> {
 
   late final BleedRootUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt firstChildId;
+  late final _is.ColumnInt firstChildId;
 
-  _i2.BleedChildTable? _childRelationWithExtremelyLongFieldNameForcingTrun24;
+  _i2rsfnut.BleedChildTable?
+  _childRelationWithExtremelyLongFieldNameForcingTrun24;
 
-  late final _i1.ColumnInt secondChildId;
+  late final _is.ColumnInt secondChildId;
 
-  _i2.BleedChildTable? _childRelationWithExtremelyLongFieldNameForcingTrun23;
+  _i2rsfnut.BleedChildTable?
+  _childRelationWithExtremelyLongFieldNameForcingTrun23;
 
-  _i2.BleedChildTable get childRelationWithExtremelyLongFieldNameForcingTrun24 {
+  _i2rsfnut.BleedChildTable
+  get childRelationWithExtremelyLongFieldNameForcingTrun24 {
     if (_childRelationWithExtremelyLongFieldNameForcingTrun24 != null)
       return _childRelationWithExtremelyLongFieldNameForcingTrun24!;
-    _childRelationWithExtremelyLongFieldNameForcingTrun24 = _i1
+    _childRelationWithExtremelyLongFieldNameForcingTrun24 = _is
         .createRelationTable(
           relationFieldName:
               'childRelationWithExtremelyLongFieldNameForcingTrun24',
           field: BleedRoot.t.firstChildId,
-          foreignField: _i2.BleedChild.t.id,
+          foreignField: _i2rsfnut.BleedChild.t.id,
           tableRelation: tableRelation,
           createTable: (foreignTableRelation) =>
-              _i2.BleedChildTable(tableRelation: foreignTableRelation),
+              _i2rsfnut.BleedChildTable(tableRelation: foreignTableRelation),
         );
     return _childRelationWithExtremelyLongFieldNameForcingTrun24!;
   }
 
-  _i2.BleedChildTable get childRelationWithExtremelyLongFieldNameForcingTrun23 {
+  _i2rsfnut.BleedChildTable
+  get childRelationWithExtremelyLongFieldNameForcingTrun23 {
     if (_childRelationWithExtremelyLongFieldNameForcingTrun23 != null)
       return _childRelationWithExtremelyLongFieldNameForcingTrun23!;
-    _childRelationWithExtremelyLongFieldNameForcingTrun23 = _i1
+    _childRelationWithExtremelyLongFieldNameForcingTrun23 = _is
         .createRelationTable(
           relationFieldName:
               'childRelationWithExtremelyLongFieldNameForcingTrun23',
           field: BleedRoot.t.secondChildId,
-          foreignField: _i2.BleedChild.t.id,
+          foreignField: _i2rsfnut.BleedChild.t.id,
           tableRelation: tableRelation,
           createTable: (foreignTableRelation) =>
-              _i2.BleedChildTable(tableRelation: foreignTableRelation),
+              _i2rsfnut.BleedChildTable(tableRelation: foreignTableRelation),
         );
     return _childRelationWithExtremelyLongFieldNameForcingTrun23!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     firstChildId,
@@ -318,7 +324,7 @@ class BleedRootTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField ==
         'childRelationWithExtremelyLongFieldNameForcingTrun24') {
       return childRelationWithExtremelyLongFieldNameForcingTrun24;
@@ -331,12 +337,14 @@ class BleedRootTable extends _i1.Table<int?> {
   }
 }
 
-class BleedRootInclude extends _i1.IncludeObject {
-  @_i4.internal
+class BleedRootInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   BleedRootInclude.internal_({
-    _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun24,
-    _i2.BleedChildInclude? childRelationWithExtremelyLongFieldNameForcingTrun23,
-    List<_i1.Column>? this.selectedColumns,
+    _i2rsfnut.BleedChildInclude?
+    childRelationWithExtremelyLongFieldNameForcingTrun24,
+    _i2rsfnut.BleedChildInclude?
+    childRelationWithExtremelyLongFieldNameForcingTrun23,
+    List<_is.Column>? this.selectedColumns,
   }) {
     _childRelationWithExtremelyLongFieldNameForcingTrun24 =
         childRelationWithExtremelyLongFieldNameForcingTrun24;
@@ -344,14 +352,16 @@ class BleedRootInclude extends _i1.IncludeObject {
         childRelationWithExtremelyLongFieldNameForcingTrun23;
   }
 
-  _i2.BleedChildInclude? _childRelationWithExtremelyLongFieldNameForcingTrun24;
+  _i2rsfnut.BleedChildInclude?
+  _childRelationWithExtremelyLongFieldNameForcingTrun24;
 
-  _i2.BleedChildInclude? _childRelationWithExtremelyLongFieldNameForcingTrun23;
+  _i2rsfnut.BleedChildInclude?
+  _childRelationWithExtremelyLongFieldNameForcingTrun23;
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'childRelationWithExtremelyLongFieldNameForcingTrun24':
         _childRelationWithExtremelyLongFieldNameForcingTrun24,
     'childRelationWithExtremelyLongFieldNameForcingTrun23':
@@ -359,30 +369,30 @@ class BleedRootInclude extends _i1.IncludeObject {
   };
 
   @override
-  _i1.Table<int?> get table => BleedRoot.t;
+  _is.Table<int?> get table => BleedRoot.t;
 }
 
-class BleedRootIncludeList extends _i1.IncludeList {
-  @_i4.internal
+class BleedRootIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   BleedRootIncludeList.internal_({
-    _i1.WhereExpressionBuilder<BleedRootTable>? where,
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(BleedRoot.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => BleedRoot.t;
+  _is.Table<int?> get table => BleedRoot.t;
 }
 
 class BleedRootRepository {
@@ -415,16 +425,16 @@ class BleedRootRepository {
   /// );
   /// ```
   Future<List<BleedRoot>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedRootTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
     BleedRootInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BleedRoot>(
       where: where?.call(BleedRoot.t),
@@ -457,15 +467,15 @@ class BleedRootRepository {
   /// );
   /// ```
   Future<BleedRoot?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedRootTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
     BleedRootInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BleedRoot>(
       where: where?.call(BleedRoot.t),
@@ -481,12 +491,12 @@ class BleedRootRepository {
 
   /// Finds a single [BleedRoot] by its [id] or null if no such row exists.
   Future<BleedRoot?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     BleedRootInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BleedRoot>(
       id,
@@ -512,9 +522,9 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedRoot> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -530,9 +540,9 @@ class BleedRootRepository {
   ///
   /// The returned [BleedRoot] will have its `id` field set.
   Future<BleedRoot> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<BleedRoot>(
       row,
@@ -561,12 +571,12 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedRoot> rows, {
-    required _i1.ColumnSelections<BleedRootTable> conflictColumns,
-    _i1.ColumnSelections<BleedRootTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BleedRootTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BleedRootTable> conflictColumns,
+    _is.ColumnSelections<BleedRootTable>? updateColumns,
+    _is.WhereExpressionBuilder<BleedRootTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<BleedRoot>(
@@ -593,12 +603,12 @@ class BleedRootRepository {
   ///
   /// The returned [BleedRoot] will have its `id` field set.
   Future<BleedRoot?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot row, {
-    required _i1.ColumnSelections<BleedRootTable> conflictColumns,
-    _i1.ColumnSelections<BleedRootTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BleedRootTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BleedRootTable> conflictColumns,
+    _is.ColumnSelections<BleedRootTable>? updateColumns,
+    _is.WhereExpressionBuilder<BleedRootTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BleedRoot>(
       row,
@@ -619,10 +629,10 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedRoot> rows, {
-    _i1.ColumnSelections<BleedRootTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BleedRootTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<BleedRoot>(
@@ -637,10 +647,10 @@ class BleedRootRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BleedRoot> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot row, {
-    _i1.ColumnSelections<BleedRootTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BleedRootTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<BleedRoot>(
       row,
@@ -652,10 +662,10 @@ class BleedRootRepository {
   /// Updates a single [BleedRoot] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BleedRoot?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BleedRootUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<BleedRootUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<BleedRoot>(
       id,
@@ -671,14 +681,14 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BleedRootUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<BleedRootTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BleedRootUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<BleedRootTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BleedRoot>(
@@ -705,11 +715,11 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BleedRoot> rows, {
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<BleedRoot>(
@@ -723,9 +733,9 @@ class BleedRootRepository {
 
   /// Deletes a single [BleedRoot].
   Future<BleedRoot> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<BleedRoot>(
       row,
@@ -742,11 +752,11 @@ class BleedRootRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BleedRoot>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BleedRootTable> where,
-    _i1.OrderByBuilder<BleedRootTable>? orderBy,
-    _i1.OrderByListBuilder<BleedRootTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BleedRootTable> where,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BleedRoot>(
@@ -761,10 +771,10 @@ class BleedRootRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BleedRootTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<BleedRoot>(
       where: where?.call(BleedRoot.t),
@@ -775,11 +785,11 @@ class BleedRootRepository {
 
   /// Acquires row-level locks on [BleedRoot] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BleedRootTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BleedRootTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BleedRoot>(
       where: where(BleedRoot.t),
@@ -796,10 +806,10 @@ class BleedRootAttachRowRepository {
   /// Creates a relation between the given [BleedRoot] and [BleedChild]
   /// by setting the [BleedRoot]'s foreign key `firstChildId` to refer to the [BleedChild].
   Future<void> childRelationWithExtremelyLongFieldNameForcingTrun24(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot bleedRoot,
-    _i2.BleedChild childRelationWithExtremelyLongFieldNameForcingTrun24, {
-    _i1.Transaction? transaction,
+    _i2rsfnut.BleedChild childRelationWithExtremelyLongFieldNameForcingTrun24, {
+    _is.Transaction? transaction,
   }) async {
     if (bleedRoot.id == null) {
       throw ArgumentError.notNull('bleedRoot.id');
@@ -823,10 +833,10 @@ class BleedRootAttachRowRepository {
   /// Creates a relation between the given [BleedRoot] and [BleedChild]
   /// by setting the [BleedRoot]'s foreign key `secondChildId` to refer to the [BleedChild].
   Future<void> childRelationWithExtremelyLongFieldNameForcingTrun23(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot bleedRoot,
-    _i2.BleedChild childRelationWithExtremelyLongFieldNameForcingTrun23, {
-    _i1.Transaction? transaction,
+    _i2rsfnut.BleedChild childRelationWithExtremelyLongFieldNameForcingTrun23, {
+    _is.Transaction? transaction,
   }) async {
     if (bleedRoot.id == null) {
       throw ArgumentError.notNull('bleedRoot.id');
@@ -857,9 +867,9 @@ class BleedRootDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> childRelationWithExtremelyLongFieldNameForcingTrun24(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot bleedRoot, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (bleedRoot.id == null) {
       throw ArgumentError.notNull('bleedRoot.id');
@@ -879,9 +889,9 @@ class BleedRootDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> childRelationWithExtremelyLongFieldNameForcingTrun23(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BleedRoot bleedRoot, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (bleedRoot.id == null) {
       throw ArgumentError.notNull('bleedRoot.id');

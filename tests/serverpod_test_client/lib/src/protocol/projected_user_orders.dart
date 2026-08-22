@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'projected_order_description.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_order_description.dart' as _id3wrdef;
 
 abstract class ProjectedUserOrders
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ProjectedUserOrders._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class ProjectedUserOrders
   factory ProjectedUserOrders({
     int? id,
     required String name,
-    List<_i2.ProjectedOrderDescription>? orders,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
   }) = _ProjectedUserOrdersImpl;
 
   factory ProjectedUserOrders.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,9 +34,10 @@ abstract class ProjectedUserOrders
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ProjectedOrderDescription>>(
-              jsonSerialization['orders'],
-            ),
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_id3wrdef.ProjectedOrderDescription>>(
+                  jsonSerialization['orders'],
+                ),
     );
   }
 
@@ -47,15 +48,15 @@ abstract class ProjectedUserOrders
 
   String name;
 
-  List<_i2.ProjectedOrderDescription>? orders;
+  List<_id3wrdef.ProjectedOrderDescription>? orders;
 
   /// Returns a shallow copy of this [ProjectedUserOrders]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ProjectedUserOrders copyWith({
     int? id,
     String? name,
-    List<_i2.ProjectedOrderDescription>? orders,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -78,8 +79,8 @@ abstract class ProjectedUserOrders
         'orders': orders?.toJson(
           valueToJson: (v) =>
               // ignore: unnecessary_type_check
-              v is _i1.ProtocolSerialization
-              ? (v as _i1.ProtocolSerialization).toJsonForProtocol()
+              v is _isc.ProtocolSerialization
+              ? (v as _isc.ProtocolSerialization).toJsonForProtocol()
               :
                 // ignore: dead_code
                 v.toJson(),
@@ -89,7 +90,7 @@ abstract class ProjectedUserOrders
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,7 +100,7 @@ class _ProjectedUserOrdersImpl extends ProjectedUserOrders {
   _ProjectedUserOrdersImpl({
     int? id,
     required String name,
-    List<_i2.ProjectedOrderDescription>? orders,
+    List<_id3wrdef.ProjectedOrderDescription>? orders,
   }) : super._(
          id: id,
          name: name,
@@ -108,7 +109,7 @@ class _ProjectedUserOrdersImpl extends ProjectedUserOrders {
 
   /// Returns a shallow copy of this [ProjectedUserOrders]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ProjectedUserOrders copyWith({
     Object? id = _Undefined,
@@ -118,7 +119,7 @@ class _ProjectedUserOrdersImpl extends ProjectedUserOrders {
     return ProjectedUserOrders(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      orders: orders is List<_i2.ProjectedOrderDescription>?
+      orders: orders is List<_id3wrdef.ProjectedOrderDescription>?
           ? orders
           : this.orders?.map((e0) => e0.copyWith()).toList(),
     );

@@ -47,7 +47,7 @@ void main() {
         test('declares a Serverpod class extending the framework class.', () {
           expect(
             serverpodFile,
-            matches(r'class Serverpod extends _i\d+\.Serverpod'),
+            matches(r'class Serverpod extends _i[a-z0-9]+\.Serverpod'),
           );
         });
 
@@ -63,8 +63,8 @@ void main() {
         test(
           'wires the generated Protocol and Endpoints in the super call.',
           () {
-            expect(serverpodFile, matches(r'_i\d+\.Protocol\(\)'));
-            expect(serverpodFile, matches(r'_i\d+\.Endpoints\(\)'));
+            expect(serverpodFile, matches(r'_i[a-z0-9]+\.Protocol\(\)'));
+            expect(serverpodFile, matches(r'_i[a-z0-9]+\.Endpoints\(\)'));
           },
         );
 

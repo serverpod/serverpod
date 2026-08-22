@@ -10,14 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'log_settings.dart' as _i2;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_service_client/src/protocol/protocol.dart'
+    as _ian793c4;
+import 'log_settings.dart' as _illv0ea4;
 
 /// Information about an override for log settings for either an entire
 /// endpoint or a specific method.
 abstract class LogSettingsOverride
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   LogSettingsOverride._({
     this.module,
     this.endpoint,
@@ -29,7 +30,7 @@ abstract class LogSettingsOverride
     String? module,
     String? endpoint,
     String? method,
-    required _i2.LogSettings logSettings,
+    required _illv0ea4.LogSettings logSettings,
   }) = _LogSettingsOverrideImpl;
 
   factory LogSettingsOverride.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +38,7 @@ abstract class LogSettingsOverride
       module: jsonSerialization['module'] as String?,
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
-      logSettings: _i3.Protocol().deserialize<_i2.LogSettings>(
+      logSettings: _ian793c4.Protocol().deserialize<_illv0ea4.LogSettings>(
         jsonSerialization['logSettings'],
       ),
     );
@@ -53,16 +54,16 @@ abstract class LogSettingsOverride
   String? method;
 
   /// Log settings override.
-  _i2.LogSettings logSettings;
+  _illv0ea4.LogSettings logSettings;
 
   /// Returns a shallow copy of this [LogSettingsOverride]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   LogSettingsOverride copyWith({
     String? module,
     String? endpoint,
     String? method,
-    _i2.LogSettings? logSettings,
+    _illv0ea4.LogSettings? logSettings,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -88,7 +89,7 @@ abstract class LogSettingsOverride
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -99,7 +100,7 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
     String? module,
     String? endpoint,
     String? method,
-    required _i2.LogSettings logSettings,
+    required _illv0ea4.LogSettings logSettings,
   }) : super._(
          module: module,
          endpoint: endpoint,
@@ -109,13 +110,13 @@ class _LogSettingsOverrideImpl extends LogSettingsOverride {
 
   /// Returns a shallow copy of this [LogSettingsOverride]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   LogSettingsOverride copyWith({
     Object? module = _Undefined,
     Object? endpoint = _Undefined,
     Object? method = _Undefined,
-    _i2.LogSettings? logSettings,
+    _illv0ea4.LogSettings? logSettings,
   }) {
     return LogSettingsOverride(
       module: module is String? ? module : this.module,

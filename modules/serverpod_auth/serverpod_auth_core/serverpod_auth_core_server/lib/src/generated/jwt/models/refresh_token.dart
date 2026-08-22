@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../auth_user/models/auth_user.dart' as _i2;
-import 'dart:typed_data' as _i3;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
+import '../../auth_user/models/auth_user.dart' as _ivyervu7;
 
 /// Refresh token for JWT-based authentication.
 abstract class RefreshToken
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   RefreshToken._({
     this.id,
     required this.authUserId,
@@ -34,13 +35,13 @@ abstract class RefreshToken
        createdAt = createdAt ?? DateTime.now();
 
   factory RefreshToken({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     required Set<String> scopeNames,
     String? extraClaims,
     required String method,
-    required _i3.ByteData fixedSecret,
+    required _idt.ByteData fixedSecret,
     required String rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
@@ -50,32 +51,32 @@ abstract class RefreshToken
     return RefreshToken(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AuthUser>(
+          : _i8reeoob.Protocol().deserialize<_ivyervu7.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      scopeNames: _i4.Protocol().deserialize<Set<String>>(
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       extraClaims: jsonSerialization['extraClaims'] as String?,
       method: jsonSerialization['method'] as String,
-      fixedSecret: _i1.ByteDataJsonExtension.fromJson(
+      fixedSecret: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['fixedSecret'],
       ),
       rotatingSecretHash: jsonSerialization['rotatingSecretHash'] as String,
       lastUpdatedAt: jsonSerialization['lastUpdatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['lastUpdatedAt'],
             ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
     );
   }
 
@@ -84,12 +85,12 @@ abstract class RefreshToken
   static const db = RefreshTokenRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this refresh token belongs to.
-  _i2.AuthUser? authUser;
+  _ivyervu7.AuthUser? authUser;
 
   /// The scopes given to this session.
   ///
@@ -121,7 +122,7 @@ abstract class RefreshToken
   /// part in here, ensuring that no one with just a (potentially expired) JWT can invalidate the refresh token.
   ///
   /// Per default uses 16 bytes of random data.
-  _i3.ByteData fixedSecret;
+  _idt.ByteData fixedSecret;
 
   /// The most recent rotating secret associated with this refresh token.
   ///
@@ -139,19 +140,19 @@ abstract class RefreshToken
   DateTime createdAt;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [RefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RefreshToken copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _ivyervu7.AuthUser? authUser,
     Set<String>? scopeNames,
     String? extraClaims,
     String? method,
-    _i3.ByteData? fixedSecret,
+    _idt.ByteData? fixedSecret,
     String? rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
@@ -178,16 +179,16 @@ abstract class RefreshToken
     return {};
   }
 
-  static RefreshTokenInclude include({_i2.AuthUserInclude? authUser}) {
+  static RefreshTokenInclude include({_ivyervu7.AuthUserInclude? authUser}) {
     return RefreshTokenInclude._(authUser: authUser);
   }
 
   static RefreshTokenIncludeList includeList({
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     RefreshTokenInclude? include,
   }) {
     return RefreshTokenIncludeList._(
@@ -202,7 +203,7 @@ abstract class RefreshToken
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -210,13 +211,13 @@ class _Undefined {}
 
 class _RefreshTokenImpl extends RefreshToken {
   _RefreshTokenImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     required Set<String> scopeNames,
     String? extraClaims,
     required String method,
-    required _i3.ByteData fixedSecret,
+    required _idt.ByteData fixedSecret,
     required String rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
@@ -235,24 +236,24 @@ class _RefreshTokenImpl extends RefreshToken {
 
   /// Returns a shallow copy of this [RefreshToken]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RefreshToken copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
     Object? extraClaims = _Undefined,
     String? method,
-    _i3.ByteData? fixedSecret,
+    _idt.ByteData? fixedSecret,
     String? rotatingSecretHash,
     DateTime? lastUpdatedAt,
     DateTime? createdAt,
   }) {
     return RefreshToken(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _ivyervu7.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
@@ -266,91 +267,92 @@ class _RefreshTokenImpl extends RefreshToken {
   }
 }
 
-class RefreshTokenUpdateTable extends _i1.UpdateTable<RefreshTokenTable> {
+class RefreshTokenUpdateTable extends _is.UpdateTable<RefreshTokenTable> {
   RefreshTokenUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<String, String> extraClaims(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> extraClaims(String? value) => _is.ColumnValue(
     table.extraClaims,
     value,
   );
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String value) => _is.ColumnValue(
     table.method,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> fixedSecret(_i3.ByteData value) =>
-      _i1.ColumnValue(
-        table.fixedSecret,
-        value,
-      );
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> fixedSecret(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
+    table.fixedSecret,
+    value,
+  );
 
-  _i1.ColumnValue<String, String> rotatingSecretHash(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> rotatingSecretHash(String value) =>
+      _is.ColumnValue(
         table.rotatingSecretHash,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> lastUpdatedAt(DateTime value) =>
+      _is.ColumnValue(
         table.lastUpdatedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 }
 
-class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
+class RefreshTokenTable extends _is.Table<_is.UuidValue?> {
   RefreshTokenTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_core_jwt_refresh_token') {
     updateTable = RefreshTokenUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
+    scopeNames = _is.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
-    extraClaims = _i1.ColumnString(
+    extraClaims = _is.ColumnString(
       'extraClaims',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
-    fixedSecret = _i1.ColumnByteData(
+    fixedSecret = _is.ColumnByteData(
       'fixedSecret',
       this,
     );
-    rotatingSecretHash = _i1.ColumnString(
+    rotatingSecretHash = _is.ColumnString(
       'rotatingSecretHash',
       this,
     );
-    lastUpdatedAt = _i1.ColumnDateTime(
+    lastUpdatedAt = _is.ColumnDateTime(
       'lastUpdatedAt',
       this,
       hasDefault: true,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
@@ -359,15 +361,15 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
 
   late final RefreshTokenUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this refresh token belongs to.
-  _i2.AuthUserTable? _authUser;
+  _ivyervu7.AuthUserTable? _authUser;
 
   /// The scopes given to this session.
   ///
   /// These will also be added to each access token (JWT) created from this refresh token as a claim named "dev.serverpod.scopeNames".
-  late final _i1.ColumnSerializable<Set<String>> scopeNames;
+  late final _is.ColumnSerializable<Set<String>> scopeNames;
 
   /// Extra claims to be added to each access token created for this refresh token.
   ///
@@ -378,12 +380,12 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// or the above-mentioned claim for [scopeNames].
   ///
   /// This is only stored as a serialized String in the database due to schema limitations.
-  late final _i1.ColumnString extraClaims;
+  late final _is.ColumnString extraClaims;
 
   /// The method through which this token was created.
   ///
   /// This can be either an email or social login, a personal access token, service account etc.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
   /// The fixed part of the secret.
   ///
@@ -394,7 +396,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   /// part in here, ensuring that no one with just a (potentially expired) JWT can invalidate the refresh token.
   ///
   /// Per default uses 16 bytes of random data.
-  late final _i1.ColumnByteData fixedSecret;
+  late final _is.ColumnByteData fixedSecret;
 
   /// The most recent rotating secret associated with this refresh token.
   ///
@@ -403,29 +405,29 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   ///
   /// Per default uses 64 bytes of random data, and its hash is stored in PHC format:
   /// $argon2id$v=19$m={memory},t={iterations},p={lanes}${base64Salt}$${base64Hash}
-  late final _i1.ColumnString rotatingSecretHash;
+  late final _is.ColumnString rotatingSecretHash;
 
   /// The time when the [rotatingSecretHash] was last updated.
-  late final _i1.ColumnDateTime lastUpdatedAt;
+  late final _is.ColumnDateTime lastUpdatedAt;
 
   /// The time when the first refresh token was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  _i2.AuthUserTable get authUser {
+  _ivyervu7.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: RefreshToken.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _ivyervu7.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _ivyervu7.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     scopeNames,
@@ -438,7 +440,7 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -446,23 +448,23 @@ class RefreshTokenTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class RefreshTokenInclude extends _i1.IncludeObject {
-  RefreshTokenInclude._({_i2.AuthUserInclude? authUser}) {
+class RefreshTokenInclude extends _is.IncludeObject {
+  RefreshTokenInclude._({_ivyervu7.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _ivyervu7.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => RefreshToken.t;
+  _is.Table<_is.UuidValue?> get table => RefreshToken.t;
 }
 
-class RefreshTokenIncludeList extends _i1.IncludeList {
+class RefreshTokenIncludeList extends _is.IncludeList {
   RefreshTokenIncludeList._({
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -473,10 +475,10 @@ class RefreshTokenIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => RefreshToken.t;
+  _is.Table<_is.UuidValue?> get table => RefreshToken.t;
 }
 
 class RefreshTokenRepository {
@@ -507,16 +509,16 @@ class RefreshTokenRepository {
   /// );
   /// ```
   Future<List<RefreshToken>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     RefreshTokenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<RefreshToken>(
       where: where?.call(RefreshToken.t),
@@ -549,15 +551,15 @@ class RefreshTokenRepository {
   /// );
   /// ```
   Future<RefreshToken?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? offset,
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     RefreshTokenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<RefreshToken>(
       where: where?.call(RefreshToken.t),
@@ -573,12 +575,12 @@ class RefreshTokenRepository {
 
   /// Finds a single [RefreshToken] by its [id] or null if no such row exists.
   Future<RefreshToken?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     RefreshTokenInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<RefreshToken>(
       id,
@@ -604,9 +606,9 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RefreshToken> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -622,9 +624,9 @@ class RefreshTokenRepository {
   ///
   /// The returned [RefreshToken] will have its `id` field set.
   Future<RefreshToken> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RefreshToken row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<RefreshToken>(
       row,
@@ -653,12 +655,12 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RefreshToken> rows, {
-    required _i1.ColumnSelections<RefreshTokenTable> conflictColumns,
-    _i1.ColumnSelections<RefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<RefreshTokenTable> conflictColumns,
+    _is.ColumnSelections<RefreshTokenTable>? updateColumns,
+    _is.WhereExpressionBuilder<RefreshTokenTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<RefreshToken>(
@@ -685,12 +687,12 @@ class RefreshTokenRepository {
   ///
   /// The returned [RefreshToken] will have its `id` field set.
   Future<RefreshToken?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RefreshToken row, {
-    required _i1.ColumnSelections<RefreshTokenTable> conflictColumns,
-    _i1.ColumnSelections<RefreshTokenTable>? updateColumns,
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<RefreshTokenTable> conflictColumns,
+    _is.ColumnSelections<RefreshTokenTable>? updateColumns,
+    _is.WhereExpressionBuilder<RefreshTokenTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<RefreshToken>(
       row,
@@ -711,10 +713,10 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RefreshToken> rows, {
-    _i1.ColumnSelections<RefreshTokenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RefreshTokenTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<RefreshToken>(
@@ -729,10 +731,10 @@ class RefreshTokenRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<RefreshToken> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RefreshToken row, {
-    _i1.ColumnSelections<RefreshTokenTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<RefreshTokenTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<RefreshToken>(
       row,
@@ -744,10 +746,10 @@ class RefreshTokenRepository {
   /// Updates a single [RefreshToken] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<RefreshToken?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<RefreshToken>(
       id,
@@ -763,14 +765,14 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<RefreshTokenUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<RefreshTokenTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<RefreshToken>(
@@ -797,11 +799,11 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<RefreshToken> rows, {
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<RefreshToken>(
@@ -815,9 +817,9 @@ class RefreshTokenRepository {
 
   /// Deletes a single [RefreshToken].
   Future<RefreshToken> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RefreshToken row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<RefreshToken>(
       row,
@@ -834,11 +836,11 @@ class RefreshTokenRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<RefreshToken>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
-    _i1.OrderByBuilder<RefreshTokenTable>? orderBy,
-    _i1.OrderByListBuilder<RefreshTokenTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RefreshTokenTable> where,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<RefreshToken>(
@@ -853,10 +855,10 @@ class RefreshTokenRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<RefreshTokenTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<RefreshToken>(
       where: where?.call(RefreshToken.t),
@@ -867,11 +869,11 @@ class RefreshTokenRepository {
 
   /// Acquires row-level locks on [RefreshToken] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<RefreshTokenTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<RefreshTokenTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<RefreshToken>(
       where: where(RefreshToken.t),
@@ -888,10 +890,10 @@ class RefreshTokenAttachRowRepository {
   /// Creates a relation between the given [RefreshToken] and [AuthUser]
   /// by setting the [RefreshToken]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     RefreshToken refreshToken,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _ivyervu7.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (refreshToken.id == null) {
       throw ArgumentError.notNull('refreshToken.id');

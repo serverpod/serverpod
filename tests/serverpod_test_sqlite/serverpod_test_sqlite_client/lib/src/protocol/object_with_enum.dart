@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'test_enum.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import 'test_enum.dart' as _ionapfu9;
 
 abstract class ObjectWithEnum
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithEnum._({
     this.id,
     required this.testEnum,
@@ -27,29 +28,35 @@ abstract class ObjectWithEnum
 
   factory ObjectWithEnum({
     int? id,
-    required _i2.TestEnum testEnum,
-    _i2.TestEnum? nullableEnum,
-    required List<_i2.TestEnum> enumList,
-    required List<_i2.TestEnum?> nullableEnumList,
-    required List<List<_i2.TestEnum>> enumListList,
+    required _ionapfu9.TestEnum testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    required List<_ionapfu9.TestEnum> enumList,
+    required List<_ionapfu9.TestEnum?> nullableEnumList,
+    required List<List<_ionapfu9.TestEnum>> enumListList,
   }) = _ObjectWithEnumImpl;
 
   factory ObjectWithEnum.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithEnum(
       id: jsonSerialization['id'] as int?,
-      testEnum: _i2.TestEnum.fromJson((jsonSerialization['testEnum'] as int)),
+      testEnum: _ionapfu9.TestEnum.fromJson(
+        (jsonSerialization['testEnum'] as int),
+      ),
       nullableEnum: jsonSerialization['nullableEnum'] == null
           ? null
-          : _i2.TestEnum.fromJson((jsonSerialization['nullableEnum'] as int)),
-      enumList: _i3.Protocol().deserialize<List<_i2.TestEnum>>(
+          : _ionapfu9.TestEnum.fromJson(
+              (jsonSerialization['nullableEnum'] as int),
+            ),
+      enumList: _i0ntutnq.Protocol().deserialize<List<_ionapfu9.TestEnum>>(
         jsonSerialization['enumList'],
       ),
-      nullableEnumList: _i3.Protocol().deserialize<List<_i2.TestEnum?>>(
-        jsonSerialization['nullableEnumList'],
-      ),
-      enumListList: _i3.Protocol().deserialize<List<List<_i2.TestEnum>>>(
-        jsonSerialization['enumListList'],
-      ),
+      nullableEnumList: _i0ntutnq.Protocol()
+          .deserialize<List<_ionapfu9.TestEnum?>>(
+            jsonSerialization['nullableEnumList'],
+          ),
+      enumListList: _i0ntutnq.Protocol()
+          .deserialize<List<List<_ionapfu9.TestEnum>>>(
+            jsonSerialization['enumListList'],
+          ),
     );
   }
 
@@ -58,26 +65,26 @@ abstract class ObjectWithEnum
   /// the id will be null.
   int? id;
 
-  _i2.TestEnum testEnum;
+  _ionapfu9.TestEnum testEnum;
 
-  _i2.TestEnum? nullableEnum;
+  _ionapfu9.TestEnum? nullableEnum;
 
-  List<_i2.TestEnum> enumList;
+  List<_ionapfu9.TestEnum> enumList;
 
-  List<_i2.TestEnum?> nullableEnumList;
+  List<_ionapfu9.TestEnum?> nullableEnumList;
 
-  List<List<_i2.TestEnum>> enumListList;
+  List<List<_ionapfu9.TestEnum>> enumListList;
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithEnum copyWith({
     int? id,
-    _i2.TestEnum? testEnum,
-    _i2.TestEnum? nullableEnum,
-    List<_i2.TestEnum>? enumList,
-    List<_i2.TestEnum?>? nullableEnumList,
-    List<List<_i2.TestEnum>>? enumListList,
+    _ionapfu9.TestEnum? testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    List<_ionapfu9.TestEnum>? enumList,
+    List<_ionapfu9.TestEnum?>? nullableEnumList,
+    List<List<_ionapfu9.TestEnum>>? enumListList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +122,7 @@ abstract class ObjectWithEnum
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -124,11 +131,11 @@ class _Undefined {}
 class _ObjectWithEnumImpl extends ObjectWithEnum {
   _ObjectWithEnumImpl({
     int? id,
-    required _i2.TestEnum testEnum,
-    _i2.TestEnum? nullableEnum,
-    required List<_i2.TestEnum> enumList,
-    required List<_i2.TestEnum?> nullableEnumList,
-    required List<List<_i2.TestEnum>> enumListList,
+    required _ionapfu9.TestEnum testEnum,
+    _ionapfu9.TestEnum? nullableEnum,
+    required List<_ionapfu9.TestEnum> enumList,
+    required List<_ionapfu9.TestEnum?> nullableEnumList,
+    required List<List<_ionapfu9.TestEnum>> enumListList,
   }) : super._(
          id: id,
          testEnum: testEnum,
@@ -140,20 +147,20 @@ class _ObjectWithEnumImpl extends ObjectWithEnum {
 
   /// Returns a shallow copy of this [ObjectWithEnum]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithEnum copyWith({
     Object? id = _Undefined,
-    _i2.TestEnum? testEnum,
+    _ionapfu9.TestEnum? testEnum,
     Object? nullableEnum = _Undefined,
-    List<_i2.TestEnum>? enumList,
-    List<_i2.TestEnum?>? nullableEnumList,
-    List<List<_i2.TestEnum>>? enumListList,
+    List<_ionapfu9.TestEnum>? enumList,
+    List<_ionapfu9.TestEnum?>? nullableEnumList,
+    List<List<_ionapfu9.TestEnum>>? enumListList,
   }) {
     return ObjectWithEnum(
       id: id is int? ? id : this.id,
       testEnum: testEnum ?? this.testEnum,
-      nullableEnum: nullableEnum is _i2.TestEnum?
+      nullableEnum: nullableEnum is _ionapfu9.TestEnum?
           ? nullableEnum
           : this.nullableEnum,
       enumList: enumList ?? this.enumList.map((e0) => e0).toList(),

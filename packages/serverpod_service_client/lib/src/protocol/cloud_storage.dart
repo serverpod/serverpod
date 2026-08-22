@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// An entry in the database for an uploaded file.
 abstract class CloudStorageEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CloudStorageEntry._({
     this.id,
     required this.storageId,
@@ -32,7 +32,7 @@ abstract class CloudStorageEntry
     required String path,
     required DateTime addedTime,
     DateTime? expiration,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
     required bool verified,
   }) = _CloudStorageEntryImpl;
 
@@ -41,16 +41,18 @@ abstract class CloudStorageEntry
       id: jsonSerialization['id'] as int?,
       storageId: jsonSerialization['storageId'] as String,
       path: jsonSerialization['path'] as String,
-      addedTime: _i1.DateTimeJsonExtension.fromJson(
+      addedTime: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['addedTime'],
       ),
       expiration: jsonSerialization['expiration'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiration']),
-      byteData: _i1.ByteDataJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
+              jsonSerialization['expiration'],
+            ),
+      byteData: _isc.ByteDataJsonExtension.fromJson(
         jsonSerialization['byteData'],
       ),
-      verified: _i1.BoolJsonExtension.fromJson(jsonSerialization['verified']),
+      verified: _isc.BoolJsonExtension.fromJson(jsonSerialization['verified']),
     );
   }
 
@@ -72,21 +74,21 @@ abstract class CloudStorageEntry
   DateTime? expiration;
 
   /// The actual data of the uploaded file.
-  _i2.ByteData byteData;
+  _idt.ByteData byteData;
 
   /// True if the file has been verified as uploaded.
   bool verified;
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CloudStorageEntry copyWith({
     int? id,
     String? storageId,
     String? path,
     DateTime? addedTime,
     DateTime? expiration,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
     bool? verified,
   });
   @override
@@ -119,7 +121,7 @@ abstract class CloudStorageEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -132,7 +134,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     required String path,
     required DateTime addedTime,
     DateTime? expiration,
-    required _i2.ByteData byteData,
+    required _idt.ByteData byteData,
     required bool verified,
   }) : super._(
          id: id,
@@ -146,7 +148,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
 
   /// Returns a shallow copy of this [CloudStorageEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CloudStorageEntry copyWith({
     Object? id = _Undefined,
@@ -154,7 +156,7 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     String? path,
     DateTime? addedTime,
     Object? expiration = _Undefined,
-    _i2.ByteData? byteData,
+    _idt.ByteData? byteData,
     bool? verified,
   }) {
     return CloudStorageEntry(

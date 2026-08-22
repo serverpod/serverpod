@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:meta/meta.dart' as _i2;
+import 'package:meta/meta.dart' as _i057hz1u;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DeferrableRelationParent
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DeferrableRelationParent._({
     this.id,
     required this.name,
@@ -44,11 +44,11 @@ abstract class DeferrableRelationParent
   String name;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DeferrableRelationParent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DeferrableRelationParent copyWith({
     int? id,
     String? name,
@@ -76,11 +76,11 @@ abstract class DeferrableRelationParent
   }
 
   static DeferrableRelationParentIncludeList includeList({
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
     DeferrableRelationParentInclude? include,
   }) {
     return DeferrableRelationParentIncludeList.internal_(
@@ -95,7 +95,7 @@ abstract class DeferrableRelationParent
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -112,7 +112,7 @@ class _DeferrableRelationParentImpl extends DeferrableRelationParent {
 
   /// Returns a shallow copy of this [DeferrableRelationParent]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DeferrableRelationParent copyWith({
     Object? id = _Undefined,
@@ -126,20 +126,20 @@ class _DeferrableRelationParentImpl extends DeferrableRelationParent {
 }
 
 class DeferrableRelationParentUpdateTable
-    extends _i1.UpdateTable<DeferrableRelationParentTable> {
+    extends _is.UpdateTable<DeferrableRelationParentTable> {
   DeferrableRelationParentUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 }
 
-class DeferrableRelationParentTable extends _i1.Table<int?> {
+class DeferrableRelationParentTable extends _is.Table<int?> {
   DeferrableRelationParentTable({super.tableRelation})
     : super(tableName: 'deferrable_relation_parent') {
     updateTable = DeferrableRelationParentUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
@@ -147,51 +147,51 @@ class DeferrableRelationParentTable extends _i1.Table<int?> {
 
   late final DeferrableRelationParentUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
   ];
 }
 
-class DeferrableRelationParentInclude extends _i1.IncludeObject {
-  @_i2.internal
+class DeferrableRelationParentInclude extends _is.IncludeObject {
+  @_i057hz1u.internal
   DeferrableRelationParentInclude.internal_({
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {}
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DeferrableRelationParent.t;
+  _is.Table<int?> get table => DeferrableRelationParent.t;
 }
 
-class DeferrableRelationParentIncludeList extends _i1.IncludeList {
-  @_i2.internal
+class DeferrableRelationParentIncludeList extends _is.IncludeList {
+  @_i057hz1u.internal
   DeferrableRelationParentIncludeList.internal_({
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
-    List<_i1.Column>? this.selectedColumns,
+    List<_is.Column>? this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationParent.t);
   }
 
-  final List<_i1.Column>? selectedColumns;
+  final List<_is.Column>? selectedColumns;
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DeferrableRelationParent.t;
+  _is.Table<int?> get table => DeferrableRelationParent.t;
 }
 
 class DeferrableRelationParentRepository {
@@ -220,15 +220,15 @@ class DeferrableRelationParentRepository {
   /// );
   /// ```
   Future<List<DeferrableRelationParent>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DeferrableRelationParent>(
       where: where?.call(DeferrableRelationParent.t),
@@ -260,14 +260,14 @@ class DeferrableRelationParentRepository {
   /// );
   /// ```
   Future<DeferrableRelationParent?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DeferrableRelationParent>(
       where: where?.call(DeferrableRelationParent.t),
@@ -282,11 +282,11 @@ class DeferrableRelationParentRepository {
 
   /// Finds a single [DeferrableRelationParent] by its [id] or null if no such row exists.
   Future<DeferrableRelationParent?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DeferrableRelationParent>(
       id,
@@ -311,9 +311,9 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationParent> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -329,9 +329,9 @@ class DeferrableRelationParentRepository {
   ///
   /// The returned [DeferrableRelationParent] will have its `id` field set.
   Future<DeferrableRelationParent> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationParent row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DeferrableRelationParent>(
       row,
@@ -360,13 +360,13 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationParent> rows, {
-    required _i1.ColumnSelections<DeferrableRelationParentTable>
+    required _is.ColumnSelections<DeferrableRelationParentTable>
     conflictColumns,
-    _i1.ColumnSelections<DeferrableRelationParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationParentTable>? updateColumns,
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DeferrableRelationParent>(
@@ -393,13 +393,13 @@ class DeferrableRelationParentRepository {
   ///
   /// The returned [DeferrableRelationParent] will have its `id` field set.
   Future<DeferrableRelationParent?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationParent row, {
-    required _i1.ColumnSelections<DeferrableRelationParentTable>
+    required _is.ColumnSelections<DeferrableRelationParentTable>
     conflictColumns,
-    _i1.ColumnSelections<DeferrableRelationParentTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationParentTable>? updateColumns,
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DeferrableRelationParent>(
       row,
@@ -420,10 +420,10 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationParent> rows, {
-    _i1.ColumnSelections<DeferrableRelationParentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationParentTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DeferrableRelationParent>(
@@ -438,10 +438,10 @@ class DeferrableRelationParentRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DeferrableRelationParent> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationParent row, {
-    _i1.ColumnSelections<DeferrableRelationParentTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DeferrableRelationParentTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DeferrableRelationParent>(
       row,
@@ -453,11 +453,11 @@ class DeferrableRelationParentRepository {
   /// Updates a single [DeferrableRelationParent] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DeferrableRelationParent?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DeferrableRelationParentUpdateTable>
+    required _is.ColumnValueListBuilder<DeferrableRelationParentUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DeferrableRelationParent>(
       id,
@@ -473,15 +473,15 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DeferrableRelationParentUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DeferrableRelationParentUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DeferrableRelationParentTable> where,
+    required _is.WhereExpressionBuilder<DeferrableRelationParentTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DeferrableRelationParent>(
@@ -508,11 +508,11 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DeferrableRelationParent> rows, {
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DeferrableRelationParent>(
@@ -526,9 +526,9 @@ class DeferrableRelationParentRepository {
 
   /// Deletes a single [DeferrableRelationParent].
   Future<DeferrableRelationParent> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DeferrableRelationParent row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DeferrableRelationParent>(
       row,
@@ -545,11 +545,11 @@ class DeferrableRelationParentRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DeferrableRelationParent>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DeferrableRelationParentTable> where,
-    _i1.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
-    _i1.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DeferrableRelationParentTable> where,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DeferrableRelationParent>(
@@ -564,10 +564,10 @@ class DeferrableRelationParentRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DeferrableRelationParent>(
       where: where?.call(DeferrableRelationParent.t),
@@ -578,11 +578,11 @@ class DeferrableRelationParentRepository {
 
   /// Acquires row-level locks on [DeferrableRelationParent] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DeferrableRelationParentTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DeferrableRelationParentTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DeferrableRelationParent>(
       where: where(DeferrableRelationParent.t),
