@@ -410,7 +410,7 @@ return result;
           ),
           Parameter(
             (p) => p
-              ..type = typeOrderByListBuilder(className, serverCode)
+              ..type = typeOrderByListBuilder(tableClassName, serverCode)
               ..name = 'orderByList'
               ..named = true,
           ),
@@ -626,7 +626,7 @@ return result;
           ),
           Parameter(
             (p) => p
-              ..type = typeOrderByListBuilder(className, serverCode)
+              ..type = typeOrderByListBuilder(tableClassName, serverCode)
               ..name = 'orderByList'
               ..named = true,
           ),
