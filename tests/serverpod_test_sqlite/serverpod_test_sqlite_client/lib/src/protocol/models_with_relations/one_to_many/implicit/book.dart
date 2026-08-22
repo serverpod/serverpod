@@ -88,7 +88,7 @@ abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   }
 
   static BookInclude include({_ithd8abs.ChapterIncludeList? chapters}) {
-    return BookInclude._(chapters: chapters);
+    return BookInclude.internal_(chapters: chapters);
   }
 
   static BookIncludeList includeList({
@@ -99,7 +99,7 @@ abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
   }) {
-    return BookIncludeList._(
+    return BookIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -221,11 +221,17 @@ class BookTable extends _isd.Table<int?> {
 }
 
 class BookInclude extends _isd.IncludeObject {
-  BookInclude._({_ithd8abs.ChapterIncludeList? chapters}) {
+  BookInclude.internal_({
+    _ithd8abs.ChapterIncludeList? chapters,
+    this.selectedColumns,
+  }) {
     _chapters = chapters;
   }
 
   _ithd8abs.ChapterIncludeList? _chapters;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {'chapters': _chapters};
@@ -235,16 +241,20 @@ class BookInclude extends _isd.IncludeObject {
 }
 
 class BookIncludeList extends _isd.IncludeList {
-  BookIncludeList._({
+  BookIncludeList.internal_({
     _isd.WhereExpressionBuilder<BookTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Book.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

@@ -105,7 +105,7 @@ abstract class UuidDefaultPersist
   }
 
   static UuidDefaultPersistInclude include() {
-    return UuidDefaultPersistInclude._();
+    return UuidDefaultPersistInclude.internal_();
   }
 
   static UuidDefaultPersistIncludeList includeList({
@@ -116,7 +116,7 @@ abstract class UuidDefaultPersist
     _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     UuidDefaultPersistInclude? include,
   }) {
-    return UuidDefaultPersistIncludeList._(
+    return UuidDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -237,7 +237,10 @@ class UuidDefaultPersistTable extends _is.Table<int?> {
 }
 
 class UuidDefaultPersistInclude extends _is.IncludeObject {
-  UuidDefaultPersistInclude._();
+  UuidDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -247,16 +250,20 @@ class UuidDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class UuidDefaultPersistIncludeList extends _is.IncludeList {
-  UuidDefaultPersistIncludeList._({
+  UuidDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

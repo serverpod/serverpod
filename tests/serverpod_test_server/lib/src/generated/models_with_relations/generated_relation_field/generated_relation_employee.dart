@@ -126,7 +126,7 @@ abstract class GeneratedRelationEmployee
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
   }) {
-    return GeneratedRelationEmployeeInclude._(
+    return GeneratedRelationEmployeeInclude.internal_(
       company: company,
       previousCompany: previousCompany,
     );
@@ -140,7 +140,7 @@ abstract class GeneratedRelationEmployee
     _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
     GeneratedRelationEmployeeInclude? include,
   }) {
-    return GeneratedRelationEmployeeIncludeList._(
+    return GeneratedRelationEmployeeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -308,9 +308,10 @@ class GeneratedRelationEmployeeTable extends _is.Table<int?> {
 }
 
 class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
-  GeneratedRelationEmployeeInclude._({
+  GeneratedRelationEmployeeInclude.internal_({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
+    this.selectedColumns,
   }) {
     _company = company;
     _previousCompany = previousCompany;
@@ -319,6 +320,9 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
   _ipeijyfj.GeneratedRelationCompanyInclude? _company;
 
   _ipeijyfj.GeneratedRelationCompanyInclude? _previousCompany;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -331,16 +335,20 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
 }
 
 class GeneratedRelationEmployeeIncludeList extends _is.IncludeList {
-  GeneratedRelationEmployeeIncludeList._({
+  GeneratedRelationEmployeeIncludeList.internal_({
     _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationEmployee.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

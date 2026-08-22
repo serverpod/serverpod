@@ -77,7 +77,7 @@ abstract class ModifiedColumnName
   }
 
   static ModifiedColumnNameInclude include() {
-    return ModifiedColumnNameInclude._();
+    return ModifiedColumnNameInclude.internal_();
   }
 
   static ModifiedColumnNameIncludeList includeList({
@@ -88,7 +88,7 @@ abstract class ModifiedColumnName
     _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     ModifiedColumnNameInclude? include,
   }) {
-    return ModifiedColumnNameIncludeList._(
+    return ModifiedColumnNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -181,7 +181,10 @@ class ModifiedColumnNameTable extends _is.Table<int?> {
 }
 
 class ModifiedColumnNameInclude extends _is.IncludeObject {
-  ModifiedColumnNameInclude._();
+  ModifiedColumnNameInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -191,16 +194,20 @@ class ModifiedColumnNameInclude extends _is.IncludeObject {
 }
 
 class ModifiedColumnNameIncludeList extends _is.IncludeList {
-  ModifiedColumnNameIncludeList._({
+  ModifiedColumnNameIncludeList.internal_({
     _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ModifiedColumnName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

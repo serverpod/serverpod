@@ -109,7 +109,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
   }) {
-    return CatInclude._(
+    return CatInclude.internal_(
       mother: mother,
       kittens: kittens,
     );
@@ -123,7 +123,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
   }) {
-    return CatIncludeList._(
+    return CatIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -283,9 +283,10 @@ class CatTable extends _is.Table<int?> {
 }
 
 class CatInclude extends _is.IncludeObject {
-  CatInclude._({
+  CatInclude.internal_({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
+    this.selectedColumns,
   }) {
     _mother = mother;
     _kittens = kittens;
@@ -294,6 +295,9 @@ class CatInclude extends _is.IncludeObject {
   _iayhscrz.CatInclude? _mother;
 
   _iayhscrz.CatIncludeList? _kittens;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -306,16 +310,20 @@ class CatInclude extends _is.IncludeObject {
 }
 
 class CatIncludeList extends _is.IncludeList {
-  CatIncludeList._({
+  CatIncludeList.internal_({
     _is.WhereExpressionBuilder<CatTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Cat.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

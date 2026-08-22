@@ -109,7 +109,7 @@ abstract class ObjectWithSparseVector
   }
 
   static ObjectWithSparseVectorInclude include() {
-    return ObjectWithSparseVectorInclude._();
+    return ObjectWithSparseVectorInclude.internal_();
   }
 
   static ObjectWithSparseVectorIncludeList includeList({
@@ -120,7 +120,7 @@ abstract class ObjectWithSparseVector
     _is.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     ObjectWithSparseVectorInclude? include,
   }) {
-    return ObjectWithSparseVectorIncludeList._(
+    return ObjectWithSparseVectorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -258,7 +258,10 @@ class ObjectWithSparseVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithSparseVectorInclude extends _is.IncludeObject {
-  ObjectWithSparseVectorInclude._();
+  ObjectWithSparseVectorInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -268,16 +271,20 @@ class ObjectWithSparseVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithSparseVectorIncludeList extends _is.IncludeList {
-  ObjectWithSparseVectorIncludeList._({
+  ObjectWithSparseVectorIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSparseVector.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

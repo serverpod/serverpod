@@ -132,7 +132,7 @@ abstract class ObjectWithEnumEnhanced
   }
 
   static ObjectWithEnumEnhancedInclude include() {
-    return ObjectWithEnumEnhancedInclude._();
+    return ObjectWithEnumEnhancedInclude.internal_();
   }
 
   static ObjectWithEnumEnhancedIncludeList includeList({
@@ -143,7 +143,7 @@ abstract class ObjectWithEnumEnhanced
     _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     ObjectWithEnumEnhancedInclude? include,
   }) {
-    return ObjectWithEnumEnhancedIncludeList._(
+    return ObjectWithEnumEnhancedIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -325,7 +325,10 @@ class ObjectWithEnumEnhancedTable extends _is.Table<int?> {
 }
 
 class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
-  ObjectWithEnumEnhancedInclude._();
+  ObjectWithEnumEnhancedInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -335,16 +338,20 @@ class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
 }
 
 class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList {
-  ObjectWithEnumEnhancedIncludeList._({
+  ObjectWithEnumEnhancedIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithEnumEnhanced.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

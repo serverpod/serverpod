@@ -101,7 +101,7 @@ abstract class ImmutableObjectWithTable
   }
 
   static ImmutableObjectWithTableInclude include() {
-    return ImmutableObjectWithTableInclude._();
+    return ImmutableObjectWithTableInclude.internal_();
   }
 
   static ImmutableObjectWithTableIncludeList includeList({
@@ -112,7 +112,7 @@ abstract class ImmutableObjectWithTable
     _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     ImmutableObjectWithTableInclude? include,
   }) {
-    return ImmutableObjectWithTableIncludeList._(
+    return ImmutableObjectWithTableIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +186,10 @@ class ImmutableObjectWithTableTable extends _is.Table<int?> {
 }
 
 class ImmutableObjectWithTableInclude extends _is.IncludeObject {
-  ImmutableObjectWithTableInclude._();
+  ImmutableObjectWithTableInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -196,16 +199,20 @@ class ImmutableObjectWithTableInclude extends _is.IncludeObject {
 }
 
 class ImmutableObjectWithTableIncludeList extends _is.IncludeList {
-  ImmutableObjectWithTableIncludeList._({
+  ImmutableObjectWithTableIncludeList.internal_({
     _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ImmutableObjectWithTable.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

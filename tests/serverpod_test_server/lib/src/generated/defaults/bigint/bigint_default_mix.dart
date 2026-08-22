@@ -109,7 +109,7 @@ abstract class BigIntDefaultMix
   }
 
   static BigIntDefaultMixInclude include() {
-    return BigIntDefaultMixInclude._();
+    return BigIntDefaultMixInclude.internal_();
   }
 
   static BigIntDefaultMixIncludeList includeList({
@@ -120,7 +120,7 @@ abstract class BigIntDefaultMix
     _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     BigIntDefaultMixInclude? include,
   }) {
-    return BigIntDefaultMixIncludeList._(
+    return BigIntDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -239,7 +239,10 @@ class BigIntDefaultMixTable extends _is.Table<int?> {
 }
 
 class BigIntDefaultMixInclude extends _is.IncludeObject {
-  BigIntDefaultMixInclude._();
+  BigIntDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -249,16 +252,20 @@ class BigIntDefaultMixInclude extends _is.IncludeObject {
 }
 
 class BigIntDefaultMixIncludeList extends _is.IncludeList {
-  BigIntDefaultMixIncludeList._({
+  BigIntDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

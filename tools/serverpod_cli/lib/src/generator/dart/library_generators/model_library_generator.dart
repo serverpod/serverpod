@@ -285,6 +285,31 @@ class SerializableModelLibraryGenerator {
             // On Dart 3.10+, this issue becomes a `dead_code` lint.
             libraryBuilder.ignoreForFile.add('dead_code');
           }
+        } else if (classDefinition.isProjection &&
+            serverCode &&
+            classDefinition.findField('id') != null) {
+          libraryBuilder.directives.add(
+            Directive.import(
+              '${ReCase(classDefinition.baseClassName!).snakeCase}.dart',
+            ),
+          );
+          var idTypeReference =
+              classDefinition.idField.type.reference(
+                    serverCode,
+                    subDirParts: classDefinition.subDirParts,
+                    config: config,
+                  )
+                  as TypeReference;
+
+          libraryBuilder.body.addAll([
+            buildRepository.buildModelProjectionRepositoryClass(
+              className,
+              classDefinition.baseClassName!,
+              fields,
+              classDefinition,
+              idTypeReference,
+            ),
+          ]);
         }
       },
     );
@@ -513,6 +538,13 @@ class SerializableModelLibraryGenerator {
         );
 
         classBuilder.methods.add(_buildModelClassTableGetter(idTypeReference));
+      } else if (classDefinition.isProjection &&
+          serverCode &&
+          classDefinition.findField('id') != null) {
+        classBuilder.implements.add(
+          refer('SerializableModel', serverpodUrl(serverCode)),
+        );
+        classBuilder.fields.add(_buildModelClassDBField(className));
       } else {
         classBuilder.implements.add(
           refer('SerializableModel', serverpodUrl(serverCode)),
@@ -637,7 +669,23 @@ class SerializableModelLibraryGenerator {
           ),
         );
       }
-      if (classDefinition.isTableOwner(serverCode)) {
+      if (serverCode &&
+          classDefinition.isProjection &&
+          classDefinition.baseClassName != null &&
+          classDefinition.findField('id') != null) {
+        classBuilder.methods.addAll([
+          _buildProjectionIncludeMethod(
+            className,
+            classDefinition.baseClassName!,
+            fields,
+            classDefinition.subDirParts,
+          ),
+          _buildProjectionIncludeListMethod(
+            className,
+            classDefinition.baseClassName!,
+          ),
+        ]);
+      } else if (classDefinition.isTableOwner(serverCode)) {
         if (_shouldGenerateTableCode(classDefinition)) {
           classBuilder.methods.addAll([
             _buildModelClassIncludeMethod(
@@ -1448,6 +1496,181 @@ class SerializableModelLibraryGenerator {
     );
   }
 
+  Method _buildProjectionIncludeMethod(
+    String className,
+    String baseClassName,
+    Iterable<SerializableModelFieldDefinition> fields,
+    List<String> subDirParts,
+  ) {
+    var relationFields = fields.where((field) => field.relation != null);
+
+    var includeMap = <String, Expression>{};
+    for (var field in relationFields) {
+      if (field.relation is ListRelationDefinition) {
+        includeMap[field.name] = refer(
+          field.type.generics.first.className,
+          field.type.generics.first
+              .reference(serverCode, subDirParts: subDirParts, config: config)
+              .url,
+        ).property('includeList').call([]);
+      } else {
+        includeMap[field.name] = refer(
+          field.type.className,
+          field.type
+              .reference(serverCode, subDirParts: subDirParts, config: config)
+              .url,
+        ).property('include').call([]);
+      }
+    }
+
+    var forwardedFields = fields.where((f) => f.forwardedFrom != null);
+    var forwardedRelationFields = forwardedFields.where(
+      (f) => f.forwardedRelationType != null,
+    );
+    var forwardedJsonFields = forwardedFields.where(
+      (f) => f.forwardedRelationType == null,
+    );
+
+    var forwardedMap = <String, List<SerializableModelFieldDefinition>>{};
+    for (var f in forwardedRelationFields) {
+      var parts = f.forwardedFrom!.split('.');
+      var relation = parts[0];
+      forwardedMap.putIfAbsent(relation, () => []).add(f);
+    }
+
+    for (var entry in forwardedMap.entries) {
+      var relationName = entry.key;
+      var relFields = entry.value;
+      var relType = relFields.first.forwardedRelationType!;
+      var relClassName = relType.className;
+      var relUrl = relType
+          .reference(serverCode, subDirParts: subDirParts, config: config)
+          .url;
+      var relCols = relFields.map(
+        (f) => refer(
+          relClassName,
+          relUrl,
+        ).property('t').property(f.forwardedFrom!.split('.').skip(1).join('.')),
+      );
+
+      includeMap[relationName] =
+          refer(
+            '${relClassName}Include',
+            relUrl,
+          ).property('internal_').call([], {
+            'selectedColumns': literalList(relCols),
+          });
+    }
+
+    var jsonColumns = <Expression>[];
+    for (var f in forwardedJsonFields) {
+      var parts = f.forwardedFrom!.split('.');
+      var rootColumnName = parts[0];
+      var jsonKey = parts.skip(1).join('.');
+      jsonColumns.add(
+        refer(baseClassName)
+            .property('t')
+            .property(rootColumnName)
+            .property('jsonKey')
+            .call(
+              [
+                literalString(jsonKey),
+              ],
+              {
+                'fieldName': literalString(f.name),
+              },
+            ),
+      );
+    }
+
+    var columnNames = [
+      ...fields
+          .where(
+            (field) => field.relation == null && field.forwardedFrom == null,
+          )
+          .map(
+            (field) => refer(baseClassName).property('t').property(field.name),
+          ),
+      ...jsonColumns,
+    ];
+
+    return Method(
+      (m) => m
+        ..name = 'include'
+        ..static = true
+        ..returns = TypeReference((r) => r..symbol = '${baseClassName}Include')
+        ..body = refer('${baseClassName}Include')
+            .property('internal_')
+            .call([], {
+              'selectedColumns': literalList(columnNames),
+              ...includeMap,
+            })
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildProjectionIncludeListMethod(
+    String className,
+    String baseClassName,
+  ) {
+    return Method(
+      (m) => m
+        ..name = 'includeList'
+        ..static = true
+        ..returns = TypeReference(
+          (r) => r..symbol = '${baseClassName}IncludeList',
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'where'
+              ..named = true
+              ..type = typeWhereExpressionBuilder(
+                baseClassName,
+                serverCode,
+              ),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'limit'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'offset'
+              ..named = true
+              ..type = refer('int?'),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderBy'
+              ..named = true
+              ..type = typeOrderByBuilder(baseClassName, serverCode),
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'orderByList'
+              ..named = true
+              ..type = typeOrderByListBuilder(baseClassName, serverCode),
+          ),
+        ])
+        ..body = refer(baseClassName)
+            .property('includeList')
+            .call([], {
+              'where': refer('where'),
+              'limit': refer('limit'),
+              'offset': refer('offset'),
+              'orderBy': refer('orderBy'),
+              'orderByList': refer('orderByList'),
+              'include': refer(className).property('include').call([]),
+            })
+            .returned
+            .statement,
+    );
+  }
+
   Method _buildModelClassIncludeMethod(
     String className,
     Iterable<SerializableModelFieldDefinition> relationFields,
@@ -1458,8 +1681,8 @@ class SerializableModelLibraryGenerator {
         ..static = true
         ..name = 'include'
         ..returns = TypeReference((r) => r..symbol = '${className}Include')
-        ..optionalParameters.addAll(
-          relationFields.map((field) {
+        ..optionalParameters.addAll([
+          ...relationFields.map((field) {
             var type = field.type.reference(
               serverCode,
               subDirParts: subDirParts,
@@ -1485,9 +1708,9 @@ class SerializableModelLibraryGenerator {
                 ..named = true,
             );
           }),
-        )
+        ])
         ..body = refer('${className}Include')
-            .property('_')
+            .property('internal_')
             .call([], {
               for (var field in relationFields) field.name: refer(field.name),
             })
@@ -1544,7 +1767,7 @@ class SerializableModelLibraryGenerator {
           ),
         ])
         ..body = refer('${className}IncludeList')
-            .property('_')
+            .property('internal_')
             .call([], {
               'where': refer('where'),
               'limit': refer('limit'),
@@ -3058,6 +3281,21 @@ class SerializableModelLibraryGenerator {
 
       c.constructors.add(_buildModelIncludeListClassConstructor(className));
 
+      c.fields.add(
+        Field(
+          (f) => f
+            ..annotations.add(refer('override'))
+            ..name = 'selectedColumns'
+            ..type = TypeReference(
+              (b) => b
+                ..symbol = 'List'
+                ..isNullable = true
+                ..types.add(refer('Column', _databaseRuntimeUrl)),
+            )
+            ..modifier = FieldModifier.final$,
+        ),
+      );
+
       c.methods.addAll([
         _buildModelIncludeListClassIncludesGetter(),
         _buildModelIncludeClassTableGetter(className, idTypeReference),
@@ -3069,7 +3307,7 @@ class SerializableModelLibraryGenerator {
     String className,
   ) {
     return Constructor((constructorBuilder) {
-      constructorBuilder.name = '_';
+      constructorBuilder.name = 'internal_';
 
       constructorBuilder.optionalParameters.addAll([
         Parameter(
@@ -3109,6 +3347,12 @@ class SerializableModelLibraryGenerator {
           (p) => p
             ..name = 'include'
             ..toSuper = true
+            ..named = true,
+        ),
+        Parameter(
+          (p) => p
+            ..name = 'selectedColumns'
+            ..toThis = true
             ..named = true,
         ),
       ]);
@@ -3227,6 +3471,21 @@ class SerializableModelLibraryGenerator {
         );
       }
     }
+    modelIncludeClassFields.add(
+      Field(
+        (f) => f
+          ..annotations.add(refer('override'))
+          ..name = 'selectedColumns'
+          ..type = TypeReference(
+            (b) => b
+              ..symbol = 'List'
+              ..isNullable = true
+              ..types.add(refer('Column', _databaseRuntimeUrl)),
+          )
+          ..modifier = FieldModifier.final$,
+      ),
+    );
+
     return modelIncludeClassFields;
   }
 
@@ -3235,10 +3494,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Constructor((constructorBuilder) {
-      constructorBuilder.name = '_';
-      if (relationFields.isEmpty) {
-        return;
-      }
+      constructorBuilder.name = 'internal_';
 
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {
@@ -3274,10 +3530,21 @@ class SerializableModelLibraryGenerator {
         }
       }
 
-      constructorBuilder.body = Block.of([
-        for (var field in relationFields)
-          refer('_${field.name}').assign(refer(field.name)).statement,
-      ]);
+      constructorBuilder.optionalParameters.add(
+        Parameter(
+          (p) => p
+            ..name = 'selectedColumns'
+            ..toThis = true
+            ..named = true,
+        ),
+      );
+
+      if (relationFields.isNotEmpty) {
+        constructorBuilder.body = Block.of([
+          for (var field in relationFields)
+            refer('_${field.name}').assign(refer(field.name)).statement,
+        ]);
+      }
     });
   }
 

@@ -154,7 +154,7 @@ abstract class QueryLogEntry
   }
 
   static QueryLogEntryInclude include() {
-    return QueryLogEntryInclude._();
+    return QueryLogEntryInclude.internal_();
   }
 
   static QueryLogEntryIncludeList includeList({
@@ -165,7 +165,7 @@ abstract class QueryLogEntry
     _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     QueryLogEntryInclude? include,
   }) {
-    return QueryLogEntryIncludeList._(
+    return QueryLogEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -394,7 +394,10 @@ class QueryLogEntryTable extends _is.Table<int?> {
 }
 
 class QueryLogEntryInclude extends _is.IncludeObject {
-  QueryLogEntryInclude._();
+  QueryLogEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -404,16 +407,20 @@ class QueryLogEntryInclude extends _is.IncludeObject {
 }
 
 class QueryLogEntryIncludeList extends _is.IncludeList {
-  QueryLogEntryIncludeList._({
+  QueryLogEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(QueryLogEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

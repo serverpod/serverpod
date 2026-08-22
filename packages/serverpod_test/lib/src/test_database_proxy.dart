@@ -153,6 +153,80 @@ class TestDatabaseProxy implements Database {
   }
 
   @override
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>({
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.findAsJson<T>(
+        where: where,
+        limit: limit,
+        offset: offset,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        transaction: transaction,
+        include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>({
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.findFirstRowAsJson<T>(
+        where: where,
+        offset: offset,
+        orderBy: orderBy,
+        orderByList: orderByList,
+        transaction: transaction,
+        include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
+    Object id, {
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  }) {
+    return _rollbackSingleOperationIfDatabaseException(
+      () => _db.findByIdAsJson<T>(
+        id,
+        transaction: transaction,
+        include: include,
+        lockMode: lockMode,
+        lockBehavior: lockBehavior,
+      ),
+      isPartOfUserTransaction: transaction != null,
+    );
+  }
+
+  @override
   Future<T?> findFirstRow<T extends TableRow>({
     Expression? where,
     int? offset,

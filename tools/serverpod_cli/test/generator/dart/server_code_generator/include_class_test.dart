@@ -100,12 +100,15 @@ void main() {
               reason: 'Missing extends clause for Include.',
             );
           });
-          test('has named parameter for field in private constructor.', () {
+          test('has named parameter for field in internal constructor.', () {
             expect(
               CompilationUnitHelpers.hasConstructorDeclaration(
                 exampleIncludeClass,
-                name: '_',
-                parameters: ['CompanyInclude? company'],
+                name: 'internal_',
+                parameters: [
+                  'CompanyInclude? company',
+                  'this.selectedColumns',
+                ],
               ),
               isTrue,
               reason:
@@ -193,11 +196,11 @@ void main() {
             );
           });
 
-          test('has named parameter for field in private constructor.', () {
+          test('has named parameter for field in internal constructor.', () {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
                   exampleIncludeListClass,
-                  name: '_',
+                  name: 'internal_',
                 );
             expect(
               constructor,
@@ -216,6 +219,7 @@ void main() {
             expect(params, contains('super.orderBy'));
             expect(params, contains('super.orderByList'));
             expect(params, contains('super.include'));
+            expect(params, contains('this.selectedColumns'));
           });
 
           test('has an includes method.', () {
@@ -300,12 +304,15 @@ void main() {
       group('then the class named ${testClassName}Include', () {
         var exampleIncludeClass = maybeClassNamedExampleInclude!;
 
-        test('has named parameter for field in private constructor.', () {
+        test('has named parameter for field in internal constructor.', () {
           expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               exampleIncludeClass,
-              name: '_',
-              parameters: ['UserIncludeList? users'],
+              name: 'internal_',
+              parameters: [
+                'UserIncludeList? users',
+                'this.selectedColumns',
+              ],
             ),
             isTrue,
             reason:

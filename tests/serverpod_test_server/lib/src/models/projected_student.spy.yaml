@@ -1,0 +1,11 @@
+class: ProjectedStudent
+table: projected_student
+fields:
+  name: String
+  enrollments: List<ProjectedEnrollment>?, relation(name=projected_student_enrollments)
+
+projections:
+  ProjectedStudentCourses:
+    select:
+      - name
+      - enrollments -> ProjectedEnrollmentCourse

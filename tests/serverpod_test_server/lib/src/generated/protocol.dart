@@ -245,6 +245,31 @@ import 'object_with_self_parent.dart' as _ihluvkmz;
 import 'object_with_sparse_vector.dart' as _i8t20dyr;
 import 'object_with_uuid.dart' as _iusk9w05;
 import 'object_with_vector.dart' as _itmc4j9i;
+import 'projected_address.dart' as _iegbxll6;
+import 'projected_address_country.dart' as _ikpl2lpd;
+import 'projected_address_street.dart' as _iitz0x8d;
+import 'projected_article.dart' as _id2zvgnl;
+import 'projected_article_author_name_only.dart' as _iwhm4f6s;
+import 'projected_author.dart' as _iq5hz6n4;
+import 'projected_course.dart' as _iotqocf1;
+import 'projected_course_name.dart' as _icve44wq;
+import 'projected_enrollment.dart' as _i3lw6w5n;
+import 'projected_enrollment_course.dart' as _ika7thts;
+import 'projected_json_field.dart' as _irlz4dmd;
+import 'projected_json_field_simple.dart' as _i37n7uc1;
+import 'projected_order.dart' as _i8r3x6pe;
+import 'projected_order_description.dart' as _id3wrdef;
+import 'projected_student.dart' as _iprfievr;
+import 'projected_student_courses.dart' as _iph9b6hp;
+import 'projected_user.dart' as _imzthwwr;
+import 'projected_user_address_and_orders.dart' as _iddxe056;
+import 'projected_user_address_street_only.dart' as _ib01viec;
+import 'projected_user_country_address.dart' as _ipucx971;
+import 'projected_user_json_field.dart' as _i1dxwa9r;
+import 'projected_user_json_multi_field.dart' as _i5kyd3on;
+import 'projected_user_orders.dart' as _inwc1zu8;
+import 'projected_user_simple_json.dart' as _ivldlu3q;
+import 'projected_user_street_address.dart' as _ifsvk6dp;
 import 'record.dart' as _ificmsie;
 import 'related_unique_data.dart' as _i2aw39a6;
 import 'required/exception_with_required_field.dart' as _iiggggl6;
@@ -475,6 +500,31 @@ export 'object_with_self_parent.dart';
 export 'object_with_sparse_vector.dart';
 export 'object_with_uuid.dart';
 export 'object_with_vector.dart';
+export 'projected_address.dart';
+export 'projected_address_country.dart';
+export 'projected_address_street.dart';
+export 'projected_article.dart';
+export 'projected_article_author_name_only.dart';
+export 'projected_author.dart';
+export 'projected_course.dart';
+export 'projected_course_name.dart';
+export 'projected_enrollment.dart';
+export 'projected_enrollment_course.dart';
+export 'projected_json_field.dart';
+export 'projected_json_field_simple.dart';
+export 'projected_order.dart';
+export 'projected_order_description.dart';
+export 'projected_student.dart';
+export 'projected_student_courses.dart';
+export 'projected_user.dart';
+export 'projected_user_address_and_orders.dart';
+export 'projected_user_address_street_only.dart';
+export 'projected_user_country_address.dart';
+export 'projected_user_json_field.dart';
+export 'projected_user_json_multi_field.dart';
+export 'projected_user_orders.dart';
+export 'projected_user_simple_json.dart';
+export 'projected_user_street_address.dart';
 export 'record.dart';
 export 'related_unique_data.dart';
 export 'required/exception_with_required_field.dart';
@@ -5463,6 +5513,348 @@ class Protocol extends _is.DatabaseSerializationManager {
       managed: true,
     ),
     _isp.TableDefinition(
+      name: 'projected_addresses',
+      dartName: 'ProjectedAddress',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'street',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'state',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'country',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_article',
+      dartName: 'ProjectedArticle',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'title',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'authorId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: 'summary',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'content',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'projected_article_fk_0',
+          columns: ['authorId'],
+          referenceTable: 'projected_author',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_author',
+      dartName: 'ProjectedAuthor',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'bio',
+          columnType: _isp.ColumnType.text,
+          isNullable: true,
+          dartType: 'String?',
+        ),
+        _isp.ColumnDefinition(
+          name: 'email',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'phone',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_course',
+      dartName: 'ProjectedCourse',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_enrollment',
+      dartName: 'ProjectedEnrollment',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'studentId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: 'courseId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'projected_enrollment_fk_0',
+          columns: ['studentId'],
+          referenceTable: 'projected_student',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+        _isp.ForeignKeyDefinition(
+          constraintName: 'projected_enrollment_fk_1',
+          columns: ['courseId'],
+          referenceTable: 'projected_course',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'projected_enrollment_index_idx',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'studentId',
+            ),
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'courseId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_order',
+      dartName: 'ProjectedOrder',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'description',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'price',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: '_projectedUserOrdersProjectedUserId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'projected_order_fk_0',
+          columns: ['_projectedUserOrdersProjectedUserId'],
+          referenceTable: 'projected_user',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_student',
+      dartName: 'ProjectedStudent',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'projected_user',
+      dartName: 'ProjectedUser',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'addressId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: 'jsonField',
+          columnType: _isp.ColumnType.json,
+          isNullable: true,
+          dartType: 'protocol:ProjectedJsonField?',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'projected_user_fk_0',
+          columns: ['addressId'],
+          referenceTable: 'projected_addresses',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
       name: 'related_unique_data',
       dartName: 'RelatedUniqueData',
       schema: 'public',
@@ -7664,6 +8056,81 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _itmc4j9i.ObjectWithVector) {
       return _itmc4j9i.ObjectWithVector.fromJson(data) as T;
     }
+    if (t == _iegbxll6.ProjectedAddress) {
+      return _iegbxll6.ProjectedAddress.fromJson(data) as T;
+    }
+    if (t == _ikpl2lpd.ProjectedAddressCountry) {
+      return _ikpl2lpd.ProjectedAddressCountry.fromJson(data) as T;
+    }
+    if (t == _iitz0x8d.ProjectedAddressStreet) {
+      return _iitz0x8d.ProjectedAddressStreet.fromJson(data) as T;
+    }
+    if (t == _id2zvgnl.ProjectedArticle) {
+      return _id2zvgnl.ProjectedArticle.fromJson(data) as T;
+    }
+    if (t == _iwhm4f6s.ProjectedArticleAuthorNameOnly) {
+      return _iwhm4f6s.ProjectedArticleAuthorNameOnly.fromJson(data) as T;
+    }
+    if (t == _iq5hz6n4.ProjectedAuthor) {
+      return _iq5hz6n4.ProjectedAuthor.fromJson(data) as T;
+    }
+    if (t == _iotqocf1.ProjectedCourse) {
+      return _iotqocf1.ProjectedCourse.fromJson(data) as T;
+    }
+    if (t == _icve44wq.ProjectedCourseName) {
+      return _icve44wq.ProjectedCourseName.fromJson(data) as T;
+    }
+    if (t == _i3lw6w5n.ProjectedEnrollment) {
+      return _i3lw6w5n.ProjectedEnrollment.fromJson(data) as T;
+    }
+    if (t == _ika7thts.ProjectedEnrollmentCourse) {
+      return _ika7thts.ProjectedEnrollmentCourse.fromJson(data) as T;
+    }
+    if (t == _irlz4dmd.ProjectedJsonField) {
+      return _irlz4dmd.ProjectedJsonField.fromJson(data) as T;
+    }
+    if (t == _i37n7uc1.ProjectedJsonFieldSimple) {
+      return _i37n7uc1.ProjectedJsonFieldSimple.fromJson(data) as T;
+    }
+    if (t == _i8r3x6pe.ProjectedOrder) {
+      return _i8r3x6pe.ProjectedOrder.fromJson(data) as T;
+    }
+    if (t == _id3wrdef.ProjectedOrderDescription) {
+      return _id3wrdef.ProjectedOrderDescription.fromJson(data) as T;
+    }
+    if (t == _iprfievr.ProjectedStudent) {
+      return _iprfievr.ProjectedStudent.fromJson(data) as T;
+    }
+    if (t == _iph9b6hp.ProjectedStudentCourses) {
+      return _iph9b6hp.ProjectedStudentCourses.fromJson(data) as T;
+    }
+    if (t == _imzthwwr.ProjectedUser) {
+      return _imzthwwr.ProjectedUser.fromJson(data) as T;
+    }
+    if (t == _iddxe056.ProjectedUserAddressAndOrders) {
+      return _iddxe056.ProjectedUserAddressAndOrders.fromJson(data) as T;
+    }
+    if (t == _ib01viec.ProjectedUserAddressStreetOnly) {
+      return _ib01viec.ProjectedUserAddressStreetOnly.fromJson(data) as T;
+    }
+    if (t == _ipucx971.ProjectedUserCountryAddress) {
+      return _ipucx971.ProjectedUserCountryAddress.fromJson(data) as T;
+    }
+    if (t == _i1dxwa9r.ProjectedUserJsonField) {
+      return _i1dxwa9r.ProjectedUserJsonField.fromJson(data) as T;
+    }
+    if (t == _i5kyd3on.ProjectedUserJsonMultiField) {
+      return _i5kyd3on.ProjectedUserJsonMultiField.fromJson(data) as T;
+    }
+    if (t == _inwc1zu8.ProjectedUserOrders) {
+      return _inwc1zu8.ProjectedUserOrders.fromJson(data) as T;
+    }
+    if (t == _ivldlu3q.ProjectedUserSimpleJson) {
+      return _ivldlu3q.ProjectedUserSimpleJson.fromJson(data) as T;
+    }
+    if (t == _ifsvk6dp.ProjectedUserStreetAddress) {
+      return _ifsvk6dp.ProjectedUserStreetAddress.fromJson(data) as T;
+    }
     if (t == _ificmsie.Record) {
       return _ificmsie.Record.fromJson(data) as T;
     }
@@ -8659,6 +9126,140 @@ class Protocol extends _is.DatabaseSerializationManager {
     }
     if (t == _is.getType<_itmc4j9i.ObjectWithVector?>()) {
       return (data != null ? _itmc4j9i.ObjectWithVector.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iegbxll6.ProjectedAddress?>()) {
+      return (data != null ? _iegbxll6.ProjectedAddress.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ikpl2lpd.ProjectedAddressCountry?>()) {
+      return (data != null
+              ? _ikpl2lpd.ProjectedAddressCountry.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iitz0x8d.ProjectedAddressStreet?>()) {
+      return (data != null
+              ? _iitz0x8d.ProjectedAddressStreet.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_id2zvgnl.ProjectedArticle?>()) {
+      return (data != null ? _id2zvgnl.ProjectedArticle.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iwhm4f6s.ProjectedArticleAuthorNameOnly?>()) {
+      return (data != null
+              ? _iwhm4f6s.ProjectedArticleAuthorNameOnly.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iq5hz6n4.ProjectedAuthor?>()) {
+      return (data != null ? _iq5hz6n4.ProjectedAuthor.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iotqocf1.ProjectedCourse?>()) {
+      return (data != null ? _iotqocf1.ProjectedCourse.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_icve44wq.ProjectedCourseName?>()) {
+      return (data != null
+              ? _icve44wq.ProjectedCourseName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i3lw6w5n.ProjectedEnrollment?>()) {
+      return (data != null
+              ? _i3lw6w5n.ProjectedEnrollment.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ika7thts.ProjectedEnrollmentCourse?>()) {
+      return (data != null
+              ? _ika7thts.ProjectedEnrollmentCourse.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_irlz4dmd.ProjectedJsonField?>()) {
+      return (data != null ? _irlz4dmd.ProjectedJsonField.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_i37n7uc1.ProjectedJsonFieldSimple?>()) {
+      return (data != null
+              ? _i37n7uc1.ProjectedJsonFieldSimple.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i8r3x6pe.ProjectedOrder?>()) {
+      return (data != null ? _i8r3x6pe.ProjectedOrder.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_id3wrdef.ProjectedOrderDescription?>()) {
+      return (data != null
+              ? _id3wrdef.ProjectedOrderDescription.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iprfievr.ProjectedStudent?>()) {
+      return (data != null ? _iprfievr.ProjectedStudent.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iph9b6hp.ProjectedStudentCourses?>()) {
+      return (data != null
+              ? _iph9b6hp.ProjectedStudentCourses.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_imzthwwr.ProjectedUser?>()) {
+      return (data != null ? _imzthwwr.ProjectedUser.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iddxe056.ProjectedUserAddressAndOrders?>()) {
+      return (data != null
+              ? _iddxe056.ProjectedUserAddressAndOrders.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ib01viec.ProjectedUserAddressStreetOnly?>()) {
+      return (data != null
+              ? _ib01viec.ProjectedUserAddressStreetOnly.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ipucx971.ProjectedUserCountryAddress?>()) {
+      return (data != null
+              ? _ipucx971.ProjectedUserCountryAddress.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i1dxwa9r.ProjectedUserJsonField?>()) {
+      return (data != null
+              ? _i1dxwa9r.ProjectedUserJsonField.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i5kyd3on.ProjectedUserJsonMultiField?>()) {
+      return (data != null
+              ? _i5kyd3on.ProjectedUserJsonMultiField.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_inwc1zu8.ProjectedUserOrders?>()) {
+      return (data != null
+              ? _inwc1zu8.ProjectedUserOrders.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ivldlu3q.ProjectedUserSimpleJson?>()) {
+      return (data != null
+              ? _ivldlu3q.ProjectedUserSimpleJson.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ifsvk6dp.ProjectedUserStreetAddress?>()) {
+      return (data != null
+              ? _ifsvk6dp.ProjectedUserStreetAddress.fromJson(data)
+              : null)
           as T;
     }
     if (t == _is.getType<_ificmsie.Record?>()) {
@@ -9725,6 +10326,116 @@ class Protocol extends _is.DatabaseSerializationManager {
               .toList()
           as T;
     }
+    if (t == List<_i3lw6w5n.ProjectedEnrollment>) {
+      return (data as List)
+              .map((e) => deserialize<_i3lw6w5n.ProjectedEnrollment>(e))
+              .toList()
+          as T;
+    }
+    if (t == _is.getType<List<_i3lw6w5n.ProjectedEnrollment>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i3lw6w5n.ProjectedEnrollment>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_icve44wq.ProjectedCourseName?>()) {
+      return (data != null
+              ? _icve44wq.ProjectedCourseName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == List<bool>) {
+      return (data as List).map((e) => deserialize<bool>(e)).toList() as T;
+    }
+    if (t == List<double>) {
+      return (data as List).map((e) => deserialize<double>(e)).toList() as T;
+    }
+    if (t == Map<String, bool>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<bool>(v)),
+          )
+          as T;
+    }
+    if (t == Map<String, double>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(deserialize<String>(k), deserialize<double>(v)),
+          )
+          as T;
+    }
+    if (t == List<_ika7thts.ProjectedEnrollmentCourse>) {
+      return (data as List)
+              .map((e) => deserialize<_ika7thts.ProjectedEnrollmentCourse>(e))
+              .toList()
+          as T;
+    }
+    if (t == _ika7thts.ProjectedEnrollmentCourse) {
+      return _ika7thts.ProjectedEnrollmentCourse.fromJson(data) as T;
+    }
+    if (t == _is.getType<List<_ika7thts.ProjectedEnrollmentCourse>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map(
+                      (e) =>
+                          deserialize<_ika7thts.ProjectedEnrollmentCourse>(e),
+                    )
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_i8r3x6pe.ProjectedOrder>) {
+      return (data as List)
+              .map((e) => deserialize<_i8r3x6pe.ProjectedOrder>(e))
+              .toList()
+          as T;
+    }
+    if (t == _is.getType<List<_i8r3x6pe.ProjectedOrder>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i8r3x6pe.ProjectedOrder>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_id3wrdef.ProjectedOrderDescription>) {
+      return (data as List)
+              .map((e) => deserialize<_id3wrdef.ProjectedOrderDescription>(e))
+              .toList()
+          as T;
+    }
+    if (t == _id3wrdef.ProjectedOrderDescription) {
+      return _id3wrdef.ProjectedOrderDescription.fromJson(data) as T;
+    }
+    if (t == _is.getType<List<_id3wrdef.ProjectedOrderDescription>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map(
+                      (e) =>
+                          deserialize<_id3wrdef.ProjectedOrderDescription>(e),
+                    )
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_iitz0x8d.ProjectedAddressStreet?>()) {
+      return (data != null
+              ? _iitz0x8d.ProjectedAddressStreet.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_ikpl2lpd.ProjectedAddressCountry?>()) {
+      return (data != null
+              ? _ikpl2lpd.ProjectedAddressCountry.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i37n7uc1.ProjectedJsonFieldSimple?>()) {
+      return (data != null
+              ? _i37n7uc1.ProjectedJsonFieldSimple.fromJson(data)
+              : null)
+          as T;
+    }
     if (t == _is.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
@@ -9999,17 +10710,11 @@ class Protocol extends _is.DatabaseSerializationManager {
                 )
                 as T;
     }
-    if (t == List<bool>) {
-      return (data as List).map((e) => deserialize<bool>(e)).toList() as T;
-    }
     if (t == _is.getType<List<bool>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<bool>(e)).toList()
               : null)
           as T;
-    }
-    if (t == List<double>) {
-      return (data as List).map((e) => deserialize<double>(e)).toList() as T;
     }
     if (t == _is.getType<List<double>?>()) {
       return (data != null
@@ -10523,12 +11228,6 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _is.getType<(String,)>()) {
       return (deserialize<String>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == Map<String, bool>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<bool>(v)),
-          )
-          as T;
-    }
     if (t == _is.getType<Map<String, bool>?>()) {
       return (data != null
               ? (data as Map).map(
@@ -10536,12 +11235,6 @@ class Protocol extends _is.DatabaseSerializationManager {
                       MapEntry(deserialize<String>(k), deserialize<bool>(v)),
                 )
               : null)
-          as T;
-    }
-    if (t == Map<String, double>) {
-      return (data as Map).map(
-            (k, v) => MapEntry(deserialize<String>(k), deserialize<double>(v)),
-          )
           as T;
     }
     if (t == _is.getType<Map<String, double>?>()) {
@@ -13245,6 +13938,34 @@ class Protocol extends _is.DatabaseSerializationManager {
       _i8t20dyr.ObjectWithSparseVector => 'ObjectWithSparseVector',
       _iusk9w05.ObjectWithUuid => 'ObjectWithUuid',
       _itmc4j9i.ObjectWithVector => 'ObjectWithVector',
+      _iegbxll6.ProjectedAddress => 'ProjectedAddress',
+      _ikpl2lpd.ProjectedAddressCountry => 'ProjectedAddressCountry',
+      _iitz0x8d.ProjectedAddressStreet => 'ProjectedAddressStreet',
+      _id2zvgnl.ProjectedArticle => 'ProjectedArticle',
+      _iwhm4f6s.ProjectedArticleAuthorNameOnly =>
+        'ProjectedArticleAuthorNameOnly',
+      _iq5hz6n4.ProjectedAuthor => 'ProjectedAuthor',
+      _iotqocf1.ProjectedCourse => 'ProjectedCourse',
+      _icve44wq.ProjectedCourseName => 'ProjectedCourseName',
+      _i3lw6w5n.ProjectedEnrollment => 'ProjectedEnrollment',
+      _ika7thts.ProjectedEnrollmentCourse => 'ProjectedEnrollmentCourse',
+      _irlz4dmd.ProjectedJsonField => 'ProjectedJsonField',
+      _i37n7uc1.ProjectedJsonFieldSimple => 'ProjectedJsonFieldSimple',
+      _i8r3x6pe.ProjectedOrder => 'ProjectedOrder',
+      _id3wrdef.ProjectedOrderDescription => 'ProjectedOrderDescription',
+      _iprfievr.ProjectedStudent => 'ProjectedStudent',
+      _iph9b6hp.ProjectedStudentCourses => 'ProjectedStudentCourses',
+      _imzthwwr.ProjectedUser => 'ProjectedUser',
+      _iddxe056.ProjectedUserAddressAndOrders =>
+        'ProjectedUserAddressAndOrders',
+      _ib01viec.ProjectedUserAddressStreetOnly =>
+        'ProjectedUserAddressStreetOnly',
+      _ipucx971.ProjectedUserCountryAddress => 'ProjectedUserCountryAddress',
+      _i1dxwa9r.ProjectedUserJsonField => 'ProjectedUserJsonField',
+      _i5kyd3on.ProjectedUserJsonMultiField => 'ProjectedUserJsonMultiField',
+      _inwc1zu8.ProjectedUserOrders => 'ProjectedUserOrders',
+      _ivldlu3q.ProjectedUserSimpleJson => 'ProjectedUserSimpleJson',
+      _ifsvk6dp.ProjectedUserStreetAddress => 'ProjectedUserStreetAddress',
       _ificmsie.Record => 'Record',
       _i2aw39a6.RelatedUniqueData => 'RelatedUniqueData',
       _iiggggl6.ExceptionWithRequiredField => 'ExceptionWithRequiredField',
@@ -13710,6 +14431,56 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'ObjectWithUuid';
       case _itmc4j9i.ObjectWithVector():
         return 'ObjectWithVector';
+      case _iegbxll6.ProjectedAddress():
+        return 'ProjectedAddress';
+      case _ikpl2lpd.ProjectedAddressCountry():
+        return 'ProjectedAddressCountry';
+      case _iitz0x8d.ProjectedAddressStreet():
+        return 'ProjectedAddressStreet';
+      case _id2zvgnl.ProjectedArticle():
+        return 'ProjectedArticle';
+      case _iwhm4f6s.ProjectedArticleAuthorNameOnly():
+        return 'ProjectedArticleAuthorNameOnly';
+      case _iq5hz6n4.ProjectedAuthor():
+        return 'ProjectedAuthor';
+      case _iotqocf1.ProjectedCourse():
+        return 'ProjectedCourse';
+      case _icve44wq.ProjectedCourseName():
+        return 'ProjectedCourseName';
+      case _i3lw6w5n.ProjectedEnrollment():
+        return 'ProjectedEnrollment';
+      case _ika7thts.ProjectedEnrollmentCourse():
+        return 'ProjectedEnrollmentCourse';
+      case _irlz4dmd.ProjectedJsonField():
+        return 'ProjectedJsonField';
+      case _i37n7uc1.ProjectedJsonFieldSimple():
+        return 'ProjectedJsonFieldSimple';
+      case _i8r3x6pe.ProjectedOrder():
+        return 'ProjectedOrder';
+      case _id3wrdef.ProjectedOrderDescription():
+        return 'ProjectedOrderDescription';
+      case _iprfievr.ProjectedStudent():
+        return 'ProjectedStudent';
+      case _iph9b6hp.ProjectedStudentCourses():
+        return 'ProjectedStudentCourses';
+      case _imzthwwr.ProjectedUser():
+        return 'ProjectedUser';
+      case _iddxe056.ProjectedUserAddressAndOrders():
+        return 'ProjectedUserAddressAndOrders';
+      case _ib01viec.ProjectedUserAddressStreetOnly():
+        return 'ProjectedUserAddressStreetOnly';
+      case _ipucx971.ProjectedUserCountryAddress():
+        return 'ProjectedUserCountryAddress';
+      case _i1dxwa9r.ProjectedUserJsonField():
+        return 'ProjectedUserJsonField';
+      case _i5kyd3on.ProjectedUserJsonMultiField():
+        return 'ProjectedUserJsonMultiField';
+      case _inwc1zu8.ProjectedUserOrders():
+        return 'ProjectedUserOrders';
+      case _ivldlu3q.ProjectedUserSimpleJson():
+        return 'ProjectedUserSimpleJson';
+      case _ifsvk6dp.ProjectedUserStreetAddress():
+        return 'ProjectedUserStreetAddress';
       case _ificmsie.Record():
         return 'Record';
       case _i2aw39a6.RelatedUniqueData():
@@ -14525,6 +15296,85 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (dataClassName == 'ObjectWithVector') {
       return deserialize<_itmc4j9i.ObjectWithVector>(data['data']);
     }
+    if (dataClassName == 'ProjectedAddress') {
+      return deserialize<_iegbxll6.ProjectedAddress>(data['data']);
+    }
+    if (dataClassName == 'ProjectedAddressCountry') {
+      return deserialize<_ikpl2lpd.ProjectedAddressCountry>(data['data']);
+    }
+    if (dataClassName == 'ProjectedAddressStreet') {
+      return deserialize<_iitz0x8d.ProjectedAddressStreet>(data['data']);
+    }
+    if (dataClassName == 'ProjectedArticle') {
+      return deserialize<_id2zvgnl.ProjectedArticle>(data['data']);
+    }
+    if (dataClassName == 'ProjectedArticleAuthorNameOnly') {
+      return deserialize<_iwhm4f6s.ProjectedArticleAuthorNameOnly>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'ProjectedAuthor') {
+      return deserialize<_iq5hz6n4.ProjectedAuthor>(data['data']);
+    }
+    if (dataClassName == 'ProjectedCourse') {
+      return deserialize<_iotqocf1.ProjectedCourse>(data['data']);
+    }
+    if (dataClassName == 'ProjectedCourseName') {
+      return deserialize<_icve44wq.ProjectedCourseName>(data['data']);
+    }
+    if (dataClassName == 'ProjectedEnrollment') {
+      return deserialize<_i3lw6w5n.ProjectedEnrollment>(data['data']);
+    }
+    if (dataClassName == 'ProjectedEnrollmentCourse') {
+      return deserialize<_ika7thts.ProjectedEnrollmentCourse>(data['data']);
+    }
+    if (dataClassName == 'ProjectedJsonField') {
+      return deserialize<_irlz4dmd.ProjectedJsonField>(data['data']);
+    }
+    if (dataClassName == 'ProjectedJsonFieldSimple') {
+      return deserialize<_i37n7uc1.ProjectedJsonFieldSimple>(data['data']);
+    }
+    if (dataClassName == 'ProjectedOrder') {
+      return deserialize<_i8r3x6pe.ProjectedOrder>(data['data']);
+    }
+    if (dataClassName == 'ProjectedOrderDescription') {
+      return deserialize<_id3wrdef.ProjectedOrderDescription>(data['data']);
+    }
+    if (dataClassName == 'ProjectedStudent') {
+      return deserialize<_iprfievr.ProjectedStudent>(data['data']);
+    }
+    if (dataClassName == 'ProjectedStudentCourses') {
+      return deserialize<_iph9b6hp.ProjectedStudentCourses>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUser') {
+      return deserialize<_imzthwwr.ProjectedUser>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserAddressAndOrders') {
+      return deserialize<_iddxe056.ProjectedUserAddressAndOrders>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserAddressStreetOnly') {
+      return deserialize<_ib01viec.ProjectedUserAddressStreetOnly>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'ProjectedUserCountryAddress') {
+      return deserialize<_ipucx971.ProjectedUserCountryAddress>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserJsonField') {
+      return deserialize<_i1dxwa9r.ProjectedUserJsonField>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserJsonMultiField') {
+      return deserialize<_i5kyd3on.ProjectedUserJsonMultiField>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserOrders') {
+      return deserialize<_inwc1zu8.ProjectedUserOrders>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserSimpleJson') {
+      return deserialize<_ivldlu3q.ProjectedUserSimpleJson>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserStreetAddress') {
+      return deserialize<_ifsvk6dp.ProjectedUserStreetAddress>(data['data']);
+    }
     if (dataClassName == 'Record') {
       return deserialize<_ificmsie.Record>(data['data']);
     }
@@ -15053,6 +15903,22 @@ class Protocol extends _is.DatabaseSerializationManager {
         return _iusk9w05.ObjectWithUuid.t;
       case _itmc4j9i.ObjectWithVector:
         return _itmc4j9i.ObjectWithVector.t;
+      case _iegbxll6.ProjectedAddress:
+        return _iegbxll6.ProjectedAddress.t;
+      case _id2zvgnl.ProjectedArticle:
+        return _id2zvgnl.ProjectedArticle.t;
+      case _iq5hz6n4.ProjectedAuthor:
+        return _iq5hz6n4.ProjectedAuthor.t;
+      case _iotqocf1.ProjectedCourse:
+        return _iotqocf1.ProjectedCourse.t;
+      case _i3lw6w5n.ProjectedEnrollment:
+        return _i3lw6w5n.ProjectedEnrollment.t;
+      case _i8r3x6pe.ProjectedOrder:
+        return _i8r3x6pe.ProjectedOrder.t;
+      case _iprfievr.ProjectedStudent:
+        return _iprfievr.ProjectedStudent.t;
+      case _imzthwwr.ProjectedUser:
+        return _imzthwwr.ProjectedUser.t;
       case _i2aw39a6.RelatedUniqueData:
         return _i2aw39a6.RelatedUniqueData.t;
       case _iv7egjxb.ModelWithRequiredField:

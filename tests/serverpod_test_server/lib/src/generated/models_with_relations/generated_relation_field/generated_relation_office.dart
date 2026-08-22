@@ -99,7 +99,7 @@ abstract class GeneratedRelationOffice
   static GeneratedRelationOfficeInclude include({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
   }) {
-    return GeneratedRelationOfficeInclude._(company: company);
+    return GeneratedRelationOfficeInclude.internal_(company: company);
   }
 
   static GeneratedRelationOfficeIncludeList includeList({
@@ -110,7 +110,7 @@ abstract class GeneratedRelationOffice
     _is.OrderByListBuilder<GeneratedRelationOfficeTable>? orderByList,
     GeneratedRelationOfficeInclude? include,
   }) {
-    return GeneratedRelationOfficeIncludeList._(
+    return GeneratedRelationOfficeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -232,13 +232,17 @@ class GeneratedRelationOfficeTable extends _is.Table<int?> {
 }
 
 class GeneratedRelationOfficeInclude extends _is.IncludeObject {
-  GeneratedRelationOfficeInclude._({
+  GeneratedRelationOfficeInclude.internal_({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
+    this.selectedColumns,
   }) {
     _company = company;
   }
 
   _ipeijyfj.GeneratedRelationCompanyInclude? _company;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'company': _company};
@@ -248,16 +252,20 @@ class GeneratedRelationOfficeInclude extends _is.IncludeObject {
 }
 
 class GeneratedRelationOfficeIncludeList extends _is.IncludeList {
-  GeneratedRelationOfficeIncludeList._({
+  GeneratedRelationOfficeIncludeList.internal_({
     _is.WhereExpressionBuilder<GeneratedRelationOfficeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationOffice.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

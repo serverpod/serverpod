@@ -104,7 +104,7 @@ abstract class DateTimeDefault
   }
 
   static DateTimeDefaultInclude include() {
-    return DateTimeDefaultInclude._();
+    return DateTimeDefaultInclude.internal_();
   }
 
   static DateTimeDefaultIncludeList includeList({
@@ -115,7 +115,7 @@ abstract class DateTimeDefault
     _is.OrderByListBuilder<DateTimeDefaultTable>? orderByList,
     DateTimeDefaultInclude? include,
   }) {
-    return DateTimeDefaultIncludeList._(
+    return DateTimeDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +228,10 @@ class DateTimeDefaultTable extends _is.Table<int?> {
 }
 
 class DateTimeDefaultInclude extends _is.IncludeObject {
-  DateTimeDefaultInclude._();
+  DateTimeDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -238,16 +241,20 @@ class DateTimeDefaultInclude extends _is.IncludeObject {
 }
 
 class DateTimeDefaultIncludeList extends _is.IncludeList {
-  DateTimeDefaultIncludeList._({
+  DateTimeDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<DateTimeDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

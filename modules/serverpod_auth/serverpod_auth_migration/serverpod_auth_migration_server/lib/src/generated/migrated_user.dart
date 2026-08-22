@@ -107,7 +107,7 @@ abstract class MigratedUser
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
   }) {
-    return MigratedUserInclude._(
+    return MigratedUserInclude.internal_(
       oldUser: oldUser,
       newAuthUser: newAuthUser,
     );
@@ -121,7 +121,7 @@ abstract class MigratedUser
     _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
   }) {
-    return MigratedUserIncludeList._(
+    return MigratedUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -267,9 +267,10 @@ class MigratedUserTable extends _is.Table<int?> {
 }
 
 class MigratedUserInclude extends _is.IncludeObject {
-  MigratedUserInclude._({
+  MigratedUserInclude.internal_({
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
+    this.selectedColumns,
   }) {
     _oldUser = oldUser;
     _newAuthUser = newAuthUser;
@@ -278,6 +279,9 @@ class MigratedUserInclude extends _is.IncludeObject {
   _i1n3uhu0.UserInfoInclude? _oldUser;
 
   _iacs.AuthUserInclude? _newAuthUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -290,16 +294,20 @@ class MigratedUserInclude extends _is.IncludeObject {
 }
 
 class MigratedUserIncludeList extends _is.IncludeList {
-  MigratedUserIncludeList._({
+  MigratedUserIncludeList.internal_({
     _is.WhereExpressionBuilder<MigratedUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MigratedUser.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

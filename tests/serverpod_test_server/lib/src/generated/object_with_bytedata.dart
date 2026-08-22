@@ -72,7 +72,7 @@ abstract class ObjectWithByteData
   }
 
   static ObjectWithByteDataInclude include() {
-    return ObjectWithByteDataInclude._();
+    return ObjectWithByteDataInclude.internal_();
   }
 
   static ObjectWithByteDataIncludeList includeList({
@@ -83,7 +83,7 @@ abstract class ObjectWithByteData
     _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
   }) {
-    return ObjectWithByteDataIncludeList._(
+    return ObjectWithByteDataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -158,7 +158,10 @@ class ObjectWithByteDataTable extends _is.Table<int?> {
 }
 
 class ObjectWithByteDataInclude extends _is.IncludeObject {
-  ObjectWithByteDataInclude._();
+  ObjectWithByteDataInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -168,16 +171,20 @@ class ObjectWithByteDataInclude extends _is.IncludeObject {
 }
 
 class ObjectWithByteDataIncludeList extends _is.IncludeList {
-  ObjectWithByteDataIncludeList._({
+  ObjectWithByteDataIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithByteData.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -97,7 +97,7 @@ abstract class ObjectWithGeographyGeometryCollection
   }
 
   static ObjectWithGeographyGeometryCollectionInclude include() {
-    return ObjectWithGeographyGeometryCollectionInclude._();
+    return ObjectWithGeographyGeometryCollectionInclude.internal_();
   }
 
   static ObjectWithGeographyGeometryCollectionIncludeList includeList({
@@ -110,7 +110,7 @@ abstract class ObjectWithGeographyGeometryCollection
     orderByList,
     ObjectWithGeographyGeometryCollectionInclude? include,
   }) {
-    return ObjectWithGeographyGeometryCollectionIncludeList._(
+    return ObjectWithGeographyGeometryCollectionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -236,7 +236,12 @@ class ObjectWithGeographyGeometryCollectionTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyGeometryCollectionInclude extends _is.IncludeObject {
-  ObjectWithGeographyGeometryCollectionInclude._();
+  ObjectWithGeographyGeometryCollectionInclude.internal_({
+    this.selectedColumns,
+  });
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -246,7 +251,7 @@ class ObjectWithGeographyGeometryCollectionInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyGeometryCollectionIncludeList extends _is.IncludeList {
-  ObjectWithGeographyGeometryCollectionIncludeList._({
+  ObjectWithGeographyGeometryCollectionIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     super.limit,
@@ -254,9 +259,13 @@ class ObjectWithGeographyGeometryCollectionIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyGeometryCollection.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

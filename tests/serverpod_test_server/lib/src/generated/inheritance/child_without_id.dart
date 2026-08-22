@@ -85,7 +85,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
   }
 
   static ChildClassWithoutIdInclude include() {
-    return ChildClassWithoutIdInclude._();
+    return ChildClassWithoutIdInclude.internal_();
   }
 
   static ChildClassWithoutIdIncludeList includeList({
@@ -96,7 +96,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     ChildClassWithoutIdInclude? include,
   }) {
-    return ChildClassWithoutIdIncludeList._(
+    return ChildClassWithoutIdIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -203,7 +203,10 @@ class ChildClassWithoutIdTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ChildClassWithoutIdInclude extends _is.IncludeObject {
-  ChildClassWithoutIdInclude._();
+  ChildClassWithoutIdInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -213,16 +216,20 @@ class ChildClassWithoutIdInclude extends _is.IncludeObject {
 }
 
 class ChildClassWithoutIdIncludeList extends _is.IncludeList {
-  ChildClassWithoutIdIncludeList._({
+  ChildClassWithoutIdIncludeList.internal_({
     _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassWithoutId.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

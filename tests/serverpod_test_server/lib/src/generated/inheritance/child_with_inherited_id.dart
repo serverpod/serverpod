@@ -110,7 +110,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
   static ChildWithInheritedIdInclude include({
     _id412n1c.ChildWithInheritedIdInclude? parent,
   }) {
-    return ChildWithInheritedIdInclude._(parent: parent);
+    return ChildWithInheritedIdInclude.internal_(parent: parent);
   }
 
   static ChildWithInheritedIdIncludeList includeList({
@@ -121,7 +121,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     ChildWithInheritedIdInclude? include,
   }) {
-    return ChildWithInheritedIdIncludeList._(
+    return ChildWithInheritedIdIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -278,13 +278,17 @@ class ChildWithInheritedIdTable extends _is.Table<_is.UuidValue> {
 }
 
 class ChildWithInheritedIdInclude extends _is.IncludeObject {
-  ChildWithInheritedIdInclude._({
+  ChildWithInheritedIdInclude.internal_({
     _id412n1c.ChildWithInheritedIdInclude? parent,
+    this.selectedColumns,
   }) {
     _parent = parent;
   }
 
   _id412n1c.ChildWithInheritedIdInclude? _parent;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'parent': _parent};
@@ -294,16 +298,20 @@ class ChildWithInheritedIdInclude extends _is.IncludeObject {
 }
 
 class ChildWithInheritedIdIncludeList extends _is.IncludeList {
-  ChildWithInheritedIdIncludeList._({
+  ChildWithInheritedIdIncludeList.internal_({
     _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChildWithInheritedId.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -331,7 +331,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
   }
 
   static TypesInclude include() {
-    return TypesInclude._();
+    return TypesInclude.internal_();
   }
 
   static TypesIncludeList includeList({
@@ -342,7 +342,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
   }) {
-    return TypesIncludeList._(
+    return TypesIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -849,7 +849,10 @@ class TypesTable extends _is.Table<int?> {
 }
 
 class TypesInclude extends _is.IncludeObject {
-  TypesInclude._();
+  TypesInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -859,16 +862,20 @@ class TypesInclude extends _is.IncludeObject {
 }
 
 class TypesIncludeList extends _is.IncludeList {
-  TypesIncludeList._({
+  TypesIncludeList.internal_({
     _is.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Types.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

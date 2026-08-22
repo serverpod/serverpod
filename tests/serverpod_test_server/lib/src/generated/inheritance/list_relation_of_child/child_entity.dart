@@ -84,7 +84,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
   }
 
   static ChildEntityInclude include() {
-    return ChildEntityInclude._();
+    return ChildEntityInclude.internal_();
   }
 
   static ChildEntityIncludeList includeList({
@@ -95,7 +95,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     _is.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
   }) {
-    return ChildEntityIncludeList._(
+    return ChildEntityIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -236,7 +236,10 @@ class ChildEntityTable extends _is.Table<int?> {
 }
 
 class ChildEntityInclude extends _is.IncludeObject {
-  ChildEntityInclude._();
+  ChildEntityInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -246,16 +249,20 @@ class ChildEntityInclude extends _is.IncludeObject {
 }
 
 class ChildEntityIncludeList extends _is.IncludeList {
-  ChildEntityIncludeList._({
+  ChildEntityIncludeList.internal_({
     _is.WhereExpressionBuilder<ChildEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChildEntity.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -100,7 +100,7 @@ abstract class Person
   }
 
   static PersonInclude include({_i0ptycc3.OrganizationInclude? organization}) {
-    return PersonInclude._(organization: organization);
+    return PersonInclude.internal_(organization: organization);
   }
 
   static PersonIncludeList includeList({
@@ -111,7 +111,7 @@ abstract class Person
     _isd.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
   }) {
-    return PersonIncludeList._(
+    return PersonIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -283,11 +283,17 @@ class PersonTable extends _isd.Table<int?> {
 }
 
 class PersonInclude extends _isd.IncludeObject {
-  PersonInclude._({_i0ptycc3.OrganizationInclude? organization}) {
+  PersonInclude.internal_({
+    _i0ptycc3.OrganizationInclude? organization,
+    this.selectedColumns,
+  }) {
     _organization = organization;
   }
 
   _i0ptycc3.OrganizationInclude? _organization;
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {'organization': _organization};
@@ -297,16 +303,20 @@ class PersonInclude extends _isd.IncludeObject {
 }
 
 class PersonIncludeList extends _isd.IncludeList {
-  PersonIncludeList._({
+  PersonIncludeList.internal_({
     _isd.WhereExpressionBuilder<PersonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Person.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

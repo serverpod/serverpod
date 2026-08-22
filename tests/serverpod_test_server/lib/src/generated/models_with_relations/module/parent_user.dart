@@ -77,7 +77,7 @@ abstract class ParentUser
   }
 
   static ParentUserInclude include() {
-    return ParentUserInclude._();
+    return ParentUserInclude.internal_();
   }
 
   static ParentUserIncludeList includeList({
@@ -88,7 +88,7 @@ abstract class ParentUser
     _is.OrderByListBuilder<ParentUserTable>? orderByList,
     ParentUserInclude? include,
   }) {
-    return ParentUserIncludeList._(
+    return ParentUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -176,7 +176,10 @@ class ParentUserTable extends _is.Table<int?> {
 }
 
 class ParentUserInclude extends _is.IncludeObject {
-  ParentUserInclude._();
+  ParentUserInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -186,16 +189,20 @@ class ParentUserInclude extends _is.IncludeObject {
 }
 
 class ParentUserIncludeList extends _is.IncludeList {
-  ParentUserIncludeList._({
+  ParentUserIncludeList.internal_({
     _is.WhereExpressionBuilder<ParentUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ParentUser.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

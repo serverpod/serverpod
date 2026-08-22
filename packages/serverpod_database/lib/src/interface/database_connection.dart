@@ -1,3 +1,5 @@
+import 'package:meta/meta.dart';
+
 import '../concepts/column_value.dart';
 import '../concepts/columns.dart';
 import '../concepts/database_result.dart';
@@ -55,7 +57,47 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
   });
 
   /// For most cases use the corresponding method in [Database] instead.
+  @internal
+  Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? limit,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
+  @internal
+  Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>(
+    DatabaseSession session, {
+    Expression? where,
+    int? offset,
+    Column? orderBy,
+    List<Column>? orderByList,
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// For most cases use the corresponding method in [Database] instead.
   Future<T?> findById<T extends TableRow>(
+    DatabaseSession session,
+    Object id, {
+    Transaction? transaction,
+    Include? include,
+    LockMode? lockMode,
+    LockBehavior? lockBehavior,
+  });
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  @internal
+  Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
     DatabaseSession session,
     Object id, {
     Transaction? transaction,

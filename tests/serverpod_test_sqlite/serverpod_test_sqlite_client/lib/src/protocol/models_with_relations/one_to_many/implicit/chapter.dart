@@ -75,7 +75,7 @@ abstract class Chapter
   }
 
   static ChapterInclude include() {
-    return ChapterInclude._();
+    return ChapterInclude.internal_();
   }
 
   static ChapterIncludeList includeList({
@@ -86,7 +86,7 @@ abstract class Chapter
     _isd.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
   }) {
-    return ChapterIncludeList._(
+    return ChapterIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,7 +204,10 @@ class ChapterTable extends _isd.Table<int?> {
 }
 
 class ChapterInclude extends _isd.IncludeObject {
-  ChapterInclude._();
+  ChapterInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -214,16 +217,20 @@ class ChapterInclude extends _isd.IncludeObject {
 }
 
 class ChapterIncludeList extends _isd.IncludeList {
-  ChapterIncludeList._({
+  ChapterIncludeList.internal_({
     _isd.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Chapter.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

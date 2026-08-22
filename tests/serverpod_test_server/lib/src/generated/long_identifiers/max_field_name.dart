@@ -74,7 +74,7 @@ abstract class MaxFieldName
   }
 
   static MaxFieldNameInclude include() {
-    return MaxFieldNameInclude._();
+    return MaxFieldNameInclude.internal_();
   }
 
   static MaxFieldNameIncludeList includeList({
@@ -85,7 +85,7 @@ abstract class MaxFieldName
     _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     MaxFieldNameInclude? include,
   }) {
-    return MaxFieldNameIncludeList._(
+    return MaxFieldNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -166,7 +166,10 @@ class MaxFieldNameTable extends _is.Table<int?> {
 }
 
 class MaxFieldNameInclude extends _is.IncludeObject {
-  MaxFieldNameInclude._();
+  MaxFieldNameInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -176,16 +179,20 @@ class MaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class MaxFieldNameIncludeList extends _is.IncludeList {
-  MaxFieldNameIncludeList._({
+  MaxFieldNameIncludeList.internal_({
     _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MaxFieldName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

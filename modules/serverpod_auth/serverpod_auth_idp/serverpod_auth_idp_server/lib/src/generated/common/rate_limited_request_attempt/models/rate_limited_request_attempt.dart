@@ -126,7 +126,7 @@ abstract class RateLimitedRequestAttempt
   }
 
   static RateLimitedRequestAttemptInclude include() {
-    return RateLimitedRequestAttemptInclude._();
+    return RateLimitedRequestAttemptInclude.internal_();
   }
 
   static RateLimitedRequestAttemptIncludeList includeList({
@@ -137,7 +137,7 @@ abstract class RateLimitedRequestAttempt
     _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
   }) {
-    return RateLimitedRequestAttemptIncludeList._(
+    return RateLimitedRequestAttemptIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -314,7 +314,10 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
 }
 
 class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
-  RateLimitedRequestAttemptInclude._();
+  RateLimitedRequestAttemptInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -324,16 +327,20 @@ class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
 }
 
 class RateLimitedRequestAttemptIncludeList extends _is.IncludeList {
-  RateLimitedRequestAttemptIncludeList._({
+  RateLimitedRequestAttemptIncludeList.internal_({
     _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RateLimitedRequestAttempt.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

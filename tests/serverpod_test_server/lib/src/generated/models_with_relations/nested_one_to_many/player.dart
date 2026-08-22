@@ -91,7 +91,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
   }
 
   static PlayerInclude include({_iaks25tn.TeamInclude? team}) {
-    return PlayerInclude._(team: team);
+    return PlayerInclude.internal_(team: team);
   }
 
   static PlayerIncludeList includeList({
@@ -102,7 +102,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<PlayerTable>? orderByList,
     PlayerInclude? include,
   }) {
-    return PlayerIncludeList._(
+    return PlayerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -217,11 +217,17 @@ class PlayerTable extends _is.Table<int?> {
 }
 
 class PlayerInclude extends _is.IncludeObject {
-  PlayerInclude._({_iaks25tn.TeamInclude? team}) {
+  PlayerInclude.internal_({
+    _iaks25tn.TeamInclude? team,
+    this.selectedColumns,
+  }) {
     _team = team;
   }
 
   _iaks25tn.TeamInclude? _team;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'team': _team};
@@ -231,16 +237,20 @@ class PlayerInclude extends _is.IncludeObject {
 }
 
 class PlayerIncludeList extends _is.IncludeList {
-  PlayerIncludeList._({
+  PlayerIncludeList.internal_({
     _is.WhereExpressionBuilder<PlayerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Player.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -71,7 +71,7 @@ abstract class DeferrableRelationParent
   }
 
   static DeferrableRelationParentInclude include() {
-    return DeferrableRelationParentInclude._();
+    return DeferrableRelationParentInclude.internal_();
   }
 
   static DeferrableRelationParentIncludeList includeList({
@@ -82,7 +82,7 @@ abstract class DeferrableRelationParent
     _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
     DeferrableRelationParentInclude? include,
   }) {
-    return DeferrableRelationParentIncludeList._(
+    return DeferrableRelationParentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -156,7 +156,10 @@ class DeferrableRelationParentTable extends _is.Table<int?> {
 }
 
 class DeferrableRelationParentInclude extends _is.IncludeObject {
-  DeferrableRelationParentInclude._();
+  DeferrableRelationParentInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -166,16 +169,20 @@ class DeferrableRelationParentInclude extends _is.IncludeObject {
 }
 
 class DeferrableRelationParentIncludeList extends _is.IncludeList {
-  DeferrableRelationParentIncludeList._({
+  DeferrableRelationParentIncludeList.internal_({
     _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationParent.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

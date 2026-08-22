@@ -249,7 +249,7 @@ abstract class SessionLogEntry
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
   }) {
-    return SessionLogEntryInclude._(
+    return SessionLogEntryInclude.internal_(
       logs: logs,
       queries: queries,
       messages: messages,
@@ -264,7 +264,7 @@ abstract class SessionLogEntry
     _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
   }) {
-    return SessionLogEntryIncludeList._(
+    return SessionLogEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -712,10 +712,11 @@ class SessionLogEntryTable extends _is.Table<int?> {
 }
 
 class SessionLogEntryInclude extends _is.IncludeObject {
-  SessionLogEntryInclude._({
+  SessionLogEntryInclude.internal_({
     _iv7ld46g.LogEntryIncludeList? logs,
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
+    this.selectedColumns,
   }) {
     _logs = logs;
     _queries = queries;
@@ -729,6 +730,9 @@ class SessionLogEntryInclude extends _is.IncludeObject {
   _iky1nb92.MessageLogEntryIncludeList? _messages;
 
   @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
   Map<String, _is.Include?> get includes => {
     'logs': _logs,
     'queries': _queries,
@@ -740,16 +744,20 @@ class SessionLogEntryInclude extends _is.IncludeObject {
 }
 
 class SessionLogEntryIncludeList extends _is.IncludeList {
-  SessionLogEntryIncludeList._({
+  SessionLogEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SessionLogEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

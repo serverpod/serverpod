@@ -89,7 +89,7 @@ abstract class EmailAuth
   }
 
   static EmailAuthInclude include() {
-    return EmailAuthInclude._();
+    return EmailAuthInclude.internal_();
   }
 
   static EmailAuthIncludeList includeList({
@@ -100,7 +100,7 @@ abstract class EmailAuth
     _is.OrderByListBuilder<EmailAuthTable>? orderByList,
     EmailAuthInclude? include,
   }) {
-    return EmailAuthIncludeList._(
+    return EmailAuthIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -208,7 +208,10 @@ class EmailAuthTable extends _is.Table<int?> {
 }
 
 class EmailAuthInclude extends _is.IncludeObject {
-  EmailAuthInclude._();
+  EmailAuthInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -218,16 +221,20 @@ class EmailAuthInclude extends _is.IncludeObject {
 }
 
 class EmailAuthIncludeList extends _is.IncludeList {
-  EmailAuthIncludeList._({
+  EmailAuthIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailAuthTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailAuth.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

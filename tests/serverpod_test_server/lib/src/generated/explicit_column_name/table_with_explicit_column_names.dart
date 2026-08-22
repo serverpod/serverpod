@@ -79,7 +79,7 @@ abstract class TableWithExplicitColumnName
   }
 
   static TableWithExplicitColumnNameInclude include() {
-    return TableWithExplicitColumnNameInclude._();
+    return TableWithExplicitColumnNameInclude.internal_();
   }
 
   static TableWithExplicitColumnNameIncludeList includeList({
@@ -90,7 +90,7 @@ abstract class TableWithExplicitColumnName
     _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
     TableWithExplicitColumnNameInclude? include,
   }) {
-    return TableWithExplicitColumnNameIncludeList._(
+    return TableWithExplicitColumnNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,7 +183,10 @@ class TableWithExplicitColumnNameTable extends _is.Table<int?> {
 }
 
 class TableWithExplicitColumnNameInclude extends _is.IncludeObject {
-  TableWithExplicitColumnNameInclude._();
+  TableWithExplicitColumnNameInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -193,16 +196,20 @@ class TableWithExplicitColumnNameInclude extends _is.IncludeObject {
 }
 
 class TableWithExplicitColumnNameIncludeList extends _is.IncludeList {
-  TableWithExplicitColumnNameIncludeList._({
+  TableWithExplicitColumnNameIncludeList.internal_({
     _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(TableWithExplicitColumnName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

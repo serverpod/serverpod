@@ -112,7 +112,7 @@ abstract class OrderUuid
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
   }) {
-    return OrderUuidInclude._(
+    return OrderUuidInclude.internal_(
       customer: customer,
       comments: comments,
     );
@@ -126,7 +126,7 @@ abstract class OrderUuid
     _is.OrderByListBuilder<OrderUuidTable>? orderByList,
     OrderUuidInclude? include,
   }) {
-    return OrderUuidIncludeList._(
+    return OrderUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -288,9 +288,10 @@ class OrderUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class OrderUuidInclude extends _is.IncludeObject {
-  OrderUuidInclude._({
+  OrderUuidInclude.internal_({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
+    this.selectedColumns,
   }) {
     _customer = customer;
     _comments = comments;
@@ -299,6 +300,9 @@ class OrderUuidInclude extends _is.IncludeObject {
   _iwdajoe0.CustomerIntInclude? _customer;
 
   _i7e4crca.CommentIntIncludeList? _comments;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -311,16 +315,20 @@ class OrderUuidInclude extends _is.IncludeObject {
 }
 
 class OrderUuidIncludeList extends _is.IncludeList {
-  OrderUuidIncludeList._({
+  OrderUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<OrderUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(OrderUuid.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -105,7 +105,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
   }) {
-    return MemberInclude._(
+    return MemberInclude.internal_(
       blocking: blocking,
       blockedBy: blockedBy,
     );
@@ -119,7 +119,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<MemberTable>? orderByList,
     MemberInclude? include,
   }) {
-    return MemberIncludeList._(
+    return MemberIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -286,9 +286,10 @@ class MemberTable extends _is.Table<int?> {
 }
 
 class MemberInclude extends _is.IncludeObject {
-  MemberInclude._({
+  MemberInclude.internal_({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
+    this.selectedColumns,
   }) {
     _blocking = blocking;
     _blockedBy = blockedBy;
@@ -297,6 +298,9 @@ class MemberInclude extends _is.IncludeObject {
   _iv5rlvod.BlockingIncludeList? _blocking;
 
   _iv5rlvod.BlockingIncludeList? _blockedBy;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -309,16 +313,20 @@ class MemberInclude extends _is.IncludeObject {
 }
 
 class MemberIncludeList extends _is.IncludeList {
-  MemberIncludeList._({
+  MemberIncludeList.internal_({
     _is.WhereExpressionBuilder<MemberTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Member.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

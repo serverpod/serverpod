@@ -112,7 +112,7 @@ abstract class DateTimeDefaultMix
   }
 
   static DateTimeDefaultMixInclude include() {
-    return DateTimeDefaultMixInclude._();
+    return DateTimeDefaultMixInclude.internal_();
   }
 
   static DateTimeDefaultMixIncludeList includeList({
@@ -123,7 +123,7 @@ abstract class DateTimeDefaultMix
     _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     DateTimeDefaultMixInclude? include,
   }) {
-    return DateTimeDefaultMixIncludeList._(
+    return DateTimeDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,7 +244,10 @@ class DateTimeDefaultMixTable extends _is.Table<int?> {
 }
 
 class DateTimeDefaultMixInclude extends _is.IncludeObject {
-  DateTimeDefaultMixInclude._();
+  DateTimeDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -254,16 +257,20 @@ class DateTimeDefaultMixInclude extends _is.IncludeObject {
 }
 
 class DateTimeDefaultMixIncludeList extends _is.IncludeList {
-  DateTimeDefaultMixIncludeList._({
+  DateTimeDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

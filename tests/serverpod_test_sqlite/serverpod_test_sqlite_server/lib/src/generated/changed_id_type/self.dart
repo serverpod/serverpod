@@ -150,7 +150,7 @@ abstract class ChangedIdTypeSelf
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
   }) {
-    return ChangedIdTypeSelfInclude._(
+    return ChangedIdTypeSelfInclude.internal_(
       previous: previous,
       next: next,
       parent: parent,
@@ -166,7 +166,7 @@ abstract class ChangedIdTypeSelf
     _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
   }) {
-    return ChangedIdTypeSelfIncludeList._(
+    return ChangedIdTypeSelfIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -395,11 +395,12 @@ class ChangedIdTypeSelfTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ChangedIdTypeSelfInclude extends _is.IncludeObject {
-  ChangedIdTypeSelfInclude._({
+  ChangedIdTypeSelfInclude.internal_({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
+    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -416,6 +417,9 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
   _iqjmn1nu.ChangedIdTypeSelfIncludeList? _children;
 
   @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
   Map<String, _is.Include?> get includes => {
     'previous': _previous,
     'next': _next,
@@ -428,16 +432,20 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
 }
 
 class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
-  ChangedIdTypeSelfIncludeList._({
+  ChangedIdTypeSelfIncludeList.internal_({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChangedIdTypeSelf.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

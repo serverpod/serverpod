@@ -93,7 +93,7 @@ abstract class TownInt
   }
 
   static TownIntInclude include({_i7hzilwf.CitizenIntInclude? mayor}) {
-    return TownIntInclude._(mayor: mayor);
+    return TownIntInclude.internal_(mayor: mayor);
   }
 
   static TownIntIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class TownInt
     _is.OrderByListBuilder<TownIntTable>? orderByList,
     TownIntInclude? include,
   }) {
-    return TownIntIncludeList._(
+    return TownIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,11 +219,17 @@ class TownIntTable extends _is.Table<int?> {
 }
 
 class TownIntInclude extends _is.IncludeObject {
-  TownIntInclude._({_i7hzilwf.CitizenIntInclude? mayor}) {
+  TownIntInclude.internal_({
+    _i7hzilwf.CitizenIntInclude? mayor,
+    this.selectedColumns,
+  }) {
     _mayor = mayor;
   }
 
   _i7hzilwf.CitizenIntInclude? _mayor;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'mayor': _mayor};
@@ -233,16 +239,20 @@ class TownIntInclude extends _is.IncludeObject {
 }
 
 class TownIntIncludeList extends _is.IncludeList {
-  TownIntIncludeList._({
+  TownIntIncludeList.internal_({
     _is.WhereExpressionBuilder<TownIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(TownInt.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

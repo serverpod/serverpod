@@ -73,7 +73,7 @@ abstract class SimpleDateTime
   }
 
   static SimpleDateTimeInclude include() {
-    return SimpleDateTimeInclude._();
+    return SimpleDateTimeInclude.internal_();
   }
 
   static SimpleDateTimeIncludeList includeList({
@@ -84,7 +84,7 @@ abstract class SimpleDateTime
     _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
   }) {
-    return SimpleDateTimeIncludeList._(
+    return SimpleDateTimeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -159,7 +159,10 @@ class SimpleDateTimeTable extends _is.Table<int?> {
 }
 
 class SimpleDateTimeInclude extends _is.IncludeObject {
-  SimpleDateTimeInclude._();
+  SimpleDateTimeInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -169,16 +172,20 @@ class SimpleDateTimeInclude extends _is.IncludeObject {
 }
 
 class SimpleDateTimeIncludeList extends _is.IncludeList {
-  SimpleDateTimeIncludeList._({
+  SimpleDateTimeIncludeList.internal_({
     _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SimpleDateTime.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

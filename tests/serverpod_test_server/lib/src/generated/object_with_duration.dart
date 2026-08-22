@@ -71,7 +71,7 @@ abstract class ObjectWithDuration
   }
 
   static ObjectWithDurationInclude include() {
-    return ObjectWithDurationInclude._();
+    return ObjectWithDurationInclude.internal_();
   }
 
   static ObjectWithDurationIncludeList includeList({
@@ -82,7 +82,7 @@ abstract class ObjectWithDuration
     _is.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
   }) {
-    return ObjectWithDurationIncludeList._(
+    return ObjectWithDurationIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -157,7 +157,10 @@ class ObjectWithDurationTable extends _is.Table<int?> {
 }
 
 class ObjectWithDurationInclude extends _is.IncludeObject {
-  ObjectWithDurationInclude._();
+  ObjectWithDurationInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -167,16 +170,20 @@ class ObjectWithDurationInclude extends _is.IncludeObject {
 }
 
 class ObjectWithDurationIncludeList extends _is.IncludeList {
-  ObjectWithDurationIncludeList._({
+  ObjectWithDurationIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithDuration.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

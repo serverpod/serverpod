@@ -1,0 +1,98 @@
+/* AUTOMATICALLY GENERATED CODE DO NOT MODIFY */
+/*   To generate run: "serverpod generate"    */
+
+// ignore_for_file: implementation_imports
+// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: public_member_api_docs
+// ignore_for_file: type_literal_in_constant_pattern
+// ignore_for_file: use_super_parameters
+// ignore_for_file: invalid_use_of_internal_member
+
+// ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+
+abstract class ProjectedOrderDescription
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
+  ProjectedOrderDescription._({
+    this.id,
+    required this.description,
+  });
+
+  factory ProjectedOrderDescription({
+    int? id,
+    required String description,
+  }) = _ProjectedOrderDescriptionImpl;
+
+  factory ProjectedOrderDescription.fromJson(
+    Map<String, dynamic> jsonSerialization,
+  ) {
+    return ProjectedOrderDescription(
+      id: jsonSerialization['id'] as int?,
+      description: jsonSerialization['description'] as String,
+    );
+  }
+
+  /// The database id, set if the object has been inserted into the
+  /// database or if it has been fetched from the database. Otherwise,
+  /// the id will be null.
+  int? id;
+
+  String description;
+
+  /// Returns a shallow copy of this [ProjectedOrderDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_isc.useResult
+  ProjectedOrderDescription copyWith({
+    int? id,
+    String? description,
+  });
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      '__className__': 'ProjectedOrderDescription',
+      if (id != null) 'id': id,
+      'description': description,
+    };
+  }
+
+  @override
+  Map<String, dynamic> toJsonForProtocol() {
+    return {
+      '__className__': 'ProjectedOrderDescription',
+      if (id != null) 'id': id,
+      'description': description,
+    };
+  }
+
+  @override
+  String toString() {
+    return _isc.SerializationManager.encode(this);
+  }
+}
+
+class _Undefined {}
+
+class _ProjectedOrderDescriptionImpl extends ProjectedOrderDescription {
+  _ProjectedOrderDescriptionImpl({
+    int? id,
+    required String description,
+  }) : super._(
+         id: id,
+         description: description,
+       );
+
+  /// Returns a shallow copy of this [ProjectedOrderDescription]
+  /// with some or all fields replaced by the given arguments.
+  @_isc.useResult
+  @override
+  ProjectedOrderDescription copyWith({
+    Object? id = _Undefined,
+    String? description,
+  }) {
+    return ProjectedOrderDescription(
+      id: id is int? ? id : this.id,
+      description: description ?? this.description,
+    );
+  }
+}

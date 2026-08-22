@@ -79,7 +79,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
   }
 
   static ChildClassExplicitColumnInclude include() {
-    return ChildClassExplicitColumnInclude._();
+    return ChildClassExplicitColumnInclude.internal_();
   }
 
   static ChildClassExplicitColumnIncludeList includeList({
@@ -90,7 +90,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
   }) {
-    return ChildClassExplicitColumnIncludeList._(
+    return ChildClassExplicitColumnIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,7 +183,10 @@ class ChildClassExplicitColumnTable extends _is.Table<int?> {
 }
 
 class ChildClassExplicitColumnInclude extends _is.IncludeObject {
-  ChildClassExplicitColumnInclude._();
+  ChildClassExplicitColumnInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -193,16 +196,20 @@ class ChildClassExplicitColumnInclude extends _is.IncludeObject {
 }
 
 class ChildClassExplicitColumnIncludeList extends _is.IncludeList {
-  ChildClassExplicitColumnIncludeList._({
+  ChildClassExplicitColumnIncludeList.internal_({
     _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassExplicitColumn.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

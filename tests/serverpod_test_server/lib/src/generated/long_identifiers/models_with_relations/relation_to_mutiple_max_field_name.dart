@@ -95,7 +95,7 @@ abstract class RelationToMultipleMaxFieldName
   static RelationToMultipleMaxFieldNameInclude include({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
   }) {
-    return RelationToMultipleMaxFieldNameInclude._(
+    return RelationToMultipleMaxFieldNameInclude.internal_(
       multipleMaxFieldNames: multipleMaxFieldNames,
     );
   }
@@ -108,7 +108,7 @@ abstract class RelationToMultipleMaxFieldName
     _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     RelationToMultipleMaxFieldNameInclude? include,
   }) {
-    return RelationToMultipleMaxFieldNameIncludeList._(
+    return RelationToMultipleMaxFieldNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -246,13 +246,17 @@ class RelationToMultipleMaxFieldNameTable extends _is.Table<int?> {
 }
 
 class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
-  RelationToMultipleMaxFieldNameInclude._({
+  RelationToMultipleMaxFieldNameInclude.internal_({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
+    this.selectedColumns,
   }) {
     _multipleMaxFieldNames = multipleMaxFieldNames;
   }
 
   _ipoh7twa.MultipleMaxFieldNameIncludeList? _multipleMaxFieldNames;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -264,16 +268,20 @@ class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  RelationToMultipleMaxFieldNameIncludeList._({
+  RelationToMultipleMaxFieldNameIncludeList.internal_({
     _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(RelationToMultipleMaxFieldName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

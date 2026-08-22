@@ -138,7 +138,7 @@ abstract class EmailAccountRequest
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
   }) {
-    return EmailAccountRequestInclude._(
+    return EmailAccountRequestInclude.internal_(
       challenge: challenge,
       createAccountChallenge: createAccountChallenge,
     );
@@ -152,7 +152,7 @@ abstract class EmailAccountRequest
     _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     EmailAccountRequestInclude? include,
   }) {
-    return EmailAccountRequestIncludeList._(
+    return EmailAccountRequestIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -343,9 +343,10 @@ class EmailAccountRequestTable extends _is.Table<_is.UuidValue?> {
 }
 
 class EmailAccountRequestInclude extends _is.IncludeObject {
-  EmailAccountRequestInclude._({
+  EmailAccountRequestInclude.internal_({
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
+    this.selectedColumns,
   }) {
     _challenge = challenge;
     _createAccountChallenge = createAccountChallenge;
@@ -354,6 +355,9 @@ class EmailAccountRequestInclude extends _is.IncludeObject {
   _i7k1fa50.SecretChallengeInclude? _challenge;
 
   _i7k1fa50.SecretChallengeInclude? _createAccountChallenge;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -366,16 +370,20 @@ class EmailAccountRequestInclude extends _is.IncludeObject {
 }
 
 class EmailAccountRequestIncludeList extends _is.IncludeList {
-  EmailAccountRequestIncludeList._({
+  EmailAccountRequestIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailAccountRequest.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -101,7 +101,7 @@ abstract class BoolDefault
   }
 
   static BoolDefaultInclude include() {
-    return BoolDefaultInclude._();
+    return BoolDefaultInclude.internal_();
   }
 
   static BoolDefaultIncludeList includeList({
@@ -112,7 +112,7 @@ abstract class BoolDefault
     _is.OrderByListBuilder<BoolDefaultTable>? orderByList,
     BoolDefaultInclude? include,
   }) {
-    return BoolDefaultIncludeList._(
+    return BoolDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,7 +222,10 @@ class BoolDefaultTable extends _is.Table<int?> {
 }
 
 class BoolDefaultInclude extends _is.IncludeObject {
-  BoolDefaultInclude._();
+  BoolDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -232,16 +235,20 @@ class BoolDefaultInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultIncludeList extends _is.IncludeList {
-  BoolDefaultIncludeList._({
+  BoolDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<BoolDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

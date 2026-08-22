@@ -90,7 +90,7 @@ abstract class BigIntDefault
   }
 
   static BigIntDefaultInclude include() {
-    return BigIntDefaultInclude._();
+    return BigIntDefaultInclude.internal_();
   }
 
   static BigIntDefaultIncludeList includeList({
@@ -101,7 +101,7 @@ abstract class BigIntDefault
     _is.OrderByListBuilder<BigIntDefaultTable>? orderByList,
     BigIntDefaultInclude? include,
   }) {
-    return BigIntDefaultIncludeList._(
+    return BigIntDefaultIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -196,7 +196,10 @@ class BigIntDefaultTable extends _is.Table<int?> {
 }
 
 class BigIntDefaultInclude extends _is.IncludeObject {
-  BigIntDefaultInclude._();
+  BigIntDefaultInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -206,16 +209,20 @@ class BigIntDefaultInclude extends _is.IncludeObject {
 }
 
 class BigIntDefaultIncludeList extends _is.IncludeList {
-  BigIntDefaultIncludeList._({
+  BigIntDefaultIncludeList.internal_({
     _is.WhereExpressionBuilder<BigIntDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefault.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

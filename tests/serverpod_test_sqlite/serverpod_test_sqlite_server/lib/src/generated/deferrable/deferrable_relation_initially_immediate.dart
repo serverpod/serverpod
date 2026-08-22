@@ -71,7 +71,7 @@ abstract class DeferrableRelationInitiallyImmediate
   }
 
   static DeferrableRelationInitiallyImmediateInclude include() {
-    return DeferrableRelationInitiallyImmediateInclude._();
+    return DeferrableRelationInitiallyImmediateInclude.internal_();
   }
 
   static DeferrableRelationInitiallyImmediateIncludeList includeList({
@@ -84,7 +84,7 @@ abstract class DeferrableRelationInitiallyImmediate
     orderByList,
     DeferrableRelationInitiallyImmediateInclude? include,
   }) {
-    return DeferrableRelationInitiallyImmediateIncludeList._(
+    return DeferrableRelationInitiallyImmediateIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -159,7 +159,10 @@ class DeferrableRelationInitiallyImmediateTable extends _is.Table<int?> {
 }
 
 class DeferrableRelationInitiallyImmediateInclude extends _is.IncludeObject {
-  DeferrableRelationInitiallyImmediateInclude._();
+  DeferrableRelationInitiallyImmediateInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -169,7 +172,7 @@ class DeferrableRelationInitiallyImmediateInclude extends _is.IncludeObject {
 }
 
 class DeferrableRelationInitiallyImmediateIncludeList extends _is.IncludeList {
-  DeferrableRelationInitiallyImmediateIncludeList._({
+  DeferrableRelationInitiallyImmediateIncludeList.internal_({
     _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
     where,
     super.limit,
@@ -177,9 +180,13 @@ class DeferrableRelationInitiallyImmediateIncludeList extends _is.IncludeList {
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationInitiallyImmediate.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

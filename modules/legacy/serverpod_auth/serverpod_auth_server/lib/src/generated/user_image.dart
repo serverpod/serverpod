@@ -89,7 +89,7 @@ abstract class UserImage
   }
 
   static UserImageInclude include() {
-    return UserImageInclude._();
+    return UserImageInclude.internal_();
   }
 
   static UserImageIncludeList includeList({
@@ -100,7 +100,7 @@ abstract class UserImage
     _is.OrderByListBuilder<UserImageTable>? orderByList,
     UserImageInclude? include,
   }) {
-    return UserImageIncludeList._(
+    return UserImageIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -208,7 +208,10 @@ class UserImageTable extends _is.Table<int?> {
 }
 
 class UserImageInclude extends _is.IncludeObject {
-  UserImageInclude._();
+  UserImageInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -218,16 +221,20 @@ class UserImageInclude extends _is.IncludeObject {
 }
 
 class UserImageIncludeList extends _is.IncludeList {
-  UserImageIncludeList._({
+  UserImageIncludeList.internal_({
     _is.WhereExpressionBuilder<UserImageTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserImage.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

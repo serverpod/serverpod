@@ -78,7 +78,7 @@ abstract class IntDefaultModel
   }
 
   static IntDefaultModelInclude include() {
-    return IntDefaultModelInclude._();
+    return IntDefaultModelInclude.internal_();
   }
 
   static IntDefaultModelIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class IntDefaultModel
     _is.OrderByListBuilder<IntDefaultModelTable>? orderByList,
     IntDefaultModelInclude? include,
   }) {
-    return IntDefaultModelIncludeList._(
+    return IntDefaultModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -178,7 +178,10 @@ class IntDefaultModelTable extends _is.Table<int?> {
 }
 
 class IntDefaultModelInclude extends _is.IncludeObject {
-  IntDefaultModelInclude._();
+  IntDefaultModelInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -188,16 +191,20 @@ class IntDefaultModelInclude extends _is.IncludeObject {
 }
 
 class IntDefaultModelIncludeList extends _is.IncludeList {
-  IntDefaultModelIncludeList._({
+  IntDefaultModelIncludeList.internal_({
     _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(IntDefaultModel.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

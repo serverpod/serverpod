@@ -119,7 +119,7 @@ abstract class ObjectWithBit
   }
 
   static ObjectWithBitInclude include() {
-    return ObjectWithBitInclude._();
+    return ObjectWithBitInclude.internal_();
   }
 
   static ObjectWithBitIncludeList includeList({
@@ -130,7 +130,7 @@ abstract class ObjectWithBit
     _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     ObjectWithBitInclude? include,
   }) {
-    return ObjectWithBitIncludeList._(
+    return ObjectWithBitIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -300,7 +300,10 @@ class ObjectWithBitTable extends _is.Table<int?> {
 }
 
 class ObjectWithBitInclude extends _is.IncludeObject {
-  ObjectWithBitInclude._();
+  ObjectWithBitInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -310,16 +313,20 @@ class ObjectWithBitInclude extends _is.IncludeObject {
 }
 
 class ObjectWithBitIncludeList extends _is.IncludeList {
-  ObjectWithBitIncludeList._({
+  ObjectWithBitIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithBit.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

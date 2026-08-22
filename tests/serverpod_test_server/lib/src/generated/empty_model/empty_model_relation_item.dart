@@ -79,7 +79,7 @@ abstract class EmptyModelRelationItem
   }
 
   static EmptyModelRelationItemInclude include() {
-    return EmptyModelRelationItemInclude._();
+    return EmptyModelRelationItemInclude.internal_();
   }
 
   static EmptyModelRelationItemIncludeList includeList({
@@ -90,7 +90,7 @@ abstract class EmptyModelRelationItem
     _is.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
   }) {
-    return EmptyModelRelationItemIncludeList._(
+    return EmptyModelRelationItemIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +214,10 @@ class EmptyModelRelationItemTable extends _is.Table<int?> {
 }
 
 class EmptyModelRelationItemInclude extends _is.IncludeObject {
-  EmptyModelRelationItemInclude._();
+  EmptyModelRelationItemInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -224,16 +227,20 @@ class EmptyModelRelationItemInclude extends _is.IncludeObject {
 }
 
 class EmptyModelRelationItemIncludeList extends _is.IncludeList {
-  EmptyModelRelationItemIncludeList._({
+  EmptyModelRelationItemIncludeList.internal_({
     _is.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmptyModelRelationItem.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

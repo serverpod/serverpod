@@ -95,7 +95,7 @@ abstract class ObjectWithJsonbClassLevel
   }
 
   static ObjectWithJsonbClassLevelInclude include() {
-    return ObjectWithJsonbClassLevelInclude._();
+    return ObjectWithJsonbClassLevelInclude.internal_();
   }
 
   static ObjectWithJsonbClassLevelIncludeList includeList({
@@ -106,7 +106,7 @@ abstract class ObjectWithJsonbClassLevel
     _is.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     ObjectWithJsonbClassLevelInclude? include,
   }) {
-    return ObjectWithJsonbClassLevelIncludeList._(
+    return ObjectWithJsonbClassLevelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,7 +219,10 @@ class ObjectWithJsonbClassLevelTable extends _is.Table<int?> {
 }
 
 class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
-  ObjectWithJsonbClassLevelInclude._();
+  ObjectWithJsonbClassLevelInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -229,16 +232,20 @@ class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
 }
 
 class ObjectWithJsonbClassLevelIncludeList extends _is.IncludeList {
-  ObjectWithJsonbClassLevelIncludeList._({
+  ObjectWithJsonbClassLevelIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithJsonbClassLevel.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

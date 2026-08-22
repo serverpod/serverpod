@@ -88,7 +88,7 @@ abstract class ModelWithRequiredField
   }
 
   static ModelWithRequiredFieldInclude include() {
-    return ModelWithRequiredFieldInclude._();
+    return ModelWithRequiredFieldInclude.internal_();
   }
 
   static ModelWithRequiredFieldIncludeList includeList({
@@ -99,7 +99,7 @@ abstract class ModelWithRequiredField
     _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     ModelWithRequiredFieldInclude? include,
   }) {
-    return ModelWithRequiredFieldIncludeList._(
+    return ModelWithRequiredFieldIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -205,7 +205,10 @@ class ModelWithRequiredFieldTable extends _isd.Table<int?> {
 }
 
 class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
-  ModelWithRequiredFieldInclude._();
+  ModelWithRequiredFieldInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => {};
@@ -215,16 +218,20 @@ class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
 }
 
 class ModelWithRequiredFieldIncludeList extends _isd.IncludeList {
-  ModelWithRequiredFieldIncludeList._({
+  ModelWithRequiredFieldIncludeList.internal_({
     _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ModelWithRequiredField.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

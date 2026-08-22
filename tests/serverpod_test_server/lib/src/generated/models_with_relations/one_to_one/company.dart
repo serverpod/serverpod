@@ -92,7 +92,7 @@ abstract class Company
   }
 
   static CompanyInclude include({_i59ly1gg.TownInclude? town}) {
-    return CompanyInclude._(town: town);
+    return CompanyInclude.internal_(town: town);
   }
 
   static CompanyIncludeList includeList({
@@ -103,7 +103,7 @@ abstract class Company
     _is.OrderByListBuilder<CompanyTable>? orderByList,
     CompanyInclude? include,
   }) {
-    return CompanyIncludeList._(
+    return CompanyIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,11 +218,17 @@ class CompanyTable extends _is.Table<int?> {
 }
 
 class CompanyInclude extends _is.IncludeObject {
-  CompanyInclude._({_i59ly1gg.TownInclude? town}) {
+  CompanyInclude.internal_({
+    _i59ly1gg.TownInclude? town,
+    this.selectedColumns,
+  }) {
     _town = town;
   }
 
   _i59ly1gg.TownInclude? _town;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'town': _town};
@@ -232,16 +238,20 @@ class CompanyInclude extends _is.IncludeObject {
 }
 
 class CompanyIncludeList extends _is.IncludeList {
-  CompanyIncludeList._({
+  CompanyIncludeList.internal_({
     _is.WhereExpressionBuilder<CompanyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Company.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

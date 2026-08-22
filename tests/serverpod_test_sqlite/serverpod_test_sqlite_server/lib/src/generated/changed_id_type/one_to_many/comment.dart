@@ -95,7 +95,7 @@ abstract class CommentInt
   }
 
   static CommentIntInclude include({_ivss21qh.OrderUuidInclude? order}) {
-    return CommentIntInclude._(order: order);
+    return CommentIntInclude.internal_(order: order);
   }
 
   static CommentIntIncludeList includeList({
@@ -106,7 +106,7 @@ abstract class CommentInt
     _is.OrderByListBuilder<CommentIntTable>? orderByList,
     CommentIntInclude? include,
   }) {
-    return CommentIntIncludeList._(
+    return CommentIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,11 +222,17 @@ class CommentIntTable extends _is.Table<int?> {
 }
 
 class CommentIntInclude extends _is.IncludeObject {
-  CommentIntInclude._({_ivss21qh.OrderUuidInclude? order}) {
+  CommentIntInclude.internal_({
+    _ivss21qh.OrderUuidInclude? order,
+    this.selectedColumns,
+  }) {
     _order = order;
   }
 
   _ivss21qh.OrderUuidInclude? _order;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'order': _order};
@@ -236,16 +242,20 @@ class CommentIntInclude extends _is.IncludeObject {
 }
 
 class CommentIntIncludeList extends _is.IncludeList {
-  CommentIntIncludeList._({
+  CommentIntIncludeList.internal_({
     _is.WhereExpressionBuilder<CommentIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(CommentInt.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

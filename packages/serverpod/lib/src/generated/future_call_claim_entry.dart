@@ -85,7 +85,7 @@ abstract class FutureCallClaimEntry
   }
 
   static FutureCallClaimEntryInclude include() {
-    return FutureCallClaimEntryInclude._();
+    return FutureCallClaimEntryInclude.internal_();
   }
 
   static FutureCallClaimEntryIncludeList includeList({
@@ -96,7 +96,7 @@ abstract class FutureCallClaimEntry
     _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     FutureCallClaimEntryInclude? include,
   }) {
-    return FutureCallClaimEntryIncludeList._(
+    return FutureCallClaimEntryIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,7 +190,10 @@ class FutureCallClaimEntryTable extends _is.Table<int?> {
 }
 
 class FutureCallClaimEntryInclude extends _is.IncludeObject {
-  FutureCallClaimEntryInclude._();
+  FutureCallClaimEntryInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -200,16 +203,20 @@ class FutureCallClaimEntryInclude extends _is.IncludeObject {
 }
 
 class FutureCallClaimEntryIncludeList extends _is.IncludeList {
-  FutureCallClaimEntryIncludeList._({
+  FutureCallClaimEntryIncludeList.internal_({
     _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(FutureCallClaimEntry.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

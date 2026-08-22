@@ -93,7 +93,7 @@ abstract class ObjectWithGeographyPolygon
   }
 
   static ObjectWithGeographyPolygonInclude include() {
-    return ObjectWithGeographyPolygonInclude._();
+    return ObjectWithGeographyPolygonInclude.internal_();
   }
 
   static ObjectWithGeographyPolygonIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class ObjectWithGeographyPolygon
     _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
     ObjectWithGeographyPolygonInclude? include,
   }) {
-    return ObjectWithGeographyPolygonIncludeList._(
+    return ObjectWithGeographyPolygonIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +214,10 @@ class ObjectWithGeographyPolygonTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
-  ObjectWithGeographyPolygonInclude._();
+  ObjectWithGeographyPolygonInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -224,16 +227,20 @@ class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList {
-  ObjectWithGeographyPolygonIncludeList._({
+  ObjectWithGeographyPolygonIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyPolygon.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

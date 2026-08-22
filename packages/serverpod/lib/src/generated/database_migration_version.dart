@@ -87,7 +87,7 @@ abstract class DatabaseMigrationVersion
   }
 
   static DatabaseMigrationVersionInclude include() {
-    return DatabaseMigrationVersionInclude._();
+    return DatabaseMigrationVersionInclude.internal_();
   }
 
   static DatabaseMigrationVersionIncludeList includeList({
@@ -98,7 +98,7 @@ abstract class DatabaseMigrationVersion
     _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
   }) {
-    return DatabaseMigrationVersionIncludeList._(
+    return DatabaseMigrationVersionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -208,7 +208,10 @@ class DatabaseMigrationVersionTable extends _is.Table<int?> {
 }
 
 class DatabaseMigrationVersionInclude extends _is.IncludeObject {
-  DatabaseMigrationVersionInclude._();
+  DatabaseMigrationVersionInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -218,16 +221,20 @@ class DatabaseMigrationVersionInclude extends _is.IncludeObject {
 }
 
 class DatabaseMigrationVersionIncludeList extends _is.IncludeList {
-  DatabaseMigrationVersionIncludeList._({
+  DatabaseMigrationVersionIncludeList.internal_({
     _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(DatabaseMigrationVersion.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

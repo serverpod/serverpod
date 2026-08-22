@@ -121,7 +121,7 @@ abstract class ObjectWithVector
   }
 
   static ObjectWithVectorInclude include() {
-    return ObjectWithVectorInclude._();
+    return ObjectWithVectorInclude.internal_();
   }
 
   static ObjectWithVectorIncludeList includeList({
@@ -132,7 +132,7 @@ abstract class ObjectWithVector
     _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
     ObjectWithVectorInclude? include,
   }) {
-    return ObjectWithVectorIncludeList._(
+    return ObjectWithVectorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -308,7 +308,10 @@ class ObjectWithVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithVectorInclude extends _is.IncludeObject {
-  ObjectWithVectorInclude._();
+  ObjectWithVectorInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -318,16 +321,20 @@ class ObjectWithVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithVectorIncludeList extends _is.IncludeList {
-  ObjectWithVectorIncludeList._({
+  ObjectWithVectorIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithVector.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

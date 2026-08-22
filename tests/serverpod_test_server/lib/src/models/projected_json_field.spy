@@ -1,0 +1,25 @@
+class: ProjectedJsonField
+fields:
+  text: String
+  value: int
+  valueA: bool
+  valueB: double
+  valueC: String?
+  dateValue: DateTime
+  
+  list: List<String>
+  listA: List<int>
+  listB: List<bool>
+  listC: List<double>
+  listD: List<String>
+
+  map: Map<String, String>
+  mapA: Map<String, int>
+  mapB: Map<String, bool>
+  mapC: Map<String, double>
+
+projections:
+  ProjectedJsonFieldSimple:
+    select:
+      - text
+      - value

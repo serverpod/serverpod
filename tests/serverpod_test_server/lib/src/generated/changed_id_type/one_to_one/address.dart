@@ -94,7 +94,7 @@ abstract class AddressUuid
   }
 
   static AddressUuidInclude include({_i7hzilwf.CitizenIntInclude? inhabitant}) {
-    return AddressUuidInclude._(inhabitant: inhabitant);
+    return AddressUuidInclude.internal_(inhabitant: inhabitant);
   }
 
   static AddressUuidIncludeList includeList({
@@ -105,7 +105,7 @@ abstract class AddressUuid
     _is.OrderByListBuilder<AddressUuidTable>? orderByList,
     AddressUuidInclude? include,
   }) {
-    return AddressUuidIncludeList._(
+    return AddressUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,11 +222,17 @@ class AddressUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class AddressUuidInclude extends _is.IncludeObject {
-  AddressUuidInclude._({_i7hzilwf.CitizenIntInclude? inhabitant}) {
+  AddressUuidInclude.internal_({
+    _i7hzilwf.CitizenIntInclude? inhabitant,
+    this.selectedColumns,
+  }) {
     _inhabitant = inhabitant;
   }
 
   _i7hzilwf.CitizenIntInclude? _inhabitant;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'inhabitant': _inhabitant};
@@ -236,16 +242,20 @@ class AddressUuidInclude extends _is.IncludeObject {
 }
 
 class AddressUuidIncludeList extends _is.IncludeList {
-  AddressUuidIncludeList._({
+  AddressUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<AddressUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(AddressUuid.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

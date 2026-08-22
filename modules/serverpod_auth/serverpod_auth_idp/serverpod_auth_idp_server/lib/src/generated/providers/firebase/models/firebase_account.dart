@@ -128,7 +128,7 @@ abstract class FirebaseAccount
   }
 
   static FirebaseAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return FirebaseAccountInclude._(authUser: authUser);
+    return FirebaseAccountInclude.internal_(authUser: authUser);
   }
 
   static FirebaseAccountIncludeList includeList({
@@ -139,7 +139,7 @@ abstract class FirebaseAccount
     _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     FirebaseAccountInclude? include,
   }) {
-    return FirebaseAccountIncludeList._(
+    return FirebaseAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -321,11 +321,17 @@ class FirebaseAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class FirebaseAccountInclude extends _is.IncludeObject {
-  FirebaseAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  FirebaseAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -335,16 +341,20 @@ class FirebaseAccountInclude extends _is.IncludeObject {
 }
 
 class FirebaseAccountIncludeList extends _is.IncludeList {
-  FirebaseAccountIncludeList._({
+  FirebaseAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(FirebaseAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

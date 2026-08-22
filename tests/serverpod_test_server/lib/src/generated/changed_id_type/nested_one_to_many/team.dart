@@ -112,7 +112,7 @@ abstract class TeamInt
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
   }) {
-    return TeamIntInclude._(
+    return TeamIntInclude.internal_(
       arena: arena,
       players: players,
     );
@@ -126,7 +126,7 @@ abstract class TeamInt
     _is.OrderByListBuilder<TeamIntTable>? orderByList,
     TeamIntInclude? include,
   }) {
-    return TeamIntIncludeList._(
+    return TeamIntIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -287,9 +287,10 @@ class TeamIntTable extends _is.Table<int?> {
 }
 
 class TeamIntInclude extends _is.IncludeObject {
-  TeamIntInclude._({
+  TeamIntInclude.internal_({
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
+    this.selectedColumns,
   }) {
     _arena = arena;
     _players = players;
@@ -298,6 +299,9 @@ class TeamIntInclude extends _is.IncludeObject {
   _izqzqdtt.ArenaUuidInclude? _arena;
 
   _igtph8zx.PlayerUuidIncludeList? _players;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -310,16 +314,20 @@ class TeamIntInclude extends _is.IncludeObject {
 }
 
 class TeamIntIncludeList extends _is.IncludeList {
-  TeamIntIncludeList._({
+  TeamIntIncludeList.internal_({
     _is.WhereExpressionBuilder<TeamIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(TeamInt.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

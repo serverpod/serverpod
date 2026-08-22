@@ -119,7 +119,9 @@ abstract class SessionMetadata
   static SessionMetadataInclude include({
     _iacs.ServerSideSessionInclude? serverSideSession,
   }) {
-    return SessionMetadataInclude._(serverSideSession: serverSideSession);
+    return SessionMetadataInclude.internal_(
+      serverSideSession: serverSideSession,
+    );
   }
 
   static SessionMetadataIncludeList includeList({
@@ -130,7 +132,7 @@ abstract class SessionMetadata
     _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     SessionMetadataInclude? include,
   }) {
-    return SessionMetadataIncludeList._(
+    return SessionMetadataIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -303,13 +305,17 @@ class SessionMetadataTable extends _is.Table<int?> {
 }
 
 class SessionMetadataInclude extends _is.IncludeObject {
-  SessionMetadataInclude._({
+  SessionMetadataInclude.internal_({
     _iacs.ServerSideSessionInclude? serverSideSession,
+    this.selectedColumns,
   }) {
     _serverSideSession = serverSideSession;
   }
 
   _iacs.ServerSideSessionInclude? _serverSideSession;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -321,16 +327,20 @@ class SessionMetadataInclude extends _is.IncludeObject {
 }
 
 class SessionMetadataIncludeList extends _is.IncludeList {
-  SessionMetadataIncludeList._({
+  SessionMetadataIncludeList.internal_({
     _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SessionMetadata.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

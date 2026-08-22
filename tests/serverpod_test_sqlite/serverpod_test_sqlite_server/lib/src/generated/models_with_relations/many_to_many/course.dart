@@ -88,7 +88,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
   }
 
   static CourseInclude include({_im07rq0v.EnrollmentIncludeList? enrollments}) {
-    return CourseInclude._(enrollments: enrollments);
+    return CourseInclude.internal_(enrollments: enrollments);
   }
 
   static CourseIncludeList includeList({
@@ -99,7 +99,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
   }) {
-    return CourseIncludeList._(
+    return CourseIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -221,11 +221,17 @@ class CourseTable extends _is.Table<int?> {
 }
 
 class CourseInclude extends _is.IncludeObject {
-  CourseInclude._({_im07rq0v.EnrollmentIncludeList? enrollments}) {
+  CourseInclude.internal_({
+    _im07rq0v.EnrollmentIncludeList? enrollments,
+    this.selectedColumns,
+  }) {
     _enrollments = enrollments;
   }
 
   _im07rq0v.EnrollmentIncludeList? _enrollments;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'enrollments': _enrollments};
@@ -235,16 +241,20 @@ class CourseInclude extends _is.IncludeObject {
 }
 
 class CourseIncludeList extends _is.IncludeList {
-  CourseIncludeList._({
+  CourseIncludeList.internal_({
     _is.WhereExpressionBuilder<CourseTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Course.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

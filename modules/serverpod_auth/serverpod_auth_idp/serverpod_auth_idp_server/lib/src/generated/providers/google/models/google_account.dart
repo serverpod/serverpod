@@ -118,7 +118,7 @@ abstract class GoogleAccount
   }
 
   static GoogleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return GoogleAccountInclude._(authUser: authUser);
+    return GoogleAccountInclude.internal_(authUser: authUser);
   }
 
   static GoogleAccountIncludeList includeList({
@@ -129,7 +129,7 @@ abstract class GoogleAccount
     _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
     GoogleAccountInclude? include,
   }) {
-    return GoogleAccountIncludeList._(
+    return GoogleAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -292,11 +292,17 @@ class GoogleAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class GoogleAccountInclude extends _is.IncludeObject {
-  GoogleAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  GoogleAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -306,16 +312,20 @@ class GoogleAccountInclude extends _is.IncludeObject {
 }
 
 class GoogleAccountIncludeList extends _is.IncludeList {
-  GoogleAccountIncludeList._({
+  GoogleAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GoogleAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

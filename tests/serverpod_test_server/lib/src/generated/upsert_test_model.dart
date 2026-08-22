@@ -85,7 +85,7 @@ abstract class UpsertTestModel
   }
 
   static UpsertTestModelInclude include() {
-    return UpsertTestModelInclude._();
+    return UpsertTestModelInclude.internal_();
   }
 
   static UpsertTestModelIncludeList includeList({
@@ -96,7 +96,7 @@ abstract class UpsertTestModel
     _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
   }) {
-    return UpsertTestModelIncludeList._(
+    return UpsertTestModelIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -201,7 +201,10 @@ class UpsertTestModelTable extends _is.Table<int?> {
 }
 
 class UpsertTestModelInclude extends _is.IncludeObject {
-  UpsertTestModelInclude._();
+  UpsertTestModelInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -211,16 +214,20 @@ class UpsertTestModelInclude extends _is.IncludeObject {
 }
 
 class UpsertTestModelIncludeList extends _is.IncludeList {
-  UpsertTestModelIncludeList._({
+  UpsertTestModelIncludeList.internal_({
     _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UpsertTestModel.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

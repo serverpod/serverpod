@@ -84,7 +84,7 @@ abstract class ObjectFieldScopes
   }
 
   static ObjectFieldScopesInclude include() {
-    return ObjectFieldScopesInclude._();
+    return ObjectFieldScopesInclude.internal_();
   }
 
   static ObjectFieldScopesIncludeList includeList({
@@ -95,7 +95,7 @@ abstract class ObjectFieldScopes
     _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
   }) {
-    return ObjectFieldScopesIncludeList._(
+    return ObjectFieldScopesIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -189,7 +189,10 @@ class ObjectFieldScopesTable extends _is.Table<int?> {
 }
 
 class ObjectFieldScopesInclude extends _is.IncludeObject {
-  ObjectFieldScopesInclude._();
+  ObjectFieldScopesInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -199,16 +202,20 @@ class ObjectFieldScopesInclude extends _is.IncludeObject {
 }
 
 class ObjectFieldScopesIncludeList extends _is.IncludeList {
-  ObjectFieldScopesIncludeList._({
+  ObjectFieldScopesIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectFieldScopes.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

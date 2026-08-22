@@ -81,7 +81,7 @@ abstract class ParentEntity
   static ParentEntityInclude include({
     _i41rqetj.ChildEntityIncludeList? children,
   }) {
-    return ParentEntityInclude._(children: children);
+    return ParentEntityInclude.internal_(children: children);
   }
 
   static ParentEntityIncludeList includeList({
@@ -92,7 +92,7 @@ abstract class ParentEntity
     _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
   }) {
-    return ParentEntityIncludeList._(
+    return ParentEntityIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -198,11 +198,17 @@ class ParentEntityTable extends _is.Table<int?> {
 }
 
 class ParentEntityInclude extends _is.IncludeObject {
-  ParentEntityInclude._({_i41rqetj.ChildEntityIncludeList? children}) {
+  ParentEntityInclude.internal_({
+    _i41rqetj.ChildEntityIncludeList? children,
+    this.selectedColumns,
+  }) {
     _children = children;
   }
 
   _i41rqetj.ChildEntityIncludeList? _children;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'children': _children};
@@ -212,16 +218,20 @@ class ParentEntityInclude extends _is.IncludeObject {
 }
 
 class ParentEntityIncludeList extends _is.IncludeList {
-  ParentEntityIncludeList._({
+  ParentEntityIncludeList.internal_({
     _is.WhereExpressionBuilder<ParentEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ParentEntity.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

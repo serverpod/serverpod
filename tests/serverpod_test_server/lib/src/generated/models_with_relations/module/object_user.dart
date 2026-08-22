@@ -92,7 +92,7 @@ abstract class ObjectUser
   }
 
   static ObjectUserInclude include({_i1n3uhu0.UserInfoInclude? userInfo}) {
-    return ObjectUserInclude._(userInfo: userInfo);
+    return ObjectUserInclude.internal_(userInfo: userInfo);
   }
 
   static ObjectUserIncludeList includeList({
@@ -103,7 +103,7 @@ abstract class ObjectUser
     _is.OrderByListBuilder<ObjectUserTable>? orderByList,
     ObjectUserInclude? include,
   }) {
-    return ObjectUserIncludeList._(
+    return ObjectUserIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -220,11 +220,17 @@ class ObjectUserTable extends _is.Table<int?> {
 }
 
 class ObjectUserInclude extends _is.IncludeObject {
-  ObjectUserInclude._({_i1n3uhu0.UserInfoInclude? userInfo}) {
+  ObjectUserInclude.internal_({
+    _i1n3uhu0.UserInfoInclude? userInfo,
+    this.selectedColumns,
+  }) {
     _userInfo = userInfo;
   }
 
   _i1n3uhu0.UserInfoInclude? _userInfo;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'userInfo': _userInfo};
@@ -234,16 +240,20 @@ class ObjectUserInclude extends _is.IncludeObject {
 }
 
 class ObjectUserIncludeList extends _is.IncludeList {
-  ObjectUserIncludeList._({
+  ObjectUserIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectUser.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -1,6 +1,7 @@
 import 'package:meta/meta.dart';
 
 import '../../serverpod_database.dart';
+import '../concepts/columns.dart';
 import 'column_alias_resolver.dart';
 
 /// Prepares a query result for serverpod serialization.
@@ -21,7 +22,10 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
 
   // Resolve this object.
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
-    table.columns,
+    [
+      ...table.columns,
+      ...?include?.selectedColumns?.whereType<ColumnJsonField>(),
+    ],
     rawRow,
     resolver,
   );

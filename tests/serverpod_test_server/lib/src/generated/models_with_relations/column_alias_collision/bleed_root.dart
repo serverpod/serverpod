@@ -144,7 +144,7 @@ abstract class BleedRoot
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun23,
   }) {
-    return BleedRootInclude._(
+    return BleedRootInclude.internal_(
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
@@ -160,7 +160,7 @@ abstract class BleedRoot
     _is.OrderByListBuilder<BleedRootTable>? orderByList,
     BleedRootInclude? include,
   }) {
-    return BleedRootIncludeList._(
+    return BleedRootIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -337,11 +337,12 @@ class BleedRootTable extends _is.Table<int?> {
 }
 
 class BleedRootInclude extends _is.IncludeObject {
-  BleedRootInclude._({
+  BleedRootInclude.internal_({
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun23,
+    this.selectedColumns,
   }) {
     _childRelationWithExtremelyLongFieldNameForcingTrun24 =
         childRelationWithExtremelyLongFieldNameForcingTrun24;
@@ -356,6 +357,9 @@ class BleedRootInclude extends _is.IncludeObject {
   _childRelationWithExtremelyLongFieldNameForcingTrun23;
 
   @override
+  final List<_is.Column>? selectedColumns;
+
+  @override
   Map<String, _is.Include?> get includes => {
     'childRelationWithExtremelyLongFieldNameForcingTrun24':
         _childRelationWithExtremelyLongFieldNameForcingTrun24,
@@ -368,16 +372,20 @@ class BleedRootInclude extends _is.IncludeObject {
 }
 
 class BleedRootIncludeList extends _is.IncludeList {
-  BleedRootIncludeList._({
+  BleedRootIncludeList.internal_({
     _is.WhereExpressionBuilder<BleedRootTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BleedRoot.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

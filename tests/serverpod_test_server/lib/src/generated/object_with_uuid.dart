@@ -81,7 +81,7 @@ abstract class ObjectWithUuid
   }
 
   static ObjectWithUuidInclude include() {
-    return ObjectWithUuidInclude._();
+    return ObjectWithUuidInclude.internal_();
   }
 
   static ObjectWithUuidIncludeList includeList({
@@ -92,7 +92,7 @@ abstract class ObjectWithUuid
     _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
   }) {
-    return ObjectWithUuidIncludeList._(
+    return ObjectWithUuidIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,7 +186,10 @@ class ObjectWithUuidTable extends _is.Table<int?> {
 }
 
 class ObjectWithUuidInclude extends _is.IncludeObject {
-  ObjectWithUuidInclude._();
+  ObjectWithUuidInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -196,16 +199,20 @@ class ObjectWithUuidInclude extends _is.IncludeObject {
 }
 
 class ObjectWithUuidIncludeList extends _is.IncludeList {
-  ObjectWithUuidIncludeList._({
+  ObjectWithUuidIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithUuid.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

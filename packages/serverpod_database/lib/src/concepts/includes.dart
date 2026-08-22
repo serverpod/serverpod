@@ -8,6 +8,9 @@ abstract class Include {
 
   /// Accessor for the [Table] this include is for.
   Table get table;
+
+  /// Optional list of columns to select from the included table.
+  List<Column>? get selectedColumns => null;
 }
 
 /// Defines what tables to join when querying a table.

@@ -131,7 +131,7 @@ abstract class Citizen
     _i2fdza8t.CompanyInclude? company,
     _i2fdza8t.CompanyInclude? oldCompany,
   }) {
-    return CitizenInclude._(
+    return CitizenInclude.internal_(
       address: address,
       company: company,
       oldCompany: oldCompany,
@@ -146,7 +146,7 @@ abstract class Citizen
     _isd.OrderByListBuilder<CitizenTable>? orderByList,
     CitizenInclude? include,
   }) {
-    return CitizenIncludeList._(
+    return CitizenIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -327,10 +327,11 @@ class CitizenTable extends _isd.Table<int?> {
 }
 
 class CitizenInclude extends _isd.IncludeObject {
-  CitizenInclude._({
+  CitizenInclude.internal_({
     _i5rzbc0r.AddressInclude? address,
     _i2fdza8t.CompanyInclude? company,
     _i2fdza8t.CompanyInclude? oldCompany,
+    this.selectedColumns,
   }) {
     _address = address;
     _company = company;
@@ -344,6 +345,9 @@ class CitizenInclude extends _isd.IncludeObject {
   _i2fdza8t.CompanyInclude? _oldCompany;
 
   @override
+  final List<_isd.Column>? selectedColumns;
+
+  @override
   Map<String, _isd.Include?> get includes => {
     'address': _address,
     'company': _company,
@@ -355,16 +359,20 @@ class CitizenInclude extends _isd.IncludeObject {
 }
 
 class CitizenIncludeList extends _isd.IncludeList {
-  CitizenIncludeList._({
+  CitizenIncludeList.internal_({
     _isd.WhereExpressionBuilder<CitizenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Citizen.t);
   }
+
+  @override
+  final List<_isd.Column>? selectedColumns;
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};

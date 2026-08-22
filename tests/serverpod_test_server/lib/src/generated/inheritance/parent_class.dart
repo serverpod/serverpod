@@ -77,7 +77,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
   }
 
   static ParentClassInclude include() {
-    return ParentClassInclude._();
+    return ParentClassInclude.internal_();
   }
 
   static ParentClassIncludeList includeList({
@@ -88,7 +88,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     _is.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
   }) {
-    return ParentClassIncludeList._(
+    return ParentClassIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -150,7 +150,10 @@ class ParentClassTable extends _is.Table<int?> {
 }
 
 class ParentClassInclude extends _is.IncludeObject {
-  ParentClassInclude._();
+  ParentClassInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -160,16 +163,20 @@ class ParentClassInclude extends _is.IncludeObject {
 }
 
 class ParentClassIncludeList extends _is.IncludeList {
-  ParentClassIncludeList._({
+  ParentClassIncludeList.internal_({
     _is.WhereExpressionBuilder<ParentClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ParentClass.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

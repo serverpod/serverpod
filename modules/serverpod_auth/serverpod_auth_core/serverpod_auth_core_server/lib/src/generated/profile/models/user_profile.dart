@@ -164,7 +164,7 @@ abstract class UserProfile
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
   }) {
-    return UserProfileInclude._(
+    return UserProfileInclude.internal_(
       authUser: authUser,
       image: image,
     );
@@ -178,7 +178,7 @@ abstract class UserProfile
     _is.OrderByListBuilder<UserProfileTable>? orderByList,
     UserProfileInclude? include,
   }) {
-    return UserProfileIncludeList._(
+    return UserProfileIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -400,9 +400,10 @@ class UserProfileTable extends _is.Table<_is.UuidValue?> {
 }
 
 class UserProfileInclude extends _is.IncludeObject {
-  UserProfileInclude._({
+  UserProfileInclude.internal_({
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
+    this.selectedColumns,
   }) {
     _authUser = authUser;
     _image = image;
@@ -411,6 +412,9 @@ class UserProfileInclude extends _is.IncludeObject {
   _ivyervu7.AuthUserInclude? _authUser;
 
   _i7y29ltp.UserProfileImageInclude? _image;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -423,16 +427,20 @@ class UserProfileInclude extends _is.IncludeObject {
 }
 
 class UserProfileIncludeList extends _is.IncludeList {
-  UserProfileIncludeList._({
+  UserProfileIncludeList.internal_({
     _is.WhereExpressionBuilder<UserProfileTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserProfile.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

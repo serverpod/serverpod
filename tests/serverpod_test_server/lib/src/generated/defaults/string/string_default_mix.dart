@@ -95,7 +95,7 @@ abstract class StringDefaultMix
   }
 
   static StringDefaultMixInclude include() {
-    return StringDefaultMixInclude._();
+    return StringDefaultMixInclude.internal_();
   }
 
   static StringDefaultMixIncludeList includeList({
@@ -106,7 +106,7 @@ abstract class StringDefaultMix
     _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     StringDefaultMixInclude? include,
   }) {
-    return StringDefaultMixIncludeList._(
+    return StringDefaultMixIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -225,7 +225,10 @@ class StringDefaultMixTable extends _is.Table<int?> {
 }
 
 class StringDefaultMixInclude extends _is.IncludeObject {
-  StringDefaultMixInclude._();
+  StringDefaultMixInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -235,16 +238,20 @@ class StringDefaultMixInclude extends _is.IncludeObject {
 }
 
 class StringDefaultMixIncludeList extends _is.IncludeList {
-  StringDefaultMixIncludeList._({
+  StringDefaultMixIncludeList.internal_({
     _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(StringDefaultMix.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

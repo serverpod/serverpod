@@ -120,7 +120,7 @@ abstract class GitHubAccount
   }
 
   static GitHubAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return GitHubAccountInclude._(authUser: authUser);
+    return GitHubAccountInclude.internal_(authUser: authUser);
   }
 
   static GitHubAccountIncludeList includeList({
@@ -131,7 +131,7 @@ abstract class GitHubAccount
     _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
     GitHubAccountInclude? include,
   }) {
-    return GitHubAccountIncludeList._(
+    return GitHubAccountIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -296,11 +296,17 @@ class GitHubAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class GitHubAccountInclude extends _is.IncludeObject {
-  GitHubAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+  GitHubAccountInclude.internal_({
+    _iacs.AuthUserInclude? authUser,
+    this.selectedColumns,
+  }) {
     _authUser = authUser;
   }
 
   _iacs.AuthUserInclude? _authUser;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'authUser': _authUser};
@@ -310,16 +316,20 @@ class GitHubAccountInclude extends _is.IncludeObject {
 }
 
 class GitHubAccountIncludeList extends _is.IncludeList {
-  GitHubAccountIncludeList._({
+  GitHubAccountIncludeList.internal_({
     _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GitHubAccount.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

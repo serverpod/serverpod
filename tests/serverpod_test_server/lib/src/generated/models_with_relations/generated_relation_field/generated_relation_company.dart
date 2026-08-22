@@ -109,7 +109,7 @@ abstract class GeneratedRelationCompany
     _im57bsix.GeneratedRelationOfficeInclude? office,
     _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
   }) {
-    return GeneratedRelationCompanyInclude._(
+    return GeneratedRelationCompanyInclude.internal_(
       office: office,
       employees: employees,
     );
@@ -123,7 +123,7 @@ abstract class GeneratedRelationCompany
     _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
     GeneratedRelationCompanyInclude? include,
   }) {
-    return GeneratedRelationCompanyIncludeList._(
+    return GeneratedRelationCompanyIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -277,9 +277,10 @@ class GeneratedRelationCompanyTable extends _is.Table<int?> {
 }
 
 class GeneratedRelationCompanyInclude extends _is.IncludeObject {
-  GeneratedRelationCompanyInclude._({
+  GeneratedRelationCompanyInclude.internal_({
     _im57bsix.GeneratedRelationOfficeInclude? office,
     _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
+    this.selectedColumns,
   }) {
     _office = office;
     _employees = employees;
@@ -288,6 +289,9 @@ class GeneratedRelationCompanyInclude extends _is.IncludeObject {
   _im57bsix.GeneratedRelationOfficeInclude? _office;
 
   _inw8ul07.GeneratedRelationEmployeeIncludeList? _employees;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -300,16 +304,20 @@ class GeneratedRelationCompanyInclude extends _is.IncludeObject {
 }
 
 class GeneratedRelationCompanyIncludeList extends _is.IncludeList {
-  GeneratedRelationCompanyIncludeList._({
+  GeneratedRelationCompanyIncludeList.internal_({
     _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationCompany.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

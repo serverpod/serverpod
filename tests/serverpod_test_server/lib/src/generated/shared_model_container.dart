@@ -387,7 +387,7 @@ abstract class SharedModelContainer
   }
 
   static SharedModelContainerInclude include() {
-    return SharedModelContainerInclude._();
+    return SharedModelContainerInclude.internal_();
   }
 
   static SharedModelContainerIncludeList includeList({
@@ -398,7 +398,7 @@ abstract class SharedModelContainer
     _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
   }) {
-    return SharedModelContainerIncludeList._(
+    return SharedModelContainerIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -944,7 +944,10 @@ class SharedModelContainerTable extends _is.Table<int?> {
 }
 
 class SharedModelContainerInclude extends _is.IncludeObject {
-  SharedModelContainerInclude._();
+  SharedModelContainerInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -954,16 +957,20 @@ class SharedModelContainerInclude extends _is.IncludeObject {
 }
 
 class SharedModelContainerIncludeList extends _is.IncludeList {
-  SharedModelContainerIncludeList._({
+  SharedModelContainerIncludeList.internal_({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(SharedModelContainer.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

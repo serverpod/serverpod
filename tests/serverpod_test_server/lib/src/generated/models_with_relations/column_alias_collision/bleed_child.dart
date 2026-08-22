@@ -76,7 +76,7 @@ abstract class BleedChild
   }
 
   static BleedChildInclude include() {
-    return BleedChildInclude._();
+    return BleedChildInclude.internal_();
   }
 
   static BleedChildIncludeList includeList({
@@ -87,7 +87,7 @@ abstract class BleedChild
     _is.OrderByListBuilder<BleedChildTable>? orderByList,
     BleedChildInclude? include,
   }) {
-    return BleedChildIncludeList._(
+    return BleedChildIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -160,7 +160,10 @@ class BleedChildTable extends _is.Table<int?> {
 }
 
 class BleedChildInclude extends _is.IncludeObject {
-  BleedChildInclude._();
+  BleedChildInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -170,16 +173,20 @@ class BleedChildInclude extends _is.IncludeObject {
 }
 
 class BleedChildIncludeList extends _is.IncludeList {
-  BleedChildIncludeList._({
+  BleedChildIncludeList.internal_({
     _is.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BleedChild.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

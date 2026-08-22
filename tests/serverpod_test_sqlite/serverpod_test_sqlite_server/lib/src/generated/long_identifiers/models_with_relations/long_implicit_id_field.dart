@@ -78,7 +78,7 @@ abstract class LongImplicitIdField
   }
 
   static LongImplicitIdFieldInclude include() {
-    return LongImplicitIdFieldInclude._();
+    return LongImplicitIdFieldInclude.internal_();
   }
 
   static LongImplicitIdFieldIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class LongImplicitIdField
     _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     LongImplicitIdFieldInclude? include,
   }) {
-    return LongImplicitIdFieldIncludeList._(
+    return LongImplicitIdFieldIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +216,10 @@ class LongImplicitIdFieldTable extends _is.Table<int?> {
 }
 
 class LongImplicitIdFieldInclude extends _is.IncludeObject {
-  LongImplicitIdFieldInclude._();
+  LongImplicitIdFieldInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -226,16 +229,20 @@ class LongImplicitIdFieldInclude extends _is.IncludeObject {
 }
 
 class LongImplicitIdFieldIncludeList extends _is.IncludeList {
-  LongImplicitIdFieldIncludeList._({
+  LongImplicitIdFieldIncludeList.internal_({
     _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(LongImplicitIdField.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

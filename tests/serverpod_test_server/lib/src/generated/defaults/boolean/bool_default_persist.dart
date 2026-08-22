@@ -91,7 +91,7 @@ abstract class BoolDefaultPersist
   }
 
   static BoolDefaultPersistInclude include() {
-    return BoolDefaultPersistInclude._();
+    return BoolDefaultPersistInclude.internal_();
   }
 
   static BoolDefaultPersistIncludeList includeList({
@@ -102,7 +102,7 @@ abstract class BoolDefaultPersist
     _is.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     BoolDefaultPersistInclude? include,
   }) {
-    return BoolDefaultPersistIncludeList._(
+    return BoolDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -200,7 +200,10 @@ class BoolDefaultPersistTable extends _is.Table<int?> {
 }
 
 class BoolDefaultPersistInclude extends _is.IncludeObject {
-  BoolDefaultPersistInclude._();
+  BoolDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -210,16 +213,20 @@ class BoolDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultPersistIncludeList extends _is.IncludeList {
-  BoolDefaultPersistIncludeList._({
+  BoolDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

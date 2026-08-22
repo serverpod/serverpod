@@ -108,7 +108,7 @@ abstract class Enrollment
     _i2rea1ue.StudentInclude? student,
     _iwlbbfis.CourseInclude? course,
   }) {
-    return EnrollmentInclude._(
+    return EnrollmentInclude.internal_(
       student: student,
       course: course,
     );
@@ -122,7 +122,7 @@ abstract class Enrollment
     _is.OrderByListBuilder<EnrollmentTable>? orderByList,
     EnrollmentInclude? include,
   }) {
-    return EnrollmentIncludeList._(
+    return EnrollmentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -261,9 +261,10 @@ class EnrollmentTable extends _is.Table<int?> {
 }
 
 class EnrollmentInclude extends _is.IncludeObject {
-  EnrollmentInclude._({
+  EnrollmentInclude.internal_({
     _i2rea1ue.StudentInclude? student,
     _iwlbbfis.CourseInclude? course,
+    this.selectedColumns,
   }) {
     _student = student;
     _course = course;
@@ -272,6 +273,9 @@ class EnrollmentInclude extends _is.IncludeObject {
   _i2rea1ue.StudentInclude? _student;
 
   _iwlbbfis.CourseInclude? _course;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -284,16 +288,20 @@ class EnrollmentInclude extends _is.IncludeObject {
 }
 
 class EnrollmentIncludeList extends _is.IncludeList {
-  EnrollmentIncludeList._({
+  EnrollmentIncludeList.internal_({
     _is.WhereExpressionBuilder<EnrollmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Enrollment.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

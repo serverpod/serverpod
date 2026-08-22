@@ -93,7 +93,7 @@ abstract class Contractor
   }
 
   static ContractorInclude include({_iml73r3x.ServiceInclude? service}) {
-    return ContractorInclude._(service: service);
+    return ContractorInclude.internal_(service: service);
   }
 
   static ContractorIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class Contractor
     _is.OrderByListBuilder<ContractorTable>? orderByList,
     ContractorInclude? include,
   }) {
-    return ContractorIncludeList._(
+    return ContractorIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -224,11 +224,17 @@ class ContractorTable extends _is.Table<int?> {
 }
 
 class ContractorInclude extends _is.IncludeObject {
-  ContractorInclude._({_iml73r3x.ServiceInclude? service}) {
+  ContractorInclude.internal_({
+    _iml73r3x.ServiceInclude? service,
+    this.selectedColumns,
+  }) {
     _service = service;
   }
 
   _iml73r3x.ServiceInclude? _service;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'service': _service};
@@ -238,16 +244,20 @@ class ContractorInclude extends _is.IncludeObject {
 }
 
 class ContractorIncludeList extends _is.IncludeList {
-  ContractorIncludeList._({
+  ContractorIncludeList.internal_({
     _is.WhereExpressionBuilder<ContractorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Contractor.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

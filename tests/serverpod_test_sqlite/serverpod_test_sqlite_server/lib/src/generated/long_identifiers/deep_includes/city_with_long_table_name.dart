@@ -113,7 +113,7 @@ abstract class CityWithLongTableName
     _i5nficvp.PersonWithLongTableNameIncludeList? citizens,
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
   }) {
-    return CityWithLongTableNameInclude._(
+    return CityWithLongTableNameInclude.internal_(
       citizens: citizens,
       organizations: organizations,
     );
@@ -127,7 +127,7 @@ abstract class CityWithLongTableName
     _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     CityWithLongTableNameInclude? include,
   }) {
-    return CityWithLongTableNameIncludeList._(
+    return CityWithLongTableNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -314,9 +314,10 @@ class CityWithLongTableNameTable extends _is.Table<int?> {
 }
 
 class CityWithLongTableNameInclude extends _is.IncludeObject {
-  CityWithLongTableNameInclude._({
+  CityWithLongTableNameInclude.internal_({
     _i5nficvp.PersonWithLongTableNameIncludeList? citizens,
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
+    this.selectedColumns,
   }) {
     _citizens = citizens;
     _organizations = organizations;
@@ -325,6 +326,9 @@ class CityWithLongTableNameInclude extends _is.IncludeObject {
   _i5nficvp.PersonWithLongTableNameIncludeList? _citizens;
 
   _imc5i9r4.OrganizationWithLongTableNameIncludeList? _organizations;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -337,16 +341,20 @@ class CityWithLongTableNameInclude extends _is.IncludeObject {
 }
 
 class CityWithLongTableNameIncludeList extends _is.IncludeList {
-  CityWithLongTableNameIncludeList._({
+  CityWithLongTableNameIncludeList.internal_({
     _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(CityWithLongTableName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -54,8 +54,22 @@ class SelectQueryBuilder {
       where: _where,
       countTableRelation: _countTableRelation,
     );
-    var selectColumns = [..._fields, ..._gatherIncludeColumns(_include)];
+    var selectColumns = [
+      ...(_include?.selectedColumns ?? _fields),
+      ..._gatherIncludeColumns(_include),
+    ];
 
+    if (_listQueryAdditions != null && _include?.selectedColumns != null) {
+      // Ensure the foreign key column is always selected, as it is required to
+      // map the results back to the parent object.
+      var foreignColumn = _listQueryAdditions!.foreignColumn;
+      var hasFk = selectColumns.any(
+        (c) => c.columnName == foreignColumn.columnName,
+      );
+      if (!hasFk) {
+        selectColumns.add(foreignColumn);
+      }
+    }
     var subQueries = _SubQueries.gatherSubQueries(
       orderBy: _orderBy,
       where: _where,
@@ -285,6 +299,7 @@ class SelectQueryBuilder {
 
     _listQueryAdditions = _ListQueryAdditions(
       relationalFieldName: tableRelation.foreignFieldQueryAlias,
+      foreignColumn: tableRelation.foreignColumn,
       whereAddition: whereAddition,
     );
 
@@ -368,11 +383,13 @@ class SelectQueryBuilder {
 
 class _ListQueryAdditions {
   final String relationalFieldName;
+  final Column foreignColumn;
 
   final Expression whereAddition;
 
   _ListQueryAdditions({
     required this.relationalFieldName,
+    required this.foreignColumn,
     required this.whereAddition,
   });
 }
@@ -850,14 +867,33 @@ List<Column> _gatherIncludeColumns(Include? include) {
     return [];
   }
 
-  var includeTables = _gatherIncludeTables(include, include.table);
-
   LinkedHashMap<String, Column> fields = LinkedHashMap();
-  for (var table in includeTables) {
-    for (var column in table.columns) {
-      fields['$column'] = column;
-    }
+
+  void gather(Include inc, Table tbl) {
+    inc.includes.forEach((relationField, relationInclude) {
+      if (relationInclude == null || relationInclude is IncludeList) {
+        return;
+      }
+
+      var relationTable = tbl.getRelationTable(relationField);
+      if (relationTable == null) return;
+
+      var columnsToInclude =
+          relationInclude.selectedColumns?.map((c) {
+            return relationTable.columns.firstWhere(
+              (rc) => rc.columnName == c.columnName,
+            );
+          }).toList() ??
+          relationTable.columns;
+      for (var column in columnsToInclude) {
+        fields['$column'] = column;
+      }
+
+      gather(relationInclude, relationTable);
+    });
   }
+
+  gather(include, include.table);
 
   return fields.values.toList();
 }

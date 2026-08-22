@@ -98,7 +98,7 @@ abstract class MultipleMaxFieldName
   }
 
   static MultipleMaxFieldNameInclude include() {
-    return MultipleMaxFieldNameInclude._();
+    return MultipleMaxFieldNameInclude.internal_();
   }
 
   static MultipleMaxFieldNameIncludeList includeList({
@@ -109,7 +109,7 @@ abstract class MultipleMaxFieldName
     _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     MultipleMaxFieldNameInclude? include,
   }) {
-    return MultipleMaxFieldNameIncludeList._(
+    return MultipleMaxFieldNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -280,7 +280,10 @@ class MultipleMaxFieldNameTable extends _is.Table<int?> {
 }
 
 class MultipleMaxFieldNameInclude extends _is.IncludeObject {
-  MultipleMaxFieldNameInclude._();
+  MultipleMaxFieldNameInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -290,16 +293,20 @@ class MultipleMaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class MultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  MultipleMaxFieldNameIncludeList._({
+  MultipleMaxFieldNameIncludeList.internal_({
     _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(MultipleMaxFieldName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

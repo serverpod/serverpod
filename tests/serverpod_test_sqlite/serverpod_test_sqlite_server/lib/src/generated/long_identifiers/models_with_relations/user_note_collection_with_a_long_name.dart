@@ -92,7 +92,7 @@ abstract class UserNoteCollectionWithALongName
   static UserNoteCollectionWithALongNameInclude include({
     _iegdvue1.UserNoteWithALongNameIncludeList? notes,
   }) {
-    return UserNoteCollectionWithALongNameInclude._(notes: notes);
+    return UserNoteCollectionWithALongNameInclude.internal_(notes: notes);
   }
 
   static UserNoteCollectionWithALongNameIncludeList includeList({
@@ -103,7 +103,7 @@ abstract class UserNoteCollectionWithALongName
     _is.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     UserNoteCollectionWithALongNameInclude? include,
   }) {
-    return UserNoteCollectionWithALongNameIncludeList._(
+    return UserNoteCollectionWithALongNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -238,13 +238,17 @@ class UserNoteCollectionWithALongNameTable extends _is.Table<int?> {
 }
 
 class UserNoteCollectionWithALongNameInclude extends _is.IncludeObject {
-  UserNoteCollectionWithALongNameInclude._({
+  UserNoteCollectionWithALongNameInclude.internal_({
     _iegdvue1.UserNoteWithALongNameIncludeList? notes,
+    this.selectedColumns,
   }) {
     _notes = notes;
   }
 
   _iegdvue1.UserNoteWithALongNameIncludeList? _notes;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'notes': _notes};
@@ -254,16 +258,20 @@ class UserNoteCollectionWithALongNameInclude extends _is.IncludeObject {
 }
 
 class UserNoteCollectionWithALongNameIncludeList extends _is.IncludeList {
-  UserNoteCollectionWithALongNameIncludeList._({
+  UserNoteCollectionWithALongNameIncludeList.internal_({
     _is.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteCollectionWithALongName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -93,7 +93,7 @@ abstract class UserNoteCollection
   static UserNoteCollectionInclude include({
     _ia9r0qbl.UserNoteIncludeList? userNotesPropertyName,
   }) {
-    return UserNoteCollectionInclude._(
+    return UserNoteCollectionInclude.internal_(
       userNotesPropertyName: userNotesPropertyName,
     );
   }
@@ -106,7 +106,7 @@ abstract class UserNoteCollection
     _is.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     UserNoteCollectionInclude? include,
   }) {
-    return UserNoteCollectionIncludeList._(
+    return UserNoteCollectionIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -236,13 +236,17 @@ class UserNoteCollectionTable extends _is.Table<int?> {
 }
 
 class UserNoteCollectionInclude extends _is.IncludeObject {
-  UserNoteCollectionInclude._({
+  UserNoteCollectionInclude.internal_({
     _ia9r0qbl.UserNoteIncludeList? userNotesPropertyName,
+    this.selectedColumns,
   }) {
     _userNotesPropertyName = userNotesPropertyName;
   }
 
   _ia9r0qbl.UserNoteIncludeList? _userNotesPropertyName;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {
@@ -254,16 +258,20 @@ class UserNoteCollectionInclude extends _is.IncludeObject {
 }
 
 class UserNoteCollectionIncludeList extends _is.IncludeList {
-  UserNoteCollectionIncludeList._({
+  UserNoteCollectionIncludeList.internal_({
     _is.WhereExpressionBuilder<UserNoteCollectionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteCollection.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

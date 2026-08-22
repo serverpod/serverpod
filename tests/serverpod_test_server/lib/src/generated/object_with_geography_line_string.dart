@@ -93,7 +93,7 @@ abstract class ObjectWithGeographyLineString
   }
 
   static ObjectWithGeographyLineStringInclude include() {
-    return ObjectWithGeographyLineStringInclude._();
+    return ObjectWithGeographyLineStringInclude.internal_();
   }
 
   static ObjectWithGeographyLineStringIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class ObjectWithGeographyLineString
     _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
   }) {
-    return ObjectWithGeographyLineStringIncludeList._(
+    return ObjectWithGeographyLineStringIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +216,10 @@ class ObjectWithGeographyLineStringTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
-  ObjectWithGeographyLineStringInclude._();
+  ObjectWithGeographyLineStringInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -226,16 +229,20 @@ class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList {
-  ObjectWithGeographyLineStringIncludeList._({
+  ObjectWithGeographyLineStringIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyLineString.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

@@ -57,7 +57,7 @@ abstract class ServerOnlyChangedIdFieldClass
   }
 
   static ServerOnlyChangedIdFieldClassInclude include() {
-    return ServerOnlyChangedIdFieldClassInclude._();
+    return ServerOnlyChangedIdFieldClassInclude.internal_();
   }
 
   static ServerOnlyChangedIdFieldClassIncludeList includeList({
@@ -68,7 +68,7 @@ abstract class ServerOnlyChangedIdFieldClass
     _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
   }) {
-    return ServerOnlyChangedIdFieldClassIncludeList._(
+    return ServerOnlyChangedIdFieldClassIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -118,7 +118,10 @@ class ServerOnlyChangedIdFieldClassTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
-  ServerOnlyChangedIdFieldClassInclude._();
+  ServerOnlyChangedIdFieldClassInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -128,16 +131,20 @@ class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
 }
 
 class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList {
-  ServerOnlyChangedIdFieldClassIncludeList._({
+  ServerOnlyChangedIdFieldClassIncludeList.internal_({
     _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

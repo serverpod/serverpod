@@ -71,7 +71,7 @@ abstract class ObjectWithSelfParent
   }
 
   static ObjectWithSelfParentInclude include() {
-    return ObjectWithSelfParentInclude._();
+    return ObjectWithSelfParentInclude.internal_();
   }
 
   static ObjectWithSelfParentIncludeList includeList({
@@ -82,7 +82,7 @@ abstract class ObjectWithSelfParent
     _is.OrderByListBuilder<ObjectWithSelfParentTable>? orderByList,
     ObjectWithSelfParentInclude? include,
   }) {
-    return ObjectWithSelfParentIncludeList._(
+    return ObjectWithSelfParentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -156,7 +156,10 @@ class ObjectWithSelfParentTable extends _is.Table<int?> {
 }
 
 class ObjectWithSelfParentInclude extends _is.IncludeObject {
-  ObjectWithSelfParentInclude._();
+  ObjectWithSelfParentInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -166,16 +169,20 @@ class ObjectWithSelfParentInclude extends _is.IncludeObject {
 }
 
 class ObjectWithSelfParentIncludeList extends _is.IncludeList {
-  ObjectWithSelfParentIncludeList._({
+  ObjectWithSelfParentIncludeList.internal_({
     _is.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSelfParent.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

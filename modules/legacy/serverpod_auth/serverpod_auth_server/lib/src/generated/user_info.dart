@@ -142,7 +142,7 @@ abstract class UserInfo
   }
 
   static UserInfoInclude include() {
-    return UserInfoInclude._();
+    return UserInfoInclude.internal_();
   }
 
   static UserInfoIncludeList includeList({
@@ -153,7 +153,7 @@ abstract class UserInfo
     _is.OrderByListBuilder<UserInfoTable>? orderByList,
     UserInfoInclude? include,
   }) {
-    return UserInfoIncludeList._(
+    return UserInfoIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -350,7 +350,10 @@ class UserInfoTable extends _is.Table<int?> {
 }
 
 class UserInfoInclude extends _is.IncludeObject {
-  UserInfoInclude._();
+  UserInfoInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -360,16 +363,20 @@ class UserInfoInclude extends _is.IncludeObject {
 }
 
 class UserInfoIncludeList extends _is.IncludeList {
-  UserInfoIncludeList._({
+  UserInfoIncludeList.internal_({
     _is.WhereExpressionBuilder<UserInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserInfo.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

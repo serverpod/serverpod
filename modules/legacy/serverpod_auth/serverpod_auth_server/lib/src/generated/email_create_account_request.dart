@@ -101,7 +101,7 @@ abstract class EmailCreateAccountRequest
   }
 
   static EmailCreateAccountRequestInclude include() {
-    return EmailCreateAccountRequestInclude._();
+    return EmailCreateAccountRequestInclude.internal_();
   }
 
   static EmailCreateAccountRequestIncludeList includeList({
@@ -112,7 +112,7 @@ abstract class EmailCreateAccountRequest
     _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     EmailCreateAccountRequestInclude? include,
   }) {
-    return EmailCreateAccountRequestIncludeList._(
+    return EmailCreateAccountRequestIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -239,7 +239,10 @@ class EmailCreateAccountRequestTable extends _is.Table<int?> {
 }
 
 class EmailCreateAccountRequestInclude extends _is.IncludeObject {
-  EmailCreateAccountRequestInclude._();
+  EmailCreateAccountRequestInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -249,16 +252,20 @@ class EmailCreateAccountRequestInclude extends _is.IncludeObject {
 }
 
 class EmailCreateAccountRequestIncludeList extends _is.IncludeList {
-  EmailCreateAccountRequestIncludeList._({
+  EmailCreateAccountRequestIncludeList.internal_({
     _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EmailCreateAccountRequest.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

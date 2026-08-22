@@ -98,7 +98,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
   }
 
   static PersonInclude include({_i0ptycc3.OrganizationInclude? organization}) {
-    return PersonInclude._(organization: organization);
+    return PersonInclude.internal_(organization: organization);
   }
 
   static PersonIncludeList includeList({
@@ -109,7 +109,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
   }) {
-    return PersonIncludeList._(
+    return PersonIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -280,11 +280,17 @@ class PersonTable extends _is.Table<int?> {
 }
 
 class PersonInclude extends _is.IncludeObject {
-  PersonInclude._({_i0ptycc3.OrganizationInclude? organization}) {
+  PersonInclude.internal_({
+    _i0ptycc3.OrganizationInclude? organization,
+    this.selectedColumns,
+  }) {
     _organization = organization;
   }
 
   _i0ptycc3.OrganizationInclude? _organization;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'organization': _organization};
@@ -294,16 +300,20 @@ class PersonInclude extends _is.IncludeObject {
 }
 
 class PersonIncludeList extends _is.IncludeList {
-  PersonIncludeList._({
+  PersonIncludeList.internal_({
     _is.WhereExpressionBuilder<PersonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Person.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

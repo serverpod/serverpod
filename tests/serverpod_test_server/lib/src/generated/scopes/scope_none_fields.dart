@@ -69,7 +69,7 @@ abstract class ScopeNoneFields
   }
 
   static ScopeNoneFieldsInclude include() {
-    return ScopeNoneFieldsInclude._();
+    return ScopeNoneFieldsInclude.internal_();
   }
 
   static ScopeNoneFieldsIncludeList includeList({
@@ -80,7 +80,7 @@ abstract class ScopeNoneFields
     _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
   }) {
-    return ScopeNoneFieldsIncludeList._(
+    return ScopeNoneFieldsIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,7 +190,10 @@ class ScopeNoneFieldsTable extends _is.Table<int?> {
 }
 
 class ScopeNoneFieldsInclude extends _is.IncludeObject {
-  ScopeNoneFieldsInclude._();
+  ScopeNoneFieldsInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -200,16 +203,20 @@ class ScopeNoneFieldsInclude extends _is.IncludeObject {
 }
 
 class ScopeNoneFieldsIncludeList extends _is.IncludeList {
-  ScopeNoneFieldsIncludeList._({
+  ScopeNoneFieldsIncludeList.internal_({
     _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(ScopeNoneFields.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

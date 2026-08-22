@@ -93,7 +93,7 @@ abstract class EnumDefaultPersist
   }
 
   static EnumDefaultPersistInclude include() {
-    return EnumDefaultPersistInclude._();
+    return EnumDefaultPersistInclude.internal_();
   }
 
   static EnumDefaultPersistIncludeList includeList({
@@ -104,7 +104,7 @@ abstract class EnumDefaultPersist
     _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
     EnumDefaultPersistInclude? include,
   }) {
-    return EnumDefaultPersistIncludeList._(
+    return EnumDefaultPersistIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -206,7 +206,10 @@ class EnumDefaultPersistTable extends _is.Table<int?> {
 }
 
 class EnumDefaultPersistInclude extends _is.IncludeObject {
-  EnumDefaultPersistInclude._();
+  EnumDefaultPersistInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -216,16 +219,20 @@ class EnumDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultPersistIncludeList extends _is.IncludeList {
-  EnumDefaultPersistIncludeList._({
+  EnumDefaultPersistIncludeList.internal_({
     _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultPersist.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

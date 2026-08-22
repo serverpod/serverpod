@@ -90,7 +90,7 @@ abstract class Department
   }
 
   static DepartmentInclude include({_ilvmgye0.EmployeeIncludeList? employees}) {
-    return DepartmentInclude._(employees: employees);
+    return DepartmentInclude.internal_(employees: employees);
   }
 
   static DepartmentIncludeList includeList({
@@ -101,7 +101,7 @@ abstract class Department
     _is.OrderByListBuilder<DepartmentTable>? orderByList,
     DepartmentInclude? include,
   }) {
-    return DepartmentIncludeList._(
+    return DepartmentIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -223,11 +223,17 @@ class DepartmentTable extends _is.Table<int?> {
 }
 
 class DepartmentInclude extends _is.IncludeObject {
-  DepartmentInclude._({_ilvmgye0.EmployeeIncludeList? employees}) {
+  DepartmentInclude.internal_({
+    _ilvmgye0.EmployeeIncludeList? employees,
+    this.selectedColumns,
+  }) {
     _employees = employees;
   }
 
   _ilvmgye0.EmployeeIncludeList? _employees;
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {'employees': _employees};
@@ -237,16 +243,20 @@ class DepartmentInclude extends _is.IncludeObject {
 }
 
 class DepartmentIncludeList extends _is.IncludeList {
-  DepartmentIncludeList._({
+  DepartmentIncludeList.internal_({
     _is.WhereExpressionBuilder<DepartmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(Department.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

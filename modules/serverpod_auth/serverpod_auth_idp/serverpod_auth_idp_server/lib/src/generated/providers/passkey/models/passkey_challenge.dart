@@ -82,7 +82,7 @@ abstract class PasskeyChallenge
   }
 
   static PasskeyChallengeInclude include() {
-    return PasskeyChallengeInclude._();
+    return PasskeyChallengeInclude.internal_();
   }
 
   static PasskeyChallengeIncludeList includeList({
@@ -93,7 +93,7 @@ abstract class PasskeyChallenge
     _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     PasskeyChallengeInclude? include,
   }) {
-    return PasskeyChallengeIncludeList._(
+    return PasskeyChallengeIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -188,7 +188,10 @@ class PasskeyChallengeTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PasskeyChallengeInclude extends _is.IncludeObject {
-  PasskeyChallengeInclude._();
+  PasskeyChallengeInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -198,16 +201,20 @@ class PasskeyChallengeInclude extends _is.IncludeObject {
 }
 
 class PasskeyChallengeIncludeList extends _is.IncludeList {
-  PasskeyChallengeIncludeList._({
+  PasskeyChallengeIncludeList.internal_({
     _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(PasskeyChallenge.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};

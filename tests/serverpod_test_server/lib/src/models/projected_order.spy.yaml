@@ -1,0 +1,10 @@
+class: ProjectedOrder
+table: projected_order
+fields:
+  description: String
+  price: int
+
+projections:
+  ProjectedOrderDescription:
+    select:
+      - description

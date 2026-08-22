@@ -80,7 +80,7 @@ abstract class UserNoteWithALongName
   }
 
   static UserNoteWithALongNameInclude include() {
-    return UserNoteWithALongNameInclude._();
+    return UserNoteWithALongNameInclude.internal_();
   }
 
   static UserNoteWithALongNameIncludeList includeList({
@@ -91,7 +91,7 @@ abstract class UserNoteWithALongName
     _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
   }) {
-    return UserNoteWithALongNameIncludeList._(
+    return UserNoteWithALongNameIncludeList.internal_(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,7 +218,10 @@ class UserNoteWithALongNameTable extends _is.Table<int?> {
 }
 
 class UserNoteWithALongNameInclude extends _is.IncludeObject {
-  UserNoteWithALongNameInclude._();
+  UserNoteWithALongNameInclude.internal_({this.selectedColumns});
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => {};
@@ -228,16 +231,20 @@ class UserNoteWithALongNameInclude extends _is.IncludeObject {
 }
 
 class UserNoteWithALongNameIncludeList extends _is.IncludeList {
-  UserNoteWithALongNameIncludeList._({
+  UserNoteWithALongNameIncludeList.internal_({
     _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     super.include,
+    this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteWithALongName.t);
   }
+
+  @override
+  final List<_is.Column>? selectedColumns;
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
