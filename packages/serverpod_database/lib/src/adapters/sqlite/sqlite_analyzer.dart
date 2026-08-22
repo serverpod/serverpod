@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import '../../../serverpod_database.dart';
 import 'sqlite_default_value.dart';
 
@@ -28,26 +26,29 @@ class SqliteDatabaseAnalyzer extends DatabaseAnalyzer {
         AND (name != 'serverpod_sqlite_schema');
     ''');
 
-    return result.map((row) async {
+    final tables = <TableDefinition>[];
+    for (final row in result) {
       var tableName = row[0] as String;
-
-      return TableDefinition(
-        name: tableName,
-        schema: _defaultSchema,
-        columns: await getColumnDefinitions(
-          schemaName: _defaultSchema,
-          tableName: tableName,
-        ),
-        foreignKeys: await getForeignKeyDefinitions(
-          schemaName: _defaultSchema,
-          tableName: tableName,
-        ),
-        indexes: await getIndexDefinitions(
-          schemaName: _defaultSchema,
-          tableName: tableName,
+      tables.add(
+        TableDefinition(
+          name: tableName,
+          schema: _defaultSchema,
+          columns: await getColumnDefinitions(
+            schemaName: _defaultSchema,
+            tableName: tableName,
+          ),
+          foreignKeys: await getForeignKeyDefinitions(
+            schemaName: _defaultSchema,
+            tableName: tableName,
+          ),
+          indexes: await getIndexDefinitions(
+            schemaName: _defaultSchema,
+            tableName: tableName,
+          ),
         ),
       );
-    }).wait;
+    }
+    return tables;
   }
 
   @override

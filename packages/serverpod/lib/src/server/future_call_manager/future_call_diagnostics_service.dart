@@ -38,10 +38,10 @@ final class ServerpodFutureCallDiagnosticsService
     StackTrace stackTrace, {
     String? message,
   }) {
-    _server.serverpod.internalSubmitEvent(
-      ExceptionEvent(error, stackTrace, message: message),
-      space: OriginSpace.framework,
-      context: contextFromServer(_server),
+    _server.serverpod.reportFrameworkException(
+      error,
+      stackTrace,
+      message: message,
     );
   }
 

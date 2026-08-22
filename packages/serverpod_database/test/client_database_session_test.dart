@@ -97,7 +97,7 @@ void main() {
   test(
     'Given a client migration that fails, '
     'when applying the migration, '
-    'then its context is logged without duplicating the thrown error.',
+    'then the error is thrown for the caller to report.',
     () async {
       session = await ClientDatabaseSession.open(
         databasePath,
@@ -126,12 +126,10 @@ void main() {
       );
       await shared.log.flush();
 
-      expect(writer.entries, hasLength(1));
       expect(
-        writer.entries.single.message,
-        'Failed to apply migration 20240101000000000.',
+        writer.entries.where((e) => e.level == shared.LogLevel.error),
+        isEmpty,
       );
-      expect(writer.entries.single.error, isNull);
     },
   );
 }

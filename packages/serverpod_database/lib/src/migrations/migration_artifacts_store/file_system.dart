@@ -277,7 +277,7 @@ class FileSystemMigrationArtifactStore
   static Future<String> _readRequiredFile(File file) async {
     var contents = await _readFileIfExists(file);
     if (contents == null) {
-      throw Exception('Required migration artifact is missing: ${file.path}');
+      throw MigrationArtifactMissingException(file.path);
     }
     return contents;
   }

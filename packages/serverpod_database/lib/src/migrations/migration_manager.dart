@@ -202,20 +202,19 @@ class MigrationManager {
   /// Returns the latest version of the given module from available migrations.
   String _getLatestVersion() {
     if (availableVersions.isEmpty) {
-      throw Exception('No migrations found in project.');
+      throw NoMigrationsFoundException();
     }
     return availableVersions.last;
   }
 
   /// Lists all versions newer than the given version for the given module.
-  List<String> _getVersionsToApply(String fromVersion) {
+  @visibleForTesting
+  List<String> getVersionsToApply(String fromVersion) {
     if (availableVersions.isEmpty) return [];
 
     var index = availableVersions.indexOf(fromVersion);
     if (index == -1) {
-      throw Exception(
-        'DB has migration version $fromVersion registered but it is not found in the project files.',
-      );
+      throw MigrationVersionNotFoundException(fromVersion);
     }
     return availableVersions.sublist(index + 1);
   }
@@ -241,22 +240,18 @@ class MigrationManager {
       var latestArtifacts = await _artifactStore.readVersionSql(latestVersion);
       var sqlDefinition = latestArtifacts?.definitionSql;
       if (sqlDefinition == null) {
-        throw Exception(
-          'Definition for migration version $latestVersion could not be loaded.',
-        );
+        throw MigrationDefinitionNotFoundException(latestVersion);
       }
 
       sqlToExecute.add((version: latestVersion, sql: sqlDefinition));
     } else {
-      var newerVersions = _getVersionsToApply(fromVersion);
+      var newerVersions = getVersionsToApply(fromVersion);
 
       for (var version in newerVersions) {
         var versionArtifacts = await _artifactStore.readVersionSql(version);
         var sqlMigration = versionArtifacts?.migrationSql;
         if (sqlMigration == null) {
-          throw Exception(
-            'Migration for version $version could not be loaded.',
-          );
+          throw MigrationSqlNotFoundException(version);
         }
 
         sqlToExecute.add((version: version, sql: sqlMigration));
@@ -279,16 +274,11 @@ class MigrationManager {
 
     var migrationsApplied = <String>[];
     for (var code in sqlToExecute) {
-      try {
-        await session.db.unsafeSimpleExecute(
-          code.sql,
-          transaction: transaction,
-        );
-        migrationsApplied.add(code.version);
-      } catch (_) {
-        log.error('Failed to apply migration ${code.version}.');
-        rethrow;
-      }
+      await session.db.unsafeSimpleExecute(
+        code.sql,
+        transaction: transaction,
+      );
+      migrationsApplied.add(code.version);
     }
 
     return migrationsApplied;
@@ -306,7 +296,9 @@ class MigrationManager {
         await loadInstalledVersions(session, transaction: transaction),
       );
     } catch (e) {
-      // Table might not exist and we therefore ignore and assume no versions.
+      if (!isUndefinedTableError(e, tableName: _migrationVersionTable)) {
+        rethrow;
+      }
     }
 
     availableVersions.clear();
@@ -336,10 +328,13 @@ class MigrationManager {
     await migrationRunner.runMigrations(session, action);
   }
 
-  /// Returns true if the database structure is up to date. If not, it
-  /// logs a warning via the global [log].
-  static Future<bool> verifyDatabaseIntegrity(DatabaseSession session) async {
+  /// Returns a [DatabaseIntegrityCheck] describing whether the live database
+  /// matches the target schema. Logs a warning when it does not.
+  static Future<DatabaseIntegrityCheck> verifyDatabaseIntegrity(
+    DatabaseSession session,
+  ) async {
     var warnings = <String>[];
+    var missingTables = <String>{};
 
     var liveDatabase = await session.db.analyzer.analyze();
     var targetTables = session.db.analyzer.getTargetTableDefinitions();
@@ -348,6 +343,7 @@ class MigrationManager {
       var liveTable = liveDatabase.findTableNamed(table.name);
       if (liveTable == null) {
         warnings.add('Table "${table.name}" is missing.');
+        missingTables.add(table.name);
         continue;
       }
       var mismatches = liveTable.like(table).asStringList();
@@ -369,6 +365,9 @@ class MigrationManager {
       );
     }
 
-    return warnings.isEmpty;
+    return DatabaseIntegrityCheck(
+      warnings: warnings,
+      missingTables: missingTables,
+    );
   }
 }
