@@ -125,10 +125,10 @@ class ColumnJsonField<T> extends Column<T> {
     this.baseColumn, {
     required super.fieldName,
   }) : super(
-          baseColumn.columnName,
-          baseColumn.table,
-          hasDefault: false,
-        );
+         baseColumn.columnName,
+         baseColumn.table,
+         hasDefault: false,
+       );
 
   @override
   String toString() {

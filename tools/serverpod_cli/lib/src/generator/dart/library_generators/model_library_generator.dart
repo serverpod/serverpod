@@ -1492,10 +1492,12 @@ class SerializableModelLibraryGenerator {
     }
 
     var forwardedFields = fields.where((f) => f.forwardedFrom != null);
-    var forwardedRelationFields =
-        forwardedFields.where((f) => f.forwardedRelationType != null);
-    var forwardedJsonFields =
-        forwardedFields.where((f) => f.forwardedRelationType == null);
+    var forwardedRelationFields = forwardedFields.where(
+      (f) => f.forwardedRelationType != null,
+    );
+    var forwardedJsonFields = forwardedFields.where(
+      (f) => f.forwardedRelationType == null,
+    );
 
     var forwardedMap = <String, List<SerializableModelFieldDefinition>>{};
     for (var f in forwardedRelationFields) {
@@ -1538,17 +1540,22 @@ class SerializableModelLibraryGenerator {
             .property('t')
             .property(rootColumnName)
             .property('jsonKey')
-            .call([
-              literalString(jsonKey),
-            ], {
-              'fieldName': literalString(f.name),
-            }),
+            .call(
+              [
+                literalString(jsonKey),
+              ],
+              {
+                'fieldName': literalString(f.name),
+              },
+            ),
       );
     }
 
     var columnNames = [
       ...fields
-          .where((field) => field.relation == null && field.forwardedFrom == null)
+          .where(
+            (field) => field.relation == null && field.forwardedFrom == null,
+          )
           .map(
             (field) => refer(baseClassName).property('t').property(field.name),
           ),

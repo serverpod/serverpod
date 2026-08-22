@@ -139,25 +139,6 @@ class _ProjectedEnrollmentCourseImpl extends ProjectedEnrollmentCourse {
 class ProjectedEnrollmentCourseRepository {
   const ProjectedEnrollmentCourseRepository._();
 
-  Map<String, dynamic> _stripClassName(Map<String, dynamic> map) {
-    var result = <String, dynamic>{};
-    for (var entry in map.entries) {
-      if (entry.key == '__className__') continue;
-      if (entry.value is Map<String, dynamic>) {
-        result[entry.key] = _stripClassName(
-          entry.value as Map<String, dynamic>,
-        );
-      } else if (entry.value is List) {
-        result[entry.key] = (entry.value as List)
-            .map((e) => e is Map<String, dynamic> ? _stripClassName(e) : e)
-            .toList();
-      } else {
-        result[entry.key] = entry.value;
-      }
-    }
-    return result;
-  }
-
   /// Returns a list of [ProjectedEnrollment]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
@@ -191,7 +172,6 @@ class ProjectedEnrollmentCourseRepository {
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    // ignore: invalid_use_of_internal_member
     return await session.db
         .findAsJson<ProjectedEnrollment>(
           where: where?.call(ProjectedEnrollment.t),
@@ -237,7 +217,6 @@ class ProjectedEnrollmentCourseRepository {
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    // ignore: invalid_use_of_internal_member
     return await session.db
         .findFirstRowAsJson<ProjectedEnrollment>(
           where: where?.call(ProjectedEnrollment.t),
@@ -260,7 +239,6 @@ class ProjectedEnrollmentCourseRepository {
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
   }) async {
-    // ignore: invalid_use_of_internal_member
     return await session.db
         .findByIdAsJson<ProjectedEnrollment>(
           id,

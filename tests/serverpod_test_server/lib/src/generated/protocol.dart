@@ -5576,12 +5576,6 @@ class Protocol extends _i1.DatabaseSerializationManager {
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
-          name: 'goefield',
-          columnType: _i2.ColumnType.geography,
-          isNullable: true,
-          dartType: 'GeographyPoint?',
-        ),
       ],
       foreignKeys: [
         _i2.ForeignKeyDefinition(

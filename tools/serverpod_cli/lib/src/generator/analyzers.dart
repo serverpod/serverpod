@@ -549,14 +549,13 @@ List<SerializableModelDefinition> _expandProjections(
                         '$relationName${forwardedName.substring(0, 1).toUpperCase()}${forwardedName.substring(1)}';
                     var isParentNullable =
                         relationField.relation is ObjectRelationDefinition
-                            ? (relationField.relation
-                                    as ObjectRelationDefinition)
-                                .nullableRelation
-                            : relationField.type.nullable;
+                        ? (relationField.relation as ObjectRelationDefinition)
+                              .nullableRelation
+                        : relationField.type.nullable;
                     var fieldType =
                         isParentNullable && !targetField.type.nullable
-                            ? targetField.type.asNullable
-                            : targetField.type;
+                        ? targetField.type.asNullable
+                        : targetField.type;
 
                     projectedFields.add(
                       SerializableModelFieldDefinition(
@@ -565,10 +564,9 @@ List<SerializableModelDefinition> _expandProjections(
                         scope: targetField.scope,
                         shouldPersist: false,
                         forwardedFrom: pf.name,
-                        forwardedRelationType:
-                            relationField.relation != null
-                                ? relationField.type
-                                : null,
+                        forwardedRelationType: relationField.relation != null
+                            ? relationField.type
+                            : null,
                       ),
                     );
                     continue;

@@ -23,7 +23,6 @@ abstract class ProjectedArticle
     this.author,
     required this.summary,
     required this.content,
-    this.goefield,
   });
 
   factory ProjectedArticle({
@@ -33,7 +32,6 @@ abstract class ProjectedArticle
     _i2.ProjectedAuthor? author,
     required String summary,
     required String content,
-    _i1.GeographyPoint? goefield,
   }) = _ProjectedArticleImpl;
 
   factory ProjectedArticle.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -48,11 +46,6 @@ abstract class ProjectedArticle
             ),
       summary: jsonSerialization['summary'] as String,
       content: jsonSerialization['content'] as String,
-      goefield: jsonSerialization['goefield'] == null
-          ? null
-          : _i1.GeographyPointJsonExtension.fromJson(
-              jsonSerialization['goefield'],
-            ),
     );
   }
 
@@ -71,8 +64,6 @@ abstract class ProjectedArticle
 
   String content;
 
-  _i1.GeographyPoint? goefield;
-
   /// Returns a shallow copy of this [ProjectedArticle]
   /// with some or all fields replaced by the given arguments.
   @_i1.useResult
@@ -83,7 +74,6 @@ abstract class ProjectedArticle
     _i2.ProjectedAuthor? author,
     String? summary,
     String? content,
-    _i1.GeographyPoint? goefield,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +85,6 @@ abstract class ProjectedArticle
       if (author != null) 'author': author?.toJson(),
       'summary': summary,
       'content': content,
-      if (goefield != null) 'goefield': goefield?.toJson(),
     };
   }
 
@@ -109,7 +98,6 @@ abstract class ProjectedArticle
       if (author != null) 'author': author?.toJsonForProtocol(),
       'summary': summary,
       'content': content,
-      if (goefield != null) 'goefield': goefield?.toJson(),
     };
   }
 
@@ -129,7 +117,6 @@ class _ProjectedArticleImpl extends ProjectedArticle {
     _i2.ProjectedAuthor? author,
     required String summary,
     required String content,
-    _i1.GeographyPoint? goefield,
   }) : super._(
          id: id,
          title: title,
@@ -137,7 +124,6 @@ class _ProjectedArticleImpl extends ProjectedArticle {
          author: author,
          summary: summary,
          content: content,
-         goefield: goefield,
        );
 
   /// Returns a shallow copy of this [ProjectedArticle]
@@ -151,7 +137,6 @@ class _ProjectedArticleImpl extends ProjectedArticle {
     Object? author = _Undefined,
     String? summary,
     String? content,
-    Object? goefield = _Undefined,
   }) {
     return ProjectedArticle(
       id: id is int? ? id : this.id,
@@ -160,7 +145,6 @@ class _ProjectedArticleImpl extends ProjectedArticle {
       author: author is _i2.ProjectedAuthor? ? author : this.author?.copyWith(),
       summary: summary ?? this.summary,
       content: content ?? this.content,
-      goefield: goefield is _i1.GeographyPoint? ? goefield : this.goefield,
     );
   }
 }

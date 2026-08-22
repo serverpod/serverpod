@@ -120,32 +120,6 @@ class BuildRepositoryClass {
           }),
         )
         ..methods.addAll([
-          Method(
-            (m) => m
-              ..name = '_stripClassName'
-              ..returns = refer('Map<String, dynamic>')
-              ..requiredParameters.add(
-                Parameter(
-                  (p) => p
-                    ..name = 'map'
-                    ..type = refer('Map<String, dynamic>'),
-                ),
-              )
-              ..body = const Code('''
-var result = <String, dynamic>{};
-for (var entry in map.entries) {
-  if (entry.key == '__className__') continue;
-  if (entry.value is Map<String, dynamic>) {
-    result[entry.key] = _stripClassName(entry.value as Map<String, dynamic>);
-  } else if (entry.value is List) {
-    result[entry.key] = (entry.value as List).map((e) => e is Map<String, dynamic> ? _stripClassName(e) : e).toList();
-  } else {
-    result[entry.key] = entry.value;
-  }
-}
-return result;
-'''),
-          ),
           _buildFindMethod(
             className,
             relationFields,
@@ -462,7 +436,6 @@ return result;
         ..modifier = MethodModifier.async
         ..body = (baseClassName != null)
             ? Block.of([
-                const Code('// ignore: invalid_use_of_internal_member'),
                 refer('session')
                     .property('db')
                     .property('findAsJson')
@@ -472,16 +445,22 @@ return result;
                         'where': refer('where').nullSafeProperty('call').call(
                           [refer(tableClassName).property('t')],
                         ),
-                        'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                          [refer(tableClassName).property('t')],
-                        ),
-                        'orderByList': refer('orderByList').nullSafeProperty('call').call(
-                          [refer(tableClassName).property('t')],
-                        ),
+                        'orderBy': refer('orderBy')
+                            .nullSafeProperty('call')
+                            .call(
+                              [refer(tableClassName).property('t')],
+                            ),
+                        'orderByList': refer('orderByList')
+                            .nullSafeProperty('call')
+                            .call(
+                              [refer(tableClassName).property('t')],
+                            ),
                         'limit': refer('limit'),
                         'offset': refer('offset'),
                         'transaction': refer('transaction'),
-                        'include': refer(className).property('include').call([]),
+                        'include': refer(
+                          className,
+                        ).property('include').call([]),
                         'lockMode': refer('lockMode'),
                         'lockBehavior': refer('lockBehavior'),
                       },
@@ -522,34 +501,34 @@ return result;
                     .statement,
               ])
             : refer('session')
-                .property('db')
-                .property('find')
-                .call(
-                  [],
-                  {
-                    'where': refer('where').nullSafeProperty('call').call(
-                      [refer(className).property('t')],
-                    ),
-                    'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                      [refer(className).property('t')],
-                    ),
-                    'orderByList': refer('orderByList')
-                        .nullSafeProperty('call')
-                        .call(
-                          [refer(className).property('t')],
-                        ),
-                    'limit': refer('limit'),
-                    'offset': refer('offset'),
-                    'transaction': refer('transaction'),
-                    if (objectRelationFields.isNotEmpty)
-                      'include': refer('include'),
-                    'lockMode': refer('lockMode'),
-                    'lockBehavior': refer('lockBehavior'),
-                  },
-                  [refer(className)],
-                )
-                .returned
-                .statement,
+                  .property('db')
+                  .property('find')
+                  .call(
+                    [],
+                    {
+                      'where': refer('where').nullSafeProperty('call').call(
+                        [refer(className).property('t')],
+                      ),
+                      'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                        [refer(className).property('t')],
+                      ),
+                      'orderByList': refer('orderByList')
+                          .nullSafeProperty('call')
+                          .call(
+                            [refer(className).property('t')],
+                          ),
+                      'limit': refer('limit'),
+                      'offset': refer('offset'),
+                      'transaction': refer('transaction'),
+                      if (objectRelationFields.isNotEmpty)
+                        'include': refer('include'),
+                      'lockMode': refer('lockMode'),
+                      'lockBehavior': refer('lockBehavior'),
+                    },
+                    [refer(className)],
+                  )
+                  .returned
+                  .statement,
     );
   }
 
@@ -678,7 +657,6 @@ return result;
         ..modifier = MethodModifier.async
         ..body = (baseClassName != null)
             ? Block.of([
-                const Code('// ignore: invalid_use_of_internal_member'),
                 refer('session')
                     .property('db')
                     .property('findFirstRowAsJson')
@@ -688,15 +666,21 @@ return result;
                         'where': refer('where').nullSafeProperty('call').call(
                           [refer(tableClassName).property('t')],
                         ),
-                        'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                          [refer(tableClassName).property('t')],
-                        ),
-                        'orderByList': refer('orderByList').nullSafeProperty('call').call(
-                          [refer(tableClassName).property('t')],
-                        ),
+                        'orderBy': refer('orderBy')
+                            .nullSafeProperty('call')
+                            .call(
+                              [refer(tableClassName).property('t')],
+                            ),
+                        'orderByList': refer('orderByList')
+                            .nullSafeProperty('call')
+                            .call(
+                              [refer(tableClassName).property('t')],
+                            ),
                         'offset': refer('offset'),
                         'transaction': refer('transaction'),
-                        'include': refer(className).property('include').call([]),
+                        'include': refer(
+                          className,
+                        ).property('include').call([]),
                         'lockMode': refer('lockMode'),
                         'lockBehavior': refer('lockBehavior'),
                       },
@@ -726,33 +710,33 @@ return result;
                     .statement,
               ])
             : refer('session')
-                .property('db')
-                .property('findFirstRow')
-                .call(
-                  [],
-                  {
-                    'where': refer('where').nullSafeProperty('call').call(
-                      [refer(className).property('t')],
-                    ),
-                    'orderBy': refer('orderBy').nullSafeProperty('call').call(
-                      [refer(className).property('t')],
-                    ),
-                    'orderByList': refer('orderByList')
-                        .nullSafeProperty('call')
-                        .call(
-                          [refer(className).property('t')],
-                        ),
-                    'offset': refer('offset'),
-                    'transaction': refer('transaction'),
-                    if (objectRelationFields.isNotEmpty)
-                      'include': refer('include'),
-                    'lockMode': refer('lockMode'),
-                    'lockBehavior': refer('lockBehavior'),
-                  },
-                  [refer(className)],
-                )
-                .returned
-                .statement,
+                  .property('db')
+                  .property('findFirstRow')
+                  .call(
+                    [],
+                    {
+                      'where': refer('where').nullSafeProperty('call').call(
+                        [refer(className).property('t')],
+                      ),
+                      'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                        [refer(className).property('t')],
+                      ),
+                      'orderByList': refer('orderByList')
+                          .nullSafeProperty('call')
+                          .call(
+                            [refer(className).property('t')],
+                          ),
+                      'offset': refer('offset'),
+                      'transaction': refer('transaction'),
+                      if (objectRelationFields.isNotEmpty)
+                        'include': refer('include'),
+                      'lockMode': refer('lockMode'),
+                      'lockBehavior': refer('lockBehavior'),
+                    },
+                    [refer(className)],
+                  )
+                  .returned
+                  .statement,
     );
   }
 
@@ -841,7 +825,6 @@ return result;
         ..modifier = MethodModifier.async
         ..body = (baseClassName != null)
             ? Block.of([
-                const Code('// ignore: invalid_use_of_internal_member'),
                 refer('session')
                     .property('db')
                     .property('findByIdAsJson')
