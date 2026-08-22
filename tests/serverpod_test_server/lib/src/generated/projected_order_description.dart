@@ -82,8 +82,6 @@ abstract class ProjectedOrderDescription
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
   }) {
     return ProjectedOrder.includeList(
@@ -91,7 +89,6 @@ abstract class ProjectedOrderDescription
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedOrderDescription.include(),
     );
@@ -179,9 +176,7 @@ class ProjectedOrderDescriptionRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedOrderDescriptionTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -192,8 +187,6 @@ class ProjectedOrderDescriptionRepository {
           where: where?.call(ProjectedOrder.t),
           orderBy: orderBy?.call(ProjectedOrder.t),
           orderByList: orderByList?.call(ProjectedOrder.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -229,9 +222,7 @@ class ProjectedOrderDescriptionRepository {
     _i1.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedOrderTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedOrderDescriptionTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -242,8 +233,6 @@ class ProjectedOrderDescriptionRepository {
           where: where?.call(ProjectedOrder.t),
           orderBy: orderBy?.call(ProjectedOrder.t),
           orderByList: orderByList?.call(ProjectedOrder.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedOrderDescription.include(),

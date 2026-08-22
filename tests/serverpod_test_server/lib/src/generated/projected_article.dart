@@ -117,8 +117,6 @@ abstract class ProjectedArticle
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     ProjectedArticleInclude? include,
   }) {
@@ -127,8 +125,6 @@ abstract class ProjectedArticle
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ProjectedArticle.t),
       include: include,
     );
@@ -299,8 +295,6 @@ class ProjectedArticleIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
     List<_i1.Column>? this.selectedColumns,
@@ -350,8 +344,6 @@ class ProjectedArticleRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedArticleInclude? include,
@@ -362,8 +354,6 @@ class ProjectedArticleRepository {
       where: where?.call(ProjectedArticle.t),
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -395,8 +385,6 @@ class ProjectedArticleRepository {
     _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedArticleInclude? include,
@@ -407,8 +395,6 @@ class ProjectedArticleRepository {
       where: where?.call(ProjectedArticle.t),
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -618,8 +604,6 @@ class ProjectedArticleRepository {
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -630,8 +614,6 @@ class ProjectedArticleRepository {
       offset: offset,
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -652,8 +634,6 @@ class ProjectedArticleRepository {
     _i1.DatabaseSession session,
     List<ProjectedArticle> rows, {
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -662,8 +642,6 @@ class ProjectedArticleRepository {
       rows,
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -693,8 +671,6 @@ class ProjectedArticleRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ProjectedArticleTable> where,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -703,8 +679,6 @@ class ProjectedArticleRepository {
       where: where(ProjectedArticle.t),
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

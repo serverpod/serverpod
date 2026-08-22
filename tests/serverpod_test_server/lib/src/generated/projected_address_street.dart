@@ -82,8 +82,6 @@ abstract class ProjectedAddressStreet
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
   }) {
     return ProjectedAddress.includeList(
@@ -91,7 +89,6 @@ abstract class ProjectedAddressStreet
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedAddressStreet.include(),
     );
@@ -179,9 +176,7 @@ class ProjectedAddressStreetRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedAddressStreetTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -192,8 +187,6 @@ class ProjectedAddressStreetRepository {
           where: where?.call(ProjectedAddress.t),
           orderBy: orderBy?.call(ProjectedAddress.t),
           orderByList: orderByList?.call(ProjectedAddress.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -229,9 +222,7 @@ class ProjectedAddressStreetRepository {
     _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedAddressStreetTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -242,8 +233,6 @@ class ProjectedAddressStreetRepository {
           where: where?.call(ProjectedAddress.t),
           orderBy: orderBy?.call(ProjectedAddress.t),
           orderByList: orderByList?.call(ProjectedAddress.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedAddressStreet.include(),

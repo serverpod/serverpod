@@ -80,8 +80,6 @@ abstract class ProjectedCourseName
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
   }) {
     return ProjectedCourse.includeList(
@@ -89,7 +87,6 @@ abstract class ProjectedCourseName
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedCourseName.include(),
     );
@@ -177,9 +174,7 @@ class ProjectedCourseNameRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedCourseNameTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -190,8 +185,6 @@ class ProjectedCourseNameRepository {
           where: where?.call(ProjectedCourse.t),
           orderBy: orderBy?.call(ProjectedCourse.t),
           orderByList: orderByList?.call(ProjectedCourse.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -226,9 +219,7 @@ class ProjectedCourseNameRepository {
     _i1.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedCourseNameTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -239,8 +230,6 @@ class ProjectedCourseNameRepository {
           where: where?.call(ProjectedCourse.t),
           orderBy: orderBy?.call(ProjectedCourse.t),
           orderByList: orderByList?.call(ProjectedCourse.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedCourseName.include(),

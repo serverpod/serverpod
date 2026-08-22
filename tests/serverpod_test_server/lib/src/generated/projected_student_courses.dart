@@ -107,8 +107,6 @@ abstract class ProjectedStudentCourses
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedStudentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedStudentTable>? orderByList,
   }) {
     return ProjectedStudent.includeList(
@@ -116,7 +114,6 @@ abstract class ProjectedStudentCourses
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedStudentCourses.include(),
     );
@@ -210,9 +207,7 @@ class ProjectedStudentCoursesRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedStudentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedStudentTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedStudentCoursesTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -223,8 +218,6 @@ class ProjectedStudentCoursesRepository {
           where: where?.call(ProjectedStudent.t),
           orderBy: orderBy?.call(ProjectedStudent.t),
           orderByList: orderByList?.call(ProjectedStudent.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -260,9 +253,7 @@ class ProjectedStudentCoursesRepository {
     _i1.WhereExpressionBuilder<ProjectedStudentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedStudentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedStudentTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedStudentCoursesTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -273,8 +264,6 @@ class ProjectedStudentCoursesRepository {
           where: where?.call(ProjectedStudent.t),
           orderBy: orderBy?.call(ProjectedStudent.t),
           orderByList: orderByList?.call(ProjectedStudent.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedStudentCourses.include(),

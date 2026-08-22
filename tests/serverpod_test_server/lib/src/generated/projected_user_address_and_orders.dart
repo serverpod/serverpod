@@ -126,8 +126,6 @@ abstract class ProjectedUserAddressAndOrders
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
     return ProjectedUser.includeList(
@@ -135,7 +133,6 @@ abstract class ProjectedUserAddressAndOrders
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedUserAddressAndOrders.include(),
     );
@@ -235,9 +232,7 @@ class ProjectedUserAddressAndOrdersRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedUserAddressAndOrdersTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -248,8 +243,6 @@ class ProjectedUserAddressAndOrdersRepository {
           where: where?.call(ProjectedUser.t),
           orderBy: orderBy?.call(ProjectedUser.t),
           orderByList: orderByList?.call(ProjectedUser.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -286,9 +279,7 @@ class ProjectedUserAddressAndOrdersRepository {
     _i1.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedUserTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedUserAddressAndOrdersTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -299,8 +290,6 @@ class ProjectedUserAddressAndOrdersRepository {
           where: where?.call(ProjectedUser.t),
           orderBy: orderBy?.call(ProjectedUser.t),
           orderByList: orderByList?.call(ProjectedUser.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedUserAddressAndOrders.include(),

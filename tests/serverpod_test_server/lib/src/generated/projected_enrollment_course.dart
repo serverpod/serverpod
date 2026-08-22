@@ -90,8 +90,6 @@ abstract class ProjectedEnrollmentCourse
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
   }) {
     return ProjectedEnrollment.includeList(
@@ -99,7 +97,6 @@ abstract class ProjectedEnrollmentCourse
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedEnrollmentCourse.include(),
     );
@@ -189,9 +186,7 @@ class ProjectedEnrollmentCourseRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedEnrollmentCourseTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -202,8 +197,6 @@ class ProjectedEnrollmentCourseRepository {
           where: where?.call(ProjectedEnrollment.t),
           orderBy: orderBy?.call(ProjectedEnrollment.t),
           orderByList: orderByList?.call(ProjectedEnrollment.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -239,9 +232,7 @@ class ProjectedEnrollmentCourseRepository {
     _i1.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedEnrollmentCourseTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -252,8 +243,6 @@ class ProjectedEnrollmentCourseRepository {
           where: where?.call(ProjectedEnrollment.t),
           orderBy: orderBy?.call(ProjectedEnrollment.t),
           orderByList: orderByList?.call(ProjectedEnrollment.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedEnrollmentCourse.include(),

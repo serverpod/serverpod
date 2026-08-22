@@ -102,8 +102,6 @@ abstract class ProjectedAuthor
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     ProjectedAuthorInclude? include,
   }) {
@@ -112,8 +110,6 @@ abstract class ProjectedAuthor
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ProjectedAuthor.t),
       include: include,
     );
@@ -249,8 +245,6 @@ class ProjectedAuthorIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
     List<_i1.Column>? this.selectedColumns,
@@ -298,8 +292,6 @@ class ProjectedAuthorRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -309,8 +301,6 @@ class ProjectedAuthorRepository {
       where: where?.call(ProjectedAuthor.t),
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -341,8 +331,6 @@ class ProjectedAuthorRepository {
     _i1.WhereExpressionBuilder<ProjectedAuthorTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -352,8 +340,6 @@ class ProjectedAuthorRepository {
       where: where?.call(ProjectedAuthor.t),
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -560,8 +546,6 @@ class ProjectedAuthorRepository {
     int? offset,
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -572,8 +556,6 @@ class ProjectedAuthorRepository {
       offset: offset,
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -594,8 +576,6 @@ class ProjectedAuthorRepository {
     _i1.DatabaseSession session,
     List<ProjectedAuthor> rows, {
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -604,8 +584,6 @@ class ProjectedAuthorRepository {
       rows,
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -635,8 +613,6 @@ class ProjectedAuthorRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ProjectedAuthorTable> where,
     _i1.OrderByBuilder<ProjectedAuthorTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -645,8 +621,6 @@ class ProjectedAuthorRepository {
       where: where(ProjectedAuthor.t),
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

@@ -94,8 +94,6 @@ abstract class ProjectedAddress
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     ProjectedAddressInclude? include,
   }) {
@@ -104,8 +102,6 @@ abstract class ProjectedAddress
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ProjectedAddress.t),
       include: include,
     );
@@ -226,8 +222,6 @@ class ProjectedAddressIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
     List<_i1.Column>? this.selectedColumns,
@@ -275,8 +269,6 @@ class ProjectedAddressRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -286,8 +278,6 @@ class ProjectedAddressRepository {
       where: where?.call(ProjectedAddress.t),
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -318,8 +308,6 @@ class ProjectedAddressRepository {
     _i1.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
@@ -329,8 +317,6 @@ class ProjectedAddressRepository {
       where: where?.call(ProjectedAddress.t),
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       lockMode: lockMode,
@@ -537,8 +523,6 @@ class ProjectedAddressRepository {
     int? offset,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -549,8 +533,6 @@ class ProjectedAddressRepository {
       offset: offset,
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -571,8 +553,6 @@ class ProjectedAddressRepository {
     _i1.DatabaseSession session,
     List<ProjectedAddress> rows, {
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -581,8 +561,6 @@ class ProjectedAddressRepository {
       rows,
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -612,8 +590,6 @@ class ProjectedAddressRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ProjectedAddressTable> where,
     _i1.OrderByBuilder<ProjectedAddressTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -622,8 +598,6 @@ class ProjectedAddressRepository {
       where: where(ProjectedAddress.t),
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

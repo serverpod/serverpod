@@ -120,8 +120,6 @@ abstract class ProjectedEnrollment
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     ProjectedEnrollmentInclude? include,
   }) {
@@ -130,8 +128,6 @@ abstract class ProjectedEnrollment
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ProjectedEnrollment.t),
       include: include,
     );
@@ -301,8 +297,6 @@ class ProjectedEnrollmentIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
     List<_i1.Column>? this.selectedColumns,
@@ -352,8 +346,6 @@ class ProjectedEnrollmentRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedEnrollmentInclude? include,
@@ -364,8 +356,6 @@ class ProjectedEnrollmentRepository {
       where: where?.call(ProjectedEnrollment.t),
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -397,8 +387,6 @@ class ProjectedEnrollmentRepository {
     _i1.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedEnrollmentInclude? include,
@@ -409,8 +397,6 @@ class ProjectedEnrollmentRepository {
       where: where?.call(ProjectedEnrollment.t),
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -620,8 +606,6 @@ class ProjectedEnrollmentRepository {
     int? offset,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -632,8 +616,6 @@ class ProjectedEnrollmentRepository {
       offset: offset,
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -654,8 +636,6 @@ class ProjectedEnrollmentRepository {
     _i1.DatabaseSession session,
     List<ProjectedEnrollment> rows, {
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -664,8 +644,6 @@ class ProjectedEnrollmentRepository {
       rows,
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -695,8 +673,6 @@ class ProjectedEnrollmentRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ProjectedEnrollmentTable> where,
     _i1.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -705,8 +681,6 @@ class ProjectedEnrollmentRepository {
       where: where(ProjectedEnrollment.t),
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );

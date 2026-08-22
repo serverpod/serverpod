@@ -105,8 +105,6 @@ abstract class ProjectedArticleAuthorNameOnly
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
   }) {
     return ProjectedArticle.includeList(
@@ -114,7 +112,6 @@ abstract class ProjectedArticleAuthorNameOnly
       limit: limit,
       offset: offset,
       orderBy: orderBy,
-      orderDescending: orderDescending,
       orderByList: orderByList,
       include: ProjectedArticleAuthorNameOnly.include(),
     );
@@ -211,9 +208,7 @@ class ProjectedArticleAuthorNameOnlyRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedArticleAuthorNameOnlyTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -224,8 +219,6 @@ class ProjectedArticleAuthorNameOnlyRepository {
           where: where?.call(ProjectedArticle.t),
           orderBy: orderBy?.call(ProjectedArticle.t),
           orderByList: orderByList?.call(ProjectedArticle.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           limit: limit,
           offset: offset,
           transaction: transaction,
@@ -262,9 +255,7 @@ class ProjectedArticleAuthorNameOnlyRepository {
     _i1.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedArticleTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
-    _i1.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _i1.OrderByListBuilder<ProjectedArticleAuthorNameOnlyTable>? orderByList,
     _i1.Transaction? transaction,
     _i1.LockMode? lockMode,
     _i1.LockBehavior? lockBehavior,
@@ -275,8 +266,6 @@ class ProjectedArticleAuthorNameOnlyRepository {
           where: where?.call(ProjectedArticle.t),
           orderBy: orderBy?.call(ProjectedArticle.t),
           orderByList: orderByList?.call(ProjectedArticle.t),
-          orderDescending: // ignore: deprecated_member_use
-              orderDescending,
           offset: offset,
           transaction: transaction,
           include: ProjectedArticleAuthorNameOnly.include(),

@@ -99,8 +99,6 @@ abstract class ProjectedCourse
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
     ProjectedCourseInclude? include,
   }) {
@@ -109,8 +107,6 @@ abstract class ProjectedCourse
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use_from_same_package
-          orderDescending,
       orderByList: orderByList?.call(ProjectedCourse.t),
       include: include,
     );
@@ -255,8 +251,6 @@ class ProjectedCourseIncludeList extends _i1.IncludeList {
     super.limit,
     super.offset,
     super.orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    super.orderDescending,
     super.orderByList,
     super.include,
     List<_i1.Column>? this.selectedColumns,
@@ -279,10 +273,6 @@ class ProjectedCourseRepository {
   final attach = const ProjectedCourseAttachRepository._();
 
   final attachRow = const ProjectedCourseAttachRowRepository._();
-
-  final detach = const ProjectedCourseDetachRepository._();
-
-  final detachRow = const ProjectedCourseDetachRowRepository._();
 
   /// Returns a list of [ProjectedCourse]s matching the given query parameters.
   ///
@@ -312,8 +302,6 @@ class ProjectedCourseRepository {
     int? limit,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedCourseInclude? include,
@@ -324,8 +312,6 @@ class ProjectedCourseRepository {
       where: where?.call(ProjectedCourse.t),
       orderBy: orderBy?.call(ProjectedCourse.t),
       orderByList: orderByList?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       limit: limit,
       offset: offset,
       transaction: transaction,
@@ -357,8 +343,6 @@ class ProjectedCourseRepository {
     _i1.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
     _i1.Transaction? transaction,
     ProjectedCourseInclude? include,
@@ -369,8 +353,6 @@ class ProjectedCourseRepository {
       where: where?.call(ProjectedCourse.t),
       orderBy: orderBy?.call(ProjectedCourse.t),
       orderByList: orderByList?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       offset: offset,
       transaction: transaction,
       include: include,
@@ -580,8 +562,6 @@ class ProjectedCourseRepository {
     int? offset,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.Transaction? transaction,
     bool noReturn = false,
   }) async {
@@ -592,8 +572,6 @@ class ProjectedCourseRepository {
       offset: offset,
       orderBy: orderBy?.call(ProjectedCourse.t),
       orderByList: orderByList?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -614,8 +592,6 @@ class ProjectedCourseRepository {
     _i1.DatabaseSession session,
     List<ProjectedCourse> rows, {
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -624,8 +600,6 @@ class ProjectedCourseRepository {
       rows,
       orderBy: orderBy?.call(ProjectedCourse.t),
       orderByList: orderByList?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -655,8 +629,6 @@ class ProjectedCourseRepository {
     _i1.DatabaseSession session, {
     required _i1.WhereExpressionBuilder<ProjectedCourseTable> where,
     _i1.OrderByBuilder<ProjectedCourseTable>? orderBy,
-    @Deprecated('Use desc() on the orderBy column instead.')
-    bool orderDescending = false,
     _i1.OrderByListBuilder<ProjectedCourseTable>? orderByList,
     _i1.Transaction? transaction,
     bool noReturn = false,
@@ -665,8 +637,6 @@ class ProjectedCourseRepository {
       where: where(ProjectedCourse.t),
       orderBy: orderBy?.call(ProjectedCourse.t),
       orderByList: orderByList?.call(ProjectedCourse.t),
-      orderDescending: // ignore: deprecated_member_use
-          orderDescending,
       transaction: transaction,
       noReturn: noReturn,
     );
@@ -754,60 +724,6 @@ class ProjectedCourseAttachRowRepository {
     var $projectedEnrollment = projectedEnrollment.copyWith(
       courseId: projectedCourse.id,
     );
-    await session.db.updateRow<_i2.ProjectedEnrollment>(
-      $projectedEnrollment,
-      columns: [_i2.ProjectedEnrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class ProjectedCourseDetachRepository {
-  const ProjectedCourseDetachRepository._();
-
-  /// Detaches the relation between this [ProjectedCourse] and the given [ProjectedEnrollment]
-  /// by setting the [ProjectedEnrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    List<_i2.ProjectedEnrollment> projectedEnrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (projectedEnrollment.any((e) => e.id == null)) {
-      throw ArgumentError.notNull('projectedEnrollment.id');
-    }
-
-    var $projectedEnrollment = projectedEnrollment
-        .map((e) => e.copyWith(courseId: null))
-        .toList();
-    await session.db.update<_i2.ProjectedEnrollment>(
-      $projectedEnrollment,
-      columns: [_i2.ProjectedEnrollment.t.courseId],
-      transaction: transaction,
-    );
-  }
-}
-
-class ProjectedCourseDetachRowRepository {
-  const ProjectedCourseDetachRowRepository._();
-
-  /// Detaches the relation between this [ProjectedCourse] and the given [ProjectedEnrollment]
-  /// by setting the [ProjectedEnrollment]'s foreign key `courseId` to `null`.
-  ///
-  /// This removes the association between the two models without deleting
-  /// the related record.
-  Future<void> enrollments(
-    _i1.DatabaseSession session,
-    _i2.ProjectedEnrollment projectedEnrollment, {
-    _i1.Transaction? transaction,
-  }) async {
-    if (projectedEnrollment.id == null) {
-      throw ArgumentError.notNull('projectedEnrollment.id');
-    }
-
-    var $projectedEnrollment = projectedEnrollment.copyWith(courseId: null);
     await session.db.updateRow<_i2.ProjectedEnrollment>(
       $projectedEnrollment,
       columns: [_i2.ProjectedEnrollment.t.courseId],
