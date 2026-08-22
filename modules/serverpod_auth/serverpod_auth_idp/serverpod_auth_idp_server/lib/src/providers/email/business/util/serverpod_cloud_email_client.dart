@@ -9,7 +9,8 @@ enum ServerpodCloudEmailType {
   signup('signup'),
 
   /// Verification code for a password reset ("lost password") flow.
-  lostpassword('lostpassword');
+  lostpassword('lostpassword')
+  ;
 
   const ServerpodCloudEmailType(this.wireValue);
 

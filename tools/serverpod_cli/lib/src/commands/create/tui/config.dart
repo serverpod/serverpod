@@ -104,7 +104,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
           'install skills and MCP servers for your selected editors.',
       spacing: 2,
     ),
-  );
+  )
+  ;
 
   const ServerpodCreateConfig({
     required this.label,
@@ -137,7 +138,8 @@ enum ServerpodCreateConfig<T extends FormConfigOption>
 /// [FormConfigOption] for database & caching options.
 enum DatabaseConfigOption implements FormConfigOption {
   database('Database (recommended)'),
-  redis('Redis');
+  redis('Redis')
+  ;
 
   const DatabaseConfigOption(this.label);
 
@@ -149,7 +151,8 @@ enum DatabaseConfigOption implements FormConfigOption {
 enum TemplateTypeOption implements FormConfigOption {
   serverAndApp('Server & Flutter app'),
   server('Server only'),
-  module('Module');
+  module('Module')
+  ;
 
   const TemplateTypeOption(this.label);
 
@@ -162,7 +165,8 @@ enum WebServerConfigOption implements FormConfigOption {
   appOnly('Flutter app only (recommended)'),
   appAndWebsite('App and website'),
   website('Website'),
-  none('None');
+  none('None')
+  ;
 
   const WebServerConfigOption(this.label);
 
@@ -177,7 +181,8 @@ enum IdeOption implements FormConfigOption {
   claude('Claude'),
   cursor('Cursor'),
   openCode('OpenCode'),
-  vsCode('VS Code');
+  vsCode('VS Code')
+  ;
 
   const IdeOption(this.label);
 
