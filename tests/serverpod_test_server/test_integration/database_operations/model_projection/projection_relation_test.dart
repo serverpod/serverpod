@@ -260,8 +260,6 @@ void main() async {
         session,
       );
 
-      print('Json fields: $result');
-
       expect(result, isNotNull);
       expect(result?.name, 'John');
       expect(result?.jsonFieldText, 'text');
@@ -303,8 +301,6 @@ void main() async {
       var result = await ProjectedUserJsonMultiField.db.findFirstRow(
         session,
       );
-
-      print('Json fields Multi: $result');
 
       expect(result, isNotNull);
       expect(result?.name, 'Alice');
