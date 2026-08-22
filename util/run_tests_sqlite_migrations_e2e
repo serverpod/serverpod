@@ -74,14 +74,20 @@ trap cleanup EXIT
 
 # Wait for the insights server (localhost:8081) to accept connections.
 echo "### Waiting for the insights server on localhost:8081"
+server_up=0
 for _ in $(seq 1 60); do
     if (exec 3<>/dev/tcp/localhost/8081) 2>/dev/null; then
         exec 3>&- 3<&-
         echo "### Server is up"
+        server_up=1
         break
     fi
     sleep 1
 done
+if [ "$server_up" -ne 1 ]; then
+    echo "### Insights server did not bind localhost:8081 within 60s"
+    exit 1
+fi
 
 # Assign whole test files to this shard, round-robin, so a file's coupled
 # migration sequence always runs together.

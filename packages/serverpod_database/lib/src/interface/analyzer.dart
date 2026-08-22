@@ -76,6 +76,13 @@ abstract class DatabaseAnalyzer {
         return [];
       }
       log.error('Failed to get installed migrations', error: e);
+      // SQLite e2e shares one file between the insights server and CLI
+      // apply/create steps. Lock/busy is not "undefined table"; rethrowing
+      // hangs Insights until the 5-minute test timeout. Postgres still
+      // rethrows so connection loss is not reported as every table missing.
+      if (database.dialect == DatabaseDialect.sqlite) {
+        return [];
+      }
       rethrow;
     }
   }

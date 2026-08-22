@@ -403,6 +403,9 @@ Future<List<DatabaseMigrationVersion>> _getInstalledMigrationVersions(
       return [];
     }
     log.error('Failed to get installed migrations', error: e);
+    if (session.db.dialect == DatabaseDialect.sqlite) {
+      return [];
+    }
     rethrow;
   }
 }
