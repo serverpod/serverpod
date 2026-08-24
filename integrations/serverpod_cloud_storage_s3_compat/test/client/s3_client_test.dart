@@ -1,4 +1,5 @@
 import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 
@@ -196,6 +197,48 @@ void main() {
         expect(
           () => client.checkResponseError(response),
           throwsA(isA<S3Exception>()),
+        );
+      },
+    );
+
+    test(
+      'when a presigned URL expiration exceeds 7 days, '
+      'then it throws a CloudStorageException',
+      () async {
+        await expectLater(
+          () => client.buildPresignedUri(
+            key: 'file.txt',
+            method: 'GET',
+            expiration: const Duration(days: 8),
+          ),
+          throwsA(
+            isA<CloudStorageException>().having(
+              (e) => e.message,
+              'message',
+              'S3 presigned URLs must expire between 1 second and 7 days.',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'when a presigned URL expiration is less than one second '
+      'then it throws a CloudStorageException',
+      () {
+        expect(
+          () => client.buildPresignedUri(
+            key: 'file.txt',
+            method: 'GET',
+            expiration: const Duration(milliseconds: 500),
+          ),
+          throwsA(
+            isA<CloudStorageException>().having(
+              (e) => e.message,
+              'message',
+              'S3 presigned URLs must expire between 1 second and 7 days.',
+            ),
+          ),
         );
       },
     );
