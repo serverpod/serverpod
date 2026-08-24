@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:serverpod/serverpod.dart';
+
 import '../client/exceptions.dart';
 import '../config/s3_endpoint_config.dart';
 
@@ -13,10 +15,6 @@ import '../config/s3_endpoint_config.dart';
 abstract class S3UploadStrategy {
   /// Upload file data directly from server.
   ///
-  /// When [preventOverwrite] is true, the upload should fail if the object
-  /// already exists. Not all strategies support this — those that don't
-  /// will ignore the flag.
-  ///
   /// Throws [S3Exception] if the upload fails.
   Future<void> uploadData({
     required String accessKey,
@@ -27,19 +25,14 @@ abstract class S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     bool preventOverwrite = false,
   });
 
   /// Generate upload description for client-side direct uploads.
   ///
-  /// Returns a JSON-encoded description containing the upload URL,
-  /// required fields, and other information needed by the client
-  /// to upload directly to the storage provider.
-  ///
-  /// When [preventOverwrite] is true, the upload should fail if the object
-  /// already exists. Not all strategies support this — those that don't
-  /// will ignore the flag.
-  Future<String?> createDirectUploadDescription({
+  /// Returns a typed description containing the upload URL and request data.
+  Future<UploadDescription> createUploadDescription({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -49,6 +42,7 @@ abstract class S3UploadStrategy {
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     int? contentLength,
     bool preventOverwrite = false,
   });
@@ -58,4 +52,11 @@ abstract class S3UploadStrategy {
   /// Used by FileUploader to determine how to send the file.
   /// Common values: 'multipart', 'binary'
   String get uploadType;
+
+  /// Whether this strategy can atomically prevent overwriting an object.
+  bool get supportsPreventOverwrite;
+
+  /// Whether this strategy can enforce `maxFileSize` without an exact
+  /// `contentLength`.
+  bool get supportsMaxFileSize;
 }
