@@ -14,18 +14,36 @@ class CloudStorageException extends IOException {
   }
 }
 
-/// Exception thrown when an object does not exist in cloud storage.
+/// Exception thrown when a file does not exist in cloud storage.
 class CloudStorageFileNotFoundException extends CloudStorageException {
   /// Creates a new [CloudStorageFileNotFoundException].
   CloudStorageFileNotFoundException({
     required this.storageId,
     required this.path,
-  }) : super('No object exists at path "$path" in storage "$storageId".');
+  }) : super('No file exists at path "$path" in storage "$storageId".');
 
-  /// Identifier of the storage that does not contain the object.
+  /// Identifier of the storage that does not contain the file.
   final String storageId;
 
   /// Path of the object that was not found.
+  final String path;
+}
+
+/// Exception thrown when a file cannot be stored without overwriting an
+/// existing file.
+class CloudStorageFileAlreadyExistsException extends CloudStorageException {
+  /// Creates a new [CloudStorageFileAlreadyExistsException].
+  CloudStorageFileAlreadyExistsException({
+    required this.storageId,
+    required this.path,
+  }) : super(
+         'A file already exists at path "$path" in storage "$storageId".',
+       );
+
+  /// Identifier of the storage containing the file.
+  final String storageId;
+
+  /// Path of the file that already exists.
   final String path;
 }
 
