@@ -11,103 +11,88 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/serverpod.dart' as _is;
-import 'projected_address.dart' as _iegbxll6;
-import 'projected_user.dart';
+import 'projected_order.dart';
 
-abstract class ProjectedUserAddressStreetOnly
+abstract class ProjectedOrderSummary
     implements _is.SerializableModel, _is.ProtocolSerialization {
-  ProjectedUserAddressStreetOnly._({
+  ProjectedOrderSummary._({
     this.id,
-    required this.name,
-    required this.addressStreet,
+    this.summary,
   });
 
-  factory ProjectedUserAddressStreetOnly({
+  factory ProjectedOrderSummary({
     _is.UuidValue? id,
-    required String name,
-    required String addressStreet,
-  }) = _ProjectedUserAddressStreetOnlyImpl;
+    String? summary,
+  }) = _ProjectedOrderSummaryImpl;
 
-  factory ProjectedUserAddressStreetOnly.fromJson(
+  factory ProjectedOrderSummary.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedOrderSummary(
       id: jsonSerialization['id'] == null
           ? null
           : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      name: jsonSerialization['name'] as String,
-      addressStreet:
-          (jsonSerialization['addressStreet'] ??
-                  (jsonSerialization['address'] as Map?)?['street'])
-              as String,
+      summary: jsonSerialization['summary'] as String?,
     );
   }
 
-  static const db = ProjectedUserAddressStreetOnlyRepository._();
+  static const db = ProjectedOrderSummaryRepository._();
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
   _is.UuidValue? id;
 
-  String name;
+  String? summary;
 
-  String addressStreet;
-
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedOrderSummary]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedOrderSummary copyWith({
     _is.UuidValue? id,
-    String? name,
-    String? addressStreet,
+    String? summary,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedOrderSummary',
       if (id != null) 'id': id?.toJson(),
-      'name': name,
-      'addressStreet': addressStreet,
+      if (summary != null) 'summary': summary,
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedUserAddressStreetOnly',
+      '__className__': 'ProjectedOrderSummary',
       if (id != null) 'id': id?.toJson(),
-      'name': name,
-      'addressStreet': addressStreet,
+      if (summary != null) 'summary': summary,
     };
   }
 
-  static ProjectedUserInclude include() {
-    return ProjectedUserInclude.internal_(
+  static ProjectedOrderInclude include() {
+    return ProjectedOrderInclude.internal_(
       selectedColumns: [
-        ProjectedUser.t.id,
-        ProjectedUser.t.name,
+        ProjectedOrder.t.id,
+        ProjectedOrder.t.summary,
       ],
-      address: _iegbxll6.ProjectedAddressInclude.internal_(
-        selectedColumns: [_iegbxll6.ProjectedAddress.t.street],
-      ),
     );
   }
 
-  static ProjectedUserIncludeList includeList({
-    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+  static ProjectedOrderIncludeList includeList({
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
   }) {
-    return ProjectedUser.includeList(
+    return ProjectedOrder.includeList(
       where: where,
       limit: limit,
       offset: offset,
       orderBy: orderBy,
       orderByList: orderByList,
-      include: ProjectedUserAddressStreetOnly.include(),
+      include: ProjectedOrderSummary.include(),
     );
   }
 
@@ -119,39 +104,34 @@ abstract class ProjectedUserAddressStreetOnly
 
 class _Undefined {}
 
-class _ProjectedUserAddressStreetOnlyImpl
-    extends ProjectedUserAddressStreetOnly {
-  _ProjectedUserAddressStreetOnlyImpl({
+class _ProjectedOrderSummaryImpl extends ProjectedOrderSummary {
+  _ProjectedOrderSummaryImpl({
     _is.UuidValue? id,
-    required String name,
-    required String addressStreet,
+    String? summary,
   }) : super._(
          id: id,
-         name: name,
-         addressStreet: addressStreet,
+         summary: summary,
        );
 
-  /// Returns a shallow copy of this [ProjectedUserAddressStreetOnly]
+  /// Returns a shallow copy of this [ProjectedOrderSummary]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   @override
-  ProjectedUserAddressStreetOnly copyWith({
+  ProjectedOrderSummary copyWith({
     Object? id = _Undefined,
-    String? name,
-    String? addressStreet,
+    Object? summary = _Undefined,
   }) {
-    return ProjectedUserAddressStreetOnly(
+    return ProjectedOrderSummary(
       id: id is _is.UuidValue? ? id : this.id,
-      name: name ?? this.name,
-      addressStreet: addressStreet ?? this.addressStreet,
+      summary: summary is String? ? summary : this.summary,
     );
   }
 }
 
-class ProjectedUserAddressStreetOnlyRepository {
-  const ProjectedUserAddressStreetOnlyRepository._();
+class ProjectedOrderSummaryRepository {
+  const ProjectedOrderSummaryRepository._();
 
-  /// Returns a list of [ProjectedUser]s matching the given query parameters.
+  /// Returns a list of [ProjectedOrder]s matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -173,37 +153,35 @@ class ProjectedUserAddressStreetOnlyRepository {
   ///   limit: 100,
   /// );
   /// ```
-  Future<List<ProjectedUserAddressStreetOnly>> find(
+  Future<List<ProjectedOrderSummary>> find(
     _is.DatabaseSession session, {
-    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
-    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
-        .findAsJson<ProjectedUser>(
-          where: where?.call(ProjectedUser.t),
-          orderBy: orderBy?.call(ProjectedUser.t),
-          orderByList: orderByList?.call(ProjectedUser.t),
+        .findAsJson<ProjectedOrder>(
+          where: where?.call(ProjectedOrder.t),
+          orderBy: orderBy?.call(ProjectedOrder.t),
+          orderByList: orderByList?.call(ProjectedOrder.t),
           limit: limit,
           offset: offset,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedOrderSummary.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
         .then(
-          (rows) => rows
-              .map((e) => ProjectedUserAddressStreetOnly.fromJson(e))
-              .toList(),
+          (rows) => rows.map((e) => ProjectedOrderSummary.fromJson(e)).toList(),
         );
   }
 
-  /// Returns the first matching [ProjectedUser] matching the given query parameters.
+  /// Returns the first matching [ProjectedOrder] matching the given query parameters.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -220,34 +198,32 @@ class ProjectedUserAddressStreetOnlyRepository {
   ///   orderBy: (t) => t.age,
   /// );
   /// ```
-  Future<ProjectedUserAddressStreetOnly?> findFirstRow(
+  Future<ProjectedOrderSummary?> findFirstRow(
     _is.DatabaseSession session, {
-    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? offset,
-    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
-    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
-        .findFirstRowAsJson<ProjectedUser>(
-          where: where?.call(ProjectedUser.t),
-          orderBy: orderBy?.call(ProjectedUser.t),
-          orderByList: orderByList?.call(ProjectedUser.t),
+        .findFirstRowAsJson<ProjectedOrder>(
+          where: where?.call(ProjectedOrder.t),
+          orderBy: orderBy?.call(ProjectedOrder.t),
+          orderByList: orderByList?.call(ProjectedOrder.t),
           offset: offset,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedOrderSummary.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
-        .then(
-          (e) => e == null ? null : ProjectedUserAddressStreetOnly.fromJson(e),
-        );
+        .then((e) => e == null ? null : ProjectedOrderSummary.fromJson(e));
   }
 
-  /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
-  Future<ProjectedUserAddressStreetOnly?> findById(
+  /// Finds a single [ProjectedOrder] by its [id] or null if no such row exists.
+  Future<ProjectedOrderSummary?> findById(
     _is.DatabaseSession session,
     _is.UuidValue id, {
     _is.Transaction? transaction,
@@ -255,15 +231,13 @@ class ProjectedUserAddressStreetOnlyRepository {
     _is.LockBehavior? lockBehavior,
   }) async {
     return await session.db
-        .findByIdAsJson<ProjectedUser>(
+        .findByIdAsJson<ProjectedOrder>(
           id,
           transaction: transaction,
-          include: ProjectedUserAddressStreetOnly.include(),
+          include: ProjectedOrderSummary.include(),
           lockMode: lockMode,
           lockBehavior: lockBehavior,
         )
-        .then(
-          (e) => e == null ? null : ProjectedUserAddressStreetOnly.fromJson(e),
-        );
+        .then((e) => e == null ? null : ProjectedOrderSummary.fromJson(e));
   }
 }

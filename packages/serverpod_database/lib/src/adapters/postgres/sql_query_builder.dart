@@ -885,6 +885,12 @@ List<Column> _gatherIncludeColumns(Include? include) {
             );
           }).toList() ??
           relationTable.columns;
+      if (relationInclude.selectedColumns != null &&
+          !columnsToInclude.any(
+            (c) => c.columnName == relationTable.id.columnName,
+          )) {
+        columnsToInclude.add(relationTable.id);
+      }
       for (var column in columnsToInclude) {
         fields['$column'] = column;
       }

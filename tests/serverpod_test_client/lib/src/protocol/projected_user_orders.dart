@@ -23,14 +23,16 @@ abstract class ProjectedUserOrders
   });
 
   factory ProjectedUserOrders({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
   }) = _ProjectedUserOrdersImpl;
 
   factory ProjectedUserOrders.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectedUserOrders(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
@@ -44,7 +46,7 @@ abstract class ProjectedUserOrders
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String name;
 
@@ -54,7 +56,7 @@ abstract class ProjectedUserOrders
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedUserOrders copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
   });
@@ -62,7 +64,7 @@ abstract class ProjectedUserOrders
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserOrders',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
@@ -73,7 +75,7 @@ abstract class ProjectedUserOrders
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserOrders',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(
@@ -98,7 +100,7 @@ class _Undefined {}
 
 class _ProjectedUserOrdersImpl extends ProjectedUserOrders {
   _ProjectedUserOrdersImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
   }) : super._(
@@ -117,7 +119,7 @@ class _ProjectedUserOrdersImpl extends ProjectedUserOrders {
     Object? orders = _Undefined,
   }) {
     return ProjectedUserOrders(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       orders: orders is List<_id3wrdef.ProjectedOrderDescription>?
           ? orders

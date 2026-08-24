@@ -244,6 +244,7 @@ import 'projected_json_field.dart' as _irlz4dmd;
 import 'projected_json_field_simple.dart' as _i37n7uc1;
 import 'projected_order.dart' as _i8r3x6pe;
 import 'projected_order_description.dart' as _id3wrdef;
+import 'projected_order_summary.dart' as _ivhidcz8;
 import 'projected_student.dart' as _iprfievr;
 import 'projected_student_courses.dart' as _iph9b6hp;
 import 'projected_user.dart' as _imzthwwr;
@@ -252,6 +253,7 @@ import 'projected_user_address_street_only.dart' as _ib01viec;
 import 'projected_user_country_address.dart' as _ipucx971;
 import 'projected_user_json_field.dart' as _i1dxwa9r;
 import 'projected_user_json_multi_field.dart' as _i5kyd3on;
+import 'projected_user_order_summary.dart' as _ilsqfnzb;
 import 'projected_user_orders.dart' as _inwc1zu8;
 import 'projected_user_simple_json.dart' as _ivldlu3q;
 import 'projected_user_street_address.dart' as _ifsvk6dp;
@@ -490,6 +492,7 @@ export 'projected_json_field.dart';
 export 'projected_json_field_simple.dart';
 export 'projected_order.dart';
 export 'projected_order_description.dart';
+export 'projected_order_summary.dart';
 export 'projected_student.dart';
 export 'projected_student_courses.dart';
 export 'projected_user.dart';
@@ -498,6 +501,7 @@ export 'projected_user_address_street_only.dart';
 export 'projected_user_country_address.dart';
 export 'projected_user_json_field.dart';
 export 'projected_user_json_multi_field.dart';
+export 'projected_user_order_summary.dart';
 export 'projected_user_orders.dart';
 export 'projected_user_simple_json.dart';
 export 'projected_user_street_address.dart';
@@ -1178,6 +1182,9 @@ class Protocol extends _isc.SerializationManager {
     if (t == _id3wrdef.ProjectedOrderDescription) {
       return _id3wrdef.ProjectedOrderDescription.fromJson(data) as T;
     }
+    if (t == _ivhidcz8.ProjectedOrderSummary) {
+      return _ivhidcz8.ProjectedOrderSummary.fromJson(data) as T;
+    }
     if (t == _iprfievr.ProjectedStudent) {
       return _iprfievr.ProjectedStudent.fromJson(data) as T;
     }
@@ -1201,6 +1208,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _i5kyd3on.ProjectedUserJsonMultiField) {
       return _i5kyd3on.ProjectedUserJsonMultiField.fromJson(data) as T;
+    }
+    if (t == _ilsqfnzb.ProjectedUserOrderSummary) {
+      return _ilsqfnzb.ProjectedUserOrderSummary.fromJson(data) as T;
     }
     if (t == _inwc1zu8.ProjectedUserOrders) {
       return _inwc1zu8.ProjectedUserOrders.fromJson(data) as T;
@@ -2211,6 +2221,12 @@ class Protocol extends _isc.SerializationManager {
               : null)
           as T;
     }
+    if (t == _isc.getType<_ivhidcz8.ProjectedOrderSummary?>()) {
+      return (data != null
+              ? _ivhidcz8.ProjectedOrderSummary.fromJson(data)
+              : null)
+          as T;
+    }
     if (t == _isc.getType<_iprfievr.ProjectedStudent?>()) {
       return (data != null ? _iprfievr.ProjectedStudent.fromJson(data) : null)
           as T;
@@ -2252,6 +2268,12 @@ class Protocol extends _isc.SerializationManager {
     if (t == _isc.getType<_i5kyd3on.ProjectedUserJsonMultiField?>()) {
       return (data != null
               ? _i5kyd3on.ProjectedUserJsonMultiField.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ilsqfnzb.ProjectedUserOrderSummary?>()) {
+      return (data != null
+              ? _ilsqfnzb.ProjectedUserOrderSummary.fromJson(data)
               : null)
           as T;
     }
@@ -3426,6 +3448,23 @@ class Protocol extends _isc.SerializationManager {
     if (t == _isc.getType<_ikpl2lpd.ProjectedAddressCountry?>()) {
       return (data != null
               ? _ikpl2lpd.ProjectedAddressCountry.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == List<_ivhidcz8.ProjectedOrderSummary>) {
+      return (data as List)
+              .map((e) => deserialize<_ivhidcz8.ProjectedOrderSummary>(e))
+              .toList()
+          as T;
+    }
+    if (t == _ivhidcz8.ProjectedOrderSummary) {
+      return _ivhidcz8.ProjectedOrderSummary.fromJson(data) as T;
+    }
+    if (t == _isc.getType<List<_ivhidcz8.ProjectedOrderSummary>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ivhidcz8.ProjectedOrderSummary>(e))
+                    .toList()
               : null)
           as T;
     }
@@ -6902,6 +6941,7 @@ class Protocol extends _isc.SerializationManager {
       _i37n7uc1.ProjectedJsonFieldSimple => 'ProjectedJsonFieldSimple',
       _i8r3x6pe.ProjectedOrder => 'ProjectedOrder',
       _id3wrdef.ProjectedOrderDescription => 'ProjectedOrderDescription',
+      _ivhidcz8.ProjectedOrderSummary => 'ProjectedOrderSummary',
       _iprfievr.ProjectedStudent => 'ProjectedStudent',
       _iph9b6hp.ProjectedStudentCourses => 'ProjectedStudentCourses',
       _imzthwwr.ProjectedUser => 'ProjectedUser',
@@ -6912,6 +6952,7 @@ class Protocol extends _isc.SerializationManager {
       _ipucx971.ProjectedUserCountryAddress => 'ProjectedUserCountryAddress',
       _i1dxwa9r.ProjectedUserJsonField => 'ProjectedUserJsonField',
       _i5kyd3on.ProjectedUserJsonMultiField => 'ProjectedUserJsonMultiField',
+      _ilsqfnzb.ProjectedUserOrderSummary => 'ProjectedUserOrderSummary',
       _inwc1zu8.ProjectedUserOrders => 'ProjectedUserOrders',
       _ivldlu3q.ProjectedUserSimpleJson => 'ProjectedUserSimpleJson',
       _ifsvk6dp.ProjectedUserStreetAddress => 'ProjectedUserStreetAddress',
@@ -7386,6 +7427,8 @@ class Protocol extends _isc.SerializationManager {
         return 'ProjectedOrder';
       case _id3wrdef.ProjectedOrderDescription():
         return 'ProjectedOrderDescription';
+      case _ivhidcz8.ProjectedOrderSummary():
+        return 'ProjectedOrderSummary';
       case _iprfievr.ProjectedStudent():
         return 'ProjectedStudent';
       case _iph9b6hp.ProjectedStudentCourses():
@@ -7402,6 +7445,8 @@ class Protocol extends _isc.SerializationManager {
         return 'ProjectedUserJsonField';
       case _i5kyd3on.ProjectedUserJsonMultiField():
         return 'ProjectedUserJsonMultiField';
+      case _ilsqfnzb.ProjectedUserOrderSummary():
+        return 'ProjectedUserOrderSummary';
       case _inwc1zu8.ProjectedUserOrders():
         return 'ProjectedUserOrders';
       case _ivldlu3q.ProjectedUserSimpleJson():
@@ -8226,6 +8271,9 @@ class Protocol extends _isc.SerializationManager {
     if (dataClassName == 'ProjectedOrderDescription') {
       return deserialize<_id3wrdef.ProjectedOrderDescription>(data['data']);
     }
+    if (dataClassName == 'ProjectedOrderSummary') {
+      return deserialize<_ivhidcz8.ProjectedOrderSummary>(data['data']);
+    }
     if (dataClassName == 'ProjectedStudent') {
       return deserialize<_iprfievr.ProjectedStudent>(data['data']);
     }
@@ -8251,6 +8299,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'ProjectedUserJsonMultiField') {
       return deserialize<_i5kyd3on.ProjectedUserJsonMultiField>(data['data']);
+    }
+    if (dataClassName == 'ProjectedUserOrderSummary') {
+      return deserialize<_ilsqfnzb.ProjectedUserOrderSummary>(data['data']);
     }
     if (dataClassName == 'ProjectedUserOrders') {
       return deserialize<_inwc1zu8.ProjectedUserOrders>(data['data']);

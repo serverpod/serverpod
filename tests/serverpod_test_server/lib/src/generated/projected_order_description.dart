@@ -18,19 +18,24 @@ abstract class ProjectedOrderDescription
   ProjectedOrderDescription._({
     this.id,
     required this.description,
+    this.summary,
   });
 
   factory ProjectedOrderDescription({
-    int? id,
+    _is.UuidValue? id,
     required String description,
+    String? summary,
   }) = _ProjectedOrderDescriptionImpl;
 
   factory ProjectedOrderDescription.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedOrderDescription(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
+      summary: jsonSerialization['summary'] as String?,
     );
   }
 
@@ -39,23 +44,27 @@ abstract class ProjectedOrderDescription
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _is.UuidValue? id;
 
   String description;
+
+  String? summary;
 
   /// Returns a shallow copy of this [ProjectedOrderDescription]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ProjectedOrderDescription copyWith({
-    int? id,
+    _is.UuidValue? id,
     String? description,
+    String? summary,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedOrderDescription',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
     };
   }
 
@@ -63,8 +72,9 @@ abstract class ProjectedOrderDescription
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedOrderDescription',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
     };
   }
 
@@ -73,6 +83,7 @@ abstract class ProjectedOrderDescription
       selectedColumns: [
         ProjectedOrder.t.id,
         ProjectedOrder.t.description,
+        ProjectedOrder.t.summary,
       ],
     );
   }
@@ -104,11 +115,13 @@ class _Undefined {}
 
 class _ProjectedOrderDescriptionImpl extends ProjectedOrderDescription {
   _ProjectedOrderDescriptionImpl({
-    int? id,
+    _is.UuidValue? id,
     required String description,
+    String? summary,
   }) : super._(
          id: id,
          description: description,
+         summary: summary,
        );
 
   /// Returns a shallow copy of this [ProjectedOrderDescription]
@@ -118,10 +131,12 @@ class _ProjectedOrderDescriptionImpl extends ProjectedOrderDescription {
   ProjectedOrderDescription copyWith({
     Object? id = _Undefined,
     String? description,
+    Object? summary = _Undefined,
   }) {
     return ProjectedOrderDescription(
-      id: id is int? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       description: description ?? this.description,
+      summary: summary is String? ? summary : this.summary,
     );
   }
 }
@@ -224,7 +239,7 @@ class ProjectedOrderDescriptionRepository {
   /// Finds a single [ProjectedOrder] by its [id] or null if no such row exists.
   Future<ProjectedOrderDescription?> findById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

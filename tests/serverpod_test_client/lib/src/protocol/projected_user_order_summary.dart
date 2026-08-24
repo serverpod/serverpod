@@ -11,33 +11,37 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'projected_order_summary.dart' as _ivhidcz8;
 
-abstract class ProjectedUserJsonField
+abstract class ProjectedUserOrderSummary
     implements _isc.SerializableModel, _isc.ProtocolSerialization {
-  ProjectedUserJsonField._({
+  ProjectedUserOrderSummary._({
     this.id,
     required this.name,
-    this.jsonFieldText,
+    this.orders,
   });
 
-  factory ProjectedUserJsonField({
+  factory ProjectedUserOrderSummary({
     _isc.UuidValue? id,
     required String name,
-    String? jsonFieldText,
-  }) = _ProjectedUserJsonFieldImpl;
+    List<_ivhidcz8.ProjectedOrderSummary>? orders,
+  }) = _ProjectedUserOrderSummaryImpl;
 
-  factory ProjectedUserJsonField.fromJson(
+  factory ProjectedUserOrderSummary.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
-    return ProjectedUserJsonField(
+    return ProjectedUserOrderSummary(
       id: jsonSerialization['id'] == null
           ? null
           : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
-      jsonFieldText:
-          (jsonSerialization['jsonFieldText'] ??
-                  (jsonSerialization['jsonField'] as Map?)?['text'])
-              as String?,
+      orders: jsonSerialization['orders'] == null
+          ? null
+          : _iza9lbb5.Protocol()
+                .deserialize<List<_ivhidcz8.ProjectedOrderSummary>>(
+                  jsonSerialization['orders'],
+                ),
     );
   }
 
@@ -48,33 +52,43 @@ abstract class ProjectedUserJsonField
 
   String name;
 
-  String? jsonFieldText;
+  List<_ivhidcz8.ProjectedOrderSummary>? orders;
 
-  /// Returns a shallow copy of this [ProjectedUserJsonField]
+  /// Returns a shallow copy of this [ProjectedUserOrderSummary]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
-  ProjectedUserJsonField copyWith({
+  ProjectedUserOrderSummary copyWith({
     _isc.UuidValue? id,
     String? name,
-    String? jsonFieldText,
+    List<_ivhidcz8.ProjectedOrderSummary>? orders,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
-      '__className__': 'ProjectedUserJsonField',
+      '__className__': 'ProjectedUserOrderSummary',
       if (id != null) 'id': id?.toJson(),
       'name': name,
-      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
+      if (orders != null)
+        'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
     };
   }
 
   @override
   Map<String, dynamic> toJsonForProtocol() {
     return {
-      '__className__': 'ProjectedUserJsonField',
+      '__className__': 'ProjectedUserOrderSummary',
       if (id != null) 'id': id?.toJson(),
       'name': name,
-      if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
+      if (orders != null)
+        'orders': orders?.toJson(
+          valueToJson: (v) =>
+              // ignore: unnecessary_type_check
+              v is _isc.ProtocolSerialization
+              ? (v as _isc.ProtocolSerialization).toJsonForProtocol()
+              :
+                // ignore: dead_code
+                v.toJson(),
+        ),
     };
   }
 
@@ -86,32 +100,32 @@ abstract class ProjectedUserJsonField
 
 class _Undefined {}
 
-class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
-  _ProjectedUserJsonFieldImpl({
+class _ProjectedUserOrderSummaryImpl extends ProjectedUserOrderSummary {
+  _ProjectedUserOrderSummaryImpl({
     _isc.UuidValue? id,
     required String name,
-    String? jsonFieldText,
+    List<_ivhidcz8.ProjectedOrderSummary>? orders,
   }) : super._(
          id: id,
          name: name,
-         jsonFieldText: jsonFieldText,
+         orders: orders,
        );
 
-  /// Returns a shallow copy of this [ProjectedUserJsonField]
+  /// Returns a shallow copy of this [ProjectedUserOrderSummary]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   @override
-  ProjectedUserJsonField copyWith({
+  ProjectedUserOrderSummary copyWith({
     Object? id = _Undefined,
     String? name,
-    Object? jsonFieldText = _Undefined,
+    Object? orders = _Undefined,
   }) {
-    return ProjectedUserJsonField(
+    return ProjectedUserOrderSummary(
       id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      jsonFieldText: jsonFieldText is String?
-          ? jsonFieldText
-          : this.jsonFieldText,
+      orders: orders is List<_ivhidcz8.ProjectedOrderSummary>?
+          ? orders
+          : this.orders?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }

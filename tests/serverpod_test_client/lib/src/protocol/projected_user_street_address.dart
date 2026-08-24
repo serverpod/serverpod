@@ -22,7 +22,7 @@ abstract class ProjectedUserStreetAddress
   });
 
   factory ProjectedUserStreetAddress({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     _iitz0x8d.ProjectedAddressStreet? address,
   }) = _ProjectedUserStreetAddressImpl;
@@ -31,7 +31,9 @@ abstract class ProjectedUserStreetAddress
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedUserStreetAddress(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
@@ -44,7 +46,7 @@ abstract class ProjectedUserStreetAddress
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String name;
 
@@ -54,7 +56,7 @@ abstract class ProjectedUserStreetAddress
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedUserStreetAddress copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? name,
     _iitz0x8d.ProjectedAddressStreet? address,
   });
@@ -62,7 +64,7 @@ abstract class ProjectedUserStreetAddress
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserStreetAddress',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (address != null) 'address': address?.toJson(),
     };
@@ -72,7 +74,7 @@ abstract class ProjectedUserStreetAddress
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserStreetAddress',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (address != null)
         'address':
@@ -95,7 +97,7 @@ class _Undefined {}
 
 class _ProjectedUserStreetAddressImpl extends ProjectedUserStreetAddress {
   _ProjectedUserStreetAddressImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     _iitz0x8d.ProjectedAddressStreet? address,
   }) : super._(
@@ -114,7 +116,7 @@ class _ProjectedUserStreetAddressImpl extends ProjectedUserStreetAddress {
     Object? address = _Undefined,
   }) {
     return ProjectedUserStreetAddress(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       address: address is _iitz0x8d.ProjectedAddressStreet?
           ? address

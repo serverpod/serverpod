@@ -17,46 +17,55 @@ abstract class ProjectedOrder
   ProjectedOrder._({
     this.id,
     required this.description,
+    this.summary,
     required this.price,
   });
 
   factory ProjectedOrder({
-    int? id,
+    _isc.UuidValue? id,
     required String description,
-    required int price,
+    String? summary,
+    required double price,
   }) = _ProjectedOrderImpl;
 
   factory ProjectedOrder.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectedOrder(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
-      price: jsonSerialization['price'] as int,
+      summary: jsonSerialization['summary'] as String?,
+      price: (jsonSerialization['price'] as num).toDouble(),
     );
   }
 
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String description;
 
-  int price;
+  String? summary;
+
+  double price;
 
   /// Returns a shallow copy of this [ProjectedOrder]
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedOrder copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? description,
-    int? price,
+    String? summary,
+    double? price,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedOrder',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
       'price': price,
     };
   }
@@ -65,8 +74,9 @@ abstract class ProjectedOrder
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedOrder',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
       'price': price,
     };
   }
@@ -81,12 +91,14 @@ class _Undefined {}
 
 class _ProjectedOrderImpl extends ProjectedOrder {
   _ProjectedOrderImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String description,
-    required int price,
+    String? summary,
+    required double price,
   }) : super._(
          id: id,
          description: description,
+         summary: summary,
          price: price,
        );
 
@@ -97,11 +109,13 @@ class _ProjectedOrderImpl extends ProjectedOrder {
   ProjectedOrder copyWith({
     Object? id = _Undefined,
     String? description,
-    int? price,
+    Object? summary = _Undefined,
+    double? price,
   }) {
     return ProjectedOrder(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       description: description ?? this.description,
+      summary: summary is String? ? summary : this.summary,
       price: price ?? this.price,
     );
   }

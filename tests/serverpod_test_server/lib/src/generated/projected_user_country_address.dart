@@ -23,7 +23,7 @@ abstract class ProjectedUserCountryAddress
   });
 
   factory ProjectedUserCountryAddress({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     _ikpl2lpd.ProjectedAddressCountry? address,
   }) = _ProjectedUserCountryAddressImpl;
@@ -32,7 +32,9 @@ abstract class ProjectedUserCountryAddress
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedUserCountryAddress(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       address: jsonSerialization['address'] == null
           ? null
@@ -47,7 +49,7 @@ abstract class ProjectedUserCountryAddress
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _is.UuidValue? id;
 
   String name;
 
@@ -57,7 +59,7 @@ abstract class ProjectedUserCountryAddress
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ProjectedUserCountryAddress copyWith({
-    int? id,
+    _is.UuidValue? id,
     String? name,
     _ikpl2lpd.ProjectedAddressCountry? address,
   });
@@ -65,7 +67,7 @@ abstract class ProjectedUserCountryAddress
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserCountryAddress',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (address != null) 'address': address?.toJson(),
     };
@@ -75,7 +77,7 @@ abstract class ProjectedUserCountryAddress
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserCountryAddress',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (address != null)
         'address':
@@ -125,7 +127,7 @@ class _Undefined {}
 
 class _ProjectedUserCountryAddressImpl extends ProjectedUserCountryAddress {
   _ProjectedUserCountryAddressImpl({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     _ikpl2lpd.ProjectedAddressCountry? address,
   }) : super._(
@@ -144,7 +146,7 @@ class _ProjectedUserCountryAddressImpl extends ProjectedUserCountryAddress {
     Object? address = _Undefined,
   }) {
     return ProjectedUserCountryAddress(
-      id: id is int? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       name: name ?? this.name,
       address: address is _ikpl2lpd.ProjectedAddressCountry?
           ? address
@@ -253,7 +255,7 @@ class ProjectedUserCountryAddressRepository {
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserCountryAddress?> findById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

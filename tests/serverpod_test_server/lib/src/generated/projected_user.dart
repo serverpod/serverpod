@@ -18,7 +18,7 @@ import 'projected_json_field.dart' as _irlz4dmd;
 import 'projected_order.dart' as _i8r3x6pe;
 
 abstract class ProjectedUser
-    implements _is.TableRow<int?>, _is.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   ProjectedUser._({
     this.id,
     required this.name,
@@ -29,7 +29,7 @@ abstract class ProjectedUser
   });
 
   factory ProjectedUser({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     required int addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -39,7 +39,9 @@ abstract class ProjectedUser
 
   factory ProjectedUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectedUser(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       addressId: jsonSerialization['addressId'] as int,
       address: jsonSerialization['address'] == null
@@ -65,7 +67,7 @@ abstract class ProjectedUser
   static const db = ProjectedUserRepository._();
 
   @override
-  int? id;
+  _is.UuidValue? id;
 
   String name;
 
@@ -78,13 +80,13 @@ abstract class ProjectedUser
   _irlz4dmd.ProjectedJsonField? jsonField;
 
   @override
-  _is.Table<int?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedUser]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ProjectedUser copyWith({
-    int? id,
+    _is.UuidValue? id,
     String? name,
     int? addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -95,7 +97,7 @@ abstract class ProjectedUser
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUser',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       'addressId': addressId,
       if (address != null) 'address': address?.toJson(),
@@ -109,7 +111,7 @@ abstract class ProjectedUser
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUser',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       'addressId': addressId,
       if (address != null) 'address': address?.toJsonForProtocol(),
@@ -157,7 +159,7 @@ class _Undefined {}
 
 class _ProjectedUserImpl extends ProjectedUser {
   _ProjectedUserImpl({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     required int addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -185,7 +187,7 @@ class _ProjectedUserImpl extends ProjectedUser {
     Object? jsonField = _Undefined,
   }) {
     return ProjectedUser(
-      id: id is int? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       name: name ?? this.name,
       addressId: addressId ?? this.addressId,
       address: address is _iegbxll6.ProjectedAddress?
@@ -221,7 +223,7 @@ class ProjectedUserUpdateTable extends _is.UpdateTable<ProjectedUserTable> {
   );
 }
 
-class ProjectedUserTable extends _is.Table<int?> {
+class ProjectedUserTable extends _is.Table<_is.UuidValue?> {
   ProjectedUserTable({super.tableRelation})
     : super(tableName: 'projected_user') {
     updateTable = ProjectedUserUpdateTable(this);
@@ -344,7 +346,7 @@ class ProjectedUserInclude extends _is.IncludeObject {
   };
 
   @override
-  _is.Table<int?> get table => ProjectedUser.t;
+  _is.Table<_is.UuidValue?> get table => ProjectedUser.t;
 }
 
 class ProjectedUserIncludeList extends _is.IncludeList {
@@ -367,7 +369,7 @@ class ProjectedUserIncludeList extends _is.IncludeList {
   Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _is.Table<int?> get table => ProjectedUser.t;
+  _is.Table<_is.UuidValue?> get table => ProjectedUser.t;
 }
 
 class ProjectedUserRepository {
@@ -471,7 +473,7 @@ class ProjectedUserRepository {
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUser?> findById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     _is.Transaction? transaction,
     ProjectedUserInclude? include,
     _is.LockMode? lockMode,
@@ -642,7 +644,7 @@ class ProjectedUserRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedUser?> updateById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     required _is.ColumnValueListBuilder<ProjectedUserUpdateTable> columnValues,
     _is.Transaction? transaction,
   }) async {

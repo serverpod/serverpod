@@ -25,7 +25,7 @@ abstract class ProjectedUserAddressAndOrders
   });
 
   factory ProjectedUserAddressAndOrders({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
     _iitz0x8d.ProjectedAddressStreet? address,
@@ -35,7 +35,9 @@ abstract class ProjectedUserAddressAndOrders
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedUserAddressAndOrders(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       orders: jsonSerialization['orders'] == null
           ? null
@@ -54,7 +56,7 @@ abstract class ProjectedUserAddressAndOrders
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String name;
 
@@ -66,7 +68,7 @@ abstract class ProjectedUserAddressAndOrders
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedUserAddressAndOrders copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
     _iitz0x8d.ProjectedAddressStreet? address,
@@ -75,7 +77,7 @@ abstract class ProjectedUserAddressAndOrders
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserAddressAndOrders',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(valueToJson: (v) => v.toJson()),
@@ -87,7 +89,7 @@ abstract class ProjectedUserAddressAndOrders
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserAddressAndOrders',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (orders != null)
         'orders': orders?.toJson(
@@ -120,7 +122,7 @@ class _Undefined {}
 
 class _ProjectedUserAddressAndOrdersImpl extends ProjectedUserAddressAndOrders {
   _ProjectedUserAddressAndOrdersImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     List<_id3wrdef.ProjectedOrderDescription>? orders,
     _iitz0x8d.ProjectedAddressStreet? address,
@@ -142,7 +144,7 @@ class _ProjectedUserAddressAndOrdersImpl extends ProjectedUserAddressAndOrders {
     Object? address = _Undefined,
   }) {
     return ProjectedUserAddressAndOrders(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       orders: orders is List<_id3wrdef.ProjectedOrderDescription>?
           ? orders

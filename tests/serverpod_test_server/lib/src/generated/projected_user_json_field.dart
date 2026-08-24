@@ -22,7 +22,7 @@ abstract class ProjectedUserJsonField
   });
 
   factory ProjectedUserJsonField({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     String? jsonFieldText,
   }) = _ProjectedUserJsonFieldImpl;
@@ -31,7 +31,9 @@ abstract class ProjectedUserJsonField
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedUserJsonField(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       jsonFieldText:
           (jsonSerialization['jsonFieldText'] ??
@@ -45,7 +47,7 @@ abstract class ProjectedUserJsonField
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _is.UuidValue? id;
 
   String name;
 
@@ -55,7 +57,7 @@ abstract class ProjectedUserJsonField
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ProjectedUserJsonField copyWith({
-    int? id,
+    _is.UuidValue? id,
     String? name,
     String? jsonFieldText,
   });
@@ -63,7 +65,7 @@ abstract class ProjectedUserJsonField
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserJsonField',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
@@ -73,7 +75,7 @@ abstract class ProjectedUserJsonField
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserJsonField',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (jsonFieldText != null) 'jsonFieldText': jsonFieldText,
     };
@@ -119,7 +121,7 @@ class _Undefined {}
 
 class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
   _ProjectedUserJsonFieldImpl({
-    int? id,
+    _is.UuidValue? id,
     required String name,
     String? jsonFieldText,
   }) : super._(
@@ -138,7 +140,7 @@ class _ProjectedUserJsonFieldImpl extends ProjectedUserJsonField {
     Object? jsonFieldText = _Undefined,
   }) {
     return ProjectedUserJsonField(
-      id: id is int? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       name: name ?? this.name,
       jsonFieldText: jsonFieldText is String?
           ? jsonFieldText
@@ -245,7 +247,7 @@ class ProjectedUserJsonFieldRepository {
   /// Finds a single [ProjectedUser] by its [id] or null if no such row exists.
   Future<ProjectedUserJsonField?> findById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

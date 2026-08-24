@@ -13,6 +13,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Map<String, Map<Object, List<dynamic>>> resolvedListRelations, {
   Include? include,
   ColumnAliasResolver? aliasResolver,
+  bool isRoot = true,
 }) {
   // Builder and parser must resolve column aliases identically. The resolver is
   // a pure function of (table, include), so building it here yields the same
@@ -30,8 +31,15 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
     resolver,
   );
 
-  if (resolvedTableRow.isEmpty) {
-    return null;
+  if (!isRoot) {
+    var idQueryKey = resolver.resolve(table.id);
+    var hasIdInResult =
+        rawRow.containsKey(idQueryKey) && rawRow[idQueryKey] != null;
+    if (rawRow.containsKey(idQueryKey)) {
+      if (!hasIdInResult) return null;
+    } else if (resolvedTableRow.isEmpty) {
+      return null;
+    }
   }
 
   // Resolve all includes for the object.
@@ -59,6 +67,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
         resolvedListRelations,
         include: relationInclude,
         aliasResolver: resolver,
+        isRoot: false,
       );
     }
   });

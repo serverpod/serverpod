@@ -13,26 +13,35 @@
 import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ProjectedOrder
-    implements _is.TableRow<int?>, _is.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   ProjectedOrder._({
     this.id,
     required this.description,
+    this.summary,
     required this.price,
   }) : _projectedUserOrdersProjectedUserId = null;
 
   factory ProjectedOrder({
-    int? id,
+    _is.UuidValue? id,
     required String description,
-    required int price,
+    String? summary,
+    required double price,
   }) = _ProjectedOrderImpl;
 
   factory ProjectedOrder.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectedOrderImplicit._(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
-      price: jsonSerialization['price'] as int,
+      summary: jsonSerialization['summary'] as String?,
+      price: (jsonSerialization['price'] as num).toDouble(),
       $_projectedUserOrdersProjectedUserId:
-          jsonSerialization['_projectedUserOrdersProjectedUserId'] as int?,
+          jsonSerialization['_projectedUserOrdersProjectedUserId'] == null
+          ? null
+          : _is.UuidValueJsonExtension.fromJson(
+              jsonSerialization['_projectedUserOrdersProjectedUserId'],
+            ),
     );
   }
 
@@ -41,35 +50,39 @@ abstract class ProjectedOrder
   static const db = ProjectedOrderRepository._();
 
   @override
-  int? id;
+  _is.UuidValue? id;
 
   String description;
 
-  int price;
+  String? summary;
 
-  final int? _projectedUserOrdersProjectedUserId;
+  double price;
+
+  final _is.UuidValue? _projectedUserOrdersProjectedUserId;
 
   @override
-  _is.Table<int?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [ProjectedOrder]
   /// with some or all fields replaced by the given arguments.
   @_is.useResult
   ProjectedOrder copyWith({
-    int? id,
+    _is.UuidValue? id,
     String? description,
-    int? price,
+    String? summary,
+    double? price,
   });
   @override
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedOrder',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
       'price': price,
       if (_projectedUserOrdersProjectedUserId != null)
         '_projectedUserOrdersProjectedUserId':
-            _projectedUserOrdersProjectedUserId,
+            _projectedUserOrdersProjectedUserId.toJson(),
     };
   }
 
@@ -77,8 +90,9 @@ abstract class ProjectedOrder
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedOrder',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'description': description,
+      if (summary != null) 'summary': summary,
       'price': price,
     };
   }
@@ -115,12 +129,14 @@ class _Undefined {}
 
 class _ProjectedOrderImpl extends ProjectedOrder {
   _ProjectedOrderImpl({
-    int? id,
+    _is.UuidValue? id,
     required String description,
-    required int price,
+    String? summary,
+    required double price,
   }) : super._(
          id: id,
          description: description,
+         summary: summary,
          price: price,
        );
 
@@ -131,11 +147,13 @@ class _ProjectedOrderImpl extends ProjectedOrder {
   ProjectedOrder copyWith({
     Object? id = _Undefined,
     String? description,
-    int? price,
+    Object? summary = _Undefined,
+    double? price,
   }) {
     return ProjectedOrderImplicit._(
-      id: id is int? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       description: description ?? this.description,
+      summary: summary is String? ? summary : this.summary,
       price: price ?? this.price,
       $_projectedUserOrdersProjectedUserId:
           this._projectedUserOrdersProjectedUserId,
@@ -145,25 +163,28 @@ class _ProjectedOrderImpl extends ProjectedOrder {
 
 class ProjectedOrderImplicit extends _ProjectedOrderImpl {
   ProjectedOrderImplicit._({
-    int? id,
+    _is.UuidValue? id,
     required String description,
-    required int price,
-    int? $_projectedUserOrdersProjectedUserId,
+    String? summary,
+    required double price,
+    _is.UuidValue? $_projectedUserOrdersProjectedUserId,
   }) : _projectedUserOrdersProjectedUserId =
            $_projectedUserOrdersProjectedUserId,
        super(
          id: id,
          description: description,
+         summary: summary,
          price: price,
        );
 
   factory ProjectedOrderImplicit(
     ProjectedOrder projectedOrder, {
-    int? $_projectedUserOrdersProjectedUserId,
+    _is.UuidValue? $_projectedUserOrdersProjectedUserId,
   }) {
     return ProjectedOrderImplicit._(
       id: projectedOrder.id,
       description: projectedOrder.description,
+      summary: projectedOrder.summary,
       price: projectedOrder.price,
       $_projectedUserOrdersProjectedUserId:
           $_projectedUserOrdersProjectedUserId,
@@ -171,7 +192,7 @@ class ProjectedOrderImplicit extends _ProjectedOrderImpl {
   }
 
   @override
-  final int? _projectedUserOrdersProjectedUserId;
+  final _is.UuidValue? _projectedUserOrdersProjectedUserId;
 }
 
 class ProjectedOrderUpdateTable extends _is.UpdateTable<ProjectedOrderTable> {
@@ -182,19 +203,24 @@ class ProjectedOrderUpdateTable extends _is.UpdateTable<ProjectedOrderTable> {
     value,
   );
 
-  _is.ColumnValue<int, int> price(int value) => _is.ColumnValue(
+  _is.ColumnValue<String, String> summary(String? value) => _is.ColumnValue(
+    table.summary,
+    value,
+  );
+
+  _is.ColumnValue<double, double> price(double value) => _is.ColumnValue(
     table.price,
     value,
   );
 
-  _is.ColumnValue<int, int> $_projectedUserOrdersProjectedUserId(int? value) =>
-      _is.ColumnValue(
-        table.$_projectedUserOrdersProjectedUserId,
-        value,
-      );
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue>
+  $_projectedUserOrdersProjectedUserId(_is.UuidValue? value) => _is.ColumnValue(
+    table.$_projectedUserOrdersProjectedUserId,
+    value,
+  );
 }
 
-class ProjectedOrderTable extends _is.Table<int?> {
+class ProjectedOrderTable extends _is.Table<_is.UuidValue?> {
   ProjectedOrderTable({super.tableRelation})
     : super(tableName: 'projected_order') {
     updateTable = ProjectedOrderUpdateTable(this);
@@ -202,11 +228,15 @@ class ProjectedOrderTable extends _is.Table<int?> {
       'description',
       this,
     );
-    price = _is.ColumnInt(
+    summary = _is.ColumnString(
+      'summary',
+      this,
+    );
+    price = _is.ColumnDouble(
       'price',
       this,
     );
-    $_projectedUserOrdersProjectedUserId = _is.ColumnInt(
+    $_projectedUserOrdersProjectedUserId = _is.ColumnUuid(
       '_projectedUserOrdersProjectedUserId',
       this,
     );
@@ -216,14 +246,17 @@ class ProjectedOrderTable extends _is.Table<int?> {
 
   late final _is.ColumnString description;
 
-  late final _is.ColumnInt price;
+  late final _is.ColumnString summary;
 
-  late final _is.ColumnInt $_projectedUserOrdersProjectedUserId;
+  late final _is.ColumnDouble price;
+
+  late final _is.ColumnUuid $_projectedUserOrdersProjectedUserId;
 
   @override
   List<_is.Column> get columns => [
     id,
     description,
+    summary,
     price,
     $_projectedUserOrdersProjectedUserId,
   ];
@@ -232,6 +265,7 @@ class ProjectedOrderTable extends _is.Table<int?> {
   List<_is.Column> get managedColumns => [
     id,
     description,
+    summary,
     price,
   ];
 }
@@ -246,7 +280,7 @@ class ProjectedOrderInclude extends _is.IncludeObject {
   Map<String, _is.Include?> get includes => {};
 
   @override
-  _is.Table<int?> get table => ProjectedOrder.t;
+  _is.Table<_is.UuidValue?> get table => ProjectedOrder.t;
 }
 
 class ProjectedOrderIncludeList extends _is.IncludeList {
@@ -269,7 +303,7 @@ class ProjectedOrderIncludeList extends _is.IncludeList {
   Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _is.Table<int?> get table => ProjectedOrder.t;
+  _is.Table<_is.UuidValue?> get table => ProjectedOrder.t;
 }
 
 class ProjectedOrderRepository {
@@ -361,7 +395,7 @@ class ProjectedOrderRepository {
   /// Finds a single [ProjectedOrder] by its [id] or null if no such row exists.
   Future<ProjectedOrder?> findById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     _is.Transaction? transaction,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -530,7 +564,7 @@ class ProjectedOrderRepository {
   /// Returns the updated row or null if no row with the given id exists.
   Future<ProjectedOrder?> updateById(
     _is.DatabaseSession session,
-    int id, {
+    _is.UuidValue id, {
     required _is.ColumnValueListBuilder<ProjectedOrderUpdateTable> columnValues,
     _is.Transaction? transaction,
   }) async {

@@ -1,10 +1,17 @@
 class: ProjectedOrder
 table: projected_order
 fields:
+  id: UuidValue?, defaultPersist=random_v7
   description: String
-  price: int
+  summary: String?
+  price: double
 
 projections:
   ProjectedOrderDescription:
     select:
       - description
+      - summary
+
+  ProjectedOrderSummary:
+    select:
+      - summary # (summary is NULL for both rows)

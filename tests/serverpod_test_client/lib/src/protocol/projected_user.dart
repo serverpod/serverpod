@@ -28,7 +28,7 @@ abstract class ProjectedUser
   });
 
   factory ProjectedUser({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     required int addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -38,7 +38,9 @@ abstract class ProjectedUser
 
   factory ProjectedUser.fromJson(Map<String, dynamic> jsonSerialization) {
     return ProjectedUser(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       addressId: jsonSerialization['addressId'] as int,
       address: jsonSerialization['address'] == null
@@ -62,7 +64,7 @@ abstract class ProjectedUser
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String name;
 
@@ -78,7 +80,7 @@ abstract class ProjectedUser
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedUser copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? name,
     int? addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -89,7 +91,7 @@ abstract class ProjectedUser
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUser',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       'addressId': addressId,
       if (address != null) 'address': address?.toJson(),
@@ -103,7 +105,7 @@ abstract class ProjectedUser
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUser',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       'addressId': addressId,
       if (address != null) 'address': address?.toJsonForProtocol(),
@@ -123,7 +125,7 @@ class _Undefined {}
 
 class _ProjectedUserImpl extends ProjectedUser {
   _ProjectedUserImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     required int addressId,
     _iegbxll6.ProjectedAddress? address,
@@ -151,7 +153,7 @@ class _ProjectedUserImpl extends ProjectedUser {
     Object? jsonField = _Undefined,
   }) {
     return ProjectedUser(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       addressId: addressId ?? this.addressId,
       address: address is _iegbxll6.ProjectedAddress?

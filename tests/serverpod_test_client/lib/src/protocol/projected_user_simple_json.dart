@@ -22,7 +22,7 @@ abstract class ProjectedUserSimpleJson
   });
 
   factory ProjectedUserSimpleJson({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) = _ProjectedUserSimpleJsonImpl;
@@ -31,7 +31,9 @@ abstract class ProjectedUserSimpleJson
     Map<String, dynamic> jsonSerialization,
   ) {
     return ProjectedUserSimpleJson(
-      id: jsonSerialization['id'] as int?,
+      id: jsonSerialization['id'] == null
+          ? null
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       jsonField: jsonSerialization['jsonField'] == null
           ? null
@@ -44,7 +46,7 @@ abstract class ProjectedUserSimpleJson
   /// The database id, set if the object has been inserted into the
   /// database or if it has been fetched from the database. Otherwise,
   /// the id will be null.
-  int? id;
+  _isc.UuidValue? id;
 
   String name;
 
@@ -54,7 +56,7 @@ abstract class ProjectedUserSimpleJson
   /// with some or all fields replaced by the given arguments.
   @_isc.useResult
   ProjectedUserSimpleJson copyWith({
-    int? id,
+    _isc.UuidValue? id,
     String? name,
     _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   });
@@ -62,7 +64,7 @@ abstract class ProjectedUserSimpleJson
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ProjectedUserSimpleJson',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (jsonField != null) 'jsonField': jsonField?.toJson(),
     };
@@ -72,7 +74,7 @@ abstract class ProjectedUserSimpleJson
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ProjectedUserSimpleJson',
-      if (id != null) 'id': id,
+      if (id != null) 'id': id?.toJson(),
       'name': name,
       if (jsonField != null)
         'jsonField':
@@ -95,7 +97,7 @@ class _Undefined {}
 
 class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
   _ProjectedUserSimpleJsonImpl({
-    int? id,
+    _isc.UuidValue? id,
     required String name,
     _i37n7uc1.ProjectedJsonFieldSimple? jsonField,
   }) : super._(
@@ -114,7 +116,7 @@ class _ProjectedUserSimpleJsonImpl extends ProjectedUserSimpleJson {
     Object? jsonField = _Undefined,
   }) {
     return ProjectedUserSimpleJson(
-      id: id is int? ? id : this.id,
+      id: id is _isc.UuidValue? ? id : this.id,
       name: name ?? this.name,
       jsonField: jsonField is _i37n7uc1.ProjectedJsonFieldSimple?
           ? jsonField

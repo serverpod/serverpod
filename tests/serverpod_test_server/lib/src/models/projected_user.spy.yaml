@@ -1,6 +1,7 @@
 class: ProjectedUser
 table: projected_user
 fields:
+  id: UuidValue?, defaultPersist=random_v7
   name: String
   address: ProjectedAddress?, relation
   orders: List<ProjectedOrder>?, relation
@@ -39,6 +40,11 @@ projections:
     select:
       - name
       - orders -> ProjectedOrderDescription
+
+  ProjectedUserOrderSummary:
+    select:
+      - name
+      - orders -> ProjectedOrderSummary
 
   ProjectedUserAddressAndOrders:
     select:
