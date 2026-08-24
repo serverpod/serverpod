@@ -83,8 +83,12 @@ abstract class ObjectFieldScopes
     };
   }
 
-  static ObjectFieldScopesInclude include() {
-    return ObjectFieldScopesInclude.internal_();
+  static ObjectFieldScopesInclude include({
+    _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
+  }) {
+    return ObjectFieldScopesInclude.internal_(
+      selectedColumns: select?.call(ObjectFieldScopes.t),
+    );
   }
 
   static ObjectFieldScopesIncludeList includeList({
@@ -94,6 +98,7 @@ abstract class ObjectFieldScopes
     _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
     _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
+    _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
   }) {
     return ObjectFieldScopesIncludeList.internal_(
       where: where,
@@ -102,6 +107,7 @@ abstract class ObjectFieldScopes
       orderBy: orderBy?.call(ObjectFieldScopes.t),
       orderByList: orderByList?.call(ObjectFieldScopes.t),
       include: include,
+      selectedColumns: select?.call(ObjectFieldScopes.t),
     );
   }
 

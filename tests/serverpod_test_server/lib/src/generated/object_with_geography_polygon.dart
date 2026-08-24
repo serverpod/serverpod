@@ -92,8 +92,12 @@ abstract class ObjectWithGeographyPolygon
     };
   }
 
-  static ObjectWithGeographyPolygonInclude include() {
-    return ObjectWithGeographyPolygonInclude.internal_();
+  static ObjectWithGeographyPolygonInclude include({
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+  }) {
+    return ObjectWithGeographyPolygonInclude.internal_(
+      selectedColumns: select?.call(ObjectWithGeographyPolygon.t),
+    );
   }
 
   static ObjectWithGeographyPolygonIncludeList includeList({
@@ -103,6 +107,7 @@ abstract class ObjectWithGeographyPolygon
     _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
     ObjectWithGeographyPolygonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
   }) {
     return ObjectWithGeographyPolygonIncludeList.internal_(
       where: where,
@@ -111,6 +116,7 @@ abstract class ObjectWithGeographyPolygon
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
       orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithGeographyPolygon.t),
     );
   }
 

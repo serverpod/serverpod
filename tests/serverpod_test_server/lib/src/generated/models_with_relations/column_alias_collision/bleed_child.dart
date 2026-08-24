@@ -75,8 +75,12 @@ abstract class BleedChild
     };
   }
 
-  static BleedChildInclude include() {
-    return BleedChildInclude.internal_();
+  static BleedChildInclude include({
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+  }) {
+    return BleedChildInclude.internal_(
+      selectedColumns: select?.call(BleedChild.t),
+    );
   }
 
   static BleedChildIncludeList includeList({
@@ -86,6 +90,7 @@ abstract class BleedChild
     _is.OrderByBuilder<BleedChildTable>? orderBy,
     _is.OrderByListBuilder<BleedChildTable>? orderByList,
     BleedChildInclude? include,
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
   }) {
     return BleedChildIncludeList.internal_(
       where: where,
@@ -94,6 +99,7 @@ abstract class BleedChild
       orderBy: orderBy?.call(BleedChild.t),
       orderByList: orderByList?.call(BleedChild.t),
       include: include,
+      selectedColumns: select?.call(BleedChild.t),
     );
   }
 

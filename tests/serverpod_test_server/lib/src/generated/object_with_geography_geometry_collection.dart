@@ -96,8 +96,13 @@ abstract class ObjectWithGeographyGeometryCollection
     };
   }
 
-  static ObjectWithGeographyGeometryCollectionInclude include() {
-    return ObjectWithGeographyGeometryCollectionInclude.internal_();
+  static ObjectWithGeographyGeometryCollectionInclude include({
+    _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    select,
+  }) {
+    return ObjectWithGeographyGeometryCollectionInclude.internal_(
+      selectedColumns: select?.call(ObjectWithGeographyGeometryCollection.t),
+    );
   }
 
   static ObjectWithGeographyGeometryCollectionIncludeList includeList({
@@ -109,6 +114,8 @@ abstract class ObjectWithGeographyGeometryCollection
     _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
     orderByList,
     ObjectWithGeographyGeometryCollectionInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    select,
   }) {
     return ObjectWithGeographyGeometryCollectionIncludeList.internal_(
       where: where,
@@ -117,6 +124,7 @@ abstract class ObjectWithGeographyGeometryCollection
       orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
       orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithGeographyGeometryCollection.t),
     );
   }
 

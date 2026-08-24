@@ -109,8 +109,12 @@ abstract class ProjectedArticle
 
   static ProjectedArticleInclude include({
     _iq5hz6n4.ProjectedAuthorInclude? author,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
-    return ProjectedArticleInclude.internal_(author: author);
+    return ProjectedArticleInclude.internal_(
+      author: author,
+      selectedColumns: select?.call(ProjectedArticle.t),
+    );
   }
 
   static ProjectedArticleIncludeList includeList({
@@ -120,6 +124,7 @@ abstract class ProjectedArticle
     _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     ProjectedArticleInclude? include,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
     return ProjectedArticleIncludeList.internal_(
       where: where,
@@ -128,6 +133,7 @@ abstract class ProjectedArticle
       orderBy: orderBy?.call(ProjectedArticle.t),
       orderByList: orderByList?.call(ProjectedArticle.t),
       include: include,
+      selectedColumns: select?.call(ProjectedArticle.t),
     );
   }
 

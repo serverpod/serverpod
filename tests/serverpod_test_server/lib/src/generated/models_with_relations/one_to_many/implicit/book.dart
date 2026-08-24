@@ -85,8 +85,14 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static BookInclude include({_ithd8abs.ChapterIncludeList? chapters}) {
-    return BookInclude.internal_(chapters: chapters);
+  static BookInclude include({
+    _ithd8abs.ChapterIncludeList? chapters,
+    _is.SelectColumnsBuilder<BookTable>? select,
+  }) {
+    return BookInclude.internal_(
+      chapters: chapters,
+      selectedColumns: select?.call(Book.t),
+    );
   }
 
   static BookIncludeList includeList({
@@ -96,6 +102,7 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<BookTable>? orderBy,
     _is.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
+    _is.SelectColumnsBuilder<BookTable>? select,
   }) {
     return BookIncludeList.internal_(
       where: where,
@@ -104,6 +111,7 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Book.t),
       orderByList: orderByList?.call(Book.t),
       include: include,
+      selectedColumns: select?.call(Book.t),
     );
   }
 

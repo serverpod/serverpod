@@ -76,8 +76,12 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     };
   }
 
-  static ParentClassInclude include() {
-    return ParentClassInclude.internal_();
+  static ParentClassInclude include({
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+  }) {
+    return ParentClassInclude.internal_(
+      selectedColumns: select?.call(ParentClass.t),
+    );
   }
 
   static ParentClassIncludeList includeList({
@@ -87,6 +91,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     _is.OrderByBuilder<ParentClassTable>? orderBy,
     _is.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
   }) {
     return ParentClassIncludeList.internal_(
       where: where,
@@ -95,6 +100,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
       orderBy: orderBy?.call(ParentClass.t),
       orderByList: orderByList?.call(ParentClass.t),
       include: include,
+      selectedColumns: select?.call(ParentClass.t),
     );
   }
 

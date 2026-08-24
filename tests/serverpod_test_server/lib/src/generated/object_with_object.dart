@@ -215,8 +215,12 @@ abstract class ObjectWithObject
     };
   }
 
-  static ObjectWithObjectInclude include() {
-    return ObjectWithObjectInclude.internal_();
+  static ObjectWithObjectInclude include({
+    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
+  }) {
+    return ObjectWithObjectInclude.internal_(
+      selectedColumns: select?.call(ObjectWithObject.t),
+    );
   }
 
   static ObjectWithObjectIncludeList includeList({
@@ -226,6 +230,7 @@ abstract class ObjectWithObject
     _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
   }) {
     return ObjectWithObjectIncludeList.internal_(
       where: where,
@@ -234,6 +239,7 @@ abstract class ObjectWithObject
       orderBy: orderBy?.call(ObjectWithObject.t),
       orderByList: orderByList?.call(ObjectWithObject.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithObject.t),
     );
   }
 

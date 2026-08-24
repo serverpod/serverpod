@@ -97,8 +97,12 @@ abstract class ProjectedOrder
     };
   }
 
-  static ProjectedOrderInclude include() {
-    return ProjectedOrderInclude.internal_();
+  static ProjectedOrderInclude include({
+    _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
+  }) {
+    return ProjectedOrderInclude.internal_(
+      selectedColumns: select?.call(ProjectedOrder.t),
+    );
   }
 
   static ProjectedOrderIncludeList includeList({
@@ -108,6 +112,7 @@ abstract class ProjectedOrder
     _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
     _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
     ProjectedOrderInclude? include,
+    _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
   }) {
     return ProjectedOrderIncludeList.internal_(
       where: where,
@@ -116,6 +121,7 @@ abstract class ProjectedOrder
       orderBy: orderBy?.call(ProjectedOrder.t),
       orderByList: orderByList?.call(ProjectedOrder.t),
       include: include,
+      selectedColumns: select?.call(ProjectedOrder.t),
     );
   }
 

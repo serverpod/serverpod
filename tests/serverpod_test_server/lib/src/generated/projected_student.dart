@@ -90,8 +90,12 @@ abstract class ProjectedStudent
 
   static ProjectedStudentInclude include({
     _i3lw6w5n.ProjectedEnrollmentIncludeList? enrollments,
+    _is.SelectColumnsBuilder<ProjectedStudentTable>? select,
   }) {
-    return ProjectedStudentInclude.internal_(enrollments: enrollments);
+    return ProjectedStudentInclude.internal_(
+      enrollments: enrollments,
+      selectedColumns: select?.call(ProjectedStudent.t),
+    );
   }
 
   static ProjectedStudentIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class ProjectedStudent
     _is.OrderByBuilder<ProjectedStudentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedStudentTable>? orderByList,
     ProjectedStudentInclude? include,
+    _is.SelectColumnsBuilder<ProjectedStudentTable>? select,
   }) {
     return ProjectedStudentIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class ProjectedStudent
       orderBy: orderBy?.call(ProjectedStudent.t),
       orderByList: orderByList?.call(ProjectedStudent.t),
       include: include,
+      selectedColumns: select?.call(ProjectedStudent.t),
     );
   }
 

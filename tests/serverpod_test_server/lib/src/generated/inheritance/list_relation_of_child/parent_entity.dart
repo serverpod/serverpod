@@ -80,8 +80,12 @@ abstract class ParentEntity
 
   static ParentEntityInclude include({
     _i41rqetj.ChildEntityIncludeList? children,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
-    return ParentEntityInclude.internal_(children: children);
+    return ParentEntityInclude.internal_(
+      children: children,
+      selectedColumns: select?.call(ParentEntity.t),
+    );
   }
 
   static ParentEntityIncludeList includeList({
@@ -91,6 +95,7 @@ abstract class ParentEntity
     _is.OrderByBuilder<ParentEntityTable>? orderBy,
     _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
     return ParentEntityIncludeList.internal_(
       where: where,
@@ -99,6 +104,7 @@ abstract class ParentEntity
       orderBy: orderBy?.call(ParentEntity.t),
       orderByList: orderByList?.call(ParentEntity.t),
       include: include,
+      selectedColumns: select?.call(ParentEntity.t),
     );
   }
 

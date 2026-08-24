@@ -88,8 +88,14 @@ abstract class Department
     };
   }
 
-  static DepartmentInclude include({_ilvmgye0.EmployeeIncludeList? employees}) {
-    return DepartmentInclude.internal_(employees: employees);
+  static DepartmentInclude include({
+    _ilvmgye0.EmployeeIncludeList? employees,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+  }) {
+    return DepartmentInclude.internal_(
+      employees: employees,
+      selectedColumns: select?.call(Department.t),
+    );
   }
 
   static DepartmentIncludeList includeList({
@@ -99,6 +105,7 @@ abstract class Department
     _is.OrderByBuilder<DepartmentTable>? orderBy,
     _is.OrderByListBuilder<DepartmentTable>? orderByList,
     DepartmentInclude? include,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
   }) {
     return DepartmentIncludeList.internal_(
       where: where,
@@ -107,6 +114,7 @@ abstract class Department
       orderBy: orderBy?.call(Department.t),
       orderByList: orderByList?.call(Department.t),
       include: include,
+      selectedColumns: select?.call(Department.t),
     );
   }
 

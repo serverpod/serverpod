@@ -102,8 +102,12 @@ abstract class BoolDefaultMix
     };
   }
 
-  static BoolDefaultMixInclude include() {
-    return BoolDefaultMixInclude.internal_();
+  static BoolDefaultMixInclude include({
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+  }) {
+    return BoolDefaultMixInclude.internal_(
+      selectedColumns: select?.call(BoolDefaultMix.t),
+    );
   }
 
   static BoolDefaultMixIncludeList includeList({
@@ -113,6 +117,7 @@ abstract class BoolDefaultMix
     _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     BoolDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
   }) {
     return BoolDefaultMixIncludeList.internal_(
       where: where,
@@ -121,6 +126,7 @@ abstract class BoolDefaultMix
       orderBy: orderBy?.call(BoolDefaultMix.t),
       orderByList: orderByList?.call(BoolDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(BoolDefaultMix.t),
     );
   }
 

@@ -84,8 +84,12 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     };
   }
 
-  static ChildClassWithoutIdInclude include() {
-    return ChildClassWithoutIdInclude.internal_();
+  static ChildClassWithoutIdInclude include({
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+  }) {
+    return ChildClassWithoutIdInclude.internal_(
+      selectedColumns: select?.call(ChildClassWithoutId.t),
+    );
   }
 
   static ChildClassWithoutIdIncludeList includeList({
@@ -95,6 +99,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     _is.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
     _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     ChildClassWithoutIdInclude? include,
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
   }) {
     return ChildClassWithoutIdIncludeList.internal_(
       where: where,
@@ -103,6 +108,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
       orderBy: orderBy?.call(ChildClassWithoutId.t),
       orderByList: orderByList?.call(ChildClassWithoutId.t),
       include: include,
+      selectedColumns: select?.call(ChildClassWithoutId.t),
     );
   }
 

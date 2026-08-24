@@ -107,10 +107,12 @@ abstract class Enrollment
   static EnrollmentInclude include({
     _i2rea1ue.StudentInclude? student,
     _iwlbbfis.CourseInclude? course,
+    _is.SelectColumnsBuilder<EnrollmentTable>? select,
   }) {
     return EnrollmentInclude.internal_(
       student: student,
       course: course,
+      selectedColumns: select?.call(Enrollment.t),
     );
   }
 
@@ -121,6 +123,7 @@ abstract class Enrollment
     _is.OrderByBuilder<EnrollmentTable>? orderBy,
     _is.OrderByListBuilder<EnrollmentTable>? orderByList,
     EnrollmentInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentTable>? select,
   }) {
     return EnrollmentIncludeList.internal_(
       where: where,
@@ -129,6 +132,7 @@ abstract class Enrollment
       orderBy: orderBy?.call(Enrollment.t),
       orderByList: orderByList?.call(Enrollment.t),
       include: include,
+      selectedColumns: select?.call(Enrollment.t),
     );
   }
 

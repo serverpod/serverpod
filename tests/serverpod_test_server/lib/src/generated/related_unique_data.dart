@@ -93,8 +93,12 @@ abstract class RelatedUniqueData
 
   static RelatedUniqueDataInclude include({
     _iufhyrjh.UniqueDataInclude? uniqueData,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
-    return RelatedUniqueDataInclude.internal_(uniqueData: uniqueData);
+    return RelatedUniqueDataInclude.internal_(
+      uniqueData: uniqueData,
+      selectedColumns: select?.call(RelatedUniqueData.t),
+    );
   }
 
   static RelatedUniqueDataIncludeList includeList({
@@ -104,6 +108,7 @@ abstract class RelatedUniqueData
     _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
     return RelatedUniqueDataIncludeList.internal_(
       where: where,
@@ -112,6 +117,7 @@ abstract class RelatedUniqueData
       orderBy: orderBy?.call(RelatedUniqueData.t),
       orderByList: orderByList?.call(RelatedUniqueData.t),
       include: include,
+      selectedColumns: select?.call(RelatedUniqueData.t),
     );
   }
 

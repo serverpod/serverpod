@@ -91,8 +91,12 @@ abstract class StudentUuid
 
   static StudentUuidInclude include({
     _ih6xbg05.EnrollmentIntIncludeList? enrollments,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
   }) {
-    return StudentUuidInclude.internal_(enrollments: enrollments);
+    return StudentUuidInclude.internal_(
+      enrollments: enrollments,
+      selectedColumns: select?.call(StudentUuid.t),
+    );
   }
 
   static StudentUuidIncludeList includeList({
@@ -102,6 +106,7 @@ abstract class StudentUuid
     _is.OrderByBuilder<StudentUuidTable>? orderBy,
     _is.OrderByListBuilder<StudentUuidTable>? orderByList,
     StudentUuidInclude? include,
+    _is.SelectColumnsBuilder<StudentUuidTable>? select,
   }) {
     return StudentUuidIncludeList.internal_(
       where: where,
@@ -110,6 +115,7 @@ abstract class StudentUuid
       orderBy: orderBy?.call(StudentUuid.t),
       orderByList: orderByList?.call(StudentUuid.t),
       include: include,
+      selectedColumns: select?.call(StudentUuid.t),
     );
   }
 

@@ -330,8 +330,8 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static TypesInclude include() {
-    return TypesInclude.internal_();
+  static TypesInclude include({_is.SelectColumnsBuilder<TypesTable>? select}) {
+    return TypesInclude.internal_(selectedColumns: select?.call(Types.t));
   }
 
   static TypesIncludeList includeList({
@@ -341,6 +341,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<TypesTable>? orderBy,
     _is.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
+    _is.SelectColumnsBuilder<TypesTable>? select,
   }) {
     return TypesIncludeList.internal_(
       where: where,
@@ -349,6 +350,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       include: include,
+      selectedColumns: select?.call(Types.t),
     );
   }
 

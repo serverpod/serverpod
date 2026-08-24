@@ -84,8 +84,12 @@ abstract class UpsertTestModel
     };
   }
 
-  static UpsertTestModelInclude include() {
-    return UpsertTestModelInclude.internal_();
+  static UpsertTestModelInclude include({
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+  }) {
+    return UpsertTestModelInclude.internal_(
+      selectedColumns: select?.call(UpsertTestModel.t),
+    );
   }
 
   static UpsertTestModelIncludeList includeList({
@@ -95,6 +99,7 @@ abstract class UpsertTestModel
     _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
     _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
   }) {
     return UpsertTestModelIncludeList.internal_(
       where: where,
@@ -103,6 +108,7 @@ abstract class UpsertTestModel
       orderBy: orderBy?.call(UpsertTestModel.t),
       orderByList: orderByList?.call(UpsertTestModel.t),
       include: include,
+      selectedColumns: select?.call(UpsertTestModel.t),
     );
   }
 

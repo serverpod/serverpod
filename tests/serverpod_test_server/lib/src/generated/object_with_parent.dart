@@ -68,8 +68,12 @@ abstract class ObjectWithParent
     };
   }
 
-  static ObjectWithParentInclude include() {
-    return ObjectWithParentInclude.internal_();
+  static ObjectWithParentInclude include({
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+  }) {
+    return ObjectWithParentInclude.internal_(
+      selectedColumns: select?.call(ObjectWithParent.t),
+    );
   }
 
   static ObjectWithParentIncludeList includeList({
@@ -79,6 +83,7 @@ abstract class ObjectWithParent
     _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
     ObjectWithParentInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
   }) {
     return ObjectWithParentIncludeList.internal_(
       where: where,
@@ -87,6 +92,7 @@ abstract class ObjectWithParent
       orderBy: orderBy?.call(ObjectWithParent.t),
       orderByList: orderByList?.call(ObjectWithParent.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithParent.t),
     );
   }
 

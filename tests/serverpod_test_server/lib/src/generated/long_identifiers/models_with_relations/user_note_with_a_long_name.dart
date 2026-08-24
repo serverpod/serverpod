@@ -79,8 +79,12 @@ abstract class UserNoteWithALongName
     };
   }
 
-  static UserNoteWithALongNameInclude include() {
-    return UserNoteWithALongNameInclude.internal_();
+  static UserNoteWithALongNameInclude include({
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+  }) {
+    return UserNoteWithALongNameInclude.internal_(
+      selectedColumns: select?.call(UserNoteWithALongName.t),
+    );
   }
 
   static UserNoteWithALongNameIncludeList includeList({
@@ -90,6 +94,7 @@ abstract class UserNoteWithALongName
     _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
   }) {
     return UserNoteWithALongNameIncludeList.internal_(
       where: where,
@@ -98,6 +103,7 @@ abstract class UserNoteWithALongName
       orderBy: orderBy?.call(UserNoteWithALongName.t),
       orderByList: orderByList?.call(UserNoteWithALongName.t),
       include: include,
+      selectedColumns: select?.call(UserNoteWithALongName.t),
     );
   }
 

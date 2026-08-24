@@ -91,8 +91,14 @@ abstract class TownInt
     };
   }
 
-  static TownIntInclude include({_i7hzilwf.CitizenIntInclude? mayor}) {
-    return TownIntInclude.internal_(mayor: mayor);
+  static TownIntInclude include({
+    _i7hzilwf.CitizenIntInclude? mayor,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+  }) {
+    return TownIntInclude.internal_(
+      mayor: mayor,
+      selectedColumns: select?.call(TownInt.t),
+    );
   }
 
   static TownIntIncludeList includeList({
@@ -102,6 +108,7 @@ abstract class TownInt
     _is.OrderByBuilder<TownIntTable>? orderBy,
     _is.OrderByListBuilder<TownIntTable>? orderByList,
     TownIntInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
   }) {
     return TownIntIncludeList.internal_(
       where: where,
@@ -110,6 +117,7 @@ abstract class TownInt
       orderBy: orderBy?.call(TownInt.t),
       orderByList: orderByList?.call(TownInt.t),
       include: include,
+      selectedColumns: select?.call(TownInt.t),
     );
   }
 

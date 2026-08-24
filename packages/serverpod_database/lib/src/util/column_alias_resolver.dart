@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -98,8 +99,18 @@ String _allocateAlias(String base, Set<String> usedAliases) {
 /// both the order of the generated `SELECT` column list and the parser's
 /// recursive traversal, so the alias assignment is identical on both sides.
 List<Column> _orderedSelectedColumns(Table table, Include? include) {
+  var columnsToRead = include?.selectedColumns != null
+      ? include!.selectedColumns!.map((c) {
+          if (c is ColumnJsonField) return c;
+          return table.columns.firstWhereOrNull(
+                (rc) => rc.columnName == c.columnName,
+              ) ??
+              c;
+        }).toList()
+      : table.columns;
+
   var columns = <Column>[
-    ...table.columns,
+    ...columnsToRead,
     ...?include?.selectedColumns?.whereType<ColumnJsonField>(),
   ];
   if (include == null) return columns;

@@ -76,8 +76,12 @@ abstract class ParentUser
     };
   }
 
-  static ParentUserInclude include() {
-    return ParentUserInclude.internal_();
+  static ParentUserInclude include({
+    _is.SelectColumnsBuilder<ParentUserTable>? select,
+  }) {
+    return ParentUserInclude.internal_(
+      selectedColumns: select?.call(ParentUser.t),
+    );
   }
 
   static ParentUserIncludeList includeList({
@@ -87,6 +91,7 @@ abstract class ParentUser
     _is.OrderByBuilder<ParentUserTable>? orderBy,
     _is.OrderByListBuilder<ParentUserTable>? orderByList,
     ParentUserInclude? include,
+    _is.SelectColumnsBuilder<ParentUserTable>? select,
   }) {
     return ParentUserIncludeList.internal_(
       where: where,
@@ -95,6 +100,7 @@ abstract class ParentUser
       orderBy: orderBy?.call(ParentUser.t),
       orderByList: orderByList?.call(ParentUser.t),
       include: include,
+      selectedColumns: select?.call(ParentUser.t),
     );
   }
 

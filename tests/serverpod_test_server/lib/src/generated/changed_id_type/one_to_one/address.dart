@@ -93,8 +93,14 @@ abstract class AddressUuid
     };
   }
 
-  static AddressUuidInclude include({_i7hzilwf.CitizenIntInclude? inhabitant}) {
-    return AddressUuidInclude.internal_(inhabitant: inhabitant);
+  static AddressUuidInclude include({
+    _i7hzilwf.CitizenIntInclude? inhabitant,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+  }) {
+    return AddressUuidInclude.internal_(
+      inhabitant: inhabitant,
+      selectedColumns: select?.call(AddressUuid.t),
+    );
   }
 
   static AddressUuidIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class AddressUuid
     _is.OrderByBuilder<AddressUuidTable>? orderBy,
     _is.OrderByListBuilder<AddressUuidTable>? orderByList,
     AddressUuidInclude? include,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
   }) {
     return AddressUuidIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class AddressUuid
       orderBy: orderBy?.call(AddressUuid.t),
       orderByList: orderByList?.call(AddressUuid.t),
       include: include,
+      selectedColumns: select?.call(AddressUuid.t),
     );
   }
 

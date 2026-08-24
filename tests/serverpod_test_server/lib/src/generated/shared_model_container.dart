@@ -386,8 +386,12 @@ abstract class SharedModelContainer
     };
   }
 
-  static SharedModelContainerInclude include() {
-    return SharedModelContainerInclude.internal_();
+  static SharedModelContainerInclude include({
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+  }) {
+    return SharedModelContainerInclude.internal_(
+      selectedColumns: select?.call(SharedModelContainer.t),
+    );
   }
 
   static SharedModelContainerIncludeList includeList({
@@ -397,6 +401,7 @@ abstract class SharedModelContainer
     _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
     _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
   }) {
     return SharedModelContainerIncludeList.internal_(
       where: where,
@@ -405,6 +410,7 @@ abstract class SharedModelContainer
       orderBy: orderBy?.call(SharedModelContainer.t),
       orderByList: orderByList?.call(SharedModelContainer.t),
       include: include,
+      selectedColumns: select?.call(SharedModelContainer.t),
     );
   }
 

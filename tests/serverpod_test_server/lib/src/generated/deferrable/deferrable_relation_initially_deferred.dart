@@ -70,8 +70,12 @@ abstract class DeferrableRelationInitiallyDeferred
     };
   }
 
-  static DeferrableRelationInitiallyDeferredInclude include() {
-    return DeferrableRelationInitiallyDeferredInclude.internal_();
+  static DeferrableRelationInitiallyDeferredInclude include({
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
+  }) {
+    return DeferrableRelationInitiallyDeferredInclude.internal_(
+      selectedColumns: select?.call(DeferrableRelationInitiallyDeferred.t),
+    );
   }
 
   static DeferrableRelationInitiallyDeferredIncludeList includeList({
@@ -82,6 +86,7 @@ abstract class DeferrableRelationInitiallyDeferred
     _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
     DeferrableRelationInitiallyDeferredInclude? include,
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
   }) {
     return DeferrableRelationInitiallyDeferredIncludeList.internal_(
       where: where,
@@ -90,6 +95,7 @@ abstract class DeferrableRelationInitiallyDeferred
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
       orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
       include: include,
+      selectedColumns: select?.call(DeferrableRelationInitiallyDeferred.t),
     );
   }
 

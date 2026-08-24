@@ -78,8 +78,12 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     };
   }
 
-  static ChildClassExplicitColumnInclude include() {
-    return ChildClassExplicitColumnInclude.internal_();
+  static ChildClassExplicitColumnInclude include({
+    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
+  }) {
+    return ChildClassExplicitColumnInclude.internal_(
+      selectedColumns: select?.call(ChildClassExplicitColumn.t),
+    );
   }
 
   static ChildClassExplicitColumnIncludeList includeList({
@@ -89,6 +93,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
     _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
+    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
   }) {
     return ChildClassExplicitColumnIncludeList.internal_(
       where: where,
@@ -97,6 +102,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
       orderByList: orderByList?.call(ChildClassExplicitColumn.t),
       include: include,
+      selectedColumns: select?.call(ChildClassExplicitColumn.t),
     );
   }
 

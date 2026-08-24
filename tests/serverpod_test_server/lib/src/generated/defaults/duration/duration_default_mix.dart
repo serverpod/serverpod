@@ -129,8 +129,12 @@ abstract class DurationDefaultMix
     };
   }
 
-  static DurationDefaultMixInclude include() {
-    return DurationDefaultMixInclude.internal_();
+  static DurationDefaultMixInclude include({
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
+  }) {
+    return DurationDefaultMixInclude.internal_(
+      selectedColumns: select?.call(DurationDefaultMix.t),
+    );
   }
 
   static DurationDefaultMixIncludeList includeList({
@@ -140,6 +144,7 @@ abstract class DurationDefaultMix
     _is.OrderByBuilder<DurationDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<DurationDefaultMixTable>? orderByList,
     DurationDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
   }) {
     return DurationDefaultMixIncludeList.internal_(
       where: where,
@@ -148,6 +153,7 @@ abstract class DurationDefaultMix
       orderBy: orderBy?.call(DurationDefaultMix.t),
       orderByList: orderByList?.call(DurationDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(DurationDefaultMix.t),
     );
   }
 

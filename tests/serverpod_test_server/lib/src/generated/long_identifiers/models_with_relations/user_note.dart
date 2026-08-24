@@ -77,8 +77,10 @@ abstract class UserNote
     };
   }
 
-  static UserNoteInclude include() {
-    return UserNoteInclude.internal_();
+  static UserNoteInclude include({
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+  }) {
+    return UserNoteInclude.internal_(selectedColumns: select?.call(UserNote.t));
   }
 
   static UserNoteIncludeList includeList({
@@ -88,6 +90,7 @@ abstract class UserNote
     _is.OrderByBuilder<UserNoteTable>? orderBy,
     _is.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
   }) {
     return UserNoteIncludeList.internal_(
       where: where,
@@ -96,6 +99,7 @@ abstract class UserNote
       orderBy: orderBy?.call(UserNote.t),
       orderByList: orderByList?.call(UserNote.t),
       include: include,
+      selectedColumns: select?.call(UserNote.t),
     );
   }
 

@@ -91,8 +91,14 @@ abstract class ObjectUser
     };
   }
 
-  static ObjectUserInclude include({_i1n3uhu0.UserInfoInclude? userInfo}) {
-    return ObjectUserInclude.internal_(userInfo: userInfo);
+  static ObjectUserInclude include({
+    _i1n3uhu0.UserInfoInclude? userInfo,
+    _is.SelectColumnsBuilder<ObjectUserTable>? select,
+  }) {
+    return ObjectUserInclude.internal_(
+      userInfo: userInfo,
+      selectedColumns: select?.call(ObjectUser.t),
+    );
   }
 
   static ObjectUserIncludeList includeList({
@@ -102,6 +108,7 @@ abstract class ObjectUser
     _is.OrderByBuilder<ObjectUserTable>? orderBy,
     _is.OrderByListBuilder<ObjectUserTable>? orderByList,
     ObjectUserInclude? include,
+    _is.SelectColumnsBuilder<ObjectUserTable>? select,
   }) {
     return ObjectUserIncludeList.internal_(
       where: where,
@@ -110,6 +117,7 @@ abstract class ObjectUser
       orderBy: orderBy?.call(ObjectUser.t),
       orderByList: orderByList?.call(ObjectUser.t),
       include: include,
+      selectedColumns: select?.call(ObjectUser.t),
     );
   }
 

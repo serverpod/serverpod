@@ -101,8 +101,12 @@ abstract class SharedTableRecord
     };
   }
 
-  static SharedTableRecordInclude include() {
-    return SharedTableRecordInclude.internal_();
+  static SharedTableRecordInclude include({
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+  }) {
+    return SharedTableRecordInclude.internal_(
+      selectedColumns: select?.call(SharedTableRecord.t),
+    );
   }
 
   static SharedTableRecordIncludeList includeList({
@@ -112,6 +116,7 @@ abstract class SharedTableRecord
     _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
     _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
   }) {
     return SharedTableRecordIncludeList.internal_(
       where: where,
@@ -120,6 +125,7 @@ abstract class SharedTableRecord
       orderBy: orderBy?.call(SharedTableRecord.t),
       orderByList: orderByList?.call(SharedTableRecord.t),
       include: include,
+      selectedColumns: select?.call(SharedTableRecord.t),
     );
   }
 

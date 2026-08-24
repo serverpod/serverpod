@@ -107,10 +107,12 @@ abstract class ProjectedEnrollment
   static ProjectedEnrollmentInclude include({
     _iprfievr.ProjectedStudentInclude? student,
     _iotqocf1.ProjectedCourseInclude? course,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
     return ProjectedEnrollmentInclude.internal_(
       student: student,
       course: course,
+      selectedColumns: select?.call(ProjectedEnrollment.t),
     );
   }
 
@@ -121,6 +123,7 @@ abstract class ProjectedEnrollment
     _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     ProjectedEnrollmentInclude? include,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
     return ProjectedEnrollmentIncludeList.internal_(
       where: where,
@@ -129,6 +132,7 @@ abstract class ProjectedEnrollment
       orderBy: orderBy?.call(ProjectedEnrollment.t),
       orderByList: orderByList?.call(ProjectedEnrollment.t),
       include: include,
+      selectedColumns: select?.call(ProjectedEnrollment.t),
     );
   }
 

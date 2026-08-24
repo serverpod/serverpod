@@ -94,9 +94,11 @@ abstract class RelationToMultipleMaxFieldName
 
   static RelationToMultipleMaxFieldNameInclude include({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
     return RelationToMultipleMaxFieldNameInclude.internal_(
       multipleMaxFieldNames: multipleMaxFieldNames,
+      selectedColumns: select?.call(RelationToMultipleMaxFieldName.t),
     );
   }
 
@@ -107,6 +109,7 @@ abstract class RelationToMultipleMaxFieldName
     _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     RelationToMultipleMaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
     return RelationToMultipleMaxFieldNameIncludeList.internal_(
       where: where,
@@ -115,6 +118,7 @@ abstract class RelationToMultipleMaxFieldName
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
       orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
       include: include,
+      selectedColumns: select?.call(RelationToMultipleMaxFieldName.t),
     );
   }
 

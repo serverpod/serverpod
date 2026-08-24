@@ -146,6 +146,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -159,8 +160,12 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       lockBehavior: lockBehavior,
     );
 
+    var selectFields = select != null
+        ? select(table)
+        : (include?.selectedColumns ?? table.columns);
+
     var query = SelectQueryBuilder(table: table)
-        .withSelectFields(table.columns)
+        .withSelectFields(selectFields)
         .withWhere(where)
         .withOrderBy(orderByCols)
         .withLimit(limit)
@@ -187,6 +192,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -200,6 +206,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       limit: 1,
       transaction: transaction,
       include: include,
+      select: select,
       lockBehavior: lockBehavior,
       lockMode: lockMode,
     );
@@ -214,6 +221,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Object id, {
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     LockBehavior? lockBehavior,
     LockMode? lockMode,
   }) async {
@@ -223,6 +231,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
+      select: select,
       lockBehavior: lockBehavior,
       lockMode: lockMode,
     );

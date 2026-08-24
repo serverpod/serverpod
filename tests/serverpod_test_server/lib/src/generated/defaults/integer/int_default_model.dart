@@ -77,8 +77,12 @@ abstract class IntDefaultModel
     };
   }
 
-  static IntDefaultModelInclude include() {
-    return IntDefaultModelInclude.internal_();
+  static IntDefaultModelInclude include({
+    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
+  }) {
+    return IntDefaultModelInclude.internal_(
+      selectedColumns: select?.call(IntDefaultModel.t),
+    );
   }
 
   static IntDefaultModelIncludeList includeList({
@@ -88,6 +92,7 @@ abstract class IntDefaultModel
     _is.OrderByBuilder<IntDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<IntDefaultModelTable>? orderByList,
     IntDefaultModelInclude? include,
+    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
   }) {
     return IntDefaultModelIncludeList.internal_(
       where: where,
@@ -96,6 +101,7 @@ abstract class IntDefaultModel
       orderBy: orderBy?.call(IntDefaultModel.t),
       orderByList: orderByList?.call(IntDefaultModel.t),
       include: include,
+      selectedColumns: select?.call(IntDefaultModel.t),
     );
   }
 

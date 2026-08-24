@@ -133,8 +133,12 @@ abstract class UuidDefault
     };
   }
 
-  static UuidDefaultInclude include() {
-    return UuidDefaultInclude.internal_();
+  static UuidDefaultInclude include({
+    _is.SelectColumnsBuilder<UuidDefaultTable>? select,
+  }) {
+    return UuidDefaultInclude.internal_(
+      selectedColumns: select?.call(UuidDefault.t),
+    );
   }
 
   static UuidDefaultIncludeList includeList({
@@ -144,6 +148,7 @@ abstract class UuidDefault
     _is.OrderByBuilder<UuidDefaultTable>? orderBy,
     _is.OrderByListBuilder<UuidDefaultTable>? orderByList,
     UuidDefaultInclude? include,
+    _is.SelectColumnsBuilder<UuidDefaultTable>? select,
   }) {
     return UuidDefaultIncludeList.internal_(
       where: where,
@@ -152,6 +157,7 @@ abstract class UuidDefault
       orderBy: orderBy?.call(UuidDefault.t),
       orderByList: orderByList?.call(UuidDefault.t),
       include: include,
+      selectedColumns: select?.call(UuidDefault.t),
     );
   }
 

@@ -111,8 +111,12 @@ abstract class DateTimeDefaultMix
     };
   }
 
-  static DateTimeDefaultMixInclude include() {
-    return DateTimeDefaultMixInclude.internal_();
+  static DateTimeDefaultMixInclude include({
+    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
+  }) {
+    return DateTimeDefaultMixInclude.internal_(
+      selectedColumns: select?.call(DateTimeDefaultMix.t),
+    );
   }
 
   static DateTimeDefaultMixIncludeList includeList({
@@ -122,6 +126,7 @@ abstract class DateTimeDefaultMix
     _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     DateTimeDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
   }) {
     return DateTimeDefaultMixIncludeList.internal_(
       where: where,
@@ -130,6 +135,7 @@ abstract class DateTimeDefaultMix
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
       orderByList: orderByList?.call(DateTimeDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(DateTimeDefaultMix.t),
     );
   }
 

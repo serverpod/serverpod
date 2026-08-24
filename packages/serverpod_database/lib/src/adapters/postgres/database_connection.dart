@@ -127,6 +127,7 @@ class PostgresDatabaseConnection
     Column? orderBy,
     List<Column>? orderByList,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -134,8 +135,12 @@ class PostgresDatabaseConnection
     var table = _getTableOrAssert<T>(session, operation: 'findAsJson');
     var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
+    var selectFields = select != null
+        ? select(table)
+        : (include?.selectedColumns ?? table.columns);
+
     var query = SelectQueryBuilder(table: table)
-        .withSelectFields(table.columns)
+        .withSelectFields(selectFields)
         .withWhere(where)
         .withOrderBy(orderByCols)
         .withLimit(limit)
@@ -163,6 +168,7 @@ class PostgresDatabaseConnection
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -176,6 +182,7 @@ class PostgresDatabaseConnection
       limit: 1,
       transaction: transaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
@@ -191,6 +198,7 @@ class PostgresDatabaseConnection
     Object id, {
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<Table>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -200,6 +208,7 @@ class PostgresDatabaseConnection
       where: table.id.equals(id),
       transaction: transaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

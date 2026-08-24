@@ -118,8 +118,12 @@ abstract class ObjectWithBit
     };
   }
 
-  static ObjectWithBitInclude include() {
-    return ObjectWithBitInclude.internal_();
+  static ObjectWithBitInclude include({
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+  }) {
+    return ObjectWithBitInclude.internal_(
+      selectedColumns: select?.call(ObjectWithBit.t),
+    );
   }
 
   static ObjectWithBitIncludeList includeList({
@@ -129,6 +133,7 @@ abstract class ObjectWithBit
     _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     ObjectWithBitInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
   }) {
     return ObjectWithBitIncludeList.internal_(
       where: where,
@@ -137,6 +142,7 @@ abstract class ObjectWithBit
       orderBy: orderBy?.call(ObjectWithBit.t),
       orderByList: orderByList?.call(ObjectWithBit.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithBit.t),
     );
   }
 

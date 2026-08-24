@@ -143,12 +143,14 @@ abstract class BleedRoot
     childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun23,
+    _is.SelectColumnsBuilder<BleedRootTable>? select,
   }) {
     return BleedRootInclude.internal_(
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
           childRelationWithExtremelyLongFieldNameForcingTrun23,
+      selectedColumns: select?.call(BleedRoot.t),
     );
   }
 
@@ -159,6 +161,7 @@ abstract class BleedRoot
     _is.OrderByBuilder<BleedRootTable>? orderBy,
     _is.OrderByListBuilder<BleedRootTable>? orderByList,
     BleedRootInclude? include,
+    _is.SelectColumnsBuilder<BleedRootTable>? select,
   }) {
     return BleedRootIncludeList.internal_(
       where: where,
@@ -167,6 +170,7 @@ abstract class BleedRoot
       orderBy: orderBy?.call(BleedRoot.t),
       orderByList: orderByList?.call(BleedRoot.t),
       include: include,
+      selectedColumns: select?.call(BleedRoot.t),
     );
   }
 

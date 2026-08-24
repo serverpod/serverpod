@@ -86,8 +86,12 @@ abstract class ModelWithRequiredField
     };
   }
 
-  static ModelWithRequiredFieldInclude include() {
-    return ModelWithRequiredFieldInclude.internal_();
+  static ModelWithRequiredFieldInclude include({
+    _is.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+  }) {
+    return ModelWithRequiredFieldInclude.internal_(
+      selectedColumns: select?.call(ModelWithRequiredField.t),
+    );
   }
 
   static ModelWithRequiredFieldIncludeList includeList({
@@ -97,6 +101,7 @@ abstract class ModelWithRequiredField
     _is.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
     _is.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
     ModelWithRequiredFieldInclude? include,
+    _is.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
   }) {
     return ModelWithRequiredFieldIncludeList.internal_(
       where: where,
@@ -105,6 +110,7 @@ abstract class ModelWithRequiredField
       orderBy: orderBy?.call(ModelWithRequiredField.t),
       orderByList: orderByList?.call(ModelWithRequiredField.t),
       include: include,
+      selectedColumns: select?.call(ModelWithRequiredField.t),
     );
   }
 

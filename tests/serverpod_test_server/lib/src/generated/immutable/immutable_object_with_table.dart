@@ -100,8 +100,12 @@ abstract class ImmutableObjectWithTable
     };
   }
 
-  static ImmutableObjectWithTableInclude include() {
-    return ImmutableObjectWithTableInclude.internal_();
+  static ImmutableObjectWithTableInclude include({
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+  }) {
+    return ImmutableObjectWithTableInclude.internal_(
+      selectedColumns: select?.call(ImmutableObjectWithTable.t),
+    );
   }
 
   static ImmutableObjectWithTableIncludeList includeList({
@@ -111,6 +115,7 @@ abstract class ImmutableObjectWithTable
     _is.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
     _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     ImmutableObjectWithTableInclude? include,
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
   }) {
     return ImmutableObjectWithTableIncludeList.internal_(
       where: where,
@@ -119,6 +124,7 @@ abstract class ImmutableObjectWithTable
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
       orderByList: orderByList?.call(ImmutableObjectWithTable.t),
       include: include,
+      selectedColumns: select?.call(ImmutableObjectWithTable.t),
     );
   }
 

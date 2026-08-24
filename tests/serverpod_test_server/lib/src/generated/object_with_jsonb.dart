@@ -154,8 +154,12 @@ abstract class ObjectWithJsonb
     };
   }
 
-  static ObjectWithJsonbInclude include() {
-    return ObjectWithJsonbInclude.internal_();
+  static ObjectWithJsonbInclude include({
+    _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
+  }) {
+    return ObjectWithJsonbInclude.internal_(
+      selectedColumns: select?.call(ObjectWithJsonb.t),
+    );
   }
 
   static ObjectWithJsonbIncludeList includeList({
@@ -165,6 +169,7 @@ abstract class ObjectWithJsonb
     _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
     ObjectWithJsonbInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
   }) {
     return ObjectWithJsonbIncludeList.internal_(
       where: where,
@@ -173,6 +178,7 @@ abstract class ObjectWithJsonb
       orderBy: orderBy?.call(ObjectWithJsonb.t),
       orderByList: orderByList?.call(ObjectWithJsonb.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithJsonb.t),
     );
   }
 

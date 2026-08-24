@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-
 import '../serverpod_database.dart';
 import 'interface/database_connection.dart';
 
@@ -153,7 +151,8 @@ class Database {
   }
 
   /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
-  @internal
+  ///
+  /// Use [select] to specify which columns to include from the root table.
   Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -162,6 +161,7 @@ class Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -183,6 +183,7 @@ class Database {
       orderByList: orderByList,
       transaction: resolvedTransaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
@@ -190,7 +191,8 @@ class Database {
 
   /// Returns a single [Map<String, dynamic>] matching the given query parameters or null
   /// if no matching row is found.
-  @internal
+  ///
+  /// Use [select] to specify which columns to include from the root table.
   Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -198,6 +200,7 @@ class Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -218,6 +221,7 @@ class Database {
       orderByList: orderByList,
       transaction: resolvedTransaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
@@ -262,11 +266,13 @@ class Database {
   }
 
   /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
-  @internal
+  ///
+  /// Use [select] to specify which columns to include from the root table.
   Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
     Object id, {
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -284,6 +290,7 @@ class Database {
       id,
       transaction: resolvedTransaction,
       include: include,
+      select: select,
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

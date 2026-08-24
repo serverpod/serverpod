@@ -93,8 +93,14 @@ abstract class PlayerUuid
     };
   }
 
-  static PlayerUuidInclude include({_i9bz1am4.TeamIntInclude? team}) {
-    return PlayerUuidInclude.internal_(team: team);
+  static PlayerUuidInclude include({
+    _i9bz1am4.TeamIntInclude? team,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+  }) {
+    return PlayerUuidInclude.internal_(
+      team: team,
+      selectedColumns: select?.call(PlayerUuid.t),
+    );
   }
 
   static PlayerUuidIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class PlayerUuid
     _is.OrderByBuilder<PlayerUuidTable>? orderBy,
     _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
   }) {
     return PlayerUuidIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class PlayerUuid
       orderBy: orderBy?.call(PlayerUuid.t),
       orderByList: orderByList?.call(PlayerUuid.t),
       include: include,
+      selectedColumns: select?.call(PlayerUuid.t),
     );
   }
 

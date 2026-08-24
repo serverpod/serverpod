@@ -92,8 +92,12 @@ abstract class ProjectedAuthor
     };
   }
 
-  static ProjectedAuthorInclude include() {
-    return ProjectedAuthorInclude.internal_();
+  static ProjectedAuthorInclude include({
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+  }) {
+    return ProjectedAuthorInclude.internal_(
+      selectedColumns: select?.call(ProjectedAuthor.t),
+    );
   }
 
   static ProjectedAuthorIncludeList includeList({
@@ -103,6 +107,7 @@ abstract class ProjectedAuthor
     _is.OrderByBuilder<ProjectedAuthorTable>? orderBy,
     _is.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     ProjectedAuthorInclude? include,
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
   }) {
     return ProjectedAuthorIncludeList.internal_(
       where: where,
@@ -111,6 +116,7 @@ abstract class ProjectedAuthor
       orderBy: orderBy?.call(ProjectedAuthor.t),
       orderByList: orderByList?.call(ProjectedAuthor.t),
       include: include,
+      selectedColumns: select?.call(ProjectedAuthor.t),
     );
   }
 

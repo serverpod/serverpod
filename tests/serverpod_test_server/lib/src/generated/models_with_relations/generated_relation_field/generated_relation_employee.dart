@@ -125,10 +125,12 @@ abstract class GeneratedRelationEmployee
   static GeneratedRelationEmployeeInclude include({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
+    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
   }) {
     return GeneratedRelationEmployeeInclude.internal_(
       company: company,
       previousCompany: previousCompany,
+      selectedColumns: select?.call(GeneratedRelationEmployee.t),
     );
   }
 
@@ -139,6 +141,7 @@ abstract class GeneratedRelationEmployee
     _is.OrderByBuilder<GeneratedRelationEmployeeTable>? orderBy,
     _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
     GeneratedRelationEmployeeInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
   }) {
     return GeneratedRelationEmployeeIncludeList.internal_(
       where: where,
@@ -147,6 +150,7 @@ abstract class GeneratedRelationEmployee
       orderBy: orderBy?.call(GeneratedRelationEmployee.t),
       orderByList: orderByList?.call(GeneratedRelationEmployee.t),
       include: include,
+      selectedColumns: select?.call(GeneratedRelationEmployee.t),
     );
   }
 

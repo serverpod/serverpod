@@ -74,8 +74,12 @@ abstract class UriDefaultPersist
     };
   }
 
-  static UriDefaultPersistInclude include() {
-    return UriDefaultPersistInclude.internal_();
+  static UriDefaultPersistInclude include({
+    _is.SelectColumnsBuilder<UriDefaultPersistTable>? select,
+  }) {
+    return UriDefaultPersistInclude.internal_(
+      selectedColumns: select?.call(UriDefaultPersist.t),
+    );
   }
 
   static UriDefaultPersistIncludeList includeList({
@@ -85,6 +89,7 @@ abstract class UriDefaultPersist
     _is.OrderByBuilder<UriDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<UriDefaultPersistTable>? orderByList,
     UriDefaultPersistInclude? include,
+    _is.SelectColumnsBuilder<UriDefaultPersistTable>? select,
   }) {
     return UriDefaultPersistIncludeList.internal_(
       where: where,
@@ -93,6 +98,7 @@ abstract class UriDefaultPersist
       orderBy: orderBy?.call(UriDefaultPersist.t),
       orderByList: orderByList?.call(UriDefaultPersist.t),
       include: include,
+      selectedColumns: select?.call(UriDefaultPersist.t),
     );
   }
 

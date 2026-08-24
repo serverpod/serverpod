@@ -76,8 +76,10 @@ abstract class Employee
     };
   }
 
-  static EmployeeInclude include() {
-    return EmployeeInclude.internal_();
+  static EmployeeInclude include({
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+  }) {
+    return EmployeeInclude.internal_(selectedColumns: select?.call(Employee.t));
   }
 
   static EmployeeIncludeList includeList({
@@ -87,6 +89,7 @@ abstract class Employee
     _is.OrderByBuilder<EmployeeTable>? orderBy,
     _is.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
   }) {
     return EmployeeIncludeList.internal_(
       where: where,
@@ -95,6 +98,7 @@ abstract class Employee
       orderBy: orderBy?.call(Employee.t),
       orderByList: orderByList?.call(Employee.t),
       include: include,
+      selectedColumns: select?.call(Employee.t),
     );
   }
 

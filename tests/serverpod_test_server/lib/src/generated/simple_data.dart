@@ -72,8 +72,12 @@ abstract class SimpleData
     };
   }
 
-  static SimpleDataInclude include() {
-    return SimpleDataInclude.internal_();
+  static SimpleDataInclude include({
+    _is.SelectColumnsBuilder<SimpleDataTable>? select,
+  }) {
+    return SimpleDataInclude.internal_(
+      selectedColumns: select?.call(SimpleData.t),
+    );
   }
 
   static SimpleDataIncludeList includeList({
@@ -83,6 +87,7 @@ abstract class SimpleData
     _is.OrderByBuilder<SimpleDataTable>? orderBy,
     _is.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
+    _is.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
     return SimpleDataIncludeList.internal_(
       where: where,
@@ -91,6 +96,7 @@ abstract class SimpleData
       orderBy: orderBy?.call(SimpleData.t),
       orderByList: orderByList?.call(SimpleData.t),
       include: include,
+      selectedColumns: select?.call(SimpleData.t),
     );
   }
 

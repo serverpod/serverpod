@@ -90,8 +90,12 @@ abstract class ObjectFieldPersist
     };
   }
 
-  static ObjectFieldPersistInclude include() {
-    return ObjectFieldPersistInclude.internal_();
+  static ObjectFieldPersistInclude include({
+    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+  }) {
+    return ObjectFieldPersistInclude.internal_(
+      selectedColumns: select?.call(ObjectFieldPersist.t),
+    );
   }
 
   static ObjectFieldPersistIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class ObjectFieldPersist
     _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
     _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
+    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
   }) {
     return ObjectFieldPersistIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class ObjectFieldPersist
       orderBy: orderBy?.call(ObjectFieldPersist.t),
       orderByList: orderByList?.call(ObjectFieldPersist.t),
       include: include,
+      selectedColumns: select?.call(ObjectFieldPersist.t),
     );
   }
 

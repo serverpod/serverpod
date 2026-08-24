@@ -98,8 +98,12 @@ abstract class GeneratedRelationOffice
 
   static GeneratedRelationOfficeInclude include({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
+    _is.SelectColumnsBuilder<GeneratedRelationOfficeTable>? select,
   }) {
-    return GeneratedRelationOfficeInclude.internal_(company: company);
+    return GeneratedRelationOfficeInclude.internal_(
+      company: company,
+      selectedColumns: select?.call(GeneratedRelationOffice.t),
+    );
   }
 
   static GeneratedRelationOfficeIncludeList includeList({
@@ -109,6 +113,7 @@ abstract class GeneratedRelationOffice
     _is.OrderByBuilder<GeneratedRelationOfficeTable>? orderBy,
     _is.OrderByListBuilder<GeneratedRelationOfficeTable>? orderByList,
     GeneratedRelationOfficeInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationOfficeTable>? select,
   }) {
     return GeneratedRelationOfficeIncludeList.internal_(
       where: where,
@@ -117,6 +122,7 @@ abstract class GeneratedRelationOffice
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
       orderByList: orderByList?.call(GeneratedRelationOffice.t),
       include: include,
+      selectedColumns: select?.call(GeneratedRelationOffice.t),
     );
   }
 

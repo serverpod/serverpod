@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_internal_member
-
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_test_server/src/generated/protocol.dart';
 import 'package:serverpod_test_server/test_util/test_serverpod.dart';
@@ -86,9 +84,7 @@ void main() async {
 
         // Select ONLY the nullable column `summary` (without selecting `id`)
         var results = await session.db.findAsJson<ProjectedOrder>(
-          include: ProjectedOrderInclude.internal_(
-            selectedColumns: [ProjectedOrder.t.summary],
-          ),
+          select: (t) => [t.summary],
         );
 
         // There are 2 records in the database.
@@ -122,9 +118,7 @@ void main() async {
         ]);
 
         var results = await session.db.findAsJson<ProjectedOrder>(
-          include: ProjectedOrderInclude.internal_(
-            selectedColumns: [ProjectedOrder.t.summary],
-          ),
+          select: (t) => [t.summary],
         );
 
         expect(results.length, 2);
@@ -152,9 +146,9 @@ void main() async {
         );
 
         var result = await session.db.findFirstRowAsJson<ProjectedUser>(
-          include: ProjectedUserInclude.internal_(
-            address: ProjectedAddressInclude.internal_(
-              selectedColumns: [ProjectedAddress.t.street],
+          include: ProjectedUser.include(
+            address: ProjectedAddress.include(
+              select: (table) => [table.street],
             ),
           ),
         );
@@ -201,6 +195,81 @@ void main() async {
         expect(result?['name'], 'Bob');
         expect(result?['company'], isNotNull);
         expect(result?['oldCompany'], isNull);
+      },
+    );
+
+    test(
+      'Given citizens in database, when using findAsJson with select, then only selected root columns are returned.',
+      () async {
+        var town = await Town.db.insertRow(
+          session,
+          Town(name: 'Tech Town'),
+        );
+        var company = await Company.db.insertRow(
+          session,
+          Company(name: 'Serverpod Corp', townId: town.id!),
+        );
+        var citizen = await Citizen.db.insertRow(
+          session,
+          Citizen(name: 'Charlie', companyId: company.id!),
+        );
+
+        var results = await session.db.findAsJson<Citizen>(
+          select: (t) => [t.name],
+        );
+
+        expect(results.length, 1);
+        expect(results.first['name'], 'Charlie');
+        expect(results.first.containsKey('id'), isFalse);
+        expect(results.first.containsKey('companyId'), isFalse);
+
+        var firstRow = await session.db.findFirstRowAsJson<Citizen>(
+          select: (t) => [t.name],
+        );
+        expect(firstRow?['name'], 'Charlie');
+        expect(firstRow?.containsKey('id'), isFalse);
+
+        var byId = await session.db.findByIdAsJson<Citizen>(
+          citizen.id!,
+          select: (t) => [t.name],
+        );
+        expect(byId?['name'], 'Charlie');
+        expect(byId?.containsKey('id'), isFalse);
+      },
+    );
+
+    test(
+      'Given related models, when using include with select, then nested relations only return selected columns.',
+      () async {
+        var town = await Town.db.insertRow(
+          session,
+          Town(name: 'River Town'),
+        );
+        var company = await Company.db.insertRow(
+          session,
+          Company(name: 'Acme Logistics', townId: town.id!),
+        );
+        await Citizen.db.insertRow(
+          session,
+          Citizen(name: 'David', companyId: company.id!),
+        );
+
+        var result = await session.db.findFirstRowAsJson<Citizen>(
+          select: (t) => [t.name],
+          include: Citizen.include(
+            company: Company.include(
+              select: (c) => [c.name],
+            ),
+          ),
+        );
+
+        expect(result, isNotNull);
+        expect(result?['name'], 'David');
+        expect(result?.containsKey('id'), isFalse);
+        expect(result?['company'], isNotNull);
+        expect(result?['company']['name'], 'Acme Logistics');
+        expect(result?['company'].containsKey('id'), isFalse);
+        expect(result?['company'].containsKey('townId'), isFalse);
       },
     );
   });

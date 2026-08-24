@@ -109,8 +109,12 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
 
   static ChildWithInheritedIdInclude include({
     _id412n1c.ChildWithInheritedIdInclude? parent,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
   }) {
-    return ChildWithInheritedIdInclude.internal_(parent: parent);
+    return ChildWithInheritedIdInclude.internal_(
+      parent: parent,
+      selectedColumns: select?.call(ChildWithInheritedId.t),
+    );
   }
 
   static ChildWithInheritedIdIncludeList includeList({
@@ -120,6 +124,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
     _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
     ChildWithInheritedIdInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
   }) {
     return ChildWithInheritedIdIncludeList.internal_(
       where: where,
@@ -128,6 +133,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
       orderBy: orderBy?.call(ChildWithInheritedId.t),
       orderByList: orderByList?.call(ChildWithInheritedId.t),
       include: include,
+      selectedColumns: select?.call(ChildWithInheritedId.t),
     );
   }
 

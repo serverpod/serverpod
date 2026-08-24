@@ -120,8 +120,12 @@ abstract class ObjectWithVector
     };
   }
 
-  static ObjectWithVectorInclude include() {
-    return ObjectWithVectorInclude.internal_();
+  static ObjectWithVectorInclude include({
+    _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
+  }) {
+    return ObjectWithVectorInclude.internal_(
+      selectedColumns: select?.call(ObjectWithVector.t),
+    );
   }
 
   static ObjectWithVectorIncludeList includeList({
@@ -131,6 +135,7 @@ abstract class ObjectWithVector
     _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
     ObjectWithVectorInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
   }) {
     return ObjectWithVectorIncludeList.internal_(
       where: where,
@@ -139,6 +144,7 @@ abstract class ObjectWithVector
       orderBy: orderBy?.call(ObjectWithVector.t),
       orderByList: orderByList?.call(ObjectWithVector.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithVector.t),
     );
   }
 

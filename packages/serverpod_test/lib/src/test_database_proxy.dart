@@ -161,6 +161,7 @@ class TestDatabaseProxy implements Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
@@ -173,6 +174,7 @@ class TestDatabaseProxy implements Database {
         orderByList: orderByList,
         transaction: transaction,
         include: include,
+        select: select,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
       ),
@@ -188,6 +190,7 @@ class TestDatabaseProxy implements Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
@@ -199,6 +202,7 @@ class TestDatabaseProxy implements Database {
         orderByList: orderByList,
         transaction: transaction,
         include: include,
+        select: select,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
       ),
@@ -211,6 +215,7 @@ class TestDatabaseProxy implements Database {
     Object id, {
     Transaction? transaction,
     Include? include,
+    SelectColumnsBuilder<dynamic>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
@@ -219,6 +224,7 @@ class TestDatabaseProxy implements Database {
         id,
         transaction: transaction,
         include: include,
+        select: select,
         lockMode: lockMode,
         lockBehavior: lockBehavior,
       ),

@@ -82,8 +82,14 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
-    return ArenaInclude.internal_(team: team);
+  static ArenaInclude include({
+    _iaks25tn.TeamInclude? team,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return ArenaInclude.internal_(
+      team: team,
+      selectedColumns: select?.call(Arena.t),
+    );
   }
 
   static ArenaIncludeList includeList({
@@ -93,6 +99,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<ArenaTable>? orderBy,
     _is.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
   }) {
     return ArenaIncludeList.internal_(
       where: where,
@@ -101,6 +108,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
       include: include,
+      selectedColumns: select?.call(Arena.t),
     );
   }
 

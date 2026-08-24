@@ -92,8 +92,12 @@ abstract class ObjectWithGeographyPoint
     };
   }
 
-  static ObjectWithGeographyPointInclude include() {
-    return ObjectWithGeographyPointInclude.internal_();
+  static ObjectWithGeographyPointInclude include({
+    _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
+  }) {
+    return ObjectWithGeographyPointInclude.internal_(
+      selectedColumns: select?.call(ObjectWithGeographyPoint.t),
+    );
   }
 
   static ObjectWithGeographyPointIncludeList includeList({
@@ -103,6 +107,7 @@ abstract class ObjectWithGeographyPoint
     _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
     ObjectWithGeographyPointInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
   }) {
     return ObjectWithGeographyPointIncludeList.internal_(
       where: where,
@@ -111,6 +116,7 @@ abstract class ObjectWithGeographyPoint
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
       orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithGeographyPoint.t),
     );
   }
 

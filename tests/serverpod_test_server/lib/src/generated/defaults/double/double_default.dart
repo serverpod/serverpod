@@ -78,8 +78,12 @@ abstract class DoubleDefault
     };
   }
 
-  static DoubleDefaultInclude include() {
-    return DoubleDefaultInclude.internal_();
+  static DoubleDefaultInclude include({
+    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
+  }) {
+    return DoubleDefaultInclude.internal_(
+      selectedColumns: select?.call(DoubleDefault.t),
+    );
   }
 
   static DoubleDefaultIncludeList includeList({
@@ -89,6 +93,7 @@ abstract class DoubleDefault
     _is.OrderByBuilder<DoubleDefaultTable>? orderBy,
     _is.OrderByListBuilder<DoubleDefaultTable>? orderByList,
     DoubleDefaultInclude? include,
+    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
   }) {
     return DoubleDefaultIncludeList.internal_(
       where: where,
@@ -97,6 +102,7 @@ abstract class DoubleDefault
       orderBy: orderBy?.call(DoubleDefault.t),
       orderByList: orderByList?.call(DoubleDefault.t),
       include: include,
+      selectedColumns: select?.call(DoubleDefault.t),
     );
   }
 

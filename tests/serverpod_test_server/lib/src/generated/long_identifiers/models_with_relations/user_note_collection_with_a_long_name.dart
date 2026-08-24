@@ -90,8 +90,12 @@ abstract class UserNoteCollectionWithALongName
 
   static UserNoteCollectionWithALongNameInclude include({
     _iegdvue1.UserNoteWithALongNameIncludeList? notes,
+    _is.SelectColumnsBuilder<UserNoteCollectionWithALongNameTable>? select,
   }) {
-    return UserNoteCollectionWithALongNameInclude.internal_(notes: notes);
+    return UserNoteCollectionWithALongNameInclude.internal_(
+      notes: notes,
+      selectedColumns: select?.call(UserNoteCollectionWithALongName.t),
+    );
   }
 
   static UserNoteCollectionWithALongNameIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class UserNoteCollectionWithALongName
     _is.OrderByBuilder<UserNoteCollectionWithALongNameTable>? orderBy,
     _is.OrderByListBuilder<UserNoteCollectionWithALongNameTable>? orderByList,
     UserNoteCollectionWithALongNameInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionWithALongNameTable>? select,
   }) {
     return UserNoteCollectionWithALongNameIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class UserNoteCollectionWithALongName
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
       orderByList: orderByList?.call(UserNoteCollectionWithALongName.t),
       include: include,
+      selectedColumns: select?.call(UserNoteCollectionWithALongName.t),
     );
   }
 

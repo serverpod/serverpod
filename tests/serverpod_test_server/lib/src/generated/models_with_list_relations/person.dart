@@ -96,8 +96,14 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static PersonInclude include({_i0ptycc3.OrganizationInclude? organization}) {
-    return PersonInclude.internal_(organization: organization);
+  static PersonInclude include({
+    _i0ptycc3.OrganizationInclude? organization,
+    _is.SelectColumnsBuilder<PersonTable>? select,
+  }) {
+    return PersonInclude.internal_(
+      organization: organization,
+      selectedColumns: select?.call(Person.t),
+    );
   }
 
   static PersonIncludeList includeList({
@@ -107,6 +113,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<PersonTable>? orderBy,
     _is.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
+    _is.SelectColumnsBuilder<PersonTable>? select,
   }) {
     return PersonIncludeList.internal_(
       where: where,
@@ -115,6 +122,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
       include: include,
+      selectedColumns: select?.call(Person.t),
     );
   }
 

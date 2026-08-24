@@ -92,8 +92,12 @@ abstract class ObjectWithGeographyLineString
     };
   }
 
-  static ObjectWithGeographyLineStringInclude include() {
-    return ObjectWithGeographyLineStringInclude.internal_();
+  static ObjectWithGeographyLineStringInclude include({
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+  }) {
+    return ObjectWithGeographyLineStringInclude.internal_(
+      selectedColumns: select?.call(ObjectWithGeographyLineString.t),
+    );
   }
 
   static ObjectWithGeographyLineStringIncludeList includeList({
@@ -103,6 +107,7 @@ abstract class ObjectWithGeographyLineString
     _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
   }) {
     return ObjectWithGeographyLineStringIncludeList.internal_(
       where: where,
@@ -111,6 +116,7 @@ abstract class ObjectWithGeographyLineString
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
       orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithGeographyLineString.t),
     );
   }
 

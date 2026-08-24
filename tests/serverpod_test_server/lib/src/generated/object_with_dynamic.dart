@@ -161,8 +161,12 @@ abstract class ObjectWithDynamic
     };
   }
 
-  static ObjectWithDynamicInclude include() {
-    return ObjectWithDynamicInclude.internal_();
+  static ObjectWithDynamicInclude include({
+    _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
+  }) {
+    return ObjectWithDynamicInclude.internal_(
+      selectedColumns: select?.call(ObjectWithDynamic.t),
+    );
   }
 
   static ObjectWithDynamicIncludeList includeList({
@@ -172,6 +176,7 @@ abstract class ObjectWithDynamic
     _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
     ObjectWithDynamicInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
   }) {
     return ObjectWithDynamicIncludeList.internal_(
       where: where,
@@ -180,6 +185,7 @@ abstract class ObjectWithDynamic
       orderBy: orderBy?.call(ObjectWithDynamic.t),
       orderByList: orderByList?.call(ObjectWithDynamic.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithDynamic.t),
     );
   }
 

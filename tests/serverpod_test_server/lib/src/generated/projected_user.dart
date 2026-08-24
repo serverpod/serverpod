@@ -124,10 +124,12 @@ abstract class ProjectedUser
   static ProjectedUserInclude include({
     _iegbxll6.ProjectedAddressInclude? address,
     _i8r3x6pe.ProjectedOrderIncludeList? orders,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
     return ProjectedUserInclude.internal_(
       address: address,
       orders: orders,
+      selectedColumns: select?.call(ProjectedUser.t),
     );
   }
 
@@ -138,6 +140,7 @@ abstract class ProjectedUser
     _is.OrderByBuilder<ProjectedUserTable>? orderBy,
     _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
     ProjectedUserInclude? include,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
     return ProjectedUserIncludeList.internal_(
       where: where,
@@ -146,6 +149,7 @@ abstract class ProjectedUser
       orderBy: orderBy?.call(ProjectedUser.t),
       orderByList: orderByList?.call(ProjectedUser.t),
       include: include,
+      selectedColumns: select?.call(ProjectedUser.t),
     );
   }
 

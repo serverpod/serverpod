@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 
 import '../../serverpod_database.dart';
@@ -21,10 +22,20 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   // threaded through the recursion.
   var resolver = aliasResolver ?? ColumnAliasResolver.forQuery(table, include);
 
+  var columnsToRead = include?.selectedColumns != null
+      ? include!.selectedColumns!.map((c) {
+          if (c is ColumnJsonField) return c;
+          return table.columns.firstWhereOrNull(
+                (rc) => rc.columnName == c.columnName,
+              ) ??
+              c;
+        }).toList()
+      : table.columns;
+
   // Resolve this object.
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
     [
-      ...table.columns,
+      ...columnsToRead,
       ...?include?.selectedColumns?.whereType<ColumnJsonField>(),
     ],
     rawRow,

@@ -74,6 +74,20 @@ TypeReference typeOrderByListBuilder(
   );
 }
 
+TypeReference typeSelectColumnsBuilder(
+  String className,
+  bool serverCode, {
+  nullable = true,
+}) {
+  return _typeWithTableCallback(
+    className,
+    'SelectColumnsBuilder',
+    serverCode,
+    nullable: nullable,
+  );
+}
+
+
 TypeReference typeColumnValueListBuilder(
   String className,
   bool serverCode, {

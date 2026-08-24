@@ -76,8 +76,12 @@ abstract class ModifiedColumnName
     };
   }
 
-  static ModifiedColumnNameInclude include() {
-    return ModifiedColumnNameInclude.internal_();
+  static ModifiedColumnNameInclude include({
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+  }) {
+    return ModifiedColumnNameInclude.internal_(
+      selectedColumns: select?.call(ModifiedColumnName.t),
+    );
   }
 
   static ModifiedColumnNameIncludeList includeList({
@@ -87,6 +91,7 @@ abstract class ModifiedColumnName
     _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
     _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     ModifiedColumnNameInclude? include,
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
   }) {
     return ModifiedColumnNameIncludeList.internal_(
       where: where,
@@ -95,6 +100,7 @@ abstract class ModifiedColumnName
       orderBy: orderBy?.call(ModifiedColumnName.t),
       orderByList: orderByList?.call(ModifiedColumnName.t),
       include: include,
+      selectedColumns: select?.call(ModifiedColumnName.t),
     );
   }
 

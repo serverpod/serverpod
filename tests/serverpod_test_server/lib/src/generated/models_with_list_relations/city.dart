@@ -104,10 +104,12 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
   static CityInclude include({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
+    _is.SelectColumnsBuilder<CityTable>? select,
   }) {
     return CityInclude.internal_(
       citizens: citizens,
       organizations: organizations,
+      selectedColumns: select?.call(City.t),
     );
   }
 
@@ -118,6 +120,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<CityTable>? orderBy,
     _is.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
+    _is.SelectColumnsBuilder<CityTable>? select,
   }) {
     return CityIncludeList.internal_(
       where: where,
@@ -126,6 +129,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(City.t),
       orderByList: orderByList?.call(City.t),
       include: include,
+      selectedColumns: select?.call(City.t),
     );
   }
 

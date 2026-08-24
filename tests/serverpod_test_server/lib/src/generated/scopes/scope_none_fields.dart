@@ -68,8 +68,12 @@ abstract class ScopeNoneFields
     };
   }
 
-  static ScopeNoneFieldsInclude include() {
-    return ScopeNoneFieldsInclude.internal_();
+  static ScopeNoneFieldsInclude include({
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+  }) {
+    return ScopeNoneFieldsInclude.internal_(
+      selectedColumns: select?.call(ScopeNoneFields.t),
+    );
   }
 
   static ScopeNoneFieldsIncludeList includeList({
@@ -79,6 +83,7 @@ abstract class ScopeNoneFields
     _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
   }) {
     return ScopeNoneFieldsIncludeList.internal_(
       where: where,
@@ -87,6 +92,7 @@ abstract class ScopeNoneFields
       orderBy: orderBy?.call(ScopeNoneFields.t),
       orderByList: orderByList?.call(ScopeNoneFields.t),
       include: include,
+      selectedColumns: select?.call(ScopeNoneFields.t),
     );
   }
 

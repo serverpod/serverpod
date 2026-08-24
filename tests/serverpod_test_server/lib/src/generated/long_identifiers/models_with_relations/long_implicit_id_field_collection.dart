@@ -102,10 +102,12 @@ abstract class LongImplicitIdFieldCollection
   static LongImplicitIdFieldCollectionInclude include({
     _i4kuijum.LongImplicitIdFieldIncludeList?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
   }) {
     return LongImplicitIdFieldCollectionInclude.internal_(
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
+      selectedColumns: select?.call(LongImplicitIdFieldCollection.t),
     );
   }
 
@@ -116,6 +118,7 @@ abstract class LongImplicitIdFieldCollection
     _is.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
     _is.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
     LongImplicitIdFieldCollectionInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
   }) {
     return LongImplicitIdFieldCollectionIncludeList.internal_(
       where: where,
@@ -124,6 +127,7 @@ abstract class LongImplicitIdFieldCollection
       orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
       orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
       include: include,
+      selectedColumns: select?.call(LongImplicitIdFieldCollection.t),
     );
   }
 

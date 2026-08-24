@@ -114,8 +114,12 @@ abstract class EnumDefaultMix
     };
   }
 
-  static EnumDefaultMixInclude include() {
-    return EnumDefaultMixInclude.internal_();
+  static EnumDefaultMixInclude include({
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+  }) {
+    return EnumDefaultMixInclude.internal_(
+      selectedColumns: select?.call(EnumDefaultMix.t),
+    );
   }
 
   static EnumDefaultMixIncludeList includeList({
@@ -125,6 +129,7 @@ abstract class EnumDefaultMix
     _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
   }) {
     return EnumDefaultMixIncludeList.internal_(
       where: where,
@@ -133,6 +138,7 @@ abstract class EnumDefaultMix
       orderBy: orderBy?.call(EnumDefaultMix.t),
       orderByList: orderByList?.call(EnumDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(EnumDefaultMix.t),
     );
   }
 

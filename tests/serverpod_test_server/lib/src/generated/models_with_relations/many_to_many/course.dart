@@ -86,8 +86,14 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static CourseInclude include({_im07rq0v.EnrollmentIncludeList? enrollments}) {
-    return CourseInclude.internal_(enrollments: enrollments);
+  static CourseInclude include({
+    _im07rq0v.EnrollmentIncludeList? enrollments,
+    _is.SelectColumnsBuilder<CourseTable>? select,
+  }) {
+    return CourseInclude.internal_(
+      enrollments: enrollments,
+      selectedColumns: select?.call(Course.t),
+    );
   }
 
   static CourseIncludeList includeList({
@@ -97,6 +103,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<CourseTable>? orderBy,
     _is.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
+    _is.SelectColumnsBuilder<CourseTable>? select,
   }) {
     return CourseIncludeList.internal_(
       where: where,
@@ -105,6 +112,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
       include: include,
+      selectedColumns: select?.call(Course.t),
     );
   }
 

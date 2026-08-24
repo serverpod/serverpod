@@ -92,8 +92,12 @@ abstract class DateTimeDefaultPersist
     };
   }
 
-  static DateTimeDefaultPersistInclude include() {
-    return DateTimeDefaultPersistInclude.internal_();
+  static DateTimeDefaultPersistInclude include({
+    _is.SelectColumnsBuilder<DateTimeDefaultPersistTable>? select,
+  }) {
+    return DateTimeDefaultPersistInclude.internal_(
+      selectedColumns: select?.call(DateTimeDefaultPersist.t),
+    );
   }
 
   static DateTimeDefaultPersistIncludeList includeList({
@@ -103,6 +107,7 @@ abstract class DateTimeDefaultPersist
     _is.OrderByBuilder<DateTimeDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<DateTimeDefaultPersistTable>? orderByList,
     DateTimeDefaultPersistInclude? include,
+    _is.SelectColumnsBuilder<DateTimeDefaultPersistTable>? select,
   }) {
     return DateTimeDefaultPersistIncludeList.internal_(
       where: where,
@@ -111,6 +116,7 @@ abstract class DateTimeDefaultPersist
       orderBy: orderBy?.call(DateTimeDefaultPersist.t),
       orderByList: orderByList?.call(DateTimeDefaultPersist.t),
       include: include,
+      selectedColumns: select?.call(DateTimeDefaultPersist.t),
     );
   }
 

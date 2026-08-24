@@ -84,8 +84,12 @@ abstract class ProjectedAddress
     };
   }
 
-  static ProjectedAddressInclude include() {
-    return ProjectedAddressInclude.internal_();
+  static ProjectedAddressInclude include({
+    _is.SelectColumnsBuilder<ProjectedAddressTable>? select,
+  }) {
+    return ProjectedAddressInclude.internal_(
+      selectedColumns: select?.call(ProjectedAddress.t),
+    );
   }
 
   static ProjectedAddressIncludeList includeList({
@@ -95,6 +99,7 @@ abstract class ProjectedAddress
     _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
     _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
     ProjectedAddressInclude? include,
+    _is.SelectColumnsBuilder<ProjectedAddressTable>? select,
   }) {
     return ProjectedAddressIncludeList.internal_(
       where: where,
@@ -103,6 +108,7 @@ abstract class ProjectedAddress
       orderBy: orderBy?.call(ProjectedAddress.t),
       orderByList: orderByList?.call(ProjectedAddress.t),
       include: include,
+      selectedColumns: select?.call(ProjectedAddress.t),
     );
   }
 

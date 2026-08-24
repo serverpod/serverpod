@@ -83,8 +83,12 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     };
   }
 
-  static ChildEntityInclude include() {
-    return ChildEntityInclude.internal_();
+  static ChildEntityInclude include({
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+  }) {
+    return ChildEntityInclude.internal_(
+      selectedColumns: select?.call(ChildEntity.t),
+    );
   }
 
   static ChildEntityIncludeList includeList({
@@ -94,6 +98,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     _is.OrderByBuilder<ChildEntityTable>? orderBy,
     _is.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
   }) {
     return ChildEntityIncludeList.internal_(
       where: where,
@@ -102,6 +107,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
       orderBy: orderBy?.call(ChildEntity.t),
       orderByList: orderByList?.call(ChildEntity.t),
       include: include,
+      selectedColumns: select?.call(ChildEntity.t),
     );
   }
 

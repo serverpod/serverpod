@@ -71,8 +71,12 @@ abstract class ObjectWithByteData
     };
   }
 
-  static ObjectWithByteDataInclude include() {
-    return ObjectWithByteDataInclude.internal_();
+  static ObjectWithByteDataInclude include({
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+  }) {
+    return ObjectWithByteDataInclude.internal_(
+      selectedColumns: select?.call(ObjectWithByteData.t),
+    );
   }
 
   static ObjectWithByteDataIncludeList includeList({
@@ -82,6 +86,7 @@ abstract class ObjectWithByteData
     _is.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
   }) {
     return ObjectWithByteDataIncludeList.internal_(
       where: where,
@@ -90,6 +95,7 @@ abstract class ObjectWithByteData
       orderBy: orderBy?.call(ObjectWithByteData.t),
       orderByList: orderByList?.call(ObjectWithByteData.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithByteData.t),
     );
   }
 

@@ -1708,11 +1708,23 @@ class SerializableModelLibraryGenerator {
                 ..named = true,
             );
           }),
+          Parameter(
+            (p) => p
+              ..name = 'select'
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
         ])
         ..body = refer('${className}Include')
             .property('internal_')
             .call([], {
               for (var field in relationFields) field.name: refer(field.name),
+              'selectedColumns': refer('select').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
             })
             .returned
             .statement,
@@ -1765,6 +1777,15 @@ class SerializableModelLibraryGenerator {
               ..named = true
               ..type = refer('${className}Include?'),
           ),
+          Parameter(
+            (p) => p
+              ..name = 'select'
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..named = true,
+          ),
         ])
         ..body = refer('${className}IncludeList')
             .property('internal_')
@@ -1779,6 +1800,9 @@ class SerializableModelLibraryGenerator {
                 [refer(className).property('t')],
               ),
               'include': refer('include'),
+              'selectedColumns': refer('select').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
             })
             .returned
             .statement,

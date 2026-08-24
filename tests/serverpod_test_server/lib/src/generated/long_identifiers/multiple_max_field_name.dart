@@ -97,8 +97,12 @@ abstract class MultipleMaxFieldName
     };
   }
 
-  static MultipleMaxFieldNameInclude include() {
-    return MultipleMaxFieldNameInclude.internal_();
+  static MultipleMaxFieldNameInclude include({
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+  }) {
+    return MultipleMaxFieldNameInclude.internal_(
+      selectedColumns: select?.call(MultipleMaxFieldName.t),
+    );
   }
 
   static MultipleMaxFieldNameIncludeList includeList({
@@ -108,6 +112,7 @@ abstract class MultipleMaxFieldName
     _is.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     MultipleMaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
   }) {
     return MultipleMaxFieldNameIncludeList.internal_(
       where: where,
@@ -116,6 +121,7 @@ abstract class MultipleMaxFieldName
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
       orderByList: orderByList?.call(MultipleMaxFieldName.t),
       include: include,
+      selectedColumns: select?.call(MultipleMaxFieldName.t),
     );
   }
 
