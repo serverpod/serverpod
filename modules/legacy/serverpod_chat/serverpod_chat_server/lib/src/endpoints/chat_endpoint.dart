@@ -325,9 +325,10 @@ class ChatEndpoint extends Endpoint {
 
     var filePath = _generateAttachmentFilePath(userId, fileName);
 
-    var uploadDescription = await session.storage
-        .createDirectFileUploadDescription(storageId: 'public', path: filePath);
-    if (uploadDescription == null) return null;
+    var uploadDescription = await session.storage.createUploadDescription(
+      storageId: 'public',
+      path: filePath,
+    );
 
     return ChatMessageAttachmentUploadDescription(
       filePath: filePath,
@@ -341,11 +342,11 @@ class ChatEndpoint extends Endpoint {
     String fileName,
     String filePath,
   ) async {
-    var success = await session.storage.verifyDirectFileUpload(
+    var success = await session.storage.verifyUpload(
       storageId: 'public',
       path: filePath,
     );
-    var url = await session.storage.getPublicUrl(
+    var url = await session.storage.publicDownloadUrl(
       storageId: 'public',
       path: filePath,
     );
@@ -361,7 +362,7 @@ class ChatEndpoint extends Endpoint {
     try {
       var ext = path.extension(filePath.toLowerCase());
       if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
-        var response = await http.get(url!);
+        var response = await http.get(url);
         var bytes = response.bodyBytes;
         // Run thumbnail generation in an isolate, because it is CPU-intensive
         var thumbnail = await Isolate.run(() {
@@ -388,21 +389,19 @@ class ChatEndpoint extends Endpoint {
             path: thumbPath,
             byteData: thumbnail.byteData,
           );
-          thumbUrl = await session.storage.getPublicUrl(
+          thumbUrl = await session.storage.publicDownloadUrl(
             storageId: 'public',
             path: thumbPath,
           );
-          if (thumbUrl != null) {
-            thumbWidth = thumbnail.width;
-            thumbHeight = thumbnail.height;
-          }
+          thumbWidth = thumbnail.width;
+          thumbHeight = thumbnail.height;
         }
       }
     } catch (e) {
       rethrow;
     }
 
-    if (success && url != null) {
+    if (success) {
       return ChatMessageAttachment(
         fileName: fileName,
         url: url.toString(),
