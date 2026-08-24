@@ -197,7 +197,7 @@ class PostgresDatabaseConnection
     var table = _getTableOrAssert<T>(session, operation: 'findByIdAsJson');
     var rows = await findAsJson<T>(
       session,
-      where: ColumnInt('id', table).equals(id as int),
+      where: table.id.equals(id),
       transaction: transaction,
       include: include,
       lockMode: lockMode,
