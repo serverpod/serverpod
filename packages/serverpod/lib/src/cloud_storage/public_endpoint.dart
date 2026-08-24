@@ -140,10 +140,12 @@ class CloudStoragePublicEndpoint extends Endpoint {
     String? downloadFileName,
   }) async {
     try {
-      final (file, stat) = await (
+      final results = await Future.wait([
         session.storage.retrieveFile(storageId: storageId, path: path),
         session.storage.statFile(storageId: storageId, path: path),
-      ).wait;
+      ]);
+      final file = results.first as ByteData;
+      final stat = results.last as FileStat;
 
       final extension = p.extension(path).toLowerCase();
       final mimeType = switch (contentTypeOverride ?? stat.contentType) {
