@@ -10,8 +10,8 @@ Flow: server issues upload description → client uploads → server verifies. D
 ## Server: create upload description
 
 ```dart
-Future<String?> getUploadDescription(Session session, String path) async {
-  return await session.storage.createDirectFileUploadDescription(
+Future<String> getUploadDescription(Session session, String path) async {
+  return await session.storage.createUploadDescription(
     storageId: 'public',
     path: path,
   );
@@ -24,7 +24,7 @@ Always authorize the request and derive the path from trusted server-side state 
 
 ```dart
 Future<bool> verifyUpload(Session session, String path) async {
-  return await session.storage.verifyDirectFileUpload(
+  return await session.storage.verifyUpload(
     storageId: 'public', path: path);
 }
 ```
@@ -35,11 +35,9 @@ Always verify after client upload when using object storage.
 
 ```dart
 var desc = await client.myEndpoint.getUploadDescription('profile/$userId/avatar.png');
-if (desc != null) {
-  var uploader = FileUploader(desc);
-  await uploader.upload(byteDataOrStream);
-  await client.myEndpoint.verifyUpload('profile/$userId/avatar.png');
-}
+var uploader = FileUploader(desc);
+await uploader.upload(byteDataOrStream);
+await client.myEndpoint.verifyUpload('profile/$userId/avatar.png');
 ```
 
 Use `Stream` for large files. Paths: no leading slash, object-store compatible, normalized, and scoped to the authenticated user/tenant.
@@ -49,12 +47,13 @@ Use `Stream` for large files. Paths: no leading slash, object-store compatible, 
 - Require authentication/authorization for both description and verification endpoints.
 - Validate or derive content type, size, and extension before issuing descriptions.
 - Never let clients choose cross-tenant paths or storage IDs.
-- Store metadata in your database after `verifyDirectFileUpload` succeeds.
+- Store metadata in your database after `verifyUpload` succeeds.
 
 ## Accessing stored files
 
 - `session.storage.fileExists(storageId: 'public', path: path)`
-- `session.storage.getPublicUrl(storageId: 'public', path: path)` (public storage only)
+- `session.storage.publicDownloadUrl(storageId: 'public', path: path)` (public storage only)
+- `session.storage.temporaryDownloadUrl(storageId: 'private', path: path)` (time-limited access to private files)
 - `session.storage.retrieveFile(storageId: 'public', path: path)`
 
 ## Storage backends
