@@ -9,6 +9,7 @@ environment:
   sdk: DART_VERSION
 
 dependencies:
+  serverpod: SERVERPOD_VERSION
   serverpod_client: SERVERPOD_VERSION
   serverpod_cloud_storage_s3_compat: SERVERPOD_VERSION
   test: ^1.25.5

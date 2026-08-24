@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:serverpod/serverpod.dart' show FileMetadata;
 import 'package:serverpod_client/serverpod_client.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
@@ -263,6 +265,100 @@ void runS3CompatIntegrationTests({
         );
       });
 
+      group('Given a file with metadata', () {
+        const metadata = FileMetadata(
+          contentType: 'application/gzip',
+          cacheControl: 'private, max-age=60',
+          contentDisposition: 'attachment; filename="metadata.txt.gz"',
+          contentEncoding: 'gzip',
+          custom: {
+            'integration-test': 's3-compatible',
+            'tenant': 'serverpod',
+          },
+        );
+
+        void expectMetadata(Map<String, String> headers) {
+          print(headers);
+          expect(headers['content-type'], metadata.contentType);
+          expect(headers['cache-control'], metadata.cacheControl);
+          expect(headers['content-disposition'], metadata.contentDisposition);
+          expect(
+            headers['content-encoding'] ??
+                headers['x-goog-stored-content-encoding'],
+            metadata.contentEncoding,
+          );
+          expect(headers['x-amz-meta-tenant'], metadata.custom['tenant']);
+          expect(
+            headers['x-amz-meta-integration-test'],
+            metadata.custom['integration-test'],
+          );
+        }
+
+        test(
+          'when uploading with uploadData, '
+          'then the metadata is stored',
+          () async {
+            final path = testPath('upload-data-metadata.txt.gz');
+            final bytes = Uint8List.fromList(
+              gzip.encode('uploadData metadata ${DateTime.now()}'.codeUnits),
+            );
+
+            await uploadStrategy.uploadData(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              data: ByteData.sublistView(bytes),
+              path: path,
+              public: false,
+              endpoints: endpoints,
+              metadata: metadata,
+            );
+
+            final response = await client.headObject(path);
+
+            expect(response.statusCode, 200);
+            expectMetadata(response.headers);
+          },
+        );
+
+        test(
+          'when uploading with a direct upload description, '
+          'then the metadata is stored',
+          () async {
+            final path = testPath('direct-upload-metadata.txt.gz');
+            final bytes = Uint8List.fromList(
+              gzip.encode(
+                'direct upload metadata ${DateTime.now()}'.codeUnits,
+              ),
+            );
+            final data = ByteData.sublistView(bytes);
+            final description = await uploadStrategy.createUploadDescription(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              path: path,
+              expiration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              public: false,
+              endpoints: endpoints,
+              metadata: metadata,
+              contentLength: data.lengthInBytes,
+            );
+
+            final uploader = FileUploader(description.encode());
+            final success = await uploader.uploadByteData(data);
+            expect(success, isTrue);
+
+            final response = await client.headObject(path);
+
+            expect(response.statusCode, 200);
+            expectMetadata(response.headers);
+          },
+        );
+      });
+
       group('Given a valid upload strategy', () {
         test(
           'when creating a direct upload description '
@@ -270,21 +366,19 @@ void runS3CompatIntegrationTests({
           () async {
             final path = testPath('presigned-description-test.txt');
 
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
-                  accessKey: config!.accessKey,
-                  secretKey: config.secretKey,
-                  bucket: config.bucket,
-                  region: config.region,
-                  path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
-                  public: false,
-                  endpoints: endpoints,
-                );
+            final description = await uploadStrategy.createUploadDescription(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              path: path,
+              expiration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              public: false,
+              endpoints: endpoints,
+            );
 
-            expect(description, isNotNull);
-            expect(description, isNotEmpty);
+            expect(description.encode(), isNotEmpty);
 
             // Remove from cleanup since we didn't actually upload
             testFiles.remove(path);
@@ -302,23 +396,20 @@ void runS3CompatIntegrationTests({
             );
 
             // Create the upload description (simulates server-side)
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
-                  accessKey: config!.accessKey,
-                  secretKey: config.secretKey,
-                  bucket: config.bucket,
-                  region: config.region,
-                  path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
-                  public: false,
-                  endpoints: endpoints,
-                );
-
-            expect(description, isNotNull);
+            final description = await uploadStrategy.createUploadDescription(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              path: path,
+              expiration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              public: false,
+              endpoints: endpoints,
+            );
 
             // Use FileUploader to upload (simulates client-side)
-            final uploader = FileUploader(description!);
+            final uploader = FileUploader(description.encode());
             final success = await uploader.uploadByteData(data);
 
             expect(success, isTrue);
@@ -340,23 +431,20 @@ void runS3CompatIntegrationTests({
               Uint8List.fromList(content.codeUnits).buffer,
             );
 
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
-                  accessKey: config!.accessKey,
-                  secretKey: config.secretKey,
-                  bucket: config.bucket,
-                  region: config.region,
-                  path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
-                  public: false,
-                  endpoints: endpoints,
-                  contentLength: data.lengthInBytes,
-                );
+            final description = await uploadStrategy.createUploadDescription(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              path: path,
+              expiration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              public: false,
+              endpoints: endpoints,
+              contentLength: data.lengthInBytes,
+            );
 
-            expect(description, isNotNull);
-
-            final uploader = FileUploader(description!);
+            final uploader = FileUploader(description.encode());
             final success = await uploader.uploadByteData(data);
 
             expect(success, isTrue);
@@ -378,23 +466,20 @@ void runS3CompatIntegrationTests({
             final data = ByteData.view(bytes.buffer);
 
             // Create the upload description
-            final description = await uploadStrategy
-                .createDirectUploadDescription(
-                  accessKey: config!.accessKey,
-                  secretKey: config.secretKey,
-                  bucket: config.bucket,
-                  region: config.region,
-                  path: path,
-                  expiration: Duration(minutes: 5),
-                  maxFileSize: 10 * 1024 * 1024,
-                  public: false,
-                  endpoints: endpoints,
-                );
-
-            expect(description, isNotNull);
+            final description = await uploadStrategy.createUploadDescription(
+              accessKey: config!.accessKey,
+              secretKey: config.secretKey,
+              bucket: config.bucket,
+              region: config.region,
+              path: path,
+              expiration: Duration(minutes: 5),
+              maxFileSize: 10 * 1024 * 1024,
+              public: false,
+              endpoints: endpoints,
+            );
 
             // Use FileUploader to upload
-            final uploader = FileUploader(description!);
+            final uploader = FileUploader(description.encode());
             final success = await uploader.uploadByteData(data);
 
             expect(success, isTrue);
@@ -512,23 +597,20 @@ void runS3CompatIntegrationTests({
                 Uint8List.fromList(content.codeUnits).buffer,
               );
 
-              final description = await uploadStrategy
-                  .createDirectUploadDescription(
-                    accessKey: config!.accessKey,
-                    secretKey: config.secretKey,
-                    bucket: config.bucket,
-                    region: config.region,
-                    path: path,
-                    expiration: Duration(minutes: 5),
-                    maxFileSize: 10 * 1024 * 1024,
-                    public: false,
-                    endpoints: endpoints,
-                    preventOverwrite: true,
-                  );
+              final description = await uploadStrategy.createUploadDescription(
+                accessKey: config!.accessKey,
+                secretKey: config.secretKey,
+                bucket: config.bucket,
+                region: config.region,
+                path: path,
+                expiration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                public: false,
+                endpoints: endpoints,
+                preventOverwrite: true,
+              );
 
-              expect(description, isNotNull);
-
-              final uploader = FileUploader(description!);
+              final uploader = FileUploader(description.encode());
               final success = await uploader.uploadByteData(data);
 
               expect(success, isTrue);
@@ -568,27 +650,24 @@ void runS3CompatIntegrationTests({
               );
 
               // Create direct upload description with preventOverwrite
-              final description = await uploadStrategy
-                  .createDirectUploadDescription(
-                    accessKey: config.accessKey,
-                    secretKey: config.secretKey,
-                    bucket: config.bucket,
-                    region: config.region,
-                    path: path,
-                    expiration: Duration(minutes: 5),
-                    maxFileSize: 10 * 1024 * 1024,
-                    public: false,
-                    endpoints: endpoints,
-                    preventOverwrite: true,
-                  );
-
-              expect(description, isNotNull);
+              final description = await uploadStrategy.createUploadDescription(
+                accessKey: config.accessKey,
+                secretKey: config.secretKey,
+                bucket: config.bucket,
+                region: config.region,
+                path: path,
+                expiration: Duration(minutes: 5),
+                maxFileSize: 10 * 1024 * 1024,
+                public: false,
+                endpoints: endpoints,
+                preventOverwrite: true,
+              );
 
               final duplicateData = ByteData.view(
                 Uint8List.fromList('duplicate'.codeUnits).buffer,
               );
 
-              final uploader = FileUploader(description!);
+              final uploader = FileUploader(description.encode());
               final success = await uploader.uploadByteData(duplicateData);
 
               expect(success, isFalse);
