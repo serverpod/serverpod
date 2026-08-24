@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod/serverpod.dart' show CloudStorageException;
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 
@@ -59,6 +59,25 @@ void main() {
           expect(mockUploadStrategy.uploadedPreventOverwrite, isTrue);
         },
       );
+
+      test(
+        'when a conditional upload is rejected, '
+        'then it throws a CloudStorageFileAlreadyExistsException',
+        () async {
+          mockUploadStrategy.uploadError = S3Exception(
+            http.Response('', 412),
+          );
+
+          await expectLater(
+            () => storage.testStoreFile(
+              'test/file.txt',
+              ByteData(1),
+              preventOverwrite: true,
+            ),
+            throwsA(isA<CloudStorageFileAlreadyExistsException>()),
+          );
+        },
+      );
     });
 
     group('Given an existing file', () {
@@ -72,8 +91,7 @@ void main() {
           final result = await storage.testRetrieveFile('existing/file.txt');
 
           expect(mockClient.lastGetKey, 'existing/file.txt');
-          expect(result, isNotNull);
-          expect(result!.buffer.asUint8List(), fileContent);
+          expect(result.buffer.asUint8List(), fileContent);
         },
       );
 
@@ -81,7 +99,11 @@ void main() {
         'when checking if it exists '
         'then it returns true',
         () async {
-          mockClient.headObjectResponse = http.Response('', 200);
+          mockClient.headObjectResponse = http.Response(
+            '',
+            200,
+            headers: {'content-length': '0'},
+          );
 
           final exists = await storage.testFileExists('existing.txt');
 
@@ -94,11 +116,14 @@ void main() {
         'when getting its public URL '
         'then it returns the URL',
         () async {
-          mockClient.headObjectResponse = http.Response('', 200);
+          mockClient.headObjectResponse = http.Response(
+            '',
+            200,
+            headers: {'content-length': '0'},
+          );
 
-          final url = await storage.testGetPublicUrl('path/to/file.txt');
+          final url = await storage.testPublicDownloadUrl('path/to/file.txt');
 
-          expect(url, isNotNull);
           expect(url.toString(), contains('test-bucket'));
           expect(url.toString(), contains('path/to/file.txt'));
         },
@@ -120,11 +145,13 @@ void main() {
         'when verifying direct file upload '
         'then it returns true',
         () async {
-          mockClient.headObjectResponse = http.Response('', 200);
-
-          final verified = await storage.testVerifyDirectFileUpload(
-            'uploaded.txt',
+          mockClient.headObjectResponse = http.Response(
+            '',
+            200,
+            headers: {'content-length': '0'},
           );
+
+          final verified = await storage.testVerifyUpload('uploaded.txt');
 
           expect(mockClient.lastHeadKey, 'uploaded.txt');
           expect(verified, isTrue);
@@ -134,14 +161,15 @@ void main() {
 
     group('Given a missing file', () {
       test(
-        'when retrieving it '
-        'then it returns null',
+        'when retrieving it, '
+        'then it throws a CloudStorageFileNotFoundException',
         () async {
           mockClient.getObjectResponse = http.Response('Not Found', 404);
 
-          final result = await storage.testRetrieveFile('missing/file.txt');
-
-          expect(result, isNull);
+          await expectLater(
+            () => storage.testRetrieveFile('missing/file.txt'),
+            throwsA(isA<CloudStorageFileNotFoundException>()),
+          );
         },
       );
 
@@ -158,14 +186,15 @@ void main() {
       );
 
       test(
-        'when getting its public URL '
-        'then it returns null',
+        'when getting its public URL, '
+        'then it throws a CloudStorageFileNotFoundException',
         () async {
           mockClient.headObjectResponse = http.Response('', 404);
 
-          final url = await storage.testGetPublicUrl('missing.txt');
-
-          expect(url, isNull);
+          await expectLater(
+            () => storage.testPublicDownloadUrl('missing.txt'),
+            throwsA(isA<CloudStorageFileNotFoundException>()),
+          );
         },
       );
 
@@ -175,14 +204,25 @@ void main() {
         () async {
           mockClient.headObjectResponse = http.Response('', 404);
 
-          final verified = await storage.testVerifyDirectFileUpload(
-            'not-uploaded.txt',
-          );
+          final verified = await storage.testVerifyUpload('not-uploaded.txt');
 
           expect(verified, isFalse);
         },
       );
     });
+
+    test(
+      'Given a storage error, '
+      'when verifying the upload then it throws a CloudStorageException',
+      () async {
+        mockClient.headObjectResponse = http.Response('', 500);
+
+        await expectLater(
+          () => storage.testVerifyUpload('upload.txt'),
+          throwsA(isA<CloudStorageException>()),
+        );
+      },
+    );
 
     group('Given a direct upload description request', () {
       test(
@@ -190,9 +230,11 @@ void main() {
         'then it delegates to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
-              '{"url":"https://example.com"}';
+              BinaryUploadDescription(
+                url: Uri.parse('https://example.com'),
+              );
 
-          final description = await storage.testCreateDirectUploadDescription(
+          final description = await storage.testCreateUploadDescription(
             'upload/target.txt',
             expiration: Duration(minutes: 5),
             maxFileSize: 1024 * 1024,
@@ -204,7 +246,10 @@ void main() {
             Duration(minutes: 5),
           );
           expect(mockUploadStrategy.directUploadMaxFileSize, 1024 * 1024);
-          expect(description, '{"url":"https://example.com"}');
+          expect(
+            description,
+            same(mockUploadStrategy.directUploadDescriptionResult),
+          );
         },
       );
 
@@ -213,9 +258,11 @@ void main() {
         'then it forwards contentLength to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
-              '{"url":"https://example.com"}';
+              BinaryUploadDescription(
+                url: Uri.parse('https://example.com'),
+              );
 
-          await storage.testCreateDirectUploadDescription(
+          await storage.testCreateUploadDescription(
             'upload/target.txt',
             maxFileSize: 1024 * 1024,
             contentLength: 512 * 1024,
@@ -230,9 +277,11 @@ void main() {
         'then it forwards null contentLength to the upload strategy',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
-              '{"url":"https://example.com"}';
+              BinaryUploadDescription(
+                url: Uri.parse('https://example.com'),
+              );
 
-          await storage.testCreateDirectUploadDescription(
+          await storage.testCreateUploadDescription(
             'upload/target.txt',
           );
 
@@ -241,11 +290,27 @@ void main() {
       );
 
       test(
+        'when the strategy cannot enforce maxFileSize without contentLength '
+        'then it throws unsupported',
+        () {
+          mockUploadStrategy.canEnforceMaxFileSize = false;
+
+          expect(
+            () => storage.createUploadDescription(
+              session: _FakeSession(),
+              path: 'upload/target.txt',
+            ),
+            throwsA(isA<CloudStorageUnsupportedOperationException>()),
+          );
+        },
+      );
+
+      test(
         'when contentLength exceeds maxFileSize '
-        'then it throws CloudStorageException',
+        'then it throws a cloud storage exception',
         () async {
           expect(
-            () => storage.testCreateDirectUploadDescription(
+            () => storage.testCreateUploadDescription(
               'upload/target.txt',
               maxFileSize: 1024 * 1024,
               contentLength: 2 * 1024 * 1024,
@@ -260,9 +325,11 @@ void main() {
         'then it succeeds',
         () async {
           mockUploadStrategy.directUploadDescriptionResult =
-              '{"url":"https://example.com"}';
+              BinaryUploadDescription(
+                url: Uri.parse('https://example.com'),
+              );
 
-          final description = await storage.testCreateDirectUploadDescription(
+          final description = await storage.testCreateUploadDescription(
             'upload/target.txt',
             maxFileSize: 1024 * 1024,
             contentLength: 1024 * 1024,
@@ -281,7 +348,11 @@ void main() {
     'then it produces correct custom URL format',
     () async {
       final mockClient = MockS3Client();
-      mockClient.headObjectResponse = http.Response('', 200);
+      mockClient.headObjectResponse = http.Response(
+        '',
+        200,
+        headers: {'content-length': '0'},
+      );
 
       final storage = TestableS3CompatCloudStorage(
         mockClient: mockClient,
@@ -294,11 +365,130 @@ void main() {
         ),
       );
 
-      final url = await storage.testGetPublicUrl('file.txt');
+      final url = await storage.testPublicDownloadUrl('file.txt');
 
       expect(url.toString(), 'http://localhost:4566/local-bucket/file.txt');
     },
   );
+
+  test(
+    'Given a private TestableS3CompatCloudStorage, '
+    'when requesting a public URL, '
+    'then it throws a CloudStorageUnsupportedOperationException',
+    () async {
+      final privateStorage = TestableS3CompatCloudStorage(
+        mockClient: MockS3Client(),
+        mockUploadStrategy: MockUploadStrategy(),
+        public: false,
+      );
+
+      await expectLater(
+        () => privateStorage.publicDownloadUrl(
+          session: _FakeSession(),
+          path: 'file.txt',
+        ),
+        throwsA(isA<CloudStorageUnsupportedOperationException>()),
+      );
+    },
+  );
+
+  group('Given a public TestableS3CompatCloudStorage', () {
+    late MockS3Client client;
+    late TestableS3CompatCloudStorage storage;
+    late Session session;
+
+    setUp(() {
+      client = MockS3Client();
+      storage = TestableS3CompatCloudStorage(
+        mockClient: client,
+        mockUploadStrategy: MockUploadStrategy(),
+      );
+      session = _FakeSession();
+    });
+
+    test('when statting a file, then HEAD metadata is retained', () async {
+      client.headObjectResponse = http.Response(
+        '',
+        200,
+        headers: {
+          'content-length': '42',
+          'last-modified': 'Fri, 21 Aug 2026 12:00:00 GMT',
+          'content-type': 'text/plain',
+          'cache-control': 'max-age=60',
+          'content-disposition': 'inline',
+          'content-encoding': 'gzip',
+          'etag': 'etag-value',
+          'x-amz-meta-tenant': 'acme',
+        },
+      );
+
+      final stat = await storage.statFile(
+        session: session,
+        path: 'file.txt',
+      );
+
+      expect(stat.size, 42);
+      expect(stat.contentType, 'text/plain');
+      expect(stat.cacheControl, 'max-age=60');
+      expect(stat.contentDisposition, 'inline');
+      expect(stat.contentEncoding, 'gzip');
+      expect(stat.etag, 'etag-value');
+      expect(stat.custom, {'tenant': 'acme'});
+    });
+
+    test(
+      'when statting a non-existent file, '
+      'then it throws a CloudStorageFileNotFoundException',
+      () async {
+        client.headObjectResponse = http.Response('', 404);
+
+        await expectLater(
+          () => storage.statFile(session: session, path: 'missing.txt'),
+          throwsA(isA<CloudStorageFileNotFoundException>()),
+        );
+      },
+    );
+
+    test(
+      'when creating a temporary URL, then response overrides are signed',
+      () async {
+        client.headObjectResponse = http.Response(
+          '',
+          200,
+          headers: {
+            'content-length': '42',
+          },
+        );
+
+        final url = await storage.temporaryDownloadUrl(
+          session: session,
+          path: 'report.pdf',
+          options: const TemporaryDownloadUrlOptions(
+            expirationDuration: Duration(minutes: 5),
+            downloadFileName: 'Quarterly report.pdf',
+            contentType: 'application/pdf',
+          ),
+        );
+
+        expect(url.queryParameters['X-Amz-Expires'], '300');
+        expect(url.queryParameters, contains('X-Amz-Signature'));
+        expect(
+          url.queryParameters['response-content-type'],
+          'application/pdf',
+        );
+        expect(
+          url.queryParameters['response-content-disposition'],
+          contains('Quarterly%20report.pdf'),
+        );
+      },
+    );
+  });
+}
+
+class _FakeSession implements Session {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName} is not implemented.');
 }
 
 // Simple mock S3Client for testing
@@ -343,6 +533,8 @@ class MockS3Client extends S3Client {
 
 // Simple mock upload strategy for testing
 class MockUploadStrategy implements S3UploadStrategy {
+  Object? uploadError;
+  bool canEnforceMaxFileSize = true;
   String? uploadedPath;
   ByteData? uploadedData;
   bool? uploadedPreventOverwrite;
@@ -351,10 +543,18 @@ class MockUploadStrategy implements S3UploadStrategy {
   int? directUploadMaxFileSize;
   int? directUploadContentLength;
 
-  String? directUploadDescriptionResult;
+  UploadDescription directUploadDescriptionResult = BinaryUploadDescription(
+    url: Uri.parse('https://example.com'),
+  );
 
   @override
   String get uploadType => 'mock';
+
+  @override
+  bool get supportsPreventOverwrite => true;
+
+  @override
+  bool get supportsMaxFileSize => canEnforceMaxFileSize;
 
   @override
   Future<void> uploadData({
@@ -366,15 +566,17 @@ class MockUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     bool preventOverwrite = false,
   }) async {
+    if (uploadError case final error?) throw error;
     uploadedPath = path;
     uploadedData = data;
     uploadedPreventOverwrite = preventOverwrite;
   }
 
   @override
-  Future<String?> createDirectUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -384,6 +586,7 @@ class MockUploadStrategy implements S3UploadStrategy {
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     int? contentLength,
     bool preventOverwrite = false,
   }) async {
@@ -425,63 +628,44 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
     String path,
     ByteData data, {
     bool preventOverwrite = false,
-  }) async {
-    await uploadStrategy.uploadData(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      region: region,
-      data: data,
-      path: path,
-      public: public,
-      endpoints: endpoints,
-      preventOverwrite: preventOverwrite,
-    );
-  }
+  }) => storeFile(
+    session: _FakeSession(),
+    path: path,
+    byteData: data,
+    options: StoreFileOptions(preventOverwrite: preventOverwrite),
+  );
 
   /// Test helper to call retrieveFile without a real Session.
-  Future<ByteData?> testRetrieveFile(String path) async {
-    final response = await mockClient.getObject(path);
-    if (response.statusCode == 200) {
-      return ByteData.view(response.bodyBytes.buffer);
-    }
-    return null;
-  }
+  Future<ByteData> testRetrieveFile(String path) =>
+      retrieveFile(session: _FakeSession(), path: path);
 
   /// Test helper to check file existence without a real Session.
-  Future<bool> testFileExists(String path) async {
-    final response = await mockClient.headObject(path);
-    return response.statusCode == 200;
-  }
+  Future<bool> testFileExists(String path) =>
+      fileExists(session: _FakeSession(), path: path);
 
   /// Test helper to get public URL without a real Session.
-  Future<Uri?> testGetPublicUrl(String path) async {
-    if (await testFileExists(path)) {
-      return endpoints.buildPublicUri(bucket, region, path);
-    }
-    return null;
-  }
+  Future<Uri> testPublicDownloadUrl(String path) =>
+      publicDownloadUrl(session: _FakeSession(), path: path);
 
   /// Test helper to delete file without a real Session.
   Future<void> testDeleteFile(String path) async {
     await mockClient.deleteObject(path);
   }
 
-  /// Test helper for direct upload description without a real Session.
-  Future<String?> testCreateDirectUploadDescription(
+  /// Test helper for an upload description without a real Session.
+  Future<UploadDescription> testCreateUploadDescription(
     String path, {
     Duration expiration = const Duration(minutes: 10),
     int maxFileSize = 10 * 1024 * 1024,
     int? contentLength,
     bool preventOverwrite = false,
   }) async {
-    if (contentLength != null && contentLength > maxFileSize) {
-      throw CloudStorageException(
-        'Content length ($contentLength bytes) exceeds maximum file size ($maxFileSize bytes).',
-      );
-    }
+    UploadOptions(
+      maxFileSize: maxFileSize,
+      contentLength: contentLength,
+    ).validate();
 
-    return uploadStrategy.createDirectUploadDescription(
+    return uploadStrategy.createUploadDescription(
       accessKey: accessKey,
       secretKey: secretKey,
       bucket: bucket,
@@ -496,8 +680,7 @@ class TestableS3CompatCloudStorage extends S3CompatCloudStorage {
     );
   }
 
-  /// Test helper for verify direct upload without a real Session.
-  Future<bool> testVerifyDirectFileUpload(String path) async {
-    return testFileExists(path);
-  }
+  /// Test helper for upload verification without a real Session.
+  Future<bool> testVerifyUpload(String path) =>
+      verifyUpload(session: _FakeSession(), path: path);
 }
