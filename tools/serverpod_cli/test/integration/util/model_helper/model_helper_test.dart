@@ -534,7 +534,9 @@ fields:
           ),
         );
         serverModelsDir.createSync(recursive: true);
-        File(join(serverModelsDir.path, 'server_model.yaml')).writeAsStringSync(
+        File(
+          join(serverModelsDir.path, 'server_model.spy.yaml'),
+        ).writeAsStringSync(
           '''
 class: ServerModel
 fields:
@@ -553,7 +555,9 @@ fields:
           ),
         );
         sharedModelsDir.createSync(recursive: true);
-        File(join(sharedModelsDir.path, 'shared_model.yaml')).writeAsStringSync(
+        File(
+          join(sharedModelsDir.path, 'shared_model.spy.yaml'),
+        ).writeAsStringSync(
           '''
 class: SharedModel
 fields:
