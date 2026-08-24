@@ -19,6 +19,21 @@ fields:
 
   ### True if the file has been verified as uploaded.
   verified: bool
+
+  ### MIME type stored with the file.
+  contentType: String?
+
+  ### HTTP cache control value stored with the file.
+  cacheControl: String?
+
+  ### HTTP content disposition value stored with the file.
+  contentDisposition: String?
+
+  ### HTTP content encoding value stored with the file.
+  contentEncoding: String?
+
+  ### JSON-encoded custom metadata stored with the file.
+  customMetadata: String?
 indexes:
   serverpod_cloud_storage_path_idx:
     fields: storageId, path

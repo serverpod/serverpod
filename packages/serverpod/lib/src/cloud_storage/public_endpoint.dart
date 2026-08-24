@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/generated/cloud_storage_direct_download.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 import 'package:path/path.dart' as p;
 
@@ -28,21 +31,34 @@ class CloudStoragePublicEndpoint extends Endpoint {
   bool get sendAsRaw => true;
 
   /// Retrieves a file from the public database cloud storage.
-  Future<Body?> file(MethodCallSession session, String path) async {
-    // Fetch the file from storage.
-    var file = await session.storage.retrieveFile(
-      storageId: 'public',
-      path: path,
-    );
+  Future<Response> file(MethodCallSession session, String path) =>
+      _fileResponse(session, storageId: 'public', path: path);
 
-    if (file == null) {
-      throw EndpointNotFoundException('File not found: $path');
+  /// Retrieves a file using a temporary database-storage download token.
+  Future<Response> temporaryFile(
+    MethodCallSession session,
+    String storageId,
+    String path,
+    String key,
+  ) async {
+    final download = await CloudStorageDirectDownloadEntry.db.findFirstRow(
+      session,
+      where: (t) =>
+          t.storageId.equals(storageId) &
+          t.path.equals(path) &
+          t.authKey.equals(key) &
+          (t.expiration > DateTime.now().toUtc()),
+    );
+    if (download == null) {
+      throw EndpointNotFoundException('Temporary download URL is invalid.');
     }
 
-    final extension = p.extension(path).toLowerCase();
-    return Body.fromData(
-      Uint8List.sublistView(file),
-      mimeType: _mimeTypeMapping[extension] ?? MimeType.octetStream,
+    return _fileResponse(
+      session,
+      storageId: storageId,
+      path: path,
+      contentTypeOverride: download.contentType,
+      downloadFileName: download.downloadFileName,
     );
   }
 
@@ -61,40 +77,107 @@ class CloudStoragePublicEndpoint extends Endpoint {
               CloudStorageDirectUploadEntry.t.path.equals(path),
         );
 
-    if (uploadInfo == null) return false;
+    if (uploadInfo == null ||
+        uploadInfo.authKey != key ||
+        !uploadInfo.expiration.isAfter(DateTime.now().toUtc())) {
+      return false;
+    }
 
-    await session.db.deleteRow(uploadInfo);
-
-    if (uploadInfo.authKey != key) return false;
-
-    var body = await _readBinaryBody(session.request);
+    var body = await _readBinaryBody(
+      session.request,
+      min(uploadInfo.maxFileSize, server.serverpod.config.maxRequestSize),
+    );
     if (body == null) return false;
+
+    if (uploadInfo.contentLength != null &&
+        body.length != uploadInfo.contentLength) {
+      return false;
+    }
 
     var byteData = ByteData.sublistView(body);
 
     var storage = server.serverpod.storage[storageId];
-    if (storage == null) return false;
+    if (storage is! DatabaseCloudStorage) return false;
 
-    await storage.storeFile(
+    await storage.storeUnverifiedFile(
       session: session,
       path: path,
       byteData: byteData,
-      verified: false,
+      options: StoreFileOptions(
+        preventOverwrite: uploadInfo.preventOverwrite,
+        metadata: FileMetadata(
+          contentType: uploadInfo.contentType,
+          cacheControl: uploadInfo.cacheControl,
+          contentDisposition: uploadInfo.contentDisposition,
+          contentEncoding: uploadInfo.contentEncoding,
+          custom: _decodeCustomMetadata(uploadInfo.customMetadata),
+        ),
+      ),
     );
+
+    await CloudStorageDirectUploadEntry.db.deleteRow(session, uploadInfo);
 
     return true;
   }
 
-  Future<Uint8List?> _readBinaryBody(Request request) async {
+  Future<Uint8List?> _readBinaryBody(Request request, int maxFileSize) async {
     int len = 0;
     var builder = BytesBuilder(copy: false);
 
     await for (var chunk in request.read()) {
       len += chunk.length;
-      if (len > server.serverpod.config.maxRequestSize) return null;
+      if (len > maxFileSize) return null;
       builder.add(chunk);
     }
     return builder.takeBytes();
+  }
+
+  Future<Response> _fileResponse(
+    MethodCallSession session, {
+    required String storageId,
+    required String path,
+    String? contentTypeOverride,
+    String? downloadFileName,
+  }) async {
+    try {
+      final (file, stat) = await (
+        session.storage.retrieveFile(storageId: storageId, path: path),
+        session.storage.statFile(storageId: storageId, path: path),
+      ).wait;
+
+      final extension = p.extension(path).toLowerCase();
+      final mimeType = switch (contentTypeOverride ?? stat.contentType) {
+        final value? => MimeType.parse(value),
+        null => _mimeTypeMapping[extension] ?? MimeType.octetStream,
+      };
+      final headers = Headers.build((mutableHeaders) {
+        if (stat.cacheControl != null) {
+          mutableHeaders['Cache-Control'] = [stat.cacheControl!];
+        }
+        if (stat.contentEncoding != null) {
+          mutableHeaders['Content-Encoding'] = [stat.contentEncoding!];
+        }
+        final disposition = downloadFileName == null
+            ? stat.contentDisposition
+            : "attachment; filename*=UTF-8''${Uri.encodeComponent(downloadFileName)}";
+        if (disposition != null) {
+          mutableHeaders['Content-Disposition'] = [disposition];
+        }
+      });
+      return Response.ok(
+        body: Body.fromData(Uint8List.sublistView(file), mimeType: mimeType),
+        headers: headers,
+      );
+    } on CloudStorageFileNotFoundException {
+      throw EndpointNotFoundException('File not found: $path');
+    }
+  }
+
+  Map<String, String> _decodeCustomMetadata(String? metadata) {
+    if (metadata == null) return const {};
+    final decoded = jsonDecode(metadata);
+    if (decoded is! Map) return const {};
+    return decoded.cast<String, String>();
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an
@@ -140,6 +223,34 @@ class CloudStoragePublicEndpoint extends Endpoint {
           },
           call: (Session session, Map<String, dynamic> params) async {
             return upload(
+              session as MethodCallSession,
+              params['storage'],
+              params['path'],
+              params['key'],
+            );
+          },
+        ),
+        'temporaryFile': MethodConnector(
+          name: name,
+          params: {
+            'storage': ParameterDescription(
+              name: 'storage',
+              type: String,
+              nullable: false,
+            ),
+            'path': ParameterDescription(
+              name: 'path',
+              type: String,
+              nullable: false,
+            ),
+            'key': ParameterDescription(
+              name: 'key',
+              type: String,
+              nullable: false,
+            ),
+          },
+          call: (Session session, Map<String, dynamic> params) async {
+            return temporaryFile(
               session as MethodCallSession,
               params['storage'],
               params['path'],

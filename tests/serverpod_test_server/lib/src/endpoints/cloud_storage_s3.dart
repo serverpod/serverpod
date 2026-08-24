@@ -23,14 +23,14 @@ class S3CloudStorageEndpoint extends Endpoint {
     );
   }
 
-  Future<ByteData?> retrievePublicFile(Session session, String path) async {
+  Future<ByteData> retrievePublicFile(Session session, String path) async {
     return await session.storage.retrieveFile(
       storageId: 's3',
       path: path,
     );
   }
 
-  Future<bool?> existsPublicFile(Session session, String path) async {
+  Future<bool> existsPublicFile(Session session, String path) async {
     return await session.storage.fileExists(
       storageId: 's3',
       path: path,
@@ -44,20 +44,26 @@ class S3CloudStorageEndpoint extends Endpoint {
     );
   }
 
-  Future<String?> getPublicUrlForFile(Session session, String path) async {
-    var uri = await session.storage.getPublicUrl(storageId: 's3', path: path);
-    return uri?.toString();
+  Future<String> publicDownloadUrlForFile(Session session, String path) async {
+    var uri = await session.storage.publicDownloadUrl(
+      storageId: 's3',
+      path: path,
+    );
+    return uri.toString();
   }
 
-  Future<String?> getDirectFilePostUrl(Session session, String path) async {
-    return await session.storage.createDirectFileUploadDescription(
+  Future<String> createUploadDescriptionForFile(
+    Session session,
+    String path,
+  ) async {
+    return await session.storage.createUploadDescription(
       storageId: 's3',
       path: path,
     );
   }
 
-  Future<bool> verifyDirectFileUpload(Session session, String path) async {
-    return await session.storage.verifyDirectFileUpload(
+  Future<bool> verifyUpload(Session session, String path) async {
+    return await session.storage.verifyUpload(
       storageId: 's3',
       path: path,
     );

@@ -36,17 +36,18 @@ cloudStorage:
   - retrievePublicFile:
   - existsPublicFile:
   - deletePublicFile:
-  - getPublicUrlForFile:
-  - getDirectFilePostUrl:
-  - verifyDirectFileUpload:
+  - publicDownloadUrlForFile:
+  - temporaryDownloadUrlForFile:
+  - createUploadDescriptionForFile:
+  - verifyUpload:
 s3CloudStorage:
   - storePublicFile:
   - retrievePublicFile:
   - existsPublicFile:
   - deletePublicFile:
-  - getPublicUrlForFile:
-  - getDirectFilePostUrl:
-  - verifyDirectFileUpload:
+  - publicDownloadUrlForFile:
+  - createUploadDescriptionForFile:
+  - verifyUpload:
 customClassProtocol:
   - getProtocolField:
 customTypes:

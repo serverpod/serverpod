@@ -24,6 +24,11 @@ abstract class CloudStorageEntry
     this.expiration,
     required this.byteData,
     required this.verified,
+    this.contentType,
+    this.cacheControl,
+    this.contentDisposition,
+    this.contentEncoding,
+    this.customMetadata,
   });
 
   factory CloudStorageEntry({
@@ -34,6 +39,11 @@ abstract class CloudStorageEntry
     DateTime? expiration,
     required _idt.ByteData byteData,
     required bool verified,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   }) = _CloudStorageEntryImpl;
 
   factory CloudStorageEntry.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -51,6 +61,11 @@ abstract class CloudStorageEntry
         jsonSerialization['byteData'],
       ),
       verified: _is.BoolJsonExtension.fromJson(jsonSerialization['verified']),
+      contentType: jsonSerialization['contentType'] as String?,
+      cacheControl: jsonSerialization['cacheControl'] as String?,
+      contentDisposition: jsonSerialization['contentDisposition'] as String?,
+      contentEncoding: jsonSerialization['contentEncoding'] as String?,
+      customMetadata: jsonSerialization['customMetadata'] as String?,
     );
   }
 
@@ -79,6 +94,21 @@ abstract class CloudStorageEntry
   /// True if the file has been verified as uploaded.
   bool verified;
 
+  /// MIME type stored with the file.
+  String? contentType;
+
+  /// HTTP cache control value stored with the file.
+  String? cacheControl;
+
+  /// HTTP content disposition value stored with the file.
+  String? contentDisposition;
+
+  /// HTTP content encoding value stored with the file.
+  String? contentEncoding;
+
+  /// JSON-encoded custom metadata stored with the file.
+  String? customMetadata;
+
   @override
   _is.Table<int?> get table => t;
 
@@ -93,6 +123,11 @@ abstract class CloudStorageEntry
     DateTime? expiration,
     _idt.ByteData? byteData,
     bool? verified,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -105,6 +140,11 @@ abstract class CloudStorageEntry
       if (expiration != null) 'expiration': expiration?.toJson(),
       'byteData': byteData.toJson(),
       'verified': verified,
+      if (contentType != null) 'contentType': contentType,
+      if (cacheControl != null) 'cacheControl': cacheControl,
+      if (contentDisposition != null) 'contentDisposition': contentDisposition,
+      if (contentEncoding != null) 'contentEncoding': contentEncoding,
+      if (customMetadata != null) 'customMetadata': customMetadata,
     };
   }
 
@@ -119,6 +159,11 @@ abstract class CloudStorageEntry
       if (expiration != null) 'expiration': expiration?.toJson(),
       'byteData': byteData.toJson(),
       'verified': verified,
+      if (contentType != null) 'contentType': contentType,
+      if (cacheControl != null) 'cacheControl': cacheControl,
+      if (contentDisposition != null) 'contentDisposition': contentDisposition,
+      if (contentEncoding != null) 'contentEncoding': contentEncoding,
+      if (customMetadata != null) 'customMetadata': customMetadata,
     };
   }
 
@@ -161,6 +206,11 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     DateTime? expiration,
     required _idt.ByteData byteData,
     required bool verified,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   }) : super._(
          id: id,
          storageId: storageId,
@@ -169,6 +219,11 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
          expiration: expiration,
          byteData: byteData,
          verified: verified,
+         contentType: contentType,
+         cacheControl: cacheControl,
+         contentDisposition: contentDisposition,
+         contentEncoding: contentEncoding,
+         customMetadata: customMetadata,
        );
 
   /// Returns a shallow copy of this [CloudStorageEntry]
@@ -183,6 +238,11 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
     Object? expiration = _Undefined,
     _idt.ByteData? byteData,
     bool? verified,
+    Object? contentType = _Undefined,
+    Object? cacheControl = _Undefined,
+    Object? contentDisposition = _Undefined,
+    Object? contentEncoding = _Undefined,
+    Object? customMetadata = _Undefined,
   }) {
     return CloudStorageEntry(
       id: id is int? ? id : this.id,
@@ -192,6 +252,17 @@ class _CloudStorageEntryImpl extends CloudStorageEntry {
       expiration: expiration is DateTime? ? expiration : this.expiration,
       byteData: byteData ?? this.byteData.clone(),
       verified: verified ?? this.verified,
+      contentType: contentType is String? ? contentType : this.contentType,
+      cacheControl: cacheControl is String? ? cacheControl : this.cacheControl,
+      contentDisposition: contentDisposition is String?
+          ? contentDisposition
+          : this.contentDisposition,
+      contentEncoding: contentEncoding is String?
+          ? contentEncoding
+          : this.contentEncoding,
+      customMetadata: customMetadata is String?
+          ? customMetadata
+          : this.customMetadata,
     );
   }
 }
@@ -232,6 +303,35 @@ class CloudStorageEntryUpdateTable
     table.verified,
     value,
   );
+
+  _is.ColumnValue<String, String> contentType(String? value) => _is.ColumnValue(
+    table.contentType,
+    value,
+  );
+
+  _is.ColumnValue<String, String> cacheControl(String? value) =>
+      _is.ColumnValue(
+        table.cacheControl,
+        value,
+      );
+
+  _is.ColumnValue<String, String> contentDisposition(String? value) =>
+      _is.ColumnValue(
+        table.contentDisposition,
+        value,
+      );
+
+  _is.ColumnValue<String, String> contentEncoding(String? value) =>
+      _is.ColumnValue(
+        table.contentEncoding,
+        value,
+      );
+
+  _is.ColumnValue<String, String> customMetadata(String? value) =>
+      _is.ColumnValue(
+        table.customMetadata,
+        value,
+      );
 }
 
 class CloudStorageEntryTable extends _is.Table<int?> {
@@ -262,6 +362,26 @@ class CloudStorageEntryTable extends _is.Table<int?> {
       'verified',
       this,
     );
+    contentType = _is.ColumnString(
+      'contentType',
+      this,
+    );
+    cacheControl = _is.ColumnString(
+      'cacheControl',
+      this,
+    );
+    contentDisposition = _is.ColumnString(
+      'contentDisposition',
+      this,
+    );
+    contentEncoding = _is.ColumnString(
+      'contentEncoding',
+      this,
+    );
+    customMetadata = _is.ColumnString(
+      'customMetadata',
+      this,
+    );
   }
 
   late final CloudStorageEntryUpdateTable updateTable;
@@ -284,6 +404,21 @@ class CloudStorageEntryTable extends _is.Table<int?> {
   /// True if the file has been verified as uploaded.
   late final _is.ColumnBool verified;
 
+  /// MIME type stored with the file.
+  late final _is.ColumnString contentType;
+
+  /// HTTP cache control value stored with the file.
+  late final _is.ColumnString cacheControl;
+
+  /// HTTP content disposition value stored with the file.
+  late final _is.ColumnString contentDisposition;
+
+  /// HTTP content encoding value stored with the file.
+  late final _is.ColumnString contentEncoding;
+
+  /// JSON-encoded custom metadata stored with the file.
+  late final _is.ColumnString customMetadata;
+
   @override
   List<_is.Column> get columns => [
     id,
@@ -293,6 +428,11 @@ class CloudStorageEntryTable extends _is.Table<int?> {
     expiration,
     byteData,
     verified,
+    contentType,
+    cacheControl,
+    contentDisposition,
+    contentEncoding,
+    customMetadata,
   ];
 }
 
