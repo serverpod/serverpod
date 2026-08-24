@@ -263,6 +263,76 @@ void main() {
     },
   );
 
+  group(
+    'Given open server scopes and a tracked active operation, '
+    'when the active server scopes are discarded, ',
+    () {
+      late int changeNotifications;
+
+      setUp(() {
+        changeNotifications = 0;
+        history.onChanged = () => changeNotifications++;
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'scope_start',
+            'id': 'scope_1',
+            'label': 'GET /api/stream-one',
+          }),
+        );
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'scope_start',
+            'id': 'scope_2',
+            'label': 'GET /api/stream-two',
+          }),
+        );
+        history.activeOperations['cli_scope'] = TrackedOperation(
+          id: 'cli_scope',
+          label: 'Compiling server',
+        );
+        changeNotifications = 0;
+        history.discardActiveServerScopes();
+      });
+
+      test('then only server scopes are removed.', () {
+        expect(history.activeOperations.keys, ['cli_scope']);
+        expect(history.serverEntries, isEmpty);
+      });
+
+      test('then observers are notified once.', () {
+        expect(changeNotifications, 1);
+      });
+
+      test(
+        'then a delayed scope_end event does not remove a replacement operation.',
+        () {
+          final replacement = TrackedOperation(
+            id: 'scope_1',
+            label: 'CLI replacement',
+          );
+          history.activeOperations['scope_1'] = replacement;
+
+          history.recordServerLogEvent(
+            _logEvent({
+              'type': 'scope_end',
+              'id': 'scope_1',
+              'success': true,
+            }),
+          );
+
+          expect(history.serverEntries, isEmpty);
+          expect(history.activeOperations['scope_1'], same(replacement));
+        },
+      );
+
+      test('then discarding the same process again is a no-op.', () {
+        history.discardActiveServerScopes();
+
+        expect(changeNotifications, 1);
+      });
+    },
+  );
+
   group('Given a Flutter framework error event, when it is recorded,', () {
     const error =
         "'package:flutter/src/widgets/framework.dart': Failed assertion: "

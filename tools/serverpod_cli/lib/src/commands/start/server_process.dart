@@ -29,6 +29,10 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
+  /// Called at most once after a started process and its VM-service resources
+  /// have been discarded, whether it stopped normally or exited unexpectedly.
+  final void Function()? _onDispose;
+
   /// Path to write the VM service info JSON file to. When set, passed
   /// to the child via `--write-service-info` and the URI is read from
   /// the file instead of parsing stdout. IDEs use this path in their
@@ -60,13 +64,15 @@ class ServerProcess {
     String? vmServiceInfoFile,
     IOSink? stdoutSink,
     IOSink? stderrSink,
+    void Function()? onDispose,
   }) : _serverDir = serverDir,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
        _vmServiceInfoFile = vmServiceInfoFile,
        _stdout = stdoutSink ?? stdout,
-       _stderr = stderrSink ?? stderr;
+       _stderr = stderrSink ?? stderr,
+       _onDispose = onDispose;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -327,6 +333,8 @@ class ServerProcess {
 
     final completer = Completer<void>();
     _cleanupCompleter = completer;
+
+    unawaited(completer.future.whenComplete(() => _onDispose?.call()));
 
     try {
       _process = null;
