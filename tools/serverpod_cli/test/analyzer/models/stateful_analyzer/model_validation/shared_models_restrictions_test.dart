@@ -1,4 +1,5 @@
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:test/test.dart';
@@ -18,15 +19,13 @@ void main() {
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
-            .withYaml(
-              '''
+            .withYaml('''
 class: SharedExample
 table: shared_example
 database: all
 fields:
   name: String
-''',
-            )
+''')
             .build(),
       ];
 
@@ -54,14 +53,12 @@ fields:
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
-            .withYaml(
-              '''
+            .withYaml('''
 class: SharedExample
 table: shared_example
 fields:
   name: String
-''',
-            )
+''')
             .build(),
       ];
 
@@ -80,7 +77,59 @@ fields:
       expect(
         collector.errors.first.message,
         'The "table" property in shared packages requires the "database" '
-        'property to be set to "all".',
+        'property to be set to "all" or "sync".',
+      );
+    },
+  );
+
+  test(
+    'Given a shared package model with a table property and "database: sync" '
+    'when analyzing model with the databaseSync experimental feature enabled '
+    'then no error is collected.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.databaseSync,
+      ]).build();
+
+      var models = <ModelSource>[
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withFileName('crdt_scope')
+            .withYaml('''
+class: CrdtScope
+table: crdt_scopes
+database: all
+fields:
+  name: String
+''')
+            .build(),
+        ModelSourceBuilder()
+            .withIsSharedModel(true)
+            .withModuleAlias('shared')
+            .withYaml('''
+class: SharedExample
+table: shared_example
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+''')
+            .build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(
+        collector.errors,
+        isEmpty,
+        reason: 'Expected no errors to be collected',
       );
     },
   );
@@ -94,14 +143,12 @@ fields:
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
-            .withYaml(
-              '''
+            .withYaml('''
           class: SharedExample
           serverOnly: true
           fields:
             name: String
-          ''',
-            )
+          ''')
             .build(),
       ];
 
@@ -133,13 +180,11 @@ fields:
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
-            .withYaml(
-              '''
+            .withYaml('''
           class: SharedExample
           fields:
             name: String, scope=serverOnly
-          ''',
-            )
+          ''')
             .build(),
       ];
 
@@ -176,27 +221,23 @@ fields:
             .withIsSharedModel(true)
             .withModuleAlias('shared')
             .withFileName('shared_example')
-            .withYaml(
-              '''
+            .withYaml('''
           class: SharedExample
           sealed: true
           fields:
             name: String
-          ''',
-            )
+          ''')
             .build(),
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
             .withFileName('shared_example_child')
-            .withYaml(
-              '''
+            .withYaml('''
           class: SharedExampleChild
           extends: SharedExample
           fields:
             other: String
-          ''',
-            )
+          ''')
             .build(),
       ];
 
@@ -215,56 +256,49 @@ fields:
     },
   );
 
-  test(
-    'Given shared package tables with object and list relations, '
-    'when analyzing the models, '
-    'then no error is collected.',
-    () {
-      var models = <ModelSource>[
-        ModelSourceBuilder()
-            .withIsSharedModel(true)
-            .withModuleAlias('shared')
-            .withFileName('company')
-            .withYaml(
-              '''
+  test('Given shared package tables with object and list relations, '
+      'when analyzing the models, '
+      'then no error is collected.', () {
+    var models = <ModelSource>[
+      ModelSourceBuilder()
+          .withIsSharedModel(true)
+          .withModuleAlias('shared')
+          .withFileName('company')
+          .withYaml('''
 class: Company
 table: company
 database: all
 fields:
   employees: List<Employee>?, relation(name=company_employees)
-''',
-            )
-            .build(),
-        ModelSourceBuilder()
-            .withIsSharedModel(true)
-            .withModuleAlias('shared')
-            .withFileName('employee')
-            .withYaml(
-              '''
+''')
+          .build(),
+      ModelSourceBuilder()
+          .withIsSharedModel(true)
+          .withModuleAlias('shared')
+          .withFileName('employee')
+          .withYaml('''
 class: Employee
 table: employee
 database: all
 fields:
   company: Company?, relation(name=company_employees, onDelete=Cascade)
-''',
-            )
-            .build(),
-      ];
+''')
+          .build(),
+    ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
+    var collector = CodeGenerationCollector();
+    StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(collector),
+    ).validateAll();
 
-      expect(
-        collector.errors,
-        isEmpty,
-        reason: 'Expected no errors to be collected',
-      );
-    },
-  );
+    expect(
+      collector.errors,
+      isEmpty,
+      reason: 'Expected no errors to be collected',
+    );
+  });
 
   test(
     'Given a sealed shared package model and a subclass on the project package '
@@ -275,23 +309,19 @@ fields:
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
-            .withYaml(
-              '''
+            .withYaml('''
           class: SharedExample
           sealed: true
           fields:
             name: String
-          ''',
-            )
+          ''')
             .build(),
-        ModelSourceBuilder().withFileName('example').withYaml(
-          '''
+        ModelSourceBuilder().withFileName('example').withYaml('''
           class: Example
           extends: SharedExample
           fields:
             other: String
-          ''',
-        ).build(),
+          ''').build(),
       ];
 
       var collector = CodeGenerationCollector();

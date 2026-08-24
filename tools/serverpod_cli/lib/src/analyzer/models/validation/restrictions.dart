@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -241,11 +242,12 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is ModelClassDefinition &&
         definition.isSharedModel &&
-        definition.database != ModelDatabaseDefinition.all) {
+        definition.database != ModelDatabaseDefinition.all &&
+        definition.database != ModelDatabaseDefinition.sync) {
       return [
         SourceSpanSeverityException(
           'The "table" property in shared packages requires the "database" '
-          'property to be set to "all".',
+          'property to be set to "all" or "sync".',
           span,
         ),
       ];
@@ -298,6 +300,22 @@ class Restrictions {
         SourceSpanSeverityException(
           'The "database" property must be one of: '
           '${ModelDatabaseDefinition.values.map((e) => e.name).join(', ')}.',
+          span,
+        ),
+      ];
+    }
+
+    if (database == ModelDatabaseDefinition.sync &&
+        !config.isExperimentalFeatureEnabled(
+          ExperimentalFeature.databaseSync,
+        )) {
+      return [
+        SourceSpanSeverityException(
+          'The "database: sync" option is experimental. Enable it with the '
+          '"databaseSync" experimental feature, either through the '
+          '"--experimental-features databaseSync" command line flag or by '
+          'setting "databaseSync: true" under "experimental_features" in the '
+          'generator.yaml file.',
           span,
         ),
       ];
@@ -688,9 +706,7 @@ class Restrictions {
           ];
         }
 
-        return [
-          SourceSpanSeverityException(baseMessage, span),
-        ];
+        return [SourceSpanSeverityException(baseMessage, span)];
       }
     }
 
@@ -971,9 +987,7 @@ class Restrictions {
     return true;
   }
 
-  bool _hasUniqueFieldIndex(
-    SerializableModelFieldDefinition? field,
-  ) {
+  bool _hasUniqueFieldIndex(SerializableModelFieldDefinition? field) {
     if (field == null) return false;
 
     var fieldIndexesWithUnique = field.indexes.where((index) => index.unique);
@@ -1897,10 +1911,7 @@ class Restrictions {
         VectorDistanceFunction.cosine,
         if (index.type == 'hnsw') VectorDistanceFunction.l1,
       },
-      'Bit': {
-        VectorDistanceFunction.jaccard,
-        VectorDistanceFunction.hamming,
-      },
+      'Bit': {VectorDistanceFunction.jaccard, VectorDistanceFunction.hamming},
     };
 
     var validFunctions = validFunctionsPerClassName[field.type.className]?.map(
@@ -2276,10 +2287,7 @@ class Restrictions {
 
     if (name is! String) {
       return [
-        SourceSpanSeverityException(
-          'The property must be a String.',
-          span,
-        ),
+        SourceSpanSeverityException('The property must be a String.', span),
       ];
     }
 
@@ -2291,9 +2299,7 @@ class Restrictions {
       field,
     );
 
-    var foreignClassName = parsedModels.extractReferenceClassName(
-      field,
-    );
+    var foreignClassName = parsedModels.extractReferenceClassName(field);
     if (foreignFields.isEmpty) {
       return [
         SourceSpanSeverityException(
@@ -2434,10 +2440,7 @@ class Restrictions {
     }
 
     if (enumCount[enumValue] != 1) {
-      return SourceSpanSeverityException(
-        'Enum values must be unique.',
-        span,
-      );
+      return SourceSpanSeverityException('Enum values must be unique.', span);
     }
 
     if (_globallyRestrictedKeywords.contains(enumValue)) {
@@ -2936,32 +2939,26 @@ class Restrictions {
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInParentHierarchy(
-      currentModel,
-      (ancestor) {
-        var parentFieldNames = ancestor.fields.map((field) => field.name);
+    return _findInParentHierarchy(currentModel, (ancestor) {
+      var parentFieldNames = ancestor.fields.map((field) => field.name);
 
-        if (parentFieldNames.contains(fieldName)) {
-          return ancestor;
-        }
+      if (parentFieldNames.contains(fieldName)) {
+        return ancestor;
+      }
 
-        return null;
-      },
-    );
+      return null;
+    });
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInParentHierarchy(
-      currentModel,
-      (ancestor) {
-        return ancestor.fields
-            .where((field) => field.name == fieldName)
-            .firstOrNull;
-      },
-    );
+    return _findInParentHierarchy(currentModel, (ancestor) {
+      return ancestor.fields
+          .where((field) => field.name == fieldName)
+          .firstOrNull;
+    });
   }
 
   List<SerializableModelFieldDefinition> _findFieldsWithColumn(
@@ -2986,9 +2983,7 @@ class Restrictions {
     return switch (relation) {
       ObjectRelationDefinition(:final fieldName) => fieldName,
       UnresolvedObjectRelationDefinition(:final fieldName) => fieldName,
-      UnresolvableObjectRelationDefinition(
-        :final objectRelationDefinition,
-      ) =>
+      UnresolvableObjectRelationDefinition(:final objectRelationDefinition) =>
         objectRelationDefinition.fieldName,
       _ => null,
     };

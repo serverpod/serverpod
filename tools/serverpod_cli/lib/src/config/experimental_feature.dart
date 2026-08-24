@@ -12,7 +12,11 @@ class CommandLineExperimentalFeatures {
 
 enum ExperimentalFeature {
   all,
-  ;
+
+  /// Enables the `database: sync` option on models, which marks a table to be
+  /// synchronized between the client and the server through the
+  /// `serverpod_offline_sync` package.
+  databaseSync;
 
   static ExperimentalFeature fromString(String value) {
     for (var feature in ExperimentalFeature.values) {
