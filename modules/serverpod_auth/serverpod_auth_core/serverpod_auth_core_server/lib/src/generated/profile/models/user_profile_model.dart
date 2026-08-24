@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// DTO for transferring user profile information.
 abstract class UserProfileModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   UserProfileModel._({
     required this.authUserId,
     this.userName,
@@ -24,7 +24,7 @@ abstract class UserProfileModel
   });
 
   factory UserProfileModel({
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue authUserId,
     String? userName,
     String? fullName,
     String? email,
@@ -33,7 +33,7 @@ abstract class UserProfileModel
 
   factory UserProfileModel.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfileModel(
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       userName: jsonSerialization['userName'] as String?,
@@ -41,12 +41,12 @@ abstract class UserProfileModel
       email: jsonSerialization['email'] as String?,
       imageUrl: jsonSerialization['imageUrl'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['imageUrl']),
+          : _is.UriJsonExtension.fromJson(jsonSerialization['imageUrl']),
     );
   }
 
   /// The [AuthUser]'s ID this profile belongs to.
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The first name of the user or the user's nickname.
   String? userName;
@@ -64,9 +64,9 @@ abstract class UserProfileModel
 
   /// Returns a shallow copy of this [UserProfileModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserProfileModel copyWith({
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     String? userName,
     String? fullName,
     String? email,
@@ -98,7 +98,7 @@ abstract class UserProfileModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -106,7 +106,7 @@ class _Undefined {}
 
 class _UserProfileModelImpl extends UserProfileModel {
   _UserProfileModelImpl({
-    required _i1.UuidValue authUserId,
+    required _is.UuidValue authUserId,
     String? userName,
     String? fullName,
     String? email,
@@ -121,10 +121,10 @@ class _UserProfileModelImpl extends UserProfileModel {
 
   /// Returns a shallow copy of this [UserProfileModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserProfileModel copyWith({
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
     Object? email = _Undefined,

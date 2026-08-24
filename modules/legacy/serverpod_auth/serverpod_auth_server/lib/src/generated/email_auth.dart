@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Database bindings for a sign in with email.
 abstract class EmailAuth
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EmailAuth._({
     this.id,
     required this.userId,
@@ -55,11 +55,11 @@ abstract class EmailAuth
   String hash;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailAuth copyWith({
     int? id,
     int? userId,
@@ -93,11 +93,11 @@ abstract class EmailAuth
   }
 
   static EmailAuthIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    _is.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
     EmailAuthInclude? include,
   }) {
     return EmailAuthIncludeList._(
@@ -112,7 +112,7 @@ abstract class EmailAuth
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -133,7 +133,7 @@ class _EmailAuthImpl extends EmailAuth {
 
   /// Returns a shallow copy of this [EmailAuth]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailAuth copyWith({
     Object? id = _Undefined,
@@ -150,38 +150,38 @@ class _EmailAuthImpl extends EmailAuth {
   }
 }
 
-class EmailAuthUpdateTable extends _i1.UpdateTable<EmailAuthTable> {
+class EmailAuthUpdateTable extends _is.UpdateTable<EmailAuthTable> {
   EmailAuthUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hash(String value) => _is.ColumnValue(
     table.hash,
     value,
   );
 }
 
-class EmailAuthTable extends _i1.Table<int?> {
+class EmailAuthTable extends _is.Table<int?> {
   EmailAuthTable({super.tableRelation})
     : super(tableName: 'serverpod_email_auth') {
     updateTable = EmailAuthUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _is.ColumnInt(
       'userId',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    hash = _i1.ColumnString(
+    hash = _is.ColumnString(
       'hash',
       this,
     );
@@ -190,16 +190,16 @@ class EmailAuthTable extends _i1.Table<int?> {
   late final EmailAuthUpdateTable updateTable;
 
   /// The id of the user, corresponds to the id field in [UserInfo].
-  late final _i1.ColumnInt userId;
+  late final _is.ColumnInt userId;
 
   /// The email of the user.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The hashed password of the user.
-  late final _i1.ColumnString hash;
+  late final _is.ColumnString hash;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userId,
     email,
@@ -207,19 +207,19 @@ class EmailAuthTable extends _i1.Table<int?> {
   ];
 }
 
-class EmailAuthInclude extends _i1.IncludeObject {
+class EmailAuthInclude extends _is.IncludeObject {
   EmailAuthInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmailAuth.t;
+  _is.Table<int?> get table => EmailAuth.t;
 }
 
-class EmailAuthIncludeList extends _i1.IncludeList {
+class EmailAuthIncludeList extends _is.IncludeList {
   EmailAuthIncludeList._({
-    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    _is.WhereExpressionBuilder<EmailAuthTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -230,10 +230,10 @@ class EmailAuthIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmailAuth.t;
+  _is.Table<int?> get table => EmailAuth.t;
 }
 
 class EmailAuthRepository {
@@ -262,15 +262,15 @@ class EmailAuthRepository {
   /// );
   /// ```
   Future<List<EmailAuth>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailAuth>(
       where: where?.call(EmailAuth.t),
@@ -302,14 +302,14 @@ class EmailAuthRepository {
   /// );
   /// ```
   Future<EmailAuth?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAuthTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailAuth>(
       where: where?.call(EmailAuth.t),
@@ -324,11 +324,11 @@ class EmailAuthRepository {
 
   /// Finds a single [EmailAuth] by its [id] or null if no such row exists.
   Future<EmailAuth?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailAuth>(
       id,
@@ -353,9 +353,9 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAuth> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -371,9 +371,9 @@ class EmailAuthRepository {
   ///
   /// The returned [EmailAuth] will have its `id` field set.
   Future<EmailAuth> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAuth row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailAuth>(
       row,
@@ -402,12 +402,12 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAuth> rows, {
-    required _i1.ColumnSelections<EmailAuthTable> conflictColumns,
-    _i1.ColumnSelections<EmailAuthTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAuthTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAuthTable> conflictColumns,
+    _is.ColumnSelections<EmailAuthTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAuthTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailAuth>(
@@ -434,12 +434,12 @@ class EmailAuthRepository {
   ///
   /// The returned [EmailAuth] will have its `id` field set.
   Future<EmailAuth?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAuth row, {
-    required _i1.ColumnSelections<EmailAuthTable> conflictColumns,
-    _i1.ColumnSelections<EmailAuthTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailAuthTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailAuthTable> conflictColumns,
+    _is.ColumnSelections<EmailAuthTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailAuthTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailAuth>(
       row,
@@ -460,10 +460,10 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAuth> rows, {
-    _i1.ColumnSelections<EmailAuthTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAuthTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailAuth>(
@@ -478,10 +478,10 @@ class EmailAuthRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailAuth> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAuth row, {
-    _i1.ColumnSelections<EmailAuthTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailAuthTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailAuth>(
       row,
@@ -493,10 +493,10 @@ class EmailAuthRepository {
   /// Updates a single [EmailAuth] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailAuth?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailAuth>(
       id,
@@ -512,14 +512,14 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailAuthUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EmailAuthTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailAuth>(
@@ -546,11 +546,11 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailAuth> rows, {
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailAuth>(
@@ -564,9 +564,9 @@ class EmailAuthRepository {
 
   /// Deletes a single [EmailAuth].
   Future<EmailAuth> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailAuth row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailAuth>(
       row,
@@ -583,11 +583,11 @@ class EmailAuthRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailAuth>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
-    _i1.OrderByBuilder<EmailAuthTable>? orderBy,
-    _i1.OrderByListBuilder<EmailAuthTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAuthTable> where,
+    _is.OrderByBuilder<EmailAuthTable>? orderBy,
+    _is.OrderByListBuilder<EmailAuthTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailAuth>(
@@ -602,10 +602,10 @@ class EmailAuthRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailAuthTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAuthTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailAuth>(
       where: where?.call(EmailAuth.t),
@@ -616,11 +616,11 @@ class EmailAuthRepository {
 
   /// Acquires row-level locks on [EmailAuth] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailAuthTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailAuthTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailAuth>(
       where: where(EmailAuth.t),

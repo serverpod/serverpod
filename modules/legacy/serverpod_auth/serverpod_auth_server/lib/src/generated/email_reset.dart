@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Database bindings for an email reset.
 abstract class EmailReset
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EmailReset._({
     this.id,
     required this.userId,
@@ -34,7 +34,7 @@ abstract class EmailReset
       id: jsonSerialization['id'] as int?,
       userId: jsonSerialization['userId'] as int,
       verificationCode: jsonSerialization['verificationCode'] as String,
-      expiration: _i1.DateTimeJsonExtension.fromJson(
+      expiration: _is.DateTimeJsonExtension.fromJson(
         jsonSerialization['expiration'],
       ),
     );
@@ -57,11 +57,11 @@ abstract class EmailReset
   DateTime expiration;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailReset copyWith({
     int? id,
     int? userId,
@@ -95,11 +95,11 @@ abstract class EmailReset
   }
 
   static EmailResetIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
   }) {
     return EmailResetIncludeList._(
@@ -114,7 +114,7 @@ abstract class EmailReset
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -135,7 +135,7 @@ class _EmailResetImpl extends EmailReset {
 
   /// Returns a shallow copy of this [EmailReset]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailReset copyWith({
     Object? id = _Undefined,
@@ -152,40 +152,40 @@ class _EmailResetImpl extends EmailReset {
   }
 }
 
-class EmailResetUpdateTable extends _i1.UpdateTable<EmailResetTable> {
+class EmailResetUpdateTable extends _is.UpdateTable<EmailResetTable> {
   EmailResetUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> userId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> userId(int value) => _is.ColumnValue(
     table.userId,
     value,
   );
 
-  _i1.ColumnValue<String, String> verificationCode(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> verificationCode(String value) =>
+      _is.ColumnValue(
         table.verificationCode,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiration(DateTime value) =>
+      _is.ColumnValue(
         table.expiration,
         value,
       );
 }
 
-class EmailResetTable extends _i1.Table<int?> {
+class EmailResetTable extends _is.Table<int?> {
   EmailResetTable({super.tableRelation})
     : super(tableName: 'serverpod_email_reset') {
     updateTable = EmailResetUpdateTable(this);
-    userId = _i1.ColumnInt(
+    userId = _is.ColumnInt(
       'userId',
       this,
     );
-    verificationCode = _i1.ColumnString(
+    verificationCode = _is.ColumnString(
       'verificationCode',
       this,
     );
-    expiration = _i1.ColumnDateTime(
+    expiration = _is.ColumnDateTime(
       'expiration',
       this,
     );
@@ -194,16 +194,16 @@ class EmailResetTable extends _i1.Table<int?> {
   late final EmailResetUpdateTable updateTable;
 
   /// The id of the user that is resetting his/her password.
-  late final _i1.ColumnInt userId;
+  late final _is.ColumnInt userId;
 
   /// The verification code for the password reset.
-  late final _i1.ColumnString verificationCode;
+  late final _is.ColumnString verificationCode;
 
   /// The expiration time for the password reset.
-  late final _i1.ColumnDateTime expiration;
+  late final _is.ColumnDateTime expiration;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userId,
     verificationCode,
@@ -211,19 +211,19 @@ class EmailResetTable extends _i1.Table<int?> {
   ];
 }
 
-class EmailResetInclude extends _i1.IncludeObject {
+class EmailResetInclude extends _is.IncludeObject {
   EmailResetInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmailReset.t;
+  _is.Table<int?> get table => EmailReset.t;
 }
 
-class EmailResetIncludeList extends _i1.IncludeList {
+class EmailResetIncludeList extends _is.IncludeList {
   EmailResetIncludeList._({
-    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -234,10 +234,10 @@ class EmailResetIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmailReset.t;
+  _is.Table<int?> get table => EmailReset.t;
 }
 
 class EmailResetRepository {
@@ -266,15 +266,15 @@ class EmailResetRepository {
   /// );
   /// ```
   Future<List<EmailReset>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailReset>(
       where: where?.call(EmailReset.t),
@@ -306,14 +306,14 @@ class EmailResetRepository {
   /// );
   /// ```
   Future<EmailReset?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailReset>(
       where: where?.call(EmailReset.t),
@@ -328,11 +328,11 @@ class EmailResetRepository {
 
   /// Finds a single [EmailReset] by its [id] or null if no such row exists.
   Future<EmailReset?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailReset>(
       id,
@@ -357,9 +357,9 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailReset> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -375,9 +375,9 @@ class EmailResetRepository {
   ///
   /// The returned [EmailReset] will have its `id` field set.
   Future<EmailReset> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailReset row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailReset>(
       row,
@@ -406,12 +406,12 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailReset> rows, {
-    required _i1.ColumnSelections<EmailResetTable> conflictColumns,
-    _i1.ColumnSelections<EmailResetTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailResetTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailResetTable> conflictColumns,
+    _is.ColumnSelections<EmailResetTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailResetTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailReset>(
@@ -438,12 +438,12 @@ class EmailResetRepository {
   ///
   /// The returned [EmailReset] will have its `id` field set.
   Future<EmailReset?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailReset row, {
-    required _i1.ColumnSelections<EmailResetTable> conflictColumns,
-    _i1.ColumnSelections<EmailResetTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailResetTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailResetTable> conflictColumns,
+    _is.ColumnSelections<EmailResetTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailResetTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailReset>(
       row,
@@ -464,10 +464,10 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailReset> rows, {
-    _i1.ColumnSelections<EmailResetTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailResetTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailReset>(
@@ -482,10 +482,10 @@ class EmailResetRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailReset> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailReset row, {
-    _i1.ColumnSelections<EmailResetTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailResetTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailReset>(
       row,
@@ -497,10 +497,10 @@ class EmailResetRepository {
   /// Updates a single [EmailReset] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailReset?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailReset>(
       id,
@@ -516,14 +516,14 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<EmailResetTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailResetUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<EmailResetTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailReset>(
@@ -550,11 +550,11 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailReset> rows, {
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailReset>(
@@ -568,9 +568,9 @@ class EmailResetRepository {
 
   /// Deletes a single [EmailReset].
   Future<EmailReset> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailReset row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailReset>(
       row,
@@ -587,11 +587,11 @@ class EmailResetRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailReset>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailResetTable> where,
-    _i1.OrderByBuilder<EmailResetTable>? orderBy,
-    _i1.OrderByListBuilder<EmailResetTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailResetTable> where,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailReset>(
@@ -606,10 +606,10 @@ class EmailResetRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailResetTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailReset>(
       where: where?.call(EmailReset.t),
@@ -620,11 +620,11 @@ class EmailResetRepository {
 
   /// Acquires row-level locks on [EmailReset] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailResetTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailResetTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailReset>(
       where: where(EmailReset.t),

@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class BulkQueryResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   BulkQueryResult._({
     required this.headers,
     required this.data,
@@ -23,7 +23,7 @@ abstract class BulkQueryResult
   });
 
   factory BulkQueryResult({
-    required List<_i2.BulkQueryColumnDescription> headers,
+    required List<_isd.BulkQueryColumnDescription> headers,
     required String data,
     required int numAffectedRows,
     required Duration duration,
@@ -31,18 +31,19 @@ abstract class BulkQueryResult
 
   factory BulkQueryResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return BulkQueryResult(
-      headers: _i2.Protocol().deserialize<List<_i2.BulkQueryColumnDescription>>(
-        jsonSerialization['headers'],
-      ),
+      headers: _isd.Protocol()
+          .deserialize<List<_isd.BulkQueryColumnDescription>>(
+            jsonSerialization['headers'],
+          ),
       data: jsonSerialization['data'] as String,
       numAffectedRows: jsonSerialization['numAffectedRows'] as int,
-      duration: _i1.DurationJsonExtension.fromJson(
+      duration: _iss.DurationJsonExtension.fromJson(
         jsonSerialization['duration'],
       ),
     );
   }
 
-  List<_i2.BulkQueryColumnDescription> headers;
+  List<_isd.BulkQueryColumnDescription> headers;
 
   String data;
 
@@ -52,9 +53,9 @@ abstract class BulkQueryResult
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   BulkQueryResult copyWith({
-    List<_i2.BulkQueryColumnDescription>? headers,
+    List<_isd.BulkQueryColumnDescription>? headers,
     String? data,
     int? numAffectedRows,
     Duration? duration,
@@ -83,13 +84,13 @@ abstract class BulkQueryResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
 class _BulkQueryResultImpl extends BulkQueryResult {
   _BulkQueryResultImpl({
-    required List<_i2.BulkQueryColumnDescription> headers,
+    required List<_isd.BulkQueryColumnDescription> headers,
     required String data,
     required int numAffectedRows,
     required Duration duration,
@@ -102,10 +103,10 @@ class _BulkQueryResultImpl extends BulkQueryResult {
 
   /// Returns a shallow copy of this [BulkQueryResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   BulkQueryResult copyWith({
-    List<_i2.BulkQueryColumnDescription>? headers,
+    List<_isd.BulkQueryColumnDescription>? headers,
     String? data,
     int? numAffectedRows,
     Duration? duration,

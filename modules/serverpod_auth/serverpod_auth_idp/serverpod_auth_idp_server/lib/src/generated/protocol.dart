@@ -11,63 +11,64 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _iacs;
 import 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart'
-    as _i4;
-import 'common/secret_challenge/models/secret_challenge.dart' as _i5;
-import 'providers/anonymous/models/anonymous_account.dart' as _i6;
+    as _iddjx2hh;
+import 'common/secret_challenge/models/secret_challenge.dart' as _ihjuvfpt;
+import 'providers/anonymous/models/anonymous_account.dart' as _i5yjjpde;
 import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception.dart'
-    as _i7;
+    as _ite257iv;
 import 'providers/anonymous/models/exceptions/anonymous_account_blocked_exception_reason.dart'
-    as _i8;
-import 'providers/apple/models/apple_account.dart' as _i9;
-import 'providers/email/models/email_account.dart' as _i10;
+    as _ig3ph7nw;
+import 'providers/apple/models/apple_account.dart' as _i9aj4p8a;
+import 'providers/email/models/email_account.dart' as _i047o257;
 import 'providers/email/models/email_account_password_reset_request.dart'
-    as _i11;
-import 'providers/email/models/email_account_request.dart' as _i12;
+    as _iouphhkf;
+import 'providers/email/models/email_account_request.dart' as _iaib0xb9;
 import 'providers/email/models/exceptions/email_account_login_exception.dart'
-    as _i13;
+    as _ij1yj4f1;
 import 'providers/email/models/exceptions/email_account_login_exception_reason.dart'
-    as _i14;
+    as _ihd5znj2;
 import 'providers/email/models/exceptions/email_account_password_reset_exception.dart'
-    as _i15;
+    as _i7yyr103;
 import 'providers/email/models/exceptions/email_account_password_reset_exception_reason.dart'
-    as _i16;
+    as _io8tbstn;
 import 'providers/email/models/exceptions/email_account_request_exception.dart'
-    as _i17;
+    as _iqtw285f;
 import 'providers/email/models/exceptions/email_account_request_exception_reason.dart'
-    as _i18;
+    as _isgeino8;
 import 'providers/facebook/models/facebook_access_token_verification_exception.dart'
-    as _i19;
-import 'providers/facebook/models/facebook_account.dart' as _i20;
-import 'providers/firebase/models/firebase_account.dart' as _i21;
+    as _i92zrjf0;
+import 'providers/facebook/models/facebook_account.dart' as _ivl5gkpe;
+import 'providers/firebase/models/firebase_account.dart' as _i923yrzc;
 import 'providers/firebase/models/firebase_email_not_verified_exception.dart'
-    as _i22;
+    as _imswdwet;
 import 'providers/firebase/models/firebase_id_token_verification_exception.dart'
-    as _i23;
+    as _i14hfyiz;
 import 'providers/github/models/github_access_token_verification_exception.dart'
-    as _i24;
-import 'providers/github/models/github_account.dart' as _i25;
-import 'providers/google/models/google_account.dart' as _i26;
+    as _i8u0zfwn;
+import 'providers/github/models/github_account.dart' as _i3l39it4;
+import 'providers/google/models/google_account.dart' as _inlwg89o;
 import 'providers/google/models/google_id_token_verification_exception.dart'
-    as _i27;
+    as _iyz9kvht;
 import 'providers/microsoft/models/microsoft_access_token_verification_exception.dart'
-    as _i28;
-import 'providers/microsoft/models/microsoft_account.dart' as _i29;
-import 'providers/passkey/models/passkey_account.dart' as _i30;
-import 'providers/passkey/models/passkey_challenge.dart' as _i31;
+    as _i0bj371b;
+import 'providers/microsoft/models/microsoft_account.dart' as _i8aemsss;
+import 'providers/passkey/models/passkey_account.dart' as _iha3dd74;
+import 'providers/passkey/models/passkey_challenge.dart' as _ini0eg2j;
 import 'providers/passkey/models/passkey_challenge_expired_exception.dart'
-    as _i32;
+    as _ihzslz1a;
 import 'providers/passkey/models/passkey_challenge_not_found_exception.dart'
-    as _i33;
-import 'providers/passkey/models/passkey_login_request.dart' as _i34;
+    as _ihzssrx9;
+import 'providers/passkey/models/passkey_login_request.dart' as _itcmwg9u;
 import 'providers/passkey/models/passkey_public_key_not_found_exception.dart'
-    as _i35;
-import 'providers/passkey/models/passkey_registration_request.dart' as _i36;
-import 'dart:typed_data' as _i37;
+    as _isvo2sb5;
+import 'providers/passkey/models/passkey_registration_request.dart'
+    as _izjoggd8;
 export 'common/rate_limited_request_attempt/models/rate_limited_request_attempt.dart';
 export 'common/secret_challenge/models/secret_challenge.dart';
 export 'providers/anonymous/models/anonymous_account.dart';
@@ -102,157 +103,157 @@ export 'providers/passkey/models/passkey_login_request.dart';
 export 'providers/passkey/models/passkey_public_key_not_found_exception.dart';
 export 'providers/passkey/models/passkey_registration_request.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [
-    _i2.TableDefinition(
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_anonymous_account',
       dartName: 'AnonymousAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_anonymous_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_apple_account',
       dartName: 'AppleAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'refreshToken',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'refreshTokenRequestedWithBundleIdentifier',
-          columnType: _i2.ColumnType.boolean,
+          columnType: _isp.ColumnType.boolean,
           isNullable: false,
           dartType: 'bool',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'lastRefreshedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'isEmailVerified',
-          columnType: _i2.ColumnType.boolean,
+          columnType: _isp.ColumnType.boolean,
           isNullable: true,
           dartType: 'bool?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'isPrivateEmail',
-          columnType: _i2.ColumnType.boolean,
+          columnType: _isp.ColumnType.boolean,
           isNullable: true,
           dartType: 'bool?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'firstName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'lastName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_apple_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_apple_account_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -263,63 +264,63 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_email_account',
       dartName: 'EmailAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'passwordHash',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_email_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_idp_email_account_email',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'email',
             ),
           ],
@@ -330,151 +331,151 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_email_account_password_reset_request',
       dartName: 'EmailAccountPasswordResetRequest',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'emailAccountId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'challengeId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'setPasswordChallengeId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName:
               'serverpod_auth_idp_email_account_password_reset_request_fk_0',
           columns: ['emailAccountId'],
           referenceTable: 'serverpod_auth_idp_email_account',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName:
               'serverpod_auth_idp_email_account_password_reset_request_fk_1',
           columns: ['challengeId'],
           referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName:
               'serverpod_auth_idp_email_account_password_reset_request_fk_2',
           columns: ['setPasswordChallengeId'],
           referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_email_account_request',
       dartName: 'EmailAccountRequest',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'challengeId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createAccountChallengeId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_email_account_request_fk_0',
           columns: ['challengeId'],
           referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_email_account_request_fk_1',
           columns: ['createAccountChallengeId'],
           referenceTable: 'serverpod_auth_idp_secret_challenge',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_idp_email_account_request_email',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'email',
             ),
           ],
@@ -485,81 +486,81 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_facebook_account',
       dartName: 'FacebookAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'fullName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'firstName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'lastName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_facebook_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_facebook_account_user_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -570,69 +571,69 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_firebase_account',
       dartName: 'FirebaseAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'created',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'phone',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_firebase_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_firebase_account_user_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -643,63 +644,63 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_github_account',
       dartName: 'GitHubAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'created',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_github_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_github_account_user_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -710,63 +711,63 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_google_account',
       dartName: 'GoogleAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'created',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_google_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_google_account_user_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -777,63 +778,63 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_microsoft_account',
       dartName: 'MicrosoftAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'created',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_microsoft_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_microsoft_account_user_identifier',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -844,81 +845,81 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_passkey_account',
       dartName: 'PasskeyAccount',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'keyId',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'keyIdBase64',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'clientDataJSON',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'attestationObject',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'originalChallenge',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_idp_passkey_account_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_idp_passkey_account_key_id_base64',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'keyIdBase64',
             ),
           ],
@@ -929,28 +930,28 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_passkey_challenge',
       dartName: 'PasskeyChallenge',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'challenge',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
@@ -959,77 +960,77 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_rate_limited_request_attempt',
       dartName: 'RateLimitedRequestAttempt',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'domain',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'source',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'nonce',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'ipAddress',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'attemptedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'extraData',
-          columnType: _i2.ColumnType.json,
+          columnType: _isp.ColumnType.json,
           isNullable: true,
           dartType: 'Map<String,String>?',
         ),
       ],
       foreignKeys: [],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName:
               'serverpod_auth_idp_rate_limited_request_attempt_composite',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'domain',
             ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'source',
             ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'nonce',
             ),
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'attemptedAt',
             ),
           ],
@@ -1040,22 +1041,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_idp_secret_challenge',
       dartName: 'SecretChallenge',
       schema: 'public',
       module: 'serverpod_auth_idp',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'challengeCodeHash',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -1064,12 +1065,12 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    ..._i3.Protocol.targetTableDefinitions,
+    ..._iacs.Protocol.targetTableDefinitions,
   ];
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _is.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -1103,263 +1104,290 @@ class Protocol extends _i1.DatabaseSerializationManager {
       }
     }
 
-    if (t == _i4.RateLimitedRequestAttempt) {
-      return _i4.RateLimitedRequestAttempt.fromJson(data) as T;
+    if (t == _iddjx2hh.RateLimitedRequestAttempt) {
+      return _iddjx2hh.RateLimitedRequestAttempt.fromJson(data) as T;
     }
-    if (t == _i5.SecretChallenge) {
-      return _i5.SecretChallenge.fromJson(data) as T;
+    if (t == _ihjuvfpt.SecretChallenge) {
+      return _ihjuvfpt.SecretChallenge.fromJson(data) as T;
     }
-    if (t == _i6.AnonymousAccount) {
-      return _i6.AnonymousAccount.fromJson(data) as T;
+    if (t == _i5yjjpde.AnonymousAccount) {
+      return _i5yjjpde.AnonymousAccount.fromJson(data) as T;
     }
-    if (t == _i7.AnonymousAccountBlockedException) {
-      return _i7.AnonymousAccountBlockedException.fromJson(data) as T;
+    if (t == _ite257iv.AnonymousAccountBlockedException) {
+      return _ite257iv.AnonymousAccountBlockedException.fromJson(data) as T;
     }
-    if (t == _i8.AnonymousAccountBlockedExceptionReason) {
-      return _i8.AnonymousAccountBlockedExceptionReason.fromJson(data) as T;
+    if (t == _ig3ph7nw.AnonymousAccountBlockedExceptionReason) {
+      return _ig3ph7nw.AnonymousAccountBlockedExceptionReason.fromJson(data)
+          as T;
     }
-    if (t == _i9.AppleAccount) {
-      return _i9.AppleAccount.fromJson(data) as T;
+    if (t == _i9aj4p8a.AppleAccount) {
+      return _i9aj4p8a.AppleAccount.fromJson(data) as T;
     }
-    if (t == _i10.EmailAccount) {
-      return _i10.EmailAccount.fromJson(data) as T;
+    if (t == _i047o257.EmailAccount) {
+      return _i047o257.EmailAccount.fromJson(data) as T;
     }
-    if (t == _i11.EmailAccountPasswordResetRequest) {
-      return _i11.EmailAccountPasswordResetRequest.fromJson(data) as T;
+    if (t == _iouphhkf.EmailAccountPasswordResetRequest) {
+      return _iouphhkf.EmailAccountPasswordResetRequest.fromJson(data) as T;
     }
-    if (t == _i12.EmailAccountRequest) {
-      return _i12.EmailAccountRequest.fromJson(data) as T;
+    if (t == _iaib0xb9.EmailAccountRequest) {
+      return _iaib0xb9.EmailAccountRequest.fromJson(data) as T;
     }
-    if (t == _i13.EmailAccountLoginException) {
-      return _i13.EmailAccountLoginException.fromJson(data) as T;
+    if (t == _ij1yj4f1.EmailAccountLoginException) {
+      return _ij1yj4f1.EmailAccountLoginException.fromJson(data) as T;
     }
-    if (t == _i14.EmailAccountLoginExceptionReason) {
-      return _i14.EmailAccountLoginExceptionReason.fromJson(data) as T;
+    if (t == _ihd5znj2.EmailAccountLoginExceptionReason) {
+      return _ihd5znj2.EmailAccountLoginExceptionReason.fromJson(data) as T;
     }
-    if (t == _i15.EmailAccountPasswordResetException) {
-      return _i15.EmailAccountPasswordResetException.fromJson(data) as T;
+    if (t == _i7yyr103.EmailAccountPasswordResetException) {
+      return _i7yyr103.EmailAccountPasswordResetException.fromJson(data) as T;
     }
-    if (t == _i16.EmailAccountPasswordResetExceptionReason) {
-      return _i16.EmailAccountPasswordResetExceptionReason.fromJson(data) as T;
+    if (t == _io8tbstn.EmailAccountPasswordResetExceptionReason) {
+      return _io8tbstn.EmailAccountPasswordResetExceptionReason.fromJson(data)
+          as T;
     }
-    if (t == _i17.EmailAccountRequestException) {
-      return _i17.EmailAccountRequestException.fromJson(data) as T;
+    if (t == _iqtw285f.EmailAccountRequestException) {
+      return _iqtw285f.EmailAccountRequestException.fromJson(data) as T;
     }
-    if (t == _i18.EmailAccountRequestExceptionReason) {
-      return _i18.EmailAccountRequestExceptionReason.fromJson(data) as T;
+    if (t == _isgeino8.EmailAccountRequestExceptionReason) {
+      return _isgeino8.EmailAccountRequestExceptionReason.fromJson(data) as T;
     }
-    if (t == _i19.FacebookAccessTokenVerificationException) {
-      return _i19.FacebookAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i92zrjf0.FacebookAccessTokenVerificationException) {
+      return _i92zrjf0.FacebookAccessTokenVerificationException.fromJson(data)
+          as T;
     }
-    if (t == _i20.FacebookAccount) {
-      return _i20.FacebookAccount.fromJson(data) as T;
+    if (t == _ivl5gkpe.FacebookAccount) {
+      return _ivl5gkpe.FacebookAccount.fromJson(data) as T;
     }
-    if (t == _i21.FirebaseAccount) {
-      return _i21.FirebaseAccount.fromJson(data) as T;
+    if (t == _i923yrzc.FirebaseAccount) {
+      return _i923yrzc.FirebaseAccount.fromJson(data) as T;
     }
-    if (t == _i22.FirebaseEmailNotVerifiedException) {
-      return _i22.FirebaseEmailNotVerifiedException.fromJson(data) as T;
+    if (t == _imswdwet.FirebaseEmailNotVerifiedException) {
+      return _imswdwet.FirebaseEmailNotVerifiedException.fromJson(data) as T;
     }
-    if (t == _i23.FirebaseIdTokenVerificationException) {
-      return _i23.FirebaseIdTokenVerificationException.fromJson(data) as T;
+    if (t == _i14hfyiz.FirebaseIdTokenVerificationException) {
+      return _i14hfyiz.FirebaseIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i24.GitHubAccessTokenVerificationException) {
-      return _i24.GitHubAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i8u0zfwn.GitHubAccessTokenVerificationException) {
+      return _i8u0zfwn.GitHubAccessTokenVerificationException.fromJson(data)
+          as T;
     }
-    if (t == _i25.GitHubAccount) {
-      return _i25.GitHubAccount.fromJson(data) as T;
+    if (t == _i3l39it4.GitHubAccount) {
+      return _i3l39it4.GitHubAccount.fromJson(data) as T;
     }
-    if (t == _i26.GoogleAccount) {
-      return _i26.GoogleAccount.fromJson(data) as T;
+    if (t == _inlwg89o.GoogleAccount) {
+      return _inlwg89o.GoogleAccount.fromJson(data) as T;
     }
-    if (t == _i27.GoogleIdTokenVerificationException) {
-      return _i27.GoogleIdTokenVerificationException.fromJson(data) as T;
+    if (t == _iyz9kvht.GoogleIdTokenVerificationException) {
+      return _iyz9kvht.GoogleIdTokenVerificationException.fromJson(data) as T;
     }
-    if (t == _i28.MicrosoftAccessTokenVerificationException) {
-      return _i28.MicrosoftAccessTokenVerificationException.fromJson(data) as T;
+    if (t == _i0bj371b.MicrosoftAccessTokenVerificationException) {
+      return _i0bj371b.MicrosoftAccessTokenVerificationException.fromJson(data)
+          as T;
     }
-    if (t == _i29.MicrosoftAccount) {
-      return _i29.MicrosoftAccount.fromJson(data) as T;
+    if (t == _i8aemsss.MicrosoftAccount) {
+      return _i8aemsss.MicrosoftAccount.fromJson(data) as T;
     }
-    if (t == _i30.PasskeyAccount) {
-      return _i30.PasskeyAccount.fromJson(data) as T;
+    if (t == _iha3dd74.PasskeyAccount) {
+      return _iha3dd74.PasskeyAccount.fromJson(data) as T;
     }
-    if (t == _i31.PasskeyChallenge) {
-      return _i31.PasskeyChallenge.fromJson(data) as T;
+    if (t == _ini0eg2j.PasskeyChallenge) {
+      return _ini0eg2j.PasskeyChallenge.fromJson(data) as T;
     }
-    if (t == _i32.PasskeyChallengeExpiredException) {
-      return _i32.PasskeyChallengeExpiredException.fromJson(data) as T;
+    if (t == _ihzslz1a.PasskeyChallengeExpiredException) {
+      return _ihzslz1a.PasskeyChallengeExpiredException.fromJson(data) as T;
     }
-    if (t == _i33.PasskeyChallengeNotFoundException) {
-      return _i33.PasskeyChallengeNotFoundException.fromJson(data) as T;
+    if (t == _ihzssrx9.PasskeyChallengeNotFoundException) {
+      return _ihzssrx9.PasskeyChallengeNotFoundException.fromJson(data) as T;
     }
-    if (t == _i34.PasskeyLoginRequest) {
-      return _i34.PasskeyLoginRequest.fromJson(data) as T;
+    if (t == _itcmwg9u.PasskeyLoginRequest) {
+      return _itcmwg9u.PasskeyLoginRequest.fromJson(data) as T;
     }
-    if (t == _i35.PasskeyPublicKeyNotFoundException) {
-      return _i35.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
+    if (t == _isvo2sb5.PasskeyPublicKeyNotFoundException) {
+      return _isvo2sb5.PasskeyPublicKeyNotFoundException.fromJson(data) as T;
     }
-    if (t == _i36.PasskeyRegistrationRequest) {
-      return _i36.PasskeyRegistrationRequest.fromJson(data) as T;
+    if (t == _izjoggd8.PasskeyRegistrationRequest) {
+      return _izjoggd8.PasskeyRegistrationRequest.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.RateLimitedRequestAttempt?>()) {
+    if (t == _is.getType<_iddjx2hh.RateLimitedRequestAttempt?>()) {
       return (data != null
-              ? _i4.RateLimitedRequestAttempt.fromJson(data)
+              ? _iddjx2hh.RateLimitedRequestAttempt.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i5.SecretChallenge?>()) {
-      return (data != null ? _i5.SecretChallenge.fromJson(data) : null) as T;
+    if (t == _is.getType<_ihjuvfpt.SecretChallenge?>()) {
+      return (data != null ? _ihjuvfpt.SecretChallenge.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i6.AnonymousAccount?>()) {
-      return (data != null ? _i6.AnonymousAccount.fromJson(data) : null) as T;
+    if (t == _is.getType<_i5yjjpde.AnonymousAccount?>()) {
+      return (data != null ? _i5yjjpde.AnonymousAccount.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i7.AnonymousAccountBlockedException?>()) {
+    if (t == _is.getType<_ite257iv.AnonymousAccountBlockedException?>()) {
       return (data != null
-              ? _i7.AnonymousAccountBlockedException.fromJson(data)
+              ? _ite257iv.AnonymousAccountBlockedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i8.AnonymousAccountBlockedExceptionReason?>()) {
+    if (t == _is.getType<_ig3ph7nw.AnonymousAccountBlockedExceptionReason?>()) {
       return (data != null
-              ? _i8.AnonymousAccountBlockedExceptionReason.fromJson(data)
+              ? _ig3ph7nw.AnonymousAccountBlockedExceptionReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i9.AppleAccount?>()) {
-      return (data != null ? _i9.AppleAccount.fromJson(data) : null) as T;
+    if (t == _is.getType<_i9aj4p8a.AppleAccount?>()) {
+      return (data != null ? _i9aj4p8a.AppleAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i10.EmailAccount?>()) {
-      return (data != null ? _i10.EmailAccount.fromJson(data) : null) as T;
+    if (t == _is.getType<_i047o257.EmailAccount?>()) {
+      return (data != null ? _i047o257.EmailAccount.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i11.EmailAccountPasswordResetRequest?>()) {
+    if (t == _is.getType<_iouphhkf.EmailAccountPasswordResetRequest?>()) {
       return (data != null
-              ? _i11.EmailAccountPasswordResetRequest.fromJson(data)
+              ? _iouphhkf.EmailAccountPasswordResetRequest.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.EmailAccountRequest?>()) {
-      return (data != null ? _i12.EmailAccountRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i13.EmailAccountLoginException?>()) {
+    if (t == _is.getType<_iaib0xb9.EmailAccountRequest?>()) {
       return (data != null
-              ? _i13.EmailAccountLoginException.fromJson(data)
+              ? _iaib0xb9.EmailAccountRequest.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i14.EmailAccountLoginExceptionReason?>()) {
+    if (t == _is.getType<_ij1yj4f1.EmailAccountLoginException?>()) {
       return (data != null
-              ? _i14.EmailAccountLoginExceptionReason.fromJson(data)
+              ? _ij1yj4f1.EmailAccountLoginException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.EmailAccountPasswordResetException?>()) {
+    if (t == _is.getType<_ihd5znj2.EmailAccountLoginExceptionReason?>()) {
       return (data != null
-              ? _i15.EmailAccountPasswordResetException.fromJson(data)
+              ? _ihd5znj2.EmailAccountLoginExceptionReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i16.EmailAccountPasswordResetExceptionReason?>()) {
+    if (t == _is.getType<_i7yyr103.EmailAccountPasswordResetException?>()) {
       return (data != null
-              ? _i16.EmailAccountPasswordResetExceptionReason.fromJson(data)
+              ? _i7yyr103.EmailAccountPasswordResetException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i17.EmailAccountRequestException?>()) {
+    if (t ==
+        _is.getType<_io8tbstn.EmailAccountPasswordResetExceptionReason?>()) {
       return (data != null
-              ? _i17.EmailAccountRequestException.fromJson(data)
+              ? _io8tbstn.EmailAccountPasswordResetExceptionReason.fromJson(
+                  data,
+                )
               : null)
           as T;
     }
-    if (t == _i1.getType<_i18.EmailAccountRequestExceptionReason?>()) {
+    if (t == _is.getType<_iqtw285f.EmailAccountRequestException?>()) {
       return (data != null
-              ? _i18.EmailAccountRequestExceptionReason.fromJson(data)
+              ? _iqtw285f.EmailAccountRequestException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i19.FacebookAccessTokenVerificationException?>()) {
+    if (t == _is.getType<_isgeino8.EmailAccountRequestExceptionReason?>()) {
       return (data != null
-              ? _i19.FacebookAccessTokenVerificationException.fromJson(data)
+              ? _isgeino8.EmailAccountRequestExceptionReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i20.FacebookAccount?>()) {
-      return (data != null ? _i20.FacebookAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i21.FirebaseAccount?>()) {
-      return (data != null ? _i21.FirebaseAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i22.FirebaseEmailNotVerifiedException?>()) {
+    if (t ==
+        _is.getType<_i92zrjf0.FacebookAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i22.FirebaseEmailNotVerifiedException.fromJson(data)
+              ? _i92zrjf0.FacebookAccessTokenVerificationException.fromJson(
+                  data,
+                )
               : null)
           as T;
     }
-    if (t == _i1.getType<_i23.FirebaseIdTokenVerificationException?>()) {
+    if (t == _is.getType<_ivl5gkpe.FacebookAccount?>()) {
+      return (data != null ? _ivl5gkpe.FacebookAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_i923yrzc.FirebaseAccount?>()) {
+      return (data != null ? _i923yrzc.FirebaseAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_imswdwet.FirebaseEmailNotVerifiedException?>()) {
       return (data != null
-              ? _i23.FirebaseIdTokenVerificationException.fromJson(data)
+              ? _imswdwet.FirebaseEmailNotVerifiedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i24.GitHubAccessTokenVerificationException?>()) {
+    if (t == _is.getType<_i14hfyiz.FirebaseIdTokenVerificationException?>()) {
       return (data != null
-              ? _i24.GitHubAccessTokenVerificationException.fromJson(data)
+              ? _i14hfyiz.FirebaseIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.GitHubAccount?>()) {
-      return (data != null ? _i25.GitHubAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i26.GoogleAccount?>()) {
-      return (data != null ? _i26.GoogleAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i27.GoogleIdTokenVerificationException?>()) {
+    if (t == _is.getType<_i8u0zfwn.GitHubAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i27.GoogleIdTokenVerificationException.fromJson(data)
+              ? _i8u0zfwn.GitHubAccessTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i28.MicrosoftAccessTokenVerificationException?>()) {
+    if (t == _is.getType<_i3l39it4.GitHubAccount?>()) {
+      return (data != null ? _i3l39it4.GitHubAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_inlwg89o.GoogleAccount?>()) {
+      return (data != null ? _inlwg89o.GoogleAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iyz9kvht.GoogleIdTokenVerificationException?>()) {
       return (data != null
-              ? _i28.MicrosoftAccessTokenVerificationException.fromJson(data)
+              ? _iyz9kvht.GoogleIdTokenVerificationException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i29.MicrosoftAccount?>()) {
-      return (data != null ? _i29.MicrosoftAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i30.PasskeyAccount?>()) {
-      return (data != null ? _i30.PasskeyAccount.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i31.PasskeyChallenge?>()) {
-      return (data != null ? _i31.PasskeyChallenge.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i32.PasskeyChallengeExpiredException?>()) {
+    if (t ==
+        _is.getType<_i0bj371b.MicrosoftAccessTokenVerificationException?>()) {
       return (data != null
-              ? _i32.PasskeyChallengeExpiredException.fromJson(data)
+              ? _i0bj371b.MicrosoftAccessTokenVerificationException.fromJson(
+                  data,
+                )
               : null)
           as T;
     }
-    if (t == _i1.getType<_i33.PasskeyChallengeNotFoundException?>()) {
+    if (t == _is.getType<_i8aemsss.MicrosoftAccount?>()) {
+      return (data != null ? _i8aemsss.MicrosoftAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iha3dd74.PasskeyAccount?>()) {
+      return (data != null ? _iha3dd74.PasskeyAccount.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ini0eg2j.PasskeyChallenge?>()) {
+      return (data != null ? _ini0eg2j.PasskeyChallenge.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ihzslz1a.PasskeyChallengeExpiredException?>()) {
       return (data != null
-              ? _i33.PasskeyChallengeNotFoundException.fromJson(data)
+              ? _ihzslz1a.PasskeyChallengeExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i34.PasskeyLoginRequest?>()) {
-      return (data != null ? _i34.PasskeyLoginRequest.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i35.PasskeyPublicKeyNotFoundException?>()) {
+    if (t == _is.getType<_ihzssrx9.PasskeyChallengeNotFoundException?>()) {
       return (data != null
-              ? _i35.PasskeyPublicKeyNotFoundException.fromJson(data)
+              ? _ihzssrx9.PasskeyChallengeNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i36.PasskeyRegistrationRequest?>()) {
+    if (t == _is.getType<_itcmwg9u.PasskeyLoginRequest?>()) {
       return (data != null
-              ? _i36.PasskeyRegistrationRequest.fromJson(data)
+              ? _itcmwg9u.PasskeyLoginRequest.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_isvo2sb5.PasskeyPublicKeyNotFoundException?>()) {
+      return (data != null
+              ? _isvo2sb5.PasskeyPublicKeyNotFoundException.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_izjoggd8.PasskeyRegistrationRequest?>()) {
+      return (data != null
+              ? _izjoggd8.PasskeyRegistrationRequest.fromJson(data)
               : null)
           as T;
     }
@@ -1369,7 +1397,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == _i1.getType<Map<String, String>?>()) {
+    if (t == _is.getType<Map<String, String>?>()) {
       return (data != null
               ? (data as Map).map(
                   (k, v) =>
@@ -1378,75 +1406,75 @@ class Protocol extends _i1.DatabaseSerializationManager {
               : null)
           as T;
     }
-    if (t == _i1.getType<({_i37.ByteData challenge, _i1.UuidValue id})>()) {
+    if (t == _is.getType<({_idt.ByteData challenge, _is.UuidValue id})>()) {
       return (
-            challenge: deserialize<_i37.ByteData>(
+            challenge: deserialize<_idt.ByteData>(
               ((data as Map)['n'] as Map)['challenge'],
             ),
-            id: deserialize<_i1.UuidValue>(data['n']['id']),
+            id: deserialize<_is.UuidValue>(data['n']['id']),
           )
           as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacs.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i4.RateLimitedRequestAttempt => 'RateLimitedRequestAttempt',
-      _i5.SecretChallenge => 'SecretChallenge',
-      _i6.AnonymousAccount => 'AnonymousAccount',
-      _i7.AnonymousAccountBlockedException =>
+      _iddjx2hh.RateLimitedRequestAttempt => 'RateLimitedRequestAttempt',
+      _ihjuvfpt.SecretChallenge => 'SecretChallenge',
+      _i5yjjpde.AnonymousAccount => 'AnonymousAccount',
+      _ite257iv.AnonymousAccountBlockedException =>
         'AnonymousAccountBlockedException',
-      _i8.AnonymousAccountBlockedExceptionReason =>
+      _ig3ph7nw.AnonymousAccountBlockedExceptionReason =>
         'AnonymousAccountBlockedExceptionReason',
-      _i9.AppleAccount => 'AppleAccount',
-      _i10.EmailAccount => 'EmailAccount',
-      _i11.EmailAccountPasswordResetRequest =>
+      _i9aj4p8a.AppleAccount => 'AppleAccount',
+      _i047o257.EmailAccount => 'EmailAccount',
+      _iouphhkf.EmailAccountPasswordResetRequest =>
         'EmailAccountPasswordResetRequest',
-      _i12.EmailAccountRequest => 'EmailAccountRequest',
-      _i13.EmailAccountLoginException => 'EmailAccountLoginException',
-      _i14.EmailAccountLoginExceptionReason =>
+      _iaib0xb9.EmailAccountRequest => 'EmailAccountRequest',
+      _ij1yj4f1.EmailAccountLoginException => 'EmailAccountLoginException',
+      _ihd5znj2.EmailAccountLoginExceptionReason =>
         'EmailAccountLoginExceptionReason',
-      _i15.EmailAccountPasswordResetException =>
+      _i7yyr103.EmailAccountPasswordResetException =>
         'EmailAccountPasswordResetException',
-      _i16.EmailAccountPasswordResetExceptionReason =>
+      _io8tbstn.EmailAccountPasswordResetExceptionReason =>
         'EmailAccountPasswordResetExceptionReason',
-      _i17.EmailAccountRequestException => 'EmailAccountRequestException',
-      _i18.EmailAccountRequestExceptionReason =>
+      _iqtw285f.EmailAccountRequestException => 'EmailAccountRequestException',
+      _isgeino8.EmailAccountRequestExceptionReason =>
         'EmailAccountRequestExceptionReason',
-      _i19.FacebookAccessTokenVerificationException =>
+      _i92zrjf0.FacebookAccessTokenVerificationException =>
         'FacebookAccessTokenVerificationException',
-      _i20.FacebookAccount => 'FacebookAccount',
-      _i21.FirebaseAccount => 'FirebaseAccount',
-      _i22.FirebaseEmailNotVerifiedException =>
+      _ivl5gkpe.FacebookAccount => 'FacebookAccount',
+      _i923yrzc.FirebaseAccount => 'FirebaseAccount',
+      _imswdwet.FirebaseEmailNotVerifiedException =>
         'FirebaseEmailNotVerifiedException',
-      _i23.FirebaseIdTokenVerificationException =>
+      _i14hfyiz.FirebaseIdTokenVerificationException =>
         'FirebaseIdTokenVerificationException',
-      _i24.GitHubAccessTokenVerificationException =>
+      _i8u0zfwn.GitHubAccessTokenVerificationException =>
         'GitHubAccessTokenVerificationException',
-      _i25.GitHubAccount => 'GitHubAccount',
-      _i26.GoogleAccount => 'GoogleAccount',
-      _i27.GoogleIdTokenVerificationException =>
+      _i3l39it4.GitHubAccount => 'GitHubAccount',
+      _inlwg89o.GoogleAccount => 'GoogleAccount',
+      _iyz9kvht.GoogleIdTokenVerificationException =>
         'GoogleIdTokenVerificationException',
-      _i28.MicrosoftAccessTokenVerificationException =>
+      _i0bj371b.MicrosoftAccessTokenVerificationException =>
         'MicrosoftAccessTokenVerificationException',
-      _i29.MicrosoftAccount => 'MicrosoftAccount',
-      _i30.PasskeyAccount => 'PasskeyAccount',
-      _i31.PasskeyChallenge => 'PasskeyChallenge',
-      _i32.PasskeyChallengeExpiredException =>
+      _i8aemsss.MicrosoftAccount => 'MicrosoftAccount',
+      _iha3dd74.PasskeyAccount => 'PasskeyAccount',
+      _ini0eg2j.PasskeyChallenge => 'PasskeyChallenge',
+      _ihzslz1a.PasskeyChallengeExpiredException =>
         'PasskeyChallengeExpiredException',
-      _i33.PasskeyChallengeNotFoundException =>
+      _ihzssrx9.PasskeyChallengeNotFoundException =>
         'PasskeyChallengeNotFoundException',
-      _i34.PasskeyLoginRequest => 'PasskeyLoginRequest',
-      _i35.PasskeyPublicKeyNotFoundException =>
+      _itcmwg9u.PasskeyLoginRequest => 'PasskeyLoginRequest',
+      _isvo2sb5.PasskeyPublicKeyNotFoundException =>
         'PasskeyPublicKeyNotFoundException',
-      _i36.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
+      _izjoggd8.PasskeyRegistrationRequest => 'PasskeyRegistrationRequest',
       _ => null,
     };
   }
@@ -1464,74 +1492,74 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i4.RateLimitedRequestAttempt():
+      case _iddjx2hh.RateLimitedRequestAttempt():
         return 'RateLimitedRequestAttempt';
-      case _i5.SecretChallenge():
+      case _ihjuvfpt.SecretChallenge():
         return 'SecretChallenge';
-      case _i6.AnonymousAccount():
+      case _i5yjjpde.AnonymousAccount():
         return 'AnonymousAccount';
-      case _i7.AnonymousAccountBlockedException():
+      case _ite257iv.AnonymousAccountBlockedException():
         return 'AnonymousAccountBlockedException';
-      case _i8.AnonymousAccountBlockedExceptionReason():
+      case _ig3ph7nw.AnonymousAccountBlockedExceptionReason():
         return 'AnonymousAccountBlockedExceptionReason';
-      case _i9.AppleAccount():
+      case _i9aj4p8a.AppleAccount():
         return 'AppleAccount';
-      case _i10.EmailAccount():
+      case _i047o257.EmailAccount():
         return 'EmailAccount';
-      case _i11.EmailAccountPasswordResetRequest():
+      case _iouphhkf.EmailAccountPasswordResetRequest():
         return 'EmailAccountPasswordResetRequest';
-      case _i12.EmailAccountRequest():
+      case _iaib0xb9.EmailAccountRequest():
         return 'EmailAccountRequest';
-      case _i13.EmailAccountLoginException():
+      case _ij1yj4f1.EmailAccountLoginException():
         return 'EmailAccountLoginException';
-      case _i14.EmailAccountLoginExceptionReason():
+      case _ihd5znj2.EmailAccountLoginExceptionReason():
         return 'EmailAccountLoginExceptionReason';
-      case _i15.EmailAccountPasswordResetException():
+      case _i7yyr103.EmailAccountPasswordResetException():
         return 'EmailAccountPasswordResetException';
-      case _i16.EmailAccountPasswordResetExceptionReason():
+      case _io8tbstn.EmailAccountPasswordResetExceptionReason():
         return 'EmailAccountPasswordResetExceptionReason';
-      case _i17.EmailAccountRequestException():
+      case _iqtw285f.EmailAccountRequestException():
         return 'EmailAccountRequestException';
-      case _i18.EmailAccountRequestExceptionReason():
+      case _isgeino8.EmailAccountRequestExceptionReason():
         return 'EmailAccountRequestExceptionReason';
-      case _i19.FacebookAccessTokenVerificationException():
+      case _i92zrjf0.FacebookAccessTokenVerificationException():
         return 'FacebookAccessTokenVerificationException';
-      case _i20.FacebookAccount():
+      case _ivl5gkpe.FacebookAccount():
         return 'FacebookAccount';
-      case _i21.FirebaseAccount():
+      case _i923yrzc.FirebaseAccount():
         return 'FirebaseAccount';
-      case _i22.FirebaseEmailNotVerifiedException():
+      case _imswdwet.FirebaseEmailNotVerifiedException():
         return 'FirebaseEmailNotVerifiedException';
-      case _i23.FirebaseIdTokenVerificationException():
+      case _i14hfyiz.FirebaseIdTokenVerificationException():
         return 'FirebaseIdTokenVerificationException';
-      case _i24.GitHubAccessTokenVerificationException():
+      case _i8u0zfwn.GitHubAccessTokenVerificationException():
         return 'GitHubAccessTokenVerificationException';
-      case _i25.GitHubAccount():
+      case _i3l39it4.GitHubAccount():
         return 'GitHubAccount';
-      case _i26.GoogleAccount():
+      case _inlwg89o.GoogleAccount():
         return 'GoogleAccount';
-      case _i27.GoogleIdTokenVerificationException():
+      case _iyz9kvht.GoogleIdTokenVerificationException():
         return 'GoogleIdTokenVerificationException';
-      case _i28.MicrosoftAccessTokenVerificationException():
+      case _i0bj371b.MicrosoftAccessTokenVerificationException():
         return 'MicrosoftAccessTokenVerificationException';
-      case _i29.MicrosoftAccount():
+      case _i8aemsss.MicrosoftAccount():
         return 'MicrosoftAccount';
-      case _i30.PasskeyAccount():
+      case _iha3dd74.PasskeyAccount():
         return 'PasskeyAccount';
-      case _i31.PasskeyChallenge():
+      case _ini0eg2j.PasskeyChallenge():
         return 'PasskeyChallenge';
-      case _i32.PasskeyChallengeExpiredException():
+      case _ihzslz1a.PasskeyChallengeExpiredException():
         return 'PasskeyChallengeExpiredException';
-      case _i33.PasskeyChallengeNotFoundException():
+      case _ihzssrx9.PasskeyChallengeNotFoundException():
         return 'PasskeyChallengeNotFoundException';
-      case _i34.PasskeyLoginRequest():
+      case _itcmwg9u.PasskeyLoginRequest():
         return 'PasskeyLoginRequest';
-      case _i35.PasskeyPublicKeyNotFoundException():
+      case _isvo2sb5.PasskeyPublicKeyNotFoundException():
         return 'PasskeyPublicKeyNotFoundException';
-      case _i36.PasskeyRegistrationRequest():
+      case _izjoggd8.PasskeyRegistrationRequest():
         return 'PasskeyRegistrationRequest';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -1545,119 +1573,139 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'RateLimitedRequestAttempt') {
-      return deserialize<_i4.RateLimitedRequestAttempt>(data['data']);
+      return deserialize<_iddjx2hh.RateLimitedRequestAttempt>(data['data']);
     }
     if (dataClassName == 'SecretChallenge') {
-      return deserialize<_i5.SecretChallenge>(data['data']);
+      return deserialize<_ihjuvfpt.SecretChallenge>(data['data']);
     }
     if (dataClassName == 'AnonymousAccount') {
-      return deserialize<_i6.AnonymousAccount>(data['data']);
+      return deserialize<_i5yjjpde.AnonymousAccount>(data['data']);
     }
     if (dataClassName == 'AnonymousAccountBlockedException') {
-      return deserialize<_i7.AnonymousAccountBlockedException>(data['data']);
+      return deserialize<_ite257iv.AnonymousAccountBlockedException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'AnonymousAccountBlockedExceptionReason') {
-      return deserialize<_i8.AnonymousAccountBlockedExceptionReason>(
+      return deserialize<_ig3ph7nw.AnonymousAccountBlockedExceptionReason>(
         data['data'],
       );
     }
     if (dataClassName == 'AppleAccount') {
-      return deserialize<_i9.AppleAccount>(data['data']);
+      return deserialize<_i9aj4p8a.AppleAccount>(data['data']);
     }
     if (dataClassName == 'EmailAccount') {
-      return deserialize<_i10.EmailAccount>(data['data']);
+      return deserialize<_i047o257.EmailAccount>(data['data']);
     }
     if (dataClassName == 'EmailAccountPasswordResetRequest') {
-      return deserialize<_i11.EmailAccountPasswordResetRequest>(data['data']);
+      return deserialize<_iouphhkf.EmailAccountPasswordResetRequest>(
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountRequest') {
-      return deserialize<_i12.EmailAccountRequest>(data['data']);
+      return deserialize<_iaib0xb9.EmailAccountRequest>(data['data']);
     }
     if (dataClassName == 'EmailAccountLoginException') {
-      return deserialize<_i13.EmailAccountLoginException>(data['data']);
+      return deserialize<_ij1yj4f1.EmailAccountLoginException>(data['data']);
     }
     if (dataClassName == 'EmailAccountLoginExceptionReason') {
-      return deserialize<_i14.EmailAccountLoginExceptionReason>(data['data']);
+      return deserialize<_ihd5znj2.EmailAccountLoginExceptionReason>(
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountPasswordResetException') {
-      return deserialize<_i15.EmailAccountPasswordResetException>(data['data']);
+      return deserialize<_i7yyr103.EmailAccountPasswordResetException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'EmailAccountPasswordResetExceptionReason') {
-      return deserialize<_i16.EmailAccountPasswordResetExceptionReason>(
+      return deserialize<_io8tbstn.EmailAccountPasswordResetExceptionReason>(
         data['data'],
       );
     }
     if (dataClassName == 'EmailAccountRequestException') {
-      return deserialize<_i17.EmailAccountRequestException>(data['data']);
+      return deserialize<_iqtw285f.EmailAccountRequestException>(data['data']);
     }
     if (dataClassName == 'EmailAccountRequestExceptionReason') {
-      return deserialize<_i18.EmailAccountRequestExceptionReason>(data['data']);
+      return deserialize<_isgeino8.EmailAccountRequestExceptionReason>(
+        data['data'],
+      );
     }
     if (dataClassName == 'FacebookAccessTokenVerificationException') {
-      return deserialize<_i19.FacebookAccessTokenVerificationException>(
+      return deserialize<_i92zrjf0.FacebookAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'FacebookAccount') {
-      return deserialize<_i20.FacebookAccount>(data['data']);
+      return deserialize<_ivl5gkpe.FacebookAccount>(data['data']);
     }
     if (dataClassName == 'FirebaseAccount') {
-      return deserialize<_i21.FirebaseAccount>(data['data']);
+      return deserialize<_i923yrzc.FirebaseAccount>(data['data']);
     }
     if (dataClassName == 'FirebaseEmailNotVerifiedException') {
-      return deserialize<_i22.FirebaseEmailNotVerifiedException>(data['data']);
+      return deserialize<_imswdwet.FirebaseEmailNotVerifiedException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'FirebaseIdTokenVerificationException') {
-      return deserialize<_i23.FirebaseIdTokenVerificationException>(
+      return deserialize<_i14hfyiz.FirebaseIdTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccessTokenVerificationException') {
-      return deserialize<_i24.GitHubAccessTokenVerificationException>(
+      return deserialize<_i8u0zfwn.GitHubAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'GitHubAccount') {
-      return deserialize<_i25.GitHubAccount>(data['data']);
+      return deserialize<_i3l39it4.GitHubAccount>(data['data']);
     }
     if (dataClassName == 'GoogleAccount') {
-      return deserialize<_i26.GoogleAccount>(data['data']);
+      return deserialize<_inlwg89o.GoogleAccount>(data['data']);
     }
     if (dataClassName == 'GoogleIdTokenVerificationException') {
-      return deserialize<_i27.GoogleIdTokenVerificationException>(data['data']);
+      return deserialize<_iyz9kvht.GoogleIdTokenVerificationException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'MicrosoftAccessTokenVerificationException') {
-      return deserialize<_i28.MicrosoftAccessTokenVerificationException>(
+      return deserialize<_i0bj371b.MicrosoftAccessTokenVerificationException>(
         data['data'],
       );
     }
     if (dataClassName == 'MicrosoftAccount') {
-      return deserialize<_i29.MicrosoftAccount>(data['data']);
+      return deserialize<_i8aemsss.MicrosoftAccount>(data['data']);
     }
     if (dataClassName == 'PasskeyAccount') {
-      return deserialize<_i30.PasskeyAccount>(data['data']);
+      return deserialize<_iha3dd74.PasskeyAccount>(data['data']);
     }
     if (dataClassName == 'PasskeyChallenge') {
-      return deserialize<_i31.PasskeyChallenge>(data['data']);
+      return deserialize<_ini0eg2j.PasskeyChallenge>(data['data']);
     }
     if (dataClassName == 'PasskeyChallengeExpiredException') {
-      return deserialize<_i32.PasskeyChallengeExpiredException>(data['data']);
+      return deserialize<_ihzslz1a.PasskeyChallengeExpiredException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'PasskeyChallengeNotFoundException') {
-      return deserialize<_i33.PasskeyChallengeNotFoundException>(data['data']);
+      return deserialize<_ihzssrx9.PasskeyChallengeNotFoundException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'PasskeyLoginRequest') {
-      return deserialize<_i34.PasskeyLoginRequest>(data['data']);
+      return deserialize<_itcmwg9u.PasskeyLoginRequest>(data['data']);
     }
     if (dataClassName == 'PasskeyPublicKeyNotFoundException') {
-      return deserialize<_i35.PasskeyPublicKeyNotFoundException>(data['data']);
+      return deserialize<_isvo2sb5.PasskeyPublicKeyNotFoundException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'PasskeyRegistrationRequest') {
-      return deserialize<_i36.PasskeyRegistrationRequest>(data['data']);
+      return deserialize<_izjoggd8.PasskeyRegistrationRequest>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -1680,8 +1728,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _is.SerializationManager.toEncodableForProtocol(wrapped)
+          : _is.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -1722,54 +1770,54 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _iacs.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i4.RateLimitedRequestAttempt:
-        return _i4.RateLimitedRequestAttempt.t;
-      case _i5.SecretChallenge:
-        return _i5.SecretChallenge.t;
-      case _i6.AnonymousAccount:
-        return _i6.AnonymousAccount.t;
-      case _i9.AppleAccount:
-        return _i9.AppleAccount.t;
-      case _i10.EmailAccount:
-        return _i10.EmailAccount.t;
-      case _i11.EmailAccountPasswordResetRequest:
-        return _i11.EmailAccountPasswordResetRequest.t;
-      case _i12.EmailAccountRequest:
-        return _i12.EmailAccountRequest.t;
-      case _i20.FacebookAccount:
-        return _i20.FacebookAccount.t;
-      case _i21.FirebaseAccount:
-        return _i21.FirebaseAccount.t;
-      case _i25.GitHubAccount:
-        return _i25.GitHubAccount.t;
-      case _i26.GoogleAccount:
-        return _i26.GoogleAccount.t;
-      case _i29.MicrosoftAccount:
-        return _i29.MicrosoftAccount.t;
-      case _i30.PasskeyAccount:
-        return _i30.PasskeyAccount.t;
-      case _i31.PasskeyChallenge:
-        return _i31.PasskeyChallenge.t;
+      case _iddjx2hh.RateLimitedRequestAttempt:
+        return _iddjx2hh.RateLimitedRequestAttempt.t;
+      case _ihjuvfpt.SecretChallenge:
+        return _ihjuvfpt.SecretChallenge.t;
+      case _i5yjjpde.AnonymousAccount:
+        return _i5yjjpde.AnonymousAccount.t;
+      case _i9aj4p8a.AppleAccount:
+        return _i9aj4p8a.AppleAccount.t;
+      case _i047o257.EmailAccount:
+        return _i047o257.EmailAccount.t;
+      case _iouphhkf.EmailAccountPasswordResetRequest:
+        return _iouphhkf.EmailAccountPasswordResetRequest.t;
+      case _iaib0xb9.EmailAccountRequest:
+        return _iaib0xb9.EmailAccountRequest.t;
+      case _ivl5gkpe.FacebookAccount:
+        return _ivl5gkpe.FacebookAccount.t;
+      case _i923yrzc.FirebaseAccount:
+        return _i923yrzc.FirebaseAccount.t;
+      case _i3l39it4.GitHubAccount:
+        return _i3l39it4.GitHubAccount.t;
+      case _inlwg89o.GoogleAccount:
+        return _inlwg89o.GoogleAccount.t;
+      case _i8aemsss.MicrosoftAccount:
+        return _i8aemsss.MicrosoftAccount.t;
+      case _iha3dd74.PasskeyAccount:
+        return _iha3dd74.PasskeyAccount.t;
+      case _ini0eg2j.PasskeyChallenge:
+        return _ini0eg2j.PasskeyChallenge.t;
     }
     return null;
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -1784,7 +1832,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is ({_i37.ByteData challenge, _i1.UuidValue id})) {
+    if (record is ({_idt.ByteData challenge, _is.UuidValue id})) {
       return {
         "n": {
           "challenge": record.challenge.toJson(),
@@ -1793,7 +1841,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       };
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iacs.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

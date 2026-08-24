@@ -10,31 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class SimpleDataObject
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SimpleDataObject._({required this.object});
 
-  factory SimpleDataObject({required _i2.SimpleData object}) =
+  factory SimpleDataObject({required _i0zisc0t.SimpleData object}) =
       _SimpleDataObjectImpl;
 
   factory SimpleDataObject.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDataObject(
-      object: _i3.Protocol().deserialize<_i2.SimpleData>(
+      object: _igqrxdcj.Protocol().deserialize<_i0zisc0t.SimpleData>(
         jsonSerialization['object'],
       ),
     );
   }
 
-  _i2.SimpleData object;
+  _i0zisc0t.SimpleData object;
 
   /// Returns a shallow copy of this [SimpleDataObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  SimpleDataObject copyWith({_i2.SimpleData? object});
+  @_is.useResult
+  SimpleDataObject copyWith({_i0zisc0t.SimpleData? object});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -53,19 +53,19 @@ abstract class SimpleDataObject
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _SimpleDataObjectImpl extends SimpleDataObject {
-  _SimpleDataObjectImpl({required _i2.SimpleData object})
+  _SimpleDataObjectImpl({required _i0zisc0t.SimpleData object})
     : super._(object: object);
 
   /// Returns a shallow copy of this [SimpleDataObject]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
-  SimpleDataObject copyWith({_i2.SimpleData? object}) {
+  SimpleDataObject copyWith({_i0zisc0t.SimpleData? object}) {
     return SimpleDataObject(object: object ?? this.object.copyWith());
   }
 }

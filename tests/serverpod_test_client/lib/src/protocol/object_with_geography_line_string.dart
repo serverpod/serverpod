@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithGeographyLineString
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithGeographyLineString._({
     this.id,
     required this.lineString,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyLineString
 
   factory ObjectWithGeographyLineString({
     int? id,
-    required _i1.GeographyLineString lineString,
-    required _i1.GeographyLineString lineStringIndexedGist,
-    required _i1.GeographyLineString lineStringIndexedSpgist,
+    required _isc.GeographyLineString lineString,
+    required _isc.GeographyLineString lineStringIndexedGist,
+    required _isc.GeographyLineString lineStringIndexedSpgist,
   }) = _ObjectWithGeographyLineStringImpl;
 
   factory ObjectWithGeographyLineString.fromJson(
@@ -33,13 +33,13 @@ abstract class ObjectWithGeographyLineString
   ) {
     return ObjectWithGeographyLineString(
       id: jsonSerialization['id'] as int?,
-      lineString: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineString: _isc.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineString'],
       ),
-      lineStringIndexedGist: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineStringIndexedGist: _isc.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineStringIndexedGist'],
       ),
-      lineStringIndexedSpgist: _i1.GeographyLineStringJsonExtension.fromJson(
+      lineStringIndexedSpgist: _isc.GeographyLineStringJsonExtension.fromJson(
         jsonSerialization['lineStringIndexedSpgist'],
       ),
     );
@@ -50,20 +50,20 @@ abstract class ObjectWithGeographyLineString
   /// the id will be null.
   int? id;
 
-  _i1.GeographyLineString lineString;
+  _isc.GeographyLineString lineString;
 
-  _i1.GeographyLineString lineStringIndexedGist;
+  _isc.GeographyLineString lineStringIndexedGist;
 
-  _i1.GeographyLineString lineStringIndexedSpgist;
+  _isc.GeographyLineString lineStringIndexedSpgist;
 
   /// Returns a shallow copy of this [ObjectWithGeographyLineString]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithGeographyLineString copyWith({
     int? id,
-    _i1.GeographyLineString? lineString,
-    _i1.GeographyLineString? lineStringIndexedGist,
-    _i1.GeographyLineString? lineStringIndexedSpgist,
+    _isc.GeographyLineString? lineString,
+    _isc.GeographyLineString? lineStringIndexedGist,
+    _isc.GeographyLineString? lineStringIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -89,7 +89,7 @@ abstract class ObjectWithGeographyLineString
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,9 +98,9 @@ class _Undefined {}
 class _ObjectWithGeographyLineStringImpl extends ObjectWithGeographyLineString {
   _ObjectWithGeographyLineStringImpl({
     int? id,
-    required _i1.GeographyLineString lineString,
-    required _i1.GeographyLineString lineStringIndexedGist,
-    required _i1.GeographyLineString lineStringIndexedSpgist,
+    required _isc.GeographyLineString lineString,
+    required _isc.GeographyLineString lineStringIndexedGist,
+    required _isc.GeographyLineString lineStringIndexedSpgist,
   }) : super._(
          id: id,
          lineString: lineString,
@@ -110,13 +110,13 @@ class _ObjectWithGeographyLineStringImpl extends ObjectWithGeographyLineString {
 
   /// Returns a shallow copy of this [ObjectWithGeographyLineString]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithGeographyLineString copyWith({
     Object? id = _Undefined,
-    _i1.GeographyLineString? lineString,
-    _i1.GeographyLineString? lineStringIndexedGist,
-    _i1.GeographyLineString? lineStringIndexedSpgist,
+    _isc.GeographyLineString? lineString,
+    _isc.GeographyLineString? lineStringIndexedGist,
+    _isc.GeographyLineString? lineStringIndexedSpgist,
   }) {
     return ObjectWithGeographyLineString(
       id: id is int? ? id : this.id,

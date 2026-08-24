@@ -10,14 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'log_settings.dart' as _i2;
-import 'log_settings_override.dart' as _i3;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_service_client/src/protocol/protocol.dart'
+    as _ian793c4;
+import 'log_settings.dart' as _illv0ea4;
+import 'log_settings_override.dart' as _i5sjxqb6;
 
 /// Runtime settings of the server.
 abstract class RuntimeSettings
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RuntimeSettings._({
     this.id,
     required this.logSettings,
@@ -28,8 +29,8 @@ abstract class RuntimeSettings
 
   factory RuntimeSettings({
     int? id,
-    required _i2.LogSettings logSettings,
-    required List<_i3.LogSettingsOverride> logSettingsOverrides,
+    required _illv0ea4.LogSettings logSettings,
+    required List<_i5sjxqb6.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) = _RuntimeSettingsImpl;
@@ -37,17 +38,17 @@ abstract class RuntimeSettings
   factory RuntimeSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return RuntimeSettings(
       id: jsonSerialization['id'] as int?,
-      logSettings: _i4.Protocol().deserialize<_i2.LogSettings>(
+      logSettings: _ian793c4.Protocol().deserialize<_illv0ea4.LogSettings>(
         jsonSerialization['logSettings'],
       ),
-      logSettingsOverrides: _i4.Protocol()
-          .deserialize<List<_i3.LogSettingsOverride>>(
+      logSettingsOverrides: _ian793c4.Protocol()
+          .deserialize<List<_i5sjxqb6.LogSettingsOverride>>(
             jsonSerialization['logSettingsOverrides'],
           ),
-      logServiceCalls: _i1.BoolJsonExtension.fromJson(
+      logServiceCalls: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logServiceCalls'],
       ),
-      logMalformedCalls: _i1.BoolJsonExtension.fromJson(
+      logMalformedCalls: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logMalformedCalls'],
       ),
     );
@@ -59,10 +60,10 @@ abstract class RuntimeSettings
   int? id;
 
   /// Log settings.
-  _i2.LogSettings logSettings;
+  _illv0ea4.LogSettings logSettings;
 
   /// List of log setting overrides.
-  List<_i3.LogSettingsOverride> logSettingsOverrides;
+  List<_i5sjxqb6.LogSettingsOverride> logSettingsOverrides;
 
   /// True if service calls to Serverpod Insights should be logged.
   bool logServiceCalls;
@@ -72,11 +73,11 @@ abstract class RuntimeSettings
 
   /// Returns a shallow copy of this [RuntimeSettings]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RuntimeSettings copyWith({
     int? id,
-    _i2.LogSettings? logSettings,
-    List<_i3.LogSettingsOverride>? logSettingsOverrides,
+    _illv0ea4.LogSettings? logSettings,
+    List<_i5sjxqb6.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   });
@@ -110,7 +111,7 @@ abstract class RuntimeSettings
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -119,8 +120,8 @@ class _Undefined {}
 class _RuntimeSettingsImpl extends RuntimeSettings {
   _RuntimeSettingsImpl({
     int? id,
-    required _i2.LogSettings logSettings,
-    required List<_i3.LogSettingsOverride> logSettingsOverrides,
+    required _illv0ea4.LogSettings logSettings,
+    required List<_i5sjxqb6.LogSettingsOverride> logSettingsOverrides,
     required bool logServiceCalls,
     required bool logMalformedCalls,
   }) : super._(
@@ -133,12 +134,12 @@ class _RuntimeSettingsImpl extends RuntimeSettings {
 
   /// Returns a shallow copy of this [RuntimeSettings]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RuntimeSettings copyWith({
     Object? id = _Undefined,
-    _i2.LogSettings? logSettings,
-    List<_i3.LogSettingsOverride>? logSettingsOverrides,
+    _illv0ea4.LogSettings? logSettings,
+    List<_i5sjxqb6.LogSettingsOverride>? logSettingsOverrides,
     bool? logServiceCalls,
     bool? logMalformedCalls,
   }) {

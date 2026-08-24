@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Defines reasons for a failed legacy authentication attempt.
-enum LegacyAuthenticationFailReason implements _i1.SerializableModel {
+enum LegacyAuthenticationFailReason implements _isc.SerializableModel {
   /// Credentials did not match any account.
   invalidCredentials,
 

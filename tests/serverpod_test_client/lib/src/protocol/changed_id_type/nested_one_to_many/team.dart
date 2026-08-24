@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/nested_one_to_many/arena.dart' as _i2;
-import '../../changed_id_type/nested_one_to_many/player.dart' as _i3;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../changed_id_type/nested_one_to_many/arena.dart' as _izqzqdtt;
+import '../../changed_id_type/nested_one_to_many/player.dart' as _igtph8zx;
 
 abstract class TeamInt
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   TeamInt._({
     this.id,
     required this.name,
@@ -28,9 +28,9 @@ abstract class TeamInt
   factory TeamInt({
     int? id,
     required String name,
-    _i1.UuidValue? arenaId,
-    _i2.ArenaUuid? arena,
-    List<_i3.PlayerUuid>? players,
+    _isc.UuidValue? arenaId,
+    _izqzqdtt.ArenaUuid? arena,
+    List<_igtph8zx.PlayerUuid>? players,
   }) = _TeamIntImpl;
 
   factory TeamInt.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -39,15 +39,15 @@ abstract class TeamInt
       name: jsonSerialization['name'] as String,
       arenaId: jsonSerialization['arenaId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['arenaId']),
       arena: jsonSerialization['arena'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.ArenaUuid>(
+          : _iza9lbb5.Protocol().deserialize<_izqzqdtt.ArenaUuid>(
               jsonSerialization['arena'],
             ),
       players: jsonSerialization['players'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.PlayerUuid>>(
+          : _iza9lbb5.Protocol().deserialize<List<_igtph8zx.PlayerUuid>>(
               jsonSerialization['players'],
             ),
     );
@@ -60,21 +60,21 @@ abstract class TeamInt
 
   String name;
 
-  _i1.UuidValue? arenaId;
+  _isc.UuidValue? arenaId;
 
-  _i2.ArenaUuid? arena;
+  _izqzqdtt.ArenaUuid? arena;
 
-  List<_i3.PlayerUuid>? players;
+  List<_igtph8zx.PlayerUuid>? players;
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   TeamInt copyWith({
     int? id,
     String? name,
-    _i1.UuidValue? arenaId,
-    _i2.ArenaUuid? arena,
-    List<_i3.PlayerUuid>? players,
+    _isc.UuidValue? arenaId,
+    _izqzqdtt.ArenaUuid? arena,
+    List<_igtph8zx.PlayerUuid>? players,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -104,7 +104,7 @@ abstract class TeamInt
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -114,9 +114,9 @@ class _TeamIntImpl extends TeamInt {
   _TeamIntImpl({
     int? id,
     required String name,
-    _i1.UuidValue? arenaId,
-    _i2.ArenaUuid? arena,
-    List<_i3.PlayerUuid>? players,
+    _isc.UuidValue? arenaId,
+    _izqzqdtt.ArenaUuid? arena,
+    List<_igtph8zx.PlayerUuid>? players,
   }) : super._(
          id: id,
          name: name,
@@ -127,7 +127,7 @@ class _TeamIntImpl extends TeamInt {
 
   /// Returns a shallow copy of this [TeamInt]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   TeamInt copyWith({
     Object? id = _Undefined,
@@ -139,9 +139,9 @@ class _TeamIntImpl extends TeamInt {
     return TeamInt(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      arenaId: arenaId is _i1.UuidValue? ? arenaId : this.arenaId,
-      arena: arena is _i2.ArenaUuid? ? arena : this.arena?.copyWith(),
-      players: players is List<_i3.PlayerUuid>?
+      arenaId: arenaId is _isc.UuidValue? ? arenaId : this.arenaId,
+      arena: arena is _izqzqdtt.ArenaUuid? ? arena : this.arena?.copyWith(),
+      players: players is List<_igtph8zx.PlayerUuid>?
           ? players
           : this.players?.map((e0) => e0.copyWith()).toList(),
     );

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectFieldPersist
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectFieldPersist._({
     this.id,
     required this.normal,
@@ -27,7 +27,7 @@ abstract class ObjectFieldPersist
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   }) = _ObjectFieldPersistImpl;
 
   factory ObjectFieldPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class ObjectFieldPersist
       api: jsonSerialization['api'] as String?,
       data: jsonSerialization['data'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SimpleData>(
+          : _iza9lbb5.Protocol().deserialize<_i0zisc0t.SimpleData>(
               jsonSerialization['data'],
             ),
     );
@@ -52,16 +52,16 @@ abstract class ObjectFieldPersist
 
   String? api;
 
-  _i2.SimpleData? data;
+  _i0zisc0t.SimpleData? data;
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +87,7 @@ abstract class ObjectFieldPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +98,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   }) : super._(
          id: id,
          normal: normal,
@@ -108,7 +108,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,
@@ -120,7 +120,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
       id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
       api: api is String? ? api : this.api,
-      data: data is _i2.SimpleData? ? data : this.data?.copyWith(),
+      data: data is _i0zisc0t.SimpleData? ? data : this.data?.copyWith(),
     );
   }
 }

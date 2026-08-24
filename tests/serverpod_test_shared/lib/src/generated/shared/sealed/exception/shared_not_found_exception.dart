@@ -11,11 +11,12 @@
 
 part of 'shared_sealed_app_exception.dart';
 
-abstract class SharedNotFoundException extends _i1.SharedSealedAppException
+abstract class SharedNotFoundException
+    extends _ilwf0zl1.SharedSealedAppException
     implements
-        _i2.SerializableException,
-        _i2.SerializableModel,
-        _i2.ProtocolSerialization {
+        _iss.SerializableException,
+        _iss.SerializableModel,
+        _iss.ProtocolSerialization {
   SharedNotFoundException._({
     required super.message,
     required this.code,
@@ -40,7 +41,7 @@ abstract class SharedNotFoundException extends _i1.SharedSealedAppException
   /// Returns a shallow copy of this [SharedNotFoundException]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_iss.useResult
   SharedNotFoundException copyWith({
     String? message,
     int? code,
@@ -80,7 +81,7 @@ class _SharedNotFoundExceptionImpl extends SharedNotFoundException {
 
   /// Returns a shallow copy of this [SharedNotFoundException]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedNotFoundException copyWith({
     String? message,

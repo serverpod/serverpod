@@ -10,16 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_log_entry.dart' as _i2;
-import 'query_log_entry.dart' as _i3;
-import 'log_entry.dart' as _i4;
-import 'message_log_entry.dart' as _i5;
-import 'package:serverpod/src/generated/protocol.dart' as _i6;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'log_entry.dart' as _iv7ld46g;
+import 'message_log_entry.dart' as _iky1nb92;
+import 'query_log_entry.dart' as _inqjskye;
+import 'session_log_entry.dart' as _i3jtimpl;
 
 /// Compounded information about a session log.
 abstract class SessionLogInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SessionLogInfo._({
     required this.sessionLogEntry,
     required this.queries,
@@ -28,49 +28,51 @@ abstract class SessionLogInfo
   });
 
   factory SessionLogInfo({
-    required _i2.SessionLogEntry sessionLogEntry,
-    required List<_i3.QueryLogEntry> queries,
-    required List<_i4.LogEntry> logs,
-    required List<_i5.MessageLogEntry> messages,
+    required _i3jtimpl.SessionLogEntry sessionLogEntry,
+    required List<_inqjskye.QueryLogEntry> queries,
+    required List<_iv7ld46g.LogEntry> logs,
+    required List<_iky1nb92.MessageLogEntry> messages,
   }) = _SessionLogInfoImpl;
 
   factory SessionLogInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogInfo(
-      sessionLogEntry: _i6.Protocol().deserialize<_i2.SessionLogEntry>(
-        jsonSerialization['sessionLogEntry'],
-      ),
-      queries: _i6.Protocol().deserialize<List<_i3.QueryLogEntry>>(
+      sessionLogEntry: _ic00rqxb.Protocol()
+          .deserialize<_i3jtimpl.SessionLogEntry>(
+            jsonSerialization['sessionLogEntry'],
+          ),
+      queries: _ic00rqxb.Protocol().deserialize<List<_inqjskye.QueryLogEntry>>(
         jsonSerialization['queries'],
       ),
-      logs: _i6.Protocol().deserialize<List<_i4.LogEntry>>(
+      logs: _ic00rqxb.Protocol().deserialize<List<_iv7ld46g.LogEntry>>(
         jsonSerialization['logs'],
       ),
-      messages: _i6.Protocol().deserialize<List<_i5.MessageLogEntry>>(
-        jsonSerialization['messages'],
-      ),
+      messages: _ic00rqxb.Protocol()
+          .deserialize<List<_iky1nb92.MessageLogEntry>>(
+            jsonSerialization['messages'],
+          ),
     );
   }
 
   /// The main session log entry.
-  _i2.SessionLogEntry sessionLogEntry;
+  _i3jtimpl.SessionLogEntry sessionLogEntry;
 
   /// List of queries made during the session.
-  List<_i3.QueryLogEntry> queries;
+  List<_inqjskye.QueryLogEntry> queries;
 
   /// List of log entries made during the session.
-  List<_i4.LogEntry> logs;
+  List<_iv7ld46g.LogEntry> logs;
 
   /// List of messages sent during the session.
-  List<_i5.MessageLogEntry> messages;
+  List<_iky1nb92.MessageLogEntry> messages;
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SessionLogInfo copyWith({
-    _i2.SessionLogEntry? sessionLogEntry,
-    List<_i3.QueryLogEntry>? queries,
-    List<_i4.LogEntry>? logs,
-    List<_i5.MessageLogEntry>? messages,
+    _i3jtimpl.SessionLogEntry? sessionLogEntry,
+    List<_inqjskye.QueryLogEntry>? queries,
+    List<_iv7ld46g.LogEntry>? logs,
+    List<_iky1nb92.MessageLogEntry>? messages,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -96,16 +98,16 @@ abstract class SessionLogInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _SessionLogInfoImpl extends SessionLogInfo {
   _SessionLogInfoImpl({
-    required _i2.SessionLogEntry sessionLogEntry,
-    required List<_i3.QueryLogEntry> queries,
-    required List<_i4.LogEntry> logs,
-    required List<_i5.MessageLogEntry> messages,
+    required _i3jtimpl.SessionLogEntry sessionLogEntry,
+    required List<_inqjskye.QueryLogEntry> queries,
+    required List<_iv7ld46g.LogEntry> logs,
+    required List<_iky1nb92.MessageLogEntry> messages,
   }) : super._(
          sessionLogEntry: sessionLogEntry,
          queries: queries,
@@ -115,13 +117,13 @@ class _SessionLogInfoImpl extends SessionLogInfo {
 
   /// Returns a shallow copy of this [SessionLogInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SessionLogInfo copyWith({
-    _i2.SessionLogEntry? sessionLogEntry,
-    List<_i3.QueryLogEntry>? queries,
-    List<_i4.LogEntry>? logs,
-    List<_i5.MessageLogEntry>? messages,
+    _i3jtimpl.SessionLogEntry? sessionLogEntry,
+    List<_inqjskye.QueryLogEntry>? queries,
+    List<_iv7ld46g.LogEntry>? logs,
+    List<_iky1nb92.MessageLogEntry>? messages,
   }) {
     return SessionLogInfo(
       sessionLogEntry: sessionLogEntry ?? this.sessionLogEntry.copyWith(),

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'log_level.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'log_level.dart' as _iavjjqw5;
 
 /// Log settings for the server.
 abstract class LogSettings
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   LogSettings._({
     required this.logLevel,
     required this.logAllSessions,
@@ -30,7 +30,7 @@ abstract class LogSettings
   });
 
   factory LogSettings({
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required bool logAllSessions,
     required bool logAllQueries,
     required bool logSlowSessions,
@@ -44,26 +44,28 @@ abstract class LogSettings
 
   factory LogSettings.fromJson(Map<String, dynamic> jsonSerialization) {
     return LogSettings(
-      logLevel: _i2.LogLevel.fromJson((jsonSerialization['logLevel'] as int)),
-      logAllSessions: _i1.BoolJsonExtension.fromJson(
+      logLevel: _iavjjqw5.LogLevel.fromJson(
+        (jsonSerialization['logLevel'] as int),
+      ),
+      logAllSessions: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logAllSessions'],
       ),
-      logAllQueries: _i1.BoolJsonExtension.fromJson(
+      logAllQueries: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logAllQueries'],
       ),
-      logSlowSessions: _i1.BoolJsonExtension.fromJson(
+      logSlowSessions: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logSlowSessions'],
       ),
-      logStreamingSessionsContinuously: _i1.BoolJsonExtension.fromJson(
+      logStreamingSessionsContinuously: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logStreamingSessionsContinuously'],
       ),
-      logSlowQueries: _i1.BoolJsonExtension.fromJson(
+      logSlowQueries: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logSlowQueries'],
       ),
-      logFailedSessions: _i1.BoolJsonExtension.fromJson(
+      logFailedSessions: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logFailedSessions'],
       ),
-      logFailedQueries: _i1.BoolJsonExtension.fromJson(
+      logFailedQueries: _isc.BoolJsonExtension.fromJson(
         jsonSerialization['logFailedQueries'],
       ),
       slowSessionDuration: (jsonSerialization['slowSessionDuration'] as num)
@@ -74,7 +76,7 @@ abstract class LogSettings
   }
 
   /// Log level. Everything above this level will be logged.
-  _i2.LogLevel logLevel;
+  _iavjjqw5.LogLevel logLevel;
 
   /// True if all sessions should be logged.
   bool logAllSessions;
@@ -106,9 +108,9 @@ abstract class LogSettings
 
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   LogSettings copyWith({
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     bool? logAllSessions,
     bool? logAllQueries,
     bool? logSlowSessions,
@@ -155,13 +157,13 @@ abstract class LogSettings
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _LogSettingsImpl extends LogSettings {
   _LogSettingsImpl({
-    required _i2.LogLevel logLevel,
+    required _iavjjqw5.LogLevel logLevel,
     required bool logAllSessions,
     required bool logAllQueries,
     required bool logSlowSessions,
@@ -186,10 +188,10 @@ class _LogSettingsImpl extends LogSettings {
 
   /// Returns a shallow copy of this [LogSettings]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   LogSettings copyWith({
-    _i2.LogLevel? logLevel,
+    _iavjjqw5.LogLevel? logLevel,
     bool? logAllSessions,
     bool? logAllQueries,
     bool? logSlowSessions,

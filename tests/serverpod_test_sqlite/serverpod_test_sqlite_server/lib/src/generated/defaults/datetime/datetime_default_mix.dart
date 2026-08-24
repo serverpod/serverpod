@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class DateTimeDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   DateTimeDefaultMix._({
     this.id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -42,19 +42,19 @@ abstract class DateTimeDefaultMix
       dateTimeDefaultAndDefaultModel:
           jsonSerialization['dateTimeDefaultAndDefaultModel'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultAndDefaultModel'],
             ),
       dateTimeDefaultAndDefaultPersist:
           jsonSerialization['dateTimeDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultAndDefaultPersist'],
             ),
       dateTimeDefaultModelAndDefaultPersist:
           jsonSerialization['dateTimeDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultModelAndDefaultPersist'],
             ),
     );
@@ -74,11 +74,11 @@ abstract class DateTimeDefaultMix
   DateTime dateTimeDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [DateTimeDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -116,11 +116,11 @@ abstract class DateTimeDefaultMix
   }
 
   static DateTimeDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     DateTimeDefaultMixInclude? include,
   }) {
     return DateTimeDefaultMixIncludeList._(
@@ -135,7 +135,7 @@ abstract class DateTimeDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -157,7 +157,7 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
 
   /// Returns a shallow copy of this [DateTimeDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,
@@ -180,46 +180,46 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
 }
 
 class DateTimeDefaultMixUpdateTable
-    extends _i1.UpdateTable<DateTimeDefaultMixTable> {
+    extends _is.UpdateTable<DateTimeDefaultMixTable> {
   DateTimeDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultModel(
+  _is.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultModel(
     DateTime value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.dateTimeDefaultAndDefaultModel,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultPersist(
+  _is.ColumnValue<DateTime, DateTime> dateTimeDefaultAndDefaultPersist(
     DateTime value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.dateTimeDefaultAndDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> dateTimeDefaultModelAndDefaultPersist(
+  _is.ColumnValue<DateTime, DateTime> dateTimeDefaultModelAndDefaultPersist(
     DateTime value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.dateTimeDefaultModelAndDefaultPersist,
     value,
   );
 }
 
-class DateTimeDefaultMixTable extends _i1.Table<int?> {
+class DateTimeDefaultMixTable extends _is.Table<int?> {
   DateTimeDefaultMixTable({super.tableRelation})
     : super(tableName: 'datetime_default_mix') {
     updateTable = DateTimeDefaultMixUpdateTable(this);
-    dateTimeDefaultAndDefaultModel = _i1.ColumnDateTime(
+    dateTimeDefaultAndDefaultModel = _is.ColumnDateTime(
       'dateTimeDefaultAndDefaultModel',
       this,
       hasDefault: true,
     );
-    dateTimeDefaultAndDefaultPersist = _i1.ColumnDateTime(
+    dateTimeDefaultAndDefaultPersist = _is.ColumnDateTime(
       'dateTimeDefaultAndDefaultPersist',
       this,
       hasDefault: true,
     );
-    dateTimeDefaultModelAndDefaultPersist = _i1.ColumnDateTime(
+    dateTimeDefaultModelAndDefaultPersist = _is.ColumnDateTime(
       'dateTimeDefaultModelAndDefaultPersist',
       this,
       hasDefault: true,
@@ -228,14 +228,14 @@ class DateTimeDefaultMixTable extends _i1.Table<int?> {
 
   late final DateTimeDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnDateTime dateTimeDefaultAndDefaultModel;
+  late final _is.ColumnDateTime dateTimeDefaultAndDefaultModel;
 
-  late final _i1.ColumnDateTime dateTimeDefaultAndDefaultPersist;
+  late final _is.ColumnDateTime dateTimeDefaultAndDefaultPersist;
 
-  late final _i1.ColumnDateTime dateTimeDefaultModelAndDefaultPersist;
+  late final _is.ColumnDateTime dateTimeDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     dateTimeDefaultAndDefaultModel,
     dateTimeDefaultAndDefaultPersist,
@@ -243,19 +243,19 @@ class DateTimeDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class DateTimeDefaultMixInclude extends _i1.IncludeObject {
+class DateTimeDefaultMixInclude extends _is.IncludeObject {
   DateTimeDefaultMixInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => DateTimeDefaultMix.t;
+  _is.Table<int?> get table => DateTimeDefaultMix.t;
 }
 
-class DateTimeDefaultMixIncludeList extends _i1.IncludeList {
+class DateTimeDefaultMixIncludeList extends _is.IncludeList {
   DateTimeDefaultMixIncludeList._({
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -266,10 +266,10 @@ class DateTimeDefaultMixIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => DateTimeDefaultMix.t;
+  _is.Table<int?> get table => DateTimeDefaultMix.t;
 }
 
 class DateTimeDefaultMixRepository {
@@ -298,15 +298,15 @@ class DateTimeDefaultMixRepository {
   /// );
   /// ```
   Future<List<DateTimeDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
@@ -338,14 +338,14 @@ class DateTimeDefaultMixRepository {
   /// );
   /// ```
   Future<DateTimeDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
@@ -360,11 +360,11 @@ class DateTimeDefaultMixRepository {
 
   /// Finds a single [DateTimeDefaultMix] by its [id] or null if no such row exists.
   Future<DateTimeDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<DateTimeDefaultMix>(
       id,
@@ -389,9 +389,9 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -407,9 +407,9 @@ class DateTimeDefaultMixRepository {
   ///
   /// The returned [DateTimeDefaultMix] will have its `id` field set.
   Future<DateTimeDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<DateTimeDefaultMix>(
       row,
@@ -438,12 +438,12 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
-    required _i1.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<DateTimeDefaultMix>(
@@ -470,12 +470,12 @@ class DateTimeDefaultMixRepository {
   ///
   /// The returned [DateTimeDefaultMix] will have its `id` field set.
   Future<DateTimeDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultMix row, {
-    required _i1.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<DateTimeDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<DateTimeDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<DateTimeDefaultMix>(
       row,
@@ -496,10 +496,10 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
-    _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DateTimeDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<DateTimeDefaultMix>(
@@ -514,10 +514,10 @@ class DateTimeDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<DateTimeDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultMix row, {
-    _i1.ColumnSelections<DateTimeDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<DateTimeDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<DateTimeDefaultMix>(
       row,
@@ -529,11 +529,11 @@ class DateTimeDefaultMixRepository {
   /// Updates a single [DateTimeDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<DateTimeDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
+    required _is.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<DateTimeDefaultMix>(
       id,
@@ -549,15 +549,15 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<DateTimeDefaultMixUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    required _is.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<DateTimeDefaultMix>(
@@ -584,11 +584,11 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<DateTimeDefaultMix> rows, {
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<DateTimeDefaultMix>(
@@ -602,9 +602,9 @@ class DateTimeDefaultMixRepository {
 
   /// Deletes a single [DateTimeDefaultMix].
   Future<DateTimeDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     DateTimeDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<DateTimeDefaultMix>(
       row,
@@ -621,11 +621,11 @@ class DateTimeDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<DateTimeDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
-    _i1.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<DateTimeDefaultMix>(
@@ -640,10 +640,10 @@ class DateTimeDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<DateTimeDefaultMix>(
       where: where?.call(DateTimeDefaultMix.t),
@@ -654,11 +654,11 @@ class DateTimeDefaultMixRepository {
 
   /// Acquires row-level locks on [DateTimeDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<DateTimeDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<DateTimeDefaultMix>(
       where: where(DateTimeDefaultMix.t),

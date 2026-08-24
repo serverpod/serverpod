@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithUuid
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithUuid._({
     this.id,
     required this.uuid,
@@ -22,17 +22,17 @@ abstract class ObjectWithUuid
 
   factory ObjectWithUuid({
     int? id,
-    required _i1.UuidValue uuid,
-    _i1.UuidValue? uuidNullable,
+    required _isc.UuidValue uuid,
+    _isc.UuidValue? uuidNullable,
   }) = _ObjectWithUuidImpl;
 
   factory ObjectWithUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithUuid(
       id: jsonSerialization['id'] as int?,
-      uuid: _i1.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
+      uuid: _isc.UuidValueJsonExtension.fromJson(jsonSerialization['uuid']),
       uuidNullable: jsonSerialization['uuidNullable'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidNullable'],
             ),
     );
@@ -43,17 +43,17 @@ abstract class ObjectWithUuid
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue uuid;
+  _isc.UuidValue uuid;
 
-  _i1.UuidValue? uuidNullable;
+  _isc.UuidValue? uuidNullable;
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithUuid copyWith({
     int? id,
-    _i1.UuidValue? uuid,
-    _i1.UuidValue? uuidNullable,
+    _isc.UuidValue? uuid,
+    _isc.UuidValue? uuidNullable,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -77,7 +77,7 @@ abstract class ObjectWithUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -86,8 +86,8 @@ class _Undefined {}
 class _ObjectWithUuidImpl extends ObjectWithUuid {
   _ObjectWithUuidImpl({
     int? id,
-    required _i1.UuidValue uuid,
-    _i1.UuidValue? uuidNullable,
+    required _isc.UuidValue uuid,
+    _isc.UuidValue? uuidNullable,
   }) : super._(
          id: id,
          uuid: uuid,
@@ -96,17 +96,17 @@ class _ObjectWithUuidImpl extends ObjectWithUuid {
 
   /// Returns a shallow copy of this [ObjectWithUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithUuid copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? uuid,
+    _isc.UuidValue? uuid,
     Object? uuidNullable = _Undefined,
   }) {
     return ObjectWithUuid(
       id: id is int? ? id : this.id,
       uuid: uuid ?? this.uuid,
-      uuidNullable: uuidNullable is _i1.UuidValue?
+      uuidNullable: uuidNullable is _isc.UuidValue?
           ? uuidNullable
           : this.uuidNullable,
     );

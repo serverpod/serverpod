@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/nested_one_to_many/team.dart' as _iaks25tn;
 
 abstract class Arena
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Arena._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class Arena
   factory Arena({
     int? id,
     required String name,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   }) = _ArenaImpl;
 
   factory Arena.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +34,9 @@ abstract class Arena
       name: jsonSerialization['name'] as String,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Team>(jsonSerialization['team']),
+          : _iza9lbb5.Protocol().deserialize<_iaks25tn.Team>(
+              jsonSerialization['team'],
+            ),
     );
   }
 
@@ -45,15 +47,15 @@ abstract class Arena
 
   String name;
 
-  _i2.Team? team;
+  _iaks25tn.Team? team;
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Arena copyWith({
     int? id,
     String? name,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -77,7 +79,7 @@ abstract class Arena
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -87,7 +89,7 @@ class _ArenaImpl extends Arena {
   _ArenaImpl({
     int? id,
     required String name,
-    _i2.Team? team,
+    _iaks25tn.Team? team,
   }) : super._(
          id: id,
          name: name,
@@ -96,7 +98,7 @@ class _ArenaImpl extends Arena {
 
   /// Returns a shallow copy of this [Arena]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Arena copyWith({
     Object? id = _Undefined,
@@ -106,7 +108,7 @@ class _ArenaImpl extends Arena {
     return Arena(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      team: team is _i2.Team? ? team : this.team?.copyWith(),
+      team: team is _iaks25tn.Team? ? team : this.team?.copyWith(),
     );
   }
 }

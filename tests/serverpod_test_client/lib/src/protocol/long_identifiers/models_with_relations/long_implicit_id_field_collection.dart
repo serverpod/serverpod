@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../long_identifiers/models_with_relations/long_implicit_id_field.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _i4kuijum;
 
 abstract class LongImplicitIdFieldCollection
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   LongImplicitIdFieldCollection._({
     this.id,
     required this.name,
@@ -26,7 +26,7 @@ abstract class LongImplicitIdFieldCollection
   factory LongImplicitIdFieldCollection({
     int? id,
     required String name,
-    List<_i2.LongImplicitIdField>?
+    List<_i4kuijum.LongImplicitIdField>?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) = _LongImplicitIdFieldCollectionImpl;
 
@@ -40,7 +40,9 @@ abstract class LongImplicitIdFieldCollection
           jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'] ==
               null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.LongImplicitIdField>>(
+          : _iza9lbb5.Protocol().deserialize<
+              List<_i4kuijum.LongImplicitIdField>
+            >(
               jsonSerialization['thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa'],
             ),
     );
@@ -53,16 +55,16 @@ abstract class LongImplicitIdFieldCollection
 
   String name;
 
-  List<_i2.LongImplicitIdField>?
+  List<_i4kuijum.LongImplicitIdField>?
   thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa;
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   LongImplicitIdFieldCollection copyWith({
     int? id,
     String? name,
-    List<_i2.LongImplicitIdField>?
+    List<_i4kuijum.LongImplicitIdField>?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   });
   @override
@@ -93,7 +95,7 @@ abstract class LongImplicitIdFieldCollection
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -103,7 +105,7 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
   _LongImplicitIdFieldCollectionImpl({
     int? id,
     required String name,
-    List<_i2.LongImplicitIdField>?
+    List<_i4kuijum.LongImplicitIdField>?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
   }) : super._(
          id: id,
@@ -114,7 +116,7 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
 
   /// Returns a shallow copy of this [LongImplicitIdFieldCollection]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   LongImplicitIdFieldCollection copyWith({
     Object? id = _Undefined,
@@ -127,7 +129,7 @@ class _LongImplicitIdFieldCollectionImpl extends LongImplicitIdFieldCollection {
       name: name ?? this.name,
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
-              is List<_i2.LongImplicitIdField>?
+              is List<_i4kuijum.LongImplicitIdField>?
           ? thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
           : this.thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa
                 ?.map((e0) => e0.copyWith())

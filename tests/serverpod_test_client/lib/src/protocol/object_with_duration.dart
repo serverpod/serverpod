@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithDuration
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithDuration._({
     this.id,
     required this.duration,
@@ -27,7 +27,7 @@ abstract class ObjectWithDuration
   factory ObjectWithDuration.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithDuration(
       id: jsonSerialization['id'] as int?,
-      duration: _i1.DurationJsonExtension.fromJson(
+      duration: _isc.DurationJsonExtension.fromJson(
         jsonSerialization['duration'],
       ),
     );
@@ -42,7 +42,7 @@ abstract class ObjectWithDuration
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithDuration copyWith({
     int? id,
     Duration? duration,
@@ -67,7 +67,7 @@ abstract class ObjectWithDuration
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -84,7 +84,7 @@ class _ObjectWithDurationImpl extends ObjectWithDuration {
 
   /// Returns a shallow copy of this [ObjectWithDuration]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithDuration copyWith({
     Object? id = _Undefined,

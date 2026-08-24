@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class AccessDeniedException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   AccessDeniedException._({required this.message});
 
   factory AccessDeniedException({required String message}) =
@@ -34,7 +34,7 @@ abstract class AccessDeniedException
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   AccessDeniedException copyWith({String? message});
   @override
   Map<String, dynamic> toJson() {
@@ -64,7 +64,7 @@ class _AccessDeniedExceptionImpl extends AccessDeniedException {
 
   /// Returns a shallow copy of this [AccessDeniedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   AccessDeniedException copyWith({String? message}) {
     return AccessDeniedException(message: message ?? this.message);

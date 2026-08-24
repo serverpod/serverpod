@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart'
-    as _i1;
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i2;
+    as _iqfgygbv;
 
-abstract class SharedSubclass extends _i1.SharedModel
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class SharedSubclass extends _iqfgygbv.SharedModel
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   SharedSubclass._({
     super.id,
     required super.name,
@@ -26,26 +26,26 @@ abstract class SharedSubclass extends _i1.SharedModel
   });
 
   factory SharedSubclass({
-    _i2.UuidValue? id,
+    _iss.UuidValue? id,
     required String name,
     int? data,
     DateTime? createdAt,
     required String sharedSubclassField,
-    required _i1.SharedEnum sharedEnumField,
+    required _iqfgygbv.SharedEnum sharedEnumField,
   }) = _SharedSubclassImpl;
 
   factory SharedSubclass.fromJson(Map<String, dynamic> jsonSerialization) {
     return SharedSubclass(
       id: jsonSerialization['id'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _iss.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       data: jsonSerialization['data'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _iss.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       sharedSubclassField: jsonSerialization['sharedSubclassField'] as String,
-      sharedEnumField: _i1.SharedEnum.fromJson(
+      sharedEnumField: _iqfgygbv.SharedEnum.fromJson(
         (jsonSerialization['sharedEnumField'] as String),
       ),
     );
@@ -53,19 +53,19 @@ abstract class SharedSubclass extends _i1.SharedModel
 
   String sharedSubclassField;
 
-  _i1.SharedEnum sharedEnumField;
+  _iqfgygbv.SharedEnum sharedEnumField;
 
   /// Returns a shallow copy of this [SharedSubclass]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_iss.useResult
   SharedSubclass copyWith({
-    _i2.UuidValue? id,
+    _iss.UuidValue? id,
     String? name,
     Object? data,
     DateTime? createdAt,
     String? sharedSubclassField,
-    _i1.SharedEnum? sharedEnumField,
+    _iqfgygbv.SharedEnum? sharedEnumField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +95,7 @@ abstract class SharedSubclass extends _i1.SharedModel
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -103,12 +103,12 @@ class _Undefined {}
 
 class _SharedSubclassImpl extends SharedSubclass {
   _SharedSubclassImpl({
-    _i2.UuidValue? id,
+    _iss.UuidValue? id,
     required String name,
     int? data,
     DateTime? createdAt,
     required String sharedSubclassField,
-    required _i1.SharedEnum sharedEnumField,
+    required _iqfgygbv.SharedEnum sharedEnumField,
   }) : super._(
          id: id,
          name: name,
@@ -120,15 +120,15 @@ class _SharedSubclassImpl extends SharedSubclass {
 
   /// Returns a shallow copy of this [SharedSubclass]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_iss.useResult
   @override
   SharedSubclass copyWith({
-    _i2.UuidValue? id,
+    _iss.UuidValue? id,
     String? name,
     Object? data = _Undefined,
     DateTime? createdAt,
     String? sharedSubclassField,
-    _i1.SharedEnum? sharedEnumField,
+    _iqfgygbv.SharedEnum? sharedEnumField,
   }) {
     return SharedSubclass(
       id: id ?? this.id,

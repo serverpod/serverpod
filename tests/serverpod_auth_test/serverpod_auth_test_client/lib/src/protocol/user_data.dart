@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i2;
-import 'package:serverpod_auth_test_client/src/protocol/protocol.dart' as _i3;
+    as _iacc;
+import 'package:serverpod_auth_test_client/src/protocol/protocol.dart'
+    as _ijeqi8o4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UserData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserData._({
     this.id,
     required this.authUserId,
@@ -27,8 +28,8 @@ abstract class UserData
 
   factory UserData({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _isc.UuidValue authUserId,
+    _iacc.AuthUser? authUser,
     required String displayName,
     String? bio,
   }) = _UserDataImpl;
@@ -36,12 +37,12 @@ abstract class UserData
   factory UserData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserData(
       id: jsonSerialization['id'] as int?,
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      authUserId: _isc.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _ijeqi8o4.Protocol().deserialize<_iacc.AuthUser>(
               jsonSerialization['authUser'],
             ),
       displayName: jsonSerialization['displayName'] as String,
@@ -54,10 +55,10 @@ abstract class UserData
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue authUserId;
+  _isc.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacc.AuthUser? authUser;
 
   /// User's display name
   String displayName;
@@ -67,11 +68,11 @@ abstract class UserData
 
   /// Returns a shallow copy of this [UserData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserData copyWith({
     int? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _isc.UuidValue? authUserId,
+    _iacc.AuthUser? authUser,
     String? displayName,
     String? bio,
   });
@@ -101,7 +102,7 @@ abstract class UserData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,8 +111,8 @@ class _Undefined {}
 class _UserDataImpl extends UserData {
   _UserDataImpl({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _isc.UuidValue authUserId,
+    _iacc.AuthUser? authUser,
     required String displayName,
     String? bio,
   }) : super._(
@@ -124,11 +125,11 @@ class _UserDataImpl extends UserData {
 
   /// Returns a shallow copy of this [UserData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserData copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _isc.UuidValue? authUserId,
     Object? authUser = _Undefined,
     String? displayName,
     Object? bio = _Undefined,
@@ -136,7 +137,7 @@ class _UserDataImpl extends UserData {
     return UserData(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacc.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       displayName: displayName ?? this.displayName,

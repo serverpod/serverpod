@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Lightweight DTO to be used as specification while creating a new user profile.
 abstract class UserProfileData
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UserProfileData._({
     this.userName,
     this.fullName,
@@ -48,7 +48,7 @@ abstract class UserProfileData
 
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UserProfileData copyWith({
     String? userName,
     String? fullName,
@@ -76,7 +76,7 @@ abstract class UserProfileData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +95,7 @@ class _UserProfileDataImpl extends UserProfileData {
 
   /// Returns a shallow copy of this [UserProfileData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UserProfileData copyWith({
     Object? userName = _Undefined,

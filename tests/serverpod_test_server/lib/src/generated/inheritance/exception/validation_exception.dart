@@ -11,11 +11,11 @@
 
 part of 'sealed_app_exception.dart';
 
-abstract class ValidationException extends _i1.SealedAppException
+abstract class ValidationException extends _iototaiw.SealedAppException
     implements
-        _i2.SerializableException,
-        _i2.SerializableModel,
-        _i2.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   ValidationException._({
     required super.message,
     required this.field,
@@ -38,7 +38,7 @@ abstract class ValidationException extends _i1.SealedAppException
   /// Returns a shallow copy of this [ValidationException]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   ValidationException copyWith({
     String? message,
     String? field,
@@ -78,7 +78,7 @@ class _ValidationExceptionImpl extends ValidationException {
 
   /// Returns a shallow copy of this [ValidationException]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   ValidationException copyWith({
     String? message,

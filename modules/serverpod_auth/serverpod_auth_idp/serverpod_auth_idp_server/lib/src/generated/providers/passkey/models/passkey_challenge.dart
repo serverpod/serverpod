@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'dart:typed_data' as _i2;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// A challenge handed out for a subsequent Passkey registration or login.
 abstract class PasskeyChallenge
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   PasskeyChallenge._({
     this.id,
     DateTime? createdAt,
@@ -23,20 +23,20 @@ abstract class PasskeyChallenge
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory PasskeyChallenge({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
-    required _i2.ByteData challenge,
+    required _idt.ByteData challenge,
   }) = _PasskeyChallengeImpl;
 
   factory PasskeyChallenge.fromJson(Map<String, dynamic> jsonSerialization) {
     return PasskeyChallenge(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
-      challenge: _i1.ByteDataJsonExtension.fromJson(
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+      challenge: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['challenge'],
       ),
     );
@@ -47,24 +47,24 @@ abstract class PasskeyChallenge
   static const db = PasskeyChallengeRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   /// The time when this challenge was created.
   DateTime createdAt;
 
   /// The actual challenge for the client
-  _i2.ByteData challenge;
+  _idt.ByteData challenge;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [PasskeyChallenge]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PasskeyChallenge copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
-    _i2.ByteData? challenge,
+    _idt.ByteData? challenge,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,11 +86,11 @@ abstract class PasskeyChallenge
   }
 
   static PasskeyChallengeIncludeList includeList({
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     PasskeyChallengeInclude? include,
   }) {
     return PasskeyChallengeIncludeList._(
@@ -105,7 +105,7 @@ abstract class PasskeyChallenge
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -113,9 +113,9 @@ class _Undefined {}
 
 class _PasskeyChallengeImpl extends PasskeyChallenge {
   _PasskeyChallengeImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     DateTime? createdAt,
-    required _i2.ByteData challenge,
+    required _idt.ByteData challenge,
   }) : super._(
          id: id,
          createdAt: createdAt,
@@ -124,15 +124,15 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
 
   /// Returns a shallow copy of this [PasskeyChallenge]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PasskeyChallenge copyWith({
     Object? id = _Undefined,
     DateTime? createdAt,
-    _i2.ByteData? challenge,
+    _idt.ByteData? challenge,
   }) {
     return PasskeyChallenge(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       createdAt: createdAt ?? this.createdAt,
       challenge: challenge ?? this.challenge.clone(),
     );
@@ -140,31 +140,32 @@ class _PasskeyChallengeImpl extends PasskeyChallenge {
 }
 
 class PasskeyChallengeUpdateTable
-    extends _i1.UpdateTable<PasskeyChallengeTable> {
+    extends _is.UpdateTable<PasskeyChallengeTable> {
   PasskeyChallengeUpdateTable(super.table);
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<_i2.ByteData, _i2.ByteData> challenge(_i2.ByteData value) =>
-      _i1.ColumnValue(
-        table.challenge,
-        value,
-      );
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> challenge(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
+    table.challenge,
+    value,
+  );
 }
 
-class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
+class PasskeyChallengeTable extends _is.Table<_is.UuidValue?> {
   PasskeyChallengeTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_passkey_challenge') {
     updateTable = PasskeyChallengeUpdateTable(this);
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
     );
-    challenge = _i1.ColumnByteData(
+    challenge = _is.ColumnByteData(
       'challenge',
       this,
     );
@@ -173,32 +174,32 @@ class PasskeyChallengeTable extends _i1.Table<_i1.UuidValue?> {
   late final PasskeyChallengeUpdateTable updateTable;
 
   /// The time when this challenge was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The actual challenge for the client
-  late final _i1.ColumnByteData challenge;
+  late final _is.ColumnByteData challenge;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     createdAt,
     challenge,
   ];
 }
 
-class PasskeyChallengeInclude extends _i1.IncludeObject {
+class PasskeyChallengeInclude extends _is.IncludeObject {
   PasskeyChallengeInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PasskeyChallenge.t;
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
 }
 
-class PasskeyChallengeIncludeList extends _i1.IncludeList {
+class PasskeyChallengeIncludeList extends _is.IncludeList {
   PasskeyChallengeIncludeList._({
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -209,10 +210,10 @@ class PasskeyChallengeIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PasskeyChallenge.t;
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
 }
 
 class PasskeyChallengeRepository {
@@ -241,15 +242,15 @@ class PasskeyChallengeRepository {
   /// );
   /// ```
   Future<List<PasskeyChallenge>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PasskeyChallenge>(
       where: where?.call(PasskeyChallenge.t),
@@ -281,14 +282,14 @@ class PasskeyChallengeRepository {
   /// );
   /// ```
   Future<PasskeyChallenge?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PasskeyChallenge>(
       where: where?.call(PasskeyChallenge.t),
@@ -303,11 +304,11 @@ class PasskeyChallengeRepository {
 
   /// Finds a single [PasskeyChallenge] by its [id] or null if no such row exists.
   Future<PasskeyChallenge?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PasskeyChallenge>(
       id,
@@ -332,9 +333,9 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyChallenge> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -350,9 +351,9 @@ class PasskeyChallengeRepository {
   ///
   /// The returned [PasskeyChallenge] will have its `id` field set.
   Future<PasskeyChallenge> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyChallenge row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PasskeyChallenge>(
       row,
@@ -381,12 +382,12 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyChallenge> rows, {
-    required _i1.ColumnSelections<PasskeyChallengeTable> conflictColumns,
-    _i1.ColumnSelections<PasskeyChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PasskeyChallengeTable> conflictColumns,
+    _is.ColumnSelections<PasskeyChallengeTable>? updateColumns,
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<PasskeyChallenge>(
@@ -413,12 +414,12 @@ class PasskeyChallengeRepository {
   ///
   /// The returned [PasskeyChallenge] will have its `id` field set.
   Future<PasskeyChallenge?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyChallenge row, {
-    required _i1.ColumnSelections<PasskeyChallengeTable> conflictColumns,
-    _i1.ColumnSelections<PasskeyChallengeTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PasskeyChallengeTable> conflictColumns,
+    _is.ColumnSelections<PasskeyChallengeTable>? updateColumns,
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<PasskeyChallenge>(
       row,
@@ -439,10 +440,10 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyChallenge> rows, {
-    _i1.ColumnSelections<PasskeyChallengeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PasskeyChallengeTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<PasskeyChallenge>(
@@ -457,10 +458,10 @@ class PasskeyChallengeRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PasskeyChallenge> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyChallenge row, {
-    _i1.ColumnSelections<PasskeyChallengeTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PasskeyChallengeTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PasskeyChallenge>(
       row,
@@ -472,11 +473,11 @@ class PasskeyChallengeRepository {
   /// Updates a single [PasskeyChallenge] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PasskeyChallenge?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PasskeyChallenge>(
       id,
@@ -492,15 +493,15 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PasskeyChallengeUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
+    required _is.WhereExpressionBuilder<PasskeyChallengeTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<PasskeyChallenge>(
@@ -527,11 +528,11 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PasskeyChallenge> rows, {
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<PasskeyChallenge>(
@@ -545,9 +546,9 @@ class PasskeyChallengeRepository {
 
   /// Deletes a single [PasskeyChallenge].
   Future<PasskeyChallenge> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PasskeyChallenge row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PasskeyChallenge>(
       row,
@@ -564,11 +565,11 @@ class PasskeyChallengeRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PasskeyChallenge>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
-    _i1.OrderByBuilder<PasskeyChallengeTable>? orderBy,
-    _i1.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PasskeyChallengeTable> where,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PasskeyChallenge>(
@@ -583,10 +584,10 @@ class PasskeyChallengeRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PasskeyChallenge>(
       where: where?.call(PasskeyChallenge.t),
@@ -597,11 +598,11 @@ class PasskeyChallengeRepository {
 
   /// Acquires row-level locks on [PasskeyChallenge] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PasskeyChallengeTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PasskeyChallengeTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PasskeyChallenge>(
       where: where(PasskeyChallenge.t),

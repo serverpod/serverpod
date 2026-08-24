@@ -10,48 +10,50 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'server_health_metric.dart' as _i2;
-import 'server_health_connection_info.dart' as _i3;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_service_client/src/protocol/protocol.dart'
+    as _ian793c4;
+import 'server_health_connection_info.dart' as _igb3a02z;
+import 'server_health_metric.dart' as _i8823art;
 
 /// Information about health and connection metrics.
 abstract class ServerHealthResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ServerHealthResult._({
     required this.metrics,
     required this.connectionInfos,
   });
 
   factory ServerHealthResult({
-    required List<_i2.ServerHealthMetric> metrics,
-    required List<_i3.ServerHealthConnectionInfo> connectionInfos,
+    required List<_i8823art.ServerHealthMetric> metrics,
+    required List<_igb3a02z.ServerHealthConnectionInfo> connectionInfos,
   }) = _ServerHealthResultImpl;
 
   factory ServerHealthResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return ServerHealthResult(
-      metrics: _i4.Protocol().deserialize<List<_i2.ServerHealthMetric>>(
-        jsonSerialization['metrics'],
-      ),
-      connectionInfos: _i4.Protocol()
-          .deserialize<List<_i3.ServerHealthConnectionInfo>>(
+      metrics: _ian793c4.Protocol()
+          .deserialize<List<_i8823art.ServerHealthMetric>>(
+            jsonSerialization['metrics'],
+          ),
+      connectionInfos: _ian793c4.Protocol()
+          .deserialize<List<_igb3a02z.ServerHealthConnectionInfo>>(
             jsonSerialization['connectionInfos'],
           ),
     );
   }
 
   /// List of health metrics.
-  List<_i2.ServerHealthMetric> metrics;
+  List<_i8823art.ServerHealthMetric> metrics;
 
   /// List of connection metrics.
-  List<_i3.ServerHealthConnectionInfo> connectionInfos;
+  List<_igb3a02z.ServerHealthConnectionInfo> connectionInfos;
 
   /// Returns a shallow copy of this [ServerHealthResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ServerHealthResult copyWith({
-    List<_i2.ServerHealthMetric>? metrics,
-    List<_i3.ServerHealthConnectionInfo>? connectionInfos,
+    List<_i8823art.ServerHealthMetric>? metrics,
+    List<_igb3a02z.ServerHealthConnectionInfo>? connectionInfos,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -75,14 +77,14 @@ abstract class ServerHealthResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _ServerHealthResultImpl extends ServerHealthResult {
   _ServerHealthResultImpl({
-    required List<_i2.ServerHealthMetric> metrics,
-    required List<_i3.ServerHealthConnectionInfo> connectionInfos,
+    required List<_i8823art.ServerHealthMetric> metrics,
+    required List<_igb3a02z.ServerHealthConnectionInfo> connectionInfos,
   }) : super._(
          metrics: metrics,
          connectionInfos: connectionInfos,
@@ -90,11 +92,11 @@ class _ServerHealthResultImpl extends ServerHealthResult {
 
   /// Returns a shallow copy of this [ServerHealthResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ServerHealthResult copyWith({
-    List<_i2.ServerHealthMetric>? metrics,
-    List<_i3.ServerHealthConnectionInfo>? connectionInfos,
+    List<_i8823art.ServerHealthMetric>? metrics,
+    List<_igb3a02z.ServerHealthConnectionInfo>? connectionInfos,
   }) {
     return ServerHealthResult(
       metrics: metrics ?? this.metrics.map((e0) => e0.copyWith()).toList(),

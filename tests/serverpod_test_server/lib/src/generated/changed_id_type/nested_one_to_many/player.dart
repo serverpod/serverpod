@@ -11,12 +11,12 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/nested_one_to_many/team.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../changed_id_type/nested_one_to_many/team.dart' as _i9bz1am4;
 
 abstract class PlayerUuid
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   PlayerUuid._({
     this.id,
     required this.name,
@@ -25,22 +25,24 @@ abstract class PlayerUuid
   });
 
   factory PlayerUuid({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i9bz1am4.TeamInt? team,
   }) = _PlayerUuidImpl;
 
   factory PlayerUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return PlayerUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       teamId: jsonSerialization['teamId'] as int?,
       team: jsonSerialization['team'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.TeamInt>(jsonSerialization['team']),
+          : _igqrxdcj.Protocol().deserialize<_i9bz1am4.TeamInt>(
+              jsonSerialization['team'],
+            ),
     );
   }
 
@@ -49,25 +51,25 @@ abstract class PlayerUuid
   static const db = PlayerUuidRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String name;
 
   int? teamId;
 
-  _i2.TeamInt? team;
+  _i9bz1am4.TeamInt? team;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   PlayerUuid copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i9bz1am4.TeamInt? team,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -91,16 +93,16 @@ abstract class PlayerUuid
     };
   }
 
-  static PlayerUuidInclude include({_i2.TeamIntInclude? team}) {
+  static PlayerUuidInclude include({_i9bz1am4.TeamIntInclude? team}) {
     return PlayerUuidInclude._(team: team);
   }
 
   static PlayerUuidIncludeList includeList({
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
   }) {
     return PlayerUuidIncludeList._(
@@ -115,7 +117,7 @@ abstract class PlayerUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,10 +125,10 @@ class _Undefined {}
 
 class _PlayerUuidImpl extends PlayerUuid {
   _PlayerUuidImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String name,
     int? teamId,
-    _i2.TeamInt? team,
+    _i9bz1am4.TeamInt? team,
   }) : super._(
          id: id,
          name: name,
@@ -136,7 +138,7 @@ class _PlayerUuidImpl extends PlayerUuid {
 
   /// Returns a shallow copy of this [PlayerUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   PlayerUuid copyWith({
     Object? id = _Undefined,
@@ -145,36 +147,36 @@ class _PlayerUuidImpl extends PlayerUuid {
     Object? team = _Undefined,
   }) {
     return PlayerUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       name: name ?? this.name,
       teamId: teamId is int? ? teamId : this.teamId,
-      team: team is _i2.TeamInt? ? team : this.team?.copyWith(),
+      team: team is _i9bz1am4.TeamInt? ? team : this.team?.copyWith(),
     );
   }
 }
 
-class PlayerUuidUpdateTable extends _i1.UpdateTable<PlayerUuidTable> {
+class PlayerUuidUpdateTable extends _is.UpdateTable<PlayerUuidTable> {
   PlayerUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 
-  _i1.ColumnValue<int, int> teamId(int? value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> teamId(int? value) => _is.ColumnValue(
     table.teamId,
     value,
   );
 }
 
-class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
+class PlayerUuidTable extends _is.Table<_is.UuidValue?> {
   PlayerUuidTable({super.tableRelation}) : super(tableName: 'player_uuid') {
     updateTable = PlayerUuidUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
-    teamId = _i1.ColumnInt(
+    teamId = _is.ColumnInt(
       'teamId',
       this,
     );
@@ -182,34 +184,34 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   late final PlayerUuidUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  late final _i1.ColumnInt teamId;
+  late final _is.ColumnInt teamId;
 
-  _i2.TeamIntTable? _team;
+  _i9bz1am4.TeamIntTable? _team;
 
-  _i2.TeamIntTable get team {
+  _i9bz1am4.TeamIntTable get team {
     if (_team != null) return _team!;
-    _team = _i1.createRelationTable(
+    _team = _is.createRelationTable(
       relationFieldName: 'team',
       field: PlayerUuid.t.teamId,
-      foreignField: _i2.TeamInt.t.id,
+      foreignField: _i9bz1am4.TeamInt.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.TeamIntTable(tableRelation: foreignTableRelation),
+          _i9bz1am4.TeamIntTable(tableRelation: foreignTableRelation),
     );
     return _team!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
     teamId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'team') {
       return team;
     }
@@ -217,23 +219,23 @@ class PlayerUuidTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class PlayerUuidInclude extends _i1.IncludeObject {
-  PlayerUuidInclude._({_i2.TeamIntInclude? team}) {
+class PlayerUuidInclude extends _is.IncludeObject {
+  PlayerUuidInclude._({_i9bz1am4.TeamIntInclude? team}) {
     _team = team;
   }
 
-  _i2.TeamIntInclude? _team;
+  _i9bz1am4.TeamIntInclude? _team;
 
   @override
-  Map<String, _i1.Include?> get includes => {'team': _team};
+  Map<String, _is.Include?> get includes => {'team': _team};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PlayerUuid.t;
+  _is.Table<_is.UuidValue?> get table => PlayerUuid.t;
 }
 
-class PlayerUuidIncludeList extends _i1.IncludeList {
+class PlayerUuidIncludeList extends _is.IncludeList {
   PlayerUuidIncludeList._({
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -244,10 +246,10 @@ class PlayerUuidIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => PlayerUuid.t;
+  _is.Table<_is.UuidValue?> get table => PlayerUuid.t;
 }
 
 class PlayerUuidRepository {
@@ -280,16 +282,16 @@ class PlayerUuidRepository {
   /// );
   /// ```
   Future<List<PlayerUuid>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
     PlayerUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
@@ -322,15 +324,15 @@ class PlayerUuidRepository {
   /// );
   /// ```
   Future<PlayerUuid?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     int? offset,
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
     PlayerUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
@@ -346,12 +348,12 @@ class PlayerUuidRepository {
 
   /// Finds a single [PlayerUuid] by its [id] or null if no such row exists.
   Future<PlayerUuid?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     PlayerUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<PlayerUuid>(
       id,
@@ -377,9 +379,9 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PlayerUuid> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -395,9 +397,9 @@ class PlayerUuidRepository {
   ///
   /// The returned [PlayerUuid] will have its `id` field set.
   Future<PlayerUuid> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<PlayerUuid>(
       row,
@@ -426,12 +428,12 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PlayerUuid> rows, {
-    required _i1.ColumnSelections<PlayerUuidTable> conflictColumns,
-    _i1.ColumnSelections<PlayerUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PlayerUuidTable> conflictColumns,
+    _is.ColumnSelections<PlayerUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<PlayerUuid>(
@@ -458,12 +460,12 @@ class PlayerUuidRepository {
   ///
   /// The returned [PlayerUuid] will have its `id` field set.
   Future<PlayerUuid?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid row, {
-    required _i1.ColumnSelections<PlayerUuidTable> conflictColumns,
-    _i1.ColumnSelections<PlayerUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<PlayerUuidTable> conflictColumns,
+    _is.ColumnSelections<PlayerUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<PlayerUuidTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<PlayerUuid>(
       row,
@@ -484,10 +486,10 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PlayerUuid> rows, {
-    _i1.ColumnSelections<PlayerUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PlayerUuidTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<PlayerUuid>(
@@ -502,10 +504,10 @@ class PlayerUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<PlayerUuid> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid row, {
-    _i1.ColumnSelections<PlayerUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<PlayerUuidTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<PlayerUuid>(
       row,
@@ -517,10 +519,10 @@ class PlayerUuidRepository {
   /// Updates a single [PlayerUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<PlayerUuid?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<PlayerUuid>(
       id,
@@ -536,14 +538,14 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<PlayerUuidUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<PlayerUuidTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<PlayerUuid>(
@@ -570,11 +572,11 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<PlayerUuid> rows, {
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<PlayerUuid>(
@@ -588,9 +590,9 @@ class PlayerUuidRepository {
 
   /// Deletes a single [PlayerUuid].
   Future<PlayerUuid> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<PlayerUuid>(
       row,
@@ -607,11 +609,11 @@ class PlayerUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<PlayerUuid>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
-    _i1.OrderByBuilder<PlayerUuidTable>? orderBy,
-    _i1.OrderByListBuilder<PlayerUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PlayerUuidTable> where,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<PlayerUuid>(
@@ -626,10 +628,10 @@ class PlayerUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<PlayerUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<PlayerUuid>(
       where: where?.call(PlayerUuid.t),
@@ -640,11 +642,11 @@ class PlayerUuidRepository {
 
   /// Acquires row-level locks on [PlayerUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<PlayerUuidTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<PlayerUuidTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<PlayerUuid>(
       where: where(PlayerUuid.t),
@@ -661,10 +663,10 @@ class PlayerUuidAttachRowRepository {
   /// Creates a relation between the given [PlayerUuid] and [TeamInt]
   /// by setting the [PlayerUuid]'s foreign key `teamId` to refer to the [TeamInt].
   Future<void> team(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid playerUuid,
-    _i2.TeamInt team, {
-    _i1.Transaction? transaction,
+    _i9bz1am4.TeamInt team, {
+    _is.Transaction? transaction,
   }) async {
     if (playerUuid.id == null) {
       throw ArgumentError.notNull('playerUuid.id');
@@ -691,9 +693,9 @@ class PlayerUuidDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> team(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     PlayerUuid playerUuid, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (playerUuid.id == null) {
       throw ArgumentError.notNull('playerUuid.id');

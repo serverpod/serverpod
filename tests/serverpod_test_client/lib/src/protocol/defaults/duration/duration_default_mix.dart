@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class DurationDefaultMix
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DurationDefaultMix._({
     this.id,
     Duration? durationDefaultAndDefaultModel,
@@ -60,19 +60,19 @@ abstract class DurationDefaultMix
       durationDefaultAndDefaultModel:
           jsonSerialization['durationDefaultAndDefaultModel'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _isc.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultAndDefaultModel'],
             ),
       durationDefaultAndDefaultPersist:
           jsonSerialization['durationDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _isc.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultAndDefaultPersist'],
             ),
       durationDefaultModelAndDefaultPersist:
           jsonSerialization['durationDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _isc.DurationJsonExtension.fromJson(
               jsonSerialization['durationDefaultModelAndDefaultPersist'],
             ),
     );
@@ -91,7 +91,7 @@ abstract class DurationDefaultMix
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DurationDefaultMix copyWith({
     int? id,
     Duration? durationDefaultAndDefaultModel,
@@ -126,7 +126,7 @@ abstract class DurationDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -148,7 +148,7 @@ class _DurationDefaultMixImpl extends DurationDefaultMix {
 
   /// Returns a shallow copy of this [DurationDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DurationDefaultMix copyWith({
     Object? id = _Undefined,

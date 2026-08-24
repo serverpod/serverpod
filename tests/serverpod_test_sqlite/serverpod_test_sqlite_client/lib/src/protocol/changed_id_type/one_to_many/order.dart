@@ -10,69 +10,70 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../changed_id_type/one_to_many/customer.dart' as _i2;
-import '../../changed_id_type/one_to_many/comment.dart' as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../changed_id_type/one_to_many/comment.dart' as _i7e4crca;
+import '../../changed_id_type/one_to_many/customer.dart' as _iwdajoe0;
 
 abstract class OrderUuid
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   OrderUuid._({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required this.description,
     required this.customerId,
     this.customer,
     this.comments,
-  }) : id = id ?? const _i1.Uuid().v7obj();
+  }) : id = id ?? const _isc.Uuid().v7obj();
 
   factory OrderUuid({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   }) = _OrderUuidImpl;
 
   factory OrderUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return OrderUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       description: jsonSerialization['description'] as String,
       customerId: jsonSerialization['customerId'] as int,
       customer: jsonSerialization['customer'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.CustomerInt>(
+          : _i0ntutnq.Protocol().deserialize<_iwdajoe0.CustomerInt>(
               jsonSerialization['customer'],
             ),
       comments: jsonSerialization['comments'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.CommentInt>>(
+          : _i0ntutnq.Protocol().deserialize<List<_i7e4crca.CommentInt>>(
               jsonSerialization['comments'],
             ),
     );
   }
 
   /// The id of the object.
-  _i1.UuidValue id;
+  _isc.UuidValue id;
 
   String description;
 
   int customerId;
 
-  _i2.CustomerInt? customer;
+  _iwdajoe0.CustomerInt? customer;
 
-  List<_i3.CommentInt>? comments;
+  List<_i7e4crca.CommentInt>? comments;
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   OrderUuid copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     String? description,
     int? customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -102,7 +103,7 @@ abstract class OrderUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -110,11 +111,11 @@ class _Undefined {}
 
 class _OrderUuidImpl extends OrderUuid {
   _OrderUuidImpl({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     required String description,
     required int customerId,
-    _i2.CustomerInt? customer,
-    List<_i3.CommentInt>? comments,
+    _iwdajoe0.CustomerInt? customer,
+    List<_i7e4crca.CommentInt>? comments,
   }) : super._(
          id: id,
          description: description,
@@ -125,10 +126,10 @@ class _OrderUuidImpl extends OrderUuid {
 
   /// Returns a shallow copy of this [OrderUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   OrderUuid copyWith({
-    _i1.UuidValue? id,
+    _isc.UuidValue? id,
     String? description,
     int? customerId,
     Object? customer = _Undefined,
@@ -138,10 +139,10 @@ class _OrderUuidImpl extends OrderUuid {
       id: id ?? this.id,
       description: description ?? this.description,
       customerId: customerId ?? this.customerId,
-      customer: customer is _i2.CustomerInt?
+      customer: customer is _iwdajoe0.CustomerInt?
           ? customer
           : this.customer?.copyWith(),
-      comments: comments is List<_i3.CommentInt>?
+      comments: comments is List<_i7e4crca.CommentInt>?
           ? comments
           : this.comments?.map((e0) => e0.copyWith()).toList(),
     );

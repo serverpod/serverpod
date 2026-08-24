@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Information about a server method.
 abstract class MethodInfo
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   MethodInfo._({
     this.id,
     required this.endpoint,
@@ -49,11 +49,11 @@ abstract class MethodInfo
   String method;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MethodInfo copyWith({
     int? id,
     String? endpoint,
@@ -84,11 +84,11 @@ abstract class MethodInfo
   }
 
   static MethodInfoIncludeList includeList({
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
     MethodInfoInclude? include,
   }) {
     return MethodInfoIncludeList._(
@@ -103,7 +103,7 @@ abstract class MethodInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -122,7 +122,7 @@ class _MethodInfoImpl extends MethodInfo {
 
   /// Returns a shallow copy of this [MethodInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MethodInfo copyWith({
     Object? id = _Undefined,
@@ -137,29 +137,29 @@ class _MethodInfoImpl extends MethodInfo {
   }
 }
 
-class MethodInfoUpdateTable extends _i1.UpdateTable<MethodInfoTable> {
+class MethodInfoUpdateTable extends _is.UpdateTable<MethodInfoTable> {
   MethodInfoUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> endpoint(String value) => _is.ColumnValue(
     table.endpoint,
     value,
   );
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String value) => _is.ColumnValue(
     table.method,
     value,
   );
 }
 
-class MethodInfoTable extends _i1.Table<int?> {
+class MethodInfoTable extends _is.Table<int?> {
   MethodInfoTable({super.tableRelation})
     : super(tableName: 'serverpod_method') {
     updateTable = MethodInfoUpdateTable(this);
-    endpoint = _i1.ColumnString(
+    endpoint = _is.ColumnString(
       'endpoint',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
@@ -168,32 +168,32 @@ class MethodInfoTable extends _i1.Table<int?> {
   late final MethodInfoUpdateTable updateTable;
 
   /// The endpoint of this method.
-  late final _i1.ColumnString endpoint;
+  late final _is.ColumnString endpoint;
 
   /// The name of this method.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     endpoint,
     method,
   ];
 }
 
-class MethodInfoInclude extends _i1.IncludeObject {
+class MethodInfoInclude extends _is.IncludeObject {
   MethodInfoInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => MethodInfo.t;
+  _is.Table<int?> get table => MethodInfo.t;
 }
 
-class MethodInfoIncludeList extends _i1.IncludeList {
+class MethodInfoIncludeList extends _is.IncludeList {
   MethodInfoIncludeList._({
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -204,10 +204,10 @@ class MethodInfoIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MethodInfo.t;
+  _is.Table<int?> get table => MethodInfo.t;
 }
 
 class MethodInfoRepository {
@@ -236,15 +236,15 @@ class MethodInfoRepository {
   /// );
   /// ```
   Future<List<MethodInfo>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MethodInfo>(
       where: where?.call(MethodInfo.t),
@@ -276,14 +276,14 @@ class MethodInfoRepository {
   /// );
   /// ```
   Future<MethodInfo?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
     int? offset,
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MethodInfo>(
       where: where?.call(MethodInfo.t),
@@ -298,11 +298,11 @@ class MethodInfoRepository {
 
   /// Finds a single [MethodInfo] by its [id] or null if no such row exists.
   Future<MethodInfo?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MethodInfo>(
       id,
@@ -327,9 +327,9 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MethodInfo> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -345,9 +345,9 @@ class MethodInfoRepository {
   ///
   /// The returned [MethodInfo] will have its `id` field set.
   Future<MethodInfo> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MethodInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<MethodInfo>(
       row,
@@ -376,12 +376,12 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MethodInfo> rows, {
-    required _i1.ColumnSelections<MethodInfoTable> conflictColumns,
-    _i1.ColumnSelections<MethodInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MethodInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MethodInfoTable> conflictColumns,
+    _is.ColumnSelections<MethodInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<MethodInfoTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<MethodInfo>(
@@ -408,12 +408,12 @@ class MethodInfoRepository {
   ///
   /// The returned [MethodInfo] will have its `id` field set.
   Future<MethodInfo?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MethodInfo row, {
-    required _i1.ColumnSelections<MethodInfoTable> conflictColumns,
-    _i1.ColumnSelections<MethodInfoTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MethodInfoTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MethodInfoTable> conflictColumns,
+    _is.ColumnSelections<MethodInfoTable>? updateColumns,
+    _is.WhereExpressionBuilder<MethodInfoTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MethodInfo>(
       row,
@@ -434,10 +434,10 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MethodInfo> rows, {
-    _i1.ColumnSelections<MethodInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MethodInfoTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<MethodInfo>(
@@ -452,10 +452,10 @@ class MethodInfoRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MethodInfo> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MethodInfo row, {
-    _i1.ColumnSelections<MethodInfoTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MethodInfoTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<MethodInfo>(
       row,
@@ -467,10 +467,10 @@ class MethodInfoRepository {
   /// Updates a single [MethodInfo] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MethodInfo?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<MethodInfo>(
       id,
@@ -486,14 +486,14 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<MethodInfoUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<MethodInfoTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MethodInfo>(
@@ -520,11 +520,11 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MethodInfo> rows, {
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<MethodInfo>(
@@ -538,9 +538,9 @@ class MethodInfoRepository {
 
   /// Deletes a single [MethodInfo].
   Future<MethodInfo> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MethodInfo row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<MethodInfo>(
       row,
@@ -557,11 +557,11 @@ class MethodInfoRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MethodInfo>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
-    _i1.OrderByBuilder<MethodInfoTable>? orderBy,
-    _i1.OrderByListBuilder<MethodInfoTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MethodInfoTable> where,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MethodInfo>(
@@ -576,10 +576,10 @@ class MethodInfoRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MethodInfoTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<MethodInfo>(
       where: where?.call(MethodInfo.t),
@@ -590,11 +590,11 @@ class MethodInfoRepository {
 
   /// Acquires row-level locks on [MethodInfo] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MethodInfoTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MethodInfoTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MethodInfo>(
       where: where(MethodInfo.t),

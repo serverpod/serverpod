@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ServerOnlyChangedIdFieldClass
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   ServerOnlyChangedIdFieldClass._({this.id});
 
-  factory ServerOnlyChangedIdFieldClass({_i1.UuidValue? id}) =
+  factory ServerOnlyChangedIdFieldClass({_is.UuidValue? id}) =
       _ServerOnlyChangedIdFieldClassImpl;
 
   factory ServerOnlyChangedIdFieldClass.fromJson(
@@ -25,7 +25,7 @@ abstract class ServerOnlyChangedIdFieldClass
     return ServerOnlyChangedIdFieldClass(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
     );
   }
 
@@ -34,15 +34,15 @@ abstract class ServerOnlyChangedIdFieldClass
   static const db = ServerOnlyChangedIdFieldClassRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [ServerOnlyChangedIdFieldClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  ServerOnlyChangedIdFieldClass copyWith({_i1.UuidValue? id});
+  @_is.useResult
+  ServerOnlyChangedIdFieldClass copyWith({_is.UuidValue? id});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -61,11 +61,11 @@ abstract class ServerOnlyChangedIdFieldClass
   }
 
   static ServerOnlyChangedIdFieldClassIncludeList includeList({
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
   }) {
     return ServerOnlyChangedIdFieldClassIncludeList._(
@@ -80,32 +80,32 @@ abstract class ServerOnlyChangedIdFieldClass
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _Undefined {}
 
 class _ServerOnlyChangedIdFieldClassImpl extends ServerOnlyChangedIdFieldClass {
-  _ServerOnlyChangedIdFieldClassImpl({_i1.UuidValue? id}) : super._(id: id);
+  _ServerOnlyChangedIdFieldClassImpl({_is.UuidValue? id}) : super._(id: id);
 
   /// Returns a shallow copy of this [ServerOnlyChangedIdFieldClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerOnlyChangedIdFieldClass copyWith({Object? id = _Undefined}) {
     return ServerOnlyChangedIdFieldClass(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
     );
   }
 }
 
 class ServerOnlyChangedIdFieldClassUpdateTable
-    extends _i1.UpdateTable<ServerOnlyChangedIdFieldClassTable> {
+    extends _is.UpdateTable<ServerOnlyChangedIdFieldClassTable> {
   ServerOnlyChangedIdFieldClassUpdateTable(super.table);
 }
 
-class ServerOnlyChangedIdFieldClassTable extends _i1.Table<_i1.UuidValue?> {
+class ServerOnlyChangedIdFieldClassTable extends _is.Table<_is.UuidValue?> {
   ServerOnlyChangedIdFieldClassTable({super.tableRelation})
     : super(tableName: 'server_only_changed_id_field_class') {
     updateTable = ServerOnlyChangedIdFieldClassUpdateTable(this);
@@ -114,22 +114,22 @@ class ServerOnlyChangedIdFieldClassTable extends _i1.Table<_i1.UuidValue?> {
   late final ServerOnlyChangedIdFieldClassUpdateTable updateTable;
 
   @override
-  List<_i1.Column> get columns => [id];
+  List<_is.Column> get columns => [id];
 }
 
-class ServerOnlyChangedIdFieldClassInclude extends _i1.IncludeObject {
+class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
   ServerOnlyChangedIdFieldClassInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
+  _is.Table<_is.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
 }
 
-class ServerOnlyChangedIdFieldClassIncludeList extends _i1.IncludeList {
+class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList {
   ServerOnlyChangedIdFieldClassIncludeList._({
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -140,10 +140,10 @@ class ServerOnlyChangedIdFieldClassIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
+  _is.Table<_is.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
 }
 
 class ServerOnlyChangedIdFieldClassRepository {
@@ -172,15 +172,15 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// );
   /// ```
   Future<List<ServerOnlyChangedIdFieldClass>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
@@ -212,14 +212,14 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// );
   /// ```
   Future<ServerOnlyChangedIdFieldClass?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
@@ -234,11 +234,11 @@ class ServerOnlyChangedIdFieldClassRepository {
 
   /// Finds a single [ServerOnlyChangedIdFieldClass] by its [id] or null if no such row exists.
   Future<ServerOnlyChangedIdFieldClass?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerOnlyChangedIdFieldClass>(
       id,
@@ -263,9 +263,9 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -281,9 +281,9 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// The returned [ServerOnlyChangedIdFieldClass] will have its `id` field set.
   Future<ServerOnlyChangedIdFieldClass> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ServerOnlyChangedIdFieldClass>(
       row,
@@ -312,13 +312,13 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
-    required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
+    required _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
     conflictColumns,
-    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ServerOnlyChangedIdFieldClass>(
@@ -345,13 +345,13 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// The returned [ServerOnlyChangedIdFieldClass] will have its `id` field set.
   Future<ServerOnlyChangedIdFieldClass?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
-    required _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
+    required _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>
     conflictColumns,
-    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerOnlyChangedIdFieldClass>(
       row,
@@ -372,10 +372,10 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
-    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ServerOnlyChangedIdFieldClass>(
@@ -390,10 +390,10 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ServerOnlyChangedIdFieldClass> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
-    _i1.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerOnlyChangedIdFieldClassTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ServerOnlyChangedIdFieldClass>(
       row,
@@ -405,13 +405,13 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// Updates a single [ServerOnlyChangedIdFieldClass] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ServerOnlyChangedIdFieldClass?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<
       ServerOnlyChangedIdFieldClassUpdateTable
     >
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerOnlyChangedIdFieldClass>(
       id,
@@ -427,18 +427,18 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<
       ServerOnlyChangedIdFieldClassUpdateTable
     >
     columnValues,
-    required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
+    required _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerOnlyChangedIdFieldClass>(
@@ -465,11 +465,11 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerOnlyChangedIdFieldClass> rows, {
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ServerOnlyChangedIdFieldClass>(
@@ -483,9 +483,9 @@ class ServerOnlyChangedIdFieldClassRepository {
 
   /// Deletes a single [ServerOnlyChangedIdFieldClass].
   Future<ServerOnlyChangedIdFieldClass> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerOnlyChangedIdFieldClass row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ServerOnlyChangedIdFieldClass>(
       row,
@@ -502,12 +502,12 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerOnlyChangedIdFieldClass>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
-    _i1.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
-    _i1.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerOnlyChangedIdFieldClass>(
@@ -522,10 +522,10 @@ class ServerOnlyChangedIdFieldClassRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerOnlyChangedIdFieldClass>(
       where: where?.call(ServerOnlyChangedIdFieldClass.t),
@@ -536,12 +536,12 @@ class ServerOnlyChangedIdFieldClassRepository {
 
   /// Acquires row-level locks on [ServerOnlyChangedIdFieldClass] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>
     where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerOnlyChangedIdFieldClass>(
       where: where(ServerOnlyChangedIdFieldClass.t),

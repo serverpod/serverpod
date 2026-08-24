@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Just some simple data.
 abstract class SimpleDateTime
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SimpleDateTime._({
     this.id,
     required this.dateTime,
@@ -28,7 +28,7 @@ abstract class SimpleDateTime
   factory SimpleDateTime.fromJson(Map<String, dynamic> jsonSerialization) {
     return SimpleDateTime(
       id: jsonSerialization['id'] as int?,
-      dateTime: _i1.DateTimeJsonExtension.fromJson(
+      dateTime: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['dateTime'],
       ),
     );
@@ -44,7 +44,7 @@ abstract class SimpleDateTime
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SimpleDateTime copyWith({
     int? id,
     DateTime? dateTime,
@@ -69,7 +69,7 @@ abstract class SimpleDateTime
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -86,7 +86,7 @@ class _SimpleDateTimeImpl extends SimpleDateTime {
 
   /// Returns a shallow copy of this [SimpleDateTime]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SimpleDateTime copyWith({
     Object? id = _Undefined,

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class BigIntDefaultModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   BigIntDefaultModel._({
     this.id,
     BigInt? bigIntDefaultModelStr,
@@ -36,13 +36,13 @@ abstract class BigIntDefaultModel
       id: jsonSerialization['id'] as int?,
       bigIntDefaultModelStr: jsonSerialization['bigIntDefaultModelStr'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _isc.BigIntJsonExtension.fromJson(
               jsonSerialization['bigIntDefaultModelStr'],
             ),
       bigIntDefaultModelStrNull:
           jsonSerialization['bigIntDefaultModelStrNull'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _isc.BigIntJsonExtension.fromJson(
               jsonSerialization['bigIntDefaultModelStrNull'],
             ),
     );
@@ -59,7 +59,7 @@ abstract class BigIntDefaultModel
 
   /// Returns a shallow copy of this [BigIntDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   BigIntDefaultModel copyWith({
     int? id,
     BigInt? bigIntDefaultModelStr,
@@ -89,7 +89,7 @@ abstract class BigIntDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -108,7 +108,7 @@ class _BigIntDefaultModelImpl extends BigIntDefaultModel {
 
   /// Returns a shallow copy of this [BigIntDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   BigIntDefaultModel copyWith({
     Object? id = _Undefined,

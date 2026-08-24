@@ -10,14 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../../protocol.dart' as _iototaiw;
 
-abstract class ExtendedAppException extends _i1.BaseAppException
+abstract class ExtendedAppException extends _iototaiw.BaseAppException
     implements
-        _i2.SerializableException,
-        _i2.SerializableModel,
-        _i2.ProtocolSerialization {
+        _isc.SerializableException,
+        _isc.SerializableModel,
+        _isc.ProtocolSerialization {
   ExtendedAppException._({
     required super.message,
     required this.detail,
@@ -42,7 +42,7 @@ abstract class ExtendedAppException extends _i1.BaseAppException
   /// Returns a shallow copy of this [ExtendedAppException]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   ExtendedAppException copyWith({
     String? message,
     String? detail,
@@ -82,7 +82,7 @@ class _ExtendedAppExceptionImpl extends ExtendedAppException {
 
   /// Returns a shallow copy of this [ExtendedAppException]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   ExtendedAppException copyWith({
     String? message,

@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../models_with_relations/many_to_many/enrollment.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import '../../models_with_relations/many_to_many/enrollment.dart' as _im07rq0v;
 
 abstract class Course
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Course._({
     this.id,
     required this.name,
@@ -25,7 +25,7 @@ abstract class Course
   factory Course({
     int? id,
     required String name,
-    List<_i2.Enrollment>? enrollments,
+    List<_im07rq0v.Enrollment>? enrollments,
   }) = _CourseImpl;
 
   factory Course.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -34,7 +34,7 @@ abstract class Course
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Enrollment>>(
+          : _iza9lbb5.Protocol().deserialize<List<_im07rq0v.Enrollment>>(
               jsonSerialization['enrollments'],
             ),
     );
@@ -47,15 +47,15 @@ abstract class Course
 
   String name;
 
-  List<_i2.Enrollment>? enrollments;
+  List<_im07rq0v.Enrollment>? enrollments;
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Course copyWith({
     int? id,
     String? name,
-    List<_i2.Enrollment>? enrollments,
+    List<_im07rq0v.Enrollment>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -83,7 +83,7 @@ abstract class Course
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -93,7 +93,7 @@ class _CourseImpl extends Course {
   _CourseImpl({
     int? id,
     required String name,
-    List<_i2.Enrollment>? enrollments,
+    List<_im07rq0v.Enrollment>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -102,7 +102,7 @@ class _CourseImpl extends Course {
 
   /// Returns a shallow copy of this [Course]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Course copyWith({
     Object? id = _Undefined,
@@ -112,7 +112,7 @@ class _CourseImpl extends Course {
     return Course(
       id: id is int? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.Enrollment>?
+      enrollments: enrollments is List<_im07rq0v.Enrollment>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );

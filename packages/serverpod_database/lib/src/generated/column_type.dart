@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// All the types, that are possible for columns.
 /// Contains all the values of [TypeDefinition.databaseType]
-enum ColumnType implements _i1.SerializableModel {
+enum ColumnType implements _iss.SerializableModel {
   /// Dart type: [String]
   text,
 

@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Defines the current state of the database, including information about
 /// installed modules and migrations.
 abstract class DatabaseDefinitions
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DatabaseDefinitions._({
     required this.target,
     required this.live,
@@ -25,51 +25,51 @@ abstract class DatabaseDefinitions
   });
 
   factory DatabaseDefinitions({
-    required List<_i2.TableDefinition> target,
-    required List<_i2.TableDefinition> live,
-    required List<_i2.DatabaseMigrationVersionModel> installedMigrations,
-    required List<_i2.DatabaseMigrationVersionModel> latestAvailableMigrations,
+    required List<_isd.TableDefinition> target,
+    required List<_isd.TableDefinition> live,
+    required List<_isd.DatabaseMigrationVersionModel> installedMigrations,
+    required List<_isd.DatabaseMigrationVersionModel> latestAvailableMigrations,
   }) = _DatabaseDefinitionsImpl;
 
   factory DatabaseDefinitions.fromJson(Map<String, dynamic> jsonSerialization) {
     return DatabaseDefinitions(
-      target: _i2.Protocol().deserialize<List<_i2.TableDefinition>>(
+      target: _isd.Protocol().deserialize<List<_isd.TableDefinition>>(
         jsonSerialization['target'],
       ),
-      live: _i2.Protocol().deserialize<List<_i2.TableDefinition>>(
+      live: _isd.Protocol().deserialize<List<_isd.TableDefinition>>(
         jsonSerialization['live'],
       ),
-      installedMigrations: _i2.Protocol()
-          .deserialize<List<_i2.DatabaseMigrationVersionModel>>(
+      installedMigrations: _isd.Protocol()
+          .deserialize<List<_isd.DatabaseMigrationVersionModel>>(
             jsonSerialization['installedMigrations'],
           ),
-      latestAvailableMigrations: _i2.Protocol()
-          .deserialize<List<_i2.DatabaseMigrationVersionModel>>(
+      latestAvailableMigrations: _isd.Protocol()
+          .deserialize<List<_isd.DatabaseMigrationVersionModel>>(
             jsonSerialization['latestAvailableMigrations'],
           ),
     );
   }
 
   /// The target database definition.
-  List<_i2.TableDefinition> target;
+  List<_isd.TableDefinition> target;
 
   /// A definition of the database as it is currently.
-  List<_i2.TableDefinition> live;
+  List<_isd.TableDefinition> live;
 
   /// The migrations that are installed in the database.
-  List<_i2.DatabaseMigrationVersionModel> installedMigrations;
+  List<_isd.DatabaseMigrationVersionModel> installedMigrations;
 
   /// The latest available migrations that can be applied.
-  List<_i2.DatabaseMigrationVersionModel> latestAvailableMigrations;
+  List<_isd.DatabaseMigrationVersionModel> latestAvailableMigrations;
 
   /// Returns a shallow copy of this [DatabaseDefinitions]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DatabaseDefinitions copyWith({
-    List<_i2.TableDefinition>? target,
-    List<_i2.TableDefinition>? live,
-    List<_i2.DatabaseMigrationVersionModel>? installedMigrations,
-    List<_i2.DatabaseMigrationVersionModel>? latestAvailableMigrations,
+    List<_isd.TableDefinition>? target,
+    List<_isd.TableDefinition>? live,
+    List<_isd.DatabaseMigrationVersionModel>? installedMigrations,
+    List<_isd.DatabaseMigrationVersionModel>? latestAvailableMigrations,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -103,16 +103,16 @@ abstract class DatabaseDefinitions
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
 class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
   _DatabaseDefinitionsImpl({
-    required List<_i2.TableDefinition> target,
-    required List<_i2.TableDefinition> live,
-    required List<_i2.DatabaseMigrationVersionModel> installedMigrations,
-    required List<_i2.DatabaseMigrationVersionModel> latestAvailableMigrations,
+    required List<_isd.TableDefinition> target,
+    required List<_isd.TableDefinition> live,
+    required List<_isd.DatabaseMigrationVersionModel> installedMigrations,
+    required List<_isd.DatabaseMigrationVersionModel> latestAvailableMigrations,
   }) : super._(
          target: target,
          live: live,
@@ -122,13 +122,13 @@ class _DatabaseDefinitionsImpl extends DatabaseDefinitions {
 
   /// Returns a shallow copy of this [DatabaseDefinitions]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DatabaseDefinitions copyWith({
-    List<_i2.TableDefinition>? target,
-    List<_i2.TableDefinition>? live,
-    List<_i2.DatabaseMigrationVersionModel>? installedMigrations,
-    List<_i2.DatabaseMigrationVersionModel>? latestAvailableMigrations,
+    List<_isd.TableDefinition>? target,
+    List<_isd.TableDefinition>? live,
+    List<_isd.DatabaseMigrationVersionModel>? installedMigrations,
+    List<_isd.DatabaseMigrationVersionModel>? latestAvailableMigrations,
   }) {
     return DatabaseDefinitions(
       target: target ?? this.target.map((e0) => e0.copyWith()).toList(),

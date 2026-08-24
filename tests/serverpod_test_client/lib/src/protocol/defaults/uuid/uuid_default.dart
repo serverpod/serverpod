@@ -10,35 +10,35 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UuidDefault
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UuidDefault._({
     this.id,
-    _i1.UuidValue? uuidDefaultRandom,
-    _i1.UuidValue? uuidDefaultRandomV7,
-    _i1.UuidValue? uuidDefaultRandomNull,
-    _i1.UuidValue? uuidDefaultStr,
-    _i1.UuidValue? uuidDefaultStrNull,
-  }) : uuidDefaultRandom = uuidDefaultRandom ?? const _i1.Uuid().v4obj(),
-       uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? const _i1.Uuid().v7obj(),
+    _isc.UuidValue? uuidDefaultRandom,
+    _isc.UuidValue? uuidDefaultRandomV7,
+    _isc.UuidValue? uuidDefaultRandomNull,
+    _isc.UuidValue? uuidDefaultStr,
+    _isc.UuidValue? uuidDefaultStrNull,
+  }) : uuidDefaultRandom = uuidDefaultRandom ?? const _isc.Uuid().v4obj(),
+       uuidDefaultRandomV7 = uuidDefaultRandomV7 ?? const _isc.Uuid().v7obj(),
        uuidDefaultRandomNull =
-           uuidDefaultRandomNull ?? const _i1.Uuid().v4obj(),
+           uuidDefaultRandomNull ?? const _isc.Uuid().v4obj(),
        uuidDefaultStr =
            uuidDefaultStr ??
-           _i1.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
+           _isc.UuidValue.fromString('550e8400-e29b-41d4-a716-446655440000'),
        uuidDefaultStrNull =
            uuidDefaultStrNull ??
-           _i1.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
+           _isc.UuidValue.fromString('3f2504e0-4f89-11d3-9a0c-0305e82c3301');
 
   factory UuidDefault({
     int? id,
-    _i1.UuidValue? uuidDefaultRandom,
-    _i1.UuidValue? uuidDefaultRandomV7,
-    _i1.UuidValue? uuidDefaultRandomNull,
-    _i1.UuidValue? uuidDefaultStr,
-    _i1.UuidValue? uuidDefaultStrNull,
+    _isc.UuidValue? uuidDefaultRandom,
+    _isc.UuidValue? uuidDefaultRandomV7,
+    _isc.UuidValue? uuidDefaultRandomNull,
+    _isc.UuidValue? uuidDefaultStr,
+    _isc.UuidValue? uuidDefaultStrNull,
   }) = _UuidDefaultImpl;
 
   factory UuidDefault.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -46,27 +46,27 @@ abstract class UuidDefault
       id: jsonSerialization['id'] as int?,
       uuidDefaultRandom: jsonSerialization['uuidDefaultRandom'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultRandom'],
             ),
       uuidDefaultRandomV7: jsonSerialization['uuidDefaultRandomV7'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultRandomV7'],
             ),
       uuidDefaultRandomNull: jsonSerialization['uuidDefaultRandomNull'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultRandomNull'],
             ),
       uuidDefaultStr: jsonSerialization['uuidDefaultStr'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultStr'],
             ),
       uuidDefaultStrNull: jsonSerialization['uuidDefaultStrNull'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(
+          : _isc.UuidValueJsonExtension.fromJson(
               jsonSerialization['uuidDefaultStrNull'],
             ),
     );
@@ -77,26 +77,26 @@ abstract class UuidDefault
   /// the id will be null.
   int? id;
 
-  _i1.UuidValue uuidDefaultRandom;
+  _isc.UuidValue uuidDefaultRandom;
 
-  _i1.UuidValue uuidDefaultRandomV7;
+  _isc.UuidValue uuidDefaultRandomV7;
 
-  _i1.UuidValue? uuidDefaultRandomNull;
+  _isc.UuidValue? uuidDefaultRandomNull;
 
-  _i1.UuidValue uuidDefaultStr;
+  _isc.UuidValue uuidDefaultStr;
 
-  _i1.UuidValue? uuidDefaultStrNull;
+  _isc.UuidValue? uuidDefaultStrNull;
 
   /// Returns a shallow copy of this [UuidDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UuidDefault copyWith({
     int? id,
-    _i1.UuidValue? uuidDefaultRandom,
-    _i1.UuidValue? uuidDefaultRandomV7,
-    _i1.UuidValue? uuidDefaultRandomNull,
-    _i1.UuidValue? uuidDefaultStr,
-    _i1.UuidValue? uuidDefaultStrNull,
+    _isc.UuidValue? uuidDefaultRandom,
+    _isc.UuidValue? uuidDefaultRandomV7,
+    _isc.UuidValue? uuidDefaultRandomNull,
+    _isc.UuidValue? uuidDefaultStr,
+    _isc.UuidValue? uuidDefaultStrNull,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -130,7 +130,7 @@ abstract class UuidDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -139,11 +139,11 @@ class _Undefined {}
 class _UuidDefaultImpl extends UuidDefault {
   _UuidDefaultImpl({
     int? id,
-    _i1.UuidValue? uuidDefaultRandom,
-    _i1.UuidValue? uuidDefaultRandomV7,
-    _i1.UuidValue? uuidDefaultRandomNull,
-    _i1.UuidValue? uuidDefaultStr,
-    _i1.UuidValue? uuidDefaultStrNull,
+    _isc.UuidValue? uuidDefaultRandom,
+    _isc.UuidValue? uuidDefaultRandomV7,
+    _isc.UuidValue? uuidDefaultRandomNull,
+    _isc.UuidValue? uuidDefaultStr,
+    _isc.UuidValue? uuidDefaultStrNull,
   }) : super._(
          id: id,
          uuidDefaultRandom: uuidDefaultRandom,
@@ -155,25 +155,25 @@ class _UuidDefaultImpl extends UuidDefault {
 
   /// Returns a shallow copy of this [UuidDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UuidDefault copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? uuidDefaultRandom,
-    _i1.UuidValue? uuidDefaultRandomV7,
+    _isc.UuidValue? uuidDefaultRandom,
+    _isc.UuidValue? uuidDefaultRandomV7,
     Object? uuidDefaultRandomNull = _Undefined,
-    _i1.UuidValue? uuidDefaultStr,
+    _isc.UuidValue? uuidDefaultStr,
     Object? uuidDefaultStrNull = _Undefined,
   }) {
     return UuidDefault(
       id: id is int? ? id : this.id,
       uuidDefaultRandom: uuidDefaultRandom ?? this.uuidDefaultRandom,
       uuidDefaultRandomV7: uuidDefaultRandomV7 ?? this.uuidDefaultRandomV7,
-      uuidDefaultRandomNull: uuidDefaultRandomNull is _i1.UuidValue?
+      uuidDefaultRandomNull: uuidDefaultRandomNull is _isc.UuidValue?
           ? uuidDefaultRandomNull
           : this.uuidDefaultRandomNull,
       uuidDefaultStr: uuidDefaultStr ?? this.uuidDefaultStr,
-      uuidDefaultStrNull: uuidDefaultStrNull is _i1.UuidValue?
+      uuidDefaultStrNull: uuidDefaultStrNull is _isc.UuidValue?
           ? uuidDefaultStrNull
           : this.uuidDefaultStrNull,
     );

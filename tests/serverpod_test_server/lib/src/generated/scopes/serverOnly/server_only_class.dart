@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ServerOnlyClass
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ServerOnlyClass._({required this.foo});
 
   factory ServerOnlyClass({required String foo}) = _ServerOnlyClassImpl;
@@ -26,7 +26,7 @@ abstract class ServerOnlyClass
 
   /// Returns a shallow copy of this [ServerOnlyClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerOnlyClass copyWith({String? foo});
   @override
   Map<String, dynamic> toJson() {
@@ -43,7 +43,7 @@ abstract class ServerOnlyClass
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -52,7 +52,7 @@ class _ServerOnlyClassImpl extends ServerOnlyClass {
 
   /// Returns a shallow copy of this [ServerOnlyClass]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerOnlyClass copyWith({String? foo}) {
     return ServerOnlyClass(foo: foo ?? this.foo);

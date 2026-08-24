@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectWithGeographyPolygon
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectWithGeographyPolygon._({
     this.id,
     required this.polygon,
@@ -23,9 +23,9 @@ abstract class ObjectWithGeographyPolygon
 
   factory ObjectWithGeographyPolygon({
     int? id,
-    required _i1.GeographyPolygon polygon,
-    required _i1.GeographyPolygon polygonIndexedGist,
-    required _i1.GeographyPolygon polygonIndexedSpgist,
+    required _is.GeographyPolygon polygon,
+    required _is.GeographyPolygon polygonIndexedGist,
+    required _is.GeographyPolygon polygonIndexedSpgist,
   }) = _ObjectWithGeographyPolygonImpl;
 
   factory ObjectWithGeographyPolygon.fromJson(
@@ -33,13 +33,13 @@ abstract class ObjectWithGeographyPolygon
   ) {
     return ObjectWithGeographyPolygon(
       id: jsonSerialization['id'] as int?,
-      polygon: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygon: _is.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygon'],
       ),
-      polygonIndexedGist: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygonIndexedGist: _is.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygonIndexedGist'],
       ),
-      polygonIndexedSpgist: _i1.GeographyPolygonJsonExtension.fromJson(
+      polygonIndexedSpgist: _is.GeographyPolygonJsonExtension.fromJson(
         jsonSerialization['polygonIndexedSpgist'],
       ),
     );
@@ -52,23 +52,23 @@ abstract class ObjectWithGeographyPolygon
   @override
   int? id;
 
-  _i1.GeographyPolygon polygon;
+  _is.GeographyPolygon polygon;
 
-  _i1.GeographyPolygon polygonIndexedGist;
+  _is.GeographyPolygon polygonIndexedGist;
 
-  _i1.GeographyPolygon polygonIndexedSpgist;
+  _is.GeographyPolygon polygonIndexedSpgist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectWithGeographyPolygon]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectWithGeographyPolygon copyWith({
     int? id,
-    _i1.GeographyPolygon? polygon,
-    _i1.GeographyPolygon? polygonIndexedGist,
-    _i1.GeographyPolygon? polygonIndexedSpgist,
+    _is.GeographyPolygon? polygon,
+    _is.GeographyPolygon? polygonIndexedGist,
+    _is.GeographyPolygon? polygonIndexedSpgist,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -97,11 +97,11 @@ abstract class ObjectWithGeographyPolygon
   }
 
   static ObjectWithGeographyPolygonIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
     ObjectWithGeographyPolygonInclude? include,
   }) {
     return ObjectWithGeographyPolygonIncludeList._(
@@ -116,7 +116,7 @@ abstract class ObjectWithGeographyPolygon
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -125,9 +125,9 @@ class _Undefined {}
 class _ObjectWithGeographyPolygonImpl extends ObjectWithGeographyPolygon {
   _ObjectWithGeographyPolygonImpl({
     int? id,
-    required _i1.GeographyPolygon polygon,
-    required _i1.GeographyPolygon polygonIndexedGist,
-    required _i1.GeographyPolygon polygonIndexedSpgist,
+    required _is.GeographyPolygon polygon,
+    required _is.GeographyPolygon polygonIndexedGist,
+    required _is.GeographyPolygon polygonIndexedSpgist,
   }) : super._(
          id: id,
          polygon: polygon,
@@ -137,13 +137,13 @@ class _ObjectWithGeographyPolygonImpl extends ObjectWithGeographyPolygon {
 
   /// Returns a shallow copy of this [ObjectWithGeographyPolygon]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectWithGeographyPolygon copyWith({
     Object? id = _Undefined,
-    _i1.GeographyPolygon? polygon,
-    _i1.GeographyPolygon? polygonIndexedGist,
-    _i1.GeographyPolygon? polygonIndexedSpgist,
+    _is.GeographyPolygon? polygon,
+    _is.GeographyPolygon? polygonIndexedGist,
+    _is.GeographyPolygon? polygonIndexedSpgist,
   }) {
     return ObjectWithGeographyPolygon(
       id: id is int? ? id : this.id,
@@ -155,42 +155,42 @@ class _ObjectWithGeographyPolygonImpl extends ObjectWithGeographyPolygon {
 }
 
 class ObjectWithGeographyPolygonUpdateTable
-    extends _i1.UpdateTable<ObjectWithGeographyPolygonTable> {
+    extends _is.UpdateTable<ObjectWithGeographyPolygonTable> {
   ObjectWithGeographyPolygonUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.GeographyPolygon, _i1.GeographyPolygon> polygon(
-    _i1.GeographyPolygon value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPolygon, _is.GeographyPolygon> polygon(
+    _is.GeographyPolygon value,
+  ) => _is.ColumnValue(
     table.polygon,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyPolygon, _i1.GeographyPolygon>
-  polygonIndexedGist(_i1.GeographyPolygon value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPolygon, _is.GeographyPolygon>
+  polygonIndexedGist(_is.GeographyPolygon value) => _is.ColumnValue(
     table.polygonIndexedGist,
     value,
   );
 
-  _i1.ColumnValue<_i1.GeographyPolygon, _i1.GeographyPolygon>
-  polygonIndexedSpgist(_i1.GeographyPolygon value) => _i1.ColumnValue(
+  _is.ColumnValue<_is.GeographyPolygon, _is.GeographyPolygon>
+  polygonIndexedSpgist(_is.GeographyPolygon value) => _is.ColumnValue(
     table.polygonIndexedSpgist,
     value,
   );
 }
 
-class ObjectWithGeographyPolygonTable extends _i1.Table<int?> {
+class ObjectWithGeographyPolygonTable extends _is.Table<int?> {
   ObjectWithGeographyPolygonTable({super.tableRelation})
     : super(tableName: 'object_with_geography_polygon') {
     updateTable = ObjectWithGeographyPolygonUpdateTable(this);
-    polygon = _i1.ColumnGeographyPolygon(
+    polygon = _is.ColumnGeographyPolygon(
       'polygon',
       this,
     );
-    polygonIndexedGist = _i1.ColumnGeographyPolygon(
+    polygonIndexedGist = _is.ColumnGeographyPolygon(
       'polygonIndexedGist',
       this,
     );
-    polygonIndexedSpgist = _i1.ColumnGeographyPolygon(
+    polygonIndexedSpgist = _is.ColumnGeographyPolygon(
       'polygonIndexedSpgist',
       this,
     );
@@ -198,14 +198,14 @@ class ObjectWithGeographyPolygonTable extends _i1.Table<int?> {
 
   late final ObjectWithGeographyPolygonUpdateTable updateTable;
 
-  late final _i1.ColumnGeographyPolygon polygon;
+  late final _is.ColumnGeographyPolygon polygon;
 
-  late final _i1.ColumnGeographyPolygon polygonIndexedGist;
+  late final _is.ColumnGeographyPolygon polygonIndexedGist;
 
-  late final _i1.ColumnGeographyPolygon polygonIndexedSpgist;
+  late final _is.ColumnGeographyPolygon polygonIndexedSpgist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     polygon,
     polygonIndexedGist,
@@ -213,19 +213,19 @@ class ObjectWithGeographyPolygonTable extends _i1.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyPolygonInclude extends _i1.IncludeObject {
+class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
   ObjectWithGeographyPolygonInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyPolygon.t;
+  _is.Table<int?> get table => ObjectWithGeographyPolygon.t;
 }
 
-class ObjectWithGeographyPolygonIncludeList extends _i1.IncludeList {
+class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList {
   ObjectWithGeographyPolygonIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -236,10 +236,10 @@ class ObjectWithGeographyPolygonIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectWithGeographyPolygon.t;
+  _is.Table<int?> get table => ObjectWithGeographyPolygon.t;
 }
 
 class ObjectWithGeographyPolygonRepository {
@@ -268,15 +268,15 @@ class ObjectWithGeographyPolygonRepository {
   /// );
   /// ```
   Future<List<ObjectWithGeographyPolygon>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectWithGeographyPolygon>(
       where: where?.call(ObjectWithGeographyPolygon.t),
@@ -308,14 +308,14 @@ class ObjectWithGeographyPolygonRepository {
   /// );
   /// ```
   Future<ObjectWithGeographyPolygon?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectWithGeographyPolygon>(
       where: where?.call(ObjectWithGeographyPolygon.t),
@@ -330,11 +330,11 @@ class ObjectWithGeographyPolygonRepository {
 
   /// Finds a single [ObjectWithGeographyPolygon] by its [id] or null if no such row exists.
   Future<ObjectWithGeographyPolygon?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectWithGeographyPolygon>(
       id,
@@ -359,9 +359,9 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPolygon> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -377,9 +377,9 @@ class ObjectWithGeographyPolygonRepository {
   ///
   /// The returned [ObjectWithGeographyPolygon] will have its `id` field set.
   Future<ObjectWithGeographyPolygon> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPolygon row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectWithGeographyPolygon>(
       row,
@@ -408,13 +408,13 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPolygon> rows, {
-    required _i1.ColumnSelections<ObjectWithGeographyPolygonTable>
+    required _is.ColumnSelections<ObjectWithGeographyPolygonTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyPolygonTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPolygonTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectWithGeographyPolygon>(
@@ -441,13 +441,13 @@ class ObjectWithGeographyPolygonRepository {
   ///
   /// The returned [ObjectWithGeographyPolygon] will have its `id` field set.
   Future<ObjectWithGeographyPolygon?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPolygon row, {
-    required _i1.ColumnSelections<ObjectWithGeographyPolygonTable>
+    required _is.ColumnSelections<ObjectWithGeographyPolygonTable>
     conflictColumns,
-    _i1.ColumnSelections<ObjectWithGeographyPolygonTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPolygonTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectWithGeographyPolygon>(
       row,
@@ -468,10 +468,10 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPolygon> rows, {
-    _i1.ColumnSelections<ObjectWithGeographyPolygonTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPolygonTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectWithGeographyPolygon>(
@@ -486,10 +486,10 @@ class ObjectWithGeographyPolygonRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectWithGeographyPolygon> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPolygon row, {
-    _i1.ColumnSelections<ObjectWithGeographyPolygonTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectWithGeographyPolygonTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectWithGeographyPolygon>(
       row,
@@ -501,11 +501,11 @@ class ObjectWithGeographyPolygonRepository {
   /// Updates a single [ObjectWithGeographyPolygon] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectWithGeographyPolygon?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectWithGeographyPolygonUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectWithGeographyPolygonUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectWithGeographyPolygon>(
       id,
@@ -521,15 +521,15 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectWithGeographyPolygonUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectWithGeographyPolygonUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectWithGeographyPolygon>(
@@ -556,11 +556,11 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectWithGeographyPolygon> rows, {
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectWithGeographyPolygon>(
@@ -574,9 +574,9 @@ class ObjectWithGeographyPolygonRepository {
 
   /// Deletes a single [ObjectWithGeographyPolygon].
   Future<ObjectWithGeographyPolygon> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectWithGeographyPolygon row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectWithGeographyPolygon>(
       row,
@@ -593,11 +593,11 @@ class ObjectWithGeographyPolygonRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectWithGeographyPolygon>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
-    _i1.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectWithGeographyPolygon>(
@@ -612,10 +612,10 @@ class ObjectWithGeographyPolygonRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectWithGeographyPolygon>(
       where: where?.call(ObjectWithGeographyPolygon.t),
@@ -626,11 +626,11 @@ class ObjectWithGeographyPolygonRepository {
 
   /// Acquires row-level locks on [ObjectWithGeographyPolygon] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectWithGeographyPolygon>(
       where: where(ObjectWithGeographyPolygon.t),

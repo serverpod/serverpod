@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class BigIntDefaultMix
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   BigIntDefaultMix._({
     this.id,
     BigInt? bigIntDefaultAndDefaultModel,
@@ -41,19 +41,19 @@ abstract class BigIntDefaultMix
       bigIntDefaultAndDefaultModel:
           jsonSerialization['bigIntDefaultAndDefaultModel'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _is.BigIntJsonExtension.fromJson(
               jsonSerialization['bigIntDefaultAndDefaultModel'],
             ),
       bigIntDefaultAndDefaultPersist:
           jsonSerialization['bigIntDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _is.BigIntJsonExtension.fromJson(
               jsonSerialization['bigIntDefaultAndDefaultPersist'],
             ),
       bigIntDefaultModelAndDefaultPersist:
           jsonSerialization['bigIntDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.BigIntJsonExtension.fromJson(
+          : _is.BigIntJsonExtension.fromJson(
               jsonSerialization['bigIntDefaultModelAndDefaultPersist'],
             ),
     );
@@ -73,11 +73,11 @@ abstract class BigIntDefaultMix
   BigInt bigIntDefaultModelAndDefaultPersist;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BigIntDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BigIntDefaultMix copyWith({
     int? id,
     BigInt? bigIntDefaultAndDefaultModel,
@@ -113,11 +113,11 @@ abstract class BigIntDefaultMix
   }
 
   static BigIntDefaultMixIncludeList includeList({
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     BigIntDefaultMixInclude? include,
   }) {
     return BigIntDefaultMixIncludeList._(
@@ -132,7 +132,7 @@ abstract class BigIntDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -154,7 +154,7 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
 
   /// Returns a shallow copy of this [BigIntDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BigIntDefaultMix copyWith({
     Object? id = _Undefined,
@@ -176,45 +176,45 @@ class _BigIntDefaultMixImpl extends BigIntDefaultMix {
 }
 
 class BigIntDefaultMixUpdateTable
-    extends _i1.UpdateTable<BigIntDefaultMixTable> {
+    extends _is.UpdateTable<BigIntDefaultMixTable> {
   BigIntDefaultMixUpdateTable(super.table);
 
-  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultModel(BigInt value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultModel(BigInt value) =>
+      _is.ColumnValue(
         table.bigIntDefaultAndDefaultModel,
         value,
       );
 
-  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultPersist(
+  _is.ColumnValue<BigInt, BigInt> bigIntDefaultAndDefaultPersist(
     BigInt value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.bigIntDefaultAndDefaultPersist,
     value,
   );
 
-  _i1.ColumnValue<BigInt, BigInt> bigIntDefaultModelAndDefaultPersist(
+  _is.ColumnValue<BigInt, BigInt> bigIntDefaultModelAndDefaultPersist(
     BigInt value,
-  ) => _i1.ColumnValue(
+  ) => _is.ColumnValue(
     table.bigIntDefaultModelAndDefaultPersist,
     value,
   );
 }
 
-class BigIntDefaultMixTable extends _i1.Table<int?> {
+class BigIntDefaultMixTable extends _is.Table<int?> {
   BigIntDefaultMixTable({super.tableRelation})
     : super(tableName: 'bigint_default_mix') {
     updateTable = BigIntDefaultMixUpdateTable(this);
-    bigIntDefaultAndDefaultModel = _i1.ColumnBigInt(
+    bigIntDefaultAndDefaultModel = _is.ColumnBigInt(
       'bigIntDefaultAndDefaultModel',
       this,
       hasDefault: true,
     );
-    bigIntDefaultAndDefaultPersist = _i1.ColumnBigInt(
+    bigIntDefaultAndDefaultPersist = _is.ColumnBigInt(
       'bigIntDefaultAndDefaultPersist',
       this,
       hasDefault: true,
     );
-    bigIntDefaultModelAndDefaultPersist = _i1.ColumnBigInt(
+    bigIntDefaultModelAndDefaultPersist = _is.ColumnBigInt(
       'bigIntDefaultModelAndDefaultPersist',
       this,
       hasDefault: true,
@@ -223,14 +223,14 @@ class BigIntDefaultMixTable extends _i1.Table<int?> {
 
   late final BigIntDefaultMixUpdateTable updateTable;
 
-  late final _i1.ColumnBigInt bigIntDefaultAndDefaultModel;
+  late final _is.ColumnBigInt bigIntDefaultAndDefaultModel;
 
-  late final _i1.ColumnBigInt bigIntDefaultAndDefaultPersist;
+  late final _is.ColumnBigInt bigIntDefaultAndDefaultPersist;
 
-  late final _i1.ColumnBigInt bigIntDefaultModelAndDefaultPersist;
+  late final _is.ColumnBigInt bigIntDefaultModelAndDefaultPersist;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     bigIntDefaultAndDefaultModel,
     bigIntDefaultAndDefaultPersist,
@@ -238,19 +238,19 @@ class BigIntDefaultMixTable extends _i1.Table<int?> {
   ];
 }
 
-class BigIntDefaultMixInclude extends _i1.IncludeObject {
+class BigIntDefaultMixInclude extends _is.IncludeObject {
   BigIntDefaultMixInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => BigIntDefaultMix.t;
+  _is.Table<int?> get table => BigIntDefaultMix.t;
 }
 
-class BigIntDefaultMixIncludeList extends _i1.IncludeList {
+class BigIntDefaultMixIncludeList extends _is.IncludeList {
   BigIntDefaultMixIncludeList._({
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -261,10 +261,10 @@ class BigIntDefaultMixIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => BigIntDefaultMix.t;
+  _is.Table<int?> get table => BigIntDefaultMix.t;
 }
 
 class BigIntDefaultMixRepository {
@@ -293,15 +293,15 @@ class BigIntDefaultMixRepository {
   /// );
   /// ```
   Future<List<BigIntDefaultMix>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
@@ -333,14 +333,14 @@ class BigIntDefaultMixRepository {
   /// );
   /// ```
   Future<BigIntDefaultMix?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
@@ -355,11 +355,11 @@ class BigIntDefaultMixRepository {
 
   /// Finds a single [BigIntDefaultMix] by its [id] or null if no such row exists.
   Future<BigIntDefaultMix?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BigIntDefaultMix>(
       id,
@@ -384,9 +384,9 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -402,9 +402,9 @@ class BigIntDefaultMixRepository {
   ///
   /// The returned [BigIntDefaultMix] will have its `id` field set.
   Future<BigIntDefaultMix> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<BigIntDefaultMix>(
       row,
@@ -433,12 +433,12 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
-    required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<BigIntDefaultMix>(
@@ -465,12 +465,12 @@ class BigIntDefaultMixRepository {
   ///
   /// The returned [BigIntDefaultMix] will have its `id` field set.
   Future<BigIntDefaultMix?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefaultMix row, {
-    required _i1.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
-    _i1.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BigIntDefaultMixTable> conflictColumns,
+    _is.ColumnSelections<BigIntDefaultMixTable>? updateColumns,
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BigIntDefaultMix>(
       row,
@@ -491,10 +491,10 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
-    _i1.ColumnSelections<BigIntDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BigIntDefaultMixTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<BigIntDefaultMix>(
@@ -509,10 +509,10 @@ class BigIntDefaultMixRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BigIntDefaultMix> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefaultMix row, {
-    _i1.ColumnSelections<BigIntDefaultMixTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BigIntDefaultMixTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<BigIntDefaultMix>(
       row,
@@ -524,11 +524,11 @@ class BigIntDefaultMixRepository {
   /// Updates a single [BigIntDefaultMix] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BigIntDefaultMix?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
+    required _is.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<BigIntDefaultMix>(
       id,
@@ -544,15 +544,15 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BigIntDefaultMixUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
+    required _is.WhereExpressionBuilder<BigIntDefaultMixTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BigIntDefaultMix>(
@@ -579,11 +579,11 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BigIntDefaultMix> rows, {
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<BigIntDefaultMix>(
@@ -597,9 +597,9 @@ class BigIntDefaultMixRepository {
 
   /// Deletes a single [BigIntDefaultMix].
   Future<BigIntDefaultMix> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BigIntDefaultMix row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<BigIntDefaultMix>(
       row,
@@ -616,11 +616,11 @@ class BigIntDefaultMixRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BigIntDefaultMix>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
-    _i1.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
-    _i1.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BigIntDefaultMixTable> where,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BigIntDefaultMix>(
@@ -635,10 +635,10 @@ class BigIntDefaultMixRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<BigIntDefaultMix>(
       where: where?.call(BigIntDefaultMix.t),
@@ -649,11 +649,11 @@ class BigIntDefaultMixRepository {
 
   /// Acquires row-level locks on [BigIntDefaultMix] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BigIntDefaultMixTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BigIntDefaultMixTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BigIntDefaultMix>(
       where: where(BigIntDefaultMix.t),

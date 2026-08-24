@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../auth_user/models/auth_user.dart' as _i2;
-import 'dart:typed_data' as _i3;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
+import 'dart:typed_data' as _idt;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
+import '../../auth_user/models/auth_user.dart' as _ivyervu7;
 
 /// Server-side authentication session.
 abstract class ServerSideSession
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   ServerSideSession._({
     this.id,
     required this.authUserId,
@@ -35,16 +36,16 @@ abstract class ServerSideSession
        lastUsedAt = lastUsedAt ?? DateTime.now();
 
   factory ServerSideSession({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     required Set<String> scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     Duration? expireAfterUnusedFor,
-    required _i3.ByteData sessionKeyHash,
-    required _i3.ByteData sessionKeySalt,
+    required _idt.ByteData sessionKeyHash,
+    required _idt.ByteData sessionKeySalt,
     required String method,
   }) = _ServerSideSessionImpl;
 
@@ -52,36 +53,36 @@ abstract class ServerSideSession
     return ServerSideSession(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AuthUser>(
+          : _i8reeoob.Protocol().deserialize<_ivyervu7.AuthUser>(
               jsonSerialization['authUser'],
             ),
-      scopeNames: _i4.Protocol().deserialize<Set<String>>(
+      scopeNames: _i8reeoob.Protocol().deserialize<Set<String>>(
         jsonSerialization['scopeNames'],
       ),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       lastUsedAt: jsonSerialization['lastUsedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['lastUsedAt']),
       expiresAt: jsonSerialization['expiresAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['expiresAt']),
       expireAfterUnusedFor: jsonSerialization['expireAfterUnusedFor'] == null
           ? null
-          : _i1.DurationJsonExtension.fromJson(
+          : _is.DurationJsonExtension.fromJson(
               jsonSerialization['expireAfterUnusedFor'],
             ),
-      sessionKeyHash: _i1.ByteDataJsonExtension.fromJson(
+      sessionKeyHash: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['sessionKeyHash'],
       ),
-      sessionKeySalt: _i1.ByteDataJsonExtension.fromJson(
+      sessionKeySalt: _is.ByteDataJsonExtension.fromJson(
         jsonSerialization['sessionKeySalt'],
       ),
       method: jsonSerialization['method'] as String,
@@ -93,12 +94,12 @@ abstract class ServerSideSession
   static const db = ServerSideSessionRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUser? authUser;
+  _ivyervu7.AuthUser? authUser;
 
   /// The scopes this session provides access to.
   Set<String> scopeNames;
@@ -126,12 +127,12 @@ abstract class ServerSideSession
   /// Hashed version of the session key.
   ///
   /// The clients authentication header will be compared against this to check the validity of the session.
-  _i3.ByteData sessionKeyHash;
+  _idt.ByteData sessionKeyHash;
 
   /// The salt used for computing the [sessionKeyHash].
   ///
   /// Per default uses 16 bytes of random data.
-  _i3.ByteData sessionKeySalt;
+  _idt.ByteData sessionKeySalt;
 
   /// The method through which this session was created.
   ///
@@ -139,22 +140,22 @@ abstract class ServerSideSession
   String method;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [ServerSideSession]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerSideSession copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _ivyervu7.AuthUser? authUser,
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     Duration? expireAfterUnusedFor,
-    _i3.ByteData? sessionKeyHash,
-    _i3.ByteData? sessionKeySalt,
+    _idt.ByteData? sessionKeyHash,
+    _idt.ByteData? sessionKeySalt,
     String? method,
   });
   @override
@@ -181,16 +182,18 @@ abstract class ServerSideSession
     return {};
   }
 
-  static ServerSideSessionInclude include({_i2.AuthUserInclude? authUser}) {
+  static ServerSideSessionInclude include({
+    _ivyervu7.AuthUserInclude? authUser,
+  }) {
     return ServerSideSessionInclude._(authUser: authUser);
   }
 
   static ServerSideSessionIncludeList includeList({
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     ServerSideSessionInclude? include,
   }) {
     return ServerSideSessionIncludeList._(
@@ -205,7 +208,7 @@ abstract class ServerSideSession
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -213,16 +216,16 @@ class _Undefined {}
 
 class _ServerSideSessionImpl extends ServerSideSession {
   _ServerSideSessionImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     required Set<String> scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
     DateTime? expiresAt,
     Duration? expireAfterUnusedFor,
-    required _i3.ByteData sessionKeyHash,
-    required _i3.ByteData sessionKeySalt,
+    required _idt.ByteData sessionKeyHash,
+    required _idt.ByteData sessionKeySalt,
     required String method,
   }) : super._(
          id: id,
@@ -240,25 +243,25 @@ class _ServerSideSessionImpl extends ServerSideSession {
 
   /// Returns a shallow copy of this [ServerSideSession]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerSideSession copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Set<String>? scopeNames,
     DateTime? createdAt,
     DateTime? lastUsedAt,
     Object? expiresAt = _Undefined,
     Object? expireAfterUnusedFor = _Undefined,
-    _i3.ByteData? sessionKeyHash,
-    _i3.ByteData? sessionKeySalt,
+    _idt.ByteData? sessionKeyHash,
+    _idt.ByteData? sessionKeySalt,
     String? method,
   }) {
     return ServerSideSession(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _ivyervu7.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       scopeNames: scopeNames ?? this.scopeNames.map((e0) => e0).toSet(),
@@ -276,105 +279,105 @@ class _ServerSideSessionImpl extends ServerSideSession {
 }
 
 class ServerSideSessionUpdateTable
-    extends _i1.UpdateTable<ServerSideSessionTable> {
+    extends _is.UpdateTable<ServerSideSessionTable> {
   ServerSideSessionUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Set<String>, Set<String>> scopeNames(Set<String> value) =>
+      _is.ColumnValue(
         table.scopeNames,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> lastUsedAt(DateTime value) =>
+      _is.ColumnValue(
         table.lastUsedAt,
         value,
       );
 
-  _i1.ColumnValue<DateTime, DateTime> expiresAt(DateTime? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> expiresAt(DateTime? value) =>
+      _is.ColumnValue(
         table.expiresAt,
         value,
       );
 
-  _i1.ColumnValue<Duration, Duration> expireAfterUnusedFor(Duration? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<Duration, Duration> expireAfterUnusedFor(Duration? value) =>
+      _is.ColumnValue(
         table.expireAfterUnusedFor,
         value,
       );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeyHash(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> sessionKeyHash(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
     table.sessionKeyHash,
     value,
   );
 
-  _i1.ColumnValue<_i3.ByteData, _i3.ByteData> sessionKeySalt(
-    _i3.ByteData value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_idt.ByteData, _idt.ByteData> sessionKeySalt(
+    _idt.ByteData value,
+  ) => _is.ColumnValue(
     table.sessionKeySalt,
     value,
   );
 
-  _i1.ColumnValue<String, String> method(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> method(String value) => _is.ColumnValue(
     table.method,
     value,
   );
 }
 
-class ServerSideSessionTable extends _i1.Table<_i1.UuidValue?> {
+class ServerSideSessionTable extends _is.Table<_is.UuidValue?> {
   ServerSideSessionTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_core_session') {
     updateTable = ServerSideSessionUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    scopeNames = _i1.ColumnSerializable<Set<String>>(
+    scopeNames = _is.ColumnSerializable<Set<String>>(
       'scopeNames',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
     );
-    lastUsedAt = _i1.ColumnDateTime(
+    lastUsedAt = _is.ColumnDateTime(
       'lastUsedAt',
       this,
       hasDefault: true,
     );
-    expiresAt = _i1.ColumnDateTime(
+    expiresAt = _is.ColumnDateTime(
       'expiresAt',
       this,
     );
-    expireAfterUnusedFor = _i1.ColumnDuration(
+    expireAfterUnusedFor = _is.ColumnDuration(
       'expireAfterUnusedFor',
       this,
     );
-    sessionKeyHash = _i1.ColumnByteData(
+    sessionKeyHash = _is.ColumnByteData(
       'sessionKeyHash',
       this,
     );
-    sessionKeySalt = _i1.ColumnByteData(
+    sessionKeySalt = _is.ColumnByteData(
       'sessionKeySalt',
       this,
     );
-    method = _i1.ColumnString(
+    method = _is.ColumnString(
       'method',
       this,
     );
@@ -382,64 +385,64 @@ class ServerSideSessionTable extends _i1.Table<_i1.UuidValue?> {
 
   late final ServerSideSessionUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this session belongs to
-  _i2.AuthUserTable? _authUser;
+  _ivyervu7.AuthUserTable? _authUser;
 
   /// The scopes this session provides access to.
-  late final _i1.ColumnSerializable<Set<String>> scopeNames;
+  late final _is.ColumnSerializable<Set<String>> scopeNames;
 
   /// The time when this session was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
   /// The time when this access session was last used.
   ///
   /// Operates only with minute resolution, to avoid excessive writes to the database.
-  late final _i1.ColumnDateTime lastUsedAt;
+  late final _is.ColumnDateTime lastUsedAt;
 
   /// The time after which this session can not be used anymore.
   ///
   /// If `null`, the session can be used indefinitely.
-  late final _i1.ColumnDateTime expiresAt;
+  late final _is.ColumnDateTime expiresAt;
 
   /// The maximum duration this session can go unused.
   ///
   /// If set, and the session is used after [lastUsed] + [expireAfterUnusedFor], then it will be rejected.
   ///
   /// If `null`, the session is valid until [expiresAt].
-  late final _i1.ColumnDuration expireAfterUnusedFor;
+  late final _is.ColumnDuration expireAfterUnusedFor;
 
   /// Hashed version of the session key.
   ///
   /// The clients authentication header will be compared against this to check the validity of the session.
-  late final _i1.ColumnByteData sessionKeyHash;
+  late final _is.ColumnByteData sessionKeyHash;
 
   /// The salt used for computing the [sessionKeyHash].
   ///
   /// Per default uses 16 bytes of random data.
-  late final _i1.ColumnByteData sessionKeySalt;
+  late final _is.ColumnByteData sessionKeySalt;
 
   /// The method through which this session was created.
   ///
   /// This can be either an email or social login, a personal access token, service account etc.
-  late final _i1.ColumnString method;
+  late final _is.ColumnString method;
 
-  _i2.AuthUserTable get authUser {
+  _ivyervu7.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: ServerSideSession.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _ivyervu7.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _ivyervu7.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     scopeNames,
@@ -453,7 +456,7 @@ class ServerSideSessionTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -461,23 +464,23 @@ class ServerSideSessionTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class ServerSideSessionInclude extends _i1.IncludeObject {
-  ServerSideSessionInclude._({_i2.AuthUserInclude? authUser}) {
+class ServerSideSessionInclude extends _is.IncludeObject {
+  ServerSideSessionInclude._({_ivyervu7.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _ivyervu7.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => ServerSideSession.t;
+  _is.Table<_is.UuidValue?> get table => ServerSideSession.t;
 }
 
-class ServerSideSessionIncludeList extends _i1.IncludeList {
+class ServerSideSessionIncludeList extends _is.IncludeList {
   ServerSideSessionIncludeList._({
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -488,10 +491,10 @@ class ServerSideSessionIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => ServerSideSession.t;
+  _is.Table<_is.UuidValue?> get table => ServerSideSession.t;
 }
 
 class ServerSideSessionRepository {
@@ -522,16 +525,16 @@ class ServerSideSessionRepository {
   /// );
   /// ```
   Future<List<ServerSideSession>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.Transaction? transaction,
     ServerSideSessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
@@ -564,15 +567,15 @@ class ServerSideSessionRepository {
   /// );
   /// ```
   Future<ServerSideSession?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.Transaction? transaction,
     ServerSideSessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
@@ -588,12 +591,12 @@ class ServerSideSessionRepository {
 
   /// Finds a single [ServerSideSession] by its [id] or null if no such row exists.
   Future<ServerSideSession?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     ServerSideSessionInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ServerSideSession>(
       id,
@@ -619,9 +622,9 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerSideSession> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -637,9 +640,9 @@ class ServerSideSessionRepository {
   ///
   /// The returned [ServerSideSession] will have its `id` field set.
   Future<ServerSideSession> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerSideSession row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ServerSideSession>(
       row,
@@ -668,12 +671,12 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerSideSession> rows, {
-    required _i1.ColumnSelections<ServerSideSessionTable> conflictColumns,
-    _i1.ColumnSelections<ServerSideSessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServerSideSessionTable> conflictColumns,
+    _is.ColumnSelections<ServerSideSessionTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ServerSideSession>(
@@ -700,12 +703,12 @@ class ServerSideSessionRepository {
   ///
   /// The returned [ServerSideSession] will have its `id` field set.
   Future<ServerSideSession?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerSideSession row, {
-    required _i1.ColumnSelections<ServerSideSessionTable> conflictColumns,
-    _i1.ColumnSelections<ServerSideSessionTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ServerSideSessionTable> conflictColumns,
+    _is.ColumnSelections<ServerSideSessionTable>? updateColumns,
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ServerSideSession>(
       row,
@@ -726,10 +729,10 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerSideSession> rows, {
-    _i1.ColumnSelections<ServerSideSessionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerSideSessionTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ServerSideSession>(
@@ -744,10 +747,10 @@ class ServerSideSessionRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ServerSideSession> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerSideSession row, {
-    _i1.ColumnSelections<ServerSideSessionTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ServerSideSessionTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ServerSideSession>(
       row,
@@ -759,11 +762,11 @@ class ServerSideSessionRepository {
   /// Updates a single [ServerSideSession] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ServerSideSession?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<ServerSideSessionUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<ServerSideSessionUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ServerSideSession>(
       id,
@@ -779,15 +782,15 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ServerSideSessionUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ServerSideSessionUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ServerSideSessionTable> where,
+    required _is.WhereExpressionBuilder<ServerSideSessionTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ServerSideSession>(
@@ -814,11 +817,11 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ServerSideSession> rows, {
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ServerSideSession>(
@@ -832,9 +835,9 @@ class ServerSideSessionRepository {
 
   /// Deletes a single [ServerSideSession].
   Future<ServerSideSession> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerSideSession row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ServerSideSession>(
       row,
@@ -851,11 +854,11 @@ class ServerSideSessionRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ServerSideSession>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerSideSessionTable> where,
-    _i1.OrderByBuilder<ServerSideSessionTable>? orderBy,
-    _i1.OrderByListBuilder<ServerSideSessionTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerSideSessionTable> where,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ServerSideSession>(
@@ -870,10 +873,10 @@ class ServerSideSessionRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ServerSideSession>(
       where: where?.call(ServerSideSession.t),
@@ -884,11 +887,11 @@ class ServerSideSessionRepository {
 
   /// Acquires row-level locks on [ServerSideSession] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ServerSideSessionTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ServerSideSessionTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ServerSideSession>(
       where: where(ServerSideSession.t),
@@ -905,10 +908,10 @@ class ServerSideSessionAttachRowRepository {
   /// Creates a relation between the given [ServerSideSession] and [AuthUser]
   /// by setting the [ServerSideSession]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ServerSideSession serverSideSession,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _ivyervu7.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (serverSideSession.id == null) {
       throw ArgumentError.notNull('serverSideSession.id');

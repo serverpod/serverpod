@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'inheritance/exception/sealed_app_exception.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'inheritance/exception/sealed_app_exception.dart' as _iaxkp5y4;
 
 abstract class ObjectWithSealedException
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithSealedException._({
     required this.sealedField,
     this.nullableSealedField,
@@ -23,42 +23,44 @@ abstract class ObjectWithSealedException
   });
 
   factory ObjectWithSealedException({
-    required _i2.SealedAppException sealedField,
-    _i2.SealedAppException? nullableSealedField,
-    required List<_i2.SealedAppException> sealedList,
+    required _iaxkp5y4.SealedAppException sealedField,
+    _iaxkp5y4.SealedAppException? nullableSealedField,
+    required List<_iaxkp5y4.SealedAppException> sealedList,
   }) = _ObjectWithSealedExceptionImpl;
 
   factory ObjectWithSealedException.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return ObjectWithSealedException(
-      sealedField: _i3.Protocol().deserialize<_i2.SealedAppException>(
-        jsonSerialization['sealedField'],
-      ),
+      sealedField: _iza9lbb5.Protocol()
+          .deserialize<_iaxkp5y4.SealedAppException>(
+            jsonSerialization['sealedField'],
+          ),
       nullableSealedField: jsonSerialization['nullableSealedField'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SealedAppException>(
+          : _iza9lbb5.Protocol().deserialize<_iaxkp5y4.SealedAppException>(
               jsonSerialization['nullableSealedField'],
             ),
-      sealedList: _i3.Protocol().deserialize<List<_i2.SealedAppException>>(
-        jsonSerialization['sealedList'],
-      ),
+      sealedList: _iza9lbb5.Protocol()
+          .deserialize<List<_iaxkp5y4.SealedAppException>>(
+            jsonSerialization['sealedList'],
+          ),
     );
   }
 
-  _i2.SealedAppException sealedField;
+  _iaxkp5y4.SealedAppException sealedField;
 
-  _i2.SealedAppException? nullableSealedField;
+  _iaxkp5y4.SealedAppException? nullableSealedField;
 
-  List<_i2.SealedAppException> sealedList;
+  List<_iaxkp5y4.SealedAppException> sealedList;
 
   /// Returns a shallow copy of this [ObjectWithSealedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithSealedException copyWith({
-    _i2.SealedAppException? sealedField,
-    _i2.SealedAppException? nullableSealedField,
-    List<_i2.SealedAppException>? sealedList,
+    _iaxkp5y4.SealedAppException? sealedField,
+    _iaxkp5y4.SealedAppException? nullableSealedField,
+    List<_iaxkp5y4.SealedAppException>? sealedList,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,7 +88,7 @@ abstract class ObjectWithSealedException
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -94,9 +96,9 @@ class _Undefined {}
 
 class _ObjectWithSealedExceptionImpl extends ObjectWithSealedException {
   _ObjectWithSealedExceptionImpl({
-    required _i2.SealedAppException sealedField,
-    _i2.SealedAppException? nullableSealedField,
-    required List<_i2.SealedAppException> sealedList,
+    required _iaxkp5y4.SealedAppException sealedField,
+    _iaxkp5y4.SealedAppException? nullableSealedField,
+    required List<_iaxkp5y4.SealedAppException> sealedList,
   }) : super._(
          sealedField: sealedField,
          nullableSealedField: nullableSealedField,
@@ -105,16 +107,16 @@ class _ObjectWithSealedExceptionImpl extends ObjectWithSealedException {
 
   /// Returns a shallow copy of this [ObjectWithSealedException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithSealedException copyWith({
-    _i2.SealedAppException? sealedField,
+    _iaxkp5y4.SealedAppException? sealedField,
     Object? nullableSealedField = _Undefined,
-    List<_i2.SealedAppException>? sealedList,
+    List<_iaxkp5y4.SealedAppException>? sealedList,
   }) {
     return ObjectWithSealedException(
       sealedField: sealedField ?? this.sealedField.copyWith(),
-      nullableSealedField: nullableSealedField is _i2.SealedAppException?
+      nullableSealedField: nullableSealedField is _iaxkp5y4.SealedAppException?
           ? nullableSealedField
           : this.nullableSealedField?.copyWith(),
       sealedList:

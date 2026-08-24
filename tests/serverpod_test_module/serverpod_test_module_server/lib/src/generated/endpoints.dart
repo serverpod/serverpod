@@ -10,137 +10,141 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../endpoints/abstract_endpoint.dart' as _i2;
-import '../endpoints/module_endpoint.dart' as _i3;
-import '../endpoints/record_streaming.dart' as _i4;
-import '../endpoints/streaming.dart' as _i5;
-import '../endpoints/unauthenticated.dart' as _i6;
-import '../module_feature/endpoints/my_feature_endpoint.dart' as _i7;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_module_server/src/generated/module_class.dart'
-    as _i8;
+    as _i6f0lekx;
 import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
-    as _i9;
+    as _irv1xa50;
+import '../endpoints/abstract_endpoint.dart' as _iaxb2v6g;
+import '../endpoints/module_endpoint.dart' as _irho5ak1;
+import '../endpoints/record_streaming.dart' as _i157ib2o;
+import '../endpoints/streaming.dart' as _i8rqmf36;
+import '../endpoints/unauthenticated.dart' as _ius7wovq;
+import '../module_feature/endpoints/my_feature_endpoint.dart' as _iv1xl3uy;
 
-class Endpoints extends _i1.EndpointDispatch {
+class Endpoints extends _is.EndpointDispatch {
   @override
-  void initializeEndpoints(_i1.Server server) {
-    var endpoints = <String, _i1.Endpoint>{
-      'concreteBase': _i2.ConcreteBaseEndpoint()
+  void initializeEndpoints(_is.Server server) {
+    var endpoints = <String, _is.Endpoint>{
+      'concreteBase': _iaxb2v6g.ConcreteBaseEndpoint()
         ..initialize(
           server,
           'concreteBase',
           'serverpod_test_module',
         ),
-      'module': _i3.ModuleEndpoint()
+      'module': _irho5ak1.ModuleEndpoint()
         ..initialize(
           server,
           'module',
           'serverpod_test_module',
         ),
-      'recordStreaming': _i4.RecordStreamingEndpoint()
+      'recordStreaming': _i157ib2o.RecordStreamingEndpoint()
         ..initialize(
           server,
           'recordStreaming',
           'serverpod_test_module',
         ),
-      'streaming': _i5.StreamingEndpoint()
+      'streaming': _i8rqmf36.StreamingEndpoint()
         ..initialize(
           server,
           'streaming',
           'serverpod_test_module',
         ),
-      'unauthenticated': _i6.UnauthenticatedEndpoint()
+      'unauthenticated': _ius7wovq.UnauthenticatedEndpoint()
         ..initialize(
           server,
           'unauthenticated',
           'serverpod_test_module',
         ),
-      'partiallyUnauthenticated': _i6.PartiallyUnauthenticatedEndpoint()
+      'partiallyUnauthenticated': _ius7wovq.PartiallyUnauthenticatedEndpoint()
         ..initialize(
           server,
           'partiallyUnauthenticated',
           'serverpod_test_module',
         ),
-      'myModuleFeature': _i7.MyModuleFeatureEndpoint()
+      'myModuleFeature': _iv1xl3uy.MyModuleFeatureEndpoint()
         ..initialize(
           server,
           'myModuleFeature',
           'serverpod_test_module',
         ),
     };
-    connectors['concreteBase'] = _i1.EndpointConnector(
+    connectors['concreteBase'] = _is.EndpointConnector(
       name: 'concreteBase',
       endpoint: endpoints['concreteBase']!,
       methodConnectors: {
-        'virtualMethod': _i1.MethodConnector(
+        'virtualMethod': _is.MethodConnector(
           name: 'virtualMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
-                  .virtualMethod(session),
+              ) async =>
+                  (endpoints['concreteBase'] as _iaxb2v6g.ConcreteBaseEndpoint)
+                      .virtualMethod(session),
         ),
-        'concreteMethod': _i1.MethodConnector(
+        'concreteMethod': _is.MethodConnector(
           name: 'concreteMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
-                  .concreteMethod(session),
+              ) async =>
+                  (endpoints['concreteBase'] as _iaxb2v6g.ConcreteBaseEndpoint)
+                      .concreteMethod(session),
         ),
-        'abstractBaseMethod': _i1.MethodConnector(
+        'abstractBaseMethod': _is.MethodConnector(
           name: 'abstractBaseMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['concreteBase'] as _i2.ConcreteBaseEndpoint)
-                  .abstractBaseMethod(session),
+              ) async =>
+                  (endpoints['concreteBase'] as _iaxb2v6g.ConcreteBaseEndpoint)
+                      .abstractBaseMethod(session),
         ),
       },
     );
-    connectors['module'] = _i1.EndpointConnector(
+    connectors['module'] = _is.EndpointConnector(
       name: 'module',
       endpoint: endpoints['module']!,
       methodConnectors: {
-        'hello': _i1.MethodConnector(
+        'hello': _is.MethodConnector(
           name: 'hello',
           params: {
-            'name': _i1.ParameterDescription(
+            'name': _is.ParameterDescription(
               name: 'name',
-              type: _i1.getType<String>(),
+              type: _is.getType<String>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['module'] as _i3.ModuleEndpoint).hello(
-                session,
-                params['name'],
-              ),
+              ) async =>
+                  (endpoints['module'] as _irho5ak1.ModuleEndpoint).hello(
+                    session,
+                    params['name'],
+                  ),
         ),
-        'modifyModuleObject': _i1.MethodConnector(
+        'modifyModuleObject': _is.MethodConnector(
           name: 'modifyModuleObject',
           params: {
-            'object': _i1.ParameterDescription(
+            'object': _is.ParameterDescription(
               name: 'object',
-              type: _i1.getType<_i8.ModuleClass>(),
+              type: _is.getType<_i6f0lekx.ModuleClass>(),
               nullable: false,
             ),
           },
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
-              ) async => (endpoints['module'] as _i3.ModuleEndpoint)
+              ) async => (endpoints['module'] as _irho5ak1.ModuleEndpoint)
                   .modifyModuleObject(
                     session,
                     params['object'],
@@ -148,78 +152,80 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['recordStreaming'] = _i1.EndpointConnector(
+    connectors['recordStreaming'] = _is.EndpointConnector(
       name: 'recordStreaming',
       endpoint: endpoints['recordStreaming']!,
       methodConnectors: {
-        'streamModuleClass': _i1.MethodStreamConnector(
+        'streamModuleClass': _is.MethodStreamConnector(
           name: 'streamModuleClass',
           params: {},
           streamParams: {
             'values':
-                _i1.StreamParameterDescription<
-                  (int?, _i9.ModuleStreamingClass?)
+                _is.StreamParameterDescription<
+                  (int?, _irv1xa50.ModuleStreamingClass?)
                 >(
                   name: 'values',
                   nullable: false,
                 ),
           },
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['recordStreaming'] as _i4.RecordStreamingEndpoint)
-                  .streamModuleClass(
-                    session,
-                    streamParams['values']!
-                        .cast<(int?, _i9.ModuleStreamingClass?)>(),
-                  ),
+              ) =>
+                  (endpoints['recordStreaming']
+                          as _i157ib2o.RecordStreamingEndpoint)
+                      .streamModuleClass(
+                        session,
+                        streamParams['values']!
+                            .cast<(int?, _irv1xa50.ModuleStreamingClass?)>(),
+                      ),
         ),
       },
     );
-    connectors['streaming'] = _i1.EndpointConnector(
+    connectors['streaming'] = _is.EndpointConnector(
       name: 'streaming',
       endpoint: endpoints['streaming']!,
       methodConnectors: {
-        'intEchoStream': _i1.MethodStreamConnector(
+        'intEchoStream': _is.MethodStreamConnector(
           name: 'intEchoStream',
           params: {},
           streamParams: {
-            'stream': _i1.StreamParameterDescription<int>(
+            'stream': _is.StreamParameterDescription<int>(
               name: 'stream',
               nullable: false,
             ),
           },
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['streaming'] as _i5.StreamingEndpoint)
+              ) => (endpoints['streaming'] as _i8rqmf36.StreamingEndpoint)
                   .intEchoStream(
                     session,
                     streamParams['stream']!.cast<int>(),
                   ),
         ),
-        'simpleInputReturnStream': _i1.MethodStreamConnector(
+        'simpleInputReturnStream': _is.MethodStreamConnector(
           name: 'simpleInputReturnStream',
           params: {},
           streamParams: {
-            'stream': _i1.StreamParameterDescription<int>(
+            'stream': _is.StreamParameterDescription<int>(
               name: 'stream',
               nullable: false,
             ),
           },
-          returnType: _i1.MethodStreamReturnType.futureType,
+          returnType: _is.MethodStreamReturnType.futureType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['streaming'] as _i5.StreamingEndpoint)
+              ) => (endpoints['streaming'] as _i8rqmf36.StreamingEndpoint)
                   .simpleInputReturnStream(
                     session,
                     streamParams['stream']!.cast<int>(),
@@ -227,120 +233,125 @@ class Endpoints extends _i1.EndpointDispatch {
         ),
       },
     );
-    connectors['unauthenticated'] = _i1.EndpointConnector(
+    connectors['unauthenticated'] = _is.EndpointConnector(
       name: 'unauthenticated',
       endpoint: endpoints['unauthenticated']!,
       methodConnectors: {
-        'unauthenticatedMethod': _i1.MethodConnector(
+        'unauthenticatedMethod': _is.MethodConnector(
           name: 'unauthenticatedMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['unauthenticated'] as _i6.UnauthenticatedEndpoint)
+                  (endpoints['unauthenticated']
+                          as _ius7wovq.UnauthenticatedEndpoint)
                       .unauthenticatedMethod(session),
         ),
-        'unauthenticatedStream': _i1.MethodStreamConnector(
+        'unauthenticatedStream': _is.MethodStreamConnector(
           name: 'unauthenticatedStream',
           params: {},
           streamParams: {},
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
-              ) => (endpoints['unauthenticated'] as _i6.UnauthenticatedEndpoint)
-                  .unauthenticatedStream(session),
+              ) =>
+                  (endpoints['unauthenticated']
+                          as _ius7wovq.UnauthenticatedEndpoint)
+                      .unauthenticatedStream(session),
         ),
       },
     );
-    connectors['partiallyUnauthenticated'] = _i1.EndpointConnector(
+    connectors['partiallyUnauthenticated'] = _is.EndpointConnector(
       name: 'partiallyUnauthenticated',
       endpoint: endpoints['partiallyUnauthenticated']!,
       methodConnectors: {
-        'unauthenticatedMethod': _i1.MethodConnector(
+        'unauthenticatedMethod': _is.MethodConnector(
           name: 'unauthenticatedMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['partiallyUnauthenticated']
-                          as _i6.PartiallyUnauthenticatedEndpoint)
+                          as _ius7wovq.PartiallyUnauthenticatedEndpoint)
                       .unauthenticatedMethod(session),
         ),
-        'authenticatedMethod': _i1.MethodConnector(
+        'authenticatedMethod': _is.MethodConnector(
           name: 'authenticatedMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['partiallyUnauthenticated']
-                          as _i6.PartiallyUnauthenticatedEndpoint)
+                          as _ius7wovq.PartiallyUnauthenticatedEndpoint)
                       .authenticatedMethod(session),
         ),
-        'unauthenticatedStream': _i1.MethodStreamConnector(
+        'unauthenticatedStream': _is.MethodStreamConnector(
           name: 'unauthenticatedStream',
           params: {},
           streamParams: {},
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
               ) =>
                   (endpoints['partiallyUnauthenticated']
-                          as _i6.PartiallyUnauthenticatedEndpoint)
+                          as _ius7wovq.PartiallyUnauthenticatedEndpoint)
                       .unauthenticatedStream(session),
         ),
-        'authenticatedStream': _i1.MethodStreamConnector(
+        'authenticatedStream': _is.MethodStreamConnector(
           name: 'authenticatedStream',
           params: {},
           streamParams: {},
-          returnType: _i1.MethodStreamReturnType.streamType,
+          returnType: _is.MethodStreamReturnType.streamType,
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
                 Map<String, Stream> streamParams,
               ) =>
                   (endpoints['partiallyUnauthenticated']
-                          as _i6.PartiallyUnauthenticatedEndpoint)
+                          as _ius7wovq.PartiallyUnauthenticatedEndpoint)
                       .authenticatedStream(session),
         ),
       },
     );
-    connectors['myModuleFeature'] = _i1.EndpointConnector(
+    connectors['myModuleFeature'] = _is.EndpointConnector(
       name: 'myModuleFeature',
       endpoint: endpoints['myModuleFeature']!,
       methodConnectors: {
-        'myFeatureMethod': _i1.MethodConnector(
+        'myFeatureMethod': _is.MethodConnector(
           name: 'myFeatureMethod',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['myModuleFeature'] as _i7.MyModuleFeatureEndpoint)
+                  (endpoints['myModuleFeature']
+                          as _iv1xl3uy.MyModuleFeatureEndpoint)
                       .myFeatureMethod(session),
         ),
-        'myFeatureModel': _i1.MethodConnector(
+        'myFeatureModel': _is.MethodConnector(
           name: 'myFeatureModel',
           params: {},
           call:
               (
-                _i1.Session session,
+                _is.Session session,
                 Map<String, dynamic> params,
               ) async =>
-                  (endpoints['myModuleFeature'] as _i7.MyModuleFeatureEndpoint)
+                  (endpoints['myModuleFeature']
+                          as _iv1xl3uy.MyModuleFeatureEndpoint)
                       .myFeatureModel(session),
         ),
       },

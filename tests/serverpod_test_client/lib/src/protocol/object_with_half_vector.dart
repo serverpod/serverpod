@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithHalfVector
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithHalfVector._({
     this.id,
     required this.halfVector,
@@ -26,12 +26,12 @@ abstract class ObjectWithHalfVector
 
   factory ObjectWithHalfVector({
     int? id,
-    required _i1.HalfVector halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    required _i1.HalfVector halfVectorIndexedHnsw,
-    required _i1.HalfVector halfVectorIndexedHnswWithParams,
-    required _i1.HalfVector halfVectorIndexedIvfflat,
-    required _i1.HalfVector halfVectorIndexedIvfflatWithParams,
+    required _isc.HalfVector halfVector,
+    _isc.HalfVector? halfVectorNullable,
+    required _isc.HalfVector halfVectorIndexedHnsw,
+    required _isc.HalfVector halfVectorIndexedHnswWithParams,
+    required _isc.HalfVector halfVectorIndexedIvfflat,
+    required _isc.HalfVector halfVectorIndexedIvfflatWithParams,
   }) = _ObjectWithHalfVectorImpl;
 
   factory ObjectWithHalfVector.fromJson(
@@ -39,24 +39,24 @@ abstract class ObjectWithHalfVector
   ) {
     return ObjectWithHalfVector(
       id: jsonSerialization['id'] as int?,
-      halfVector: _i1.HalfVectorJsonExtension.fromJson(
+      halfVector: _isc.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVector'],
       ),
       halfVectorNullable: jsonSerialization['halfVectorNullable'] == null
           ? null
-          : _i1.HalfVectorJsonExtension.fromJson(
+          : _isc.HalfVectorJsonExtension.fromJson(
               jsonSerialization['halfVectorNullable'],
             ),
-      halfVectorIndexedHnsw: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedHnsw: _isc.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedHnsw'],
       ),
-      halfVectorIndexedHnswWithParams: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedHnswWithParams: _isc.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedHnswWithParams'],
       ),
-      halfVectorIndexedIvfflat: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedIvfflat: _isc.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedIvfflat'],
       ),
-      halfVectorIndexedIvfflatWithParams: _i1.HalfVectorJsonExtension.fromJson(
+      halfVectorIndexedIvfflatWithParams: _isc.HalfVectorJsonExtension.fromJson(
         jsonSerialization['halfVectorIndexedIvfflatWithParams'],
       ),
     );
@@ -67,29 +67,29 @@ abstract class ObjectWithHalfVector
   /// the id will be null.
   int? id;
 
-  _i1.HalfVector halfVector;
+  _isc.HalfVector halfVector;
 
-  _i1.HalfVector? halfVectorNullable;
+  _isc.HalfVector? halfVectorNullable;
 
-  _i1.HalfVector halfVectorIndexedHnsw;
+  _isc.HalfVector halfVectorIndexedHnsw;
 
-  _i1.HalfVector halfVectorIndexedHnswWithParams;
+  _isc.HalfVector halfVectorIndexedHnswWithParams;
 
-  _i1.HalfVector halfVectorIndexedIvfflat;
+  _isc.HalfVector halfVectorIndexedIvfflat;
 
-  _i1.HalfVector halfVectorIndexedIvfflatWithParams;
+  _isc.HalfVector halfVectorIndexedIvfflatWithParams;
 
   /// Returns a shallow copy of this [ObjectWithHalfVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithHalfVector copyWith({
     int? id,
-    _i1.HalfVector? halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    _i1.HalfVector? halfVectorIndexedHnsw,
-    _i1.HalfVector? halfVectorIndexedHnswWithParams,
-    _i1.HalfVector? halfVectorIndexedIvfflat,
-    _i1.HalfVector? halfVectorIndexedIvfflatWithParams,
+    _isc.HalfVector? halfVector,
+    _isc.HalfVector? halfVectorNullable,
+    _isc.HalfVector? halfVectorIndexedHnsw,
+    _isc.HalfVector? halfVectorIndexedHnswWithParams,
+    _isc.HalfVector? halfVectorIndexedIvfflat,
+    _isc.HalfVector? halfVectorIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -127,7 +127,7 @@ abstract class ObjectWithHalfVector
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -136,12 +136,12 @@ class _Undefined {}
 class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
   _ObjectWithHalfVectorImpl({
     int? id,
-    required _i1.HalfVector halfVector,
-    _i1.HalfVector? halfVectorNullable,
-    required _i1.HalfVector halfVectorIndexedHnsw,
-    required _i1.HalfVector halfVectorIndexedHnswWithParams,
-    required _i1.HalfVector halfVectorIndexedIvfflat,
-    required _i1.HalfVector halfVectorIndexedIvfflatWithParams,
+    required _isc.HalfVector halfVector,
+    _isc.HalfVector? halfVectorNullable,
+    required _isc.HalfVector halfVectorIndexedHnsw,
+    required _isc.HalfVector halfVectorIndexedHnswWithParams,
+    required _isc.HalfVector halfVectorIndexedIvfflat,
+    required _isc.HalfVector halfVectorIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          halfVector: halfVector,
@@ -154,21 +154,21 @@ class _ObjectWithHalfVectorImpl extends ObjectWithHalfVector {
 
   /// Returns a shallow copy of this [ObjectWithHalfVector]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithHalfVector copyWith({
     Object? id = _Undefined,
-    _i1.HalfVector? halfVector,
+    _isc.HalfVector? halfVector,
     Object? halfVectorNullable = _Undefined,
-    _i1.HalfVector? halfVectorIndexedHnsw,
-    _i1.HalfVector? halfVectorIndexedHnswWithParams,
-    _i1.HalfVector? halfVectorIndexedIvfflat,
-    _i1.HalfVector? halfVectorIndexedIvfflatWithParams,
+    _isc.HalfVector? halfVectorIndexedHnsw,
+    _isc.HalfVector? halfVectorIndexedHnswWithParams,
+    _isc.HalfVector? halfVectorIndexedIvfflat,
+    _isc.HalfVector? halfVectorIndexedIvfflatWithParams,
   }) {
     return ObjectWithHalfVector(
       id: id is int? ? id : this.id,
       halfVector: halfVector ?? this.halfVector.clone(),
-      halfVectorNullable: halfVectorNullable is _i1.HalfVector?
+      halfVectorNullable: halfVectorNullable is _isc.HalfVector?
           ? halfVectorNullable
           : this.halfVectorNullable?.clone(),
       halfVectorIndexedHnsw:

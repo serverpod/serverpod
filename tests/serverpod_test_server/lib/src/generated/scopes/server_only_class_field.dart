@@ -10,20 +10,20 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../scopes/serverOnly/server_only_class.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../scopes/serverOnly/server_only_class.dart' as _i3zqz247;
 
 abstract class ServerOnlyClassField
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ServerOnlyClassField._({
     this.serverOnlyClassList,
     this.serverOnlyClassMap,
   });
 
   factory ServerOnlyClassField({
-    List<_i2.ServerOnlyClass>? serverOnlyClassList,
-    Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap,
   }) = _ServerOnlyClassFieldImpl;
 
   factory ServerOnlyClassField.fromJson(
@@ -32,27 +32,28 @@ abstract class ServerOnlyClassField
     return ServerOnlyClassField(
       serverOnlyClassList: jsonSerialization['serverOnlyClassList'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.ServerOnlyClass>>(
+          : _igqrxdcj.Protocol().deserialize<List<_i3zqz247.ServerOnlyClass>>(
               jsonSerialization['serverOnlyClassList'],
             ),
       serverOnlyClassMap: jsonSerialization['serverOnlyClassMap'] == null
           ? null
-          : _i3.Protocol().deserialize<Map<String, _i2.ServerOnlyClass>>(
-              jsonSerialization['serverOnlyClassMap'],
-            ),
+          : _igqrxdcj.Protocol()
+                .deserialize<Map<String, _i3zqz247.ServerOnlyClass>>(
+                  jsonSerialization['serverOnlyClassMap'],
+                ),
     );
   }
 
-  List<_i2.ServerOnlyClass>? serverOnlyClassList;
+  List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList;
 
-  Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap;
+  Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap;
 
   /// Returns a shallow copy of this [ServerOnlyClassField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ServerOnlyClassField copyWith({
-    List<_i2.ServerOnlyClass>? serverOnlyClassList,
-    Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -76,7 +77,7 @@ abstract class ServerOnlyClassField
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -84,8 +85,8 @@ class _Undefined {}
 
 class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
   _ServerOnlyClassFieldImpl({
-    List<_i2.ServerOnlyClass>? serverOnlyClassList,
-    Map<String, _i2.ServerOnlyClass>? serverOnlyClassMap,
+    List<_i3zqz247.ServerOnlyClass>? serverOnlyClassList,
+    Map<String, _i3zqz247.ServerOnlyClass>? serverOnlyClassMap,
   }) : super._(
          serverOnlyClassList: serverOnlyClassList,
          serverOnlyClassMap: serverOnlyClassMap,
@@ -93,18 +94,19 @@ class _ServerOnlyClassFieldImpl extends ServerOnlyClassField {
 
   /// Returns a shallow copy of this [ServerOnlyClassField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ServerOnlyClassField copyWith({
     Object? serverOnlyClassList = _Undefined,
     Object? serverOnlyClassMap = _Undefined,
   }) {
     return ServerOnlyClassField(
-      serverOnlyClassList: serverOnlyClassList is List<_i2.ServerOnlyClass>?
+      serverOnlyClassList:
+          serverOnlyClassList is List<_i3zqz247.ServerOnlyClass>?
           ? serverOnlyClassList
           : this.serverOnlyClassList?.map((e0) => e0.copyWith()).toList(),
       serverOnlyClassMap:
-          serverOnlyClassMap is Map<String, _i2.ServerOnlyClass>?
+          serverOnlyClassMap is Map<String, _i3zqz247.ServerOnlyClass>?
           ? serverOnlyClassMap
           : this.serverOnlyClassMap?.map(
               (

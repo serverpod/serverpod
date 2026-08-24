@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod/src/web_server/routes/cache_control_environment.dart';
 
 const _flutterCacheControlEnvironmentVariable =
     'SERVERPOD_WEB_SERVER_FLUTTER_CACHE_CONTROL';
@@ -98,17 +99,12 @@ class FlutterRoute extends Route {
     super.host,
   }) : indexFile = indexFile ?? File(path.join(directory.path, 'index.html')),
        cacheControlFactory =
-           cacheControlFactory ?? _cacheControlFactoryFromEnvironment(),
+           cacheControlFactory ??
+           cacheControlFactoryFromEnvironment(
+             _flutterCacheControlEnvironmentVariable,
+             fallback: StaticRoute.privateNoCache(),
+           ),
        super(methods: {Method.get, Method.head});
-
-  static CacheControlFactory _cacheControlFactoryFromEnvironment() {
-    final cacheControl =
-        Platform.environment[_flutterCacheControlEnvironmentVariable];
-    if (cacheControl == null) return StaticRoute.privateNoCache();
-
-    final parsedCacheControl = CacheControlHeader.parseStrict([cacheControl]);
-    return (_, _) => parsedCacheControl;
-  }
 
   @override
   void injectIn(RelicRouter router) {

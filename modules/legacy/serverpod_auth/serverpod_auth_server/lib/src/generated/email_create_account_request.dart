@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// A request for creating an email signin. Created during the sign up process
 /// to keep track of the user's details and verification code.
 abstract class EmailCreateAccountRequest
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EmailCreateAccountRequest._({
     this.id,
     required this.userName,
@@ -64,11 +64,11 @@ abstract class EmailCreateAccountRequest
   String verificationCode;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailCreateAccountRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailCreateAccountRequest copyWith({
     int? id,
     String? userName,
@@ -105,11 +105,11 @@ abstract class EmailCreateAccountRequest
   }
 
   static EmailCreateAccountRequestIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     EmailCreateAccountRequestInclude? include,
   }) {
     return EmailCreateAccountRequestIncludeList._(
@@ -124,7 +124,7 @@ abstract class EmailCreateAccountRequest
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,7 +147,7 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
 
   /// Returns a shallow copy of this [EmailCreateAccountRequest]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailCreateAccountRequest copyWith({
     Object? id = _Undefined,
@@ -167,48 +167,48 @@ class _EmailCreateAccountRequestImpl extends EmailCreateAccountRequest {
 }
 
 class EmailCreateAccountRequestUpdateTable
-    extends _i1.UpdateTable<EmailCreateAccountRequestTable> {
+    extends _is.UpdateTable<EmailCreateAccountRequestTable> {
   EmailCreateAccountRequestUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> userName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userName(String value) => _is.ColumnValue(
     table.userName,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> hash(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> hash(String value) => _is.ColumnValue(
     table.hash,
     value,
   );
 
-  _i1.ColumnValue<String, String> verificationCode(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> verificationCode(String value) =>
+      _is.ColumnValue(
         table.verificationCode,
         value,
       );
 }
 
-class EmailCreateAccountRequestTable extends _i1.Table<int?> {
+class EmailCreateAccountRequestTable extends _is.Table<int?> {
   EmailCreateAccountRequestTable({super.tableRelation})
     : super(tableName: 'serverpod_email_create_request') {
     updateTable = EmailCreateAccountRequestUpdateTable(this);
-    userName = _i1.ColumnString(
+    userName = _is.ColumnString(
       'userName',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    hash = _i1.ColumnString(
+    hash = _is.ColumnString(
       'hash',
       this,
     );
-    verificationCode = _i1.ColumnString(
+    verificationCode = _is.ColumnString(
       'verificationCode',
       this,
     );
@@ -217,19 +217,19 @@ class EmailCreateAccountRequestTable extends _i1.Table<int?> {
   late final EmailCreateAccountRequestUpdateTable updateTable;
 
   /// The name of the user.
-  late final _i1.ColumnString userName;
+  late final _is.ColumnString userName;
 
   /// The email of the user.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// Hash of the user's requested password.
-  late final _i1.ColumnString hash;
+  late final _is.ColumnString hash;
 
   /// The verification code sent to the user.
-  late final _i1.ColumnString verificationCode;
+  late final _is.ColumnString verificationCode;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     userName,
     email,
@@ -238,19 +238,19 @@ class EmailCreateAccountRequestTable extends _i1.Table<int?> {
   ];
 }
 
-class EmailCreateAccountRequestInclude extends _i1.IncludeObject {
+class EmailCreateAccountRequestInclude extends _is.IncludeObject {
   EmailCreateAccountRequestInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmailCreateAccountRequest.t;
+  _is.Table<int?> get table => EmailCreateAccountRequest.t;
 }
 
-class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
+class EmailCreateAccountRequestIncludeList extends _is.IncludeList {
   EmailCreateAccountRequestIncludeList._({
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -261,10 +261,10 @@ class EmailCreateAccountRequestIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmailCreateAccountRequest.t;
+  _is.Table<int?> get table => EmailCreateAccountRequest.t;
 }
 
 class EmailCreateAccountRequestRepository {
@@ -293,15 +293,15 @@ class EmailCreateAccountRequestRepository {
   /// );
   /// ```
   Future<List<EmailCreateAccountRequest>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
@@ -333,14 +333,14 @@ class EmailCreateAccountRequestRepository {
   /// );
   /// ```
   Future<EmailCreateAccountRequest?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
@@ -355,11 +355,11 @@ class EmailCreateAccountRequestRepository {
 
   /// Finds a single [EmailCreateAccountRequest] by its [id] or null if no such row exists.
   Future<EmailCreateAccountRequest?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailCreateAccountRequest>(
       id,
@@ -384,9 +384,9 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -402,9 +402,9 @@ class EmailCreateAccountRequestRepository {
   ///
   /// The returned [EmailCreateAccountRequest] will have its `id` field set.
   Future<EmailCreateAccountRequest> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailCreateAccountRequest>(
       row,
@@ -433,13 +433,13 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
-    required _i1.ColumnSelections<EmailCreateAccountRequestTable>
+    required _is.ColumnSelections<EmailCreateAccountRequestTable>
     conflictColumns,
-    _i1.ColumnSelections<EmailCreateAccountRequestTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailCreateAccountRequestTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailCreateAccountRequest>(
@@ -466,13 +466,13 @@ class EmailCreateAccountRequestRepository {
   ///
   /// The returned [EmailCreateAccountRequest] will have its `id` field set.
   Future<EmailCreateAccountRequest?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailCreateAccountRequest row, {
-    required _i1.ColumnSelections<EmailCreateAccountRequestTable>
+    required _is.ColumnSelections<EmailCreateAccountRequestTable>
     conflictColumns,
-    _i1.ColumnSelections<EmailCreateAccountRequestTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailCreateAccountRequestTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailCreateAccountRequest>(
       row,
@@ -493,10 +493,10 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
-    _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailCreateAccountRequestTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailCreateAccountRequest>(
@@ -511,10 +511,10 @@ class EmailCreateAccountRequestRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailCreateAccountRequest> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailCreateAccountRequest row, {
-    _i1.ColumnSelections<EmailCreateAccountRequestTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailCreateAccountRequestTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailCreateAccountRequest>(
       row,
@@ -526,11 +526,11 @@ class EmailCreateAccountRequestRepository {
   /// Updates a single [EmailCreateAccountRequest] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailCreateAccountRequest?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
+    required _is.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailCreateAccountRequest>(
       id,
@@ -546,15 +546,15 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailCreateAccountRequestUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    required _is.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailCreateAccountRequest>(
@@ -581,11 +581,11 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailCreateAccountRequest> rows, {
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailCreateAccountRequest>(
@@ -599,9 +599,9 @@ class EmailCreateAccountRequestRepository {
 
   /// Deletes a single [EmailCreateAccountRequest].
   Future<EmailCreateAccountRequest> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailCreateAccountRequest row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailCreateAccountRequest>(
       row,
@@ -618,11 +618,11 @@ class EmailCreateAccountRequestRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailCreateAccountRequest>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
-    _i1.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
-    _i1.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailCreateAccountRequest>(
@@ -637,10 +637,10 @@ class EmailCreateAccountRequestRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailCreateAccountRequest>(
       where: where?.call(EmailCreateAccountRequest.t),
@@ -651,11 +651,11 @@ class EmailCreateAccountRequestRepository {
 
   /// Acquires row-level locks on [EmailCreateAccountRequest] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailCreateAccountRequestTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailCreateAccountRequest>(
       where: where(EmailCreateAccountRequest.t),

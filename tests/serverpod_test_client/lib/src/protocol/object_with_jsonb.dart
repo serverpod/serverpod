@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectWithJsonb
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithJsonb._({
     this.id,
     required this.notJsonb,
@@ -34,7 +34,7 @@ abstract class ObjectWithJsonb
     required List<String> notJsonb,
     required List<String> jsonb,
     required Map<String, String> jsonbMap,
-    required _i2.SimpleData jsonbObject,
+    required _i0zisc0t.SimpleData jsonbObject,
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
@@ -45,33 +45,33 @@ abstract class ObjectWithJsonb
   factory ObjectWithJsonb.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithJsonb(
       id: jsonSerialization['id'] as int?,
-      notJsonb: _i3.Protocol().deserialize<List<String>>(
+      notJsonb: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['notJsonb'],
       ),
-      jsonb: _i3.Protocol().deserialize<List<String>>(
+      jsonb: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonb'],
       ),
-      jsonbMap: _i3.Protocol().deserialize<Map<String, String>>(
+      jsonbMap: _iza9lbb5.Protocol().deserialize<Map<String, String>>(
         jsonSerialization['jsonbMap'],
       ),
-      jsonbObject: _i3.Protocol().deserialize<_i2.SimpleData>(
+      jsonbObject: _iza9lbb5.Protocol().deserialize<_i0zisc0t.SimpleData>(
         jsonSerialization['jsonbObject'],
       ),
-      jsonbIndexed: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexed: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexed'],
       ),
-      jsonbIndexedGin: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedGin: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGin'],
       ),
-      jsonbIndexedGinJsonbPath: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedGinJsonbPath: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedGinJsonbPath'],
       ),
-      jsonbIndexedImplicitGin: _i3.Protocol().deserialize<List<String>>(
+      jsonbIndexedImplicitGin: _iza9lbb5.Protocol().deserialize<List<String>>(
         jsonSerialization['jsonbIndexedImplicitGin'],
       ),
       nullableJsonb: jsonSerialization['nullableJsonb'] == null
           ? null
-          : _i3.Protocol().deserialize<List<String>>(
+          : _iza9lbb5.Protocol().deserialize<List<String>>(
               jsonSerialization['nullableJsonb'],
             ),
     );
@@ -88,7 +88,7 @@ abstract class ObjectWithJsonb
 
   Map<String, String> jsonbMap;
 
-  _i2.SimpleData jsonbObject;
+  _i0zisc0t.SimpleData jsonbObject;
 
   List<String> jsonbIndexed;
 
@@ -102,13 +102,13 @@ abstract class ObjectWithJsonb
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithJsonb copyWith({
     int? id,
     List<String>? notJsonb,
     List<String>? jsonb,
     Map<String, String>? jsonbMap,
-    _i2.SimpleData? jsonbObject,
+    _i0zisc0t.SimpleData? jsonbObject,
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,
@@ -151,7 +151,7 @@ abstract class ObjectWithJsonb
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -163,7 +163,7 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
     required List<String> notJsonb,
     required List<String> jsonb,
     required Map<String, String> jsonbMap,
-    required _i2.SimpleData jsonbObject,
+    required _i0zisc0t.SimpleData jsonbObject,
     required List<String> jsonbIndexed,
     required List<String> jsonbIndexedGin,
     required List<String> jsonbIndexedGinJsonbPath,
@@ -184,14 +184,14 @@ class _ObjectWithJsonbImpl extends ObjectWithJsonb {
 
   /// Returns a shallow copy of this [ObjectWithJsonb]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithJsonb copyWith({
     Object? id = _Undefined,
     List<String>? notJsonb,
     List<String>? jsonb,
     Map<String, String>? jsonbMap,
-    _i2.SimpleData? jsonbObject,
+    _i0zisc0t.SimpleData? jsonbObject,
     List<String>? jsonbIndexed,
     List<String>? jsonbIndexedGin,
     List<String>? jsonbIndexedGinJsonbPath,

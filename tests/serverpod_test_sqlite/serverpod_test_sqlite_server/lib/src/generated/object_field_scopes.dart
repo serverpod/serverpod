@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ObjectFieldScopes
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectFieldScopes._({
     this.id,
     required this.normal,
@@ -51,11 +51,11 @@ abstract class ObjectFieldScopes
   String? database;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectFieldScopes copyWith({
     int? id,
     String? normal,
@@ -88,11 +88,11 @@ abstract class ObjectFieldScopes
   }
 
   static ObjectFieldScopesIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
     ObjectFieldScopesInclude? include,
   }) {
     return ObjectFieldScopesIncludeList._(
@@ -107,7 +107,7 @@ abstract class ObjectFieldScopes
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -128,7 +128,7 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
 
   /// Returns a shallow copy of this [ObjectFieldScopes]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectFieldScopes copyWith({
     Object? id = _Undefined,
@@ -146,29 +146,29 @@ class _ObjectFieldScopesImpl extends ObjectFieldScopes {
 }
 
 class ObjectFieldScopesUpdateTable
-    extends _i1.UpdateTable<ObjectFieldScopesTable> {
+    extends _is.UpdateTable<ObjectFieldScopesTable> {
   ObjectFieldScopesUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> normal(String value) => _is.ColumnValue(
     table.normal,
     value,
   );
 
-  _i1.ColumnValue<String, String> database(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> database(String? value) => _is.ColumnValue(
     table.database,
     value,
   );
 }
 
-class ObjectFieldScopesTable extends _i1.Table<int?> {
+class ObjectFieldScopesTable extends _is.Table<int?> {
   ObjectFieldScopesTable({super.tableRelation})
     : super(tableName: 'object_field_scopes') {
     updateTable = ObjectFieldScopesUpdateTable(this);
-    normal = _i1.ColumnString(
+    normal = _is.ColumnString(
       'normal',
       this,
     );
-    database = _i1.ColumnString(
+    database = _is.ColumnString(
       'database',
       this,
     );
@@ -176,31 +176,31 @@ class ObjectFieldScopesTable extends _i1.Table<int?> {
 
   late final ObjectFieldScopesUpdateTable updateTable;
 
-  late final _i1.ColumnString normal;
+  late final _is.ColumnString normal;
 
-  late final _i1.ColumnString database;
+  late final _is.ColumnString database;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     normal,
     database,
   ];
 }
 
-class ObjectFieldScopesInclude extends _i1.IncludeObject {
+class ObjectFieldScopesInclude extends _is.IncludeObject {
   ObjectFieldScopesInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectFieldScopes.t;
+  _is.Table<int?> get table => ObjectFieldScopes.t;
 }
 
-class ObjectFieldScopesIncludeList extends _i1.IncludeList {
+class ObjectFieldScopesIncludeList extends _is.IncludeList {
   ObjectFieldScopesIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -211,10 +211,10 @@ class ObjectFieldScopesIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectFieldScopes.t;
+  _is.Table<int?> get table => ObjectFieldScopes.t;
 }
 
 class ObjectFieldScopesRepository {
@@ -243,15 +243,15 @@ class ObjectFieldScopesRepository {
   /// );
   /// ```
   Future<List<ObjectFieldScopes>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
@@ -283,14 +283,14 @@ class ObjectFieldScopesRepository {
   /// );
   /// ```
   Future<ObjectFieldScopes?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
@@ -305,11 +305,11 @@ class ObjectFieldScopesRepository {
 
   /// Finds a single [ObjectFieldScopes] by its [id] or null if no such row exists.
   Future<ObjectFieldScopes?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectFieldScopes>(
       id,
@@ -334,9 +334,9 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldScopes> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -352,9 +352,9 @@ class ObjectFieldScopesRepository {
   ///
   /// The returned [ObjectFieldScopes] will have its `id` field set.
   Future<ObjectFieldScopes> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectFieldScopes>(
       row,
@@ -383,12 +383,12 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldScopes> rows, {
-    required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
-    _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
+    _is.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectFieldScopes>(
@@ -415,12 +415,12 @@ class ObjectFieldScopesRepository {
   ///
   /// The returned [ObjectFieldScopes] will have its `id` field set.
   Future<ObjectFieldScopes?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldScopes row, {
-    required _i1.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
-    _i1.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectFieldScopesTable> conflictColumns,
+    _is.ColumnSelections<ObjectFieldScopesTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectFieldScopes>(
       row,
@@ -441,10 +441,10 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldScopes> rows, {
-    _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectFieldScopesTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectFieldScopes>(
@@ -459,10 +459,10 @@ class ObjectFieldScopesRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectFieldScopes> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldScopes row, {
-    _i1.ColumnSelections<ObjectFieldScopesTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectFieldScopesTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectFieldScopes>(
       row,
@@ -474,11 +474,11 @@ class ObjectFieldScopesRepository {
   /// Updates a single [ObjectFieldScopes] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectFieldScopes?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldScopes>(
       id,
@@ -494,15 +494,15 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectFieldScopesUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    required _is.WhereExpressionBuilder<ObjectFieldScopesTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectFieldScopes>(
@@ -529,11 +529,11 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldScopes> rows, {
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectFieldScopes>(
@@ -547,9 +547,9 @@ class ObjectFieldScopesRepository {
 
   /// Deletes a single [ObjectFieldScopes].
   Future<ObjectFieldScopes> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldScopes row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectFieldScopes>(
       row,
@@ -566,11 +566,11 @@ class ObjectFieldScopesRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldScopes>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
-    _i1.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectFieldScopes>(
@@ -585,10 +585,10 @@ class ObjectFieldScopesRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectFieldScopes>(
       where: where?.call(ObjectFieldScopes.t),
@@ -599,11 +599,11 @@ class ObjectFieldScopesRepository {
 
   /// Acquires row-level locks on [ObjectFieldScopes] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectFieldScopesTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectFieldScopesTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectFieldScopes>(
       where: where(ObjectFieldScopes.t),

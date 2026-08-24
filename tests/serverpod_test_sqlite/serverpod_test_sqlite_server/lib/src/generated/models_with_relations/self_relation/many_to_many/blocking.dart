@@ -11,14 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../../models_with_relations/self_relation/many_to_many/member.dart'
-    as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_sqlite_server/src/generated/protocol.dart'
-    as _i3;
+    as _i08l111i;
+import '../../../models_with_relations/self_relation/many_to_many/member.dart'
+    as _iubhvl5a;
 
 abstract class Blocking
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   Blocking._({
     this.id,
     required this.blockedId,
@@ -30,9 +30,9 @@ abstract class Blocking
   factory Blocking({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   }) = _BlockingImpl;
 
   factory Blocking.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -41,13 +41,13 @@ abstract class Blocking
       blockedId: jsonSerialization['blockedId'] as int,
       blocked: jsonSerialization['blocked'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _i08l111i.Protocol().deserialize<_iubhvl5a.Member>(
               jsonSerialization['blocked'],
             ),
       blockedById: jsonSerialization['blockedById'] as int,
       blockedBy: jsonSerialization['blockedBy'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.Member>(
+          : _i08l111i.Protocol().deserialize<_iubhvl5a.Member>(
               jsonSerialization['blockedBy'],
             ),
     );
@@ -62,24 +62,24 @@ abstract class Blocking
 
   int blockedId;
 
-  _i2.Member? blocked;
+  _iubhvl5a.Member? blocked;
 
   int blockedById;
 
-  _i2.Member? blockedBy;
+  _iubhvl5a.Member? blockedBy;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   Blocking copyWith({
     int? id,
     int? blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     int? blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,8 +106,8 @@ abstract class Blocking
   }
 
   static BlockingInclude include({
-    _i2.MemberInclude? blocked,
-    _i2.MemberInclude? blockedBy,
+    _iubhvl5a.MemberInclude? blocked,
+    _iubhvl5a.MemberInclude? blockedBy,
   }) {
     return BlockingInclude._(
       blocked: blocked,
@@ -116,11 +116,11 @@ abstract class Blocking
   }
 
   static BlockingIncludeList includeList({
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    _is.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
     BlockingInclude? include,
   }) {
     return BlockingIncludeList._(
@@ -135,7 +135,7 @@ abstract class Blocking
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -145,9 +145,9 @@ class _BlockingImpl extends Blocking {
   _BlockingImpl({
     int? id,
     required int blockedId,
-    _i2.Member? blocked,
+    _iubhvl5a.Member? blocked,
     required int blockedById,
-    _i2.Member? blockedBy,
+    _iubhvl5a.Member? blockedBy,
   }) : super._(
          id: id,
          blockedId: blockedId,
@@ -158,7 +158,7 @@ class _BlockingImpl extends Blocking {
 
   /// Returns a shallow copy of this [Blocking]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   Blocking copyWith({
     Object? id = _Undefined,
@@ -170,37 +170,39 @@ class _BlockingImpl extends Blocking {
     return Blocking(
       id: id is int? ? id : this.id,
       blockedId: blockedId ?? this.blockedId,
-      blocked: blocked is _i2.Member? ? blocked : this.blocked?.copyWith(),
+      blocked: blocked is _iubhvl5a.Member?
+          ? blocked
+          : this.blocked?.copyWith(),
       blockedById: blockedById ?? this.blockedById,
-      blockedBy: blockedBy is _i2.Member?
+      blockedBy: blockedBy is _iubhvl5a.Member?
           ? blockedBy
           : this.blockedBy?.copyWith(),
     );
   }
 }
 
-class BlockingUpdateTable extends _i1.UpdateTable<BlockingTable> {
+class BlockingUpdateTable extends _is.UpdateTable<BlockingTable> {
   BlockingUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> blockedId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> blockedId(int value) => _is.ColumnValue(
     table.blockedId,
     value,
   );
 
-  _i1.ColumnValue<int, int> blockedById(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> blockedById(int value) => _is.ColumnValue(
     table.blockedById,
     value,
   );
 }
 
-class BlockingTable extends _i1.Table<int?> {
+class BlockingTable extends _is.Table<int?> {
   BlockingTable({super.tableRelation}) : super(tableName: 'blocking') {
     updateTable = BlockingUpdateTable(this);
-    blockedId = _i1.ColumnInt(
+    blockedId = _is.ColumnInt(
       'blockedId',
       this,
     );
-    blockedById = _i1.ColumnInt(
+    blockedById = _is.ColumnInt(
       'blockedById',
       this,
     );
@@ -208,49 +210,49 @@ class BlockingTable extends _i1.Table<int?> {
 
   late final BlockingUpdateTable updateTable;
 
-  late final _i1.ColumnInt blockedId;
+  late final _is.ColumnInt blockedId;
 
-  _i2.MemberTable? _blocked;
+  _iubhvl5a.MemberTable? _blocked;
 
-  late final _i1.ColumnInt blockedById;
+  late final _is.ColumnInt blockedById;
 
-  _i2.MemberTable? _blockedBy;
+  _iubhvl5a.MemberTable? _blockedBy;
 
-  _i2.MemberTable get blocked {
+  _iubhvl5a.MemberTable get blocked {
     if (_blocked != null) return _blocked!;
-    _blocked = _i1.createRelationTable(
+    _blocked = _is.createRelationTable(
       relationFieldName: 'blocked',
       field: Blocking.t.blockedId,
-      foreignField: _i2.Member.t.id,
+      foreignField: _iubhvl5a.Member.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+          _iubhvl5a.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blocked!;
   }
 
-  _i2.MemberTable get blockedBy {
+  _iubhvl5a.MemberTable get blockedBy {
     if (_blockedBy != null) return _blockedBy!;
-    _blockedBy = _i1.createRelationTable(
+    _blockedBy = _is.createRelationTable(
       relationFieldName: 'blockedBy',
       field: Blocking.t.blockedById,
-      foreignField: _i2.Member.t.id,
+      foreignField: _iubhvl5a.Member.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.MemberTable(tableRelation: foreignTableRelation),
+          _iubhvl5a.MemberTable(tableRelation: foreignTableRelation),
     );
     return _blockedBy!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     blockedId,
     blockedById,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'blocked') {
       return blocked;
     }
@@ -261,32 +263,32 @@ class BlockingTable extends _i1.Table<int?> {
   }
 }
 
-class BlockingInclude extends _i1.IncludeObject {
+class BlockingInclude extends _is.IncludeObject {
   BlockingInclude._({
-    _i2.MemberInclude? blocked,
-    _i2.MemberInclude? blockedBy,
+    _iubhvl5a.MemberInclude? blocked,
+    _iubhvl5a.MemberInclude? blockedBy,
   }) {
     _blocked = blocked;
     _blockedBy = blockedBy;
   }
 
-  _i2.MemberInclude? _blocked;
+  _iubhvl5a.MemberInclude? _blocked;
 
-  _i2.MemberInclude? _blockedBy;
+  _iubhvl5a.MemberInclude? _blockedBy;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'blocked': _blocked,
     'blockedBy': _blockedBy,
   };
 
   @override
-  _i1.Table<int?> get table => Blocking.t;
+  _is.Table<int?> get table => Blocking.t;
 }
 
-class BlockingIncludeList extends _i1.IncludeList {
+class BlockingIncludeList extends _is.IncludeList {
   BlockingIncludeList._({
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    _is.WhereExpressionBuilder<BlockingTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -297,10 +299,10 @@ class BlockingIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Blocking.t;
+  _is.Table<int?> get table => Blocking.t;
 }
 
 class BlockingRepository {
@@ -331,16 +333,16 @@ class BlockingRepository {
   /// );
   /// ```
   Future<List<Blocking>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.Transaction? transaction,
     BlockingInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Blocking>(
       where: where?.call(Blocking.t),
@@ -373,15 +375,15 @@ class BlockingRepository {
   /// );
   /// ```
   Future<Blocking?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BlockingTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.Transaction? transaction,
     BlockingInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Blocking>(
       where: where?.call(Blocking.t),
@@ -397,12 +399,12 @@ class BlockingRepository {
 
   /// Finds a single [Blocking] by its [id] or null if no such row exists.
   Future<Blocking?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     BlockingInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Blocking>(
       id,
@@ -428,9 +430,9 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Blocking> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -446,9 +448,9 @@ class BlockingRepository {
   ///
   /// The returned [Blocking] will have its `id` field set.
   Future<Blocking> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<Blocking>(
       row,
@@ -477,12 +479,12 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Blocking> rows, {
-    required _i1.ColumnSelections<BlockingTable> conflictColumns,
-    _i1.ColumnSelections<BlockingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BlockingTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BlockingTable> conflictColumns,
+    _is.ColumnSelections<BlockingTable>? updateColumns,
+    _is.WhereExpressionBuilder<BlockingTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Blocking>(
@@ -509,12 +511,12 @@ class BlockingRepository {
   ///
   /// The returned [Blocking] will have its `id` field set.
   Future<Blocking?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking row, {
-    required _i1.ColumnSelections<BlockingTable> conflictColumns,
-    _i1.ColumnSelections<BlockingTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BlockingTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BlockingTable> conflictColumns,
+    _is.ColumnSelections<BlockingTable>? updateColumns,
+    _is.WhereExpressionBuilder<BlockingTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Blocking>(
       row,
@@ -535,10 +537,10 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Blocking> rows, {
-    _i1.ColumnSelections<BlockingTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BlockingTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Blocking>(
@@ -553,10 +555,10 @@ class BlockingRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Blocking> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking row, {
-    _i1.ColumnSelections<BlockingTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BlockingTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<Blocking>(
       row,
@@ -568,10 +570,10 @@ class BlockingRepository {
   /// Updates a single [Blocking] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Blocking?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<Blocking>(
       id,
@@ -587,14 +589,14 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<BlockingTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BlockingUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<BlockingTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Blocking>(
@@ -621,11 +623,11 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<Blocking> rows, {
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Blocking>(
@@ -639,9 +641,9 @@ class BlockingRepository {
 
   /// Deletes a single [Blocking].
   Future<Blocking> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Blocking>(
       row,
@@ -658,11 +660,11 @@ class BlockingRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Blocking>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BlockingTable> where,
-    _i1.OrderByBuilder<BlockingTable>? orderBy,
-    _i1.OrderByListBuilder<BlockingTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BlockingTable> where,
+    _is.OrderByBuilder<BlockingTable>? orderBy,
+    _is.OrderByListBuilder<BlockingTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Blocking>(
@@ -677,10 +679,10 @@ class BlockingRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BlockingTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BlockingTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<Blocking>(
       where: where?.call(Blocking.t),
@@ -691,11 +693,11 @@ class BlockingRepository {
 
   /// Acquires row-level locks on [Blocking] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BlockingTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BlockingTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Blocking>(
       where: where(Blocking.t),
@@ -712,10 +714,10 @@ class BlockingAttachRowRepository {
   /// Creates a relation between the given [Blocking] and [Member]
   /// by setting the [Blocking]'s foreign key `blockedId` to refer to the [Member].
   Future<void> blocked(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking blocking,
-    _i2.Member blocked, {
-    _i1.Transaction? transaction,
+    _iubhvl5a.Member blocked, {
+    _is.Transaction? transaction,
   }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');
@@ -735,10 +737,10 @@ class BlockingAttachRowRepository {
   /// Creates a relation between the given [Blocking] and [Member]
   /// by setting the [Blocking]'s foreign key `blockedById` to refer to the [Member].
   Future<void> blockedBy(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     Blocking blocking,
-    _i2.Member blockedBy, {
-    _i1.Transaction? transaction,
+    _iubhvl5a.Member blockedBy, {
+    _is.Transaction? transaction,
   }) async {
     if (blocking.id == null) {
       throw ArgumentError.notNull('blocking.id');

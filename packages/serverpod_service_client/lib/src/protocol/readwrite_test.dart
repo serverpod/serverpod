@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Database mapping for a read/write test that is performed by the default
 /// health checks.
 abstract class ReadWriteTestEntry
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ReadWriteTestEntry._({
     this.id,
     required this.number,
@@ -43,7 +43,7 @@ abstract class ReadWriteTestEntry
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ReadWriteTestEntry copyWith({
     int? id,
     int? number,
@@ -68,7 +68,7 @@ abstract class ReadWriteTestEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -85,7 +85,7 @@ class _ReadWriteTestEntryImpl extends ReadWriteTestEntry {
 
   /// Returns a shallow copy of this [ReadWriteTestEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ReadWriteTestEntry copyWith({
     Object? id = _Undefined,

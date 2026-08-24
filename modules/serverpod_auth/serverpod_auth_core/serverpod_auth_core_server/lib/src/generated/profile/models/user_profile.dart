@@ -11,17 +11,18 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../auth_user/models/auth_user.dart' as _i2;
-import '../../profile/models/user_profile_image.dart' as _i3;
-import 'package:serverpod_auth_core_server/src/generated/protocol.dart' as _i4;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_auth_core_server/src/generated/protocol.dart'
+    as _i8reeoob;
+import '../../auth_user/models/auth_user.dart' as _ivyervu7;
+import '../../profile/models/user_profile_image.dart' as _i7y29ltp;
 
 /// Core database entity representing a user profile in the authentication system.
 ///
 /// This class is meant to be used only to interact with the database. To transfer
 /// user profile data, use the [UserProfileModel] DTO.
 abstract class UserProfile
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   UserProfile._({
     this.id,
     required this.authUserId,
@@ -35,28 +36,28 @@ abstract class UserProfile
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory UserProfile({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _is.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   }) = _UserProfileImpl;
 
   factory UserProfile.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserProfile(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.AuthUser>(
+          : _i8reeoob.Protocol().deserialize<_ivyervu7.AuthUser>(
               jsonSerialization['authUser'],
             ),
       userName: jsonSerialization['userName'] as String?,
@@ -64,13 +65,13 @@ abstract class UserProfile
       email: jsonSerialization['email'] as String?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       imageId: jsonSerialization['imageId'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['imageId']),
       image: jsonSerialization['image'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.UserProfileImage>(
+          : _i8reeoob.Protocol().deserialize<_i7y29ltp.UserProfileImage>(
               jsonSerialization['image'],
             ),
     );
@@ -81,12 +82,12 @@ abstract class UserProfile
   static const db = UserProfileRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to.
-  _i2.AuthUser? authUser;
+  _ivyervu7.AuthUser? authUser;
 
   /// The first name of the user or the user's nickname.
   String? userName;
@@ -105,27 +106,27 @@ abstract class UserProfile
   /// The time when this user was created.
   DateTime createdAt;
 
-  _i1.UuidValue? imageId;
+  _is.UuidValue? imageId;
 
   /// The user's profile image.
-  _i3.UserProfileImage? image;
+  _i7y29ltp.UserProfileImage? image;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserProfile copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _is.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -160,8 +161,8 @@ abstract class UserProfile
   }
 
   static UserProfileInclude include({
-    _i2.AuthUserInclude? authUser,
-    _i3.UserProfileImageInclude? image,
+    _ivyervu7.AuthUserInclude? authUser,
+    _i7y29ltp.UserProfileImageInclude? image,
   }) {
     return UserProfileInclude._(
       authUser: authUser,
@@ -170,11 +171,11 @@ abstract class UserProfile
   }
 
   static UserProfileIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserProfileTable>? where,
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
     UserProfileInclude? include,
   }) {
     return UserProfileIncludeList._(
@@ -189,7 +190,7 @@ abstract class UserProfile
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -197,15 +198,15 @@ class _Undefined {}
 
 class _UserProfileImpl extends UserProfile {
   _UserProfileImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _ivyervu7.AuthUser? authUser,
     String? userName,
     String? fullName,
     String? email,
     DateTime? createdAt,
-    _i1.UuidValue? imageId,
-    _i3.UserProfileImage? image,
+    _is.UuidValue? imageId,
+    _i7y29ltp.UserProfileImage? image,
   }) : super._(
          id: id,
          authUserId: authUserId,
@@ -220,11 +221,11 @@ class _UserProfileImpl extends UserProfile {
 
   /// Returns a shallow copy of this [UserProfile]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserProfile copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     Object? userName = _Undefined,
     Object? fullName = _Undefined,
@@ -234,85 +235,87 @@ class _UserProfileImpl extends UserProfile {
     Object? image = _Undefined,
   }) {
     return UserProfile(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _ivyervu7.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       userName: userName is String? ? userName : this.userName,
       fullName: fullName is String? ? fullName : this.fullName,
       email: email is String? ? email : this.email,
       createdAt: createdAt ?? this.createdAt,
-      imageId: imageId is _i1.UuidValue? ? imageId : this.imageId,
-      image: image is _i3.UserProfileImage? ? image : this.image?.copyWith(),
+      imageId: imageId is _is.UuidValue? ? imageId : this.imageId,
+      image: image is _i7y29ltp.UserProfileImage?
+          ? image
+          : this.image?.copyWith(),
     );
   }
 }
 
-class UserProfileUpdateTable extends _i1.UpdateTable<UserProfileTable> {
+class UserProfileUpdateTable extends _is.UpdateTable<UserProfileTable> {
   UserProfileUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userName(String? value) => _is.ColumnValue(
     table.userName,
     value,
   );
 
-  _i1.ColumnValue<String, String> fullName(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> fullName(String? value) => _is.ColumnValue(
     table.fullName,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> createdAt(DateTime value) =>
+      _is.ColumnValue(
         table.createdAt,
         value,
       );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> imageId(_i1.UuidValue? value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> imageId(_is.UuidValue? value) =>
+      _is.ColumnValue(
         table.imageId,
         value,
       );
 }
 
-class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
+class UserProfileTable extends _is.Table<_is.UuidValue?> {
   UserProfileTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_core_profile') {
     updateTable = UserProfileUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    userName = _i1.ColumnString(
+    userName = _is.ColumnString(
       'userName',
       this,
     );
-    fullName = _i1.ColumnString(
+    fullName = _is.ColumnString(
       'fullName',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    createdAt = _i1.ColumnDateTime(
+    createdAt = _is.ColumnDateTime(
       'createdAt',
       this,
       hasDefault: true,
     );
-    imageId = _i1.ColumnUuid(
+    imageId = _is.ColumnUuid(
       'imageId',
       this,
     );
@@ -320,16 +323,16 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
 
   late final UserProfileUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to.
-  _i2.AuthUserTable? _authUser;
+  _ivyervu7.AuthUserTable? _authUser;
 
   /// The first name of the user or the user's nickname.
-  late final _i1.ColumnString userName;
+  late final _is.ColumnString userName;
 
   /// The full name of the user.
-  late final _i1.ColumnString fullName;
+  late final _is.ColumnString fullName;
 
   /// The verified email address of the user.
   ///
@@ -337,44 +340,44 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   /// checked ownership of this email for the user.
   ///
   /// Stored in lower-case.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The time when this user was created.
-  late final _i1.ColumnDateTime createdAt;
+  late final _is.ColumnDateTime createdAt;
 
-  late final _i1.ColumnUuid imageId;
+  late final _is.ColumnUuid imageId;
 
   /// The user's profile image.
-  _i3.UserProfileImageTable? _image;
+  _i7y29ltp.UserProfileImageTable? _image;
 
-  _i2.AuthUserTable get authUser {
+  _ivyervu7.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: UserProfile.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _ivyervu7.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _ivyervu7.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
-  _i3.UserProfileImageTable get image {
+  _i7y29ltp.UserProfileImageTable get image {
     if (_image != null) return _image!;
-    _image = _i1.createRelationTable(
+    _image = _is.createRelationTable(
       relationFieldName: 'image',
       field: UserProfile.t.imageId,
-      foreignField: _i3.UserProfileImage.t.id,
+      foreignField: _i7y29ltp.UserProfileImage.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.UserProfileImageTable(tableRelation: foreignTableRelation),
+          _i7y29ltp.UserProfileImageTable(tableRelation: foreignTableRelation),
     );
     return _image!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     userName,
@@ -385,7 +388,7 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -396,32 +399,32 @@ class UserProfileTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class UserProfileInclude extends _i1.IncludeObject {
+class UserProfileInclude extends _is.IncludeObject {
   UserProfileInclude._({
-    _i2.AuthUserInclude? authUser,
-    _i3.UserProfileImageInclude? image,
+    _ivyervu7.AuthUserInclude? authUser,
+    _i7y29ltp.UserProfileImageInclude? image,
   }) {
     _authUser = authUser;
     _image = image;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _ivyervu7.AuthUserInclude? _authUser;
 
-  _i3.UserProfileImageInclude? _image;
+  _i7y29ltp.UserProfileImageInclude? _image;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'authUser': _authUser,
     'image': _image,
   };
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserProfile.t;
+  _is.Table<_is.UuidValue?> get table => UserProfile.t;
 }
 
-class UserProfileIncludeList extends _i1.IncludeList {
+class UserProfileIncludeList extends _is.IncludeList {
   UserProfileIncludeList._({
-    _i1.WhereExpressionBuilder<UserProfileTable>? where,
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -432,10 +435,10 @@ class UserProfileIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => UserProfile.t;
+  _is.Table<_is.UuidValue?> get table => UserProfile.t;
 }
 
 class UserProfileRepository {
@@ -468,16 +471,16 @@ class UserProfileRepository {
   /// );
   /// ```
   Future<List<UserProfile>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
     UserProfileInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserProfile>(
       where: where?.call(UserProfile.t),
@@ -510,15 +513,15 @@ class UserProfileRepository {
   /// );
   /// ```
   Future<UserProfile?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
     UserProfileInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserProfile>(
       where: where?.call(UserProfile.t),
@@ -534,12 +537,12 @@ class UserProfileRepository {
 
   /// Finds a single [UserProfile] by its [id] or null if no such row exists.
   Future<UserProfile?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     UserProfileInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserProfile>(
       id,
@@ -565,9 +568,9 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfile> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -583,9 +586,9 @@ class UserProfileRepository {
   ///
   /// The returned [UserProfile] will have its `id` field set.
   Future<UserProfile> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserProfile>(
       row,
@@ -614,12 +617,12 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfile> rows, {
-    required _i1.ColumnSelections<UserProfileTable> conflictColumns,
-    _i1.ColumnSelections<UserProfileTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserProfileTable> conflictColumns,
+    _is.ColumnSelections<UserProfileTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserProfileTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UserProfile>(
@@ -646,12 +649,12 @@ class UserProfileRepository {
   ///
   /// The returned [UserProfile] will have its `id` field set.
   Future<UserProfile?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile row, {
-    required _i1.ColumnSelections<UserProfileTable> conflictColumns,
-    _i1.ColumnSelections<UserProfileTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserProfileTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserProfileTable> conflictColumns,
+    _is.ColumnSelections<UserProfileTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserProfileTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserProfile>(
       row,
@@ -672,10 +675,10 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfile> rows, {
-    _i1.ColumnSelections<UserProfileTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserProfileTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UserProfile>(
@@ -690,10 +693,10 @@ class UserProfileRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserProfile> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile row, {
-    _i1.ColumnSelections<UserProfileTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserProfileTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UserProfile>(
       row,
@@ -705,10 +708,10 @@ class UserProfileRepository {
   /// Updates a single [UserProfile] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserProfile?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UserProfile>(
       id,
@@ -724,14 +727,14 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<UserProfileTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UserProfileUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<UserProfileTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserProfile>(
@@ -758,11 +761,11 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserProfile> rows, {
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UserProfile>(
@@ -776,9 +779,9 @@ class UserProfileRepository {
 
   /// Deletes a single [UserProfile].
   Future<UserProfile> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UserProfile>(
       row,
@@ -795,11 +798,11 @@ class UserProfileRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserProfile>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserProfileTable> where,
-    _i1.OrderByBuilder<UserProfileTable>? orderBy,
-    _i1.OrderByListBuilder<UserProfileTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserProfileTable> where,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserProfile>(
@@ -814,10 +817,10 @@ class UserProfileRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserProfileTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UserProfile>(
       where: where?.call(UserProfile.t),
@@ -828,11 +831,11 @@ class UserProfileRepository {
 
   /// Acquires row-level locks on [UserProfile] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserProfileTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserProfileTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserProfile>(
       where: where(UserProfile.t),
@@ -849,10 +852,10 @@ class UserProfileAttachRowRepository {
   /// Creates a relation between the given [UserProfile] and [AuthUser]
   /// by setting the [UserProfile]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile userProfile,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _ivyervu7.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (userProfile.id == null) {
       throw ArgumentError.notNull('userProfile.id');
@@ -872,10 +875,10 @@ class UserProfileAttachRowRepository {
   /// Creates a relation between the given [UserProfile] and [UserProfileImage]
   /// by setting the [UserProfile]'s foreign key `imageId` to refer to the [UserProfileImage].
   Future<void> image(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile userProfile,
-    _i3.UserProfileImage image, {
-    _i1.Transaction? transaction,
+    _i7y29ltp.UserProfileImage image, {
+    _is.Transaction? transaction,
   }) async {
     if (userProfile.id == null) {
       throw ArgumentError.notNull('userProfile.id');
@@ -902,9 +905,9 @@ class UserProfileDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> image(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserProfile userProfile, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     if (userProfile.id == null) {
       throw ArgumentError.notNull('userProfile.id');
