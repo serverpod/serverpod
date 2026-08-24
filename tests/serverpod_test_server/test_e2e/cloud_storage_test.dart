@@ -274,7 +274,7 @@ void main() {
 
       test(
         'when ByteData is uploaded, '
-        'then the upload succeeds and can be verified',
+        'then the upload succeeds and can be verified and retrieved',
         () async {
           final uploader = FileUploader(uploadDescription);
 
@@ -285,15 +285,6 @@ void main() {
 
           expect(uploaded, isTrue);
           expect(verified, isTrue);
-        },
-      );
-
-      test(
-        'when uploaded ByteData is retrieved, '
-        'then it contains the uploaded data',
-        () async {
-          final uploader = FileUploader(uploadDescription);
-          await uploader.uploadByteData(createByteData(1024));
 
           final byteData = await client.cloudStorage.retrievePublicFile(path);
 
