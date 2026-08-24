@@ -1,0 +1,52 @@
+{
+  "__className__": "serverpod.DatabaseDefinition",
+  "schemaVersion": 2,
+  "moduleName": "serverpod_test_shared_module",
+  "tables": [
+    {
+      "__className__": "serverpod.TableDefinition",
+      "name": "shared_module_table",
+      "dartName": "SharedModuleTable",
+      "module": "serverpod_test_shared_module",
+      "schema": "public",
+      "columns": [
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "id",
+          "fieldName": "id",
+          "columnType": 6,
+          "isNullable": false,
+          "columnDefault": "serial",
+          "dartType": "int?"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "name",
+          "fieldName": "name",
+          "columnType": 0,
+          "isNullable": false,
+          "dartType": "String"
+        },
+        {
+          "__className__": "serverpod.ColumnDefinition",
+          "name": "data",
+          "fieldName": "data",
+          "columnType": 8,
+          "isNullable": false,
+          "dartType": "dynamic"
+        }
+      ],
+      "foreignKeys": [],
+      "indexes": [],
+      "managed": true
+    }
+  ],
+  "installedModules": [
+    {
+      "__className__": "serverpod.DatabaseMigrationVersion",
+      "module": "serverpod",
+      "version": "20260821141637226-cloud-storage-metadata"
+    }
+  ],
+  "migrationApiVersion": 1
+}
