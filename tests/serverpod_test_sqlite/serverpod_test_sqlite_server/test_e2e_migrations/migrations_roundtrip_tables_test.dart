@@ -1,6 +1,5 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
@@ -8,8 +7,8 @@ void main() {
   group('Given new protocol model with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -62,12 +61,11 @@ void main() {
   group('Given multiple new protocol models with table', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: [
-          'DROP TABLE IF EXISTS migrated_table;',
-          'DROP TABLE IF EXISTS migrated_table_2;',
-          'DROP TABLE IF EXISTS migrated_table_3;',
-        ],
-        runQueries: runQueries,
+        resetSql:
+            'DROP TABLE IF EXISTS migrated_table;'
+            'DROP TABLE IF EXISTS migrated_table_2;'
+            'DROP TABLE IF EXISTS migrated_table_3;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -138,8 +136,8 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -176,8 +174,8 @@ void main() {
   group('Given protocol model with table that is removed', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 

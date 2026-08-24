@@ -1,6 +1,5 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
@@ -8,8 +7,8 @@ void main() {
   group('Given existing protocol model with added nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -87,8 +86,8 @@ void main() {
   group('Given existing protocol model with removed column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -167,8 +166,8 @@ void main() {
   group('Given existing protocol model with removed column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -216,8 +215,8 @@ void main() {
   group('Given existing protocol model with added non nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 
@@ -265,8 +264,8 @@ void main() {
   group('Given existing protocol model with non nullable column', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-        runQueries: runQueries,
+        resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+        serviceClient: serviceClient,
       );
     });
 

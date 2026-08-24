@@ -268,6 +268,106 @@ class InsightsEndpoint extends Endpoint {
     );
   }
 
+  /// Exports raw data serialized in JSON from the database.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
+  Future<BulkData> fetchDatabaseBulkData(
+    Session session, {
+    required String table,
+    required int startingId,
+    required int limit,
+    Filter? filter,
+  }) async {
+    _requireDatabaseAccess(session);
+    try {
+      return await DatabaseBulkData.exportTableData(
+        database: session.db,
+        table: table,
+        lastId: startingId,
+        limit: limit,
+        filter: filter,
+      );
+    } catch (e) {
+      throw BulkDataException(
+        message: 'Failed to fetch bulk data. ($e)',
+      );
+    }
+  }
+
+  /// Executes a list of queries on the database and returns the last result.
+  /// The queries are executed in a single transaction.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
+  Future<BulkQueryResult> runQueries(
+    Session session,
+    List<String> queries,
+  ) async {
+    _requireDatabaseAccess(session);
+    try {
+      var result = await DatabaseBulkData.executeQueries(
+        database: session.db,
+        queries: queries,
+      );
+      return result;
+    } catch (e) {
+      if (e is DatabaseException) {
+        throw BulkDataException(
+          message: 'Failed to execute query: ${e.message}',
+        );
+      } else {
+        throw BulkDataException(
+          message: 'Failed to execute query: $e',
+        );
+      }
+    }
+  }
+
+  /// Returns the approximate number of rows in the provided [table].
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
+  Future<int> getDatabaseRowCount(
+    Session session, {
+    required String table,
+  }) async {
+    _requireDatabaseAccess(session);
+    return DatabaseBulkData.approximateRowCount(
+      database: session.db,
+      table: table,
+    );
+  }
+
+  /// Executes SQL commands. Returns the number of rows affected.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
+  Future<int> executeSql(Session session, String sql) async {
+    _requireDatabaseAccess(session);
+    try {
+      return await session.db.unsafeExecute(sql);
+    } catch (e) {
+      throw ServerpodSqlException(
+        message: '$e',
+        sql: sql,
+      );
+    }
+  }
+
+  /// Throws an [AccessDeniedException] unless the raw database access
+  /// endpoints are enabled through the server configuration.
+  void _requireDatabaseAccess(Session session) {
+    if (!session.serverpod.config.insightsDatabaseAccessEnabled) {
+      throw AccessDeniedException(
+        message:
+            'Database access through Insights is disabled. Enable it by '
+            'setting `enableDatabaseAccess: true` under `insightsServer` in '
+            'the server configuration.',
+      );
+    }
+  }
+
   /// Fetches a file from the server. Only whitelisted files in
   /// [Serverpod.filesWhitelistedForInsights] can be fetched.
   /// The file path must be in unix format and relative to the servers root

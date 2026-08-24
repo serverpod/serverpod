@@ -13,7 +13,6 @@ environment:
 dependencies:
   serverpod_auth_client: SERVERPOD_VERSION
   serverpod_client: SERVERPOD_VERSION
-  serverpod_service_client: SERVERPOD_VERSION
   serverpod_test_module_client:
     path: ../serverpod_test_module/serverpod_test_module_client
   serverpod_test_shared:
@@ -35,7 +34,5 @@ dependency_overrides:
     path: ../../packages/serverpod_embedded_postgres
   serverpod_serialization:
     path: ../../packages/serverpod_serialization
-  serverpod_service_client:
-    path: ../../packages/serverpod_service_client
   serverpod_shared:
     path: ../../packages/serverpod_shared

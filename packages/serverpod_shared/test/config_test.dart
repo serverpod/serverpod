@@ -176,6 +176,65 @@ insightsServer:
       expect(config.insightsServer?.publicHost, 'localhost');
       expect(config.insightsServer?.publicPort, 8081);
       expect(config.insightsServer?.publicScheme, 'http');
+      expect(config.insightsDatabaseAccessEnabled, isFalse);
+    },
+  );
+
+  test(
+    'Given a Serverpod config with insights database access enabled when loading from Map then the flag is set.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
+  enableDatabaseAccess: true
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+      );
+
+      expect(config.insightsDatabaseAccessEnabled, isTrue);
+    },
+  );
+
+  test(
+    'Given insights database access enabled through the environment when loading from Map then the flag is set.',
+    () {
+      var serverpodConfig = '''
+apiServer:
+  port: 8080
+  publicHost: localhost
+  publicPort: 8080
+  publicScheme: http
+insightsServer:
+  port: 8081
+  publicHost: localhost
+  publicPort: 8081
+  publicScheme: http
+''';
+
+      var config = ServerpodConfig.loadFromMap(
+        runMode,
+        serverId,
+        passwords,
+        loadYaml(serverpodConfig),
+        environment: {
+          'SERVERPOD_INSIGHTS_SERVER_ENABLE_DATABASE_ACCESS': 'true',
+        },
+      );
+
+      expect(config.insightsDatabaseAccessEnabled, isTrue);
     },
   );
 

@@ -1,0 +1,4 @@
+exception: ServerpodSqlException
+fields:
+  message: String
+  sql: String

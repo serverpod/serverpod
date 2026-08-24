@@ -161,11 +161,6 @@ fieldScopes:
 testFutureCalls:
   - makeFutureCall:
   - makeFutureCallThatThrows:
-insightsDatabaseTest:
-  - executeSql:
-  - fetchDatabaseBulkData:
-  - runQueries:
-  - getDatabaseRowCount:
 listParameters:
   - returnIntList:
   - returnIntListList:

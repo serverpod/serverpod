@@ -1,8 +1,3 @@
-insightsDatabaseTest:
-  - executeSql:
-  - fetchDatabaseBulkData:
-  - runQueries:
-  - getDatabaseRowCount:
 testTools:
   - createSimpleData:
   - getAllSimpleData:

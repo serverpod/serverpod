@@ -1,13 +1,13 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
+import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('Given existing migration registry', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        runQueries: runQueries,
+        serviceClient: serviceClient,
       );
     });
 
@@ -46,7 +46,7 @@ fields:
   group('Given existing migration registry', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        runQueries: runQueries,
+        serviceClient: serviceClient,
       );
     });
 

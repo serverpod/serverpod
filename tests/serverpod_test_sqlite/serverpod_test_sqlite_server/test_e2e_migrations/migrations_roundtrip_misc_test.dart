@@ -1,6 +1,5 @@
 @Timeout(Duration(minutes: 5))
 import 'package:serverpod_test_server/test_util/migration_test_utils.dart';
-import 'package:serverpod_test_sqlite_server/test_util/migration_database_client.dart';
 import 'package:serverpod_test_sqlite_server/test_util/service_client.dart';
 import 'package:test/test.dart';
 
@@ -8,7 +7,7 @@ void main() {
   group('Given invalid protocol file', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        runQueries: runQueries,
+        serviceClient: serviceClient,
       );
     });
 
@@ -43,7 +42,7 @@ void main() {
   group('Given a new table that should not be managed by Serverpod', () {
     tearDown(() async {
       await MigrationTestUtils.migrationTestCleanup(
-        runQueries: runQueries,
+        serviceClient: serviceClient,
       );
     });
 
@@ -87,11 +86,10 @@ void main() {
       var newTable = 'z_new_table';
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetQueries: [
-            'DROP TABLE IF EXISTS $oldTable;',
-            'DROP TABLE IF EXISTS $newTable;',
-          ],
-          runQueries: runQueries,
+          resetSql:
+              'DROP TABLE IF EXISTS $oldTable;'
+              'DROP TABLE IF EXISTS $newTable;',
+          serviceClient: serviceClient,
         );
       });
 
@@ -181,8 +179,8 @@ void main() {
     () {
       tearDown(() async {
         await MigrationTestUtils.migrationTestCleanup(
-          resetQueries: ['DROP TABLE IF EXISTS migrated_table;'],
-          runQueries: runQueries,
+          resetSql: 'DROP TABLE IF EXISTS migrated_table;',
+          serviceClient: serviceClient,
         );
       });
 

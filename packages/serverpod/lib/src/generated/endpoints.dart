@@ -14,6 +14,7 @@ import 'package:serverpod/serverpod.dart' as _i1;
 import '../endpoints/insights.dart' as _i2;
 import 'package:serverpod/src/generated/runtime_settings.dart' as _i3;
 import 'package:serverpod/src/generated/session_log_filter.dart' as _i4;
+import 'package:serverpod_database/serverpod_database.dart' as _i5;
 
 class Endpoints extends _i1.EndpointDispatch {
   @override
@@ -202,6 +203,100 @@ class Endpoints extends _i1.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
                   .getDatabaseDefinitions(session),
+        ),
+        'fetchDatabaseBulkData': _i1.MethodConnector(
+          name: 'fetchDatabaseBulkData',
+          params: {
+            'table': _i1.ParameterDescription(
+              name: 'table',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+            'startingId': _i1.ParameterDescription(
+              name: 'startingId',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'limit': _i1.ParameterDescription(
+              name: 'limit',
+              type: _i1.getType<int>(),
+              nullable: false,
+            ),
+            'filter': _i1.ParameterDescription(
+              name: 'filter',
+              type: _i1.getType<_i5.Filter?>(),
+              nullable: true,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .fetchDatabaseBulkData(
+                    session,
+                    table: params['table'],
+                    startingId: params['startingId'],
+                    limit: params['limit'],
+                    filter: params['filter'],
+                  ),
+        ),
+        'runQueries': _i1.MethodConnector(
+          name: 'runQueries',
+          params: {
+            'queries': _i1.ParameterDescription(
+              name: 'queries',
+              type: _i1.getType<List<String>>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['insights'] as _i2.InsightsEndpoint).runQueries(
+                    session,
+                    params['queries'],
+                  ),
+        ),
+        'getDatabaseRowCount': _i1.MethodConnector(
+          name: 'getDatabaseRowCount',
+          params: {
+            'table': _i1.ParameterDescription(
+              name: 'table',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async => (endpoints['insights'] as _i2.InsightsEndpoint)
+                  .getDatabaseRowCount(
+                    session,
+                    table: params['table'],
+                  ),
+        ),
+        'executeSql': _i1.MethodConnector(
+          name: 'executeSql',
+          params: {
+            'sql': _i1.ParameterDescription(
+              name: 'sql',
+              type: _i1.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _i1.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['insights'] as _i2.InsightsEndpoint).executeSql(
+                    session,
+                    params['sql'],
+                  ),
         ),
         'fetchFile': _i1.MethodConnector(
           name: 'fetchFile',
