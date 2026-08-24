@@ -907,6 +907,13 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       });
     } on _TransactionCancelledException catch (e) {
       return e.result;
+    } on DatabaseException {
+      rethrow;
+    } on SqliteException catch (exception, trace) {
+      Error.throwWithStackTrace(
+        _queryExceptionFromSqliteException(exception),
+        trace,
+      );
     } finally {
       _currentTransactionParentZone = null;
     }

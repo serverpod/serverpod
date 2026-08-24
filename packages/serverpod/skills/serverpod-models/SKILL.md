@@ -178,7 +178,7 @@ fields:
 
 **Many-to-many:** Use a join table model with two relation fields.
 
-**Referential actions:** `relation(onDelete=Cascade)` and `relation(onUpdate=...)` map to the SQL foreign key actions (`Cascade`, `SetNull`, `SetDefault`, `Restrict`, `NoAction`). `SetNull` requires a nullable foreign key (a nullable object relation field, or `relation(optional)`). Add `deferrable` (or `deferred` for initially deferred) to check the constraint at the end of the transaction instead of per statement.
+**Referential actions:** `relation(onDelete=Cascade)` and `relation(onUpdate=...)` map to the SQL foreign key actions (`Cascade`, `SetNull`, `SetDefault`, `Restrict`, `NoAction`). `SetNull` requires a nullable foreign key (a nullable object relation field, or `relation(optional)`). Add `deferrable` to allow constraint checks to be deferred explicitly, or `deferred` to defer them by default until commit. `Restrict` actions are always checked immediately, even on a deferred constraint; use `NoAction` when the check must be deferrable.
 
 Querying: `include` for eager loading, `includeList` with `where`/`orderBy`/`limit`/`offset` for list relations. `attach`/`detach` for managing relations.
 
