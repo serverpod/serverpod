@@ -76,8 +76,10 @@ abstract class Service
     };
   }
 
-  static ServiceInclude include() {
-    return ServiceInclude.internal_();
+  static ServiceInclude include({
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+  }) {
+    return ServiceInclude.internal_(selectedColumns: select?.call(Service.t));
   }
 
   static ServiceIncludeList includeList({
@@ -87,6 +89,7 @@ abstract class Service
     _is.OrderByBuilder<ServiceTable>? orderBy,
     _is.OrderByListBuilder<ServiceTable>? orderByList,
     ServiceInclude? include,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
   }) {
     return ServiceIncludeList.internal_(
       where: where,
@@ -95,6 +98,7 @@ abstract class Service
       orderBy: orderBy?.call(Service.t),
       orderByList: orderByList?.call(Service.t),
       include: include,
+      selectedColumns: select?.call(Service.t),
     );
   }
 

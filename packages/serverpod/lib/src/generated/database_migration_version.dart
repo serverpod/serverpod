@@ -86,8 +86,12 @@ abstract class DatabaseMigrationVersion
     };
   }
 
-  static DatabaseMigrationVersionInclude include() {
-    return DatabaseMigrationVersionInclude.internal_();
+  static DatabaseMigrationVersionInclude include({
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+  }) {
+    return DatabaseMigrationVersionInclude.internal_(
+      selectedColumns: select?.call(DatabaseMigrationVersion.t),
+    );
   }
 
   static DatabaseMigrationVersionIncludeList includeList({
@@ -97,6 +101,7 @@ abstract class DatabaseMigrationVersion
     _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
     _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
   }) {
     return DatabaseMigrationVersionIncludeList.internal_(
       where: where,
@@ -105,6 +110,7 @@ abstract class DatabaseMigrationVersion
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
       orderByList: orderByList?.call(DatabaseMigrationVersion.t),
       include: include,
+      selectedColumns: select?.call(DatabaseMigrationVersion.t),
     );
   }
 

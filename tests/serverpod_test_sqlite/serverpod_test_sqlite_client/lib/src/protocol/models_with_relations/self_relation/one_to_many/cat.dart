@@ -110,10 +110,12 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   static CatInclude include({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
+    _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
     return CatInclude.internal_(
       mother: mother,
       kittens: kittens,
+      selectedColumns: select?.call(Cat.t),
     );
   }
 
@@ -124,6 +126,7 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<CatTable>? orderBy,
     _isd.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
     return CatIncludeList.internal_(
       where: where,
@@ -132,6 +135,7 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
       orderBy: orderBy?.call(Cat.t),
       orderByList: orderByList?.call(Cat.t),
       include: include,
+      selectedColumns: select?.call(Cat.t),
     );
   }
 

@@ -93,9 +93,11 @@ abstract class UserNoteCollection
 
   static UserNoteCollectionInclude include({
     _ia9r0qbl.UserNoteIncludeList? userNotesPropertyName,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
   }) {
     return UserNoteCollectionInclude.internal_(
       userNotesPropertyName: userNotesPropertyName,
+      selectedColumns: select?.call(UserNoteCollection.t),
     );
   }
 
@@ -106,6 +108,7 @@ abstract class UserNoteCollection
     _is.OrderByBuilder<UserNoteCollectionTable>? orderBy,
     _is.OrderByListBuilder<UserNoteCollectionTable>? orderByList,
     UserNoteCollectionInclude? include,
+    _is.SelectColumnsBuilder<UserNoteCollectionTable>? select,
   }) {
     return UserNoteCollectionIncludeList.internal_(
       where: where,
@@ -114,6 +117,7 @@ abstract class UserNoteCollection
       orderBy: orderBy?.call(UserNoteCollection.t),
       orderByList: orderByList?.call(UserNoteCollection.t),
       include: include,
+      selectedColumns: select?.call(UserNoteCollection.t),
     );
   }
 

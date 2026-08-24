@@ -122,8 +122,12 @@ abstract class ServerHealthConnectionInfo
     };
   }
 
-  static ServerHealthConnectionInfoInclude include() {
-    return ServerHealthConnectionInfoInclude.internal_();
+  static ServerHealthConnectionInfoInclude include({
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+  }) {
+    return ServerHealthConnectionInfoInclude.internal_(
+      selectedColumns: select?.call(ServerHealthConnectionInfo.t),
+    );
   }
 
   static ServerHealthConnectionInfoIncludeList includeList({
@@ -133,6 +137,7 @@ abstract class ServerHealthConnectionInfo
     _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
   }) {
     return ServerHealthConnectionInfoIncludeList.internal_(
       where: where,
@@ -141,6 +146,7 @@ abstract class ServerHealthConnectionInfo
       orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
       orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
       include: include,
+      selectedColumns: select?.call(ServerHealthConnectionInfo.t),
     );
   }
 

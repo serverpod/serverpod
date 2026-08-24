@@ -86,8 +86,12 @@ abstract class UniqueDataWithNonPersist
     };
   }
 
-  static UniqueDataWithNonPersistInclude include() {
-    return UniqueDataWithNonPersistInclude.internal_();
+  static UniqueDataWithNonPersistInclude include({
+    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+  }) {
+    return UniqueDataWithNonPersistInclude.internal_(
+      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
+    );
   }
 
   static UniqueDataWithNonPersistIncludeList includeList({
@@ -97,6 +101,7 @@ abstract class UniqueDataWithNonPersist
     _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
     _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
+    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
     return UniqueDataWithNonPersistIncludeList.internal_(
       where: where,
@@ -105,6 +110,7 @@ abstract class UniqueDataWithNonPersist
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
       orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
       include: include,
+      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
     );
   }
 

@@ -115,10 +115,12 @@ abstract class OrganizationWithLongTableName
   static OrganizationWithLongTableNameInclude include({
     _i5nficvp.PersonWithLongTableNameIncludeList? people,
     _ii8bs4lb.CityWithLongTableNameInclude? city,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
   }) {
     return OrganizationWithLongTableNameInclude.internal_(
       people: people,
       city: city,
+      selectedColumns: select?.call(OrganizationWithLongTableName.t),
     );
   }
 
@@ -129,6 +131,7 @@ abstract class OrganizationWithLongTableName
     _is.OrderByBuilder<OrganizationWithLongTableNameTable>? orderBy,
     _is.OrderByListBuilder<OrganizationWithLongTableNameTable>? orderByList,
     OrganizationWithLongTableNameInclude? include,
+    _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
   }) {
     return OrganizationWithLongTableNameIncludeList.internal_(
       where: where,
@@ -137,6 +140,7 @@ abstract class OrganizationWithLongTableName
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
       orderByList: orderByList?.call(OrganizationWithLongTableName.t),
       include: include,
+      selectedColumns: select?.call(OrganizationWithLongTableName.t),
     );
   }
 

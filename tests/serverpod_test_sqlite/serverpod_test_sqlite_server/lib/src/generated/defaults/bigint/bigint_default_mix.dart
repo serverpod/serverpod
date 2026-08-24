@@ -108,8 +108,12 @@ abstract class BigIntDefaultMix
     };
   }
 
-  static BigIntDefaultMixInclude include() {
-    return BigIntDefaultMixInclude.internal_();
+  static BigIntDefaultMixInclude include({
+    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
+  }) {
+    return BigIntDefaultMixInclude.internal_(
+      selectedColumns: select?.call(BigIntDefaultMix.t),
+    );
   }
 
   static BigIntDefaultMixIncludeList includeList({
@@ -119,6 +123,7 @@ abstract class BigIntDefaultMix
     _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     BigIntDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
   }) {
     return BigIntDefaultMixIncludeList.internal_(
       where: where,
@@ -127,6 +132,7 @@ abstract class BigIntDefaultMix
       orderBy: orderBy?.call(BigIntDefaultMix.t),
       orderByList: orderByList?.call(BigIntDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(BigIntDefaultMix.t),
     );
   }
 

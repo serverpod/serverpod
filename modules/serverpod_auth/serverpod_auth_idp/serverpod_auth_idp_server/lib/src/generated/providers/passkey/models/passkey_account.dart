@@ -143,8 +143,14 @@ abstract class PasskeyAccount
     return {};
   }
 
-  static PasskeyAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return PasskeyAccountInclude.internal_(authUser: authUser);
+  static PasskeyAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
+  }) {
+    return PasskeyAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(PasskeyAccount.t),
+    );
   }
 
   static PasskeyAccountIncludeList includeList({
@@ -154,6 +160,7 @@ abstract class PasskeyAccount
     _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
     _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
     PasskeyAccountInclude? include,
+    _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
   }) {
     return PasskeyAccountIncludeList.internal_(
       where: where,
@@ -162,6 +169,7 @@ abstract class PasskeyAccount
       orderBy: orderBy?.call(PasskeyAccount.t),
       orderByList: orderByList?.call(PasskeyAccount.t),
       include: include,
+      selectedColumns: select?.call(PasskeyAccount.t),
     );
   }
 

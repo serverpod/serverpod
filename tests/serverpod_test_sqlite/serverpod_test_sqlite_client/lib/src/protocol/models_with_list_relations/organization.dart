@@ -111,10 +111,12 @@ abstract class Organization
   static OrganizationInclude include({
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
+    _isd.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
     return OrganizationInclude.internal_(
       people: people,
       city: city,
+      selectedColumns: select?.call(Organization.t),
     );
   }
 
@@ -125,6 +127,7 @@ abstract class Organization
     _isd.OrderByBuilder<OrganizationTable>? orderBy,
     _isd.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
+    _isd.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
     return OrganizationIncludeList.internal_(
       where: where,
@@ -133,6 +136,7 @@ abstract class Organization
       orderBy: orderBy?.call(Organization.t),
       orderByList: orderByList?.call(Organization.t),
       include: include,
+      selectedColumns: select?.call(Organization.t),
     );
   }
 

@@ -102,8 +102,10 @@ abstract class AuthUser
     };
   }
 
-  static AuthUserInclude include() {
-    return AuthUserInclude.internal_();
+  static AuthUserInclude include({
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+  }) {
+    return AuthUserInclude.internal_(selectedColumns: select?.call(AuthUser.t));
   }
 
   static AuthUserIncludeList includeList({
@@ -113,6 +115,7 @@ abstract class AuthUser
     _is.OrderByBuilder<AuthUserTable>? orderBy,
     _is.OrderByListBuilder<AuthUserTable>? orderByList,
     AuthUserInclude? include,
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
   }) {
     return AuthUserIncludeList.internal_(
       where: where,
@@ -121,6 +124,7 @@ abstract class AuthUser
       orderBy: orderBy?.call(AuthUser.t),
       orderByList: orderByList?.call(AuthUser.t),
       include: include,
+      selectedColumns: select?.call(AuthUser.t),
     );
   }
 

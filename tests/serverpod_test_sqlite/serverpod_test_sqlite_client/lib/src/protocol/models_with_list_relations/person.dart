@@ -99,8 +99,14 @@ abstract class Person
     };
   }
 
-  static PersonInclude include({_i0ptycc3.OrganizationInclude? organization}) {
-    return PersonInclude.internal_(organization: organization);
+  static PersonInclude include({
+    _i0ptycc3.OrganizationInclude? organization,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+  }) {
+    return PersonInclude.internal_(
+      organization: organization,
+      selectedColumns: select?.call(Person.t),
+    );
   }
 
   static PersonIncludeList includeList({
@@ -110,6 +116,7 @@ abstract class Person
     _isd.OrderByBuilder<PersonTable>? orderBy,
     _isd.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
   }) {
     return PersonIncludeList.internal_(
       where: where,
@@ -118,6 +125,7 @@ abstract class Person
       orderBy: orderBy?.call(Person.t),
       orderByList: orderByList?.call(Person.t),
       include: include,
+      selectedColumns: select?.call(Person.t),
     );
   }
 

@@ -93,8 +93,14 @@ abstract class Company
     };
   }
 
-  static CompanyInclude include({_i59ly1gg.TownInclude? town}) {
-    return CompanyInclude.internal_(town: town);
+  static CompanyInclude include({
+    _i59ly1gg.TownInclude? town,
+    _isd.SelectColumnsBuilder<CompanyTable>? select,
+  }) {
+    return CompanyInclude.internal_(
+      town: town,
+      selectedColumns: select?.call(Company.t),
+    );
   }
 
   static CompanyIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class Company
     _isd.OrderByBuilder<CompanyTable>? orderBy,
     _isd.OrderByListBuilder<CompanyTable>? orderByList,
     CompanyInclude? include,
+    _isd.SelectColumnsBuilder<CompanyTable>? select,
   }) {
     return CompanyIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class Company
       orderBy: orderBy?.call(Company.t),
       orderByList: orderByList?.call(Company.t),
       include: include,
+      selectedColumns: select?.call(Company.t),
     );
   }
 

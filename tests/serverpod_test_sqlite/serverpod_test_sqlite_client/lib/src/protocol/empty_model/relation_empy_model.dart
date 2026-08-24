@@ -81,8 +81,12 @@ abstract class RelationEmptyModel
 
   static RelationEmptyModelInclude include({
     _iq60yogb.EmptyModelRelationItemIncludeList? items,
+    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
-    return RelationEmptyModelInclude.internal_(items: items);
+    return RelationEmptyModelInclude.internal_(
+      items: items,
+      selectedColumns: select?.call(RelationEmptyModel.t),
+    );
   }
 
   static RelationEmptyModelIncludeList includeList({
@@ -92,6 +96,7 @@ abstract class RelationEmptyModel
     _isd.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _isd.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     RelationEmptyModelInclude? include,
+    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
     return RelationEmptyModelIncludeList.internal_(
       where: where,
@@ -100,6 +105,7 @@ abstract class RelationEmptyModel
       orderBy: orderBy?.call(RelationEmptyModel.t),
       orderByList: orderByList?.call(RelationEmptyModel.t),
       include: include,
+      selectedColumns: select?.call(RelationEmptyModel.t),
     );
   }
 

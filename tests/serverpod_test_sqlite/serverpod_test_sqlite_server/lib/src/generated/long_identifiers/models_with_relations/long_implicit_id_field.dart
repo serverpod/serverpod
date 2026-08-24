@@ -77,8 +77,12 @@ abstract class LongImplicitIdField
     };
   }
 
-  static LongImplicitIdFieldInclude include() {
-    return LongImplicitIdFieldInclude.internal_();
+  static LongImplicitIdFieldInclude include({
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+  }) {
+    return LongImplicitIdFieldInclude.internal_(
+      selectedColumns: select?.call(LongImplicitIdField.t),
+    );
   }
 
   static LongImplicitIdFieldIncludeList includeList({
@@ -88,6 +92,7 @@ abstract class LongImplicitIdField
     _is.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
     _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     LongImplicitIdFieldInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
   }) {
     return LongImplicitIdFieldIncludeList.internal_(
       where: where,
@@ -96,6 +101,7 @@ abstract class LongImplicitIdField
       orderBy: orderBy?.call(LongImplicitIdField.t),
       orderByList: orderByList?.call(LongImplicitIdField.t),
       include: include,
+      selectedColumns: select?.call(LongImplicitIdField.t),
     );
   }
 

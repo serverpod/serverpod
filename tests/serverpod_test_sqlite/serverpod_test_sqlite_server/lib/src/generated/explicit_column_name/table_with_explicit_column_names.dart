@@ -78,8 +78,12 @@ abstract class TableWithExplicitColumnName
     };
   }
 
-  static TableWithExplicitColumnNameInclude include() {
-    return TableWithExplicitColumnNameInclude.internal_();
+  static TableWithExplicitColumnNameInclude include({
+    _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
+  }) {
+    return TableWithExplicitColumnNameInclude.internal_(
+      selectedColumns: select?.call(TableWithExplicitColumnName.t),
+    );
   }
 
   static TableWithExplicitColumnNameIncludeList includeList({
@@ -89,6 +93,7 @@ abstract class TableWithExplicitColumnName
     _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
     _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
     TableWithExplicitColumnNameInclude? include,
+    _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
   }) {
     return TableWithExplicitColumnNameIncludeList.internal_(
       where: where,
@@ -97,6 +102,7 @@ abstract class TableWithExplicitColumnName
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
       orderByList: orderByList?.call(TableWithExplicitColumnName.t),
       include: include,
+      selectedColumns: select?.call(TableWithExplicitColumnName.t),
     );
   }
 

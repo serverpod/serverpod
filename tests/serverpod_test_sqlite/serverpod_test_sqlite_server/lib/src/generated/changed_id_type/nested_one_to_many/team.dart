@@ -112,10 +112,12 @@ abstract class TeamInt
   static TeamIntInclude include({
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
   }) {
     return TeamIntInclude.internal_(
       arena: arena,
       players: players,
+      selectedColumns: select?.call(TeamInt.t),
     );
   }
 
@@ -126,6 +128,7 @@ abstract class TeamInt
     _is.OrderByBuilder<TeamIntTable>? orderBy,
     _is.OrderByListBuilder<TeamIntTable>? orderByList,
     TeamIntInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
   }) {
     return TeamIntIncludeList.internal_(
       where: where,
@@ -134,6 +137,7 @@ abstract class TeamInt
       orderBy: orderBy?.call(TeamInt.t),
       orderByList: orderByList?.call(TeamInt.t),
       include: include,
+      selectedColumns: select?.call(TeamInt.t),
     );
   }
 

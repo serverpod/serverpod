@@ -92,8 +92,14 @@ abstract class Town implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     };
   }
 
-  static TownInclude include({_igho3lba.CitizenInclude? mayor}) {
-    return TownInclude.internal_(mayor: mayor);
+  static TownInclude include({
+    _igho3lba.CitizenInclude? mayor,
+    _isd.SelectColumnsBuilder<TownTable>? select,
+  }) {
+    return TownInclude.internal_(
+      mayor: mayor,
+      selectedColumns: select?.call(Town.t),
+    );
   }
 
   static TownIncludeList includeList({
@@ -103,6 +109,7 @@ abstract class Town implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<TownTable>? orderBy,
     _isd.OrderByListBuilder<TownTable>? orderByList,
     TownInclude? include,
+    _isd.SelectColumnsBuilder<TownTable>? select,
   }) {
     return TownIncludeList.internal_(
       where: where,
@@ -111,6 +118,7 @@ abstract class Town implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
       orderBy: orderBy?.call(Town.t),
       orderByList: orderByList?.call(Town.t),
       include: include,
+      selectedColumns: select?.call(Town.t),
     );
   }
 

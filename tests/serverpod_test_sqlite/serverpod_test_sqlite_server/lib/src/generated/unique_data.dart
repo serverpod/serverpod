@@ -76,8 +76,12 @@ abstract class UniqueData
     };
   }
 
-  static UniqueDataInclude include() {
-    return UniqueDataInclude.internal_();
+  static UniqueDataInclude include({
+    _is.SelectColumnsBuilder<UniqueDataTable>? select,
+  }) {
+    return UniqueDataInclude.internal_(
+      selectedColumns: select?.call(UniqueData.t),
+    );
   }
 
   static UniqueDataIncludeList includeList({
@@ -87,6 +91,7 @@ abstract class UniqueData
     _is.OrderByBuilder<UniqueDataTable>? orderBy,
     _is.OrderByListBuilder<UniqueDataTable>? orderByList,
     UniqueDataInclude? include,
+    _is.SelectColumnsBuilder<UniqueDataTable>? select,
   }) {
     return UniqueDataIncludeList.internal_(
       where: where,
@@ -95,6 +100,7 @@ abstract class UniqueData
       orderBy: orderBy?.call(UniqueData.t),
       orderByList: orderByList?.call(UniqueData.t),
       include: include,
+      selectedColumns: select?.call(UniqueData.t),
     );
   }
 

@@ -105,10 +105,12 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
   static MemberInclude include({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
+    _is.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return MemberInclude.internal_(
       blocking: blocking,
       blockedBy: blockedBy,
+      selectedColumns: select?.call(Member.t),
     );
   }
 
@@ -119,6 +121,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<MemberTable>? orderBy,
     _is.OrderByListBuilder<MemberTable>? orderByList,
     MemberInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return MemberIncludeList.internal_(
       where: where,
@@ -127,6 +130,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
       include: include,
+      selectedColumns: select?.call(Member.t),
     );
   }
 

@@ -118,9 +118,11 @@ abstract class SessionMetadata
 
   static SessionMetadataInclude include({
     _iacs.ServerSideSessionInclude? serverSideSession,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
     return SessionMetadataInclude.internal_(
       serverSideSession: serverSideSession,
+      selectedColumns: select?.call(SessionMetadata.t),
     );
   }
 
@@ -131,6 +133,7 @@ abstract class SessionMetadata
     _is.OrderByBuilder<SessionMetadataTable>? orderBy,
     _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     SessionMetadataInclude? include,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
     return SessionMetadataIncludeList.internal_(
       where: where,
@@ -139,6 +142,7 @@ abstract class SessionMetadata
       orderBy: orderBy?.call(SessionMetadata.t),
       orderByList: orderByList?.call(SessionMetadata.t),
       include: include,
+      selectedColumns: select?.call(SessionMetadata.t),
     );
   }
 

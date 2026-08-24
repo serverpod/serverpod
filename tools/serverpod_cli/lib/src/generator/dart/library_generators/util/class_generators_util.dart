@@ -87,7 +87,6 @@ TypeReference typeSelectColumnsBuilder(
   );
 }
 
-
 TypeReference typeColumnValueListBuilder(
   String className,
   bool serverCode, {

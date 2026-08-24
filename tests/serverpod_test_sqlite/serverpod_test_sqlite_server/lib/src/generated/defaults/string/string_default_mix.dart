@@ -94,8 +94,12 @@ abstract class StringDefaultMix
     };
   }
 
-  static StringDefaultMixInclude include() {
-    return StringDefaultMixInclude.internal_();
+  static StringDefaultMixInclude include({
+    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
+  }) {
+    return StringDefaultMixInclude.internal_(
+      selectedColumns: select?.call(StringDefaultMix.t),
+    );
   }
 
   static StringDefaultMixIncludeList includeList({
@@ -105,6 +109,7 @@ abstract class StringDefaultMix
     _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     StringDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
   }) {
     return StringDefaultMixIncludeList.internal_(
       where: where,
@@ -113,6 +118,7 @@ abstract class StringDefaultMix
       orderBy: orderBy?.call(StringDefaultMix.t),
       orderByList: orderByList?.call(StringDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(StringDefaultMix.t),
     );
   }
 

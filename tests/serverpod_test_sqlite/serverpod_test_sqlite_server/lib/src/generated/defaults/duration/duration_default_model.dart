@@ -106,8 +106,12 @@ abstract class DurationDefaultModel
     };
   }
 
-  static DurationDefaultModelInclude include() {
-    return DurationDefaultModelInclude.internal_();
+  static DurationDefaultModelInclude include({
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+  }) {
+    return DurationDefaultModelInclude.internal_(
+      selectedColumns: select?.call(DurationDefaultModel.t),
+    );
   }
 
   static DurationDefaultModelIncludeList includeList({
@@ -117,6 +121,7 @@ abstract class DurationDefaultModel
     _is.OrderByBuilder<DurationDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     DurationDefaultModelInclude? include,
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
   }) {
     return DurationDefaultModelIncludeList.internal_(
       where: where,
@@ -125,6 +130,7 @@ abstract class DurationDefaultModel
       orderBy: orderBy?.call(DurationDefaultModel.t),
       orderByList: orderByList?.call(DurationDefaultModel.t),
       include: include,
+      selectedColumns: select?.call(DurationDefaultModel.t),
     );
   }
 

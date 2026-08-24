@@ -88,8 +88,12 @@ abstract class UserImage
     };
   }
 
-  static UserImageInclude include() {
-    return UserImageInclude.internal_();
+  static UserImageInclude include({
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+  }) {
+    return UserImageInclude.internal_(
+      selectedColumns: select?.call(UserImage.t),
+    );
   }
 
   static UserImageIncludeList includeList({
@@ -99,6 +103,7 @@ abstract class UserImage
     _is.OrderByBuilder<UserImageTable>? orderBy,
     _is.OrderByListBuilder<UserImageTable>? orderByList,
     UserImageInclude? include,
+    _is.SelectColumnsBuilder<UserImageTable>? select,
   }) {
     return UserImageIncludeList.internal_(
       where: where,
@@ -107,6 +112,7 @@ abstract class UserImage
       orderBy: orderBy?.call(UserImage.t),
       orderByList: orderByList?.call(UserImage.t),
       include: include,
+      selectedColumns: select?.call(UserImage.t),
     );
   }
 

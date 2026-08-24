@@ -137,10 +137,12 @@ abstract class EmailAccountRequest
   static EmailAccountRequestInclude include({
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? createAccountChallenge,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
   }) {
     return EmailAccountRequestInclude.internal_(
       challenge: challenge,
       createAccountChallenge: createAccountChallenge,
+      selectedColumns: select?.call(EmailAccountRequest.t),
     );
   }
 
@@ -151,6 +153,7 @@ abstract class EmailAccountRequest
     _is.OrderByBuilder<EmailAccountRequestTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountRequestTable>? orderByList,
     EmailAccountRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
   }) {
     return EmailAccountRequestIncludeList.internal_(
       where: where,
@@ -159,6 +162,7 @@ abstract class EmailAccountRequest
       orderBy: orderBy?.call(EmailAccountRequest.t),
       orderByList: orderByList?.call(EmailAccountRequest.t),
       include: include,
+      selectedColumns: select?.call(EmailAccountRequest.t),
     );
   }
 

@@ -81,8 +81,12 @@ abstract class PasskeyChallenge
     return {};
   }
 
-  static PasskeyChallengeInclude include() {
-    return PasskeyChallengeInclude.internal_();
+  static PasskeyChallengeInclude include({
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+  }) {
+    return PasskeyChallengeInclude.internal_(
+      selectedColumns: select?.call(PasskeyChallenge.t),
+    );
   }
 
   static PasskeyChallengeIncludeList includeList({
@@ -92,6 +96,7 @@ abstract class PasskeyChallenge
     _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
     _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     PasskeyChallengeInclude? include,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
   }) {
     return PasskeyChallengeIncludeList.internal_(
       where: where,
@@ -100,6 +105,7 @@ abstract class PasskeyChallenge
       orderBy: orderBy?.call(PasskeyChallenge.t),
       orderByList: orderByList?.call(PasskeyChallenge.t),
       include: include,
+      selectedColumns: select?.call(PasskeyChallenge.t),
     );
   }
 

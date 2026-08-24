@@ -79,8 +79,12 @@ abstract class EmptyModelRelationItem
     };
   }
 
-  static EmptyModelRelationItemInclude include() {
-    return EmptyModelRelationItemInclude.internal_();
+  static EmptyModelRelationItemInclude include({
+    _isd.SelectColumnsBuilder<EmptyModelRelationItemTable>? select,
+  }) {
+    return EmptyModelRelationItemInclude.internal_(
+      selectedColumns: select?.call(EmptyModelRelationItem.t),
+    );
   }
 
   static EmptyModelRelationItemIncludeList includeList({
@@ -90,6 +94,7 @@ abstract class EmptyModelRelationItem
     _isd.OrderByBuilder<EmptyModelRelationItemTable>? orderBy,
     _isd.OrderByListBuilder<EmptyModelRelationItemTable>? orderByList,
     EmptyModelRelationItemInclude? include,
+    _isd.SelectColumnsBuilder<EmptyModelRelationItemTable>? select,
   }) {
     return EmptyModelRelationItemIncludeList.internal_(
       where: where,
@@ -98,6 +103,7 @@ abstract class EmptyModelRelationItem
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
       orderByList: orderByList?.call(EmptyModelRelationItem.t),
       include: include,
+      selectedColumns: select?.call(EmptyModelRelationItem.t),
     );
   }
 

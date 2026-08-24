@@ -106,8 +106,14 @@ abstract class UserData
     };
   }
 
-  static UserDataInclude include({_iacs.AuthUserInclude? authUser}) {
-    return UserDataInclude.internal_(authUser: authUser);
+  static UserDataInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<UserDataTable>? select,
+  }) {
+    return UserDataInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(UserData.t),
+    );
   }
 
   static UserDataIncludeList includeList({
@@ -117,6 +123,7 @@ abstract class UserData
     _is.OrderByBuilder<UserDataTable>? orderBy,
     _is.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
+    _is.SelectColumnsBuilder<UserDataTable>? select,
   }) {
     return UserDataIncludeList.internal_(
       where: where,
@@ -125,6 +132,7 @@ abstract class UserData
       orderBy: orderBy?.call(UserData.t),
       orderByList: orderByList?.call(UserData.t),
       include: include,
+      selectedColumns: select?.call(UserData.t),
     );
   }
 

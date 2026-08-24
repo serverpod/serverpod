@@ -79,8 +79,12 @@ abstract class GoogleRefreshToken
     };
   }
 
-  static GoogleRefreshTokenInclude include() {
-    return GoogleRefreshTokenInclude.internal_();
+  static GoogleRefreshTokenInclude include({
+    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
+  }) {
+    return GoogleRefreshTokenInclude.internal_(
+      selectedColumns: select?.call(GoogleRefreshToken.t),
+    );
   }
 
   static GoogleRefreshTokenIncludeList includeList({
@@ -90,6 +94,7 @@ abstract class GoogleRefreshToken
     _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
+    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
   }) {
     return GoogleRefreshTokenIncludeList.internal_(
       where: where,
@@ -98,6 +103,7 @@ abstract class GoogleRefreshToken
       orderBy: orderBy?.call(GoogleRefreshToken.t),
       orderByList: orderByList?.call(GoogleRefreshToken.t),
       include: include,
+      selectedColumns: select?.call(GoogleRefreshToken.t),
     );
   }
 

@@ -90,8 +90,12 @@ abstract class Student
 
   static StudentInclude include({
     _im07rq0v.EnrollmentIncludeList? enrollments,
+    _is.SelectColumnsBuilder<StudentTable>? select,
   }) {
-    return StudentInclude.internal_(enrollments: enrollments);
+    return StudentInclude.internal_(
+      enrollments: enrollments,
+      selectedColumns: select?.call(Student.t),
+    );
   }
 
   static StudentIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class Student
     _is.OrderByBuilder<StudentTable>? orderBy,
     _is.OrderByListBuilder<StudentTable>? orderByList,
     StudentInclude? include,
+    _is.SelectColumnsBuilder<StudentTable>? select,
   }) {
     return StudentIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class Student
       orderBy: orderBy?.call(Student.t),
       orderByList: orderByList?.call(Student.t),
       include: include,
+      selectedColumns: select?.call(Student.t),
     );
   }
 

@@ -71,8 +71,12 @@ abstract class SecretChallenge
     return {};
   }
 
-  static SecretChallengeInclude include() {
-    return SecretChallengeInclude.internal_();
+  static SecretChallengeInclude include({
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+  }) {
+    return SecretChallengeInclude.internal_(
+      selectedColumns: select?.call(SecretChallenge.t),
+    );
   }
 
   static SecretChallengeIncludeList includeList({
@@ -82,6 +86,7 @@ abstract class SecretChallenge
     _is.OrderByBuilder<SecretChallengeTable>? orderBy,
     _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
     SecretChallengeInclude? include,
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
   }) {
     return SecretChallengeIncludeList.internal_(
       where: where,
@@ -90,6 +95,7 @@ abstract class SecretChallenge
       orderBy: orderBy?.call(SecretChallenge.t),
       orderByList: orderByList?.call(SecretChallenge.t),
       include: include,
+      selectedColumns: select?.call(SecretChallenge.t),
     );
   }
 

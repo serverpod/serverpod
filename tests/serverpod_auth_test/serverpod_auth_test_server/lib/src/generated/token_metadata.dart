@@ -117,8 +117,12 @@ abstract class TokenMetadata
 
   static TokenMetadataInclude include({
     _iacs.RefreshTokenInclude? refreshToken,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
-    return TokenMetadataInclude.internal_(refreshToken: refreshToken);
+    return TokenMetadataInclude.internal_(
+      refreshToken: refreshToken,
+      selectedColumns: select?.call(TokenMetadata.t),
+    );
   }
 
   static TokenMetadataIncludeList includeList({
@@ -128,6 +132,7 @@ abstract class TokenMetadata
     _is.OrderByBuilder<TokenMetadataTable>? orderBy,
     _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     TokenMetadataInclude? include,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
     return TokenMetadataIncludeList.internal_(
       where: where,
@@ -136,6 +141,7 @@ abstract class TokenMetadata
       orderBy: orderBy?.call(TokenMetadata.t),
       orderByList: orderByList?.call(TokenMetadata.t),
       include: include,
+      selectedColumns: select?.call(TokenMetadata.t),
     );
   }
 

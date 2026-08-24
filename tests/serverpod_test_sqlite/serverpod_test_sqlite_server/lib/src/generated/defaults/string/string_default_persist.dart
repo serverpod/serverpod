@@ -185,8 +185,12 @@ abstract class StringDefaultPersist
     };
   }
 
-  static StringDefaultPersistInclude include() {
-    return StringDefaultPersistInclude.internal_();
+  static StringDefaultPersistInclude include({
+    _is.SelectColumnsBuilder<StringDefaultPersistTable>? select,
+  }) {
+    return StringDefaultPersistInclude.internal_(
+      selectedColumns: select?.call(StringDefaultPersist.t),
+    );
   }
 
   static StringDefaultPersistIncludeList includeList({
@@ -196,6 +200,7 @@ abstract class StringDefaultPersist
     _is.OrderByBuilder<StringDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<StringDefaultPersistTable>? orderByList,
     StringDefaultPersistInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultPersistTable>? select,
   }) {
     return StringDefaultPersistIncludeList.internal_(
       where: where,
@@ -204,6 +209,7 @@ abstract class StringDefaultPersist
       orderBy: orderBy?.call(StringDefaultPersist.t),
       orderByList: orderByList?.call(StringDefaultPersist.t),
       include: include,
+      selectedColumns: select?.call(StringDefaultPersist.t),
     );
   }
 

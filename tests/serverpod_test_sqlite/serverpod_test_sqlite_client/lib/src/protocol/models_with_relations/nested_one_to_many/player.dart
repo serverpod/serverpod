@@ -93,8 +93,14 @@ abstract class Player
     };
   }
 
-  static PlayerInclude include({_iaks25tn.TeamInclude? team}) {
-    return PlayerInclude.internal_(team: team);
+  static PlayerInclude include({
+    _iaks25tn.TeamInclude? team,
+    _isd.SelectColumnsBuilder<PlayerTable>? select,
+  }) {
+    return PlayerInclude.internal_(
+      team: team,
+      selectedColumns: select?.call(Player.t),
+    );
   }
 
   static PlayerIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class Player
     _isd.OrderByBuilder<PlayerTable>? orderBy,
     _isd.OrderByListBuilder<PlayerTable>? orderByList,
     PlayerInclude? include,
+    _isd.SelectColumnsBuilder<PlayerTable>? select,
   }) {
     return PlayerIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class Player
       orderBy: orderBy?.call(Player.t),
       orderByList: orderByList?.call(Player.t),
       include: include,
+      selectedColumns: select?.call(Player.t),
     );
   }
 

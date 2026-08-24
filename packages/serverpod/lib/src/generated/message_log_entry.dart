@@ -153,8 +153,12 @@ abstract class MessageLogEntry
     };
   }
 
-  static MessageLogEntryInclude include() {
-    return MessageLogEntryInclude.internal_();
+  static MessageLogEntryInclude include({
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+  }) {
+    return MessageLogEntryInclude.internal_(
+      selectedColumns: select?.call(MessageLogEntry.t),
+    );
   }
 
   static MessageLogEntryIncludeList includeList({
@@ -164,6 +168,7 @@ abstract class MessageLogEntry
     _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
     _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
   }) {
     return MessageLogEntryIncludeList.internal_(
       where: where,
@@ -172,6 +177,7 @@ abstract class MessageLogEntry
       orderBy: orderBy?.call(MessageLogEntry.t),
       orderByList: orderByList?.call(MessageLogEntry.t),
       include: include,
+      selectedColumns: select?.call(MessageLogEntry.t),
     );
   }
 

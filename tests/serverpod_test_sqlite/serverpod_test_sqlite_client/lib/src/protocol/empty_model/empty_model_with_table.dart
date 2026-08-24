@@ -53,8 +53,12 @@ abstract class EmptyModelWithTable
     };
   }
 
-  static EmptyModelWithTableInclude include() {
-    return EmptyModelWithTableInclude.internal_();
+  static EmptyModelWithTableInclude include({
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+  }) {
+    return EmptyModelWithTableInclude.internal_(
+      selectedColumns: select?.call(EmptyModelWithTable.t),
+    );
   }
 
   static EmptyModelWithTableIncludeList includeList({
@@ -64,6 +68,7 @@ abstract class EmptyModelWithTable
     _isd.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
     _isd.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     EmptyModelWithTableInclude? include,
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
   }) {
     return EmptyModelWithTableIncludeList.internal_(
       where: where,
@@ -72,6 +77,7 @@ abstract class EmptyModelWithTable
       orderBy: orderBy?.call(EmptyModelWithTable.t),
       orderByList: orderByList?.call(EmptyModelWithTable.t),
       include: include,
+      selectedColumns: select?.call(EmptyModelWithTable.t),
     );
   }
 

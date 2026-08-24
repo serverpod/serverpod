@@ -153,8 +153,12 @@ abstract class QueryLogEntry
     };
   }
 
-  static QueryLogEntryInclude include() {
-    return QueryLogEntryInclude.internal_();
+  static QueryLogEntryInclude include({
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+  }) {
+    return QueryLogEntryInclude.internal_(
+      selectedColumns: select?.call(QueryLogEntry.t),
+    );
   }
 
   static QueryLogEntryIncludeList includeList({
@@ -164,6 +168,7 @@ abstract class QueryLogEntry
     _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
     _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     QueryLogEntryInclude? include,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
   }) {
     return QueryLogEntryIncludeList.internal_(
       where: where,
@@ -172,6 +177,7 @@ abstract class QueryLogEntry
       orderBy: orderBy?.call(QueryLogEntry.t),
       orderByList: orderByList?.call(QueryLogEntry.t),
       include: include,
+      selectedColumns: select?.call(QueryLogEntry.t),
     );
   }
 

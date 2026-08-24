@@ -106,10 +106,12 @@ abstract class MigratedUser
   static MigratedUserInclude include({
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
     return MigratedUserInclude.internal_(
       oldUser: oldUser,
       newAuthUser: newAuthUser,
+      selectedColumns: select?.call(MigratedUser.t),
     );
   }
 
@@ -120,6 +122,7 @@ abstract class MigratedUser
     _is.OrderByBuilder<MigratedUserTable>? orderBy,
     _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
     return MigratedUserIncludeList.internal_(
       where: where,
@@ -128,6 +131,7 @@ abstract class MigratedUser
       orderBy: orderBy?.call(MigratedUser.t),
       orderByList: orderByList?.call(MigratedUser.t),
       include: include,
+      selectedColumns: select?.call(MigratedUser.t),
     );
   }
 

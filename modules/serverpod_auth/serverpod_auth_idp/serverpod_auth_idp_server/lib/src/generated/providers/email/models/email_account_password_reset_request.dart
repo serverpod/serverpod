@@ -151,11 +151,13 @@ abstract class EmailAccountPasswordResetRequest
     _imety4f2.EmailAccountInclude? emailAccount,
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? setPasswordChallenge,
+    _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
   }) {
     return EmailAccountPasswordResetRequestInclude.internal_(
       emailAccount: emailAccount,
       challenge: challenge,
       setPasswordChallenge: setPasswordChallenge,
+      selectedColumns: select?.call(EmailAccountPasswordResetRequest.t),
     );
   }
 
@@ -166,6 +168,7 @@ abstract class EmailAccountPasswordResetRequest
     _is.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
     EmailAccountPasswordResetRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
   }) {
     return EmailAccountPasswordResetRequestIncludeList.internal_(
       where: where,
@@ -174,6 +177,7 @@ abstract class EmailAccountPasswordResetRequest
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
       orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
       include: include,
+      selectedColumns: select?.call(EmailAccountPasswordResetRequest.t),
     );
   }
 

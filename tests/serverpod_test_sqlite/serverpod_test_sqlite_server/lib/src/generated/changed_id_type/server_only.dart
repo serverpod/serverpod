@@ -56,8 +56,12 @@ abstract class ServerOnlyChangedIdFieldClass
     return {};
   }
 
-  static ServerOnlyChangedIdFieldClassInclude include() {
-    return ServerOnlyChangedIdFieldClassInclude.internal_();
+  static ServerOnlyChangedIdFieldClassInclude include({
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+  }) {
+    return ServerOnlyChangedIdFieldClassInclude.internal_(
+      selectedColumns: select?.call(ServerOnlyChangedIdFieldClass.t),
+    );
   }
 
   static ServerOnlyChangedIdFieldClassIncludeList includeList({
@@ -67,6 +71,7 @@ abstract class ServerOnlyChangedIdFieldClass
     _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
     _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
   }) {
     return ServerOnlyChangedIdFieldClassIncludeList.internal_(
       where: where,
@@ -75,6 +80,7 @@ abstract class ServerOnlyChangedIdFieldClass
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
       orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
       include: include,
+      selectedColumns: select?.call(ServerOnlyChangedIdFieldClass.t),
     );
   }
 

@@ -141,8 +141,10 @@ abstract class UserInfo
     };
   }
 
-  static UserInfoInclude include() {
-    return UserInfoInclude.internal_();
+  static UserInfoInclude include({
+    _is.SelectColumnsBuilder<UserInfoTable>? select,
+  }) {
+    return UserInfoInclude.internal_(selectedColumns: select?.call(UserInfo.t));
   }
 
   static UserInfoIncludeList includeList({
@@ -152,6 +154,7 @@ abstract class UserInfo
     _is.OrderByBuilder<UserInfoTable>? orderBy,
     _is.OrderByListBuilder<UserInfoTable>? orderByList,
     UserInfoInclude? include,
+    _is.SelectColumnsBuilder<UserInfoTable>? select,
   }) {
     return UserInfoIncludeList.internal_(
       where: where,
@@ -160,6 +163,7 @@ abstract class UserInfo
       orderBy: orderBy?.call(UserInfo.t),
       orderByList: orderByList?.call(UserInfo.t),
       include: include,
+      selectedColumns: select?.call(UserInfo.t),
     );
   }
 

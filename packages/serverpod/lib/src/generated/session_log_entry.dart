@@ -248,11 +248,13 @@ abstract class SessionLogEntry
     _iv7ld46g.LogEntryIncludeList? logs,
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
     return SessionLogEntryInclude.internal_(
       logs: logs,
       queries: queries,
       messages: messages,
+      selectedColumns: select?.call(SessionLogEntry.t),
     );
   }
 
@@ -263,6 +265,7 @@ abstract class SessionLogEntry
     _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
     _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
     return SessionLogEntryIncludeList.internal_(
       where: where,
@@ -271,6 +274,7 @@ abstract class SessionLogEntry
       orderBy: orderBy?.call(SessionLogEntry.t),
       orderByList: orderByList?.call(SessionLogEntry.t),
       include: include,
+      selectedColumns: select?.call(SessionLogEntry.t),
     );
   }
 

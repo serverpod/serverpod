@@ -77,8 +77,12 @@ abstract class BigIntDefaultPersist
     };
   }
 
-  static BigIntDefaultPersistInclude include() {
-    return BigIntDefaultPersistInclude.internal_();
+  static BigIntDefaultPersistInclude include({
+    _is.SelectColumnsBuilder<BigIntDefaultPersistTable>? select,
+  }) {
+    return BigIntDefaultPersistInclude.internal_(
+      selectedColumns: select?.call(BigIntDefaultPersist.t),
+    );
   }
 
   static BigIntDefaultPersistIncludeList includeList({
@@ -88,6 +92,7 @@ abstract class BigIntDefaultPersist
     _is.OrderByBuilder<BigIntDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<BigIntDefaultPersistTable>? orderByList,
     BigIntDefaultPersistInclude? include,
+    _is.SelectColumnsBuilder<BigIntDefaultPersistTable>? select,
   }) {
     return BigIntDefaultPersistIncludeList.internal_(
       where: where,
@@ -96,6 +101,7 @@ abstract class BigIntDefaultPersist
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
       orderByList: orderByList?.call(BigIntDefaultPersist.t),
       include: include,
+      selectedColumns: select?.call(BigIntDefaultPersist.t),
     );
   }
 

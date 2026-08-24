@@ -122,8 +122,12 @@ abstract class CloudStorageEntry
     };
   }
 
-  static CloudStorageEntryInclude include() {
-    return CloudStorageEntryInclude.internal_();
+  static CloudStorageEntryInclude include({
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+  }) {
+    return CloudStorageEntryInclude.internal_(
+      selectedColumns: select?.call(CloudStorageEntry.t),
+    );
   }
 
   static CloudStorageEntryIncludeList includeList({
@@ -133,6 +137,7 @@ abstract class CloudStorageEntry
     _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
   }) {
     return CloudStorageEntryIncludeList.internal_(
       where: where,
@@ -141,6 +146,7 @@ abstract class CloudStorageEntry
       orderBy: orderBy?.call(CloudStorageEntry.t),
       orderByList: orderByList?.call(CloudStorageEntry.t),
       include: include,
+      selectedColumns: select?.call(CloudStorageEntry.t),
     );
   }
 

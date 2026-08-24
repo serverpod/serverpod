@@ -85,8 +85,12 @@ abstract class NullsDistinctData
     };
   }
 
-  static NullsDistinctDataInclude include() {
-    return NullsDistinctDataInclude.internal_();
+  static NullsDistinctDataInclude include({
+    _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+  }) {
+    return NullsDistinctDataInclude.internal_(
+      selectedColumns: select?.call(NullsDistinctData.t),
+    );
   }
 
   static NullsDistinctDataIncludeList includeList({
@@ -96,6 +100,7 @@ abstract class NullsDistinctData
     _isd.OrderByBuilder<NullsDistinctDataTable>? orderBy,
     _isd.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
     NullsDistinctDataInclude? include,
+    _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
   }) {
     return NullsDistinctDataIncludeList.internal_(
       where: where,
@@ -104,6 +109,7 @@ abstract class NullsDistinctData
       orderBy: orderBy?.call(NullsDistinctData.t),
       orderByList: orderByList?.call(NullsDistinctData.t),
       include: include,
+      selectedColumns: select?.call(NullsDistinctData.t),
     );
   }
 

@@ -122,8 +122,12 @@ abstract class FutureCallEntry
     };
   }
 
-  static FutureCallEntryInclude include() {
-    return FutureCallEntryInclude.internal_();
+  static FutureCallEntryInclude include({
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+  }) {
+    return FutureCallEntryInclude.internal_(
+      selectedColumns: select?.call(FutureCallEntry.t),
+    );
   }
 
   static FutureCallEntryIncludeList includeList({
@@ -133,6 +137,7 @@ abstract class FutureCallEntry
     _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
     _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
   }) {
     return FutureCallEntryIncludeList.internal_(
       where: where,
@@ -141,6 +146,7 @@ abstract class FutureCallEntry
       orderBy: orderBy?.call(FutureCallEntry.t),
       orderByList: orderByList?.call(FutureCallEntry.t),
       include: include,
+      selectedColumns: select?.call(FutureCallEntry.t),
     );
   }
 

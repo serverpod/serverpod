@@ -154,8 +154,10 @@ abstract class LogEntry
     };
   }
 
-  static LogEntryInclude include() {
-    return LogEntryInclude.internal_();
+  static LogEntryInclude include({
+    _is.SelectColumnsBuilder<LogEntryTable>? select,
+  }) {
+    return LogEntryInclude.internal_(selectedColumns: select?.call(LogEntry.t));
   }
 
   static LogEntryIncludeList includeList({
@@ -165,6 +167,7 @@ abstract class LogEntry
     _is.OrderByBuilder<LogEntryTable>? orderBy,
     _is.OrderByListBuilder<LogEntryTable>? orderByList,
     LogEntryInclude? include,
+    _is.SelectColumnsBuilder<LogEntryTable>? select,
   }) {
     return LogEntryIncludeList.internal_(
       where: where,
@@ -173,6 +176,7 @@ abstract class LogEntry
       orderBy: orderBy?.call(LogEntry.t),
       orderByList: orderByList?.call(LogEntry.t),
       include: include,
+      selectedColumns: select?.call(LogEntry.t),
     );
   }
 

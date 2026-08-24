@@ -107,10 +107,12 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
   static PostInclude include({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
+    _is.SelectColumnsBuilder<PostTable>? select,
   }) {
     return PostInclude.internal_(
       previous: previous,
       next: next,
+      selectedColumns: select?.call(Post.t),
     );
   }
 
@@ -121,6 +123,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<PostTable>? orderBy,
     _is.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
+    _is.SelectColumnsBuilder<PostTable>? select,
   }) {
     return PostIncludeList.internal_(
       where: where,
@@ -129,6 +132,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Post.t),
       orderByList: orderByList?.call(Post.t),
       include: include,
+      selectedColumns: select?.call(Post.t),
     );
   }
 

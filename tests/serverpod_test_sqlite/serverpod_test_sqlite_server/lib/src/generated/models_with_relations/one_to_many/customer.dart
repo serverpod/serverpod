@@ -86,8 +86,14 @@ abstract class Customer
     };
   }
 
-  static CustomerInclude include({_ig920ya2.OrderIncludeList? orders}) {
-    return CustomerInclude.internal_(orders: orders);
+  static CustomerInclude include({
+    _ig920ya2.OrderIncludeList? orders,
+    _is.SelectColumnsBuilder<CustomerTable>? select,
+  }) {
+    return CustomerInclude.internal_(
+      orders: orders,
+      selectedColumns: select?.call(Customer.t),
+    );
   }
 
   static CustomerIncludeList includeList({
@@ -97,6 +103,7 @@ abstract class Customer
     _is.OrderByBuilder<CustomerTable>? orderBy,
     _is.OrderByListBuilder<CustomerTable>? orderByList,
     CustomerInclude? include,
+    _is.SelectColumnsBuilder<CustomerTable>? select,
   }) {
     return CustomerIncludeList.internal_(
       where: where,
@@ -105,6 +112,7 @@ abstract class Customer
       orderBy: orderBy?.call(Customer.t),
       orderByList: orderByList?.call(Customer.t),
       include: include,
+      selectedColumns: select?.call(Customer.t),
     );
   }
 

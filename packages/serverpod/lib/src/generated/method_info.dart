@@ -79,8 +79,12 @@ abstract class MethodInfo
     };
   }
 
-  static MethodInfoInclude include() {
-    return MethodInfoInclude.internal_();
+  static MethodInfoInclude include({
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+  }) {
+    return MethodInfoInclude.internal_(
+      selectedColumns: select?.call(MethodInfo.t),
+    );
   }
 
   static MethodInfoIncludeList includeList({
@@ -90,6 +94,7 @@ abstract class MethodInfo
     _is.OrderByBuilder<MethodInfoTable>? orderBy,
     _is.OrderByListBuilder<MethodInfoTable>? orderByList,
     MethodInfoInclude? include,
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
   }) {
     return MethodInfoIncludeList.internal_(
       where: where,
@@ -98,6 +103,7 @@ abstract class MethodInfo
       orderBy: orderBy?.call(MethodInfo.t),
       orderByList: orderByList?.call(MethodInfo.t),
       include: include,
+      selectedColumns: select?.call(MethodInfo.t),
     );
   }
 

@@ -108,10 +108,12 @@ abstract class Blocking
   static BlockingInclude include({
     _iubhvl5a.MemberInclude? blocked,
     _iubhvl5a.MemberInclude? blockedBy,
+    _is.SelectColumnsBuilder<BlockingTable>? select,
   }) {
     return BlockingInclude.internal_(
       blocked: blocked,
       blockedBy: blockedBy,
+      selectedColumns: select?.call(Blocking.t),
     );
   }
 
@@ -122,6 +124,7 @@ abstract class Blocking
     _is.OrderByBuilder<BlockingTable>? orderBy,
     _is.OrderByListBuilder<BlockingTable>? orderByList,
     BlockingInclude? include,
+    _is.SelectColumnsBuilder<BlockingTable>? select,
   }) {
     return BlockingIncludeList.internal_(
       where: where,
@@ -130,6 +133,7 @@ abstract class Blocking
       orderBy: orderBy?.call(Blocking.t),
       orderByList: orderByList?.call(Blocking.t),
       include: include,
+      selectedColumns: select?.call(Blocking.t),
     );
   }
 

@@ -93,8 +93,14 @@ abstract class Contractor
     };
   }
 
-  static ContractorInclude include({_iml73r3x.ServiceInclude? service}) {
-    return ContractorInclude.internal_(service: service);
+  static ContractorInclude include({
+    _iml73r3x.ServiceInclude? service,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+  }) {
+    return ContractorInclude.internal_(
+      service: service,
+      selectedColumns: select?.call(Contractor.t),
+    );
   }
 
   static ContractorIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class Contractor
     _is.OrderByBuilder<ContractorTable>? orderBy,
     _is.OrderByListBuilder<ContractorTable>? orderByList,
     ContractorInclude? include,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
   }) {
     return ContractorIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class Contractor
       orderBy: orderBy?.call(Contractor.t),
       orderByList: orderByList?.call(Contractor.t),
       include: include,
+      selectedColumns: select?.call(Contractor.t),
     );
   }
 

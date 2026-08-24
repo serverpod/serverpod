@@ -85,8 +85,14 @@ abstract class Arena
     };
   }
 
-  static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
-    return ArenaInclude.internal_(team: team);
+  static ArenaInclude include({
+    _iaks25tn.TeamInclude? team,
+    _isd.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return ArenaInclude.internal_(
+      team: team,
+      selectedColumns: select?.call(Arena.t),
+    );
   }
 
   static ArenaIncludeList includeList({
@@ -96,6 +102,7 @@ abstract class Arena
     _isd.OrderByBuilder<ArenaTable>? orderBy,
     _isd.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
+    _isd.SelectColumnsBuilder<ArenaTable>? select,
   }) {
     return ArenaIncludeList.internal_(
       where: where,
@@ -104,6 +111,7 @@ abstract class Arena
       orderBy: orderBy?.call(Arena.t),
       orderByList: orderByList?.call(Arena.t),
       include: include,
+      selectedColumns: select?.call(Arena.t),
     );
   }
 

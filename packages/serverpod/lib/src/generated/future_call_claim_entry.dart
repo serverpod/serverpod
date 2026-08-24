@@ -84,8 +84,12 @@ abstract class FutureCallClaimEntry
     };
   }
 
-  static FutureCallClaimEntryInclude include() {
-    return FutureCallClaimEntryInclude.internal_();
+  static FutureCallClaimEntryInclude include({
+    _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
+  }) {
+    return FutureCallClaimEntryInclude.internal_(
+      selectedColumns: select?.call(FutureCallClaimEntry.t),
+    );
   }
 
   static FutureCallClaimEntryIncludeList includeList({
@@ -95,6 +99,7 @@ abstract class FutureCallClaimEntry
     _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
     _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
     FutureCallClaimEntryInclude? include,
+    _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
   }) {
     return FutureCallClaimEntryIncludeList.internal_(
       where: where,
@@ -103,6 +108,7 @@ abstract class FutureCallClaimEntry
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
       orderByList: orderByList?.call(FutureCallClaimEntry.t),
       include: include,
+      selectedColumns: select?.call(FutureCallClaimEntry.t),
     );
   }
 

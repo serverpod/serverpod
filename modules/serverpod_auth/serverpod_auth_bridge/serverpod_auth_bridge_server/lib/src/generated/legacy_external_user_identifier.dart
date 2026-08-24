@@ -100,8 +100,12 @@ abstract class LegacyExternalUserIdentifier
 
   static LegacyExternalUserIdentifierInclude include({
     _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
-    return LegacyExternalUserIdentifierInclude.internal_(authUser: authUser);
+    return LegacyExternalUserIdentifierInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(LegacyExternalUserIdentifier.t),
+    );
   }
 
   static LegacyExternalUserIdentifierIncludeList includeList({
@@ -111,6 +115,7 @@ abstract class LegacyExternalUserIdentifier
     _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
     _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     LegacyExternalUserIdentifierInclude? include,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
     return LegacyExternalUserIdentifierIncludeList.internal_(
       where: where,
@@ -119,6 +124,7 @@ abstract class LegacyExternalUserIdentifier
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
       orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
       include: include,
+      selectedColumns: select?.call(LegacyExternalUserIdentifier.t),
     );
   }
 

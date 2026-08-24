@@ -100,8 +100,12 @@ abstract class EmailCreateAccountRequest
     };
   }
 
-  static EmailCreateAccountRequestInclude include() {
-    return EmailCreateAccountRequestInclude.internal_();
+  static EmailCreateAccountRequestInclude include({
+    _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
+  }) {
+    return EmailCreateAccountRequestInclude.internal_(
+      selectedColumns: select?.call(EmailCreateAccountRequest.t),
+    );
   }
 
   static EmailCreateAccountRequestIncludeList includeList({
@@ -111,6 +115,7 @@ abstract class EmailCreateAccountRequest
     _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
     _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
     EmailCreateAccountRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
   }) {
     return EmailCreateAccountRequestIncludeList.internal_(
       where: where,
@@ -119,6 +124,7 @@ abstract class EmailCreateAccountRequest
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
       orderByList: orderByList?.call(EmailCreateAccountRequest.t),
       include: include,
+      selectedColumns: select?.call(EmailCreateAccountRequest.t),
     );
   }
 

@@ -119,8 +119,14 @@ abstract class MicrosoftAccount
     return {};
   }
 
-  static MicrosoftAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return MicrosoftAccountInclude.internal_(authUser: authUser);
+  static MicrosoftAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
+  }) {
+    return MicrosoftAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(MicrosoftAccount.t),
+    );
   }
 
   static MicrosoftAccountIncludeList includeList({
@@ -130,6 +136,7 @@ abstract class MicrosoftAccount
     _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
     _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
+    _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
   }) {
     return MicrosoftAccountIncludeList.internal_(
       where: where,
@@ -138,6 +145,7 @@ abstract class MicrosoftAccount
       orderBy: orderBy?.call(MicrosoftAccount.t),
       orderByList: orderByList?.call(MicrosoftAccount.t),
       include: include,
+      selectedColumns: select?.call(MicrosoftAccount.t),
     );
   }
 

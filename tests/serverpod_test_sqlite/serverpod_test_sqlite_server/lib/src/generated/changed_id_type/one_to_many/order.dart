@@ -112,10 +112,12 @@ abstract class OrderUuid
   static OrderUuidInclude include({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
   }) {
     return OrderUuidInclude.internal_(
       customer: customer,
       comments: comments,
+      selectedColumns: select?.call(OrderUuid.t),
     );
   }
 
@@ -126,6 +128,7 @@ abstract class OrderUuid
     _is.OrderByBuilder<OrderUuidTable>? orderBy,
     _is.OrderByListBuilder<OrderUuidTable>? orderByList,
     OrderUuidInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
   }) {
     return OrderUuidIncludeList.internal_(
       where: where,
@@ -134,6 +137,7 @@ abstract class OrderUuid
       orderBy: orderBy?.call(OrderUuid.t),
       orderByList: orderByList?.call(OrderUuid.t),
       include: include,
+      selectedColumns: select?.call(OrderUuid.t),
     );
   }
 

@@ -92,8 +92,14 @@ abstract class Comment
     };
   }
 
-  static CommentInclude include({_ig920ya2.OrderInclude? order}) {
-    return CommentInclude.internal_(order: order);
+  static CommentInclude include({
+    _ig920ya2.OrderInclude? order,
+    _is.SelectColumnsBuilder<CommentTable>? select,
+  }) {
+    return CommentInclude.internal_(
+      order: order,
+      selectedColumns: select?.call(Comment.t),
+    );
   }
 
   static CommentIncludeList includeList({
@@ -103,6 +109,7 @@ abstract class Comment
     _is.OrderByBuilder<CommentTable>? orderBy,
     _is.OrderByListBuilder<CommentTable>? orderByList,
     CommentInclude? include,
+    _is.SelectColumnsBuilder<CommentTable>? select,
   }) {
     return CommentIncludeList.internal_(
       where: where,
@@ -111,6 +118,7 @@ abstract class Comment
       orderBy: orderBy?.call(Comment.t),
       orderByList: orderByList?.call(Comment.t),
       include: include,
+      selectedColumns: select?.call(Comment.t),
     );
   }
 

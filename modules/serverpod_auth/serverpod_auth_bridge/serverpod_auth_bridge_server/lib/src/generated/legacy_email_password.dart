@@ -97,8 +97,12 @@ abstract class LegacyEmailPassword
 
   static LegacyEmailPasswordInclude include({
     _iais.EmailAccountInclude? emailAccount,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
-    return LegacyEmailPasswordInclude.internal_(emailAccount: emailAccount);
+    return LegacyEmailPasswordInclude.internal_(
+      emailAccount: emailAccount,
+      selectedColumns: select?.call(LegacyEmailPassword.t),
+    );
   }
 
   static LegacyEmailPasswordIncludeList includeList({
@@ -108,6 +112,7 @@ abstract class LegacyEmailPassword
     _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     LegacyEmailPasswordInclude? include,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
     return LegacyEmailPasswordIncludeList.internal_(
       where: where,
@@ -116,6 +121,7 @@ abstract class LegacyEmailPassword
       orderBy: orderBy?.call(LegacyEmailPassword.t),
       orderByList: orderByList?.call(LegacyEmailPassword.t),
       include: include,
+      selectedColumns: select?.call(LegacyEmailPassword.t),
     );
   }
 

@@ -149,12 +149,14 @@ abstract class ChangedIdTypeSelf
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
     return ChangedIdTypeSelfInclude.internal_(
       previous: previous,
       next: next,
       parent: parent,
       children: children,
+      selectedColumns: select?.call(ChangedIdTypeSelf.t),
     );
   }
 
@@ -165,6 +167,7 @@ abstract class ChangedIdTypeSelf
     _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
     return ChangedIdTypeSelfIncludeList.internal_(
       where: where,
@@ -173,6 +176,7 @@ abstract class ChangedIdTypeSelf
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
       orderByList: orderByList?.call(ChangedIdTypeSelf.t),
       include: include,
+      selectedColumns: select?.call(ChangedIdTypeSelf.t),
     );
   }
 

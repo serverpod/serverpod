@@ -84,8 +84,12 @@ abstract class SharedModuleTable
     };
   }
 
-  static SharedModuleTableInclude include() {
-    return SharedModuleTableInclude.internal_();
+  static SharedModuleTableInclude include({
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+  }) {
+    return SharedModuleTableInclude.internal_(
+      selectedColumns: select?.call(SharedModuleTable.t),
+    );
   }
 
   static SharedModuleTableIncludeList includeList({
@@ -95,6 +99,7 @@ abstract class SharedModuleTable
     _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
     _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
     SharedModuleTableInclude? include,
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
   }) {
     return SharedModuleTableIncludeList.internal_(
       where: where,
@@ -103,6 +108,7 @@ abstract class SharedModuleTable
       orderBy: orderBy?.call(SharedModuleTable.t),
       orderByList: orderByList?.call(SharedModuleTable.t),
       include: include,
+      selectedColumns: select?.call(SharedModuleTable.t),
     );
   }
 

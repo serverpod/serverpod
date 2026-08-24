@@ -110,8 +110,10 @@ abstract class AuthKey
     };
   }
 
-  static AuthKeyInclude include() {
-    return AuthKeyInclude.internal_();
+  static AuthKeyInclude include({
+    _is.SelectColumnsBuilder<AuthKeyTable>? select,
+  }) {
+    return AuthKeyInclude.internal_(selectedColumns: select?.call(AuthKey.t));
   }
 
   static AuthKeyIncludeList includeList({
@@ -121,6 +123,7 @@ abstract class AuthKey
     _is.OrderByBuilder<AuthKeyTable>? orderBy,
     _is.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
+    _is.SelectColumnsBuilder<AuthKeyTable>? select,
   }) {
     return AuthKeyIncludeList.internal_(
       where: where,
@@ -129,6 +132,7 @@ abstract class AuthKey
       orderBy: orderBy?.call(AuthKey.t),
       orderByList: orderByList?.call(AuthKey.t),
       include: include,
+      selectedColumns: select?.call(AuthKey.t),
     );
   }
 

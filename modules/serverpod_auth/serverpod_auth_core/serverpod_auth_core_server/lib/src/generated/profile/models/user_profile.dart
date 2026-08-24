@@ -163,10 +163,12 @@ abstract class UserProfile
   static UserProfileInclude include({
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
     return UserProfileInclude.internal_(
       authUser: authUser,
       image: image,
+      selectedColumns: select?.call(UserProfile.t),
     );
   }
 
@@ -177,6 +179,7 @@ abstract class UserProfile
     _is.OrderByBuilder<UserProfileTable>? orderBy,
     _is.OrderByListBuilder<UserProfileTable>? orderByList,
     UserProfileInclude? include,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
     return UserProfileIncludeList.internal_(
       where: where,
@@ -185,6 +188,7 @@ abstract class UserProfile
       orderBy: orderBy?.call(UserProfile.t),
       orderByList: orderByList?.call(UserProfile.t),
       include: include,
+      selectedColumns: select?.call(UserProfile.t),
     );
   }
 

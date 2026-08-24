@@ -88,8 +88,12 @@ abstract class UriDefaultModel
     };
   }
 
-  static UriDefaultModelInclude include() {
-    return UriDefaultModelInclude.internal_();
+  static UriDefaultModelInclude include({
+    _is.SelectColumnsBuilder<UriDefaultModelTable>? select,
+  }) {
+    return UriDefaultModelInclude.internal_(
+      selectedColumns: select?.call(UriDefaultModel.t),
+    );
   }
 
   static UriDefaultModelIncludeList includeList({
@@ -99,6 +103,7 @@ abstract class UriDefaultModel
     _is.OrderByBuilder<UriDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<UriDefaultModelTable>? orderByList,
     UriDefaultModelInclude? include,
+    _is.SelectColumnsBuilder<UriDefaultModelTable>? select,
   }) {
     return UriDefaultModelIncludeList.internal_(
       where: where,
@@ -107,6 +112,7 @@ abstract class UriDefaultModel
       orderBy: orderBy?.call(UriDefaultModel.t),
       orderByList: orderByList?.call(UriDefaultModel.t),
       include: include,
+      selectedColumns: select?.call(UriDefaultModel.t),
     );
   }
 

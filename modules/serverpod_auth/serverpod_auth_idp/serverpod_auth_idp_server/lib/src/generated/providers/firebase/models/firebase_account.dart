@@ -127,8 +127,14 @@ abstract class FirebaseAccount
     return {};
   }
 
-  static FirebaseAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return FirebaseAccountInclude.internal_(authUser: authUser);
+  static FirebaseAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+  }) {
+    return FirebaseAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(FirebaseAccount.t),
+    );
   }
 
   static FirebaseAccountIncludeList includeList({
@@ -138,6 +144,7 @@ abstract class FirebaseAccount
     _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
     _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
     FirebaseAccountInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
   }) {
     return FirebaseAccountIncludeList.internal_(
       where: where,
@@ -146,6 +153,7 @@ abstract class FirebaseAccount
       orderBy: orderBy?.call(FirebaseAccount.t),
       orderByList: orderByList?.call(FirebaseAccount.t),
       include: include,
+      selectedColumns: select?.call(FirebaseAccount.t),
     );
   }
 

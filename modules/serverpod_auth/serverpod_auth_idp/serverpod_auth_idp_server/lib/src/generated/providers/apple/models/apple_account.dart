@@ -199,8 +199,14 @@ abstract class AppleAccount
     return {};
   }
 
-  static AppleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return AppleAccountInclude.internal_(authUser: authUser);
+  static AppleAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+  }) {
+    return AppleAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(AppleAccount.t),
+    );
   }
 
   static AppleAccountIncludeList includeList({
@@ -210,6 +216,7 @@ abstract class AppleAccount
     _is.OrderByBuilder<AppleAccountTable>? orderBy,
     _is.OrderByListBuilder<AppleAccountTable>? orderByList,
     AppleAccountInclude? include,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
   }) {
     return AppleAccountIncludeList.internal_(
       where: where,
@@ -218,6 +225,7 @@ abstract class AppleAccount
       orderBy: orderBy?.call(AppleAccount.t),
       orderByList: orderByList?.call(AppleAccount.t),
       include: include,
+      selectedColumns: select?.call(AppleAccount.t),
     );
   }
 

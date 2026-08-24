@@ -130,8 +130,12 @@ abstract class UserProfileImage
 
   static UserProfileImageInclude include({
     _ixqiikps.UserProfileInclude? userProfile,
+    _is.SelectColumnsBuilder<UserProfileImageTable>? select,
   }) {
-    return UserProfileImageInclude.internal_(userProfile: userProfile);
+    return UserProfileImageInclude.internal_(
+      userProfile: userProfile,
+      selectedColumns: select?.call(UserProfileImage.t),
+    );
   }
 
   static UserProfileImageIncludeList includeList({
@@ -141,6 +145,7 @@ abstract class UserProfileImage
     _is.OrderByBuilder<UserProfileImageTable>? orderBy,
     _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
     UserProfileImageInclude? include,
+    _is.SelectColumnsBuilder<UserProfileImageTable>? select,
   }) {
     return UserProfileImageIncludeList.internal_(
       where: where,
@@ -149,6 +154,7 @@ abstract class UserProfileImage
       orderBy: orderBy?.call(UserProfileImage.t),
       orderByList: orderByList?.call(UserProfileImage.t),
       include: include,
+      selectedColumns: select?.call(UserProfileImage.t),
     );
   }
 

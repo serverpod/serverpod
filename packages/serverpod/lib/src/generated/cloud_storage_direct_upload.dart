@@ -101,8 +101,12 @@ abstract class CloudStorageDirectUploadEntry
     };
   }
 
-  static CloudStorageDirectUploadEntryInclude include() {
-    return CloudStorageDirectUploadEntryInclude.internal_();
+  static CloudStorageDirectUploadEntryInclude include({
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+  }) {
+    return CloudStorageDirectUploadEntryInclude.internal_(
+      selectedColumns: select?.call(CloudStorageDirectUploadEntry.t),
+    );
   }
 
   static CloudStorageDirectUploadEntryIncludeList includeList({
@@ -112,6 +116,7 @@ abstract class CloudStorageDirectUploadEntry
     _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
   }) {
     return CloudStorageDirectUploadEntryIncludeList.internal_(
       where: where,
@@ -120,6 +125,7 @@ abstract class CloudStorageDirectUploadEntry
       orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
       orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
       include: include,
+      selectedColumns: select?.call(CloudStorageDirectUploadEntry.t),
     );
   }
 

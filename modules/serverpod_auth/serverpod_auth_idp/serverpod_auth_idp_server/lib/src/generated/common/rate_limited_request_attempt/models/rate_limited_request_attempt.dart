@@ -125,8 +125,12 @@ abstract class RateLimitedRequestAttempt
     return {};
   }
 
-  static RateLimitedRequestAttemptInclude include() {
-    return RateLimitedRequestAttemptInclude.internal_();
+  static RateLimitedRequestAttemptInclude include({
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+  }) {
+    return RateLimitedRequestAttemptInclude.internal_(
+      selectedColumns: select?.call(RateLimitedRequestAttempt.t),
+    );
   }
 
   static RateLimitedRequestAttemptIncludeList includeList({
@@ -136,6 +140,7 @@ abstract class RateLimitedRequestAttempt
     _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
     _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
   }) {
     return RateLimitedRequestAttemptIncludeList.internal_(
       where: where,
@@ -144,6 +149,7 @@ abstract class RateLimitedRequestAttempt
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
       orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
       include: include,
+      selectedColumns: select?.call(RateLimitedRequestAttempt.t),
     );
   }
 

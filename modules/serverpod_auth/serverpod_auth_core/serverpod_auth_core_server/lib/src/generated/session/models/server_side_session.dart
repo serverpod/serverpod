@@ -184,8 +184,12 @@ abstract class ServerSideSession
 
   static ServerSideSessionInclude include({
     _ivyervu7.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
   }) {
-    return ServerSideSessionInclude.internal_(authUser: authUser);
+    return ServerSideSessionInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(ServerSideSession.t),
+    );
   }
 
   static ServerSideSessionIncludeList includeList({
@@ -195,6 +199,7 @@ abstract class ServerSideSession
     _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
     _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     ServerSideSessionInclude? include,
+    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
   }) {
     return ServerSideSessionIncludeList.internal_(
       where: where,
@@ -203,6 +208,7 @@ abstract class ServerSideSession
       orderBy: orderBy?.call(ServerSideSession.t),
       orderByList: orderByList?.call(ServerSideSession.t),
       include: include,
+      selectedColumns: select?.call(ServerSideSession.t),
     );
   }
 

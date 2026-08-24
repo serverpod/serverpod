@@ -94,8 +94,14 @@ abstract class CommentInt
     };
   }
 
-  static CommentIntInclude include({_ivss21qh.OrderUuidInclude? order}) {
-    return CommentIntInclude.internal_(order: order);
+  static CommentIntInclude include({
+    _ivss21qh.OrderUuidInclude? order,
+    _is.SelectColumnsBuilder<CommentIntTable>? select,
+  }) {
+    return CommentIntInclude.internal_(
+      order: order,
+      selectedColumns: select?.call(CommentInt.t),
+    );
   }
 
   static CommentIntIncludeList includeList({
@@ -105,6 +111,7 @@ abstract class CommentInt
     _is.OrderByBuilder<CommentIntTable>? orderBy,
     _is.OrderByListBuilder<CommentIntTable>? orderByList,
     CommentIntInclude? include,
+    _is.SelectColumnsBuilder<CommentIntTable>? select,
   }) {
     return CommentIntIncludeList.internal_(
       where: where,
@@ -113,6 +120,7 @@ abstract class CommentInt
       orderBy: orderBy?.call(CommentInt.t),
       orderByList: orderByList?.call(CommentInt.t),
       include: include,
+      selectedColumns: select?.call(CommentInt.t),
     );
   }
 

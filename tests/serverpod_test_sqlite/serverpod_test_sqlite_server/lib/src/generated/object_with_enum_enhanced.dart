@@ -132,8 +132,12 @@ abstract class ObjectWithEnumEnhanced
     };
   }
 
-  static ObjectWithEnumEnhancedInclude include() {
-    return ObjectWithEnumEnhancedInclude.internal_();
+  static ObjectWithEnumEnhancedInclude include({
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+  }) {
+    return ObjectWithEnumEnhancedInclude.internal_(
+      selectedColumns: select?.call(ObjectWithEnumEnhanced.t),
+    );
   }
 
   static ObjectWithEnumEnhancedIncludeList includeList({
@@ -143,6 +147,7 @@ abstract class ObjectWithEnumEnhanced
     _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     ObjectWithEnumEnhancedInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
   }) {
     return ObjectWithEnumEnhancedIncludeList.internal_(
       where: where,
@@ -151,6 +156,7 @@ abstract class ObjectWithEnumEnhanced
       orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
       orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithEnumEnhanced.t),
     );
   }
 

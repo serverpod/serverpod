@@ -90,8 +90,12 @@ abstract class BoolDefaultPersist
     };
   }
 
-  static BoolDefaultPersistInclude include() {
-    return BoolDefaultPersistInclude.internal_();
+  static BoolDefaultPersistInclude include({
+    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
+  }) {
+    return BoolDefaultPersistInclude.internal_(
+      selectedColumns: select?.call(BoolDefaultPersist.t),
+    );
   }
 
   static BoolDefaultPersistIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class BoolDefaultPersist
     _is.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     BoolDefaultPersistInclude? include,
+    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
   }) {
     return BoolDefaultPersistIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class BoolDefaultPersist
       orderBy: orderBy?.call(BoolDefaultPersist.t),
       orderByList: orderByList?.call(BoolDefaultPersist.t),
       include: include,
+      selectedColumns: select?.call(BoolDefaultPersist.t),
     );
   }
 

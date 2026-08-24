@@ -121,8 +121,12 @@ abstract class EnumDefault
     };
   }
 
-  static EnumDefaultInclude include() {
-    return EnumDefaultInclude.internal_();
+  static EnumDefaultInclude include({
+    _is.SelectColumnsBuilder<EnumDefaultTable>? select,
+  }) {
+    return EnumDefaultInclude.internal_(
+      selectedColumns: select?.call(EnumDefault.t),
+    );
   }
 
   static EnumDefaultIncludeList includeList({
@@ -132,6 +136,7 @@ abstract class EnumDefault
     _is.OrderByBuilder<EnumDefaultTable>? orderBy,
     _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
     EnumDefaultInclude? include,
+    _is.SelectColumnsBuilder<EnumDefaultTable>? select,
   }) {
     return EnumDefaultIncludeList.internal_(
       where: where,
@@ -140,6 +145,7 @@ abstract class EnumDefault
       orderBy: orderBy?.call(EnumDefault.t),
       orderByList: orderByList?.call(EnumDefault.t),
       include: include,
+      selectedColumns: select?.call(EnumDefault.t),
     );
   }
 

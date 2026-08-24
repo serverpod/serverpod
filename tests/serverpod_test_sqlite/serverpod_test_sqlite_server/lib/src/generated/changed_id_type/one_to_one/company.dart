@@ -94,8 +94,14 @@ abstract class CompanyUuid
     };
   }
 
-  static CompanyUuidInclude include({_i3qwzvq1.TownIntInclude? town}) {
-    return CompanyUuidInclude.internal_(town: town);
+  static CompanyUuidInclude include({
+    _i3qwzvq1.TownIntInclude? town,
+    _is.SelectColumnsBuilder<CompanyUuidTable>? select,
+  }) {
+    return CompanyUuidInclude.internal_(
+      town: town,
+      selectedColumns: select?.call(CompanyUuid.t),
+    );
   }
 
   static CompanyUuidIncludeList includeList({
@@ -105,6 +111,7 @@ abstract class CompanyUuid
     _is.OrderByBuilder<CompanyUuidTable>? orderBy,
     _is.OrderByListBuilder<CompanyUuidTable>? orderByList,
     CompanyUuidInclude? include,
+    _is.SelectColumnsBuilder<CompanyUuidTable>? select,
   }) {
     return CompanyUuidIncludeList.internal_(
       where: where,
@@ -113,6 +120,7 @@ abstract class CompanyUuid
       orderBy: orderBy?.call(CompanyUuid.t),
       orderByList: orderByList?.call(CompanyUuid.t),
       include: include,
+      selectedColumns: select?.call(CompanyUuid.t),
     );
   }
 

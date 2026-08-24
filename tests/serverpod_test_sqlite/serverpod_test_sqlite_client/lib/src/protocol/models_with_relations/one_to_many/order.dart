@@ -111,10 +111,12 @@ abstract class Order
   static OrderInclude include({
     _i3fqgdb1.CustomerInclude? customer,
     _ij3ynzrj.CommentIncludeList? comments,
+    _isd.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderInclude.internal_(
       customer: customer,
       comments: comments,
+      selectedColumns: select?.call(Order.t),
     );
   }
 
@@ -125,6 +127,7 @@ abstract class Order
     _isd.OrderByBuilder<OrderTable>? orderBy,
     _isd.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
+    _isd.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderIncludeList.internal_(
       where: where,
@@ -133,6 +136,7 @@ abstract class Order
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
       include: include,
+      selectedColumns: select?.call(Order.t),
     );
   }
 

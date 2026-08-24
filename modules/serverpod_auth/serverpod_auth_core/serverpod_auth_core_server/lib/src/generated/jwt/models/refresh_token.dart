@@ -179,8 +179,14 @@ abstract class RefreshToken
     return {};
   }
 
-  static RefreshTokenInclude include({_ivyervu7.AuthUserInclude? authUser}) {
-    return RefreshTokenInclude.internal_(authUser: authUser);
+  static RefreshTokenInclude include({
+    _ivyervu7.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+  }) {
+    return RefreshTokenInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(RefreshToken.t),
+    );
   }
 
   static RefreshTokenIncludeList includeList({
@@ -190,6 +196,7 @@ abstract class RefreshToken
     _is.OrderByBuilder<RefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     RefreshTokenInclude? include,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
   }) {
     return RefreshTokenIncludeList.internal_(
       where: where,
@@ -198,6 +205,7 @@ abstract class RefreshToken
       orderBy: orderBy?.call(RefreshToken.t),
       orderByList: orderByList?.call(RefreshToken.t),
       include: include,
+      selectedColumns: select?.call(RefreshToken.t),
     );
   }
 

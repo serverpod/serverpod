@@ -333,8 +333,8 @@ abstract class Types
     };
   }
 
-  static TypesInclude include() {
-    return TypesInclude.internal_();
+  static TypesInclude include({_isd.SelectColumnsBuilder<TypesTable>? select}) {
+    return TypesInclude.internal_(selectedColumns: select?.call(Types.t));
   }
 
   static TypesIncludeList includeList({
@@ -344,6 +344,7 @@ abstract class Types
     _isd.OrderByBuilder<TypesTable>? orderBy,
     _isd.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
+    _isd.SelectColumnsBuilder<TypesTable>? select,
   }) {
     return TypesIncludeList.internal_(
       where: where,
@@ -352,6 +353,7 @@ abstract class Types
       orderBy: orderBy?.call(Types.t),
       orderByList: orderByList?.call(Types.t),
       include: include,
+      selectedColumns: select?.call(Types.t),
     );
   }
 

@@ -119,8 +119,14 @@ abstract class GitHubAccount
     return {};
   }
 
-  static GitHubAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return GitHubAccountInclude.internal_(authUser: authUser);
+  static GitHubAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+  }) {
+    return GitHubAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(GitHubAccount.t),
+    );
   }
 
   static GitHubAccountIncludeList includeList({
@@ -130,6 +136,7 @@ abstract class GitHubAccount
     _is.OrderByBuilder<GitHubAccountTable>? orderBy,
     _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
     GitHubAccountInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
   }) {
     return GitHubAccountIncludeList.internal_(
       where: where,
@@ -138,6 +145,7 @@ abstract class GitHubAccount
       orderBy: orderBy?.call(GitHubAccount.t),
       orderByList: orderByList?.call(GitHubAccount.t),
       include: include,
+      selectedColumns: select?.call(GitHubAccount.t),
     );
   }
 

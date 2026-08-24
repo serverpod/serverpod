@@ -103,8 +103,12 @@ abstract class ChallengeTracker
 
   static ChallengeTrackerInclude include({
     _iais.SecretChallengeInclude? secretChallenge,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
   }) {
-    return ChallengeTrackerInclude.internal_(secretChallenge: secretChallenge);
+    return ChallengeTrackerInclude.internal_(
+      secretChallenge: secretChallenge,
+      selectedColumns: select?.call(ChallengeTracker.t),
+    );
   }
 
   static ChallengeTrackerIncludeList includeList({
@@ -114,6 +118,7 @@ abstract class ChallengeTracker
     _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
     _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
     ChallengeTrackerInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
   }) {
     return ChallengeTrackerIncludeList.internal_(
       where: where,
@@ -122,6 +127,7 @@ abstract class ChallengeTracker
       orderBy: orderBy?.call(ChallengeTracker.t),
       orderByList: orderByList?.call(ChallengeTracker.t),
       include: include,
+      selectedColumns: select?.call(ChallengeTracker.t),
     );
   }
 

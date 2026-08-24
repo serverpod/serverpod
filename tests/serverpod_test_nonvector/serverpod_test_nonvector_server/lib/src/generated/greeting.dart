@@ -90,8 +90,10 @@ abstract class Greeting
     };
   }
 
-  static GreetingInclude include() {
-    return GreetingInclude.internal_();
+  static GreetingInclude include({
+    _is.SelectColumnsBuilder<GreetingTable>? select,
+  }) {
+    return GreetingInclude.internal_(selectedColumns: select?.call(Greeting.t));
   }
 
   static GreetingIncludeList includeList({
@@ -101,6 +103,7 @@ abstract class Greeting
     _is.OrderByBuilder<GreetingTable>? orderBy,
     _is.OrderByListBuilder<GreetingTable>? orderByList,
     GreetingInclude? include,
+    _is.SelectColumnsBuilder<GreetingTable>? select,
   }) {
     return GreetingIncludeList.internal_(
       where: where,
@@ -109,6 +112,7 @@ abstract class Greeting
       orderBy: orderBy?.call(Greeting.t),
       orderByList: orderByList?.call(Greeting.t),
       include: include,
+      selectedColumns: select?.call(Greeting.t),
     );
   }
 

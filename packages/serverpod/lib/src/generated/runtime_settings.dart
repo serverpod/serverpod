@@ -113,8 +113,12 @@ abstract class RuntimeSettings
     };
   }
 
-  static RuntimeSettingsInclude include() {
-    return RuntimeSettingsInclude.internal_();
+  static RuntimeSettingsInclude include({
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+  }) {
+    return RuntimeSettingsInclude.internal_(
+      selectedColumns: select?.call(RuntimeSettings.t),
+    );
   }
 
   static RuntimeSettingsIncludeList includeList({
@@ -124,6 +128,7 @@ abstract class RuntimeSettings
     _is.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
   }) {
     return RuntimeSettingsIncludeList.internal_(
       where: where,
@@ -132,6 +137,7 @@ abstract class RuntimeSettings
       orderBy: orderBy?.call(RuntimeSettings.t),
       orderByList: orderByList?.call(RuntimeSettings.t),
       include: include,
+      selectedColumns: select?.call(RuntimeSettings.t),
     );
   }
 

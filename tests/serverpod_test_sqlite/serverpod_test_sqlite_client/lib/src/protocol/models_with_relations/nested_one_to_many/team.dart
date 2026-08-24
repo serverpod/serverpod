@@ -111,10 +111,12 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   static TeamInclude include({
     _iv085ahk.ArenaInclude? arena,
     _i9mhudyy.PlayerIncludeList? players,
+    _isd.SelectColumnsBuilder<TeamTable>? select,
   }) {
     return TeamInclude.internal_(
       arena: arena,
       players: players,
+      selectedColumns: select?.call(Team.t),
     );
   }
 
@@ -125,6 +127,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<TeamTable>? orderBy,
     _isd.OrderByListBuilder<TeamTable>? orderByList,
     TeamInclude? include,
+    _isd.SelectColumnsBuilder<TeamTable>? select,
   }) {
     return TeamIncludeList.internal_(
       where: where,
@@ -133,6 +136,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
       orderBy: orderBy?.call(Team.t),
       orderByList: orderByList?.call(Team.t),
       include: include,
+      selectedColumns: select?.call(Team.t),
     );
   }
 

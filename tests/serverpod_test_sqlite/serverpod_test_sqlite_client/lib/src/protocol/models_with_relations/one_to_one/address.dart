@@ -93,8 +93,14 @@ abstract class Address
     };
   }
 
-  static AddressInclude include({_igho3lba.CitizenInclude? inhabitant}) {
-    return AddressInclude.internal_(inhabitant: inhabitant);
+  static AddressInclude include({
+    _igho3lba.CitizenInclude? inhabitant,
+    _isd.SelectColumnsBuilder<AddressTable>? select,
+  }) {
+    return AddressInclude.internal_(
+      inhabitant: inhabitant,
+      selectedColumns: select?.call(Address.t),
+    );
   }
 
   static AddressIncludeList includeList({
@@ -104,6 +110,7 @@ abstract class Address
     _isd.OrderByBuilder<AddressTable>? orderBy,
     _isd.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
+    _isd.SelectColumnsBuilder<AddressTable>? select,
   }) {
     return AddressIncludeList.internal_(
       where: where,
@@ -112,6 +119,7 @@ abstract class Address
       orderBy: orderBy?.call(Address.t),
       orderByList: orderByList?.call(Address.t),
       include: include,
+      selectedColumns: select?.call(Address.t),
     );
   }
 

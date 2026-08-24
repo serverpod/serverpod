@@ -107,10 +107,12 @@ abstract class Member
   static MemberInclude include({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
+    _isd.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return MemberInclude.internal_(
       blocking: blocking,
       blockedBy: blockedBy,
+      selectedColumns: select?.call(Member.t),
     );
   }
 
@@ -121,6 +123,7 @@ abstract class Member
     _isd.OrderByBuilder<MemberTable>? orderBy,
     _isd.OrderByListBuilder<MemberTable>? orderByList,
     MemberInclude? include,
+    _isd.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return MemberIncludeList.internal_(
       where: where,
@@ -129,6 +132,7 @@ abstract class Member
       orderBy: orderBy?.call(Member.t),
       orderByList: orderByList?.call(Member.t),
       include: include,
+      selectedColumns: select?.call(Member.t),
     );
   }
 

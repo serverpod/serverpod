@@ -89,8 +89,12 @@ abstract class EmailFailedSignIn
     };
   }
 
-  static EmailFailedSignInInclude include() {
-    return EmailFailedSignInInclude.internal_();
+  static EmailFailedSignInInclude include({
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+  }) {
+    return EmailFailedSignInInclude.internal_(
+      selectedColumns: select?.call(EmailFailedSignIn.t),
+    );
   }
 
   static EmailFailedSignInIncludeList includeList({
@@ -100,6 +104,7 @@ abstract class EmailFailedSignIn
     _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
   }) {
     return EmailFailedSignInIncludeList.internal_(
       where: where,
@@ -108,6 +113,7 @@ abstract class EmailFailedSignIn
       orderBy: orderBy?.call(EmailFailedSignIn.t),
       orderByList: orderByList?.call(EmailFailedSignIn.t),
       include: include,
+      selectedColumns: select?.call(EmailFailedSignIn.t),
     );
   }
 

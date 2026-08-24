@@ -88,8 +88,12 @@ abstract class EmailAuth
     };
   }
 
-  static EmailAuthInclude include() {
-    return EmailAuthInclude.internal_();
+  static EmailAuthInclude include({
+    _is.SelectColumnsBuilder<EmailAuthTable>? select,
+  }) {
+    return EmailAuthInclude.internal_(
+      selectedColumns: select?.call(EmailAuth.t),
+    );
   }
 
   static EmailAuthIncludeList includeList({
@@ -99,6 +103,7 @@ abstract class EmailAuth
     _is.OrderByBuilder<EmailAuthTable>? orderBy,
     _is.OrderByListBuilder<EmailAuthTable>? orderByList,
     EmailAuthInclude? include,
+    _is.SelectColumnsBuilder<EmailAuthTable>? select,
   }) {
     return EmailAuthIncludeList.internal_(
       where: where,
@@ -107,6 +112,7 @@ abstract class EmailAuth
       orderBy: orderBy?.call(EmailAuth.t),
       orderByList: orderByList?.call(EmailAuth.t),
       include: include,
+      selectedColumns: select?.call(EmailAuth.t),
     );
   }
 

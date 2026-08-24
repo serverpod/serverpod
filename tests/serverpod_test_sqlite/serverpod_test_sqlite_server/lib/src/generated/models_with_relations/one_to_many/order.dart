@@ -109,10 +109,12 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
   static OrderInclude include({
     _i3fqgdb1.CustomerInclude? customer,
     _ij3ynzrj.CommentIncludeList? comments,
+    _is.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderInclude.internal_(
       customer: customer,
       comments: comments,
+      selectedColumns: select?.call(Order.t),
     );
   }
 
@@ -123,6 +125,7 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<OrderTable>? orderBy,
     _is.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
+    _is.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderIncludeList.internal_(
       where: where,
@@ -131,6 +134,7 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
       orderBy: orderBy?.call(Order.t),
       orderByList: orderByList?.call(Order.t),
       include: include,
+      selectedColumns: select?.call(Order.t),
     );
   }
 

@@ -71,8 +71,12 @@ abstract class ReadWriteTestEntry
     };
   }
 
-  static ReadWriteTestEntryInclude include() {
-    return ReadWriteTestEntryInclude.internal_();
+  static ReadWriteTestEntryInclude include({
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+  }) {
+    return ReadWriteTestEntryInclude.internal_(
+      selectedColumns: select?.call(ReadWriteTestEntry.t),
+    );
   }
 
   static ReadWriteTestEntryIncludeList includeList({
@@ -82,6 +86,7 @@ abstract class ReadWriteTestEntry
     _is.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
   }) {
     return ReadWriteTestEntryIncludeList.internal_(
       where: where,
@@ -90,6 +95,7 @@ abstract class ReadWriteTestEntry
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
       orderByList: orderByList?.call(ReadWriteTestEntry.t),
       include: include,
+      selectedColumns: select?.call(ReadWriteTestEntry.t),
     );
   }
 

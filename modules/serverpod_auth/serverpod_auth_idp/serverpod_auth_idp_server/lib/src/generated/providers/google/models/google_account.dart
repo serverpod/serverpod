@@ -117,8 +117,14 @@ abstract class GoogleAccount
     return {};
   }
 
-  static GoogleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return GoogleAccountInclude.internal_(authUser: authUser);
+  static GoogleAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+  }) {
+    return GoogleAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(GoogleAccount.t),
+    );
   }
 
   static GoogleAccountIncludeList includeList({
@@ -128,6 +134,7 @@ abstract class GoogleAccount
     _is.OrderByBuilder<GoogleAccountTable>? orderBy,
     _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
     GoogleAccountInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
   }) {
     return GoogleAccountIncludeList.internal_(
       where: where,
@@ -136,6 +143,7 @@ abstract class GoogleAccount
       orderBy: orderBy?.call(GoogleAccount.t),
       orderByList: orderByList?.call(GoogleAccount.t),
       include: include,
+      selectedColumns: select?.call(GoogleAccount.t),
     );
   }
 

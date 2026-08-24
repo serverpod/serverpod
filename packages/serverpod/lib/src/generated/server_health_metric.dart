@@ -120,8 +120,12 @@ abstract class ServerHealthMetric
     };
   }
 
-  static ServerHealthMetricInclude include() {
-    return ServerHealthMetricInclude.internal_();
+  static ServerHealthMetricInclude include({
+    _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
+  }) {
+    return ServerHealthMetricInclude.internal_(
+      selectedColumns: select?.call(ServerHealthMetric.t),
+    );
   }
 
   static ServerHealthMetricIncludeList includeList({
@@ -131,6 +135,7 @@ abstract class ServerHealthMetric
     _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
     _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
     ServerHealthMetricInclude? include,
+    _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
   }) {
     return ServerHealthMetricIncludeList.internal_(
       where: where,
@@ -139,6 +144,7 @@ abstract class ServerHealthMetric
       orderBy: orderBy?.call(ServerHealthMetric.t),
       orderByList: orderByList?.call(ServerHealthMetric.t),
       include: include,
+      selectedColumns: select?.call(ServerHealthMetric.t),
     );
   }
 

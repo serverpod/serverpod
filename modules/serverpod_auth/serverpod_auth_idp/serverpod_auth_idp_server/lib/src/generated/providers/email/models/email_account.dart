@@ -116,8 +116,14 @@ abstract class EmailAccount
     return {};
   }
 
-  static EmailAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return EmailAccountInclude.internal_(authUser: authUser);
+  static EmailAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+  }) {
+    return EmailAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(EmailAccount.t),
+    );
   }
 
   static EmailAccountIncludeList includeList({
@@ -127,6 +133,7 @@ abstract class EmailAccount
     _is.OrderByBuilder<EmailAccountTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     EmailAccountInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
   }) {
     return EmailAccountIncludeList.internal_(
       where: where,
@@ -135,6 +142,7 @@ abstract class EmailAccount
       orderBy: orderBy?.call(EmailAccount.t),
       orderByList: orderByList?.call(EmailAccount.t),
       include: include,
+      selectedColumns: select?.call(EmailAccount.t),
     );
   }
 

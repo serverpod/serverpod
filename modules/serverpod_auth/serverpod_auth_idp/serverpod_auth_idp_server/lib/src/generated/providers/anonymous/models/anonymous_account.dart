@@ -98,8 +98,14 @@ abstract class AnonymousAccount
     return {};
   }
 
-  static AnonymousAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return AnonymousAccountInclude.internal_(authUser: authUser);
+  static AnonymousAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+  }) {
+    return AnonymousAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(AnonymousAccount.t),
+    );
   }
 
   static AnonymousAccountIncludeList includeList({
@@ -109,6 +115,7 @@ abstract class AnonymousAccount
     _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     AnonymousAccountInclude? include,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
   }) {
     return AnonymousAccountIncludeList.internal_(
       where: where,
@@ -117,6 +124,7 @@ abstract class AnonymousAccount
       orderBy: orderBy?.call(AnonymousAccount.t),
       orderByList: orderByList?.call(AnonymousAccount.t),
       include: include,
+      selectedColumns: select?.call(AnonymousAccount.t),
     );
   }
 

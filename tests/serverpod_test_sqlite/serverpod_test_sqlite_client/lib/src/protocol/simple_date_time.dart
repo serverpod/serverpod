@@ -73,8 +73,12 @@ abstract class SimpleDateTime
     };
   }
 
-  static SimpleDateTimeInclude include() {
-    return SimpleDateTimeInclude.internal_();
+  static SimpleDateTimeInclude include({
+    _isd.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+  }) {
+    return SimpleDateTimeInclude.internal_(
+      selectedColumns: select?.call(SimpleDateTime.t),
+    );
   }
 
   static SimpleDateTimeIncludeList includeList({
@@ -84,6 +88,7 @@ abstract class SimpleDateTime
     _isd.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     _isd.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
+    _isd.SelectColumnsBuilder<SimpleDateTimeTable>? select,
   }) {
     return SimpleDateTimeIncludeList.internal_(
       where: where,
@@ -92,6 +97,7 @@ abstract class SimpleDateTime
       orderBy: orderBy?.call(SimpleDateTime.t),
       orderByList: orderByList?.call(SimpleDateTime.t),
       include: include,
+      selectedColumns: select?.call(SimpleDateTime.t),
     );
   }
 

@@ -135,11 +135,13 @@ abstract class CitizenInt
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
     _i441ok8u.CompanyUuidInclude? oldCompany,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
     return CitizenIntInclude.internal_(
       address: address,
       company: company,
       oldCompany: oldCompany,
+      selectedColumns: select?.call(CitizenInt.t),
     );
   }
 
@@ -150,6 +152,7 @@ abstract class CitizenInt
     _is.OrderByBuilder<CitizenIntTable>? orderBy,
     _is.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
     return CitizenIntIncludeList.internal_(
       where: where,
@@ -158,6 +161,7 @@ abstract class CitizenInt
       orderBy: orderBy?.call(CitizenInt.t),
       orderByList: orderByList?.call(CitizenInt.t),
       include: include,
+      selectedColumns: select?.call(CitizenInt.t),
     );
   }
 

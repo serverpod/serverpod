@@ -86,8 +86,14 @@ abstract class CustomerInt
     };
   }
 
-  static CustomerIntInclude include({_ivss21qh.OrderUuidIncludeList? orders}) {
-    return CustomerIntInclude.internal_(orders: orders);
+  static CustomerIntInclude include({
+    _ivss21qh.OrderUuidIncludeList? orders,
+    _is.SelectColumnsBuilder<CustomerIntTable>? select,
+  }) {
+    return CustomerIntInclude.internal_(
+      orders: orders,
+      selectedColumns: select?.call(CustomerInt.t),
+    );
   }
 
   static CustomerIntIncludeList includeList({
@@ -97,6 +103,7 @@ abstract class CustomerInt
     _is.OrderByBuilder<CustomerIntTable>? orderBy,
     _is.OrderByListBuilder<CustomerIntTable>? orderByList,
     CustomerIntInclude? include,
+    _is.SelectColumnsBuilder<CustomerIntTable>? select,
   }) {
     return CustomerIntIncludeList.internal_(
       where: where,
@@ -105,6 +112,7 @@ abstract class CustomerInt
       orderBy: orderBy?.call(CustomerInt.t),
       orderByList: orderByList?.call(CustomerInt.t),
       include: include,
+      selectedColumns: select?.call(CustomerInt.t),
     );
   }
 

@@ -80,8 +80,12 @@ abstract class ObjectWithUuid
     };
   }
 
-  static ObjectWithUuidInclude include() {
-    return ObjectWithUuidInclude.internal_();
+  static ObjectWithUuidInclude include({
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+  }) {
+    return ObjectWithUuidInclude.internal_(
+      selectedColumns: select?.call(ObjectWithUuid.t),
+    );
   }
 
   static ObjectWithUuidIncludeList includeList({
@@ -91,6 +95,7 @@ abstract class ObjectWithUuid
     _is.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
   }) {
     return ObjectWithUuidIncludeList.internal_(
       where: where,
@@ -99,6 +104,7 @@ abstract class ObjectWithUuid
       orderBy: orderBy?.call(ObjectWithUuid.t),
       orderByList: orderByList?.call(ObjectWithUuid.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithUuid.t),
     );
   }
 

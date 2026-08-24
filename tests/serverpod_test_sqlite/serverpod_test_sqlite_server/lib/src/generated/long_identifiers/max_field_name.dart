@@ -73,8 +73,12 @@ abstract class MaxFieldName
     };
   }
 
-  static MaxFieldNameInclude include() {
-    return MaxFieldNameInclude.internal_();
+  static MaxFieldNameInclude include({
+    _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
+  }) {
+    return MaxFieldNameInclude.internal_(
+      selectedColumns: select?.call(MaxFieldName.t),
+    );
   }
 
   static MaxFieldNameIncludeList includeList({
@@ -84,6 +88,7 @@ abstract class MaxFieldName
     _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
     MaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
   }) {
     return MaxFieldNameIncludeList.internal_(
       where: where,
@@ -92,6 +97,7 @@ abstract class MaxFieldName
       orderBy: orderBy?.call(MaxFieldName.t),
       orderByList: orderByList?.call(MaxFieldName.t),
       include: include,
+      selectedColumns: select?.call(MaxFieldName.t),
     );
   }
 

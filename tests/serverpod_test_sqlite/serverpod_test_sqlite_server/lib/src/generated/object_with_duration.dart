@@ -70,8 +70,12 @@ abstract class ObjectWithDuration
     };
   }
 
-  static ObjectWithDurationInclude include() {
-    return ObjectWithDurationInclude.internal_();
+  static ObjectWithDurationInclude include({
+    _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
+  }) {
+    return ObjectWithDurationInclude.internal_(
+      selectedColumns: select?.call(ObjectWithDuration.t),
+    );
   }
 
   static ObjectWithDurationIncludeList includeList({
@@ -81,6 +85,7 @@ abstract class ObjectWithDuration
     _is.OrderByBuilder<ObjectWithDurationTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
     ObjectWithDurationInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
   }) {
     return ObjectWithDurationIncludeList.internal_(
       where: where,
@@ -89,6 +94,7 @@ abstract class ObjectWithDuration
       orderBy: orderBy?.call(ObjectWithDuration.t),
       orderByList: orderByList?.call(ObjectWithDuration.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithDuration.t),
     );
   }
 

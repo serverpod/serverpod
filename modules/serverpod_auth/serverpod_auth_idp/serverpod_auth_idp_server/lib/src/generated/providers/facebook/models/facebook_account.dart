@@ -145,8 +145,14 @@ abstract class FacebookAccount
     return {};
   }
 
-  static FacebookAccountInclude include({_iacs.AuthUserInclude? authUser}) {
-    return FacebookAccountInclude.internal_(authUser: authUser);
+  static FacebookAccountInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+  }) {
+    return FacebookAccountInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(FacebookAccount.t),
+    );
   }
 
   static FacebookAccountIncludeList includeList({
@@ -156,6 +162,7 @@ abstract class FacebookAccount
     _is.OrderByBuilder<FacebookAccountTable>? orderBy,
     _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     FacebookAccountInclude? include,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
   }) {
     return FacebookAccountIncludeList.internal_(
       where: where,
@@ -164,6 +171,7 @@ abstract class FacebookAccount
       orderBy: orderBy?.call(FacebookAccount.t),
       orderByList: orderByList?.call(FacebookAccount.t),
       include: include,
+      selectedColumns: select?.call(FacebookAccount.t),
     );
   }
 

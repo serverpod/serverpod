@@ -73,8 +73,10 @@ abstract class Chapter
     };
   }
 
-  static ChapterInclude include() {
-    return ChapterInclude.internal_();
+  static ChapterInclude include({
+    _is.SelectColumnsBuilder<ChapterTable>? select,
+  }) {
+    return ChapterInclude.internal_(selectedColumns: select?.call(Chapter.t));
   }
 
   static ChapterIncludeList includeList({
@@ -84,6 +86,7 @@ abstract class Chapter
     _is.OrderByBuilder<ChapterTable>? orderBy,
     _is.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
+    _is.SelectColumnsBuilder<ChapterTable>? select,
   }) {
     return ChapterIncludeList.internal_(
       where: where,
@@ -92,6 +95,7 @@ abstract class Chapter
       orderBy: orderBy?.call(Chapter.t),
       orderByList: orderByList?.call(Chapter.t),
       include: include,
+      selectedColumns: select?.call(Chapter.t),
     );
   }
 

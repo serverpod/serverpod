@@ -109,8 +109,12 @@ abstract class UriDefaultMix
     };
   }
 
-  static UriDefaultMixInclude include() {
-    return UriDefaultMixInclude.internal_();
+  static UriDefaultMixInclude include({
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+  }) {
+    return UriDefaultMixInclude.internal_(
+      selectedColumns: select?.call(UriDefaultMix.t),
+    );
   }
 
   static UriDefaultMixIncludeList includeList({
@@ -120,6 +124,7 @@ abstract class UriDefaultMix
     _is.OrderByBuilder<UriDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     UriDefaultMixInclude? include,
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
   }) {
     return UriDefaultMixIncludeList.internal_(
       where: where,
@@ -128,6 +133,7 @@ abstract class UriDefaultMix
       orderBy: orderBy?.call(UriDefaultMix.t),
       orderByList: orderByList?.call(UriDefaultMix.t),
       include: include,
+      selectedColumns: select?.call(UriDefaultMix.t),
     );
   }
 

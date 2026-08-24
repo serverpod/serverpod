@@ -111,8 +111,14 @@ abstract class LegacySession
     return {};
   }
 
-  static LegacySessionInclude include({_iacs.AuthUserInclude? authUser}) {
-    return LegacySessionInclude.internal_(authUser: authUser);
+  static LegacySessionInclude include({
+    _iacs.AuthUserInclude? authUser,
+    _is.SelectColumnsBuilder<LegacySessionTable>? select,
+  }) {
+    return LegacySessionInclude.internal_(
+      authUser: authUser,
+      selectedColumns: select?.call(LegacySession.t),
+    );
   }
 
   static LegacySessionIncludeList includeList({
@@ -122,6 +128,7 @@ abstract class LegacySession
     _is.OrderByBuilder<LegacySessionTable>? orderBy,
     _is.OrderByListBuilder<LegacySessionTable>? orderByList,
     LegacySessionInclude? include,
+    _is.SelectColumnsBuilder<LegacySessionTable>? select,
   }) {
     return LegacySessionIncludeList.internal_(
       where: where,
@@ -130,6 +137,7 @@ abstract class LegacySession
       orderBy: orderBy?.call(LegacySession.t),
       orderByList: orderByList?.call(LegacySession.t),
       include: include,
+      selectedColumns: select?.call(LegacySession.t),
     );
   }
 

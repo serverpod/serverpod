@@ -89,8 +89,14 @@ abstract class Course
     };
   }
 
-  static CourseInclude include({_im07rq0v.EnrollmentIncludeList? enrollments}) {
-    return CourseInclude.internal_(enrollments: enrollments);
+  static CourseInclude include({
+    _im07rq0v.EnrollmentIncludeList? enrollments,
+    _isd.SelectColumnsBuilder<CourseTable>? select,
+  }) {
+    return CourseInclude.internal_(
+      enrollments: enrollments,
+      selectedColumns: select?.call(Course.t),
+    );
   }
 
   static CourseIncludeList includeList({
@@ -100,6 +106,7 @@ abstract class Course
     _isd.OrderByBuilder<CourseTable>? orderBy,
     _isd.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
+    _isd.SelectColumnsBuilder<CourseTable>? select,
   }) {
     return CourseIncludeList.internal_(
       where: where,
@@ -108,6 +115,7 @@ abstract class Course
       orderBy: orderBy?.call(Course.t),
       orderByList: orderByList?.call(Course.t),
       include: include,
+      selectedColumns: select?.call(Course.t),
     );
   }
 

@@ -90,8 +90,12 @@ abstract class EmailReset
     };
   }
 
-  static EmailResetInclude include() {
-    return EmailResetInclude.internal_();
+  static EmailResetInclude include({
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+  }) {
+    return EmailResetInclude.internal_(
+      selectedColumns: select?.call(EmailReset.t),
+    );
   }
 
   static EmailResetIncludeList includeList({
@@ -101,6 +105,7 @@ abstract class EmailReset
     _is.OrderByBuilder<EmailResetTable>? orderBy,
     _is.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
   }) {
     return EmailResetIncludeList.internal_(
       where: where,
@@ -109,6 +114,7 @@ abstract class EmailReset
       orderBy: orderBy?.call(EmailReset.t),
       orderByList: orderByList?.call(EmailReset.t),
       include: include,
+      selectedColumns: select?.call(EmailReset.t),
     );
   }
 

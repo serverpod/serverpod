@@ -130,8 +130,12 @@ abstract class ObjectWithHalfVector
     };
   }
 
-  static ObjectWithHalfVectorInclude include() {
-    return ObjectWithHalfVectorInclude.internal_();
+  static ObjectWithHalfVectorInclude include({
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+  }) {
+    return ObjectWithHalfVectorInclude.internal_(
+      selectedColumns: select?.call(ObjectWithHalfVector.t),
+    );
   }
 
   static ObjectWithHalfVectorIncludeList includeList({
@@ -141,6 +145,7 @@ abstract class ObjectWithHalfVector
     _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     ObjectWithHalfVectorInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
   }) {
     return ObjectWithHalfVectorIncludeList.internal_(
       where: where,
@@ -149,6 +154,7 @@ abstract class ObjectWithHalfVector
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
       orderByList: orderByList?.call(ObjectWithHalfVector.t),
       include: include,
+      selectedColumns: select?.call(ObjectWithHalfVector.t),
     );
   }
 
