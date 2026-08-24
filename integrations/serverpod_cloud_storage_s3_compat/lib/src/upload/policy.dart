@@ -28,6 +28,9 @@ class Policy {
   /// Maximum allowed file size in bytes.
   final int maxFileSize;
 
+  /// Minimum allowed file size in bytes.
+  final int minFileSize;
+
   /// Whether the uploaded file should be publicly accessible.
   final bool public;
 
@@ -37,6 +40,9 @@ class Policy {
   /// (e.g. GCP with uniform bucket-level access, Cloudflare R2).
   final bool includeAcl;
 
+  /// Additional form fields that must be included in the upload.
+  final Map<String, String> fields;
+
   /// Creates a new policy with the given parameters.
   Policy({
     required this.key,
@@ -45,9 +51,11 @@ class Policy {
     required this.expiration,
     required this.credential,
     required this.maxFileSize,
+    this.minFileSize = 1,
     this.region = 'us-east-1',
     this.public = true,
     this.includeAcl = true,
+    this.fields = const {},
   });
 
   /// Creates a policy for S3 presigned POST uploads.
@@ -68,6 +76,8 @@ class Policy {
     String region = 'us-east-1',
     bool public = true,
     bool includeAcl = true,
+    int minFileSize = 1,
+    Map<String, String> fields = const {},
   }) {
     final datetime = SigV4.generateDatetime();
     final exp = DateTime.now().add(Duration(minutes: expiryMinutes)).toUtc();
@@ -88,9 +98,11 @@ class Policy {
       expiration: expiration,
       credential: cred,
       maxFileSize: maxFileSize,
+      minFileSize: minFileSize,
       region: region,
       public: public,
       includeAcl: includeAcl,
+      fields: fields,
     );
   }
 
@@ -102,21 +114,19 @@ class Policy {
 
   @override
   String toString() {
-    final conditions = [
-      '{"bucket": "$bucket"}',
-      '["starts-with", "\$key", "$key"]',
-      if (includeAcl) '{"acl": "${public ? 'public-read' : 'private'}"}',
-      '["content-length-range", 1, $maxFileSize]',
-      '{"x-amz-credential": "$credential"}',
-      '{"x-amz-algorithm": "AWS4-HMAC-SHA256"}',
-      '{"x-amz-date": "$datetime" }',
-    ];
-    return '''
-{ "expiration": "$expiration",
-  "conditions": [
-    ${conditions.join(',\n    ')}
-  ]
-}
-''';
+    final policy = {
+      'expiration': expiration,
+      'conditions': [
+        {'bucket': bucket},
+        ['starts-with', r'$key', key],
+        if (includeAcl) {'acl': public ? 'public-read' : 'private'},
+        ['content-length-range', minFileSize, maxFileSize],
+        {'x-amz-credential': credential},
+        {'x-amz-algorithm': 'AWS4-HMAC-SHA256'},
+        {'x-amz-date': datetime},
+        for (final entry in fields.entries) {entry.key: entry.value},
+      ],
+    };
+    return jsonEncode(policy);
   }
 }
