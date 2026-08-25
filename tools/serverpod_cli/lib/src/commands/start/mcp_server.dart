@@ -4,10 +4,9 @@ import 'dart:convert';
 import 'package:dart_mcp/server.dart';
 import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/mcp/runner_surface.dart';
+import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/migration_result.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
-import 'package:serverpod_shared/log.dart';
-import 'package:serverpod_tui/serverpod_tui.dart';
 
 /// MCP server that exposes serverpod dev tools.
 ///
@@ -195,7 +194,7 @@ base class ServerpodMcpServer extends MCPServer
     final limit = _tailLimit(request);
     final all = runner.logHistory;
     final tail = all.length <= limit ? all : all.sublist(all.length - limit);
-    final encoded = tail.map(_encodeLogHistoryItem).toList();
+    final encoded = tail.map(encodeLogHistoryItem).toList();
     return CallToolResult(
       content: [
         TextContent(
@@ -397,29 +396,4 @@ bool _boolArg(
 }) {
   final v = request.arguments?[name];
   return v is bool ? v : defaultValue;
-}
-
-Map<String, Object?> _encodeLogHistoryItem(Object item) {
-  if (item is LogEntry) {
-    return {
-      'type': 'log',
-      'time': item.time.toIso8601String(),
-      'level': item.level.name,
-      'message': item.message,
-      'scope': {'id': item.scope.id, 'label': item.scope.label},
-      if (item.error != null) 'error': item.error.toString(),
-      if (item.stackTrace != null) 'stackTrace': item.stackTrace.toString(),
-      if (item.metadata != null) 'metadata': item.metadata,
-    };
-  }
-  if (item is CompletedOperation) {
-    return {
-      'type': 'operation',
-      'label': item.label,
-      'success': item.success,
-      'durationMs': item.duration.inMilliseconds,
-      'completedAt': item.completedAt.toIso8601String(),
-    };
-  }
-  return {'type': 'unknown', 'value': item.toString()};
 }

@@ -42,6 +42,8 @@ import 'package:serverpod_cli/src/runner/runner_lock.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
+import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -726,6 +728,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
           );
   }
 
+  LocalRunnerApi? runnerEvents;
+
   // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
   // session start regardless of whether `--flutter` was passed.
   final runMode = runModeFromServerArgs(serverArgs.value);
@@ -742,13 +746,22 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     serverPubspecFile: serverPubspecFile,
     serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
     onProgress: (app, stage) => onFlutterProgress?.call(app, stage),
-    onReady: (app, url) => onFlutterReady?.call(app, url),
+    onReady: (app, url) {
+      runnerEvents?.recordFlutterAppState(app.id, running: true, url: url);
+      onFlutterReady?.call(app, url);
+    },
     onStart: (app, process) => _recordExtensionEvents(
       process.vmService,
       (event) => logHistory.recordFlutterExtensionEvent(app.id, event),
     ),
-    onStop: (app) => onFlutterStop?.call(app),
-    onLaunchFailed: (app) => onFlutterLaunchFailed?.call(app),
+    onStop: (app) {
+      runnerEvents?.recordFlutterAppState(app.id, running: false);
+      onFlutterStop?.call(app);
+    },
+    onLaunchFailed: (app) {
+      runnerEvents?.recordFlutterAppState(app.id, running: false);
+      onFlutterLaunchFailed?.call(app);
+    },
     onEnsureAppTab: (app) => onEnsureFlutterAppTab?.call(app),
     onLog: (app, event) => logHistory.recordFlutterLogEvent(app.id, event),
     stdoutSinkFor: (app) => logHistory.flutterOutputSink(
@@ -784,6 +797,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       serverProcess.vmService,
       logHistory.recordServerLogEvent,
     );
+    runnerEvents?.setStage(RunnerStage.running);
     if (onServerStart != null) await onServerStart(serverProcess);
     proxy = await _mountOrRetargetProxy(
       serverProcess: serverProcess,
@@ -887,6 +901,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     flutterAppsLoader: () async {
       await flutterManager.loadApps();
       onFlutterAppsLoaded?.call(flutterManager.apps.toList());
+      runnerEvents?.recordFlutterApps(flutterManager.apps.toList());
       setupFileWatcher();
     },
     applyMigrationsAction: () => _applyMigrationsForSession(
@@ -911,6 +926,11 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     runMode: runMode,
     vmServiceUri: () => proxy?.httpUri.toString(),
     requestShutdown: shutdown.complete,
+    watchModeEnabled: watch,
+  );
+  runnerEvents = runnerApi;
+  runnerApi.setStage(
+    session.isRunning ? RunnerStage.running : RunnerStage.degraded,
   );
 
   McpSocketServer? mcpSocket = McpSocketServer(serverDir: serverDir);
@@ -923,6 +943,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     mcpSocket = null;
   }
 
+  RunnerSocketServer? attachSocket = RunnerSocketServer(serverDir: serverDir);
+  try {
+    await attachSocket.start();
+    attachSocket.connect(runnerApi);
+  } on SocketException catch (e) {
+    log.warning('Failed to start the attach server: $e');
+    attachSocket = null;
+  }
+
   setupFileWatcher();
 
   final publisher = RunnerManifestPublisher(
@@ -930,7 +959,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     manifest: RunnerManifest(
       pid: pid,
       sockets: RunnerSockets(
-        tui: '',
+        tui: attachSocket.socketPath,
         mcp: mcpSocket?.socketPath ?? '',
       ),
       vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
@@ -949,12 +978,13 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
     ),
   );
   await publisher.publish();
-  publisher.republishOn(
-    session.vmServiceUriChanges,
-    (current) => current.copyWith(
+  publisher.republishOn(session.vmServiceUriChanges, (current) {
+    final updated = current.copyWith(
       vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
-    ),
-  );
+    );
+    runnerApi.recordManifest(updated);
+    return updated;
+  });
 
   return WatchLoopReady(
     WatchLoopContext(
@@ -963,7 +993,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       proxy: () => proxy,
       flutterManager: flutterManager,
       mcpSocket: mcpSocket,
+      attachSocket: attachSocket,
       closeAnalyzers: closeAnalyzers,
+      announceStopping: (exitCode) =>
+          runnerApi.setStage(RunnerStage.stopping, exitCode: exitCode),
       stopFileWatcher: () => fileChangeSub?.cancel(),
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,

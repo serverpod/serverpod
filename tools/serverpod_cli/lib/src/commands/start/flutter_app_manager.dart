@@ -90,6 +90,12 @@ class FlutterAppManager {
 
   final String serverpodToolDir;
   final String runMode;
+
+  /// Whether [launch] can do anything.
+  ///
+  /// Apps are configured and listed in every run mode, but only development
+  /// launches them.
+  bool get canLaunchApps => runMode == 'development';
   final void Function(FlutterAppConfig app, String stage) onProgress;
 
   /// Fires once per launch when the app is up: on the published web URL
@@ -241,7 +247,7 @@ class FlutterAppManager {
       await launchOverrideForTesting!(appId);
       return;
     }
-    if (runMode != 'development') return;
+    if (!canLaunchApps) return;
 
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;

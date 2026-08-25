@@ -3,6 +3,8 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
+import 'package:serverpod_cli/src/runner/log_codec.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 import 'package:test/test.dart';
@@ -242,6 +244,47 @@ void main() {
     );
   });
 
+  group('Given a CLI operation that failed,', () {
+    setUp(() {
+      history.startCliOperation('gen_1', 'Generating code');
+    });
+
+    test(
+      'when it is completed with the error it failed on, '
+      'then the reason follows it into the history',
+      () {
+        history.completeCliOperation(
+          'gen_1',
+          success: false,
+          duration: const Duration(milliseconds: 1234),
+          error: 'protocol.yaml is not valid',
+          stackTrace: StackTrace.fromString('#0 main'),
+        );
+
+        final operation = history.serverEntries.first as CompletedOperation;
+        expect(operation.success, isFalse);
+        final entry = history.serverEntries.last as LogEntry;
+        expect(entry.level, LogLevel.error);
+        expect(entry.error, 'protocol.yaml is not valid');
+        expect(entry.stackTrace.toString(), contains('#0 main'));
+      },
+    );
+
+    test(
+      'when it is completed without an error, '
+      'then nothing is added beyond the completed operation',
+      () {
+        history.completeCliOperation(
+          'gen_1',
+          success: true,
+          duration: const Duration(milliseconds: 12),
+        );
+
+        expect(history.serverEntries.single, isA<CompletedOperation>());
+      },
+    );
+  });
+
   group(
     'Given an extension event from another publisher, '
     'when it is recorded as a server event,',
@@ -341,6 +384,32 @@ void main() {
       });
     },
   );
+
+  group('Given open server scopes,', () {
+    test(
+      'when they are discarded, '
+      'then attached clients are told which, since no scope_end will follow',
+      () async {
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'scope_start',
+            'id': 'scope_1',
+            'label': 'GET /api/stream-one',
+          }),
+        );
+        final events = <RunnerEvent>[];
+        final sub = history.events.listen(events.add);
+        addTearDown(sub.cancel);
+
+        history.discardActiveServerScopes();
+        await pumpEventQueue();
+
+        final discarded = events.whereType<OperationsDiscardedEvent>().single;
+        expect(discarded.ids, ['scope_1']);
+        expect(history.operationStartTimes, isNot(contains('scope_1')));
+      },
+    );
+  });
 
   group('Given a Flutter framework error event, when it is recorded,', () {
     const error =
