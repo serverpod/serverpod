@@ -1,3 +1,4 @@
+import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
@@ -127,7 +128,7 @@ void main() {
     );
   });
 
-  group('Given an S3Client', () {
+  group('Given an S3Client,', () {
     late S3Client client;
 
     setUp(() {
@@ -238,6 +239,29 @@ void main() {
               'message',
               'S3 presigned URLs must expire between 1 second and 7 days.',
             ),
+          ),
+        );
+      },
+    );
+    test(
+      'when building a presigned URL with a query value containing a space, '
+      'then the emitted query uses the encoding that was signed',
+      () {
+        const disposition = "attachment; filename*=UTF-8''report.pdf";
+
+        final uri = client.buildPresignedUri(
+          key: 'file.txt',
+          method: 'GET',
+          expiration: const Duration(minutes: 10),
+          queryParams: const {'response-content-disposition': disposition},
+        );
+
+        expect(
+          uri.query,
+          contains(
+            SigV4.buildCanonicalQueryString(const {
+              'response-content-disposition': disposition,
+            }),
           ),
         );
       },
