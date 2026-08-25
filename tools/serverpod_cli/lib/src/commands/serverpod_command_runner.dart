@@ -19,7 +19,6 @@ import '../commands/version.dart' show VersionCommand;
 import '../generated/completion_script_carapace.dart';
 
 Future<void> _preCommandEnvironmentChecks() async {
-  // Check that required tools are installed
   if (!await CommandLineTools.existsCommand('dart', ['--version'])) {
     log.error(
       'Failed to run serverpod. You need to have dart installed and in your \$PATH',
@@ -156,7 +155,8 @@ class ServerpodCommandRunner extends BetterCommandRunner<GlobalOption, void> {
   }
 }
 
-/// The global configuration options for the Serverpod CLI.
+/// The CLI's global options, wired into [ServerpodCommandRunner] as
+/// `globalOptions` so every command's usage lists them alongside its own.
 enum GlobalOption<V> implements OptionDefinition<V> {
   quiet(BetterCommandRunnerFlags.quietOption),
   verbose(BetterCommandRunnerFlags.verboseOption),

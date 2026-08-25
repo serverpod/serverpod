@@ -1,10 +1,10 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/upgrade/cli_installation.dart';
 import 'package:serverpod_cli/src/commands/upgrade/published_versions.dart';
 import 'package:serverpod_cli/src/commands/upgrade/upgrade_target.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 class VersionCommand extends ServerpodCommand {

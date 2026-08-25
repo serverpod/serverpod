@@ -1,8 +1,8 @@
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:pub_semver/pub_semver.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command.dart';
-import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command.dart';
+import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:test/test.dart';
 
 class _TestCommand extends ServerpodCommand<OptionDefinition> {
@@ -39,7 +39,7 @@ class _MockAnalytics implements Analytics {
 }
 
 void main() {
-  group('Given a Serverpod command registered on the command runner', () {
+  group('Given a Serverpod command registered on the command runner,', () {
     late _TestCommand command;
 
     setUp(() {
@@ -53,19 +53,20 @@ void main() {
       runner.addCommand(command);
     });
 
-    test('when reading the usage then the global options are listed', () {
+    test('when reading the usage, then the global options are listed', () {
       expect(command.usage, contains('Global options:'));
     });
 
     test(
-      'when reading the usage then the interactive global option is listed',
+      'when reading the usage, then the interactive global option is listed',
       () {
         expect(command.usage, contains('--[no-]interactive'));
       },
     );
 
     test(
-      'when reading the usage then the command specific options are still listed',
+      'when reading the usage, '
+      'then the command specific options are still listed',
       () {
         expect(command.usage, contains('-h, --help'));
       },
