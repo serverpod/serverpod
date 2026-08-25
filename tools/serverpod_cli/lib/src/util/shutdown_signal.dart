@@ -22,12 +22,15 @@ Future<T> runWithShutdownSignals<T>(
   }
 }
 
-/// One-shot shutdown request shared between command work and its callers.
+/// The single point every termination trigger funnels through.
 ///
-/// When [listenForSignals] is true (the default for non-TUI), SIGINT and
-/// SIGTERM complete [future] with 0. The TUI passes `false` because
-/// `runServerpodApp` already owns the signal subscriptions and forwards
-/// them via its own callback. Either way, callers can [complete] the
+/// In the runner, SIGINT and SIGTERM mean a graceful shutdown. In an attached
+/// client, SIGINT only detaches. It cannot reach the runner, which is in a
+/// process group of its own.
+///
+/// When [listenForSignals] is true (the default), SIGINT and SIGTERM complete
+/// [future] with 0. A caller that already owns the signal subscriptions passes
+/// `false` and forwards them itself. Either way, callers can [complete] the
 /// signal directly (e.g. when the server crashes or the Quit button is
 /// pressed) so the wait-for-exit point only ever has to await [future].
 ///

@@ -97,6 +97,7 @@ class RunnerManifest {
   /// the stack, and take null to mean "no longer any". Omit them to keep what
   /// is there. A `??` default would leave `runner status` naming a dead server.
   RunnerManifest copyWith({
+    RunnerSockets? sockets,
     Object? vmService = _keep,
     Object? servers = _keep,
     Object? docker = _keep,
@@ -106,7 +107,7 @@ class RunnerManifest {
     protocolVersion: protocolVersion,
     cliVersion: cliVersion,
     pid: pid,
-    sockets: sockets,
+    sockets: sockets ?? this.sockets,
     config: config,
     vmService: identical(vmService, _keep)
         ? this.vmService
@@ -301,6 +302,23 @@ class RunnerConfig {
     if (!_serverArgsEqual.equals(serverArgs, other.serverArgs))
       'server arguments after --',
   ];
+
+  /// The `serverpod runner serve` arguments that reproduce this configuration.
+  ///
+  /// `serverpod start` spawns `runner serve` with these, then compares what
+  /// came back via [differencesFrom]. A null [docker] passes neither flag,
+  /// leaving the runner to take the default from the project.
+  List<String> toServeArgs({required String directory}) {
+    return [
+      '--directory',
+      directory,
+      if (watch) '--watch' else '--no-watch',
+      if (flutter) '--flutter' else '--no-flutter',
+      if (docker == true) '--docker',
+      if (docker == false) '--no-docker',
+      if (serverArgs.isNotEmpty) ...['--', ...serverArgs],
+    ];
+  }
 
   Map<String, Object?> toJson() => {
     'watch': watch,

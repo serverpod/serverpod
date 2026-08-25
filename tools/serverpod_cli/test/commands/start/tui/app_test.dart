@@ -47,7 +47,7 @@ void main() {
     holder = StartAppStateHolder(state);
     tester = await NoctermTester.create(size: const Size(80, 24));
     await tester.pumpComponent(
-      ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      ServerpodWatchApp(holder: holder),
     );
   });
 
@@ -586,7 +586,7 @@ void main() {
     );
   });
 
-  group('Given a wide TUI with multiple app tabs open', () {
+  group('Given a wide TUI with multiple app tabs open,', () {
     late AppLogTab admin;
     late AppLogTab portal;
 
@@ -603,7 +603,7 @@ void main() {
 
       tester = await NoctermTester.create(size: const Size(200, 30));
       await tester.pumpComponent(
-        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+        ServerpodWatchApp(holder: holder),
       );
       await tester.pump();
     });
@@ -678,7 +678,7 @@ void main() {
     );
   });
 
-  group('Given a narrow TUI with multiple tabs open', () {
+  group('Given a narrow TUI with multiple tabs open,', () {
     late AppLogTab admin;
 
     setUp(() async {
@@ -692,7 +692,7 @@ void main() {
 
       tester = await NoctermTester.create(size: const Size(100, 24));
       await tester.pumpComponent(
-        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+        ServerpodWatchApp(holder: holder),
       );
       await tester.pump();
     });

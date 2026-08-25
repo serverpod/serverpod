@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:serverpod_cli/src/generated/version.dart';
+import 'package:serverpod_cli/src/runner/runner_lock.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' show connectUnixSocket;
 
@@ -7,18 +10,26 @@ sealed class RunnerResolution {
   const RunnerResolution();
 }
 
-/// No runner is serving this server package.
+/// No runner is answering for this server package.
 ///
-/// Either there was no manifest, or the one there named a socket that refuses
-/// connections.
+/// Either there was no manifest, or the one there named a socket that did not
+/// answer.
 final class NoRunner extends RunnerResolution {
-  const NoRunner({this.staleManifest});
+  const NoRunner({this.staleManifest, this.lockHeld = false});
 
-  /// The manifest left behind by a runner that is no longer listening, when
+  /// The manifest left behind by a runner that is no longer answering, when
   /// there was one.
   ///
-  /// A caller starting a runner overwrites it.
+  /// A caller starting a runner overwrites it once [lockHeld] is false.
   final RunnerManifest? staleManifest;
+
+  /// Whether the runner named by [staleManifest] still holds the project
+  /// lock.
+  ///
+  /// A runner closes its sockets first and releases the lock last, after
+  /// Docker. Held means a runner on its way out, or one too busy to answer
+  /// the probe. Free means it is gone.
+  final bool lockHeld;
 }
 
 /// A runner is listening and speaks a protocol this client understands.
@@ -50,7 +61,7 @@ final class IncompatibleRunner extends RunnerResolution {
       'A serverpod runner is already running for this project, but it speaks '
       'attach protocol version ${manifest.protocolVersion} while this CLI '
       'speaks ${RunnerManifest.currentProtocolVersion}. '
-      'Stop it with `serverpod stop` and start it again to pick up this '
+      'Stop it with `serverpod runner stop` and start it again to pick up this '
       'version of the CLI.';
 }
 
@@ -78,7 +89,14 @@ Future<RunnerResolution> resolveRunner(
       break;
     }
   }
-  if (!listening) return NoRunner(staleManifest: manifest);
+  if (!listening) {
+    return NoRunner(
+      staleManifest: manifest,
+      // Not from inside the runner: on POSIX its own lock is re-entrant, and
+      // the probe would release it.
+      lockHeld: manifest.pid != pid && await RunnerLock.isHeld(serverDir),
+    );
+  }
 
   if (manifest.protocolVersion != RunnerManifest.currentProtocolVersion) {
     return IncompatibleRunner(manifest);
@@ -90,11 +108,15 @@ Future<RunnerResolution> resolveRunner(
         ? null
         : 'The runner was started by serverpod_cli '
               '${manifest.cliVersion}, but this is $templateVersion. '
-              'Restart it with `serverpod stop` to pick up this version.',
+              'Restart it with `serverpod runner stop` to pick up this version.',
   );
 }
 
 /// Whether something accepts a connection on the Unix socket at [path].
+///
+/// Says nothing before disconnecting. The runner counts a client as attached
+/// only once it asks for the snapshot, so a silent probe is not a UI
+/// arriving.
 Future<bool> _isListening(String path, Duration timeout) async {
   try {
     final probe = await connectUnixSocket(path, timeout: timeout);

@@ -13,7 +13,7 @@ const runnerSnapshotMethod = 'snapshot';
 /// The JSON-RPC notification the runner pushes events on.
 const runnerEventNotification = 'event';
 
-/// Serves the attach protocol on [serverpodTuiSocketPath].
+/// Serves the attach protocol on `<serverDir>/.dart_tool/serverpod/tui.sock`.
 ///
 /// JSON-RPC 2.0, line-delimited, over the framing [socketChannel] gives the MCP
 /// socket.
@@ -32,8 +32,26 @@ class RunnerSocketServer {
   /// Absolute path to this runner's attach socket.
   final String socketPath;
 
+  /// Invoked the first time a client asks for the snapshot, and never again for
+  /// this runner.
+  ///
+  /// Auto-launching Flutter apps hangs off this, so they appear when a UI
+  /// first arrives rather than when the stack came up. A connection alone does
+  /// not identify a UI, which is why the snapshot request is the trigger.
+  ///
+  /// Assigning this after a client has already arrived runs it immediately.
+  void Function()? get onFirstClientAttached => _onFirstClientAttached;
+
+  set onFirstClientAttached(void Function()? callback) {
+    _onFirstClientAttached = callback;
+    if (_hadClient) callback?.call();
+  }
+
+  void Function()? _onFirstClientAttached;
+
   ServerSocket? _serverSocket;
   RunnerApi? _runner;
+  bool _hadClient = false;
   StreamSubscription<void>? _eventSub;
   final Set<json_rpc.Peer> _peers = {};
   final Set<Socket> _sockets = {};
@@ -57,17 +75,25 @@ class RunnerSocketServer {
   void connect(RunnerApi runner) {
     _runner = runner;
     _eventSub?.cancel();
-    _eventSub = runner.events.listen((event) {
-      if (_peers.isEmpty) return;
-      final payload = event.toJson();
-      for (final peer in _peers.toList()) {
-        try {
-          peer.sendNotification(runnerEventNotification, payload);
-        } on StateError {
-          _peers.remove(peer);
-        }
+    _eventSub = runner.events.listen(
+      (event) => _broadcast(runnerEventNotification, event.toJson),
+    );
+  }
+
+  /// Sends [method] to every attached client.
+  ///
+  /// [payload] is built only when there is someone to send it to. Under
+  /// `--no-attach` there is never a peer, and the runner stays up for days.
+  void _broadcast(String method, Map<String, Object?> Function() payload) {
+    if (_peers.isEmpty) return;
+    final params = payload();
+    for (final peer in _peers.toList()) {
+      try {
+        peer.sendNotification(method, params);
+      } on StateError {
+        _peers.remove(peer);
       }
-    });
+    }
   }
 
   /// Closes the socket and every attached client.
@@ -147,6 +173,10 @@ class RunnerSocketServer {
   void _register(json_rpc.Peer peer) {
     peer.registerMethod(runnerSnapshotMethod, (json_rpc.Parameters _) {
       _peers.add(peer);
+      if (!_hadClient) {
+        _hadClient = true;
+        _onFirstClientAttached?.call();
+      }
       return _withRunner((runner) => runner.snapshot().toJson());
     });
 

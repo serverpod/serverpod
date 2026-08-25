@@ -8,6 +8,8 @@ import 'package:serverpod_shared/serverpod_shared.dart'
     show FileEx, bindUnixSocket;
 import 'package:test/test.dart';
 
+import '../test_util/hold_lock.dart';
+
 void main() {
   group('Given a server package directory,', () {
     late Directory tempDir;
@@ -105,6 +107,49 @@ void main() {
         await _writeManifest(tempDir.path, tui: '', mcp: socketPath);
 
         expect(await resolveRunner(tempDir.path), isA<LiveRunner>());
+      },
+    );
+  });
+
+  group('Given a manifest whose runner does not answer,', () {
+    late Directory tempDir;
+
+    setUp(() async {
+      tempDir = await Directory.systemTemp.createTemp('rdl');
+      await _writeManifest(tempDir.path, pid: 424242);
+    });
+
+    tearDown(() async {
+      await tempDir.deleteIfExists(recursive: true);
+    });
+
+    test(
+      'when its process still holds the lock, '
+      'then it is resolved as no runner with the lock held',
+      () async {
+        await holdLockFromAnotherProcess(tempDir.path);
+
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(
+          resolution,
+          isA<NoRunner>()
+              .having((r) => r.lockHeld, 'lockHeld', isTrue)
+              .having((r) => r.staleManifest?.pid, 'pid', 424242),
+        );
+      },
+    );
+
+    test(
+      'when the lock is free, '
+      'then it is resolved as no runner with the lock free',
+      () async {
+        final resolution = await resolveRunner(tempDir.path);
+
+        expect(
+          resolution,
+          isA<NoRunner>().having((r) => r.lockHeld, 'lockHeld', isFalse),
+        );
       },
     );
   });

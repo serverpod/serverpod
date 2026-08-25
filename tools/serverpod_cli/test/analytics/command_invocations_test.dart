@@ -54,8 +54,8 @@ void main() {
             CreateRepairMigrationCommand(),
             MigrateCommand(),
             RunCommand(),
-            StartCommand(),
             RunnerCommand(),
+            StartCommand(),
             UpgradeCommand(),
             VersionCommand(version),
           ]);
