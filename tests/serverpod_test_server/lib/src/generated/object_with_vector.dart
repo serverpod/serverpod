@@ -123,7 +123,7 @@ abstract class ObjectWithVector
   static ObjectWithVectorInclude include({
     _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
   }) {
-    return ObjectWithVectorInclude.internal_(
+    return ObjectWithVectorInclude._(
       selectedColumns: select?.call(ObjectWithVector.t),
     );
   }
@@ -137,7 +137,7 @@ abstract class ObjectWithVector
     ObjectWithVectorInclude? include,
     _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
   }) {
-    return ObjectWithVectorIncludeList.internal_(
+    return ObjectWithVectorIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -314,7 +314,7 @@ class ObjectWithVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithVectorInclude extends _is.IncludeObject {
-  ObjectWithVectorInclude.internal_({this.selectedColumns});
+  ObjectWithVectorInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -327,7 +327,7 @@ class ObjectWithVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithVectorIncludeList extends _is.IncludeList {
-  ObjectWithVectorIncludeList.internal_({
+  ObjectWithVectorIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
     super.limit,
     super.offset,
@@ -446,6 +446,83 @@ class ObjectWithVectorRepository {
     return session.db.findById<ObjectWithVector>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithVector>(
+      where: where?.call(ObjectWithVector.t),
+      orderBy: orderBy?.call(ObjectWithVector.t),
+      orderByList: orderByList?.call(ObjectWithVector.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithVector>(
+      where: where?.call(ObjectWithVector.t),
+      orderBy: orderBy?.call(ObjectWithVector.t),
+      orderByList: orderByList?.call(ObjectWithVector.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithVector>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

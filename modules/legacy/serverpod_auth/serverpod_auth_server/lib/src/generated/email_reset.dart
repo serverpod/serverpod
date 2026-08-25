@@ -93,9 +93,7 @@ abstract class EmailReset
   static EmailResetInclude include({
     _is.SelectColumnsBuilder<EmailResetTable>? select,
   }) {
-    return EmailResetInclude.internal_(
-      selectedColumns: select?.call(EmailReset.t),
-    );
+    return EmailResetInclude._(selectedColumns: select?.call(EmailReset.t));
   }
 
   static EmailResetIncludeList includeList({
@@ -107,7 +105,7 @@ abstract class EmailReset
     EmailResetInclude? include,
     _is.SelectColumnsBuilder<EmailResetTable>? select,
   }) {
-    return EmailResetIncludeList.internal_(
+    return EmailResetIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,7 +216,7 @@ class EmailResetTable extends _is.Table<int?> {
 }
 
 class EmailResetInclude extends _is.IncludeObject {
-  EmailResetInclude.internal_({this.selectedColumns});
+  EmailResetInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -231,7 +229,7 @@ class EmailResetInclude extends _is.IncludeObject {
 }
 
 class EmailResetIncludeList extends _is.IncludeList {
-  EmailResetIncludeList.internal_({
+  EmailResetIncludeList._({
     _is.WhereExpressionBuilder<EmailResetTable>? where,
     super.limit,
     super.offset,
@@ -350,6 +348,83 @@ class EmailResetRepository {
     return session.db.findById<EmailReset>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailReset>(
+      where: where?.call(EmailReset.t),
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailReset>(
+      id,
+      transaction: transaction,
+      select: select?.call(EmailReset.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

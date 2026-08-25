@@ -59,7 +59,7 @@ class SelectQueryBuilder {
       ..._gatherIncludeColumns(_include),
     ];
 
-    if (_listQueryAdditions != null && _include?.selectedColumns != null) {
+    if (_listQueryAdditions != null) {
       // Ensure the foreign key column is always selected, as it is required to
       // map the results back to the parent object.
       var foreignColumn = _listQueryAdditions!.foreignColumn;
@@ -68,6 +68,17 @@ class SelectQueryBuilder {
       );
       if (!hasFk) {
         selectColumns.add(foreignColumn);
+      }
+    }
+
+    if (_hasIncludeList(_include)) {
+      // Ensure the table's primary key is selected when list relations are included,
+      // as it is required to extract IDs to query the child relations.
+      var hasId = selectColumns.any(
+        (c) => c.columnName == _table.id.columnName,
+      );
+      if (!hasId) {
+        selectColumns.add(_table.id);
       }
     }
     var subQueries = _SubQueries.gatherSubQueries(
@@ -902,6 +913,17 @@ List<Column> _gatherIncludeColumns(Include? include) {
   gather(include, include.table);
 
   return fields.values.toList();
+}
+
+bool _hasIncludeList(Include? include) {
+  if (include == null) return false;
+  for (var relationInclude in include.includes.values) {
+    if (relationInclude is IncludeList) return true;
+    if (relationInclude != null && _hasIncludeList(relationInclude)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 List<Table> _gatherIncludeTables(Include? include, Table table) {

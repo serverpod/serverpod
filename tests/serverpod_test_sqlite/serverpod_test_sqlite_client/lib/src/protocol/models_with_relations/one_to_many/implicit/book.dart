@@ -91,7 +91,7 @@ abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _ithd8abs.ChapterIncludeList? chapters,
     _isd.SelectColumnsBuilder<BookTable>? select,
   }) {
-    return BookInclude.internal_(
+    return BookInclude._(
       chapters: chapters,
       selectedColumns: select?.call(Book.t),
     );
@@ -106,7 +106,7 @@ abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     BookInclude? include,
     _isd.SelectColumnsBuilder<BookTable>? select,
   }) {
-    return BookIncludeList.internal_(
+    return BookIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class BookTable extends _isd.Table<int?> {
 }
 
 class BookInclude extends _isd.IncludeObject {
-  BookInclude.internal_({
+  BookInclude._({
     _ithd8abs.ChapterIncludeList? chapters,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class BookInclude extends _isd.IncludeObject {
 }
 
 class BookIncludeList extends _isd.IncludeList {
-  BookIncludeList.internal_({
+  BookIncludeList._({
     _isd.WhereExpressionBuilder<BookTable>? where,
     super.limit,
     super.offset,
@@ -382,6 +382,89 @@ class BookRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<BookTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
+    BookInclude? include,
+    _isd.SelectColumnsBuilder<BookTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Book>(
+      where: where?.call(Book.t),
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Book.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<BookTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
+    BookInclude? include,
+    _isd.SelectColumnsBuilder<BookTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Book>(
+      where: where?.call(Book.t),
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Book.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    BookInclude? include,
+    _isd.SelectColumnsBuilder<BookTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Book>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Book.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -123,7 +123,7 @@ abstract class MicrosoftAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
   }) {
-    return MicrosoftAccountInclude.internal_(
+    return MicrosoftAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(MicrosoftAccount.t),
     );
@@ -138,7 +138,7 @@ abstract class MicrosoftAccount
     MicrosoftAccountInclude? include,
     _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
   }) {
-    return MicrosoftAccountIncludeList.internal_(
+    return MicrosoftAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -305,7 +305,7 @@ class MicrosoftAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class MicrosoftAccountInclude extends _is.IncludeObject {
-  MicrosoftAccountInclude.internal_({
+  MicrosoftAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -325,7 +325,7 @@ class MicrosoftAccountInclude extends _is.IncludeObject {
 }
 
 class MicrosoftAccountIncludeList extends _is.IncludeList {
-  MicrosoftAccountIncludeList.internal_({
+  MicrosoftAccountIncludeList._({
     _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     super.limit,
     super.offset,
@@ -452,6 +452,89 @@ class MicrosoftAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    MicrosoftAccountInclude? include,
+    _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MicrosoftAccount>(
+      where: where?.call(MicrosoftAccount.t),
+      orderBy: orderBy?.call(MicrosoftAccount.t),
+      orderByList: orderByList?.call(MicrosoftAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MicrosoftAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    MicrosoftAccountInclude? include,
+    _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MicrosoftAccount>(
+      where: where?.call(MicrosoftAccount.t),
+      orderBy: orderBy?.call(MicrosoftAccount.t),
+      orderByList: orderByList?.call(MicrosoftAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MicrosoftAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    MicrosoftAccountInclude? include,
+    _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MicrosoftAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MicrosoftAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

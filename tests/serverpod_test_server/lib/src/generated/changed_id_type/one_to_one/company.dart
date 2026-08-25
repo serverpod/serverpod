@@ -97,7 +97,7 @@ abstract class CompanyUuid
     _i3qwzvq1.TownIntInclude? town,
     _is.SelectColumnsBuilder<CompanyUuidTable>? select,
   }) {
-    return CompanyUuidInclude.internal_(
+    return CompanyUuidInclude._(
       town: town,
       selectedColumns: select?.call(CompanyUuid.t),
     );
@@ -112,7 +112,7 @@ abstract class CompanyUuid
     CompanyUuidInclude? include,
     _is.SelectColumnsBuilder<CompanyUuidTable>? select,
   }) {
-    return CompanyUuidIncludeList.internal_(
+    return CompanyUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +228,7 @@ class CompanyUuidTable extends _is.Table<_is.UuidValue?> {
 }
 
 class CompanyUuidInclude extends _is.IncludeObject {
-  CompanyUuidInclude.internal_({
+  CompanyUuidInclude._({
     _i3qwzvq1.TownIntInclude? town,
     this.selectedColumns,
   }) {
@@ -248,7 +248,7 @@ class CompanyUuidInclude extends _is.IncludeObject {
 }
 
 class CompanyUuidIncludeList extends _is.IncludeList {
-  CompanyUuidIncludeList.internal_({
+  CompanyUuidIncludeList._({
     _is.WhereExpressionBuilder<CompanyUuidTable>? where,
     super.limit,
     super.offset,
@@ -375,6 +375,89 @@ class CompanyUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CompanyUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CompanyUuidTable>? orderBy,
+    _is.OrderByListBuilder<CompanyUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    CompanyUuidInclude? include,
+    _is.SelectColumnsBuilder<CompanyUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CompanyUuid>(
+      where: where?.call(CompanyUuid.t),
+      orderBy: orderBy?.call(CompanyUuid.t),
+      orderByList: orderByList?.call(CompanyUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CompanyUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CompanyUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CompanyUuidTable>? orderBy,
+    _is.OrderByListBuilder<CompanyUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    CompanyUuidInclude? include,
+    _is.SelectColumnsBuilder<CompanyUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CompanyUuid>(
+      where: where?.call(CompanyUuid.t),
+      orderBy: orderBy?.call(CompanyUuid.t),
+      orderByList: orderByList?.call(CompanyUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CompanyUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CompanyUuidInclude? include,
+    _is.SelectColumnsBuilder<CompanyUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CompanyUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CompanyUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

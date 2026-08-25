@@ -95,7 +95,7 @@ abstract class RelatedUniqueData
     _iufhyrjh.UniqueDataInclude? uniqueData,
     _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
-    return RelatedUniqueDataInclude.internal_(
+    return RelatedUniqueDataInclude._(
       uniqueData: uniqueData,
       selectedColumns: select?.call(RelatedUniqueData.t),
     );
@@ -110,7 +110,7 @@ abstract class RelatedUniqueData
     RelatedUniqueDataInclude? include,
     _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
-    return RelatedUniqueDataIncludeList.internal_(
+    return RelatedUniqueDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,7 +230,7 @@ class RelatedUniqueDataTable extends _is.Table<int?> {
 }
 
 class RelatedUniqueDataInclude extends _is.IncludeObject {
-  RelatedUniqueDataInclude.internal_({
+  RelatedUniqueDataInclude._({
     _iufhyrjh.UniqueDataInclude? uniqueData,
     this.selectedColumns,
   }) {
@@ -250,7 +250,7 @@ class RelatedUniqueDataInclude extends _is.IncludeObject {
 }
 
 class RelatedUniqueDataIncludeList extends _is.IncludeList {
-  RelatedUniqueDataIncludeList.internal_({
+  RelatedUniqueDataIncludeList._({
     _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,
     super.offset,
@@ -377,6 +377,89 @@ class RelatedUniqueDataRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
+    RelatedUniqueDataInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RelatedUniqueData>(
+      where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _is.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    _is.Transaction? transaction,
+    RelatedUniqueDataInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RelatedUniqueData>(
+      where: where?.call(RelatedUniqueData.t),
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    RelatedUniqueDataInclude? include,
+    _is.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RelatedUniqueData>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelatedUniqueData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

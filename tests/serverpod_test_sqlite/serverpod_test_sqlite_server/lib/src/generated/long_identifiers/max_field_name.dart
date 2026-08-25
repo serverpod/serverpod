@@ -76,9 +76,7 @@ abstract class MaxFieldName
   static MaxFieldNameInclude include({
     _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
   }) {
-    return MaxFieldNameInclude.internal_(
-      selectedColumns: select?.call(MaxFieldName.t),
-    );
+    return MaxFieldNameInclude._(selectedColumns: select?.call(MaxFieldName.t));
   }
 
   static MaxFieldNameIncludeList includeList({
@@ -90,7 +88,7 @@ abstract class MaxFieldName
     MaxFieldNameInclude? include,
     _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
   }) {
-    return MaxFieldNameIncludeList.internal_(
+    return MaxFieldNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -172,7 +170,7 @@ class MaxFieldNameTable extends _is.Table<int?> {
 }
 
 class MaxFieldNameInclude extends _is.IncludeObject {
-  MaxFieldNameInclude.internal_({this.selectedColumns});
+  MaxFieldNameInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -185,7 +183,7 @@ class MaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class MaxFieldNameIncludeList extends _is.IncludeList {
-  MaxFieldNameIncludeList.internal_({
+  MaxFieldNameIncludeList._({
     _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
     super.limit,
     super.offset,
@@ -304,6 +302,83 @@ class MaxFieldNameRepository {
     return session.db.findById<MaxFieldName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MaxFieldName>(
+      where: where?.call(MaxFieldName.t),
+      orderBy: orderBy?.call(MaxFieldName.t),
+      orderByList: orderByList?.call(MaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MaxFieldName>(
+      where: where?.call(MaxFieldName.t),
+      orderBy: orderBy?.call(MaxFieldName.t),
+      orderByList: orderByList?.call(MaxFieldName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MaxFieldName>(
+      id,
+      transaction: transaction,
+      select: select?.call(MaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

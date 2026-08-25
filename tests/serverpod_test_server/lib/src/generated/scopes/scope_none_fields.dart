@@ -71,7 +71,7 @@ abstract class ScopeNoneFields
   static ScopeNoneFieldsInclude include({
     _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
   }) {
-    return ScopeNoneFieldsInclude.internal_(
+    return ScopeNoneFieldsInclude._(
       selectedColumns: select?.call(ScopeNoneFields.t),
     );
   }
@@ -85,7 +85,7 @@ abstract class ScopeNoneFields
     ScopeNoneFieldsInclude? include,
     _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
   }) {
-    return ScopeNoneFieldsIncludeList.internal_(
+    return ScopeNoneFieldsIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -196,7 +196,7 @@ class ScopeNoneFieldsTable extends _is.Table<int?> {
 }
 
 class ScopeNoneFieldsInclude extends _is.IncludeObject {
-  ScopeNoneFieldsInclude.internal_({this.selectedColumns});
+  ScopeNoneFieldsInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -209,7 +209,7 @@ class ScopeNoneFieldsInclude extends _is.IncludeObject {
 }
 
 class ScopeNoneFieldsIncludeList extends _is.IncludeList {
-  ScopeNoneFieldsIncludeList.internal_({
+  ScopeNoneFieldsIncludeList._({
     _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
     super.offset,
@@ -328,6 +328,83 @@ class ScopeNoneFieldsRepository {
     return session.db.findById<ScopeNoneFields>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ScopeNoneFields>(
+      where: where?.call(ScopeNoneFields.t),
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ScopeNoneFields.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ScopeNoneFields>(
+      where: where?.call(ScopeNoneFields.t),
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ScopeNoneFields.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ScopeNoneFields>(
+      id,
+      transaction: transaction,
+      select: select?.call(ScopeNoneFields.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

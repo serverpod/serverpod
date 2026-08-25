@@ -123,7 +123,7 @@ abstract class GitHubAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<GitHubAccountTable>? select,
   }) {
-    return GitHubAccountInclude.internal_(
+    return GitHubAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(GitHubAccount.t),
     );
@@ -138,7 +138,7 @@ abstract class GitHubAccount
     GitHubAccountInclude? include,
     _is.SelectColumnsBuilder<GitHubAccountTable>? select,
   }) {
-    return GitHubAccountIncludeList.internal_(
+    return GitHubAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -304,7 +304,7 @@ class GitHubAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class GitHubAccountInclude extends _is.IncludeObject {
-  GitHubAccountInclude.internal_({
+  GitHubAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -324,7 +324,7 @@ class GitHubAccountInclude extends _is.IncludeObject {
 }
 
 class GitHubAccountIncludeList extends _is.IncludeList {
-  GitHubAccountIncludeList.internal_({
+  GitHubAccountIncludeList._({
     _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     super.limit,
     super.offset,
@@ -451,6 +451,89 @@ class GitHubAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GitHubAccountInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<GitHubAccount>(
+      where: where?.call(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GitHubAccountInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<GitHubAccount>(
+      where: where?.call(GitHubAccount.t),
+      orderBy: orderBy?.call(GitHubAccount.t),
+      orderByList: orderByList?.call(GitHubAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    GitHubAccountInclude? include,
+    _is.SelectColumnsBuilder<GitHubAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<GitHubAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GitHubAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

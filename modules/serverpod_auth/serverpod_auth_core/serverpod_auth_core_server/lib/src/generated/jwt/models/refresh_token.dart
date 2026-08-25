@@ -183,7 +183,7 @@ abstract class RefreshToken
     _ivyervu7.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
   }) {
-    return RefreshTokenInclude.internal_(
+    return RefreshTokenInclude._(
       authUser: authUser,
       selectedColumns: select?.call(RefreshToken.t),
     );
@@ -198,7 +198,7 @@ abstract class RefreshToken
     RefreshTokenInclude? include,
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
   }) {
-    return RefreshTokenIncludeList.internal_(
+    return RefreshTokenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -457,7 +457,7 @@ class RefreshTokenTable extends _is.Table<_is.UuidValue?> {
 }
 
 class RefreshTokenInclude extends _is.IncludeObject {
-  RefreshTokenInclude.internal_({
+  RefreshTokenInclude._({
     _ivyervu7.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -477,7 +477,7 @@ class RefreshTokenInclude extends _is.IncludeObject {
 }
 
 class RefreshTokenIncludeList extends _is.IncludeList {
-  RefreshTokenIncludeList.internal_({
+  RefreshTokenIncludeList._({
     _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     super.limit,
     super.offset,
@@ -604,6 +604,89 @@ class RefreshTokenRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
+    RefreshTokenInclude? include,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RefreshToken>(
+      where: where?.call(RefreshToken.t),
+      orderBy: orderBy?.call(RefreshToken.t),
+      orderByList: orderByList?.call(RefreshToken.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RefreshToken.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    _is.Transaction? transaction,
+    RefreshTokenInclude? include,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RefreshToken>(
+      where: where?.call(RefreshToken.t),
+      orderBy: orderBy?.call(RefreshToken.t),
+      orderByList: orderByList?.call(RefreshToken.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RefreshToken.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    RefreshTokenInclude? include,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RefreshToken>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RefreshToken.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

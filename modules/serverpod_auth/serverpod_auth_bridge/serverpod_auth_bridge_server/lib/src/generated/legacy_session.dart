@@ -115,7 +115,7 @@ abstract class LegacySession
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<LegacySessionTable>? select,
   }) {
-    return LegacySessionInclude.internal_(
+    return LegacySessionInclude._(
       authUser: authUser,
       selectedColumns: select?.call(LegacySession.t),
     );
@@ -130,7 +130,7 @@ abstract class LegacySession
     LegacySessionInclude? include,
     _is.SelectColumnsBuilder<LegacySessionTable>? select,
   }) {
-    return LegacySessionIncludeList.internal_(
+    return LegacySessionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -290,7 +290,7 @@ class LegacySessionTable extends _is.Table<int?> {
 }
 
 class LegacySessionInclude extends _is.IncludeObject {
-  LegacySessionInclude.internal_({
+  LegacySessionInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -310,7 +310,7 @@ class LegacySessionInclude extends _is.IncludeObject {
 }
 
 class LegacySessionIncludeList extends _is.IncludeList {
-  LegacySessionIncludeList.internal_({
+  LegacySessionIncludeList._({
     _is.WhereExpressionBuilder<LegacySessionTable>? where,
     super.limit,
     super.offset,
@@ -437,6 +437,89 @@ class LegacySessionRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacySessionInclude? include,
+    _is.SelectColumnsBuilder<LegacySessionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LegacySession>(
+      where: where?.call(LegacySession.t),
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacySession.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacySessionTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LegacySessionTable>? orderBy,
+    _is.OrderByListBuilder<LegacySessionTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacySessionInclude? include,
+    _is.SelectColumnsBuilder<LegacySessionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LegacySession>(
+      where: where?.call(LegacySession.t),
+      orderBy: orderBy?.call(LegacySession.t),
+      orderByList: orderByList?.call(LegacySession.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacySession.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    LegacySessionInclude? include,
+    _is.SelectColumnsBuilder<LegacySessionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LegacySession>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacySession.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

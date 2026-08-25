@@ -87,7 +87,7 @@ abstract class SharedModuleTable
   static SharedModuleTableInclude include({
     _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
   }) {
-    return SharedModuleTableInclude.internal_(
+    return SharedModuleTableInclude._(
       selectedColumns: select?.call(SharedModuleTable.t),
     );
   }
@@ -101,7 +101,7 @@ abstract class SharedModuleTable
     SharedModuleTableInclude? include,
     _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
   }) {
-    return SharedModuleTableIncludeList.internal_(
+    return SharedModuleTableIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +192,7 @@ class SharedModuleTableTable extends _isd.Table<int?> {
 }
 
 class SharedModuleTableInclude extends _isd.IncludeObject {
-  SharedModuleTableInclude.internal_({this.selectedColumns});
+  SharedModuleTableInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -205,7 +205,7 @@ class SharedModuleTableInclude extends _isd.IncludeObject {
 }
 
 class SharedModuleTableIncludeList extends _isd.IncludeList {
-  SharedModuleTableIncludeList.internal_({
+  SharedModuleTableIncludeList._({
     _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     super.limit,
     super.offset,
@@ -324,6 +324,83 @@ class SharedModuleTableRepository {
     return session.db.findById<SharedModuleTable>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SharedModuleTable>(
+      where: where?.call(SharedModuleTable.t),
+      orderBy: orderBy?.call(SharedModuleTable.t),
+      orderByList: orderByList?.call(SharedModuleTable.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModuleTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SharedModuleTable>(
+      where: where?.call(SharedModuleTable.t),
+      orderBy: orderBy?.call(SharedModuleTable.t),
+      orderByList: orderByList?.call(SharedModuleTable.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModuleTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SharedModuleTable>(
+      id,
+      transaction: transaction,
+      select: select?.call(SharedModuleTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

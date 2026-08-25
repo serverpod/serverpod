@@ -95,7 +95,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _iaks25tn.TeamInclude? team,
     _is.SelectColumnsBuilder<PlayerTable>? select,
   }) {
-    return PlayerInclude.internal_(
+    return PlayerInclude._(
       team: team,
       selectedColumns: select?.call(Player.t),
     );
@@ -110,7 +110,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     PlayerInclude? include,
     _is.SelectColumnsBuilder<PlayerTable>? select,
   }) {
-    return PlayerIncludeList.internal_(
+    return PlayerIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -226,7 +226,7 @@ class PlayerTable extends _is.Table<int?> {
 }
 
 class PlayerInclude extends _is.IncludeObject {
-  PlayerInclude.internal_({
+  PlayerInclude._({
     _iaks25tn.TeamInclude? team,
     this.selectedColumns,
   }) {
@@ -246,7 +246,7 @@ class PlayerInclude extends _is.IncludeObject {
 }
 
 class PlayerIncludeList extends _is.IncludeList {
-  PlayerIncludeList.internal_({
+  PlayerIncludeList._({
     _is.WhereExpressionBuilder<PlayerTable>? where,
     super.limit,
     super.offset,
@@ -375,6 +375,89 @@ class PlayerRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Player>(
+      where: where?.call(Player.t),
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PlayerTable>? orderBy,
+    _is.OrderByListBuilder<PlayerTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Player>(
+      where: where?.call(Player.t),
+      orderBy: orderBy?.call(Player.t),
+      orderByList: orderByList?.call(Player.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    PlayerInclude? include,
+    _is.SelectColumnsBuilder<PlayerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Player>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Player.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

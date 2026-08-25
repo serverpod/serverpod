@@ -144,8 +144,8 @@ abstract class ProjectedUserJsonMultiField
   }
 
   static ProjectedUserInclude include() {
-    return ProjectedUserInclude.internal_(
-      selectedColumns: [
+    return ProjectedUser.include(
+      select: (t) => [
         ProjectedUser.t.id,
         ProjectedUser.t.name,
         ProjectedUser.t.jsonField.jsonKey(

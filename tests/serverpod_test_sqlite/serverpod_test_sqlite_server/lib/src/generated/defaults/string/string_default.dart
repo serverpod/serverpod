@@ -80,7 +80,7 @@ abstract class StringDefault
   static StringDefaultInclude include({
     _is.SelectColumnsBuilder<StringDefaultTable>? select,
   }) {
-    return StringDefaultInclude.internal_(
+    return StringDefaultInclude._(
       selectedColumns: select?.call(StringDefault.t),
     );
   }
@@ -94,7 +94,7 @@ abstract class StringDefault
     StringDefaultInclude? include,
     _is.SelectColumnsBuilder<StringDefaultTable>? select,
   }) {
-    return StringDefaultIncludeList.internal_(
+    return StringDefaultIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,7 +190,7 @@ class StringDefaultTable extends _is.Table<int?> {
 }
 
 class StringDefaultInclude extends _is.IncludeObject {
-  StringDefaultInclude.internal_({this.selectedColumns});
+  StringDefaultInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -203,7 +203,7 @@ class StringDefaultInclude extends _is.IncludeObject {
 }
 
 class StringDefaultIncludeList extends _is.IncludeList {
-  StringDefaultIncludeList.internal_({
+  StringDefaultIncludeList._({
     _is.WhereExpressionBuilder<StringDefaultTable>? where,
     super.limit,
     super.offset,
@@ -322,6 +322,83 @@ class StringDefaultRepository {
     return session.db.findById<StringDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<StringDefault>(
+      where: where?.call(StringDefault.t),
+      orderBy: orderBy?.call(StringDefault.t),
+      orderByList: orderByList?.call(StringDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<StringDefault>(
+      where: where?.call(StringDefault.t),
+      orderBy: orderBy?.call(StringDefault.t),
+      orderByList: orderByList?.call(StringDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<StringDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(StringDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

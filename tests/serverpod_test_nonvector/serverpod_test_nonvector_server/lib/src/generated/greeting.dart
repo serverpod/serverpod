@@ -93,7 +93,7 @@ abstract class Greeting
   static GreetingInclude include({
     _is.SelectColumnsBuilder<GreetingTable>? select,
   }) {
-    return GreetingInclude.internal_(selectedColumns: select?.call(Greeting.t));
+    return GreetingInclude._(selectedColumns: select?.call(Greeting.t));
   }
 
   static GreetingIncludeList includeList({
@@ -105,7 +105,7 @@ abstract class Greeting
     GreetingInclude? include,
     _is.SelectColumnsBuilder<GreetingTable>? select,
   }) {
-    return GreetingIncludeList.internal_(
+    return GreetingIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +214,7 @@ class GreetingTable extends _is.Table<int?> {
 }
 
 class GreetingInclude extends _is.IncludeObject {
-  GreetingInclude.internal_({this.selectedColumns});
+  GreetingInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -227,7 +227,7 @@ class GreetingInclude extends _is.IncludeObject {
 }
 
 class GreetingIncludeList extends _is.IncludeList {
-  GreetingIncludeList.internal_({
+  GreetingIncludeList._({
     _is.WhereExpressionBuilder<GreetingTable>? where,
     super.limit,
     super.offset,
@@ -346,6 +346,83 @@ class GreetingRepository {
     return session.db.findById<Greeting>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GreetingTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<GreetingTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Greeting>(
+      where: where?.call(Greeting.t),
+      orderBy: orderBy?.call(Greeting.t),
+      orderByList: orderByList?.call(Greeting.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Greeting.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GreetingTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GreetingTable>? orderBy,
+    _is.OrderByListBuilder<GreetingTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<GreetingTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Greeting>(
+      where: where?.call(Greeting.t),
+      orderBy: orderBy?.call(Greeting.t),
+      orderByList: orderByList?.call(Greeting.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Greeting.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<GreetingTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Greeting>(
+      id,
+      transaction: transaction,
+      select: select?.call(Greeting.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

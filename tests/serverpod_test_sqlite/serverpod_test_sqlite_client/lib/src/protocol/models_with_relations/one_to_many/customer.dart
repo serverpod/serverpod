@@ -91,7 +91,7 @@ abstract class Customer
     _ig920ya2.OrderIncludeList? orders,
     _isd.SelectColumnsBuilder<CustomerTable>? select,
   }) {
-    return CustomerInclude.internal_(
+    return CustomerInclude._(
       orders: orders,
       selectedColumns: select?.call(Customer.t),
     );
@@ -106,7 +106,7 @@ abstract class Customer
     CustomerInclude? include,
     _isd.SelectColumnsBuilder<CustomerTable>? select,
   }) {
-    return CustomerIncludeList.internal_(
+    return CustomerIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class CustomerTable extends _isd.Table<int?> {
 }
 
 class CustomerInclude extends _isd.IncludeObject {
-  CustomerInclude.internal_({
+  CustomerInclude._({
     _ig920ya2.OrderIncludeList? orders,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class CustomerInclude extends _isd.IncludeObject {
 }
 
 class CustomerIncludeList extends _isd.IncludeList {
-  CustomerIncludeList.internal_({
+  CustomerIncludeList._({
     _isd.WhereExpressionBuilder<CustomerTable>? where,
     super.limit,
     super.offset,
@@ -378,6 +378,89 @@ class CustomerRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
+    CustomerInclude? include,
+    _isd.SelectColumnsBuilder<CustomerTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Customer>(
+      where: where?.call(Customer.t),
+      orderBy: orderBy?.call(Customer.t),
+      orderByList: orderByList?.call(Customer.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Customer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CustomerTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CustomerTable>? orderBy,
+    _isd.OrderByListBuilder<CustomerTable>? orderByList,
+    _isd.Transaction? transaction,
+    CustomerInclude? include,
+    _isd.SelectColumnsBuilder<CustomerTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Customer>(
+      where: where?.call(Customer.t),
+      orderBy: orderBy?.call(Customer.t),
+      orderByList: orderByList?.call(Customer.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Customer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CustomerInclude? include,
+    _isd.SelectColumnsBuilder<CustomerTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Customer>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Customer.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -100,7 +100,7 @@ abstract class ProjectedOrder
   static ProjectedOrderInclude include({
     _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
   }) {
-    return ProjectedOrderInclude.internal_(
+    return ProjectedOrderInclude._(
       selectedColumns: select?.call(ProjectedOrder.t),
     );
   }
@@ -114,7 +114,7 @@ abstract class ProjectedOrder
     ProjectedOrderInclude? include,
     _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
   }) {
-    return ProjectedOrderIncludeList.internal_(
+    return ProjectedOrderIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -277,7 +277,7 @@ class ProjectedOrderTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ProjectedOrderInclude extends _is.IncludeObject {
-  ProjectedOrderInclude.internal_({this.selectedColumns});
+  ProjectedOrderInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -290,7 +290,7 @@ class ProjectedOrderInclude extends _is.IncludeObject {
 }
 
 class ProjectedOrderIncludeList extends _is.IncludeList {
-  ProjectedOrderIncludeList.internal_({
+  ProjectedOrderIncludeList._({
     _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     super.limit,
     super.offset,
@@ -409,6 +409,83 @@ class ProjectedOrderRepository {
     return session.db.findById<ProjectedOrder>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ProjectedOrder>(
+      where: where?.call(ProjectedOrder.t),
+      orderBy: orderBy?.call(ProjectedOrder.t),
+      orderByList: orderByList?.call(ProjectedOrder.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ProjectedOrder.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ProjectedOrder>(
+      where: where?.call(ProjectedOrder.t),
+      orderBy: orderBy?.call(ProjectedOrder.t),
+      orderByList: orderByList?.call(ProjectedOrder.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ProjectedOrder.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedOrderTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ProjectedOrder>(
+      id,
+      transaction: transaction,
+      select: select?.call(ProjectedOrder.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -147,7 +147,7 @@ abstract class PasskeyAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
   }) {
-    return PasskeyAccountInclude.internal_(
+    return PasskeyAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(PasskeyAccount.t),
     );
@@ -162,7 +162,7 @@ abstract class PasskeyAccount
     PasskeyAccountInclude? include,
     _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
   }) {
-    return PasskeyAccountIncludeList.internal_(
+    return PasskeyAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -378,7 +378,7 @@ class PasskeyAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PasskeyAccountInclude extends _is.IncludeObject {
-  PasskeyAccountInclude.internal_({
+  PasskeyAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -398,7 +398,7 @@ class PasskeyAccountInclude extends _is.IncludeObject {
 }
 
 class PasskeyAccountIncludeList extends _is.IncludeList {
-  PasskeyAccountIncludeList.internal_({
+  PasskeyAccountIncludeList._({
     _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
     super.limit,
     super.offset,
@@ -525,6 +525,89 @@ class PasskeyAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    PasskeyAccountInclude? include,
+    _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<PasskeyAccount>(
+      where: where?.call(PasskeyAccount.t),
+      orderBy: orderBy?.call(PasskeyAccount.t),
+      orderByList: orderByList?.call(PasskeyAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PasskeyAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PasskeyAccountTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    PasskeyAccountInclude? include,
+    _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<PasskeyAccount>(
+      where: where?.call(PasskeyAccount.t),
+      orderBy: orderBy?.call(PasskeyAccount.t),
+      orderByList: orderByList?.call(PasskeyAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PasskeyAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    PasskeyAccountInclude? include,
+    _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<PasskeyAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PasskeyAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

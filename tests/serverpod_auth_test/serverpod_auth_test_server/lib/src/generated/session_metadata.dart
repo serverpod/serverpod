@@ -120,7 +120,7 @@ abstract class SessionMetadata
     _iacs.ServerSideSessionInclude? serverSideSession,
     _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
-    return SessionMetadataInclude.internal_(
+    return SessionMetadataInclude._(
       serverSideSession: serverSideSession,
       selectedColumns: select?.call(SessionMetadata.t),
     );
@@ -135,7 +135,7 @@ abstract class SessionMetadata
     SessionMetadataInclude? include,
     _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
-    return SessionMetadataIncludeList.internal_(
+    return SessionMetadataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -309,7 +309,7 @@ class SessionMetadataTable extends _is.Table<int?> {
 }
 
 class SessionMetadataInclude extends _is.IncludeObject {
-  SessionMetadataInclude.internal_({
+  SessionMetadataInclude._({
     _iacs.ServerSideSessionInclude? serverSideSession,
     this.selectedColumns,
   }) {
@@ -331,7 +331,7 @@ class SessionMetadataInclude extends _is.IncludeObject {
 }
 
 class SessionMetadataIncludeList extends _is.IncludeList {
-  SessionMetadataIncludeList.internal_({
+  SessionMetadataIncludeList._({
     _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     super.limit,
     super.offset,
@@ -458,6 +458,89 @@ class SessionMetadataRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
+    SessionMetadataInclude? include,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SessionMetadata>(
+      where: where?.call(SessionMetadata.t),
+      orderBy: orderBy?.call(SessionMetadata.t),
+      orderByList: orderByList?.call(SessionMetadata.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionMetadata.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
+    SessionMetadataInclude? include,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SessionMetadata>(
+      where: where?.call(SessionMetadata.t),
+      orderBy: orderBy?.call(SessionMetadata.t),
+      orderByList: orderByList?.call(SessionMetadata.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionMetadata.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    SessionMetadataInclude? include,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SessionMetadata>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionMetadata.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

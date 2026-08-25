@@ -102,7 +102,7 @@ abstract class AnonymousAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
   }) {
-    return AnonymousAccountInclude.internal_(
+    return AnonymousAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(AnonymousAccount.t),
     );
@@ -117,7 +117,7 @@ abstract class AnonymousAccount
     AnonymousAccountInclude? include,
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
   }) {
-    return AnonymousAccountIncludeList.internal_(
+    return AnonymousAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -242,7 +242,7 @@ class AnonymousAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AnonymousAccountInclude extends _is.IncludeObject {
-  AnonymousAccountInclude.internal_({
+  AnonymousAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -262,7 +262,7 @@ class AnonymousAccountInclude extends _is.IncludeObject {
 }
 
 class AnonymousAccountIncludeList extends _is.IncludeList {
-  AnonymousAccountIncludeList.internal_({
+  AnonymousAccountIncludeList._({
     _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
     super.limit,
     super.offset,
@@ -389,6 +389,89 @@ class AnonymousAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    AnonymousAccountInclude? include,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<AnonymousAccount>(
+      where: where?.call(AnonymousAccount.t),
+      orderBy: orderBy?.call(AnonymousAccount.t),
+      orderByList: orderByList?.call(AnonymousAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AnonymousAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    AnonymousAccountInclude? include,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<AnonymousAccount>(
+      where: where?.call(AnonymousAccount.t),
+      orderBy: orderBy?.call(AnonymousAccount.t),
+      orderByList: orderByList?.call(AnonymousAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AnonymousAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    AnonymousAccountInclude? include,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<AnonymousAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AnonymousAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

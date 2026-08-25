@@ -153,7 +153,7 @@ abstract class EmailAccountPasswordResetRequest
     _i7k1fa50.SecretChallengeInclude? setPasswordChallenge,
     _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
   }) {
-    return EmailAccountPasswordResetRequestInclude.internal_(
+    return EmailAccountPasswordResetRequestInclude._(
       emailAccount: emailAccount,
       challenge: challenge,
       setPasswordChallenge: setPasswordChallenge,
@@ -170,7 +170,7 @@ abstract class EmailAccountPasswordResetRequest
     EmailAccountPasswordResetRequestInclude? include,
     _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
   }) {
-    return EmailAccountPasswordResetRequestIncludeList.internal_(
+    return EmailAccountPasswordResetRequestIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -388,7 +388,7 @@ class EmailAccountPasswordResetRequestTable extends _is.Table<_is.UuidValue?> {
 }
 
 class EmailAccountPasswordResetRequestInclude extends _is.IncludeObject {
-  EmailAccountPasswordResetRequestInclude.internal_({
+  EmailAccountPasswordResetRequestInclude._({
     _imety4f2.EmailAccountInclude? emailAccount,
     _i7k1fa50.SecretChallengeInclude? challenge,
     _i7k1fa50.SecretChallengeInclude? setPasswordChallenge,
@@ -420,7 +420,7 @@ class EmailAccountPasswordResetRequestInclude extends _is.IncludeObject {
 }
 
 class EmailAccountPasswordResetRequestIncludeList extends _is.IncludeList {
-  EmailAccountPasswordResetRequestIncludeList.internal_({
+  EmailAccountPasswordResetRequestIncludeList._({
     _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
     super.limit,
     super.offset,
@@ -551,6 +551,89 @@ class EmailAccountPasswordResetRequestRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountPasswordResetRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailAccountPasswordResetRequest>(
+      where: where?.call(EmailAccountPasswordResetRequest.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountPasswordResetRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountPasswordResetRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountPasswordResetRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountPasswordResetRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailAccountPasswordResetRequest>(
+      where: where?.call(EmailAccountPasswordResetRequest.t),
+      orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
+      orderByList: orderByList?.call(EmailAccountPasswordResetRequest.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountPasswordResetRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    EmailAccountPasswordResetRequestInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailAccountPasswordResetRequest>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccountPasswordResetRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -83,7 +83,7 @@ abstract class StringDefaultModel
   static StringDefaultModelInclude include({
     _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
   }) {
-    return StringDefaultModelInclude.internal_(
+    return StringDefaultModelInclude._(
       selectedColumns: select?.call(StringDefaultModel.t),
     );
   }
@@ -97,7 +97,7 @@ abstract class StringDefaultModel
     StringDefaultModelInclude? include,
     _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
   }) {
-    return StringDefaultModelIncludeList.internal_(
+    return StringDefaultModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -191,7 +191,7 @@ class StringDefaultModelTable extends _is.Table<int?> {
 }
 
 class StringDefaultModelInclude extends _is.IncludeObject {
-  StringDefaultModelInclude.internal_({this.selectedColumns});
+  StringDefaultModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -204,7 +204,7 @@ class StringDefaultModelInclude extends _is.IncludeObject {
 }
 
 class StringDefaultModelIncludeList extends _is.IncludeList {
-  StringDefaultModelIncludeList.internal_({
+  StringDefaultModelIncludeList._({
     _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     super.limit,
     super.offset,
@@ -323,6 +323,83 @@ class StringDefaultModelRepository {
     return session.db.findById<StringDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<StringDefaultModel>(
+      where: where?.call(StringDefaultModel.t),
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<StringDefaultModel>(
+      where: where?.call(StringDefaultModel.t),
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<StringDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(StringDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

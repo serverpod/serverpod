@@ -111,7 +111,7 @@ abstract class Organization
     _i64066zp.CityInclude? city,
     _is.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
-    return OrganizationInclude.internal_(
+    return OrganizationInclude._(
       people: people,
       city: city,
       selectedColumns: select?.call(Organization.t),
@@ -127,7 +127,7 @@ abstract class Organization
     OrganizationInclude? include,
     _is.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
-    return OrganizationIncludeList.internal_(
+    return OrganizationIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -288,7 +288,7 @@ class OrganizationTable extends _is.Table<int?> {
 }
 
 class OrganizationInclude extends _is.IncludeObject {
-  OrganizationInclude.internal_({
+  OrganizationInclude._({
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
     this.selectedColumns,
@@ -315,7 +315,7 @@ class OrganizationInclude extends _is.IncludeObject {
 }
 
 class OrganizationIncludeList extends _is.IncludeList {
-  OrganizationIncludeList.internal_({
+  OrganizationIncludeList._({
     _is.WhereExpressionBuilder<OrganizationTable>? where,
     super.limit,
     super.offset,
@@ -448,6 +448,89 @@ class OrganizationRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrganizationTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrganizationTable>? orderBy,
+    _is.OrderByListBuilder<OrganizationTable>? orderByList,
+    _is.Transaction? transaction,
+    OrganizationInclude? include,
+    _is.SelectColumnsBuilder<OrganizationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Organization>(
+      where: where?.call(Organization.t),
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Organization.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrganizationTable>? where,
+    int? offset,
+    _is.OrderByBuilder<OrganizationTable>? orderBy,
+    _is.OrderByListBuilder<OrganizationTable>? orderByList,
+    _is.Transaction? transaction,
+    OrganizationInclude? include,
+    _is.SelectColumnsBuilder<OrganizationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Organization>(
+      where: where?.call(Organization.t),
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Organization.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    OrganizationInclude? include,
+    _is.SelectColumnsBuilder<OrganizationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Organization>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Organization.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

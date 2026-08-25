@@ -69,8 +69,8 @@ abstract class ProjectedAddressCountry
   }
 
   static ProjectedAddressInclude include() {
-    return ProjectedAddressInclude.internal_(
-      selectedColumns: [
+    return ProjectedAddress.include(
+      select: (t) => [
         ProjectedAddress.t.id,
         ProjectedAddress.t.country,
       ],

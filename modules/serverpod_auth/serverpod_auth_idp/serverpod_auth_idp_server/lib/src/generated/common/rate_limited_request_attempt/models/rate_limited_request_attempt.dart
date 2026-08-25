@@ -128,7 +128,7 @@ abstract class RateLimitedRequestAttempt
   static RateLimitedRequestAttemptInclude include({
     _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
   }) {
-    return RateLimitedRequestAttemptInclude.internal_(
+    return RateLimitedRequestAttemptInclude._(
       selectedColumns: select?.call(RateLimitedRequestAttempt.t),
     );
   }
@@ -142,7 +142,7 @@ abstract class RateLimitedRequestAttempt
     RateLimitedRequestAttemptInclude? include,
     _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
   }) {
-    return RateLimitedRequestAttemptIncludeList.internal_(
+    return RateLimitedRequestAttemptIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -320,7 +320,7 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
 }
 
 class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
-  RateLimitedRequestAttemptInclude.internal_({this.selectedColumns});
+  RateLimitedRequestAttemptInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -333,7 +333,7 @@ class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
 }
 
 class RateLimitedRequestAttemptIncludeList extends _is.IncludeList {
-  RateLimitedRequestAttemptIncludeList.internal_({
+  RateLimitedRequestAttemptIncludeList._({
     _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     super.limit,
     super.offset,
@@ -452,6 +452,83 @@ class RateLimitedRequestAttemptRepository {
     return session.db.findById<RateLimitedRequestAttempt>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RateLimitedRequestAttempt>(
+      where: where?.call(RateLimitedRequestAttempt.t),
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(RateLimitedRequestAttempt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RateLimitedRequestAttempt>(
+      where: where?.call(RateLimitedRequestAttempt.t),
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(RateLimitedRequestAttempt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RateLimitedRequestAttempt>(
+      id,
+      transaction: transaction,
+      select: select?.call(RateLimitedRequestAttempt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

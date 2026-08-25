@@ -90,7 +90,7 @@ abstract class CustomerInt
     _ivss21qh.OrderUuidIncludeList? orders,
     _is.SelectColumnsBuilder<CustomerIntTable>? select,
   }) {
-    return CustomerIntInclude.internal_(
+    return CustomerIntInclude._(
       orders: orders,
       selectedColumns: select?.call(CustomerInt.t),
     );
@@ -105,7 +105,7 @@ abstract class CustomerInt
     CustomerIntInclude? include,
     _is.SelectColumnsBuilder<CustomerIntTable>? select,
   }) {
-    return CustomerIntIncludeList.internal_(
+    return CustomerIntIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +228,7 @@ class CustomerIntTable extends _is.Table<int?> {
 }
 
 class CustomerIntInclude extends _is.IncludeObject {
-  CustomerIntInclude.internal_({
+  CustomerIntInclude._({
     _ivss21qh.OrderUuidIncludeList? orders,
     this.selectedColumns,
   }) {
@@ -248,7 +248,7 @@ class CustomerIntInclude extends _is.IncludeObject {
 }
 
 class CustomerIntIncludeList extends _is.IncludeList {
-  CustomerIntIncludeList.internal_({
+  CustomerIntIncludeList._({
     _is.WhereExpressionBuilder<CustomerIntTable>? where,
     super.limit,
     super.offset,
@@ -377,6 +377,89 @@ class CustomerIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CustomerIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CustomerIntTable>? orderBy,
+    _is.OrderByListBuilder<CustomerIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CustomerIntInclude? include,
+    _is.SelectColumnsBuilder<CustomerIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CustomerInt>(
+      where: where?.call(CustomerInt.t),
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CustomerInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CustomerIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CustomerIntTable>? orderBy,
+    _is.OrderByListBuilder<CustomerIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CustomerIntInclude? include,
+    _is.SelectColumnsBuilder<CustomerIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CustomerInt>(
+      where: where?.call(CustomerInt.t),
+      orderBy: orderBy?.call(CustomerInt.t),
+      orderByList: orderByList?.call(CustomerInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CustomerInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CustomerIntInclude? include,
+    _is.SelectColumnsBuilder<CustomerIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CustomerInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CustomerInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

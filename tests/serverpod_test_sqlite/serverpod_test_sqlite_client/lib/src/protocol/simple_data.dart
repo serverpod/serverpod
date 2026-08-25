@@ -76,9 +76,7 @@ abstract class SimpleData
   static SimpleDataInclude include({
     _isd.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
-    return SimpleDataInclude.internal_(
-      selectedColumns: select?.call(SimpleData.t),
-    );
+    return SimpleDataInclude._(selectedColumns: select?.call(SimpleData.t));
   }
 
   static SimpleDataIncludeList includeList({
@@ -90,7 +88,7 @@ abstract class SimpleData
     SimpleDataInclude? include,
     _isd.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
-    return SimpleDataIncludeList.internal_(
+    return SimpleDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -166,7 +164,7 @@ class SimpleDataTable extends _isd.Table<int?> {
 }
 
 class SimpleDataInclude extends _isd.IncludeObject {
-  SimpleDataInclude.internal_({this.selectedColumns});
+  SimpleDataInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -179,7 +177,7 @@ class SimpleDataInclude extends _isd.IncludeObject {
 }
 
 class SimpleDataIncludeList extends _isd.IncludeList {
-  SimpleDataIncludeList.internal_({
+  SimpleDataIncludeList._({
     _isd.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
@@ -298,6 +296,83 @@ class SimpleDataRepository {
     return session.db.findById<SimpleData>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SimpleDataTable>? orderBy,
+    _isd.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<SimpleDataTable>? orderBy,
+    _isd.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SimpleData>(
+      id,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

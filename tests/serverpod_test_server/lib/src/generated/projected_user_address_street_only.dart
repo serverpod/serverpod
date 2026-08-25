@@ -83,13 +83,13 @@ abstract class ProjectedUserAddressStreetOnly
   }
 
   static ProjectedUserInclude include() {
-    return ProjectedUserInclude.internal_(
-      selectedColumns: [
+    return ProjectedUser.include(
+      select: (t) => [
         ProjectedUser.t.id,
         ProjectedUser.t.name,
       ],
-      address: _iegbxll6.ProjectedAddressInclude.internal_(
-        selectedColumns: [_iegbxll6.ProjectedAddress.t.street],
+      address: _iegbxll6.ProjectedAddress.include(
+        select: (t) => [_iegbxll6.ProjectedAddress.t.street],
       ),
     );
   }

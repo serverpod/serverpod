@@ -100,7 +100,7 @@ abstract class MultipleMaxFieldName
   static MultipleMaxFieldNameInclude include({
     _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
   }) {
-    return MultipleMaxFieldNameInclude.internal_(
+    return MultipleMaxFieldNameInclude._(
       selectedColumns: select?.call(MultipleMaxFieldName.t),
     );
   }
@@ -114,7 +114,7 @@ abstract class MultipleMaxFieldName
     MultipleMaxFieldNameInclude? include,
     _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
   }) {
-    return MultipleMaxFieldNameIncludeList.internal_(
+    return MultipleMaxFieldNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -286,7 +286,7 @@ class MultipleMaxFieldNameTable extends _is.Table<int?> {
 }
 
 class MultipleMaxFieldNameInclude extends _is.IncludeObject {
-  MultipleMaxFieldNameInclude.internal_({this.selectedColumns});
+  MultipleMaxFieldNameInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -299,7 +299,7 @@ class MultipleMaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class MultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  MultipleMaxFieldNameIncludeList.internal_({
+  MultipleMaxFieldNameIncludeList._({
     _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
@@ -418,6 +418,83 @@ class MultipleMaxFieldNameRepository {
     return session.db.findById<MultipleMaxFieldName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MultipleMaxFieldName>(
+      where: where?.call(MultipleMaxFieldName.t),
+      orderBy: orderBy?.call(MultipleMaxFieldName.t),
+      orderByList: orderByList?.call(MultipleMaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MultipleMaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MultipleMaxFieldName>(
+      where: where?.call(MultipleMaxFieldName.t),
+      orderBy: orderBy?.call(MultipleMaxFieldName.t),
+      orderByList: orderByList?.call(MultipleMaxFieldName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MultipleMaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MultipleMaxFieldName>(
+      id,
+      transaction: transaction,
+      select: select?.call(MultipleMaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

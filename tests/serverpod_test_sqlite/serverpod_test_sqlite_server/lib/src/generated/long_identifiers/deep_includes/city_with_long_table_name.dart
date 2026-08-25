@@ -114,7 +114,7 @@ abstract class CityWithLongTableName
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
   }) {
-    return CityWithLongTableNameInclude.internal_(
+    return CityWithLongTableNameInclude._(
       citizens: citizens,
       organizations: organizations,
       selectedColumns: select?.call(CityWithLongTableName.t),
@@ -130,7 +130,7 @@ abstract class CityWithLongTableName
     CityWithLongTableNameInclude? include,
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
   }) {
-    return CityWithLongTableNameIncludeList.internal_(
+    return CityWithLongTableNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -318,7 +318,7 @@ class CityWithLongTableNameTable extends _is.Table<int?> {
 }
 
 class CityWithLongTableNameInclude extends _is.IncludeObject {
-  CityWithLongTableNameInclude.internal_({
+  CityWithLongTableNameInclude._({
     _i5nficvp.PersonWithLongTableNameIncludeList? citizens,
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
     this.selectedColumns,
@@ -345,7 +345,7 @@ class CityWithLongTableNameInclude extends _is.IncludeObject {
 }
 
 class CityWithLongTableNameIncludeList extends _is.IncludeList {
-  CityWithLongTableNameIncludeList.internal_({
+  CityWithLongTableNameIncludeList._({
     _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     super.limit,
     super.offset,
@@ -478,6 +478,89 @@ class CityWithLongTableNameRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
+    CityWithLongTableNameInclude? include,
+    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CityWithLongTableName>(
+      where: where?.call(CityWithLongTableName.t),
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CityWithLongTableName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    _is.Transaction? transaction,
+    CityWithLongTableNameInclude? include,
+    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CityWithLongTableName>(
+      where: where?.call(CityWithLongTableName.t),
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CityWithLongTableName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CityWithLongTableNameInclude? include,
+    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CityWithLongTableName>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CityWithLongTableName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

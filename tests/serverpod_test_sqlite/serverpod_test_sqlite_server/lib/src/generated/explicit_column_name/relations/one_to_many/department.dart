@@ -93,7 +93,7 @@ abstract class Department
     _ilvmgye0.EmployeeIncludeList? employees,
     _is.SelectColumnsBuilder<DepartmentTable>? select,
   }) {
-    return DepartmentInclude.internal_(
+    return DepartmentInclude._(
       employees: employees,
       selectedColumns: select?.call(Department.t),
     );
@@ -108,7 +108,7 @@ abstract class Department
     DepartmentInclude? include,
     _is.SelectColumnsBuilder<DepartmentTable>? select,
   }) {
-    return DepartmentIncludeList.internal_(
+    return DepartmentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -231,7 +231,7 @@ class DepartmentTable extends _is.Table<int?> {
 }
 
 class DepartmentInclude extends _is.IncludeObject {
-  DepartmentInclude.internal_({
+  DepartmentInclude._({
     _ilvmgye0.EmployeeIncludeList? employees,
     this.selectedColumns,
   }) {
@@ -251,7 +251,7 @@ class DepartmentInclude extends _is.IncludeObject {
 }
 
 class DepartmentIncludeList extends _is.IncludeList {
-  DepartmentIncludeList.internal_({
+  DepartmentIncludeList._({
     _is.WhereExpressionBuilder<DepartmentTable>? where,
     super.limit,
     super.offset,
@@ -380,6 +380,89 @@ class DepartmentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
+    DepartmentInclude? include,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Department>(
+      where: where?.call(Department.t),
+      orderBy: orderBy?.call(Department.t),
+      orderByList: orderByList?.call(Department.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Department.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    _is.Transaction? transaction,
+    DepartmentInclude? include,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Department>(
+      where: where?.call(Department.t),
+      orderBy: orderBy?.call(Department.t),
+      orderByList: orderByList?.call(Department.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Department.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    DepartmentInclude? include,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Department>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Department.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

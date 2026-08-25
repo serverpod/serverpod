@@ -105,7 +105,7 @@ abstract class BoolDefaultMix
   static BoolDefaultMixInclude include({
     _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
   }) {
-    return BoolDefaultMixInclude.internal_(
+    return BoolDefaultMixInclude._(
       selectedColumns: select?.call(BoolDefaultMix.t),
     );
   }
@@ -119,7 +119,7 @@ abstract class BoolDefaultMix
     BoolDefaultMixInclude? include,
     _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
   }) {
-    return BoolDefaultMixIncludeList.internal_(
+    return BoolDefaultMixIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -235,7 +235,7 @@ class BoolDefaultMixTable extends _is.Table<int?> {
 }
 
 class BoolDefaultMixInclude extends _is.IncludeObject {
-  BoolDefaultMixInclude.internal_({this.selectedColumns});
+  BoolDefaultMixInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -248,7 +248,7 @@ class BoolDefaultMixInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultMixIncludeList extends _is.IncludeList {
-  BoolDefaultMixIncludeList.internal_({
+  BoolDefaultMixIncludeList._({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     super.limit,
     super.offset,
@@ -367,6 +367,83 @@ class BoolDefaultMixRepository {
     return session.db.findById<BoolDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<BoolDefaultMix>(
+      where: where?.call(BoolDefaultMix.t),
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<BoolDefaultMix>(
+      where: where?.call(BoolDefaultMix.t),
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<BoolDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(BoolDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

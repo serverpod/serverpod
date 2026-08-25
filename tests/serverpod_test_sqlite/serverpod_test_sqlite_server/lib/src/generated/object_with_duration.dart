@@ -73,7 +73,7 @@ abstract class ObjectWithDuration
   static ObjectWithDurationInclude include({
     _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
   }) {
-    return ObjectWithDurationInclude.internal_(
+    return ObjectWithDurationInclude._(
       selectedColumns: select?.call(ObjectWithDuration.t),
     );
   }
@@ -87,7 +87,7 @@ abstract class ObjectWithDuration
     ObjectWithDurationInclude? include,
     _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
   }) {
-    return ObjectWithDurationIncludeList.internal_(
+    return ObjectWithDurationIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,7 +163,7 @@ class ObjectWithDurationTable extends _is.Table<int?> {
 }
 
 class ObjectWithDurationInclude extends _is.IncludeObject {
-  ObjectWithDurationInclude.internal_({this.selectedColumns});
+  ObjectWithDurationInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -176,7 +176,7 @@ class ObjectWithDurationInclude extends _is.IncludeObject {
 }
 
 class ObjectWithDurationIncludeList extends _is.IncludeList {
-  ObjectWithDurationIncludeList.internal_({
+  ObjectWithDurationIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
     super.limit,
     super.offset,
@@ -295,6 +295,83 @@ class ObjectWithDurationRepository {
     return session.db.findById<ObjectWithDuration>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithDuration.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithDurationTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDurationTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithDuration>(
+      where: where?.call(ObjectWithDuration.t),
+      orderBy: orderBy?.call(ObjectWithDuration.t),
+      orderByList: orderByList?.call(ObjectWithDuration.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithDuration.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithDuration>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithDuration.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

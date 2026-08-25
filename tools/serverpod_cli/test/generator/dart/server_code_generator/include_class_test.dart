@@ -104,7 +104,7 @@ void main() {
             expect(
               CompilationUnitHelpers.hasConstructorDeclaration(
                 exampleIncludeClass,
-                name: 'internal_',
+                name: '_',
                 parameters: [
                   'CompanyInclude? company',
                   'this.selectedColumns',
@@ -200,7 +200,7 @@ void main() {
             var constructor =
                 CompilationUnitHelpers.tryFindConstructorDeclaration(
                   exampleIncludeListClass,
-                  name: 'internal_',
+                  name: '_',
                 );
             expect(
               constructor,
@@ -308,7 +308,7 @@ void main() {
           expect(
             CompilationUnitHelpers.hasConstructorDeclaration(
               exampleIncludeClass,
-              name: 'internal_',
+              name: '_',
               parameters: [
                 'UserIncludeList? users',
                 'this.selectedColumns',

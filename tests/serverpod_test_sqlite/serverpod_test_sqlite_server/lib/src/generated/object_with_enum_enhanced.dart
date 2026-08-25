@@ -135,7 +135,7 @@ abstract class ObjectWithEnumEnhanced
   static ObjectWithEnumEnhancedInclude include({
     _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
   }) {
-    return ObjectWithEnumEnhancedInclude.internal_(
+    return ObjectWithEnumEnhancedInclude._(
       selectedColumns: select?.call(ObjectWithEnumEnhanced.t),
     );
   }
@@ -149,7 +149,7 @@ abstract class ObjectWithEnumEnhanced
     ObjectWithEnumEnhancedInclude? include,
     _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
   }) {
-    return ObjectWithEnumEnhancedIncludeList.internal_(
+    return ObjectWithEnumEnhancedIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -332,7 +332,7 @@ class ObjectWithEnumEnhancedTable extends _is.Table<int?> {
 }
 
 class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
-  ObjectWithEnumEnhancedInclude.internal_({this.selectedColumns});
+  ObjectWithEnumEnhancedInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -345,7 +345,7 @@ class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
 }
 
 class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList {
-  ObjectWithEnumEnhancedIncludeList.internal_({
+  ObjectWithEnumEnhancedIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     super.limit,
     super.offset,
@@ -464,6 +464,83 @@ class ObjectWithEnumEnhancedRepository {
     return session.db.findById<ObjectWithEnumEnhanced>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithEnumEnhanced>(
+      where: where?.call(ObjectWithEnumEnhanced.t),
+      orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
+      orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnumEnhanced.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithEnumEnhanced>(
+      where: where?.call(ObjectWithEnumEnhanced.t),
+      orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
+      orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnumEnhanced.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithEnumEnhanced>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnumEnhanced.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

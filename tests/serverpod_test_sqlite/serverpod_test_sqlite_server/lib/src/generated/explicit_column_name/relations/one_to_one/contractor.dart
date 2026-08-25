@@ -97,7 +97,7 @@ abstract class Contractor
     _iml73r3x.ServiceInclude? service,
     _is.SelectColumnsBuilder<ContractorTable>? select,
   }) {
-    return ContractorInclude.internal_(
+    return ContractorInclude._(
       service: service,
       selectedColumns: select?.call(Contractor.t),
     );
@@ -112,7 +112,7 @@ abstract class Contractor
     ContractorInclude? include,
     _is.SelectColumnsBuilder<ContractorTable>? select,
   }) {
-    return ContractorIncludeList.internal_(
+    return ContractorIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -233,7 +233,7 @@ class ContractorTable extends _is.Table<int?> {
 }
 
 class ContractorInclude extends _is.IncludeObject {
-  ContractorInclude.internal_({
+  ContractorInclude._({
     _iml73r3x.ServiceInclude? service,
     this.selectedColumns,
   }) {
@@ -253,7 +253,7 @@ class ContractorInclude extends _is.IncludeObject {
 }
 
 class ContractorIncludeList extends _is.IncludeList {
-  ContractorIncludeList.internal_({
+  ContractorIncludeList._({
     _is.WhereExpressionBuilder<ContractorTable>? where,
     super.limit,
     super.offset,
@@ -382,6 +382,89 @@ class ContractorRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ContractorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
+    ContractorInclude? include,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Contractor>(
+      where: where?.call(Contractor.t),
+      orderBy: orderBy?.call(Contractor.t),
+      orderByList: orderByList?.call(Contractor.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Contractor.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ContractorTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    _is.Transaction? transaction,
+    ContractorInclude? include,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Contractor>(
+      where: where?.call(Contractor.t),
+      orderBy: orderBy?.call(Contractor.t),
+      orderByList: orderByList?.call(Contractor.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Contractor.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ContractorInclude? include,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Contractor>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Contractor.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -79,9 +79,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
   static ParentClassInclude include({
     _is.SelectColumnsBuilder<ParentClassTable>? select,
   }) {
-    return ParentClassInclude.internal_(
-      selectedColumns: select?.call(ParentClass.t),
-    );
+    return ParentClassInclude._(selectedColumns: select?.call(ParentClass.t));
   }
 
   static ParentClassIncludeList includeList({
@@ -93,7 +91,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     ParentClassInclude? include,
     _is.SelectColumnsBuilder<ParentClassTable>? select,
   }) {
-    return ParentClassIncludeList.internal_(
+    return ParentClassIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -156,7 +154,7 @@ class ParentClassTable extends _is.Table<int?> {
 }
 
 class ParentClassInclude extends _is.IncludeObject {
-  ParentClassInclude.internal_({this.selectedColumns});
+  ParentClassInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -169,7 +167,7 @@ class ParentClassInclude extends _is.IncludeObject {
 }
 
 class ParentClassIncludeList extends _is.IncludeList {
-  ParentClassIncludeList.internal_({
+  ParentClassIncludeList._({
     _is.WhereExpressionBuilder<ParentClassTable>? where,
     super.limit,
     super.offset,
@@ -288,6 +286,83 @@ class ParentClassRepository {
     return session.db.findById<ParentClass>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ParentClassTable>? orderBy,
+    _is.OrderByListBuilder<ParentClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ParentClass>(
+      where: where?.call(ParentClass.t),
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ParentClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ParentClassTable>? orderBy,
+    _is.OrderByListBuilder<ParentClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ParentClass>(
+      where: where?.call(ParentClass.t),
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ParentClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ParentClass>(
+      id,
+      transaction: transaction,
+      select: select?.call(ParentClass.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

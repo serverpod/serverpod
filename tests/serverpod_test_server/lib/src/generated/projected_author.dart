@@ -95,7 +95,7 @@ abstract class ProjectedAuthor
   static ProjectedAuthorInclude include({
     _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
   }) {
-    return ProjectedAuthorInclude.internal_(
+    return ProjectedAuthorInclude._(
       selectedColumns: select?.call(ProjectedAuthor.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class ProjectedAuthor
     ProjectedAuthorInclude? include,
     _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
   }) {
-    return ProjectedAuthorIncludeList.internal_(
+    return ProjectedAuthorIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -231,7 +231,7 @@ class ProjectedAuthorTable extends _is.Table<int?> {
 }
 
 class ProjectedAuthorInclude extends _is.IncludeObject {
-  ProjectedAuthorInclude.internal_({this.selectedColumns});
+  ProjectedAuthorInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -244,7 +244,7 @@ class ProjectedAuthorInclude extends _is.IncludeObject {
 }
 
 class ProjectedAuthorIncludeList extends _is.IncludeList {
-  ProjectedAuthorIncludeList.internal_({
+  ProjectedAuthorIncludeList._({
     _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
     super.limit,
     super.offset,
@@ -363,6 +363,83 @@ class ProjectedAuthorRepository {
     return session.db.findById<ProjectedAuthor>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedAuthorTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ProjectedAuthor>(
+      where: where?.call(ProjectedAuthor.t),
+      orderBy: orderBy?.call(ProjectedAuthor.t),
+      orderByList: orderByList?.call(ProjectedAuthor.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ProjectedAuthor.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ProjectedAuthorTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ProjectedAuthor>(
+      where: where?.call(ProjectedAuthor.t),
+      orderBy: orderBy?.call(ProjectedAuthor.t),
+      orderByList: orderByList?.call(ProjectedAuthor.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ProjectedAuthor.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ProjectedAuthor>(
+      id,
+      transaction: transaction,
+      select: select?.call(ProjectedAuthor.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

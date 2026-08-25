@@ -121,7 +121,7 @@ abstract class GoogleAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<GoogleAccountTable>? select,
   }) {
-    return GoogleAccountInclude.internal_(
+    return GoogleAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(GoogleAccount.t),
     );
@@ -136,7 +136,7 @@ abstract class GoogleAccount
     GoogleAccountInclude? include,
     _is.SelectColumnsBuilder<GoogleAccountTable>? select,
   }) {
-    return GoogleAccountIncludeList.internal_(
+    return GoogleAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -300,7 +300,7 @@ class GoogleAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class GoogleAccountInclude extends _is.IncludeObject {
-  GoogleAccountInclude.internal_({
+  GoogleAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -320,7 +320,7 @@ class GoogleAccountInclude extends _is.IncludeObject {
 }
 
 class GoogleAccountIncludeList extends _is.IncludeList {
-  GoogleAccountIncludeList.internal_({
+  GoogleAccountIncludeList._({
     _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     super.limit,
     super.offset,
@@ -447,6 +447,89 @@ class GoogleAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GoogleAccountInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<GoogleAccount>(
+      where: where?.call(GoogleAccount.t),
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    GoogleAccountInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<GoogleAccount>(
+      where: where?.call(GoogleAccount.t),
+      orderBy: orderBy?.call(GoogleAccount.t),
+      orderByList: orderByList?.call(GoogleAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    GoogleAccountInclude? include,
+    _is.SelectColumnsBuilder<GoogleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<GoogleAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GoogleAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

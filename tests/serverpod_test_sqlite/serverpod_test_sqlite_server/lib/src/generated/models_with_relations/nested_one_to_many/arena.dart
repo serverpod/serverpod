@@ -87,7 +87,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _iaks25tn.TeamInclude? team,
     _is.SelectColumnsBuilder<ArenaTable>? select,
   }) {
-    return ArenaInclude.internal_(
+    return ArenaInclude._(
       team: team,
       selectedColumns: select?.call(Arena.t),
     );
@@ -102,7 +102,7 @@ abstract class Arena implements _is.TableRow<int?>, _is.ProtocolSerialization {
     ArenaInclude? include,
     _is.SelectColumnsBuilder<ArenaTable>? select,
   }) {
-    return ArenaIncludeList.internal_(
+    return ArenaIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -202,7 +202,7 @@ class ArenaTable extends _is.Table<int?> {
 }
 
 class ArenaInclude extends _is.IncludeObject {
-  ArenaInclude.internal_({
+  ArenaInclude._({
     _iaks25tn.TeamInclude? team,
     this.selectedColumns,
   }) {
@@ -222,7 +222,7 @@ class ArenaInclude extends _is.IncludeObject {
 }
 
 class ArenaIncludeList extends _is.IncludeList {
-  ArenaIncludeList.internal_({
+  ArenaIncludeList._({
     _is.WhereExpressionBuilder<ArenaTable>? where,
     super.limit,
     super.offset,
@@ -351,6 +351,89 @@ class ArenaRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ArenaTable>? orderBy,
+    _is.OrderByListBuilder<ArenaTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Arena>(
+      where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ArenaTable>? orderBy,
+    _is.OrderByListBuilder<ArenaTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Arena>(
+      where: where?.call(Arena.t),
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ArenaInclude? include,
+    _is.SelectColumnsBuilder<ArenaTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Arena>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Arena.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

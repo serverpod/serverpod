@@ -79,7 +79,7 @@ abstract class ModifiedColumnName
   static ModifiedColumnNameInclude include({
     _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
   }) {
-    return ModifiedColumnNameInclude.internal_(
+    return ModifiedColumnNameInclude._(
       selectedColumns: select?.call(ModifiedColumnName.t),
     );
   }
@@ -93,7 +93,7 @@ abstract class ModifiedColumnName
     ModifiedColumnNameInclude? include,
     _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
   }) {
-    return ModifiedColumnNameIncludeList.internal_(
+    return ModifiedColumnNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -187,7 +187,7 @@ class ModifiedColumnNameTable extends _is.Table<int?> {
 }
 
 class ModifiedColumnNameInclude extends _is.IncludeObject {
-  ModifiedColumnNameInclude.internal_({this.selectedColumns});
+  ModifiedColumnNameInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -200,7 +200,7 @@ class ModifiedColumnNameInclude extends _is.IncludeObject {
 }
 
 class ModifiedColumnNameIncludeList extends _is.IncludeList {
-  ModifiedColumnNameIncludeList.internal_({
+  ModifiedColumnNameIncludeList._({
     _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     super.limit,
     super.offset,
@@ -319,6 +319,83 @@ class ModifiedColumnNameRepository {
     return session.db.findById<ModifiedColumnName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ModifiedColumnName>(
+      where: where?.call(ModifiedColumnName.t),
+      orderBy: orderBy?.call(ModifiedColumnName.t),
+      orderByList: orderByList?.call(ModifiedColumnName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModifiedColumnName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ModifiedColumnName>(
+      where: where?.call(ModifiedColumnName.t),
+      orderBy: orderBy?.call(ModifiedColumnName.t),
+      orderByList: orderByList?.call(ModifiedColumnName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModifiedColumnName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ModifiedColumnName>(
+      id,
+      transaction: transaction,
+      select: select?.call(ModifiedColumnName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

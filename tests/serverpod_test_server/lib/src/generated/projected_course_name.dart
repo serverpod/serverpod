@@ -67,8 +67,8 @@ abstract class ProjectedCourseName
   }
 
   static ProjectedCourseInclude include() {
-    return ProjectedCourseInclude.internal_(
-      selectedColumns: [
+    return ProjectedCourse.include(
+      select: (t) => [
         ProjectedCourse.t.id,
         ProjectedCourse.t.name,
       ],

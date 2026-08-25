@@ -89,7 +89,7 @@ abstract class DatabaseMigrationVersion
   static DatabaseMigrationVersionInclude include({
     _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
   }) {
-    return DatabaseMigrationVersionInclude.internal_(
+    return DatabaseMigrationVersionInclude._(
       selectedColumns: select?.call(DatabaseMigrationVersion.t),
     );
   }
@@ -103,7 +103,7 @@ abstract class DatabaseMigrationVersion
     DatabaseMigrationVersionInclude? include,
     _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
   }) {
-    return DatabaseMigrationVersionIncludeList.internal_(
+    return DatabaseMigrationVersionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +214,7 @@ class DatabaseMigrationVersionTable extends _is.Table<int?> {
 }
 
 class DatabaseMigrationVersionInclude extends _is.IncludeObject {
-  DatabaseMigrationVersionInclude.internal_({this.selectedColumns});
+  DatabaseMigrationVersionInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -227,7 +227,7 @@ class DatabaseMigrationVersionInclude extends _is.IncludeObject {
 }
 
 class DatabaseMigrationVersionIncludeList extends _is.IncludeList {
-  DatabaseMigrationVersionIncludeList.internal_({
+  DatabaseMigrationVersionIncludeList._({
     _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     super.limit,
     super.offset,
@@ -346,6 +346,83 @@ class DatabaseMigrationVersionRepository {
     return session.db.findById<DatabaseMigrationVersion>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DatabaseMigrationVersion>(
+      where: where?.call(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DatabaseMigrationVersion.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DatabaseMigrationVersion>(
+      where: where?.call(DatabaseMigrationVersion.t),
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DatabaseMigrationVersion.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DatabaseMigrationVersion>(
+      id,
+      transaction: transaction,
+      select: select?.call(DatabaseMigrationVersion.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

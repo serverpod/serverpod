@@ -81,7 +81,7 @@ abstract class RelationEmptyModel
     _iq60yogb.EmptyModelRelationItemIncludeList? items,
     _is.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
-    return RelationEmptyModelInclude.internal_(
+    return RelationEmptyModelInclude._(
       items: items,
       selectedColumns: select?.call(RelationEmptyModel.t),
     );
@@ -96,7 +96,7 @@ abstract class RelationEmptyModel
     RelationEmptyModelInclude? include,
     _is.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
-    return RelationEmptyModelIncludeList.internal_(
+    return RelationEmptyModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -213,7 +213,7 @@ class RelationEmptyModelTable extends _is.Table<int?> {
 }
 
 class RelationEmptyModelInclude extends _is.IncludeObject {
-  RelationEmptyModelInclude.internal_({
+  RelationEmptyModelInclude._({
     _iq60yogb.EmptyModelRelationItemIncludeList? items,
     this.selectedColumns,
   }) {
@@ -233,7 +233,7 @@ class RelationEmptyModelInclude extends _is.IncludeObject {
 }
 
 class RelationEmptyModelIncludeList extends _is.IncludeList {
-  RelationEmptyModelIncludeList.internal_({
+  RelationEmptyModelIncludeList._({
     _is.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     super.limit,
     super.offset,
@@ -366,6 +366,89 @@ class RelationEmptyModelRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelationEmptyModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    _is.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    _is.Transaction? transaction,
+    RelationEmptyModelInclude? include,
+    _is.SelectColumnsBuilder<RelationEmptyModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RelationEmptyModel>(
+      where: where?.call(RelationEmptyModel.t),
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationEmptyModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelationEmptyModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    _is.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    _is.Transaction? transaction,
+    RelationEmptyModelInclude? include,
+    _is.SelectColumnsBuilder<RelationEmptyModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RelationEmptyModel>(
+      where: where?.call(RelationEmptyModel.t),
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationEmptyModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    RelationEmptyModelInclude? include,
+    _is.SelectColumnsBuilder<RelationEmptyModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RelationEmptyModel>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationEmptyModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

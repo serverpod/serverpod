@@ -117,7 +117,7 @@ abstract class EnumDefaultMix
   static EnumDefaultMixInclude include({
     _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
   }) {
-    return EnumDefaultMixInclude.internal_(
+    return EnumDefaultMixInclude._(
       selectedColumns: select?.call(EnumDefaultMix.t),
     );
   }
@@ -131,7 +131,7 @@ abstract class EnumDefaultMix
     EnumDefaultMixInclude? include,
     _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
   }) {
-    return EnumDefaultMixIncludeList.internal_(
+    return EnumDefaultMixIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -259,7 +259,7 @@ class EnumDefaultMixTable extends _is.Table<int?> {
 }
 
 class EnumDefaultMixInclude extends _is.IncludeObject {
-  EnumDefaultMixInclude.internal_({this.selectedColumns});
+  EnumDefaultMixInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -272,7 +272,7 @@ class EnumDefaultMixInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultMixIncludeList extends _is.IncludeList {
-  EnumDefaultMixIncludeList.internal_({
+  EnumDefaultMixIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
     super.offset,
@@ -391,6 +391,83 @@ class EnumDefaultMixRepository {
     return session.db.findById<EnumDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EnumDefaultMix>(
+      where: where?.call(EnumDefaultMix.t),
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EnumDefaultMix>(
+      where: where?.call(EnumDefaultMix.t),
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EnumDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(EnumDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

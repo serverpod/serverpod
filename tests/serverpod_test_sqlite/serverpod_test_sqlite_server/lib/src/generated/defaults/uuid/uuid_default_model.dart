@@ -142,7 +142,7 @@ abstract class UuidDefaultModel
   static UuidDefaultModelInclude include({
     _is.SelectColumnsBuilder<UuidDefaultModelTable>? select,
   }) {
-    return UuidDefaultModelInclude.internal_(
+    return UuidDefaultModelInclude._(
       selectedColumns: select?.call(UuidDefaultModel.t),
     );
   }
@@ -156,7 +156,7 @@ abstract class UuidDefaultModel
     UuidDefaultModelInclude? include,
     _is.SelectColumnsBuilder<UuidDefaultModelTable>? select,
   }) {
-    return UuidDefaultModelIncludeList.internal_(
+    return UuidDefaultModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -311,7 +311,7 @@ class UuidDefaultModelTable extends _is.Table<int?> {
 }
 
 class UuidDefaultModelInclude extends _is.IncludeObject {
-  UuidDefaultModelInclude.internal_({this.selectedColumns});
+  UuidDefaultModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -324,7 +324,7 @@ class UuidDefaultModelInclude extends _is.IncludeObject {
 }
 
 class UuidDefaultModelIncludeList extends _is.IncludeList {
-  UuidDefaultModelIncludeList.internal_({
+  UuidDefaultModelIncludeList._({
     _is.WhereExpressionBuilder<UuidDefaultModelTable>? where,
     super.limit,
     super.offset,
@@ -443,6 +443,83 @@ class UuidDefaultModelRepository {
     return session.db.findById<UuidDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UuidDefaultModel>(
+      where: where?.call(UuidDefaultModel.t),
+      orderBy: orderBy?.call(UuidDefaultModel.t),
+      orderByList: orderByList?.call(UuidDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UuidDefaultModel>(
+      where: where?.call(UuidDefaultModel.t),
+      orderBy: orderBy?.call(UuidDefaultModel.t),
+      orderByList: orderByList?.call(UuidDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UuidDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(UuidDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -73,7 +73,7 @@ abstract class DeferrableRelationParent
   static DeferrableRelationParentInclude include({
     _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
   }) {
-    return DeferrableRelationParentInclude.internal_(
+    return DeferrableRelationParentInclude._(
       selectedColumns: select?.call(DeferrableRelationParent.t),
     );
   }
@@ -87,7 +87,7 @@ abstract class DeferrableRelationParent
     DeferrableRelationParentInclude? include,
     _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
   }) {
-    return DeferrableRelationParentIncludeList.internal_(
+    return DeferrableRelationParentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -162,7 +162,7 @@ class DeferrableRelationParentTable extends _is.Table<int?> {
 }
 
 class DeferrableRelationParentInclude extends _is.IncludeObject {
-  DeferrableRelationParentInclude.internal_({this.selectedColumns});
+  DeferrableRelationParentInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -175,7 +175,7 @@ class DeferrableRelationParentInclude extends _is.IncludeObject {
 }
 
 class DeferrableRelationParentIncludeList extends _is.IncludeList {
-  DeferrableRelationParentIncludeList.internal_({
+  DeferrableRelationParentIncludeList._({
     _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
     super.limit,
     super.offset,
@@ -294,6 +294,83 @@ class DeferrableRelationParentRepository {
     return session.db.findById<DeferrableRelationParent>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DeferrableRelationParent>(
+      where: where?.call(DeferrableRelationParent.t),
+      orderBy: orderBy?.call(DeferrableRelationParent.t),
+      orderByList: orderByList?.call(DeferrableRelationParent.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DeferrableRelationParentTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DeferrableRelationParent>(
+      where: where?.call(DeferrableRelationParent.t),
+      orderBy: orderBy?.call(DeferrableRelationParent.t),
+      orderByList: orderByList?.call(DeferrableRelationParent.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DeferrableRelationParent>(
+      id,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationParent.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -114,7 +114,7 @@ abstract class OrderUuid
     _i7e4crca.CommentIntIncludeList? comments,
     _is.SelectColumnsBuilder<OrderUuidTable>? select,
   }) {
-    return OrderUuidInclude.internal_(
+    return OrderUuidInclude._(
       customer: customer,
       comments: comments,
       selectedColumns: select?.call(OrderUuid.t),
@@ -130,7 +130,7 @@ abstract class OrderUuid
     OrderUuidInclude? include,
     _is.SelectColumnsBuilder<OrderUuidTable>? select,
   }) {
-    return OrderUuidIncludeList.internal_(
+    return OrderUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -293,7 +293,7 @@ class OrderUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class OrderUuidInclude extends _is.IncludeObject {
-  OrderUuidInclude.internal_({
+  OrderUuidInclude._({
     _iwdajoe0.CustomerIntInclude? customer,
     _i7e4crca.CommentIntIncludeList? comments,
     this.selectedColumns,
@@ -320,7 +320,7 @@ class OrderUuidInclude extends _is.IncludeObject {
 }
 
 class OrderUuidIncludeList extends _is.IncludeList {
-  OrderUuidIncludeList.internal_({
+  OrderUuidIncludeList._({
     _is.WhereExpressionBuilder<OrderUuidTable>? where,
     super.limit,
     super.offset,
@@ -449,6 +449,89 @@ class OrderUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    OrderUuidInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<OrderUuid>(
+      where: where?.call(OrderUuid.t),
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<OrderUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<OrderUuidTable>? orderBy,
+    _is.OrderByListBuilder<OrderUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    OrderUuidInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<OrderUuid>(
+      where: where?.call(OrderUuid.t),
+      orderBy: orderBy?.call(OrderUuid.t),
+      orderByList: orderByList?.call(OrderUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    OrderUuidInclude? include,
+    _is.SelectColumnsBuilder<OrderUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<OrderUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(OrderUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

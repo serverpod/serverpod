@@ -157,7 +157,7 @@ abstract class LogEntry
   static LogEntryInclude include({
     _is.SelectColumnsBuilder<LogEntryTable>? select,
   }) {
-    return LogEntryInclude.internal_(selectedColumns: select?.call(LogEntry.t));
+    return LogEntryInclude._(selectedColumns: select?.call(LogEntry.t));
   }
 
   static LogEntryIncludeList includeList({
@@ -169,7 +169,7 @@ abstract class LogEntry
     LogEntryInclude? include,
     _is.SelectColumnsBuilder<LogEntryTable>? select,
   }) {
-    return LogEntryIncludeList.internal_(
+    return LogEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -399,7 +399,7 @@ class LogEntryTable extends _is.Table<int?> {
 }
 
 class LogEntryInclude extends _is.IncludeObject {
-  LogEntryInclude.internal_({this.selectedColumns});
+  LogEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -412,7 +412,7 @@ class LogEntryInclude extends _is.IncludeObject {
 }
 
 class LogEntryIncludeList extends _is.IncludeList {
-  LogEntryIncludeList.internal_({
+  LogEntryIncludeList._({
     _is.WhereExpressionBuilder<LogEntryTable>? where,
     super.limit,
     super.offset,
@@ -531,6 +531,83 @@ class LogEntryRepository {
     return session.db.findById<LogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LogEntry>(
+      where: where?.call(LogEntry.t),
+      orderBy: orderBy?.call(LogEntry.t),
+      orderByList: orderByList?.call(LogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(LogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LogEntryTable>? orderBy,
+    _is.OrderByListBuilder<LogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LogEntry>(
+      where: where?.call(LogEntry.t),
+      orderBy: orderBy?.call(LogEntry.t),
+      orderByList: orderByList?.call(LogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(LogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LogEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(LogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

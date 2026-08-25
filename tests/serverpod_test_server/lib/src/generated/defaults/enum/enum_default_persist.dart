@@ -95,7 +95,7 @@ abstract class EnumDefaultPersist
   static EnumDefaultPersistInclude include({
     _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
   }) {
-    return EnumDefaultPersistInclude.internal_(
+    return EnumDefaultPersistInclude._(
       selectedColumns: select?.call(EnumDefaultPersist.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class EnumDefaultPersist
     EnumDefaultPersistInclude? include,
     _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
   }) {
-    return EnumDefaultPersistIncludeList.internal_(
+    return EnumDefaultPersistIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -212,7 +212,7 @@ class EnumDefaultPersistTable extends _is.Table<int?> {
 }
 
 class EnumDefaultPersistInclude extends _is.IncludeObject {
-  EnumDefaultPersistInclude.internal_({this.selectedColumns});
+  EnumDefaultPersistInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -225,7 +225,7 @@ class EnumDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultPersistIncludeList extends _is.IncludeList {
-  EnumDefaultPersistIncludeList.internal_({
+  EnumDefaultPersistIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
     super.limit,
     super.offset,
@@ -344,6 +344,83 @@ class EnumDefaultPersistRepository {
     return session.db.findById<EnumDefaultPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EnumDefaultPersist>(
+      where: where?.call(EnumDefaultPersist.t),
+      orderBy: orderBy?.call(EnumDefaultPersist.t),
+      orderByList: orderByList?.call(EnumDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EnumDefaultPersist>(
+      where: where?.call(EnumDefaultPersist.t),
+      orderBy: orderBy?.call(EnumDefaultPersist.t),
+      orderByList: orderByList?.call(EnumDefaultPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EnumDefaultPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(EnumDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

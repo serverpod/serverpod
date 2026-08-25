@@ -87,7 +87,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
   static ChildClassWithoutIdInclude include({
     _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
   }) {
-    return ChildClassWithoutIdInclude.internal_(
+    return ChildClassWithoutIdInclude._(
       selectedColumns: select?.call(ChildClassWithoutId.t),
     );
   }
@@ -101,7 +101,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     ChildClassWithoutIdInclude? include,
     _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
   }) {
-    return ChildClassWithoutIdIncludeList.internal_(
+    return ChildClassWithoutIdIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -209,7 +209,7 @@ class ChildClassWithoutIdTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ChildClassWithoutIdInclude extends _is.IncludeObject {
-  ChildClassWithoutIdInclude.internal_({this.selectedColumns});
+  ChildClassWithoutIdInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -222,7 +222,7 @@ class ChildClassWithoutIdInclude extends _is.IncludeObject {
 }
 
 class ChildClassWithoutIdIncludeList extends _is.IncludeList {
-  ChildClassWithoutIdIncludeList.internal_({
+  ChildClassWithoutIdIncludeList._({
     _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     super.limit,
     super.offset,
@@ -341,6 +341,83 @@ class ChildClassWithoutIdRepository {
     return session.db.findById<ChildClassWithoutId>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChildClassWithoutId>(
+      where: where?.call(ChildClassWithoutId.t),
+      orderBy: orderBy?.call(ChildClassWithoutId.t),
+      orderByList: orderByList?.call(ChildClassWithoutId.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ChildClassWithoutId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChildClassWithoutId>(
+      where: where?.call(ChildClassWithoutId.t),
+      orderBy: orderBy?.call(ChildClassWithoutId.t),
+      orderByList: orderByList?.call(ChildClassWithoutId.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ChildClassWithoutId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChildClassWithoutId>(
+      id,
+      transaction: transaction,
+      select: select?.call(ChildClassWithoutId.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

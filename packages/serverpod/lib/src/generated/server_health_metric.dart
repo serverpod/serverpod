@@ -123,7 +123,7 @@ abstract class ServerHealthMetric
   static ServerHealthMetricInclude include({
     _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
   }) {
-    return ServerHealthMetricInclude.internal_(
+    return ServerHealthMetricInclude._(
       selectedColumns: select?.call(ServerHealthMetric.t),
     );
   }
@@ -137,7 +137,7 @@ abstract class ServerHealthMetric
     ServerHealthMetricInclude? include,
     _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
   }) {
-    return ServerHealthMetricIncludeList.internal_(
+    return ServerHealthMetricIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -300,7 +300,7 @@ class ServerHealthMetricTable extends _is.Table<int?> {
 }
 
 class ServerHealthMetricInclude extends _is.IncludeObject {
-  ServerHealthMetricInclude.internal_({this.selectedColumns});
+  ServerHealthMetricInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -313,7 +313,7 @@ class ServerHealthMetricInclude extends _is.IncludeObject {
 }
 
 class ServerHealthMetricIncludeList extends _is.IncludeList {
-  ServerHealthMetricIncludeList.internal_({
+  ServerHealthMetricIncludeList._({
     _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
     super.limit,
     super.offset,
@@ -432,6 +432,83 @@ class ServerHealthMetricRepository {
     return session.db.findById<ServerHealthMetric>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ServerHealthMetric>(
+      where: where?.call(ServerHealthMetric.t),
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerHealthMetric.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ServerHealthMetricTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthMetricTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ServerHealthMetric>(
+      where: where?.call(ServerHealthMetric.t),
+      orderBy: orderBy?.call(ServerHealthMetric.t),
+      orderByList: orderByList?.call(ServerHealthMetric.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerHealthMetric.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ServerHealthMetric>(
+      id,
+      transaction: transaction,
+      select: select?.call(ServerHealthMetric.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

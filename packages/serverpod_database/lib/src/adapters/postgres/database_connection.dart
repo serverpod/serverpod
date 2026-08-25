@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:postgres/postgres.dart' as pg;
 import 'package:serverpod_serialization/serverpod_serialization.dart';
@@ -127,7 +128,7 @@ class PostgresDatabaseConnection
     Column? orderBy,
     List<Column>? orderByList,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -135,9 +136,7 @@ class PostgresDatabaseConnection
     var table = _getTableOrAssert<T>(session, operation: 'findAsJson');
     var orderByCols = _resolveOrderBy(orderByList, orderBy);
 
-    var selectFields = select != null
-        ? select(table)
-        : (include?.selectedColumns ?? table.columns);
+    var selectFields = select ?? (include?.selectedColumns ?? table.columns);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(selectFields)
@@ -156,6 +155,7 @@ class PostgresDatabaseConnection
       timeoutInSeconds: 60,
       transaction: transaction,
       include: include,
+      selectedColumns: selectFields,
     );
   }
 
@@ -168,7 +168,7 @@ class PostgresDatabaseConnection
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -198,7 +198,7 @@ class PostgresDatabaseConnection
     Object id, {
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -915,6 +915,7 @@ class PostgresDatabaseConnection
     int? timeoutInSeconds,
     required Transaction? transaction,
     Include? include,
+    List<Column>? selectedColumns,
   }) async {
     var result = await _mappedResultsQuery(
       session,
@@ -940,6 +941,7 @@ class PostgresDatabaseConnection
             rawRow,
             resolvedListRelations,
             include: include,
+            selectedColumns: selectedColumns,
             aliasResolver: aliasResolver,
           ),
         )
@@ -1048,8 +1050,11 @@ class PostgresDatabaseConnection
           nestedInclude.orderBy,
         );
 
+        var selectFields =
+            nestedInclude.selectedColumns ?? relationTable.columns;
+
         var query = SelectQueryBuilder(table: relationTable)
-            .withSelectFields(relationTable.columns)
+            .withSelectFields(selectFields)
             .withWhere(nestedInclude.where)
             .withOrderBy(orderBy)
             .withLimit(nestedInclude.limit)
@@ -1076,26 +1081,38 @@ class PostgresDatabaseConnection
           relationTable,
           nestedInclude,
         );
-        var resolvedList = includeListResult
-            .map(
-              (rawRow) => resolvePrefixedQueryRow(
-                relationTable,
-                rawRow,
-                resolvedLists,
-                include: nestedInclude,
-                aliasResolver: listAliasResolver,
-              ),
-            )
-            .whereType<Map<String, dynamic>>()
-            .toList();
 
-        resolvedListRelations.addAll(
-          mapListToQueryById(
-            resolvedList,
-            relativeRelationTable,
-            tableRelation.foreignFieldName,
-          ),
+        var foreignColumn = relationTable.columns.firstWhereOrNull(
+          (c) => c.columnName == tableRelation.foreignFieldName,
         );
+        var foreignKeyInRawRow = foreignColumn != null
+            ? listAliasResolver.resolve(foreignColumn)
+            : tableRelation.foreignFieldName;
+
+        var mappedLists = <Object, List<Map<String, dynamic>>>{};
+        for (var rawRow in includeListResult) {
+          var resolvedRow = resolvePrefixedQueryRow(
+            relationTable,
+            rawRow,
+            resolvedLists,
+            include: nestedInclude,
+            aliasResolver: listAliasResolver,
+          );
+          if (resolvedRow == null) continue;
+
+          var parentId =
+              rawRow[foreignKeyInRawRow] ??
+              resolvedRow[tableRelation.foreignFieldName];
+          if (parentId != null) {
+            mappedLists.update(
+              parentId,
+              (list) => [...list, resolvedRow],
+              ifAbsent: () => [resolvedRow],
+            );
+          }
+        }
+
+        resolvedListRelations[relativeRelationTable.queryPrefix] = mappedLists;
       } else {
         var resolvedNestedListRelations = await _queryIncludedLists(
           session,

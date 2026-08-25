@@ -91,7 +91,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _im07rq0v.EnrollmentIncludeList? enrollments,
     _is.SelectColumnsBuilder<CourseTable>? select,
   }) {
-    return CourseInclude.internal_(
+    return CourseInclude._(
       enrollments: enrollments,
       selectedColumns: select?.call(Course.t),
     );
@@ -106,7 +106,7 @@ abstract class Course implements _is.TableRow<int?>, _is.ProtocolSerialization {
     CourseInclude? include,
     _is.SelectColumnsBuilder<CourseTable>? select,
   }) {
-    return CourseIncludeList.internal_(
+    return CourseIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class CourseTable extends _is.Table<int?> {
 }
 
 class CourseInclude extends _is.IncludeObject {
-  CourseInclude.internal_({
+  CourseInclude._({
     _im07rq0v.EnrollmentIncludeList? enrollments,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class CourseInclude extends _is.IncludeObject {
 }
 
 class CourseIncludeList extends _is.IncludeList {
-  CourseIncludeList.internal_({
+  CourseIncludeList._({
     _is.WhereExpressionBuilder<CourseTable>? where,
     super.limit,
     super.offset,
@@ -378,6 +378,89 @@ class CourseRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CourseTable>? orderBy,
+    _is.OrderByListBuilder<CourseTable>? orderByList,
+    _is.Transaction? transaction,
+    CourseInclude? include,
+    _is.SelectColumnsBuilder<CourseTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Course>(
+      where: where?.call(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Course.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CourseTable>? orderBy,
+    _is.OrderByListBuilder<CourseTable>? orderByList,
+    _is.Transaction? transaction,
+    CourseInclude? include,
+    _is.SelectColumnsBuilder<CourseTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Course>(
+      where: where?.call(Course.t),
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Course.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CourseInclude? include,
+    _is.SelectColumnsBuilder<CourseTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Course>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Course.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

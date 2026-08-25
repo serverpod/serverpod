@@ -75,7 +75,7 @@ abstract class SimpleDateTime
   static SimpleDateTimeInclude include({
     _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
   }) {
-    return SimpleDateTimeInclude.internal_(
+    return SimpleDateTimeInclude._(
       selectedColumns: select?.call(SimpleDateTime.t),
     );
   }
@@ -89,7 +89,7 @@ abstract class SimpleDateTime
     SimpleDateTimeInclude? include,
     _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
   }) {
-    return SimpleDateTimeIncludeList.internal_(
+    return SimpleDateTimeIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -165,7 +165,7 @@ class SimpleDateTimeTable extends _is.Table<int?> {
 }
 
 class SimpleDateTimeInclude extends _is.IncludeObject {
-  SimpleDateTimeInclude.internal_({this.selectedColumns});
+  SimpleDateTimeInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -178,7 +178,7 @@ class SimpleDateTimeInclude extends _is.IncludeObject {
 }
 
 class SimpleDateTimeIncludeList extends _is.IncludeList {
-  SimpleDateTimeIncludeList.internal_({
+  SimpleDateTimeIncludeList._({
     _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     super.limit,
     super.offset,
@@ -297,6 +297,83 @@ class SimpleDateTimeRepository {
     return session.db.findById<SimpleDateTime>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SimpleDateTime>(
+      where: where?.call(SimpleDateTime.t),
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SimpleDateTime>(
+      id,
+      transaction: transaction,
+      select: select?.call(SimpleDateTime.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

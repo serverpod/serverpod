@@ -82,9 +82,7 @@ abstract class MethodInfo
   static MethodInfoInclude include({
     _is.SelectColumnsBuilder<MethodInfoTable>? select,
   }) {
-    return MethodInfoInclude.internal_(
-      selectedColumns: select?.call(MethodInfo.t),
-    );
+    return MethodInfoInclude._(selectedColumns: select?.call(MethodInfo.t));
   }
 
   static MethodInfoIncludeList includeList({
@@ -96,7 +94,7 @@ abstract class MethodInfo
     MethodInfoInclude? include,
     _is.SelectColumnsBuilder<MethodInfoTable>? select,
   }) {
-    return MethodInfoIncludeList.internal_(
+    return MethodInfoIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -188,7 +186,7 @@ class MethodInfoTable extends _is.Table<int?> {
 }
 
 class MethodInfoInclude extends _is.IncludeObject {
-  MethodInfoInclude.internal_({this.selectedColumns});
+  MethodInfoInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -201,7 +199,7 @@ class MethodInfoInclude extends _is.IncludeObject {
 }
 
 class MethodInfoIncludeList extends _is.IncludeList {
-  MethodInfoIncludeList.internal_({
+  MethodInfoIncludeList._({
     _is.WhereExpressionBuilder<MethodInfoTable>? where,
     super.limit,
     super.offset,
@@ -320,6 +318,83 @@ class MethodInfoRepository {
     return session.db.findById<MethodInfo>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MethodInfo>(
+      where: where?.call(MethodInfo.t),
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MethodInfo.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MethodInfo>(
+      where: where?.call(MethodInfo.t),
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MethodInfo.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MethodInfo>(
+      id,
+      transaction: transaction,
+      select: select?.call(MethodInfo.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

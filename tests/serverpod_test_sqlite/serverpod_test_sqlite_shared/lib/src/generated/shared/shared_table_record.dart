@@ -105,7 +105,7 @@ abstract class SharedTableRecord
   static SharedTableRecordInclude include({
     _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
   }) {
-    return SharedTableRecordInclude.internal_(
+    return SharedTableRecordInclude._(
       selectedColumns: select?.call(SharedTableRecord.t),
     );
   }
@@ -119,7 +119,7 @@ abstract class SharedTableRecord
     SharedTableRecordInclude? include,
     _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
   }) {
-    return SharedTableRecordIncludeList.internal_(
+    return SharedTableRecordIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -249,7 +249,7 @@ class SharedTableRecordTable extends _isd.Table<int?> {
 }
 
 class SharedTableRecordInclude extends _isd.IncludeObject {
-  SharedTableRecordInclude.internal_({this.selectedColumns});
+  SharedTableRecordInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -262,7 +262,7 @@ class SharedTableRecordInclude extends _isd.IncludeObject {
 }
 
 class SharedTableRecordIncludeList extends _isd.IncludeList {
-  SharedTableRecordIncludeList.internal_({
+  SharedTableRecordIncludeList._({
     _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
     super.offset,
@@ -381,6 +381,83 @@ class SharedTableRecordRepository {
     return session.db.findById<SharedTableRecord>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SharedTableRecord>(
+      where: where?.call(SharedTableRecord.t),
+      orderBy: orderBy?.call(SharedTableRecord.t),
+      orderByList: orderByList?.call(SharedTableRecord.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedTableRecord.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SharedTableRecord>(
+      where: where?.call(SharedTableRecord.t),
+      orderBy: orderBy?.call(SharedTableRecord.t),
+      orderByList: orderByList?.call(SharedTableRecord.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedTableRecord.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SharedTableRecord>(
+      id,
+      transaction: transaction,
+      select: select?.call(SharedTableRecord.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

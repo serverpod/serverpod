@@ -86,9 +86,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
   static ChildEntityInclude include({
     _is.SelectColumnsBuilder<ChildEntityTable>? select,
   }) {
-    return ChildEntityInclude.internal_(
-      selectedColumns: select?.call(ChildEntity.t),
-    );
+    return ChildEntityInclude._(selectedColumns: select?.call(ChildEntity.t));
   }
 
   static ChildEntityIncludeList includeList({
@@ -100,7 +98,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     ChildEntityInclude? include,
     _is.SelectColumnsBuilder<ChildEntityTable>? select,
   }) {
-    return ChildEntityIncludeList.internal_(
+    return ChildEntityIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -242,7 +240,7 @@ class ChildEntityTable extends _is.Table<int?> {
 }
 
 class ChildEntityInclude extends _is.IncludeObject {
-  ChildEntityInclude.internal_({this.selectedColumns});
+  ChildEntityInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -255,7 +253,7 @@ class ChildEntityInclude extends _is.IncludeObject {
 }
 
 class ChildEntityIncludeList extends _is.IncludeList {
-  ChildEntityIncludeList.internal_({
+  ChildEntityIncludeList._({
     _is.WhereExpressionBuilder<ChildEntityTable>? where,
     super.limit,
     super.offset,
@@ -374,6 +372,83 @@ class ChildEntityRepository {
     return session.db.findById<ChildEntity>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChildEntity>(
+      where: where?.call(ChildEntity.t),
+      orderBy: orderBy?.call(ChildEntity.t),
+      orderByList: orderByList?.call(ChildEntity.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ChildEntity.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChildEntity>(
+      where: where?.call(ChildEntity.t),
+      orderBy: orderBy?.call(ChildEntity.t),
+      orderByList: orderByList?.call(ChildEntity.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ChildEntity.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChildEntity>(
+      id,
+      transaction: transaction,
+      select: select?.call(ChildEntity.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -59,7 +59,7 @@ abstract class ServerOnlyChangedIdFieldClass
   static ServerOnlyChangedIdFieldClassInclude include({
     _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
   }) {
-    return ServerOnlyChangedIdFieldClassInclude.internal_(
+    return ServerOnlyChangedIdFieldClassInclude._(
       selectedColumns: select?.call(ServerOnlyChangedIdFieldClass.t),
     );
   }
@@ -73,7 +73,7 @@ abstract class ServerOnlyChangedIdFieldClass
     ServerOnlyChangedIdFieldClassInclude? include,
     _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
   }) {
-    return ServerOnlyChangedIdFieldClassIncludeList.internal_(
+    return ServerOnlyChangedIdFieldClassIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -124,7 +124,7 @@ class ServerOnlyChangedIdFieldClassTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
-  ServerOnlyChangedIdFieldClassInclude.internal_({this.selectedColumns});
+  ServerOnlyChangedIdFieldClassInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -137,7 +137,7 @@ class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
 }
 
 class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList {
-  ServerOnlyChangedIdFieldClassIncludeList.internal_({
+  ServerOnlyChangedIdFieldClassIncludeList._({
     _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     super.limit,
     super.offset,
@@ -256,6 +256,83 @@ class ServerOnlyChangedIdFieldClassRepository {
     return session.db.findById<ServerOnlyChangedIdFieldClass>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ServerOnlyChangedIdFieldClass>(
+      where: where?.call(ServerOnlyChangedIdFieldClass.t),
+      orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
+      orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerOnlyChangedIdFieldClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ServerOnlyChangedIdFieldClass>(
+      where: where?.call(ServerOnlyChangedIdFieldClass.t),
+      orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
+      orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerOnlyChangedIdFieldClass.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ServerOnlyChangedIdFieldClass>(
+      id,
+      transaction: transaction,
+      select: select?.call(ServerOnlyChangedIdFieldClass.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

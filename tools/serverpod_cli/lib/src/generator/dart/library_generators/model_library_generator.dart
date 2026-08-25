@@ -1555,10 +1555,15 @@ class SerializableModelLibraryGenerator {
 
       includeMap[relationName] =
           refer(
-            '${relClassName}Include',
+            relClassName,
             relUrl,
-          ).property('internal_').call([], {
-            'selectedColumns': literalList(relCols),
+          ).property('include').call([], {
+            'select': Method(
+              (m) => m
+                ..requiredParameters.add(Parameter((p) => p..name = 't'))
+                ..lambda = true
+                ..body = literalList(relCols).code,
+            ).closure,
           });
     }
 
@@ -1599,10 +1604,15 @@ class SerializableModelLibraryGenerator {
         ..name = 'include'
         ..static = true
         ..returns = TypeReference((r) => r..symbol = '${baseClassName}Include')
-        ..body = refer('${baseClassName}Include')
-            .property('internal_')
+        ..body = refer(baseClassName)
+            .property('include')
             .call([], {
-              'selectedColumns': literalList(columnNames),
+              'select': Method(
+                (m) => m
+                  ..requiredParameters.add(Parameter((p) => p..name = 't'))
+                  ..lambda = true
+                  ..body = literalList(columnNames).code,
+              ).closure,
               ...includeMap,
             })
             .returned
@@ -1719,7 +1729,7 @@ class SerializableModelLibraryGenerator {
           ),
         ])
         ..body = refer('${className}Include')
-            .property('internal_')
+            .property('_')
             .call([], {
               for (var field in relationFields) field.name: refer(field.name),
               'selectedColumns': refer('select').nullSafeProperty('call').call([
@@ -1788,7 +1798,7 @@ class SerializableModelLibraryGenerator {
           ),
         ])
         ..body = refer('${className}IncludeList')
-            .property('internal_')
+            .property('_')
             .call([], {
               'where': refer('where'),
               'limit': refer('limit'),
@@ -3331,7 +3341,7 @@ class SerializableModelLibraryGenerator {
     String className,
   ) {
     return Constructor((constructorBuilder) {
-      constructorBuilder.name = 'internal_';
+      constructorBuilder.name = '_';
 
       constructorBuilder.optionalParameters.addAll([
         Parameter(
@@ -3518,7 +3528,7 @@ class SerializableModelLibraryGenerator {
     ClassDefinition classDefinition,
   ) {
     return Constructor((constructorBuilder) {
-      constructorBuilder.name = 'internal_';
+      constructorBuilder.name = '_';
 
       for (var field in relationFields) {
         if (field.relation is ObjectRelationDefinition) {

@@ -119,7 +119,7 @@ abstract class TokenMetadata
     _iacs.RefreshTokenInclude? refreshToken,
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
-    return TokenMetadataInclude.internal_(
+    return TokenMetadataInclude._(
       refreshToken: refreshToken,
       selectedColumns: select?.call(TokenMetadata.t),
     );
@@ -134,7 +134,7 @@ abstract class TokenMetadata
     TokenMetadataInclude? include,
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
-    return TokenMetadataIncludeList.internal_(
+    return TokenMetadataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -308,7 +308,7 @@ class TokenMetadataTable extends _is.Table<int?> {
 }
 
 class TokenMetadataInclude extends _is.IncludeObject {
-  TokenMetadataInclude.internal_({
+  TokenMetadataInclude._({
     _iacs.RefreshTokenInclude? refreshToken,
     this.selectedColumns,
   }) {
@@ -328,7 +328,7 @@ class TokenMetadataInclude extends _is.IncludeObject {
 }
 
 class TokenMetadataIncludeList extends _is.IncludeList {
-  TokenMetadataIncludeList.internal_({
+  TokenMetadataIncludeList._({
     _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     super.limit,
     super.offset,
@@ -455,6 +455,89 @@ class TokenMetadataRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
+    TokenMetadataInclude? include,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TokenMetadata>(
+      where: where?.call(TokenMetadata.t),
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TokenMetadata.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
+    TokenMetadataInclude? include,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TokenMetadata>(
+      where: where?.call(TokenMetadata.t),
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TokenMetadata.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    TokenMetadataInclude? include,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TokenMetadata>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TokenMetadata.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

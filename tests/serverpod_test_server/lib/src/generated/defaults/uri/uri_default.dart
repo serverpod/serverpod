@@ -85,9 +85,7 @@ abstract class UriDefault
   static UriDefaultInclude include({
     _is.SelectColumnsBuilder<UriDefaultTable>? select,
   }) {
-    return UriDefaultInclude.internal_(
-      selectedColumns: select?.call(UriDefault.t),
-    );
+    return UriDefaultInclude._(selectedColumns: select?.call(UriDefault.t));
   }
 
   static UriDefaultIncludeList includeList({
@@ -99,7 +97,7 @@ abstract class UriDefault
     UriDefaultInclude? include,
     _is.SelectColumnsBuilder<UriDefaultTable>? select,
   }) {
-    return UriDefaultIncludeList.internal_(
+    return UriDefaultIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +190,7 @@ class UriDefaultTable extends _is.Table<int?> {
 }
 
 class UriDefaultInclude extends _is.IncludeObject {
-  UriDefaultInclude.internal_({this.selectedColumns});
+  UriDefaultInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -205,7 +203,7 @@ class UriDefaultInclude extends _is.IncludeObject {
 }
 
 class UriDefaultIncludeList extends _is.IncludeList {
-  UriDefaultIncludeList.internal_({
+  UriDefaultIncludeList._({
     _is.WhereExpressionBuilder<UriDefaultTable>? where,
     super.limit,
     super.offset,
@@ -324,6 +322,83 @@ class UriDefaultRepository {
     return session.db.findById<UriDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UriDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UriDefaultTable>? orderBy,
+    _is.OrderByListBuilder<UriDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UriDefault>(
+      where: where?.call(UriDefault.t),
+      orderBy: orderBy?.call(UriDefault.t),
+      orderByList: orderByList?.call(UriDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UriDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UriDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UriDefaultTable>? orderBy,
+    _is.OrderByListBuilder<UriDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UriDefault>(
+      where: where?.call(UriDefault.t),
+      orderBy: orderBy?.call(UriDefault.t),
+      orderByList: orderByList?.call(UriDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UriDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UriDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(UriDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

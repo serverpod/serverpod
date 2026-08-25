@@ -130,7 +130,7 @@ abstract class Citizen
     _i2fdza8t.CompanyInclude? oldCompany,
     _is.SelectColumnsBuilder<CitizenTable>? select,
   }) {
-    return CitizenInclude.internal_(
+    return CitizenInclude._(
       address: address,
       company: company,
       oldCompany: oldCompany,
@@ -147,7 +147,7 @@ abstract class Citizen
     CitizenInclude? include,
     _is.SelectColumnsBuilder<CitizenTable>? select,
   }) {
-    return CitizenIncludeList.internal_(
+    return CitizenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -329,7 +329,7 @@ class CitizenTable extends _is.Table<int?> {
 }
 
 class CitizenInclude extends _is.IncludeObject {
-  CitizenInclude.internal_({
+  CitizenInclude._({
     _i5rzbc0r.AddressInclude? address,
     _i2fdza8t.CompanyInclude? company,
     _i2fdza8t.CompanyInclude? oldCompany,
@@ -361,7 +361,7 @@ class CitizenInclude extends _is.IncludeObject {
 }
 
 class CitizenIncludeList extends _is.IncludeList {
-  CitizenIncludeList.internal_({
+  CitizenIncludeList._({
     _is.WhereExpressionBuilder<CitizenTable>? where,
     super.limit,
     super.offset,
@@ -490,6 +490,89 @@ class CitizenRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenInclude? include,
+    _is.SelectColumnsBuilder<CitizenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Citizen>(
+      where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CitizenTable>? orderBy,
+    _is.OrderByListBuilder<CitizenTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenInclude? include,
+    _is.SelectColumnsBuilder<CitizenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Citizen>(
+      where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CitizenInclude? include,
+    _is.SelectColumnsBuilder<CitizenTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Citizen>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -95,7 +95,7 @@ abstract class ObjectWithGeographyPoint
   static ObjectWithGeographyPointInclude include({
     _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
   }) {
-    return ObjectWithGeographyPointInclude.internal_(
+    return ObjectWithGeographyPointInclude._(
       selectedColumns: select?.call(ObjectWithGeographyPoint.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class ObjectWithGeographyPoint
     ObjectWithGeographyPointInclude? include,
     _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
   }) {
-    return ObjectWithGeographyPointIncludeList.internal_(
+    return ObjectWithGeographyPointIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,7 +222,7 @@ class ObjectWithGeographyPointTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyPointInclude extends _is.IncludeObject {
-  ObjectWithGeographyPointInclude.internal_({this.selectedColumns});
+  ObjectWithGeographyPointInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -235,7 +235,7 @@ class ObjectWithGeographyPointInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyPointIncludeList extends _is.IncludeList {
-  ObjectWithGeographyPointIncludeList.internal_({
+  ObjectWithGeographyPointIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
     super.limit,
     super.offset,
@@ -354,6 +354,83 @@ class ObjectWithGeographyPointRepository {
     return session.db.findById<ObjectWithGeographyPoint>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithGeographyPoint>(
+      where: where?.call(ObjectWithGeographyPoint.t),
+      orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
+      orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPoint.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyPointTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPointTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithGeographyPoint>(
+      where: where?.call(ObjectWithGeographyPoint.t),
+      orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
+      orderByList: orderByList?.call(ObjectWithGeographyPoint.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPoint.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithGeographyPoint>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPoint.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -74,7 +74,7 @@ abstract class ObjectWithByteData
   static ObjectWithByteDataInclude include({
     _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
   }) {
-    return ObjectWithByteDataInclude.internal_(
+    return ObjectWithByteDataInclude._(
       selectedColumns: select?.call(ObjectWithByteData.t),
     );
   }
@@ -88,7 +88,7 @@ abstract class ObjectWithByteData
     ObjectWithByteDataInclude? include,
     _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
   }) {
-    return ObjectWithByteDataIncludeList.internal_(
+    return ObjectWithByteDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -164,7 +164,7 @@ class ObjectWithByteDataTable extends _is.Table<int?> {
 }
 
 class ObjectWithByteDataInclude extends _is.IncludeObject {
-  ObjectWithByteDataInclude.internal_({this.selectedColumns});
+  ObjectWithByteDataInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -177,7 +177,7 @@ class ObjectWithByteDataInclude extends _is.IncludeObject {
 }
 
 class ObjectWithByteDataIncludeList extends _is.IncludeList {
-  ObjectWithByteDataIncludeList.internal_({
+  ObjectWithByteDataIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,
     super.offset,
@@ -296,6 +296,83 @@ class ObjectWithByteDataRepository {
     return session.db.findById<ObjectWithByteData>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithByteData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithByteData>(
+      where: where?.call(ObjectWithByteData.t),
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithByteData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithByteData>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithByteData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

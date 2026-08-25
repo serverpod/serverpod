@@ -102,7 +102,7 @@ abstract class LegacyExternalUserIdentifier
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
-    return LegacyExternalUserIdentifierInclude.internal_(
+    return LegacyExternalUserIdentifierInclude._(
       authUser: authUser,
       selectedColumns: select?.call(LegacyExternalUserIdentifier.t),
     );
@@ -117,7 +117,7 @@ abstract class LegacyExternalUserIdentifier
     LegacyExternalUserIdentifierInclude? include,
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
-    return LegacyExternalUserIdentifierIncludeList.internal_(
+    return LegacyExternalUserIdentifierIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -245,7 +245,7 @@ class LegacyExternalUserIdentifierTable extends _is.Table<_is.UuidValue?> {
 }
 
 class LegacyExternalUserIdentifierInclude extends _is.IncludeObject {
-  LegacyExternalUserIdentifierInclude.internal_({
+  LegacyExternalUserIdentifierInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -265,7 +265,7 @@ class LegacyExternalUserIdentifierInclude extends _is.IncludeObject {
 }
 
 class LegacyExternalUserIdentifierIncludeList extends _is.IncludeList {
-  LegacyExternalUserIdentifierIncludeList.internal_({
+  LegacyExternalUserIdentifierIncludeList._({
     _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     super.limit,
     super.offset,
@@ -392,6 +392,89 @@ class LegacyExternalUserIdentifierRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacyExternalUserIdentifierInclude? include,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LegacyExternalUserIdentifier>(
+      where: where?.call(LegacyExternalUserIdentifier.t),
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyExternalUserIdentifier.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacyExternalUserIdentifierInclude? include,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LegacyExternalUserIdentifier>(
+      where: where?.call(LegacyExternalUserIdentifier.t),
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyExternalUserIdentifier.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    LegacyExternalUserIdentifierInclude? include,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LegacyExternalUserIdentifier>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyExternalUserIdentifier.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

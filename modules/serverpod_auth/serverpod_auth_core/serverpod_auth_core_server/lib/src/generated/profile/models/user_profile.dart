@@ -165,7 +165,7 @@ abstract class UserProfile
     _i7y29ltp.UserProfileImageInclude? image,
     _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
-    return UserProfileInclude.internal_(
+    return UserProfileInclude._(
       authUser: authUser,
       image: image,
       selectedColumns: select?.call(UserProfile.t),
@@ -181,7 +181,7 @@ abstract class UserProfile
     UserProfileInclude? include,
     _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
-    return UserProfileIncludeList.internal_(
+    return UserProfileIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -404,7 +404,7 @@ class UserProfileTable extends _is.Table<_is.UuidValue?> {
 }
 
 class UserProfileInclude extends _is.IncludeObject {
-  UserProfileInclude.internal_({
+  UserProfileInclude._({
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
     this.selectedColumns,
@@ -431,7 +431,7 @@ class UserProfileInclude extends _is.IncludeObject {
 }
 
 class UserProfileIncludeList extends _is.IncludeList {
-  UserProfileIncludeList.internal_({
+  UserProfileIncludeList._({
     _is.WhereExpressionBuilder<UserProfileTable>? where,
     super.limit,
     super.offset,
@@ -560,6 +560,89 @@ class UserProfileRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
+    UserProfileInclude? include,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserProfile>(
+      where: where?.call(UserProfile.t),
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfile.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    _is.Transaction? transaction,
+    UserProfileInclude? include,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserProfile>(
+      where: where?.call(UserProfile.t),
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfile.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    UserProfileInclude? include,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserProfile>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfile.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

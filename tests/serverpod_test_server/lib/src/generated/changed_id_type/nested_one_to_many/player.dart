@@ -97,7 +97,7 @@ abstract class PlayerUuid
     _i9bz1am4.TeamIntInclude? team,
     _is.SelectColumnsBuilder<PlayerUuidTable>? select,
   }) {
-    return PlayerUuidInclude.internal_(
+    return PlayerUuidInclude._(
       team: team,
       selectedColumns: select?.call(PlayerUuid.t),
     );
@@ -112,7 +112,7 @@ abstract class PlayerUuid
     PlayerUuidInclude? include,
     _is.SelectColumnsBuilder<PlayerUuidTable>? select,
   }) {
-    return PlayerUuidIncludeList.internal_(
+    return PlayerUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +228,7 @@ class PlayerUuidTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PlayerUuidInclude extends _is.IncludeObject {
-  PlayerUuidInclude.internal_({
+  PlayerUuidInclude._({
     _i9bz1am4.TeamIntInclude? team,
     this.selectedColumns,
   }) {
@@ -248,7 +248,7 @@ class PlayerUuidInclude extends _is.IncludeObject {
 }
 
 class PlayerUuidIncludeList extends _is.IncludeList {
-  PlayerUuidIncludeList.internal_({
+  PlayerUuidIncludeList._({
     _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
     super.offset,
@@ -377,6 +377,89 @@ class PlayerUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerUuidInclude? include,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<PlayerUuid>(
+      where: where?.call(PlayerUuid.t),
+      orderBy: orderBy?.call(PlayerUuid.t),
+      orderByList: orderByList?.call(PlayerUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PlayerUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    PlayerUuidInclude? include,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<PlayerUuid>(
+      where: where?.call(PlayerUuid.t),
+      orderBy: orderBy?.call(PlayerUuid.t),
+      orderByList: orderByList?.call(PlayerUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PlayerUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    PlayerUuidInclude? include,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<PlayerUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(PlayerUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

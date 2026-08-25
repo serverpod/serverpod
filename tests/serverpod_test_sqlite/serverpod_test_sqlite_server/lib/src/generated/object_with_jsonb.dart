@@ -158,7 +158,7 @@ abstract class ObjectWithJsonb
   static ObjectWithJsonbInclude include({
     _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
   }) {
-    return ObjectWithJsonbInclude.internal_(
+    return ObjectWithJsonbInclude._(
       selectedColumns: select?.call(ObjectWithJsonb.t),
     );
   }
@@ -172,7 +172,7 @@ abstract class ObjectWithJsonb
     ObjectWithJsonbInclude? include,
     _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
   }) {
-    return ObjectWithJsonbIncludeList.internal_(
+    return ObjectWithJsonbIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -407,7 +407,7 @@ class ObjectWithJsonbTable extends _is.Table<int?> {
 }
 
 class ObjectWithJsonbInclude extends _is.IncludeObject {
-  ObjectWithJsonbInclude.internal_({this.selectedColumns});
+  ObjectWithJsonbInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -420,7 +420,7 @@ class ObjectWithJsonbInclude extends _is.IncludeObject {
 }
 
 class ObjectWithJsonbIncludeList extends _is.IncludeList {
-  ObjectWithJsonbIncludeList.internal_({
+  ObjectWithJsonbIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
     super.limit,
     super.offset,
@@ -539,6 +539,83 @@ class ObjectWithJsonbRepository {
     return session.db.findById<ObjectWithJsonb>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithJsonb>(
+      where: where?.call(ObjectWithJsonb.t),
+      orderBy: orderBy?.call(ObjectWithJsonb.t),
+      orderByList: orderByList?.call(ObjectWithJsonb.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonb.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithJsonbTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithJsonb>(
+      where: where?.call(ObjectWithJsonb.t),
+      orderBy: orderBy?.call(ObjectWithJsonb.t),
+      orderByList: orderByList?.call(ObjectWithJsonb.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonb.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithJsonb>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonb.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

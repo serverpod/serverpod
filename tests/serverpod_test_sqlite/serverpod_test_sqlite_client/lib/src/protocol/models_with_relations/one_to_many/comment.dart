@@ -97,7 +97,7 @@ abstract class Comment
     _ig920ya2.OrderInclude? order,
     _isd.SelectColumnsBuilder<CommentTable>? select,
   }) {
-    return CommentInclude.internal_(
+    return CommentInclude._(
       order: order,
       selectedColumns: select?.call(Comment.t),
     );
@@ -112,7 +112,7 @@ abstract class Comment
     CommentInclude? include,
     _isd.SelectColumnsBuilder<CommentTable>? select,
   }) {
-    return CommentIncludeList.internal_(
+    return CommentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class CommentTable extends _isd.Table<int?> {
 }
 
 class CommentInclude extends _isd.IncludeObject {
-  CommentInclude.internal_({
+  CommentInclude._({
     _ig920ya2.OrderInclude? order,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class CommentInclude extends _isd.IncludeObject {
 }
 
 class CommentIncludeList extends _isd.IncludeList {
-  CommentIncludeList.internal_({
+  CommentIncludeList._({
     _isd.WhereExpressionBuilder<CommentTable>? where,
     super.limit,
     super.offset,
@@ -376,6 +376,89 @@ class CommentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    _isd.Transaction? transaction,
+    CommentInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Comment>(
+      where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    _isd.Transaction? transaction,
+    CommentInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Comment>(
+      where: where?.call(Comment.t),
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CommentInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Comment>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Comment.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

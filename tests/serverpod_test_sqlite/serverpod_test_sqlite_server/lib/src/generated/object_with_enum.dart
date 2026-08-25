@@ -128,7 +128,7 @@ abstract class ObjectWithEnum
   static ObjectWithEnumInclude include({
     _is.SelectColumnsBuilder<ObjectWithEnumTable>? select,
   }) {
-    return ObjectWithEnumInclude.internal_(
+    return ObjectWithEnumInclude._(
       selectedColumns: select?.call(ObjectWithEnum.t),
     );
   }
@@ -142,7 +142,7 @@ abstract class ObjectWithEnum
     ObjectWithEnumInclude? include,
     _is.SelectColumnsBuilder<ObjectWithEnumTable>? select,
   }) {
-    return ObjectWithEnumIncludeList.internal_(
+    return ObjectWithEnumIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -299,7 +299,7 @@ class ObjectWithEnumTable extends _is.Table<int?> {
 }
 
 class ObjectWithEnumInclude extends _is.IncludeObject {
-  ObjectWithEnumInclude.internal_({this.selectedColumns});
+  ObjectWithEnumInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -312,7 +312,7 @@ class ObjectWithEnumInclude extends _is.IncludeObject {
 }
 
 class ObjectWithEnumIncludeList extends _is.IncludeList {
-  ObjectWithEnumIncludeList.internal_({
+  ObjectWithEnumIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
     super.limit,
     super.offset,
@@ -431,6 +431,83 @@ class ObjectWithEnumRepository {
     return session.db.findById<ObjectWithEnum>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnum.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithEnumTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithEnumTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithEnum>(
+      where: where?.call(ObjectWithEnum.t),
+      orderBy: orderBy?.call(ObjectWithEnum.t),
+      orderByList: orderByList?.call(ObjectWithEnum.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnum.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithEnumTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithEnum>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithEnum.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

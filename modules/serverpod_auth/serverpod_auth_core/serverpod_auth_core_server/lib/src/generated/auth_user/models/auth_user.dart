@@ -105,7 +105,7 @@ abstract class AuthUser
   static AuthUserInclude include({
     _is.SelectColumnsBuilder<AuthUserTable>? select,
   }) {
-    return AuthUserInclude.internal_(selectedColumns: select?.call(AuthUser.t));
+    return AuthUserInclude._(selectedColumns: select?.call(AuthUser.t));
   }
 
   static AuthUserIncludeList includeList({
@@ -117,7 +117,7 @@ abstract class AuthUser
     AuthUserInclude? include,
     _is.SelectColumnsBuilder<AuthUserTable>? select,
   }) {
-    return AuthUserIncludeList.internal_(
+    return AuthUserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +228,7 @@ class AuthUserTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AuthUserInclude extends _is.IncludeObject {
-  AuthUserInclude.internal_({this.selectedColumns});
+  AuthUserInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -241,7 +241,7 @@ class AuthUserInclude extends _is.IncludeObject {
 }
 
 class AuthUserIncludeList extends _is.IncludeList {
-  AuthUserIncludeList.internal_({
+  AuthUserIncludeList._({
     _is.WhereExpressionBuilder<AuthUserTable>? where,
     super.limit,
     super.offset,
@@ -360,6 +360,83 @@ class AuthUserRepository {
     return session.db.findById<AuthUser>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<AuthUser>(
+      where: where?.call(AuthUser.t),
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(AuthUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    int? offset,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<AuthUser>(
+      where: where?.call(AuthUser.t),
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(AuthUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<AuthUser>(
+      id,
+      transaction: transaction,
+      select: select?.call(AuthUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -91,7 +91,7 @@ abstract class Student
     _im07rq0v.EnrollmentIncludeList? enrollments,
     _is.SelectColumnsBuilder<StudentTable>? select,
   }) {
-    return StudentInclude.internal_(
+    return StudentInclude._(
       enrollments: enrollments,
       selectedColumns: select?.call(Student.t),
     );
@@ -106,7 +106,7 @@ abstract class Student
     StudentInclude? include,
     _is.SelectColumnsBuilder<StudentTable>? select,
   }) {
-    return StudentIncludeList.internal_(
+    return StudentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class StudentTable extends _is.Table<int?> {
 }
 
 class StudentInclude extends _is.IncludeObject {
-  StudentInclude.internal_({
+  StudentInclude._({
     _im07rq0v.EnrollmentIncludeList? enrollments,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class StudentInclude extends _is.IncludeObject {
 }
 
 class StudentIncludeList extends _is.IncludeList {
-  StudentIncludeList.internal_({
+  StudentIncludeList._({
     _is.WhereExpressionBuilder<StudentTable>? where,
     super.limit,
     super.offset,
@@ -378,6 +378,89 @@ class StudentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StudentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StudentTable>? orderBy,
+    _is.OrderByListBuilder<StudentTable>? orderByList,
+    _is.Transaction? transaction,
+    StudentInclude? include,
+    _is.SelectColumnsBuilder<StudentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Student>(
+      where: where?.call(Student.t),
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Student.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StudentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<StudentTable>? orderBy,
+    _is.OrderByListBuilder<StudentTable>? orderByList,
+    _is.Transaction? transaction,
+    StudentInclude? include,
+    _is.SelectColumnsBuilder<StudentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Student>(
+      where: where?.call(Student.t),
+      orderBy: orderBy?.call(Student.t),
+      orderByList: orderByList?.call(Student.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Student.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    StudentInclude? include,
+    _is.SelectColumnsBuilder<StudentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Student>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Student.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -96,7 +96,7 @@ abstract class TownInt
     _i7hzilwf.CitizenIntInclude? mayor,
     _is.SelectColumnsBuilder<TownIntTable>? select,
   }) {
-    return TownIntInclude.internal_(
+    return TownIntInclude._(
       mayor: mayor,
       selectedColumns: select?.call(TownInt.t),
     );
@@ -111,7 +111,7 @@ abstract class TownInt
     TownIntInclude? include,
     _is.SelectColumnsBuilder<TownIntTable>? select,
   }) {
-    return TownIntIncludeList.internal_(
+    return TownIntIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,7 +227,7 @@ class TownIntTable extends _is.Table<int?> {
 }
 
 class TownIntInclude extends _is.IncludeObject {
-  TownIntInclude.internal_({
+  TownIntInclude._({
     _i7hzilwf.CitizenIntInclude? mayor,
     this.selectedColumns,
   }) {
@@ -247,7 +247,7 @@ class TownIntInclude extends _is.IncludeObject {
 }
 
 class TownIntIncludeList extends _is.IncludeList {
-  TownIntIncludeList.internal_({
+  TownIntIncludeList._({
     _is.WhereExpressionBuilder<TownIntTable>? where,
     super.limit,
     super.offset,
@@ -376,6 +376,89 @@ class TownIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TownIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TownIntTable>? orderBy,
+    _is.OrderByListBuilder<TownIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TownIntInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TownInt>(
+      where: where?.call(TownInt.t),
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TownIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TownIntTable>? orderBy,
+    _is.OrderByListBuilder<TownIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TownIntInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TownInt>(
+      where: where?.call(TownInt.t),
+      orderBy: orderBy?.call(TownInt.t),
+      orderByList: orderByList?.call(TownInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    TownIntInclude? include,
+    _is.SelectColumnsBuilder<TownIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TownInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TownInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

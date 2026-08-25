@@ -86,7 +86,7 @@ abstract class ObjectFieldScopes
   static ObjectFieldScopesInclude include({
     _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
   }) {
-    return ObjectFieldScopesInclude.internal_(
+    return ObjectFieldScopesInclude._(
       selectedColumns: select?.call(ObjectFieldScopes.t),
     );
   }
@@ -100,7 +100,7 @@ abstract class ObjectFieldScopes
     ObjectFieldScopesInclude? include,
     _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
   }) {
-    return ObjectFieldScopesIncludeList.internal_(
+    return ObjectFieldScopesIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -195,7 +195,7 @@ class ObjectFieldScopesTable extends _is.Table<int?> {
 }
 
 class ObjectFieldScopesInclude extends _is.IncludeObject {
-  ObjectFieldScopesInclude.internal_({this.selectedColumns});
+  ObjectFieldScopesInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -208,7 +208,7 @@ class ObjectFieldScopesInclude extends _is.IncludeObject {
 }
 
 class ObjectFieldScopesIncludeList extends _is.IncludeList {
-  ObjectFieldScopesIncludeList.internal_({
+  ObjectFieldScopesIncludeList._({
     _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
     super.limit,
     super.offset,
@@ -327,6 +327,83 @@ class ObjectFieldScopesRepository {
     return session.db.findById<ObjectFieldScopes>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectFieldScopes.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectFieldScopesTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldScopesTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectFieldScopes>(
+      where: where?.call(ObjectFieldScopes.t),
+      orderBy: orderBy?.call(ObjectFieldScopes.t),
+      orderByList: orderByList?.call(ObjectFieldScopes.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectFieldScopes.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectFieldScopes>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectFieldScopes.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

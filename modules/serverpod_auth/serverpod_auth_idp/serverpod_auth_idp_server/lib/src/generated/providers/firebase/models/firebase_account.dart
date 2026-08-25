@@ -131,7 +131,7 @@ abstract class FirebaseAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
   }) {
-    return FirebaseAccountInclude.internal_(
+    return FirebaseAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(FirebaseAccount.t),
     );
@@ -146,7 +146,7 @@ abstract class FirebaseAccount
     FirebaseAccountInclude? include,
     _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
   }) {
-    return FirebaseAccountIncludeList.internal_(
+    return FirebaseAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -329,7 +329,7 @@ class FirebaseAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class FirebaseAccountInclude extends _is.IncludeObject {
-  FirebaseAccountInclude.internal_({
+  FirebaseAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -349,7 +349,7 @@ class FirebaseAccountInclude extends _is.IncludeObject {
 }
 
 class FirebaseAccountIncludeList extends _is.IncludeList {
-  FirebaseAccountIncludeList.internal_({
+  FirebaseAccountIncludeList._({
     _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
     super.limit,
     super.offset,
@@ -476,6 +476,89 @@ class FirebaseAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FirebaseAccountInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<FirebaseAccount>(
+      where: where?.call(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<FirebaseAccountTable>? orderBy,
+    _is.OrderByListBuilder<FirebaseAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FirebaseAccountInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<FirebaseAccount>(
+      where: where?.call(FirebaseAccount.t),
+      orderBy: orderBy?.call(FirebaseAccount.t),
+      orderByList: orderByList?.call(FirebaseAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    FirebaseAccountInclude? include,
+    _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<FirebaseAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FirebaseAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

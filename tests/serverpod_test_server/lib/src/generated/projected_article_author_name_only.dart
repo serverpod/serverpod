@@ -89,14 +89,14 @@ abstract class ProjectedArticleAuthorNameOnly
   }
 
   static ProjectedArticleInclude include() {
-    return ProjectedArticleInclude.internal_(
-      selectedColumns: [
+    return ProjectedArticle.include(
+      select: (t) => [
         ProjectedArticle.t.id,
         ProjectedArticle.t.title,
         ProjectedArticle.t.summary,
       ],
-      author: _iq5hz6n4.ProjectedAuthorInclude.internal_(
-        selectedColumns: [_iq5hz6n4.ProjectedAuthor.t.name],
+      author: _iq5hz6n4.ProjectedAuthor.include(
+        select: (t) => [_iq5hz6n4.ProjectedAuthor.t.name],
       ),
     );
   }

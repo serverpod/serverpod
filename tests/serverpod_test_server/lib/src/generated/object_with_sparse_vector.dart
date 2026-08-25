@@ -111,7 +111,7 @@ abstract class ObjectWithSparseVector
   static ObjectWithSparseVectorInclude include({
     _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
   }) {
-    return ObjectWithSparseVectorInclude.internal_(
+    return ObjectWithSparseVectorInclude._(
       selectedColumns: select?.call(ObjectWithSparseVector.t),
     );
   }
@@ -125,7 +125,7 @@ abstract class ObjectWithSparseVector
     ObjectWithSparseVectorInclude? include,
     _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
   }) {
-    return ObjectWithSparseVectorIncludeList.internal_(
+    return ObjectWithSparseVectorIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -264,7 +264,7 @@ class ObjectWithSparseVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithSparseVectorInclude extends _is.IncludeObject {
-  ObjectWithSparseVectorInclude.internal_({this.selectedColumns});
+  ObjectWithSparseVectorInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -277,7 +277,7 @@ class ObjectWithSparseVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithSparseVectorIncludeList extends _is.IncludeList {
-  ObjectWithSparseVectorIncludeList.internal_({
+  ObjectWithSparseVectorIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     super.limit,
     super.offset,
@@ -396,6 +396,83 @@ class ObjectWithSparseVectorRepository {
     return session.db.findById<ObjectWithSparseVector>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithSparseVector>(
+      where: where?.call(ObjectWithSparseVector.t),
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithSparseVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithSparseVector>(
+      where: where?.call(ObjectWithSparseVector.t),
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithSparseVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithSparseVector>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithSparseVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

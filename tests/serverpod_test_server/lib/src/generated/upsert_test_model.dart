@@ -87,7 +87,7 @@ abstract class UpsertTestModel
   static UpsertTestModelInclude include({
     _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
   }) {
-    return UpsertTestModelInclude.internal_(
+    return UpsertTestModelInclude._(
       selectedColumns: select?.call(UpsertTestModel.t),
     );
   }
@@ -101,7 +101,7 @@ abstract class UpsertTestModel
     UpsertTestModelInclude? include,
     _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
   }) {
-    return UpsertTestModelIncludeList.internal_(
+    return UpsertTestModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -207,7 +207,7 @@ class UpsertTestModelTable extends _is.Table<int?> {
 }
 
 class UpsertTestModelInclude extends _is.IncludeObject {
-  UpsertTestModelInclude.internal_({this.selectedColumns});
+  UpsertTestModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -220,7 +220,7 @@ class UpsertTestModelInclude extends _is.IncludeObject {
 }
 
 class UpsertTestModelIncludeList extends _is.IncludeList {
-  UpsertTestModelIncludeList.internal_({
+  UpsertTestModelIncludeList._({
     _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     super.limit,
     super.offset,
@@ -339,6 +339,83 @@ class UpsertTestModelRepository {
     return session.db.findById<UpsertTestModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UpsertTestModel>(
+      where: where?.call(UpsertTestModel.t),
+      orderBy: orderBy?.call(UpsertTestModel.t),
+      orderByList: orderByList?.call(UpsertTestModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UpsertTestModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UpsertTestModel>(
+      where: where?.call(UpsertTestModel.t),
+      orderBy: orderBy?.call(UpsertTestModel.t),
+      orderByList: orderByList?.call(UpsertTestModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UpsertTestModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UpsertTestModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(UpsertTestModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

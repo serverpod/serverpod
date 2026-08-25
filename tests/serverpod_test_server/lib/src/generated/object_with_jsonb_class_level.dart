@@ -96,7 +96,7 @@ abstract class ObjectWithJsonbClassLevel
   static ObjectWithJsonbClassLevelInclude include({
     _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
   }) {
-    return ObjectWithJsonbClassLevelInclude.internal_(
+    return ObjectWithJsonbClassLevelInclude._(
       selectedColumns: select?.call(ObjectWithJsonbClassLevel.t),
     );
   }
@@ -110,7 +110,7 @@ abstract class ObjectWithJsonbClassLevel
     ObjectWithJsonbClassLevelInclude? include,
     _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
   }) {
-    return ObjectWithJsonbClassLevelIncludeList.internal_(
+    return ObjectWithJsonbClassLevelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -224,7 +224,7 @@ class ObjectWithJsonbClassLevelTable extends _is.Table<int?> {
 }
 
 class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
-  ObjectWithJsonbClassLevelInclude.internal_({this.selectedColumns});
+  ObjectWithJsonbClassLevelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -237,7 +237,7 @@ class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
 }
 
 class ObjectWithJsonbClassLevelIncludeList extends _is.IncludeList {
-  ObjectWithJsonbClassLevelIncludeList.internal_({
+  ObjectWithJsonbClassLevelIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
     super.limit,
     super.offset,
@@ -356,6 +356,83 @@ class ObjectWithJsonbClassLevelRepository {
     return session.db.findById<ObjectWithJsonbClassLevel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithJsonbClassLevel>(
+      where: where?.call(ObjectWithJsonbClassLevel.t),
+      orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
+      orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonbClassLevel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithJsonbClassLevel>(
+      where: where?.call(ObjectWithJsonbClassLevel.t),
+      orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
+      orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonbClassLevel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithJsonbClassLevel>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithJsonbClassLevel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

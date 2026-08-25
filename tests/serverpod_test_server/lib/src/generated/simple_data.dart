@@ -75,9 +75,7 @@ abstract class SimpleData
   static SimpleDataInclude include({
     _is.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
-    return SimpleDataInclude.internal_(
-      selectedColumns: select?.call(SimpleData.t),
-    );
+    return SimpleDataInclude._(selectedColumns: select?.call(SimpleData.t));
   }
 
   static SimpleDataIncludeList includeList({
@@ -89,7 +87,7 @@ abstract class SimpleData
     SimpleDataInclude? include,
     _is.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
-    return SimpleDataIncludeList.internal_(
+    return SimpleDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -165,7 +163,7 @@ class SimpleDataTable extends _is.Table<int?> {
 }
 
 class SimpleDataInclude extends _is.IncludeObject {
-  SimpleDataInclude.internal_({this.selectedColumns});
+  SimpleDataInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -178,7 +176,7 @@ class SimpleDataInclude extends _is.IncludeObject {
 }
 
 class SimpleDataIncludeList extends _is.IncludeList {
-  SimpleDataIncludeList.internal_({
+  SimpleDataIncludeList._({
     _is.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
@@ -297,6 +295,83 @@ class SimpleDataRepository {
     return session.db.findById<SimpleData>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SimpleDataTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDataTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SimpleData>(
+      where: where?.call(SimpleData.t),
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SimpleDataTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SimpleData>(
+      id,
+      transaction: transaction,
+      select: select?.call(SimpleData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

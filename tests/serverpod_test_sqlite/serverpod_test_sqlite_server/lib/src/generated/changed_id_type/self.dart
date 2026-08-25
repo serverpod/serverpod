@@ -151,7 +151,7 @@ abstract class ChangedIdTypeSelf
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
-    return ChangedIdTypeSelfInclude.internal_(
+    return ChangedIdTypeSelfInclude._(
       previous: previous,
       next: next,
       parent: parent,
@@ -169,7 +169,7 @@ abstract class ChangedIdTypeSelf
     ChangedIdTypeSelfInclude? include,
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
-    return ChangedIdTypeSelfIncludeList.internal_(
+    return ChangedIdTypeSelfIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -399,7 +399,7 @@ class ChangedIdTypeSelfTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ChangedIdTypeSelfInclude extends _is.IncludeObject {
-  ChangedIdTypeSelfInclude.internal_({
+  ChangedIdTypeSelfInclude._({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
@@ -436,7 +436,7 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
 }
 
 class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
-  ChangedIdTypeSelfIncludeList.internal_({
+  ChangedIdTypeSelfIncludeList._({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     super.limit,
     super.offset,
@@ -569,6 +569,89 @@ class ChangedIdTypeSelfRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChangedIdTypeSelf>(
+      where: where?.call(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChangedIdTypeSelf>(
+      where: where?.call(ChangedIdTypeSelf.t),
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChangedIdTypeSelfInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChangedIdTypeSelf>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChangedIdTypeSelf.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

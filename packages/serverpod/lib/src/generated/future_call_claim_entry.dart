@@ -87,7 +87,7 @@ abstract class FutureCallClaimEntry
   static FutureCallClaimEntryInclude include({
     _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
   }) {
-    return FutureCallClaimEntryInclude.internal_(
+    return FutureCallClaimEntryInclude._(
       selectedColumns: select?.call(FutureCallClaimEntry.t),
     );
   }
@@ -101,7 +101,7 @@ abstract class FutureCallClaimEntry
     FutureCallClaimEntryInclude? include,
     _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
   }) {
-    return FutureCallClaimEntryIncludeList.internal_(
+    return FutureCallClaimEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -196,7 +196,7 @@ class FutureCallClaimEntryTable extends _is.Table<int?> {
 }
 
 class FutureCallClaimEntryInclude extends _is.IncludeObject {
-  FutureCallClaimEntryInclude.internal_({this.selectedColumns});
+  FutureCallClaimEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -209,7 +209,7 @@ class FutureCallClaimEntryInclude extends _is.IncludeObject {
 }
 
 class FutureCallClaimEntryIncludeList extends _is.IncludeList {
-  FutureCallClaimEntryIncludeList.internal_({
+  FutureCallClaimEntryIncludeList._({
     _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
     super.limit,
     super.offset,
@@ -328,6 +328,83 @@ class FutureCallClaimEntryRepository {
     return session.db.findById<FutureCallClaimEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<FutureCallClaimEntry>(
+      where: where?.call(FutureCallClaimEntry.t),
+      orderBy: orderBy?.call(FutureCallClaimEntry.t),
+      orderByList: orderByList?.call(FutureCallClaimEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(FutureCallClaimEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<FutureCallClaimEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallClaimEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<FutureCallClaimEntry>(
+      where: where?.call(FutureCallClaimEntry.t),
+      orderBy: orderBy?.call(FutureCallClaimEntry.t),
+      orderByList: orderByList?.call(FutureCallClaimEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(FutureCallClaimEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<FutureCallClaimEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(FutureCallClaimEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

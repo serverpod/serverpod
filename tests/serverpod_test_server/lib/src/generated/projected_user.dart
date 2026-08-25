@@ -126,7 +126,7 @@ abstract class ProjectedUser
     _i8r3x6pe.ProjectedOrderIncludeList? orders,
     _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
-    return ProjectedUserInclude.internal_(
+    return ProjectedUserInclude._(
       address: address,
       orders: orders,
       selectedColumns: select?.call(ProjectedUser.t),
@@ -142,7 +142,7 @@ abstract class ProjectedUser
     ProjectedUserInclude? include,
     _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
-    return ProjectedUserIncludeList.internal_(
+    return ProjectedUserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -327,7 +327,7 @@ class ProjectedUserTable extends _is.Table<_is.UuidValue?> {
 }
 
 class ProjectedUserInclude extends _is.IncludeObject {
-  ProjectedUserInclude.internal_({
+  ProjectedUserInclude._({
     _iegbxll6.ProjectedAddressInclude? address,
     _i8r3x6pe.ProjectedOrderIncludeList? orders,
     this.selectedColumns,
@@ -354,7 +354,7 @@ class ProjectedUserInclude extends _is.IncludeObject {
 }
 
 class ProjectedUserIncludeList extends _is.IncludeList {
-  ProjectedUserIncludeList.internal_({
+  ProjectedUserIncludeList._({
     _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     super.limit,
     super.offset,
@@ -487,6 +487,89 @@ class ProjectedUserRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedUserInclude? include,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ProjectedUser>(
+      where: where?.call(ProjectedUser.t),
+      orderBy: orderBy?.call(ProjectedUser.t),
+      orderByList: orderByList?.call(ProjectedUser.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedUserInclude? include,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ProjectedUser>(
+      where: where?.call(ProjectedUser.t),
+      orderBy: orderBy?.call(ProjectedUser.t),
+      orderByList: orderByList?.call(ProjectedUser.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ProjectedUserInclude? include,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ProjectedUser>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

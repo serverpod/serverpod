@@ -100,7 +100,7 @@ abstract class ObjectWithGeographyGeometryCollection
     _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
     select,
   }) {
-    return ObjectWithGeographyGeometryCollectionInclude.internal_(
+    return ObjectWithGeographyGeometryCollectionInclude._(
       selectedColumns: select?.call(ObjectWithGeographyGeometryCollection.t),
     );
   }
@@ -117,7 +117,7 @@ abstract class ObjectWithGeographyGeometryCollection
     _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
     select,
   }) {
-    return ObjectWithGeographyGeometryCollectionIncludeList.internal_(
+    return ObjectWithGeographyGeometryCollectionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,9 +244,7 @@ class ObjectWithGeographyGeometryCollectionTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyGeometryCollectionInclude extends _is.IncludeObject {
-  ObjectWithGeographyGeometryCollectionInclude.internal_({
-    this.selectedColumns,
-  });
+  ObjectWithGeographyGeometryCollectionInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -259,7 +257,7 @@ class ObjectWithGeographyGeometryCollectionInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyGeometryCollectionIncludeList extends _is.IncludeList {
-  ObjectWithGeographyGeometryCollectionIncludeList.internal_({
+  ObjectWithGeographyGeometryCollectionIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
     where,
     super.limit,
@@ -383,6 +381,90 @@ class ObjectWithGeographyGeometryCollectionRepository {
     return session.db.findById<ObjectWithGeographyGeometryCollection>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithGeographyGeometryCollection>(
+      where: where?.call(ObjectWithGeographyGeometryCollection.t),
+      orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
+      orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyGeometryCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyGeometryCollectionTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithGeographyGeometryCollection>(
+      where: where?.call(ObjectWithGeographyGeometryCollection.t),
+      orderBy: orderBy?.call(ObjectWithGeographyGeometryCollection.t),
+      orderByList: orderByList?.call(ObjectWithGeographyGeometryCollection.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyGeometryCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyGeometryCollectionTable>?
+    select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithGeographyGeometryCollection>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyGeometryCollection.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

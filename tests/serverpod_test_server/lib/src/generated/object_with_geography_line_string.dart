@@ -95,7 +95,7 @@ abstract class ObjectWithGeographyLineString
   static ObjectWithGeographyLineStringInclude include({
     _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
   }) {
-    return ObjectWithGeographyLineStringInclude.internal_(
+    return ObjectWithGeographyLineStringInclude._(
       selectedColumns: select?.call(ObjectWithGeographyLineString.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class ObjectWithGeographyLineString
     ObjectWithGeographyLineStringInclude? include,
     _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
   }) {
-    return ObjectWithGeographyLineStringIncludeList.internal_(
+    return ObjectWithGeographyLineStringIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,7 +222,7 @@ class ObjectWithGeographyLineStringTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
-  ObjectWithGeographyLineStringInclude.internal_({this.selectedColumns});
+  ObjectWithGeographyLineStringInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -235,7 +235,7 @@ class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList {
-  ObjectWithGeographyLineStringIncludeList.internal_({
+  ObjectWithGeographyLineStringIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     super.limit,
     super.offset,
@@ -354,6 +354,83 @@ class ObjectWithGeographyLineStringRepository {
     return session.db.findById<ObjectWithGeographyLineString>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithGeographyLineString>(
+      where: where?.call(ObjectWithGeographyLineString.t),
+      orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
+      orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyLineString.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithGeographyLineString>(
+      where: where?.call(ObjectWithGeographyLineString.t),
+      orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
+      orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyLineString.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithGeographyLineString>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyLineString.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

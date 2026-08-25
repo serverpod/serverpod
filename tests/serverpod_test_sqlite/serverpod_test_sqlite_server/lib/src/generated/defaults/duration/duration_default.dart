@@ -106,7 +106,7 @@ abstract class DurationDefault
   static DurationDefaultInclude include({
     _is.SelectColumnsBuilder<DurationDefaultTable>? select,
   }) {
-    return DurationDefaultInclude.internal_(
+    return DurationDefaultInclude._(
       selectedColumns: select?.call(DurationDefault.t),
     );
   }
@@ -120,7 +120,7 @@ abstract class DurationDefault
     DurationDefaultInclude? include,
     _is.SelectColumnsBuilder<DurationDefaultTable>? select,
   }) {
-    return DurationDefaultIncludeList.internal_(
+    return DurationDefaultIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +216,7 @@ class DurationDefaultTable extends _is.Table<int?> {
 }
 
 class DurationDefaultInclude extends _is.IncludeObject {
-  DurationDefaultInclude.internal_({this.selectedColumns});
+  DurationDefaultInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -229,7 +229,7 @@ class DurationDefaultInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultIncludeList extends _is.IncludeList {
-  DurationDefaultIncludeList.internal_({
+  DurationDefaultIncludeList._({
     _is.WhereExpressionBuilder<DurationDefaultTable>? where,
     super.limit,
     super.offset,
@@ -348,6 +348,83 @@ class DurationDefaultRepository {
     return session.db.findById<DurationDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DurationDefault>(
+      where: where?.call(DurationDefault.t),
+      orderBy: orderBy?.call(DurationDefault.t),
+      orderByList: orderByList?.call(DurationDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DurationDefault>(
+      where: where?.call(DurationDefault.t),
+      orderBy: orderBy?.call(DurationDefault.t),
+      orderByList: orderByList?.call(DurationDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DurationDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(DurationDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

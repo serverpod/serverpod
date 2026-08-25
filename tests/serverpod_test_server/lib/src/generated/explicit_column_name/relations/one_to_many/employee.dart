@@ -79,7 +79,7 @@ abstract class Employee
   static EmployeeInclude include({
     _is.SelectColumnsBuilder<EmployeeTable>? select,
   }) {
-    return EmployeeInclude.internal_(selectedColumns: select?.call(Employee.t));
+    return EmployeeInclude._(selectedColumns: select?.call(Employee.t));
   }
 
   static EmployeeIncludeList includeList({
@@ -91,7 +91,7 @@ abstract class Employee
     EmployeeInclude? include,
     _is.SelectColumnsBuilder<EmployeeTable>? select,
   }) {
-    return EmployeeIncludeList.internal_(
+    return EmployeeIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -181,7 +181,7 @@ class EmployeeTable extends _is.Table<int?> {
 }
 
 class EmployeeInclude extends _is.IncludeObject {
-  EmployeeInclude.internal_({this.selectedColumns});
+  EmployeeInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -194,7 +194,7 @@ class EmployeeInclude extends _is.IncludeObject {
 }
 
 class EmployeeIncludeList extends _is.IncludeList {
-  EmployeeIncludeList.internal_({
+  EmployeeIncludeList._({
     _is.WhereExpressionBuilder<EmployeeTable>? where,
     super.limit,
     super.offset,
@@ -313,6 +313,83 @@ class EmployeeRepository {
     return session.db.findById<Employee>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Employee>(
+      where: where?.call(Employee.t),
+      orderBy: orderBy?.call(Employee.t),
+      orderByList: orderByList?.call(Employee.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Employee.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Employee>(
+      where: where?.call(Employee.t),
+      orderBy: orderBy?.call(Employee.t),
+      orderByList: orderByList?.call(Employee.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Employee.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Employee>(
+      id,
+      transaction: transaction,
+      select: select?.call(Employee.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

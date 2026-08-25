@@ -121,7 +121,7 @@ abstract class ObjectWithBit
   static ObjectWithBitInclude include({
     _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
   }) {
-    return ObjectWithBitInclude.internal_(
+    return ObjectWithBitInclude._(
       selectedColumns: select?.call(ObjectWithBit.t),
     );
   }
@@ -135,7 +135,7 @@ abstract class ObjectWithBit
     ObjectWithBitInclude? include,
     _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
   }) {
-    return ObjectWithBitIncludeList.internal_(
+    return ObjectWithBitIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -306,7 +306,7 @@ class ObjectWithBitTable extends _is.Table<int?> {
 }
 
 class ObjectWithBitInclude extends _is.IncludeObject {
-  ObjectWithBitInclude.internal_({this.selectedColumns});
+  ObjectWithBitInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -319,7 +319,7 @@ class ObjectWithBitInclude extends _is.IncludeObject {
 }
 
 class ObjectWithBitIncludeList extends _is.IncludeList {
-  ObjectWithBitIncludeList.internal_({
+  ObjectWithBitIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     super.limit,
     super.offset,
@@ -438,6 +438,83 @@ class ObjectWithBitRepository {
     return session.db.findById<ObjectWithBit>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithBit>(
+      where: where?.call(ObjectWithBit.t),
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithBit.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithBit>(
+      where: where?.call(ObjectWithBit.t),
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithBit.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithBit>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithBit.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

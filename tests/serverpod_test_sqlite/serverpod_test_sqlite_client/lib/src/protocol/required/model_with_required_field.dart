@@ -90,7 +90,7 @@ abstract class ModelWithRequiredField
   static ModelWithRequiredFieldInclude include({
     _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
   }) {
-    return ModelWithRequiredFieldInclude.internal_(
+    return ModelWithRequiredFieldInclude._(
       selectedColumns: select?.call(ModelWithRequiredField.t),
     );
   }
@@ -104,7 +104,7 @@ abstract class ModelWithRequiredField
     ModelWithRequiredFieldInclude? include,
     _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
   }) {
-    return ModelWithRequiredFieldIncludeList.internal_(
+    return ModelWithRequiredFieldIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -211,7 +211,7 @@ class ModelWithRequiredFieldTable extends _isd.Table<int?> {
 }
 
 class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
-  ModelWithRequiredFieldInclude.internal_({this.selectedColumns});
+  ModelWithRequiredFieldInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -224,7 +224,7 @@ class ModelWithRequiredFieldInclude extends _isd.IncludeObject {
 }
 
 class ModelWithRequiredFieldIncludeList extends _isd.IncludeList {
-  ModelWithRequiredFieldIncludeList.internal_({
+  ModelWithRequiredFieldIncludeList._({
     _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
     super.limit,
     super.offset,
@@ -343,6 +343,83 @@ class ModelWithRequiredFieldRepository {
     return session.db.findById<ModelWithRequiredField>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ModelWithRequiredField>(
+      where: where?.call(ModelWithRequiredField.t),
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<ModelWithRequiredFieldTable>? orderBy,
+    _isd.OrderByListBuilder<ModelWithRequiredFieldTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ModelWithRequiredField>(
+      where: where?.call(ModelWithRequiredField.t),
+      orderBy: orderBy?.call(ModelWithRequiredField.t),
+      orderByList: orderByList?.call(ModelWithRequiredField.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ModelWithRequiredField>(
+      id,
+      transaction: transaction,
+      select: select?.call(ModelWithRequiredField.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

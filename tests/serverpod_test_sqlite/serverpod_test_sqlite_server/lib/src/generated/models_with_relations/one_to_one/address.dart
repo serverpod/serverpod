@@ -96,7 +96,7 @@ abstract class Address
     _igho3lba.CitizenInclude? inhabitant,
     _is.SelectColumnsBuilder<AddressTable>? select,
   }) {
-    return AddressInclude.internal_(
+    return AddressInclude._(
       inhabitant: inhabitant,
       selectedColumns: select?.call(Address.t),
     );
@@ -111,7 +111,7 @@ abstract class Address
     AddressInclude? include,
     _is.SelectColumnsBuilder<AddressTable>? select,
   }) {
-    return AddressIncludeList.internal_(
+    return AddressIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,7 +229,7 @@ class AddressTable extends _is.Table<int?> {
 }
 
 class AddressInclude extends _is.IncludeObject {
-  AddressInclude.internal_({
+  AddressInclude._({
     _igho3lba.CitizenInclude? inhabitant,
     this.selectedColumns,
   }) {
@@ -249,7 +249,7 @@ class AddressInclude extends _is.IncludeObject {
 }
 
 class AddressIncludeList extends _is.IncludeList {
-  AddressIncludeList.internal_({
+  AddressIncludeList._({
     _is.WhereExpressionBuilder<AddressTable>? where,
     super.limit,
     super.offset,
@@ -378,6 +378,89 @@ class AddressRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AddressTable>? orderBy,
+    _is.OrderByListBuilder<AddressTable>? orderByList,
+    _is.Transaction? transaction,
+    AddressInclude? include,
+    _is.SelectColumnsBuilder<AddressTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Address>(
+      where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Address.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AddressTable>? where,
+    int? offset,
+    _is.OrderByBuilder<AddressTable>? orderBy,
+    _is.OrderByListBuilder<AddressTable>? orderByList,
+    _is.Transaction? transaction,
+    AddressInclude? include,
+    _is.SelectColumnsBuilder<AddressTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Address>(
+      where: where?.call(Address.t),
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Address.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    AddressInclude? include,
+    _is.SelectColumnsBuilder<AddressTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Address>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Address.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

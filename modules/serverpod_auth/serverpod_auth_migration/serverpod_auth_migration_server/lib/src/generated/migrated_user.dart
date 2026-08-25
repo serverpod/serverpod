@@ -108,7 +108,7 @@ abstract class MigratedUser
     _iacs.AuthUserInclude? newAuthUser,
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
-    return MigratedUserInclude.internal_(
+    return MigratedUserInclude._(
       oldUser: oldUser,
       newAuthUser: newAuthUser,
       selectedColumns: select?.call(MigratedUser.t),
@@ -124,7 +124,7 @@ abstract class MigratedUser
     MigratedUserInclude? include,
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
-    return MigratedUserIncludeList.internal_(
+    return MigratedUserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -271,7 +271,7 @@ class MigratedUserTable extends _is.Table<int?> {
 }
 
 class MigratedUserInclude extends _is.IncludeObject {
-  MigratedUserInclude.internal_({
+  MigratedUserInclude._({
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
     this.selectedColumns,
@@ -298,7 +298,7 @@ class MigratedUserInclude extends _is.IncludeObject {
 }
 
 class MigratedUserIncludeList extends _is.IncludeList {
-  MigratedUserIncludeList.internal_({
+  MigratedUserIncludeList._({
     _is.WhereExpressionBuilder<MigratedUserTable>? where,
     super.limit,
     super.offset,
@@ -425,6 +425,89 @@ class MigratedUserRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    MigratedUserInclude? include,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MigratedUser>(
+      where: where?.call(MigratedUser.t),
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MigratedUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
+    MigratedUserInclude? include,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MigratedUser>(
+      where: where?.call(MigratedUser.t),
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MigratedUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    MigratedUserInclude? include,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MigratedUser>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(MigratedUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

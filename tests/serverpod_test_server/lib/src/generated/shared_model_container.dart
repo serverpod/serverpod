@@ -389,7 +389,7 @@ abstract class SharedModelContainer
   static SharedModelContainerInclude include({
     _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
   }) {
-    return SharedModelContainerInclude.internal_(
+    return SharedModelContainerInclude._(
       selectedColumns: select?.call(SharedModelContainer.t),
     );
   }
@@ -403,7 +403,7 @@ abstract class SharedModelContainer
     SharedModelContainerInclude? include,
     _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
   }) {
-    return SharedModelContainerIncludeList.internal_(
+    return SharedModelContainerIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -950,7 +950,7 @@ class SharedModelContainerTable extends _is.Table<int?> {
 }
 
 class SharedModelContainerInclude extends _is.IncludeObject {
-  SharedModelContainerInclude.internal_({this.selectedColumns});
+  SharedModelContainerInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -963,7 +963,7 @@ class SharedModelContainerInclude extends _is.IncludeObject {
 }
 
 class SharedModelContainerIncludeList extends _is.IncludeList {
-  SharedModelContainerIncludeList.internal_({
+  SharedModelContainerIncludeList._({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
     super.offset,
@@ -1082,6 +1082,83 @@ class SharedModelContainerRepository {
     return session.db.findById<SharedModelContainer>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SharedModelContainer>(
+      where: where?.call(SharedModelContainer.t),
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SharedModelContainer>(
+      where: where?.call(SharedModelContainer.t),
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SharedModelContainer>(
+      id,
+      transaction: transaction,
+      select: select?.call(SharedModelContainer.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

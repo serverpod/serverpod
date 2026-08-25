@@ -91,9 +91,7 @@ abstract class UserImage
   static UserImageInclude include({
     _is.SelectColumnsBuilder<UserImageTable>? select,
   }) {
-    return UserImageInclude.internal_(
-      selectedColumns: select?.call(UserImage.t),
-    );
+    return UserImageInclude._(selectedColumns: select?.call(UserImage.t));
   }
 
   static UserImageIncludeList includeList({
@@ -105,7 +103,7 @@ abstract class UserImage
     UserImageInclude? include,
     _is.SelectColumnsBuilder<UserImageTable>? select,
   }) {
-    return UserImageIncludeList.internal_(
+    return UserImageIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,7 +212,7 @@ class UserImageTable extends _is.Table<int?> {
 }
 
 class UserImageInclude extends _is.IncludeObject {
-  UserImageInclude.internal_({this.selectedColumns});
+  UserImageInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -227,7 +225,7 @@ class UserImageInclude extends _is.IncludeObject {
 }
 
 class UserImageIncludeList extends _is.IncludeList {
-  UserImageIncludeList.internal_({
+  UserImageIncludeList._({
     _is.WhereExpressionBuilder<UserImageTable>? where,
     super.limit,
     super.offset,
@@ -346,6 +344,83 @@ class UserImageRepository {
     return session.db.findById<UserImage>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserImageTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserImageTable>? orderBy,
+    _is.OrderByListBuilder<UserImageTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserImage>(
+      where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserImage.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserImageTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserImageTable>? orderBy,
+    _is.OrderByListBuilder<UserImageTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserImage>(
+      where: where?.call(UserImage.t),
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserImage.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserImage>(
+      id,
+      transaction: transaction,
+      select: select?.call(UserImage.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -94,7 +94,7 @@ abstract class CourseUuid
     _ih6xbg05.EnrollmentIntIncludeList? enrollments,
     _is.SelectColumnsBuilder<CourseUuidTable>? select,
   }) {
-    return CourseUuidInclude.internal_(
+    return CourseUuidInclude._(
       enrollments: enrollments,
       selectedColumns: select?.call(CourseUuid.t),
     );
@@ -109,7 +109,7 @@ abstract class CourseUuid
     CourseUuidInclude? include,
     _is.SelectColumnsBuilder<CourseUuidTable>? select,
   }) {
-    return CourseUuidIncludeList.internal_(
+    return CourseUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -232,7 +232,7 @@ class CourseUuidTable extends _is.Table<_is.UuidValue?> {
 }
 
 class CourseUuidInclude extends _is.IncludeObject {
-  CourseUuidInclude.internal_({
+  CourseUuidInclude._({
     _ih6xbg05.EnrollmentIntIncludeList? enrollments,
     this.selectedColumns,
   }) {
@@ -252,7 +252,7 @@ class CourseUuidInclude extends _is.IncludeObject {
 }
 
 class CourseUuidIncludeList extends _is.IncludeList {
-  CourseUuidIncludeList.internal_({
+  CourseUuidIncludeList._({
     _is.WhereExpressionBuilder<CourseUuidTable>? where,
     super.limit,
     super.offset,
@@ -381,6 +381,89 @@ class CourseUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    CourseUuidInclude? include,
+    _is.SelectColumnsBuilder<CourseUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CourseUuid>(
+      where: where?.call(CourseUuid.t),
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CourseUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    CourseUuidInclude? include,
+    _is.SelectColumnsBuilder<CourseUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CourseUuid>(
+      where: where?.call(CourseUuid.t),
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CourseUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CourseUuidInclude? include,
+    _is.SelectColumnsBuilder<CourseUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CourseUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CourseUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -114,7 +114,7 @@ abstract class TeamInt
     _igtph8zx.PlayerUuidIncludeList? players,
     _is.SelectColumnsBuilder<TeamIntTable>? select,
   }) {
-    return TeamIntInclude.internal_(
+    return TeamIntInclude._(
       arena: arena,
       players: players,
       selectedColumns: select?.call(TeamInt.t),
@@ -130,7 +130,7 @@ abstract class TeamInt
     TeamIntInclude? include,
     _is.SelectColumnsBuilder<TeamIntTable>? select,
   }) {
-    return TeamIntIncludeList.internal_(
+    return TeamIntIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -292,7 +292,7 @@ class TeamIntTable extends _is.Table<int?> {
 }
 
 class TeamIntInclude extends _is.IncludeObject {
-  TeamIntInclude.internal_({
+  TeamIntInclude._({
     _izqzqdtt.ArenaUuidInclude? arena,
     _igtph8zx.PlayerUuidIncludeList? players,
     this.selectedColumns,
@@ -319,7 +319,7 @@ class TeamIntInclude extends _is.IncludeObject {
 }
 
 class TeamIntIncludeList extends _is.IncludeList {
-  TeamIntIncludeList.internal_({
+  TeamIntIncludeList._({
     _is.WhereExpressionBuilder<TeamIntTable>? where,
     super.limit,
     super.offset,
@@ -452,6 +452,89 @@ class TeamIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TeamIntTable>? orderBy,
+    _is.OrderByListBuilder<TeamIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TeamIntInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TeamInt>(
+      where: where?.call(TeamInt.t),
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TeamIntTable>? orderBy,
+    _is.OrderByListBuilder<TeamIntTable>? orderByList,
+    _is.Transaction? transaction,
+    TeamIntInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TeamInt>(
+      where: where?.call(TeamInt.t),
+      orderBy: orderBy?.call(TeamInt.t),
+      orderByList: orderByList?.call(TeamInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    TeamIntInclude? include,
+    _is.SelectColumnsBuilder<TeamIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TeamInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(TeamInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

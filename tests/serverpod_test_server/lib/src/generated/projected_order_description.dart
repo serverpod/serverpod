@@ -79,8 +79,8 @@ abstract class ProjectedOrderDescription
   }
 
   static ProjectedOrderInclude include() {
-    return ProjectedOrderInclude.internal_(
-      selectedColumns: [
+    return ProjectedOrder.include(
+      select: (t) => [
         ProjectedOrder.t.id,
         ProjectedOrder.t.description,
         ProjectedOrder.t.summary,

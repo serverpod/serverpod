@@ -64,7 +64,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });
@@ -78,7 +78,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });
@@ -99,7 +99,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Object id, {
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });

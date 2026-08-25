@@ -90,7 +90,7 @@ abstract class ArenaUuid
     _i9bz1am4.TeamIntInclude? team,
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
   }) {
-    return ArenaUuidInclude.internal_(
+    return ArenaUuidInclude._(
       team: team,
       selectedColumns: select?.call(ArenaUuid.t),
     );
@@ -105,7 +105,7 @@ abstract class ArenaUuid
     ArenaUuidInclude? include,
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
   }) {
-    return ArenaUuidIncludeList.internal_(
+    return ArenaUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -205,7 +205,7 @@ class ArenaUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class ArenaUuidInclude extends _is.IncludeObject {
-  ArenaUuidInclude.internal_({
+  ArenaUuidInclude._({
     _i9bz1am4.TeamIntInclude? team,
     this.selectedColumns,
   }) {
@@ -225,7 +225,7 @@ class ArenaUuidInclude extends _is.IncludeObject {
 }
 
 class ArenaUuidIncludeList extends _is.IncludeList {
-  ArenaUuidIncludeList.internal_({
+  ArenaUuidIncludeList._({
     _is.WhereExpressionBuilder<ArenaUuidTable>? where,
     super.limit,
     super.offset,
@@ -354,6 +354,89 @@ class ArenaUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaUuidInclude? include,
+    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ArenaUuid>(
+      where: where?.call(ArenaUuid.t),
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ArenaUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    ArenaUuidInclude? include,
+    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ArenaUuid>(
+      where: where?.call(ArenaUuid.t),
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ArenaUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ArenaUuidInclude? include,
+    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ArenaUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ArenaUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

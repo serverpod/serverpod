@@ -124,9 +124,7 @@ abstract class EnumDefault
   static EnumDefaultInclude include({
     _is.SelectColumnsBuilder<EnumDefaultTable>? select,
   }) {
-    return EnumDefaultInclude.internal_(
-      selectedColumns: select?.call(EnumDefault.t),
-    );
+    return EnumDefaultInclude._(selectedColumns: select?.call(EnumDefault.t));
   }
 
   static EnumDefaultIncludeList includeList({
@@ -138,7 +136,7 @@ abstract class EnumDefault
     EnumDefaultInclude? include,
     _is.SelectColumnsBuilder<EnumDefaultTable>? select,
   }) {
-    return EnumDefaultIncludeList.internal_(
+    return EnumDefaultIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -276,7 +274,7 @@ class EnumDefaultTable extends _is.Table<int?> {
 }
 
 class EnumDefaultInclude extends _is.IncludeObject {
-  EnumDefaultInclude.internal_({this.selectedColumns});
+  EnumDefaultInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -289,7 +287,7 @@ class EnumDefaultInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultIncludeList extends _is.IncludeList {
-  EnumDefaultIncludeList.internal_({
+  EnumDefaultIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultTable>? where,
     super.limit,
     super.offset,
@@ -408,6 +406,83 @@ class EnumDefaultRepository {
     return session.db.findById<EnumDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EnumDefault>(
+      where: where?.call(EnumDefault.t),
+      orderBy: orderBy?.call(EnumDefault.t),
+      orderByList: orderByList?.call(EnumDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EnumDefault>(
+      where: where?.call(EnumDefault.t),
+      orderBy: orderBy?.call(EnumDefault.t),
+      orderByList: orderByList?.call(EnumDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EnumDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(EnumDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -90,7 +90,7 @@ abstract class UniqueDataWithNonPersist
   static UniqueDataWithNonPersistInclude include({
     _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
-    return UniqueDataWithNonPersistInclude.internal_(
+    return UniqueDataWithNonPersistInclude._(
       selectedColumns: select?.call(UniqueDataWithNonPersist.t),
     );
   }
@@ -104,7 +104,7 @@ abstract class UniqueDataWithNonPersist
     UniqueDataWithNonPersistInclude? include,
     _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
-    return UniqueDataWithNonPersistIncludeList.internal_(
+    return UniqueDataWithNonPersistIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -199,7 +199,7 @@ class UniqueDataWithNonPersistTable extends _isd.Table<int?> {
 }
 
 class UniqueDataWithNonPersistInclude extends _isd.IncludeObject {
-  UniqueDataWithNonPersistInclude.internal_({this.selectedColumns});
+  UniqueDataWithNonPersistInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -212,7 +212,7 @@ class UniqueDataWithNonPersistInclude extends _isd.IncludeObject {
 }
 
 class UniqueDataWithNonPersistIncludeList extends _isd.IncludeList {
-  UniqueDataWithNonPersistIncludeList.internal_({
+  UniqueDataWithNonPersistIncludeList._({
     _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
     super.offset,
@@ -331,6 +331,83 @@ class UniqueDataWithNonPersistRepository {
     return session.db.findById<UniqueDataWithNonPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UniqueDataWithNonPersist>(
+      where: where?.call(UniqueDataWithNonPersist.t),
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UniqueDataWithNonPersist>(
+      where: where?.call(UniqueDataWithNonPersist.t),
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UniqueDataWithNonPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(UniqueDataWithNonPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -165,7 +165,7 @@ abstract class ObjectWithDynamic
   static ObjectWithDynamicInclude include({
     _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
   }) {
-    return ObjectWithDynamicInclude.internal_(
+    return ObjectWithDynamicInclude._(
       selectedColumns: select?.call(ObjectWithDynamic.t),
     );
   }
@@ -179,7 +179,7 @@ abstract class ObjectWithDynamic
     ObjectWithDynamicInclude? include,
     _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
   }) {
-    return ObjectWithDynamicIncludeList.internal_(
+    return ObjectWithDynamicIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -364,7 +364,7 @@ class ObjectWithDynamicTable extends _is.Table<int?> {
 }
 
 class ObjectWithDynamicInclude extends _is.IncludeObject {
-  ObjectWithDynamicInclude.internal_({this.selectedColumns});
+  ObjectWithDynamicInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -377,7 +377,7 @@ class ObjectWithDynamicInclude extends _is.IncludeObject {
 }
 
 class ObjectWithDynamicIncludeList extends _is.IncludeList {
-  ObjectWithDynamicIncludeList.internal_({
+  ObjectWithDynamicIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
     super.limit,
     super.offset,
@@ -496,6 +496,83 @@ class ObjectWithDynamicRepository {
     return session.db.findById<ObjectWithDynamic>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithDynamic>(
+      where: where?.call(ObjectWithDynamic.t),
+      orderBy: orderBy?.call(ObjectWithDynamic.t),
+      orderByList: orderByList?.call(ObjectWithDynamic.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithDynamic.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithDynamicTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithDynamicTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithDynamicTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithDynamic>(
+      where: where?.call(ObjectWithDynamic.t),
+      orderBy: orderBy?.call(ObjectWithDynamic.t),
+      orderByList: orderByList?.call(ObjectWithDynamic.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithDynamic.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithDynamicTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithDynamic>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithDynamic.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

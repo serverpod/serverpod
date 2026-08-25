@@ -156,7 +156,7 @@ abstract class MessageLogEntry
   static MessageLogEntryInclude include({
     _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
   }) {
-    return MessageLogEntryInclude.internal_(
+    return MessageLogEntryInclude._(
       selectedColumns: select?.call(MessageLogEntry.t),
     );
   }
@@ -170,7 +170,7 @@ abstract class MessageLogEntry
     MessageLogEntryInclude? include,
     _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
   }) {
-    return MessageLogEntryIncludeList.internal_(
+    return MessageLogEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -400,7 +400,7 @@ class MessageLogEntryTable extends _is.Table<int?> {
 }
 
 class MessageLogEntryInclude extends _is.IncludeObject {
-  MessageLogEntryInclude.internal_({this.selectedColumns});
+  MessageLogEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -413,7 +413,7 @@ class MessageLogEntryInclude extends _is.IncludeObject {
 }
 
 class MessageLogEntryIncludeList extends _is.IncludeList {
-  MessageLogEntryIncludeList.internal_({
+  MessageLogEntryIncludeList._({
     _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     super.limit,
     super.offset,
@@ -532,6 +532,83 @@ class MessageLogEntryRepository {
     return session.db.findById<MessageLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<MessageLogEntry>(
+      where: where?.call(MessageLogEntry.t),
+      orderBy: orderBy?.call(MessageLogEntry.t),
+      orderByList: orderByList?.call(MessageLogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<MessageLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<MessageLogEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(MessageLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

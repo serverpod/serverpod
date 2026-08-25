@@ -103,9 +103,7 @@ abstract class BoolDefault
   static BoolDefaultInclude include({
     _is.SelectColumnsBuilder<BoolDefaultTable>? select,
   }) {
-    return BoolDefaultInclude.internal_(
-      selectedColumns: select?.call(BoolDefault.t),
-    );
+    return BoolDefaultInclude._(selectedColumns: select?.call(BoolDefault.t));
   }
 
   static BoolDefaultIncludeList includeList({
@@ -117,7 +115,7 @@ abstract class BoolDefault
     BoolDefaultInclude? include,
     _is.SelectColumnsBuilder<BoolDefaultTable>? select,
   }) {
-    return BoolDefaultIncludeList.internal_(
+    return BoolDefaultIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,7 +226,7 @@ class BoolDefaultTable extends _is.Table<int?> {
 }
 
 class BoolDefaultInclude extends _is.IncludeObject {
-  BoolDefaultInclude.internal_({this.selectedColumns});
+  BoolDefaultInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -241,7 +239,7 @@ class BoolDefaultInclude extends _is.IncludeObject {
 }
 
 class BoolDefaultIncludeList extends _is.IncludeList {
-  BoolDefaultIncludeList.internal_({
+  BoolDefaultIncludeList._({
     _is.WhereExpressionBuilder<BoolDefaultTable>? where,
     super.limit,
     super.offset,
@@ -360,6 +358,83 @@ class BoolDefaultRepository {
     return session.db.findById<BoolDefault>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<BoolDefault>(
+      where: where?.call(BoolDefault.t),
+      orderBy: orderBy?.call(BoolDefault.t),
+      orderByList: orderByList?.call(BoolDefault.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultTable>? where,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<BoolDefault>(
+      where: where?.call(BoolDefault.t),
+      orderBy: orderBy?.call(BoolDefault.t),
+      orderByList: orderByList?.call(BoolDefault.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BoolDefault.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BoolDefaultTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<BoolDefault>(
+      id,
+      transaction: transaction,
+      select: select?.call(BoolDefault.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

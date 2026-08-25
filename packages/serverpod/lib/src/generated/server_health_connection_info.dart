@@ -125,7 +125,7 @@ abstract class ServerHealthConnectionInfo
   static ServerHealthConnectionInfoInclude include({
     _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
   }) {
-    return ServerHealthConnectionInfoInclude.internal_(
+    return ServerHealthConnectionInfoInclude._(
       selectedColumns: select?.call(ServerHealthConnectionInfo.t),
     );
   }
@@ -139,7 +139,7 @@ abstract class ServerHealthConnectionInfo
     ServerHealthConnectionInfoInclude? include,
     _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
   }) {
-    return ServerHealthConnectionInfoIncludeList.internal_(
+    return ServerHealthConnectionInfoIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -302,7 +302,7 @@ class ServerHealthConnectionInfoTable extends _is.Table<int?> {
 }
 
 class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
-  ServerHealthConnectionInfoInclude.internal_({this.selectedColumns});
+  ServerHealthConnectionInfoInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -315,7 +315,7 @@ class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
 }
 
 class ServerHealthConnectionInfoIncludeList extends _is.IncludeList {
-  ServerHealthConnectionInfoIncludeList.internal_({
+  ServerHealthConnectionInfoIncludeList._({
     _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     super.limit,
     super.offset,
@@ -434,6 +434,83 @@ class ServerHealthConnectionInfoRepository {
     return session.db.findById<ServerHealthConnectionInfo>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ServerHealthConnectionInfo>(
+      where: where?.call(ServerHealthConnectionInfo.t),
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerHealthConnectionInfo.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ServerHealthConnectionInfo>(
+      where: where?.call(ServerHealthConnectionInfo.t),
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ServerHealthConnectionInfo.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ServerHealthConnectionInfo>(
+      id,
+      transaction: transaction,
+      select: select?.call(ServerHealthConnectionInfo.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

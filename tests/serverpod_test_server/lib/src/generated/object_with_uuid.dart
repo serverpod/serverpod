@@ -83,7 +83,7 @@ abstract class ObjectWithUuid
   static ObjectWithUuidInclude include({
     _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
   }) {
-    return ObjectWithUuidInclude.internal_(
+    return ObjectWithUuidInclude._(
       selectedColumns: select?.call(ObjectWithUuid.t),
     );
   }
@@ -97,7 +97,7 @@ abstract class ObjectWithUuid
     ObjectWithUuidInclude? include,
     _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
   }) {
-    return ObjectWithUuidIncludeList.internal_(
+    return ObjectWithUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +192,7 @@ class ObjectWithUuidTable extends _is.Table<int?> {
 }
 
 class ObjectWithUuidInclude extends _is.IncludeObject {
-  ObjectWithUuidInclude.internal_({this.selectedColumns});
+  ObjectWithUuidInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -205,7 +205,7 @@ class ObjectWithUuidInclude extends _is.IncludeObject {
 }
 
 class ObjectWithUuidIncludeList extends _is.IncludeList {
-  ObjectWithUuidIncludeList.internal_({
+  ObjectWithUuidIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,
     super.offset,
@@ -324,6 +324,83 @@ class ObjectWithUuidRepository {
     return session.db.findById<ObjectWithUuid>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithUuidTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithUuid>(
+      where: where?.call(ObjectWithUuid.t),
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithUuidTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithUuid>(
+      where: where?.call(ObjectWithUuid.t),
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithUuid>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

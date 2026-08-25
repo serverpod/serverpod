@@ -103,7 +103,7 @@ abstract class ImmutableObjectWithTable
   static ImmutableObjectWithTableInclude include({
     _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
   }) {
-    return ImmutableObjectWithTableInclude.internal_(
+    return ImmutableObjectWithTableInclude._(
       selectedColumns: select?.call(ImmutableObjectWithTable.t),
     );
   }
@@ -117,7 +117,7 @@ abstract class ImmutableObjectWithTable
     ImmutableObjectWithTableInclude? include,
     _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
   }) {
-    return ImmutableObjectWithTableIncludeList.internal_(
+    return ImmutableObjectWithTableIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +192,7 @@ class ImmutableObjectWithTableTable extends _is.Table<int?> {
 }
 
 class ImmutableObjectWithTableInclude extends _is.IncludeObject {
-  ImmutableObjectWithTableInclude.internal_({this.selectedColumns});
+  ImmutableObjectWithTableInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -205,7 +205,7 @@ class ImmutableObjectWithTableInclude extends _is.IncludeObject {
 }
 
 class ImmutableObjectWithTableIncludeList extends _is.IncludeList {
-  ImmutableObjectWithTableIncludeList.internal_({
+  ImmutableObjectWithTableIncludeList._({
     _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     super.limit,
     super.offset,
@@ -324,6 +324,83 @@ class ImmutableObjectWithTableRepository {
     return session.db.findById<ImmutableObjectWithTable>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
+    _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ImmutableObjectWithTable>(
+      where: where?.call(ImmutableObjectWithTable.t),
+      orderBy: orderBy?.call(ImmutableObjectWithTable.t),
+      orderByList: orderByList?.call(ImmutableObjectWithTable.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ImmutableObjectWithTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
+    _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ImmutableObjectWithTable>(
+      where: where?.call(ImmutableObjectWithTable.t),
+      orderBy: orderBy?.call(ImmutableObjectWithTable.t),
+      orderByList: orderByList?.call(ImmutableObjectWithTable.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ImmutableObjectWithTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ImmutableObjectWithTable>(
+      id,
+      transaction: transaction,
+      select: select?.call(ImmutableObjectWithTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

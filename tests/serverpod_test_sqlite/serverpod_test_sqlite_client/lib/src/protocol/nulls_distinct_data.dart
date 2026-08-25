@@ -88,7 +88,7 @@ abstract class NullsDistinctData
   static NullsDistinctDataInclude include({
     _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
   }) {
-    return NullsDistinctDataInclude.internal_(
+    return NullsDistinctDataInclude._(
       selectedColumns: select?.call(NullsDistinctData.t),
     );
   }
@@ -102,7 +102,7 @@ abstract class NullsDistinctData
     NullsDistinctDataInclude? include,
     _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
   }) {
-    return NullsDistinctDataIncludeList.internal_(
+    return NullsDistinctDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -210,7 +210,7 @@ class NullsDistinctDataTable extends _isd.Table<int?> {
 }
 
 class NullsDistinctDataInclude extends _isd.IncludeObject {
-  NullsDistinctDataInclude.internal_({this.selectedColumns});
+  NullsDistinctDataInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -223,7 +223,7 @@ class NullsDistinctDataInclude extends _isd.IncludeObject {
 }
 
 class NullsDistinctDataIncludeList extends _isd.IncludeList {
-  NullsDistinctDataIncludeList.internal_({
+  NullsDistinctDataIncludeList._({
     _isd.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     super.limit,
     super.offset,
@@ -342,6 +342,83 @@ class NullsDistinctDataRepository {
     return session.db.findById<NullsDistinctData>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _isd.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<NullsDistinctData>(
+      where: where?.call(NullsDistinctData.t),
+      orderBy: orderBy?.call(NullsDistinctData.t),
+      orderByList: orderByList?.call(NullsDistinctData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(NullsDistinctData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _isd.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<NullsDistinctData>(
+      where: where?.call(NullsDistinctData.t),
+      orderBy: orderBy?.call(NullsDistinctData.t),
+      orderByList: orderByList?.call(NullsDistinctData.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(NullsDistinctData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<NullsDistinctData>(
+      id,
+      transaction: transaction,
+      select: select?.call(NullsDistinctData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

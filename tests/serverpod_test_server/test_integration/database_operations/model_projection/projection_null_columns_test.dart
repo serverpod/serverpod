@@ -31,9 +31,25 @@ void main() async {
       session,
       where: (_) => Constant.bool(true),
     );
+    await OrderUuid.db.deleteWhere(
+      session,
+      where: (_) => Constant.bool(true),
+    );
+    await CustomerInt.db.deleteWhere(
+      session,
+      where: (_) => Constant.bool(true),
+    );
   });
 
   tearDown(() async {
+    await OrderUuid.db.deleteWhere(
+      session,
+      where: (_) => Constant.bool(true),
+    );
+    await CustomerInt.db.deleteWhere(
+      session,
+      where: (_) => Constant.bool(true),
+    );
     await Citizen.db.deleteWhere(
       session,
       where: (_) => Constant.bool(true),
@@ -83,7 +99,8 @@ void main() async {
         ]);
 
         // Select ONLY the nullable column `summary` (without selecting `id`)
-        var results = await session.db.findAsJson<ProjectedOrder>(
+        var results = await ProjectedOrder.db.findAsJson(
+          session,
           select: (t) => [t.summary],
         );
 
@@ -117,7 +134,8 @@ void main() async {
           ),
         ]);
 
-        var results = await session.db.findAsJson<ProjectedOrder>(
+        var results = await ProjectedOrder.db.findAsJson(
+          session,
           select: (t) => [t.summary],
         );
 
@@ -145,7 +163,8 @@ void main() async {
           ProjectedUser(name: 'Alice', addressId: address.id!),
         );
 
-        var result = await session.db.findFirstRowAsJson<ProjectedUser>(
+        var result = await ProjectedUser.db.findFirstRowAsJson(
+          session,
           include: ProjectedUser.include(
             address: ProjectedAddress.include(
               select: (table) => [table.street],
@@ -184,7 +203,8 @@ void main() async {
           ),
         );
 
-        var result = await session.db.findFirstRowAsJson<Citizen>(
+        var result = await Citizen.db.findFirstRowAsJson(
+          session,
           include: Citizen.include(
             oldCompany: Company.include(),
             company: Company.include(),
@@ -214,7 +234,8 @@ void main() async {
           Citizen(name: 'Charlie', companyId: company.id!),
         );
 
-        var results = await session.db.findAsJson<Citizen>(
+        var results = await Citizen.db.findAsJson(
+          session,
           select: (t) => [t.name],
         );
 
@@ -223,13 +244,15 @@ void main() async {
         expect(results.first.containsKey('id'), isFalse);
         expect(results.first.containsKey('companyId'), isFalse);
 
-        var firstRow = await session.db.findFirstRowAsJson<Citizen>(
+        var firstRow = await Citizen.db.findFirstRowAsJson(
+          session,
           select: (t) => [t.name],
         );
         expect(firstRow?['name'], 'Charlie');
         expect(firstRow?.containsKey('id'), isFalse);
 
-        var byId = await session.db.findByIdAsJson<Citizen>(
+        var byId = await Citizen.db.findByIdAsJson(
+          session,
           citizen.id!,
           select: (t) => [t.name],
         );
@@ -254,7 +277,8 @@ void main() async {
           Citizen(name: 'David', companyId: company.id!),
         );
 
-        var result = await session.db.findFirstRowAsJson<Citizen>(
+        var result = await Citizen.db.findFirstRowAsJson(
+          session,
           select: (t) => [t.name],
           include: Citizen.include(
             company: Company.include(
@@ -270,6 +294,117 @@ void main() async {
         expect(result?['company']['name'], 'Acme Logistics');
         expect(result?['company'].containsKey('id'), isFalse);
         expect(result?['company'].containsKey('townId'), isFalse);
+      },
+    );
+
+    test(
+      'Given generated model repository, when using findAsJson with strongly typed select, then only selected columns are returned.',
+      () async {
+        var customer = await CustomerInt.db.insertRow(
+          session,
+          CustomerInt(name: 'Alice'),
+        );
+
+        var results = await CustomerInt.db.findAsJson(
+          session,
+          select: (customer) => [customer.name],
+        );
+
+        expect(results.length, 1);
+        expect(results.first['name'], 'Alice');
+        expect(results.first.containsKey('id'), isFalse);
+
+        var firstRow = await CustomerInt.db.findFirstRowAsJson(
+          session,
+          select: (customer) => [customer.name],
+        );
+        expect(firstRow?['name'], 'Alice');
+        expect(firstRow?.containsKey('id'), isFalse);
+
+        var byId = await CustomerInt.db.findByIdAsJson(
+          session,
+          customer.id!,
+          select: (customer) => [customer.name],
+        );
+        expect(byId?['name'], 'Alice');
+        expect(byId?.containsKey('id'), isFalse);
+      },
+    );
+
+    test(
+      'Given customer with orders, when using findAsJson with includeList and select omitting primary and foreign keys, '
+      'then list relation is resolved properly and only selected columns are in returned maps.',
+      () async {
+        var customer = await CustomerInt.db.insertRow(
+          session,
+          CustomerInt(name: 'Bob'),
+        );
+
+        await OrderUuid.db.insertRow(
+          session,
+          OrderUuid(
+            description: 'First order',
+            customerId: customer.id!,
+          ),
+        );
+        await OrderUuid.db.insertRow(
+          session,
+          OrderUuid(
+            description: 'Second order',
+            customerId: customer.id!,
+          ),
+        );
+
+        var results = await CustomerInt.db.findAsJson(
+          session,
+          select: (customer) => [customer.name],
+          orderBy: (t) => t.id,
+          include: CustomerInt.include(
+            orders: OrderUuid.includeList(
+              select: (order) => [order.description],
+            ),
+          ),
+        );
+
+        var sessionResults = await session.db.findAsJson<CustomerInt>(
+          select: [CustomerInt.t.name],
+          orderBy: CustomerInt.t.id,
+          include: CustomerInt.include(
+            orders: OrderUuid.includeList(
+              select: (order) => [order.description],
+            ),
+          ),
+        );
+        expect(sessionResults.length, 1);
+
+        var firstRow = await session.db.findFirstRowAsJson<CustomerInt>(
+          select: [CustomerInt.t.name],
+          orderBy: CustomerInt.t.id,
+          include: CustomerInt.include(
+            orders: OrderUuid.includeList(
+              select: (order) => [order.description],
+            ),
+          ),
+        );
+        expect(firstRow?['name'], 'Bob');
+
+        expect(results.length, 1);
+        var row = results.first;
+        expect(row['name'], 'Bob');
+        expect(row.containsKey('id'), isFalse);
+
+        var orders = row['orders'] as List;
+        expect(orders.length, 2);
+
+        for (var order in orders) {
+          expect(order, isA<Map<String, dynamic>>());
+          expect(order.containsKey('description'), isTrue);
+          expect(order.containsKey('id'), isFalse);
+          expect(order.containsKey('customer'), isFalse);
+        }
+
+        var descriptions = orders.map((o) => o['description']).toList();
+        expect(descriptions, containsAll(['First order', 'Second order']));
       },
     );
   });

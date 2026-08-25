@@ -99,7 +99,7 @@ abstract class LegacyEmailPassword
     _iais.EmailAccountInclude? emailAccount,
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
-    return LegacyEmailPasswordInclude.internal_(
+    return LegacyEmailPasswordInclude._(
       emailAccount: emailAccount,
       selectedColumns: select?.call(LegacyEmailPassword.t),
     );
@@ -114,7 +114,7 @@ abstract class LegacyEmailPassword
     LegacyEmailPasswordInclude? include,
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
-    return LegacyEmailPasswordIncludeList.internal_(
+    return LegacyEmailPasswordIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -240,7 +240,7 @@ class LegacyEmailPasswordTable extends _is.Table<_is.UuidValue?> {
 }
 
 class LegacyEmailPasswordInclude extends _is.IncludeObject {
-  LegacyEmailPasswordInclude.internal_({
+  LegacyEmailPasswordInclude._({
     _iais.EmailAccountInclude? emailAccount,
     this.selectedColumns,
   }) {
@@ -260,7 +260,7 @@ class LegacyEmailPasswordInclude extends _is.IncludeObject {
 }
 
 class LegacyEmailPasswordIncludeList extends _is.IncludeList {
-  LegacyEmailPasswordIncludeList.internal_({
+  LegacyEmailPasswordIncludeList._({
     _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     super.limit,
     super.offset,
@@ -387,6 +387,89 @@ class LegacyEmailPasswordRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacyEmailPasswordInclude? include,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LegacyEmailPassword>(
+      where: where?.call(LegacyEmailPassword.t),
+      orderBy: orderBy?.call(LegacyEmailPassword.t),
+      orderByList: orderByList?.call(LegacyEmailPassword.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyEmailPassword.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    _is.Transaction? transaction,
+    LegacyEmailPasswordInclude? include,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LegacyEmailPassword>(
+      where: where?.call(LegacyEmailPassword.t),
+      orderBy: orderBy?.call(LegacyEmailPassword.t),
+      orderByList: orderByList?.call(LegacyEmailPassword.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyEmailPassword.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    LegacyEmailPasswordInclude? include,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LegacyEmailPassword>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LegacyEmailPassword.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

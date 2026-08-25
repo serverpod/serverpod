@@ -98,7 +98,7 @@ abstract class DoubleDefaultMix
   static DoubleDefaultMixInclude include({
     _is.SelectColumnsBuilder<DoubleDefaultMixTable>? select,
   }) {
-    return DoubleDefaultMixInclude.internal_(
+    return DoubleDefaultMixInclude._(
       selectedColumns: select?.call(DoubleDefaultMix.t),
     );
   }
@@ -112,7 +112,7 @@ abstract class DoubleDefaultMix
     DoubleDefaultMixInclude? include,
     _is.SelectColumnsBuilder<DoubleDefaultMixTable>? select,
   }) {
-    return DoubleDefaultMixIncludeList.internal_(
+    return DoubleDefaultMixIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -232,7 +232,7 @@ class DoubleDefaultMixTable extends _is.Table<int?> {
 }
 
 class DoubleDefaultMixInclude extends _is.IncludeObject {
-  DoubleDefaultMixInclude.internal_({this.selectedColumns});
+  DoubleDefaultMixInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -245,7 +245,7 @@ class DoubleDefaultMixInclude extends _is.IncludeObject {
 }
 
 class DoubleDefaultMixIncludeList extends _is.IncludeList {
-  DoubleDefaultMixIncludeList.internal_({
+  DoubleDefaultMixIncludeList._({
     _is.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
     super.limit,
     super.offset,
@@ -364,6 +364,83 @@ class DoubleDefaultMixRepository {
     return session.db.findById<DoubleDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DoubleDefaultMix>(
+      where: where?.call(DoubleDefaultMix.t),
+      orderBy: orderBy?.call(DoubleDefaultMix.t),
+      orderByList: orderByList?.call(DoubleDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DoubleDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DoubleDefaultMix>(
+      where: where?.call(DoubleDefaultMix.t),
+      orderBy: orderBy?.call(DoubleDefaultMix.t),
+      orderByList: orderByList?.call(DoubleDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DoubleDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

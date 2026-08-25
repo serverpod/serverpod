@@ -149,7 +149,7 @@ abstract class FacebookAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
   }) {
-    return FacebookAccountInclude.internal_(
+    return FacebookAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(FacebookAccount.t),
     );
@@ -164,7 +164,7 @@ abstract class FacebookAccount
     FacebookAccountInclude? include,
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
   }) {
-    return FacebookAccountIncludeList.internal_(
+    return FacebookAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -383,7 +383,7 @@ class FacebookAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class FacebookAccountInclude extends _is.IncludeObject {
-  FacebookAccountInclude.internal_({
+  FacebookAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -403,7 +403,7 @@ class FacebookAccountInclude extends _is.IncludeObject {
 }
 
 class FacebookAccountIncludeList extends _is.IncludeList {
-  FacebookAccountIncludeList.internal_({
+  FacebookAccountIncludeList._({
     _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     super.limit,
     super.offset,
@@ -530,6 +530,89 @@ class FacebookAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FacebookAccountInclude? include,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<FacebookAccount>(
+      where: where?.call(FacebookAccount.t),
+      orderBy: orderBy?.call(FacebookAccount.t),
+      orderByList: orderByList?.call(FacebookAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FacebookAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    FacebookAccountInclude? include,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<FacebookAccount>(
+      where: where?.call(FacebookAccount.t),
+      orderBy: orderBy?.call(FacebookAccount.t),
+      orderByList: orderByList?.call(FacebookAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FacebookAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    FacebookAccountInclude? include,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<FacebookAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(FacebookAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

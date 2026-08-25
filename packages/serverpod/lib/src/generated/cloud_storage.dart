@@ -125,7 +125,7 @@ abstract class CloudStorageEntry
   static CloudStorageEntryInclude include({
     _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
   }) {
-    return CloudStorageEntryInclude.internal_(
+    return CloudStorageEntryInclude._(
       selectedColumns: select?.call(CloudStorageEntry.t),
     );
   }
@@ -139,7 +139,7 @@ abstract class CloudStorageEntry
     CloudStorageEntryInclude? include,
     _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
   }) {
-    return CloudStorageEntryIncludeList.internal_(
+    return CloudStorageEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -303,7 +303,7 @@ class CloudStorageEntryTable extends _is.Table<int?> {
 }
 
 class CloudStorageEntryInclude extends _is.IncludeObject {
-  CloudStorageEntryInclude.internal_({this.selectedColumns});
+  CloudStorageEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -316,7 +316,7 @@ class CloudStorageEntryInclude extends _is.IncludeObject {
 }
 
 class CloudStorageEntryIncludeList extends _is.IncludeList {
-  CloudStorageEntryIncludeList.internal_({
+  CloudStorageEntryIncludeList._({
     _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     super.limit,
     super.offset,
@@ -435,6 +435,83 @@ class CloudStorageEntryRepository {
     return session.db.findById<CloudStorageEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(CloudStorageEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CloudStorageEntry>(
+      where: where?.call(CloudStorageEntry.t),
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(CloudStorageEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CloudStorageEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(CloudStorageEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

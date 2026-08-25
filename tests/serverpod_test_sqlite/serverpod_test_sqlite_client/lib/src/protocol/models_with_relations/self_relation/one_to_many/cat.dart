@@ -112,7 +112,7 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _iayhscrz.CatIncludeList? kittens,
     _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
-    return CatInclude.internal_(
+    return CatInclude._(
       mother: mother,
       kittens: kittens,
       selectedColumns: select?.call(Cat.t),
@@ -128,7 +128,7 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     CatInclude? include,
     _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
-    return CatIncludeList.internal_(
+    return CatIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -289,7 +289,7 @@ class CatTable extends _isd.Table<int?> {
 }
 
 class CatInclude extends _isd.IncludeObject {
-  CatInclude.internal_({
+  CatInclude._({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
     this.selectedColumns,
@@ -316,7 +316,7 @@ class CatInclude extends _isd.IncludeObject {
 }
 
 class CatIncludeList extends _isd.IncludeList {
-  CatIncludeList.internal_({
+  CatIncludeList._({
     _isd.WhereExpressionBuilder<CatTable>? where,
     super.limit,
     super.offset,
@@ -449,6 +449,89 @@ class CatRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
+    CatInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Cat>(
+      where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    _isd.Transaction? transaction,
+    CatInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Cat>(
+      where: where?.call(Cat.t),
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CatInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Cat>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Cat.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -125,7 +125,7 @@ abstract class FutureCallEntry
   static FutureCallEntryInclude include({
     _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
   }) {
-    return FutureCallEntryInclude.internal_(
+    return FutureCallEntryInclude._(
       selectedColumns: select?.call(FutureCallEntry.t),
     );
   }
@@ -139,7 +139,7 @@ abstract class FutureCallEntry
     FutureCallEntryInclude? include,
     _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
   }) {
-    return FutureCallEntryIncludeList.internal_(
+    return FutureCallEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -309,7 +309,7 @@ class FutureCallEntryTable extends _is.Table<int?> {
 }
 
 class FutureCallEntryInclude extends _is.IncludeObject {
-  FutureCallEntryInclude.internal_({this.selectedColumns});
+  FutureCallEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -322,7 +322,7 @@ class FutureCallEntryInclude extends _is.IncludeObject {
 }
 
 class FutureCallEntryIncludeList extends _is.IncludeList {
-  FutureCallEntryIncludeList.internal_({
+  FutureCallEntryIncludeList._({
     _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     super.limit,
     super.offset,
@@ -441,6 +441,83 @@ class FutureCallEntryRepository {
     return session.db.findById<FutureCallEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<FutureCallEntry>(
+      where: where?.call(FutureCallEntry.t),
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(FutureCallEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<FutureCallEntry>(
+      where: where?.call(FutureCallEntry.t),
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(FutureCallEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<FutureCallEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(FutureCallEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

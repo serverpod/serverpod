@@ -116,7 +116,7 @@ abstract class RuntimeSettings
   static RuntimeSettingsInclude include({
     _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
   }) {
-    return RuntimeSettingsInclude.internal_(
+    return RuntimeSettingsInclude._(
       selectedColumns: select?.call(RuntimeSettings.t),
     );
   }
@@ -130,7 +130,7 @@ abstract class RuntimeSettings
     RuntimeSettingsInclude? include,
     _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
   }) {
-    return RuntimeSettingsIncludeList.internal_(
+    return RuntimeSettingsIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -267,7 +267,7 @@ class RuntimeSettingsTable extends _is.Table<int?> {
 }
 
 class RuntimeSettingsInclude extends _is.IncludeObject {
-  RuntimeSettingsInclude.internal_({this.selectedColumns});
+  RuntimeSettingsInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -280,7 +280,7 @@ class RuntimeSettingsInclude extends _is.IncludeObject {
 }
 
 class RuntimeSettingsIncludeList extends _is.IncludeList {
-  RuntimeSettingsIncludeList.internal_({
+  RuntimeSettingsIncludeList._({
     _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     super.limit,
     super.offset,
@@ -399,6 +399,83 @@ class RuntimeSettingsRepository {
     return session.db.findById<RuntimeSettings>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RuntimeSettings>(
+      where: where?.call(RuntimeSettings.t),
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(RuntimeSettings.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RuntimeSettings>(
+      where: where?.call(RuntimeSettings.t),
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(RuntimeSettings.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RuntimeSettings>(
+      id,
+      transaction: transaction,
+      select: select?.call(RuntimeSettings.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -107,7 +107,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _iv5rlvod.BlockingIncludeList? blockedBy,
     _is.SelectColumnsBuilder<MemberTable>? select,
   }) {
-    return MemberInclude.internal_(
+    return MemberInclude._(
       blocking: blocking,
       blockedBy: blockedBy,
       selectedColumns: select?.call(Member.t),
@@ -123,7 +123,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     MemberInclude? include,
     _is.SelectColumnsBuilder<MemberTable>? select,
   }) {
-    return MemberIncludeList.internal_(
+    return MemberIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -291,7 +291,7 @@ class MemberTable extends _is.Table<int?> {
 }
 
 class MemberInclude extends _is.IncludeObject {
-  MemberInclude.internal_({
+  MemberInclude._({
     _iv5rlvod.BlockingIncludeList? blocking,
     _iv5rlvod.BlockingIncludeList? blockedBy,
     this.selectedColumns,
@@ -318,7 +318,7 @@ class MemberInclude extends _is.IncludeObject {
 }
 
 class MemberIncludeList extends _is.IncludeList {
-  MemberIncludeList.internal_({
+  MemberIncludeList._({
     _is.WhereExpressionBuilder<MemberTable>? where,
     super.limit,
     super.offset,
@@ -447,6 +447,89 @@ class MemberRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MemberTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MemberTable>? orderBy,
+    _is.OrderByListBuilder<MemberTable>? orderByList,
+    _is.Transaction? transaction,
+    MemberInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Member>(
+      where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MemberTable>? where,
+    int? offset,
+    _is.OrderByBuilder<MemberTable>? orderBy,
+    _is.OrderByListBuilder<MemberTable>? orderByList,
+    _is.Transaction? transaction,
+    MemberInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Member>(
+      where: where?.call(Member.t),
+      orderBy: orderBy?.call(Member.t),
+      orderByList: orderByList?.call(Member.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    MemberInclude? include,
+    _is.SelectColumnsBuilder<MemberTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Member>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Member.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

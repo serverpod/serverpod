@@ -97,7 +97,7 @@ abstract class RelationToMultipleMaxFieldName
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
-    return RelationToMultipleMaxFieldNameInclude.internal_(
+    return RelationToMultipleMaxFieldNameInclude._(
       multipleMaxFieldNames: multipleMaxFieldNames,
       selectedColumns: select?.call(RelationToMultipleMaxFieldName.t),
     );
@@ -112,7 +112,7 @@ abstract class RelationToMultipleMaxFieldName
     RelationToMultipleMaxFieldNameInclude? include,
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
-    return RelationToMultipleMaxFieldNameIncludeList.internal_(
+    return RelationToMultipleMaxFieldNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -251,7 +251,7 @@ class RelationToMultipleMaxFieldNameTable extends _is.Table<int?> {
 }
 
 class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
-  RelationToMultipleMaxFieldNameInclude.internal_({
+  RelationToMultipleMaxFieldNameInclude._({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
     this.selectedColumns,
   }) {
@@ -273,7 +273,7 @@ class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
 }
 
 class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  RelationToMultipleMaxFieldNameIncludeList.internal_({
+  RelationToMultipleMaxFieldNameIncludeList._({
     _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
@@ -406,6 +406,89 @@ class RelationToMultipleMaxFieldNameRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    RelationToMultipleMaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<RelationToMultipleMaxFieldName>(
+      where: where?.call(RelationToMultipleMaxFieldName.t),
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationToMultipleMaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
+    _is.Transaction? transaction,
+    RelationToMultipleMaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<RelationToMultipleMaxFieldName>(
+      where: where?.call(RelationToMultipleMaxFieldName.t),
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationToMultipleMaxFieldName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    RelationToMultipleMaxFieldNameInclude? include,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<RelationToMultipleMaxFieldName>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(RelationToMultipleMaxFieldName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

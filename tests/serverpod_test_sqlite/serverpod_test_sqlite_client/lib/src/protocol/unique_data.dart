@@ -80,9 +80,7 @@ abstract class UniqueData
   static UniqueDataInclude include({
     _isd.SelectColumnsBuilder<UniqueDataTable>? select,
   }) {
-    return UniqueDataInclude.internal_(
-      selectedColumns: select?.call(UniqueData.t),
-    );
+    return UniqueDataInclude._(selectedColumns: select?.call(UniqueData.t));
   }
 
   static UniqueDataIncludeList includeList({
@@ -94,7 +92,7 @@ abstract class UniqueData
     UniqueDataInclude? include,
     _isd.SelectColumnsBuilder<UniqueDataTable>? select,
   }) {
-    return UniqueDataIncludeList.internal_(
+    return UniqueDataIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,7 +181,7 @@ class UniqueDataTable extends _isd.Table<int?> {
 }
 
 class UniqueDataInclude extends _isd.IncludeObject {
-  UniqueDataInclude.internal_({this.selectedColumns});
+  UniqueDataInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -196,7 +194,7 @@ class UniqueDataInclude extends _isd.IncludeObject {
 }
 
 class UniqueDataIncludeList extends _isd.IncludeList {
-  UniqueDataIncludeList.internal_({
+  UniqueDataIncludeList._({
     _isd.WhereExpressionBuilder<UniqueDataTable>? where,
     super.limit,
     super.offset,
@@ -315,6 +313,83 @@ class UniqueDataRepository {
     return session.db.findById<UniqueData>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UniqueData>(
+      where: where?.call(UniqueData.t),
+      orderBy: orderBy?.call(UniqueData.t),
+      orderByList: orderByList?.call(UniqueData.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UniqueData>(
+      where: where?.call(UniqueData.t),
+      orderBy: orderBy?.call(UniqueData.t),
+      orderByList: orderByList?.call(UniqueData.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UniqueData.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UniqueData>(
+      id,
+      transaction: transaction,
+      select: select?.call(UniqueData.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

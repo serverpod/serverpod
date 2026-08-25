@@ -109,7 +109,7 @@ abstract class DurationDefaultModel
   static DurationDefaultModelInclude include({
     _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
   }) {
-    return DurationDefaultModelInclude.internal_(
+    return DurationDefaultModelInclude._(
       selectedColumns: select?.call(DurationDefaultModel.t),
     );
   }
@@ -123,7 +123,7 @@ abstract class DurationDefaultModel
     DurationDefaultModelInclude? include,
     _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
   }) {
-    return DurationDefaultModelIncludeList.internal_(
+    return DurationDefaultModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,7 +219,7 @@ class DurationDefaultModelTable extends _is.Table<int?> {
 }
 
 class DurationDefaultModelInclude extends _is.IncludeObject {
-  DurationDefaultModelInclude.internal_({this.selectedColumns});
+  DurationDefaultModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -232,7 +232,7 @@ class DurationDefaultModelInclude extends _is.IncludeObject {
 }
 
 class DurationDefaultModelIncludeList extends _is.IncludeList {
-  DurationDefaultModelIncludeList.internal_({
+  DurationDefaultModelIncludeList._({
     _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
     super.limit,
     super.offset,
@@ -351,6 +351,83 @@ class DurationDefaultModelRepository {
     return session.db.findById<DurationDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DurationDefaultModel>(
+      where: where?.call(DurationDefaultModel.t),
+      orderBy: orderBy?.call(DurationDefaultModel.t),
+      orderByList: orderByList?.call(DurationDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DurationDefaultModel>(
+      where: where?.call(DurationDefaultModel.t),
+      orderBy: orderBy?.call(DurationDefaultModel.t),
+      orderByList: orderByList?.call(DurationDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DurationDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DurationDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(DurationDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

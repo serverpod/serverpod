@@ -73,7 +73,7 @@ abstract class DeferrableRelationInitiallyImmediate
   static DeferrableRelationInitiallyImmediateInclude include({
     _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
   }) {
-    return DeferrableRelationInitiallyImmediateInclude.internal_(
+    return DeferrableRelationInitiallyImmediateInclude._(
       selectedColumns: select?.call(DeferrableRelationInitiallyImmediate.t),
     );
   }
@@ -89,7 +89,7 @@ abstract class DeferrableRelationInitiallyImmediate
     DeferrableRelationInitiallyImmediateInclude? include,
     _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
   }) {
-    return DeferrableRelationInitiallyImmediateIncludeList.internal_(
+    return DeferrableRelationInitiallyImmediateIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -165,7 +165,7 @@ class DeferrableRelationInitiallyImmediateTable extends _is.Table<int?> {
 }
 
 class DeferrableRelationInitiallyImmediateInclude extends _is.IncludeObject {
-  DeferrableRelationInitiallyImmediateInclude.internal_({this.selectedColumns});
+  DeferrableRelationInitiallyImmediateInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -178,7 +178,7 @@ class DeferrableRelationInitiallyImmediateInclude extends _is.IncludeObject {
 }
 
 class DeferrableRelationInitiallyImmediateIncludeList extends _is.IncludeList {
-  DeferrableRelationInitiallyImmediateIncludeList.internal_({
+  DeferrableRelationInitiallyImmediateIncludeList._({
     _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
     where,
     super.limit,
@@ -302,6 +302,87 @@ class DeferrableRelationInitiallyImmediateRepository {
     return session.db.findById<DeferrableRelationInitiallyImmediate>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
+    where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DeferrableRelationInitiallyImmediateTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyImmediateTable>?
+    orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DeferrableRelationInitiallyImmediate>(
+      where: where?.call(DeferrableRelationInitiallyImmediate.t),
+      orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
+      orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationInitiallyImmediate.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
+    where,
+    int? offset,
+    _is.OrderByBuilder<DeferrableRelationInitiallyImmediateTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyImmediateTable>?
+    orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DeferrableRelationInitiallyImmediate>(
+      where: where?.call(DeferrableRelationInitiallyImmediate.t),
+      orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
+      orderByList: orderByList?.call(DeferrableRelationInitiallyImmediate.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationInitiallyImmediate.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DeferrableRelationInitiallyImmediate>(
+      id,
+      transaction: transaction,
+      select: select?.call(DeferrableRelationInitiallyImmediate.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

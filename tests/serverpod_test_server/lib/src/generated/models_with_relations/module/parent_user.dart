@@ -79,9 +79,7 @@ abstract class ParentUser
   static ParentUserInclude include({
     _is.SelectColumnsBuilder<ParentUserTable>? select,
   }) {
-    return ParentUserInclude.internal_(
-      selectedColumns: select?.call(ParentUser.t),
-    );
+    return ParentUserInclude._(selectedColumns: select?.call(ParentUser.t));
   }
 
   static ParentUserIncludeList includeList({
@@ -93,7 +91,7 @@ abstract class ParentUser
     ParentUserInclude? include,
     _is.SelectColumnsBuilder<ParentUserTable>? select,
   }) {
-    return ParentUserIncludeList.internal_(
+    return ParentUserIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -182,7 +180,7 @@ class ParentUserTable extends _is.Table<int?> {
 }
 
 class ParentUserInclude extends _is.IncludeObject {
-  ParentUserInclude.internal_({this.selectedColumns});
+  ParentUserInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -195,7 +193,7 @@ class ParentUserInclude extends _is.IncludeObject {
 }
 
 class ParentUserIncludeList extends _is.IncludeList {
-  ParentUserIncludeList.internal_({
+  ParentUserIncludeList._({
     _is.WhereExpressionBuilder<ParentUserTable>? where,
     super.limit,
     super.offset,
@@ -314,6 +312,83 @@ class ParentUserRepository {
     return session.db.findById<ParentUser>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ParentUser>(
+      where: where?.call(ParentUser.t),
+      orderBy: orderBy?.call(ParentUser.t),
+      orderByList: orderByList?.call(ParentUser.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ParentUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentUserTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ParentUserTable>? orderBy,
+    _is.OrderByListBuilder<ParentUserTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ParentUser>(
+      where: where?.call(ParentUser.t),
+      orderBy: orderBy?.call(ParentUser.t),
+      orderByList: orderByList?.call(ParentUser.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ParentUser.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ParentUserTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ParentUser>(
+      id,
+      transaction: transaction,
+      select: select?.call(ParentUser.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

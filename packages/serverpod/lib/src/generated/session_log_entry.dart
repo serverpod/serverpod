@@ -250,7 +250,7 @@ abstract class SessionLogEntry
     _iky1nb92.MessageLogEntryIncludeList? messages,
     _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
-    return SessionLogEntryInclude.internal_(
+    return SessionLogEntryInclude._(
       logs: logs,
       queries: queries,
       messages: messages,
@@ -267,7 +267,7 @@ abstract class SessionLogEntry
     SessionLogEntryInclude? include,
     _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
-    return SessionLogEntryIncludeList.internal_(
+    return SessionLogEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -716,7 +716,7 @@ class SessionLogEntryTable extends _is.Table<int?> {
 }
 
 class SessionLogEntryInclude extends _is.IncludeObject {
-  SessionLogEntryInclude.internal_({
+  SessionLogEntryInclude._({
     _iv7ld46g.LogEntryIncludeList? logs,
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
@@ -748,7 +748,7 @@ class SessionLogEntryInclude extends _is.IncludeObject {
 }
 
 class SessionLogEntryIncludeList extends _is.IncludeList {
-  SessionLogEntryIncludeList.internal_({
+  SessionLogEntryIncludeList._({
     _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     super.limit,
     super.offset,
@@ -877,6 +877,89 @@ class SessionLogEntryRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    SessionLogEntryInclude? include,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SessionLogEntry>(
+      where: where?.call(SessionLogEntry.t),
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    SessionLogEntryInclude? include,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SessionLogEntry>(
+      where: where?.call(SessionLogEntry.t),
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    SessionLogEntryInclude? include,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SessionLogEntry>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(SessionLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

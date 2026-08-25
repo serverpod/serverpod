@@ -111,7 +111,7 @@ abstract class ProjectedArticle
     _iq5hz6n4.ProjectedAuthorInclude? author,
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
-    return ProjectedArticleInclude.internal_(
+    return ProjectedArticleInclude._(
       author: author,
       selectedColumns: select?.call(ProjectedArticle.t),
     );
@@ -126,7 +126,7 @@ abstract class ProjectedArticle
     ProjectedArticleInclude? include,
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
-    return ProjectedArticleIncludeList.internal_(
+    return ProjectedArticleIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -278,7 +278,7 @@ class ProjectedArticleTable extends _is.Table<int?> {
 }
 
 class ProjectedArticleInclude extends _is.IncludeObject {
-  ProjectedArticleInclude.internal_({
+  ProjectedArticleInclude._({
     _iq5hz6n4.ProjectedAuthorInclude? author,
     this.selectedColumns,
   }) {
@@ -298,7 +298,7 @@ class ProjectedArticleInclude extends _is.IncludeObject {
 }
 
 class ProjectedArticleIncludeList extends _is.IncludeList {
-  ProjectedArticleIncludeList.internal_({
+  ProjectedArticleIncludeList._({
     _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     super.limit,
     super.offset,
@@ -425,6 +425,89 @@ class ProjectedArticleRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ProjectedArticle>(
+      where: where?.call(ProjectedArticle.t),
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedArticle.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ProjectedArticle>(
+      where: where?.call(ProjectedArticle.t),
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedArticle.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ProjectedArticleInclude? include,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ProjectedArticle>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedArticle.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

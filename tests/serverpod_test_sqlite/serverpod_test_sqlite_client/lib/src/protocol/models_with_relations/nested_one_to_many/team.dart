@@ -113,7 +113,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _i9mhudyy.PlayerIncludeList? players,
     _isd.SelectColumnsBuilder<TeamTable>? select,
   }) {
-    return TeamInclude.internal_(
+    return TeamInclude._(
       arena: arena,
       players: players,
       selectedColumns: select?.call(Team.t),
@@ -129,7 +129,7 @@ abstract class Team implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     TeamInclude? include,
     _isd.SelectColumnsBuilder<TeamTable>? select,
   }) {
-    return TeamIncludeList.internal_(
+    return TeamIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -290,7 +290,7 @@ class TeamTable extends _isd.Table<int?> {
 }
 
 class TeamInclude extends _isd.IncludeObject {
-  TeamInclude.internal_({
+  TeamInclude._({
     _iv085ahk.ArenaInclude? arena,
     _i9mhudyy.PlayerIncludeList? players,
     this.selectedColumns,
@@ -317,7 +317,7 @@ class TeamInclude extends _isd.IncludeObject {
 }
 
 class TeamIncludeList extends _isd.IncludeList {
-  TeamIncludeList.internal_({
+  TeamIncludeList._({
     _isd.WhereExpressionBuilder<TeamTable>? where,
     super.limit,
     super.offset,
@@ -450,6 +450,89 @@ class TeamRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TeamTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<TeamTable>? orderBy,
+    _isd.OrderByListBuilder<TeamTable>? orderByList,
+    _isd.Transaction? transaction,
+    TeamInclude? include,
+    _isd.SelectColumnsBuilder<TeamTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Team>(
+      where: where?.call(Team.t),
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Team.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TeamTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<TeamTable>? orderBy,
+    _isd.OrderByListBuilder<TeamTable>? orderByList,
+    _isd.Transaction? transaction,
+    TeamInclude? include,
+    _isd.SelectColumnsBuilder<TeamTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Team>(
+      where: where?.call(Team.t),
+      orderBy: orderBy?.call(Team.t),
+      orderByList: orderByList?.call(Team.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Team.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    TeamInclude? include,
+    _isd.SelectColumnsBuilder<TeamTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Team>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Team.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

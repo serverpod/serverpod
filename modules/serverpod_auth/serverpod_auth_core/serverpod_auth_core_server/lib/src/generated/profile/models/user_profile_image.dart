@@ -132,7 +132,7 @@ abstract class UserProfileImage
     _ixqiikps.UserProfileInclude? userProfile,
     _is.SelectColumnsBuilder<UserProfileImageTable>? select,
   }) {
-    return UserProfileImageInclude.internal_(
+    return UserProfileImageInclude._(
       userProfile: userProfile,
       selectedColumns: select?.call(UserProfileImage.t),
     );
@@ -147,7 +147,7 @@ abstract class UserProfileImage
     UserProfileImageInclude? include,
     _is.SelectColumnsBuilder<UserProfileImageTable>? select,
   }) {
-    return UserProfileImageIncludeList.internal_(
+    return UserProfileImageIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -324,7 +324,7 @@ class UserProfileImageTable extends _is.Table<_is.UuidValue?> {
 }
 
 class UserProfileImageInclude extends _is.IncludeObject {
-  UserProfileImageInclude.internal_({
+  UserProfileImageInclude._({
     _ixqiikps.UserProfileInclude? userProfile,
     this.selectedColumns,
   }) {
@@ -344,7 +344,7 @@ class UserProfileImageInclude extends _is.IncludeObject {
 }
 
 class UserProfileImageIncludeList extends _is.IncludeList {
-  UserProfileImageIncludeList.internal_({
+  UserProfileImageIncludeList._({
     _is.WhereExpressionBuilder<UserProfileImageTable>? where,
     super.limit,
     super.offset,
@@ -471,6 +471,89 @@ class UserProfileImageRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
+    UserProfileImageInclude? include,
+    _is.SelectColumnsBuilder<UserProfileImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserProfileImage>(
+      where: where?.call(UserProfileImage.t),
+      orderBy: orderBy?.call(UserProfileImage.t),
+      orderByList: orderByList?.call(UserProfileImage.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfileImage.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserProfileImageTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileImageTable>? orderByList,
+    _is.Transaction? transaction,
+    UserProfileImageInclude? include,
+    _is.SelectColumnsBuilder<UserProfileImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserProfileImage>(
+      where: where?.call(UserProfileImage.t),
+      orderBy: orderBy?.call(UserProfileImage.t),
+      orderByList: orderByList?.call(UserProfileImage.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfileImage.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    UserProfileImageInclude? include,
+    _is.SelectColumnsBuilder<UserProfileImageTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserProfileImage>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(UserProfileImage.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

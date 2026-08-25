@@ -133,7 +133,7 @@ abstract class ObjectWithHalfVector
   static ObjectWithHalfVectorInclude include({
     _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
   }) {
-    return ObjectWithHalfVectorInclude.internal_(
+    return ObjectWithHalfVectorInclude._(
       selectedColumns: select?.call(ObjectWithHalfVector.t),
     );
   }
@@ -147,7 +147,7 @@ abstract class ObjectWithHalfVector
     ObjectWithHalfVectorInclude? include,
     _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
   }) {
-    return ObjectWithHalfVectorIncludeList.internal_(
+    return ObjectWithHalfVectorIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -326,7 +326,7 @@ class ObjectWithHalfVectorTable extends _is.Table<int?> {
 }
 
 class ObjectWithHalfVectorInclude extends _is.IncludeObject {
-  ObjectWithHalfVectorInclude.internal_({this.selectedColumns});
+  ObjectWithHalfVectorInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -339,7 +339,7 @@ class ObjectWithHalfVectorInclude extends _is.IncludeObject {
 }
 
 class ObjectWithHalfVectorIncludeList extends _is.IncludeList {
-  ObjectWithHalfVectorIncludeList.internal_({
+  ObjectWithHalfVectorIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     super.limit,
     super.offset,
@@ -458,6 +458,83 @@ class ObjectWithHalfVectorRepository {
     return session.db.findById<ObjectWithHalfVector>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithHalfVector>(
+      where: where?.call(ObjectWithHalfVector.t),
+      orderBy: orderBy?.call(ObjectWithHalfVector.t),
+      orderByList: orderByList?.call(ObjectWithHalfVector.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithHalfVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithHalfVector>(
+      where: where?.call(ObjectWithHalfVector.t),
+      orderBy: orderBy?.call(ObjectWithHalfVector.t),
+      orderByList: orderByList?.call(ObjectWithHalfVector.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithHalfVector.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithHalfVector>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithHalfVector.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -81,7 +81,7 @@ abstract class TableWithExplicitColumnName
   static TableWithExplicitColumnNameInclude include({
     _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
   }) {
-    return TableWithExplicitColumnNameInclude.internal_(
+    return TableWithExplicitColumnNameInclude._(
       selectedColumns: select?.call(TableWithExplicitColumnName.t),
     );
   }
@@ -95,7 +95,7 @@ abstract class TableWithExplicitColumnName
     TableWithExplicitColumnNameInclude? include,
     _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
   }) {
-    return TableWithExplicitColumnNameIncludeList.internal_(
+    return TableWithExplicitColumnNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -189,7 +189,7 @@ class TableWithExplicitColumnNameTable extends _is.Table<int?> {
 }
 
 class TableWithExplicitColumnNameInclude extends _is.IncludeObject {
-  TableWithExplicitColumnNameInclude.internal_({this.selectedColumns});
+  TableWithExplicitColumnNameInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -202,7 +202,7 @@ class TableWithExplicitColumnNameInclude extends _is.IncludeObject {
 }
 
 class TableWithExplicitColumnNameIncludeList extends _is.IncludeList {
-  TableWithExplicitColumnNameIncludeList.internal_({
+  TableWithExplicitColumnNameIncludeList._({
     _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
     super.limit,
     super.offset,
@@ -321,6 +321,83 @@ class TableWithExplicitColumnNameRepository {
     return session.db.findById<TableWithExplicitColumnName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<TableWithExplicitColumnName>(
+      where: where?.call(TableWithExplicitColumnName.t),
+      orderBy: orderBy?.call(TableWithExplicitColumnName.t),
+      orderByList: orderByList?.call(TableWithExplicitColumnName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(TableWithExplicitColumnName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<TableWithExplicitColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<TableWithExplicitColumnNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<TableWithExplicitColumnName>(
+      where: where?.call(TableWithExplicitColumnName.t),
+      orderBy: orderBy?.call(TableWithExplicitColumnName.t),
+      orderByList: orderByList?.call(TableWithExplicitColumnName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(TableWithExplicitColumnName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<TableWithExplicitColumnName>(
+      id,
+      transaction: transaction,
+      select: select?.call(TableWithExplicitColumnName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -78,9 +78,7 @@ abstract class BleedChild
   static BleedChildInclude include({
     _is.SelectColumnsBuilder<BleedChildTable>? select,
   }) {
-    return BleedChildInclude.internal_(
-      selectedColumns: select?.call(BleedChild.t),
-    );
+    return BleedChildInclude._(selectedColumns: select?.call(BleedChild.t));
   }
 
   static BleedChildIncludeList includeList({
@@ -92,7 +90,7 @@ abstract class BleedChild
     BleedChildInclude? include,
     _is.SelectColumnsBuilder<BleedChildTable>? select,
   }) {
-    return BleedChildIncludeList.internal_(
+    return BleedChildIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -166,7 +164,7 @@ class BleedChildTable extends _is.Table<int?> {
 }
 
 class BleedChildInclude extends _is.IncludeObject {
-  BleedChildInclude.internal_({this.selectedColumns});
+  BleedChildInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -179,7 +177,7 @@ class BleedChildInclude extends _is.IncludeObject {
 }
 
 class BleedChildIncludeList extends _is.IncludeList {
-  BleedChildIncludeList.internal_({
+  BleedChildIncludeList._({
     _is.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
     super.offset,
@@ -298,6 +296,83 @@ class BleedChildRepository {
     return session.db.findById<BleedChild>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<BleedChild>(
+      where: where?.call(BleedChild.t),
+      orderBy: orderBy?.call(BleedChild.t),
+      orderByList: orderByList?.call(BleedChild.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BleedChild.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    int? offset,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<BleedChild>(
+      where: where?.call(BleedChild.t),
+      orderBy: orderBy?.call(BleedChild.t),
+      orderByList: orderByList?.call(BleedChild.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(BleedChild.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<BleedChild>(
+      id,
+      transaction: transaction,
+      select: select?.call(BleedChild.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

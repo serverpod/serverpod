@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:collection/collection.dart';
 import 'package:meta/meta.dart';
 import 'package:serverpod_serialization/serverpod_serialization.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
@@ -146,7 +147,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -160,9 +161,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       lockBehavior: lockBehavior,
     );
 
-    var selectFields = select != null
-        ? select(table)
-        : (include?.selectedColumns ?? table.columns);
+    var selectFields = select ?? (include?.selectedColumns ?? table.columns);
 
     var query = SelectQueryBuilder(table: table)
         .withSelectFields(selectFields)
@@ -180,6 +179,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
       timeoutInSeconds: 60,
       transaction: transaction,
       include: include,
+      selectedColumns: selectFields,
     );
   }
 
@@ -192,7 +192,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -221,7 +221,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     Object id, {
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<Table>? select,
+    List<Column>? select,
     LockBehavior? lockBehavior,
     LockMode? lockMode,
   }) async {
@@ -1316,6 +1316,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
     int? timeoutInSeconds,
     required Transaction? transaction,
     Include? include,
+    List<Column>? selectedColumns,
   }) async {
     var result = await _mappedResultsQuery(
       session,
@@ -1343,6 +1344,7 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
             rawRow,
             resolvedListRelations,
             include: include,
+            selectedColumns: selectedColumns,
             aliasResolver: aliasResolver,
           ),
         )
@@ -1407,8 +1409,11 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           nestedInclude.orderBy,
         );
 
+        var selectFields =
+            nestedInclude.selectedColumns ?? relationTable.columns;
+
         var query = SelectQueryBuilder(table: relationTable)
-            .withSelectFields(relationTable.columns)
+            .withSelectFields(selectFields)
             .withWhere(nestedInclude.where)
             .withOrderBy(orderBy)
             .withLimit(nestedInclude.limit)
@@ -1438,26 +1443,38 @@ class SqliteDatabaseConnection extends DatabaseConnection<SqlitePoolManager> {
           relationTable,
           nestedInclude,
         );
-        var resolvedList = includeListResult
-            .map(
-              (rawRow) => resolvePrefixedQueryRow(
-                relationTable,
-                rawRow,
-                resolvedLists,
-                include: nestedInclude,
-                aliasResolver: listAliasResolver,
-              ),
-            )
-            .whereType<Map<String, dynamic>>()
-            .toList();
 
-        resolvedListRelations.addAll(
-          mapListToQueryById(
-            resolvedList,
-            relativeRelationTable,
-            tableRelation.foreignFieldName,
-          ),
+        var foreignColumn = relationTable.columns.firstWhereOrNull(
+          (c) => c.columnName == tableRelation.foreignFieldName,
         );
+        var foreignKeyInRawRow = foreignColumn != null
+            ? listAliasResolver.resolve(foreignColumn)
+            : tableRelation.foreignFieldName;
+
+        var mappedLists = <Object, List<Map<String, dynamic>>>{};
+        for (var rawRow in includeListResult) {
+          var resolvedRow = resolvePrefixedQueryRow(
+            relationTable,
+            rawRow,
+            resolvedLists,
+            include: nestedInclude,
+            aliasResolver: listAliasResolver,
+          );
+          if (resolvedRow == null) continue;
+
+          var parentId =
+              rawRow[foreignKeyInRawRow] ??
+              resolvedRow[tableRelation.foreignFieldName];
+          if (parentId != null) {
+            mappedLists.update(
+              parentId,
+              (list) => [...list, resolvedRow],
+              ifAbsent: () => [resolvedRow],
+            );
+          }
+        }
+
+        resolvedListRelations[relativeRelationTable.queryPrefix] = mappedLists;
       } else {
         var resolvedNestedListRelations = await _queryIncludedLists(
           session,

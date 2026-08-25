@@ -74,7 +74,7 @@ abstract class ReadWriteTestEntry
   static ReadWriteTestEntryInclude include({
     _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
   }) {
-    return ReadWriteTestEntryInclude.internal_(
+    return ReadWriteTestEntryInclude._(
       selectedColumns: select?.call(ReadWriteTestEntry.t),
     );
   }
@@ -88,7 +88,7 @@ abstract class ReadWriteTestEntry
     ReadWriteTestEntryInclude? include,
     _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
   }) {
-    return ReadWriteTestEntryIncludeList.internal_(
+    return ReadWriteTestEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -164,7 +164,7 @@ class ReadWriteTestEntryTable extends _is.Table<int?> {
 }
 
 class ReadWriteTestEntryInclude extends _is.IncludeObject {
-  ReadWriteTestEntryInclude.internal_({this.selectedColumns});
+  ReadWriteTestEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -177,7 +177,7 @@ class ReadWriteTestEntryInclude extends _is.IncludeObject {
 }
 
 class ReadWriteTestEntryIncludeList extends _is.IncludeList {
-  ReadWriteTestEntryIncludeList.internal_({
+  ReadWriteTestEntryIncludeList._({
     _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     super.limit,
     super.offset,
@@ -296,6 +296,83 @@ class ReadWriteTestEntryRepository {
     return session.db.findById<ReadWriteTestEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
+    _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ReadWriteTestEntry>(
+      where: where?.call(ReadWriteTestEntry.t),
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ReadWriteTestEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
+    _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ReadWriteTestEntry>(
+      where: where?.call(ReadWriteTestEntry.t),
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ReadWriteTestEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ReadWriteTestEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(ReadWriteTestEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

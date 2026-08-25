@@ -84,7 +84,7 @@ abstract class PasskeyChallenge
   static PasskeyChallengeInclude include({
     _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
   }) {
-    return PasskeyChallengeInclude.internal_(
+    return PasskeyChallengeInclude._(
       selectedColumns: select?.call(PasskeyChallenge.t),
     );
   }
@@ -98,7 +98,7 @@ abstract class PasskeyChallenge
     PasskeyChallengeInclude? include,
     _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
   }) {
-    return PasskeyChallengeIncludeList.internal_(
+    return PasskeyChallengeIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -194,7 +194,7 @@ class PasskeyChallengeTable extends _is.Table<_is.UuidValue?> {
 }
 
 class PasskeyChallengeInclude extends _is.IncludeObject {
-  PasskeyChallengeInclude.internal_({this.selectedColumns});
+  PasskeyChallengeInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -207,7 +207,7 @@ class PasskeyChallengeInclude extends _is.IncludeObject {
 }
 
 class PasskeyChallengeIncludeList extends _is.IncludeList {
-  PasskeyChallengeIncludeList.internal_({
+  PasskeyChallengeIncludeList._({
     _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     super.limit,
     super.offset,
@@ -326,6 +326,83 @@ class PasskeyChallengeRepository {
     return session.db.findById<PasskeyChallenge>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<PasskeyChallenge>(
+      where: where?.call(PasskeyChallenge.t),
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<PasskeyChallenge>(
+      where: where?.call(PasskeyChallenge.t),
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<PasskeyChallenge>(
+      id,
+      transaction: transaction,
+      select: select?.call(PasskeyChallenge.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

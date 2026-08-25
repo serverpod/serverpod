@@ -145,7 +145,7 @@ abstract class BleedRoot
     childRelationWithExtremelyLongFieldNameForcingTrun23,
     _is.SelectColumnsBuilder<BleedRootTable>? select,
   }) {
-    return BleedRootInclude.internal_(
+    return BleedRootInclude._(
       childRelationWithExtremelyLongFieldNameForcingTrun24:
           childRelationWithExtremelyLongFieldNameForcingTrun24,
       childRelationWithExtremelyLongFieldNameForcingTrun23:
@@ -163,7 +163,7 @@ abstract class BleedRoot
     BleedRootInclude? include,
     _is.SelectColumnsBuilder<BleedRootTable>? select,
   }) {
-    return BleedRootIncludeList.internal_(
+    return BleedRootIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -341,7 +341,7 @@ class BleedRootTable extends _is.Table<int?> {
 }
 
 class BleedRootInclude extends _is.IncludeObject {
-  BleedRootInclude.internal_({
+  BleedRootInclude._({
     _i2rsfnut.BleedChildInclude?
     childRelationWithExtremelyLongFieldNameForcingTrun24,
     _i2rsfnut.BleedChildInclude?
@@ -376,7 +376,7 @@ class BleedRootInclude extends _is.IncludeObject {
 }
 
 class BleedRootIncludeList extends _is.IncludeList {
-  BleedRootIncludeList.internal_({
+  BleedRootIncludeList._({
     _is.WhereExpressionBuilder<BleedRootTable>? where,
     super.limit,
     super.offset,
@@ -505,6 +505,89 @@ class BleedRootRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
+    BleedRootInclude? include,
+    _is.SelectColumnsBuilder<BleedRootTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<BleedRoot>(
+      where: where?.call(BleedRoot.t),
+      orderBy: orderBy?.call(BleedRoot.t),
+      orderByList: orderByList?.call(BleedRoot.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(BleedRoot.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BleedRootTable>? where,
+    int? offset,
+    _is.OrderByBuilder<BleedRootTable>? orderBy,
+    _is.OrderByListBuilder<BleedRootTable>? orderByList,
+    _is.Transaction? transaction,
+    BleedRootInclude? include,
+    _is.SelectColumnsBuilder<BleedRootTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<BleedRoot>(
+      where: where?.call(BleedRoot.t),
+      orderBy: orderBy?.call(BleedRoot.t),
+      orderByList: orderByList?.call(BleedRoot.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(BleedRoot.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    BleedRootInclude? include,
+    _is.SelectColumnsBuilder<BleedRootTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<BleedRoot>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(BleedRoot.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

@@ -104,7 +104,7 @@ abstract class LongImplicitIdFieldCollection
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
     _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
   }) {
-    return LongImplicitIdFieldCollectionInclude.internal_(
+    return LongImplicitIdFieldCollectionInclude._(
       thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa:
           thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
       selectedColumns: select?.call(LongImplicitIdFieldCollection.t),
@@ -120,7 +120,7 @@ abstract class LongImplicitIdFieldCollection
     LongImplicitIdFieldCollectionInclude? include,
     _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
   }) {
-    return LongImplicitIdFieldCollectionIncludeList.internal_(
+    return LongImplicitIdFieldCollectionIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -273,7 +273,7 @@ class LongImplicitIdFieldCollectionTable extends _is.Table<int?> {
 }
 
 class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
-  LongImplicitIdFieldCollectionInclude.internal_({
+  LongImplicitIdFieldCollectionInclude._({
     _i4kuijum.LongImplicitIdFieldIncludeList?
     thisFieldIsExactly61CharactersLongAndIsThereforeAValidFieldNa,
     this.selectedColumns,
@@ -299,7 +299,7 @@ class LongImplicitIdFieldCollectionInclude extends _is.IncludeObject {
 }
 
 class LongImplicitIdFieldCollectionIncludeList extends _is.IncludeList {
-  LongImplicitIdFieldCollectionIncludeList.internal_({
+  LongImplicitIdFieldCollectionIncludeList._({
     _is.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
     super.limit,
     super.offset,
@@ -432,6 +432,89 @@ class LongImplicitIdFieldCollectionRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    _is.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
+    _is.Transaction? transaction,
+    LongImplicitIdFieldCollectionInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LongImplicitIdFieldCollection>(
+      where: where?.call(LongImplicitIdFieldCollection.t),
+      orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
+      orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LongImplicitIdFieldCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LongImplicitIdFieldCollectionTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LongImplicitIdFieldCollectionTable>? orderBy,
+    _is.OrderByListBuilder<LongImplicitIdFieldCollectionTable>? orderByList,
+    _is.Transaction? transaction,
+    LongImplicitIdFieldCollectionInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LongImplicitIdFieldCollection>(
+      where: where?.call(LongImplicitIdFieldCollection.t),
+      orderBy: orderBy?.call(LongImplicitIdFieldCollection.t),
+      orderByList: orderByList?.call(LongImplicitIdFieldCollection.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LongImplicitIdFieldCollection.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    LongImplicitIdFieldCollectionInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldCollectionTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LongImplicitIdFieldCollection>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(LongImplicitIdFieldCollection.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

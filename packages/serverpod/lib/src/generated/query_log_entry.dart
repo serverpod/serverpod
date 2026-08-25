@@ -156,7 +156,7 @@ abstract class QueryLogEntry
   static QueryLogEntryInclude include({
     _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
   }) {
-    return QueryLogEntryInclude.internal_(
+    return QueryLogEntryInclude._(
       selectedColumns: select?.call(QueryLogEntry.t),
     );
   }
@@ -170,7 +170,7 @@ abstract class QueryLogEntry
     QueryLogEntryInclude? include,
     _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
   }) {
-    return QueryLogEntryIncludeList.internal_(
+    return QueryLogEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -400,7 +400,7 @@ class QueryLogEntryTable extends _is.Table<int?> {
 }
 
 class QueryLogEntryInclude extends _is.IncludeObject {
-  QueryLogEntryInclude.internal_({this.selectedColumns});
+  QueryLogEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -413,7 +413,7 @@ class QueryLogEntryInclude extends _is.IncludeObject {
 }
 
 class QueryLogEntryIncludeList extends _is.IncludeList {
-  QueryLogEntryIncludeList.internal_({
+  QueryLogEntryIncludeList._({
     _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
     super.limit,
     super.offset,
@@ -532,6 +532,83 @@ class QueryLogEntryRepository {
     return session.db.findById<QueryLogEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<QueryLogEntry>(
+      where: where?.call(QueryLogEntry.t),
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<QueryLogEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(QueryLogEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

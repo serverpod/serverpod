@@ -82,7 +82,7 @@ abstract class UserNoteWithALongName
   static UserNoteWithALongNameInclude include({
     _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
   }) {
-    return UserNoteWithALongNameInclude.internal_(
+    return UserNoteWithALongNameInclude._(
       selectedColumns: select?.call(UserNoteWithALongName.t),
     );
   }
@@ -96,7 +96,7 @@ abstract class UserNoteWithALongName
     UserNoteWithALongNameInclude? include,
     _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
   }) {
-    return UserNoteWithALongNameIncludeList.internal_(
+    return UserNoteWithALongNameIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -224,7 +224,7 @@ class UserNoteWithALongNameTable extends _is.Table<int?> {
 }
 
 class UserNoteWithALongNameInclude extends _is.IncludeObject {
-  UserNoteWithALongNameInclude.internal_({this.selectedColumns});
+  UserNoteWithALongNameInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -237,7 +237,7 @@ class UserNoteWithALongNameInclude extends _is.IncludeObject {
 }
 
 class UserNoteWithALongNameIncludeList extends _is.IncludeList {
-  UserNoteWithALongNameIncludeList.internal_({
+  UserNoteWithALongNameIncludeList._({
     _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     super.limit,
     super.offset,
@@ -356,6 +356,83 @@ class UserNoteWithALongNameRepository {
     return session.db.findById<UserNoteWithALongName>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserNoteWithALongName>(
+      where: where?.call(UserNoteWithALongName.t),
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserNoteWithALongName>(
+      where: where?.call(UserNoteWithALongName.t),
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserNoteWithALongName>(
+      id,
+      transaction: transaction,
+      select: select?.call(UserNoteWithALongName.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

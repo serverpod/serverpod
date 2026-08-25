@@ -97,7 +97,7 @@ abstract class AddressUuid
     _i7hzilwf.CitizenIntInclude? inhabitant,
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
   }) {
-    return AddressUuidInclude.internal_(
+    return AddressUuidInclude._(
       inhabitant: inhabitant,
       selectedColumns: select?.call(AddressUuid.t),
     );
@@ -112,7 +112,7 @@ abstract class AddressUuid
     AddressUuidInclude? include,
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
   }) {
-    return AddressUuidIncludeList.internal_(
+    return AddressUuidIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,7 +230,7 @@ class AddressUuidTable extends _is.Table<_is.UuidValue> {
 }
 
 class AddressUuidInclude extends _is.IncludeObject {
-  AddressUuidInclude.internal_({
+  AddressUuidInclude._({
     _i7hzilwf.CitizenIntInclude? inhabitant,
     this.selectedColumns,
   }) {
@@ -250,7 +250,7 @@ class AddressUuidInclude extends _is.IncludeObject {
 }
 
 class AddressUuidIncludeList extends _is.IncludeList {
-  AddressUuidIncludeList.internal_({
+  AddressUuidIncludeList._({
     _is.WhereExpressionBuilder<AddressUuidTable>? where,
     super.limit,
     super.offset,
@@ -379,6 +379,89 @@ class AddressUuidRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AddressUuidTable>? orderBy,
+    _is.OrderByListBuilder<AddressUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    AddressUuidInclude? include,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<AddressUuid>(
+      where: where?.call(AddressUuid.t),
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AddressUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    int? offset,
+    _is.OrderByBuilder<AddressUuidTable>? orderBy,
+    _is.OrderByListBuilder<AddressUuidTable>? orderByList,
+    _is.Transaction? transaction,
+    AddressUuidInclude? include,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<AddressUuid>(
+      where: where?.call(AddressUuid.t),
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AddressUuid.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    AddressUuidInclude? include,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<AddressUuid>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AddressUuid.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

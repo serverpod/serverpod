@@ -95,7 +95,7 @@ abstract class ObjectFieldPersist
   static ObjectFieldPersistInclude include({
     _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
   }) {
-    return ObjectFieldPersistInclude.internal_(
+    return ObjectFieldPersistInclude._(
       selectedColumns: select?.call(ObjectFieldPersist.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class ObjectFieldPersist
     ObjectFieldPersistInclude? include,
     _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
   }) {
-    return ObjectFieldPersistIncludeList.internal_(
+    return ObjectFieldPersistIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -192,7 +192,7 @@ class ObjectFieldPersistTable extends _isd.Table<int?> {
 }
 
 class ObjectFieldPersistInclude extends _isd.IncludeObject {
-  ObjectFieldPersistInclude.internal_({this.selectedColumns});
+  ObjectFieldPersistInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -205,7 +205,7 @@ class ObjectFieldPersistInclude extends _isd.IncludeObject {
 }
 
 class ObjectFieldPersistIncludeList extends _isd.IncludeList {
-  ObjectFieldPersistIncludeList.internal_({
+  ObjectFieldPersistIncludeList._({
     _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     super.limit,
     super.offset,
@@ -324,6 +324,83 @@ class ObjectFieldPersistRepository {
     return session.db.findById<ObjectFieldPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _isd.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectFieldPersist>(
+      where: where?.call(ObjectFieldPersist.t),
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectFieldPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _isd.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectFieldPersist>(
+      where: where?.call(ObjectFieldPersist.t),
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectFieldPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectFieldPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectFieldPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

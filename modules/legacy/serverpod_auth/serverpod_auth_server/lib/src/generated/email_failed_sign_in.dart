@@ -92,7 +92,7 @@ abstract class EmailFailedSignIn
   static EmailFailedSignInInclude include({
     _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
   }) {
-    return EmailFailedSignInInclude.internal_(
+    return EmailFailedSignInInclude._(
       selectedColumns: select?.call(EmailFailedSignIn.t),
     );
   }
@@ -106,7 +106,7 @@ abstract class EmailFailedSignIn
     EmailFailedSignInInclude? include,
     _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
   }) {
-    return EmailFailedSignInIncludeList.internal_(
+    return EmailFailedSignInIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,7 +216,7 @@ class EmailFailedSignInTable extends _is.Table<int?> {
 }
 
 class EmailFailedSignInInclude extends _is.IncludeObject {
-  EmailFailedSignInInclude.internal_({this.selectedColumns});
+  EmailFailedSignInInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -229,7 +229,7 @@ class EmailFailedSignInInclude extends _is.IncludeObject {
 }
 
 class EmailFailedSignInIncludeList extends _is.IncludeList {
-  EmailFailedSignInIncludeList.internal_({
+  EmailFailedSignInIncludeList._({
     _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     super.limit,
     super.offset,
@@ -348,6 +348,83 @@ class EmailFailedSignInRepository {
     return session.db.findById<EmailFailedSignIn>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailFailedSignIn>(
+      where: where?.call(EmailFailedSignIn.t),
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailFailedSignIn.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailFailedSignIn>(
+      where: where?.call(EmailFailedSignIn.t),
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailFailedSignIn.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailFailedSignIn>(
+      id,
+      transaction: transaction,
+      select: select?.call(EmailFailedSignIn.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

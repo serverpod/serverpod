@@ -105,7 +105,7 @@ abstract class ChallengeTracker
     _iais.SecretChallengeInclude? secretChallenge,
     _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
   }) {
-    return ChallengeTrackerInclude.internal_(
+    return ChallengeTrackerInclude._(
       secretChallenge: secretChallenge,
       selectedColumns: select?.call(ChallengeTracker.t),
     );
@@ -120,7 +120,7 @@ abstract class ChallengeTracker
     ChallengeTrackerInclude? include,
     _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
   }) {
-    return ChallengeTrackerIncludeList.internal_(
+    return ChallengeTrackerIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -262,7 +262,7 @@ class ChallengeTrackerTable extends _is.Table<int?> {
 }
 
 class ChallengeTrackerInclude extends _is.IncludeObject {
-  ChallengeTrackerInclude.internal_({
+  ChallengeTrackerInclude._({
     _iais.SecretChallengeInclude? secretChallenge,
     this.selectedColumns,
   }) {
@@ -284,7 +284,7 @@ class ChallengeTrackerInclude extends _is.IncludeObject {
 }
 
 class ChallengeTrackerIncludeList extends _is.IncludeList {
-  ChallengeTrackerIncludeList.internal_({
+  ChallengeTrackerIncludeList._({
     _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
     super.limit,
     super.offset,
@@ -411,6 +411,89 @@ class ChallengeTrackerRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
+    ChallengeTrackerInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChallengeTracker>(
+      where: where?.call(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChallengeTrackerTable>? orderBy,
+    _is.OrderByListBuilder<ChallengeTrackerTable>? orderByList,
+    _is.Transaction? transaction,
+    ChallengeTrackerInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChallengeTracker>(
+      where: where?.call(ChallengeTracker.t),
+      orderBy: orderBy?.call(ChallengeTracker.t),
+      orderByList: orderByList?.call(ChallengeTracker.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChallengeTrackerInclude? include,
+    _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChallengeTracker>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChallengeTracker.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

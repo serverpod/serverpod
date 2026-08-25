@@ -103,7 +103,7 @@ abstract class EmailCreateAccountRequest
   static EmailCreateAccountRequestInclude include({
     _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
   }) {
-    return EmailCreateAccountRequestInclude.internal_(
+    return EmailCreateAccountRequestInclude._(
       selectedColumns: select?.call(EmailCreateAccountRequest.t),
     );
   }
@@ -117,7 +117,7 @@ abstract class EmailCreateAccountRequest
     EmailCreateAccountRequestInclude? include,
     _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
   }) {
-    return EmailCreateAccountRequestIncludeList.internal_(
+    return EmailCreateAccountRequestIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -245,7 +245,7 @@ class EmailCreateAccountRequestTable extends _is.Table<int?> {
 }
 
 class EmailCreateAccountRequestInclude extends _is.IncludeObject {
-  EmailCreateAccountRequestInclude.internal_({this.selectedColumns});
+  EmailCreateAccountRequestInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -258,7 +258,7 @@ class EmailCreateAccountRequestInclude extends _is.IncludeObject {
 }
 
 class EmailCreateAccountRequestIncludeList extends _is.IncludeList {
-  EmailCreateAccountRequestIncludeList.internal_({
+  EmailCreateAccountRequestIncludeList._({
     _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
     super.limit,
     super.offset,
@@ -377,6 +377,83 @@ class EmailCreateAccountRequestRepository {
     return session.db.findById<EmailCreateAccountRequest>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailCreateAccountRequest>(
+      where: where?.call(EmailCreateAccountRequest.t),
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailCreateAccountRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailCreateAccountRequestTable>? orderBy,
+    _is.OrderByListBuilder<EmailCreateAccountRequestTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailCreateAccountRequest>(
+      where: where?.call(EmailCreateAccountRequest.t),
+      orderBy: orderBy?.call(EmailCreateAccountRequest.t),
+      orderByList: orderByList?.call(EmailCreateAccountRequest.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmailCreateAccountRequest.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailCreateAccountRequest>(
+      id,
+      transaction: transaction,
+      select: select?.call(EmailCreateAccountRequest.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

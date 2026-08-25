@@ -74,7 +74,7 @@ abstract class SecretChallenge
   static SecretChallengeInclude include({
     _is.SelectColumnsBuilder<SecretChallengeTable>? select,
   }) {
-    return SecretChallengeInclude.internal_(
+    return SecretChallengeInclude._(
       selectedColumns: select?.call(SecretChallenge.t),
     );
   }
@@ -88,7 +88,7 @@ abstract class SecretChallenge
     SecretChallengeInclude? include,
     _is.SelectColumnsBuilder<SecretChallengeTable>? select,
   }) {
-    return SecretChallengeIncludeList.internal_(
+    return SecretChallengeIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -166,7 +166,7 @@ class SecretChallengeTable extends _is.Table<_is.UuidValue?> {
 }
 
 class SecretChallengeInclude extends _is.IncludeObject {
-  SecretChallengeInclude.internal_({this.selectedColumns});
+  SecretChallengeInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -179,7 +179,7 @@ class SecretChallengeInclude extends _is.IncludeObject {
 }
 
 class SecretChallengeIncludeList extends _is.IncludeList {
-  SecretChallengeIncludeList.internal_({
+  SecretChallengeIncludeList._({
     _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     super.limit,
     super.offset,
@@ -298,6 +298,83 @@ class SecretChallengeRepository {
     return session.db.findById<SecretChallenge>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<SecretChallenge>(
+      where: where?.call(SecretChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SecretChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    int? offset,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<SecretChallenge>(
+      where: where?.call(SecretChallenge.t),
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(SecretChallenge.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<SecretChallenge>(
+      id,
+      transaction: transaction,
+      select: select?.call(SecretChallenge.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

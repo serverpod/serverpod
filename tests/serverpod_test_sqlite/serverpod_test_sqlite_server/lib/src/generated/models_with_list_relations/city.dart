@@ -107,7 +107,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _i0ptycc3.OrganizationIncludeList? organizations,
     _is.SelectColumnsBuilder<CityTable>? select,
   }) {
-    return CityInclude.internal_(
+    return CityInclude._(
       citizens: citizens,
       organizations: organizations,
       selectedColumns: select?.call(City.t),
@@ -123,7 +123,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
     CityInclude? include,
     _is.SelectColumnsBuilder<CityTable>? select,
   }) {
-    return CityIncludeList.internal_(
+    return CityIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -291,7 +291,7 @@ class CityTable extends _is.Table<int?> {
 }
 
 class CityInclude extends _is.IncludeObject {
-  CityInclude.internal_({
+  CityInclude._({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
     this.selectedColumns,
@@ -318,7 +318,7 @@ class CityInclude extends _is.IncludeObject {
 }
 
 class CityIncludeList extends _is.IncludeList {
-  CityIncludeList.internal_({
+  CityIncludeList._({
     _is.WhereExpressionBuilder<CityTable>? where,
     super.limit,
     super.offset,
@@ -451,6 +451,89 @@ class CityRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CityTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CityTable>? orderBy,
+    _is.OrderByListBuilder<CityTable>? orderByList,
+    _is.Transaction? transaction,
+    CityInclude? include,
+    _is.SelectColumnsBuilder<CityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<City>(
+      where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CityTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CityTable>? orderBy,
+    _is.OrderByListBuilder<CityTable>? orderByList,
+    _is.Transaction? transaction,
+    CityInclude? include,
+    _is.SelectColumnsBuilder<CityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<City>(
+      where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CityInclude? include,
+    _is.SelectColumnsBuilder<CityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<City>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

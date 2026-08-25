@@ -111,7 +111,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     _id412n1c.ChildWithInheritedIdInclude? parent,
     _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
   }) {
-    return ChildWithInheritedIdInclude.internal_(
+    return ChildWithInheritedIdInclude._(
       parent: parent,
       selectedColumns: select?.call(ChildWithInheritedId.t),
     );
@@ -126,7 +126,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     ChildWithInheritedIdInclude? include,
     _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
   }) {
-    return ChildWithInheritedIdIncludeList.internal_(
+    return ChildWithInheritedIdIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -284,7 +284,7 @@ class ChildWithInheritedIdTable extends _is.Table<_is.UuidValue> {
 }
 
 class ChildWithInheritedIdInclude extends _is.IncludeObject {
-  ChildWithInheritedIdInclude.internal_({
+  ChildWithInheritedIdInclude._({
     _id412n1c.ChildWithInheritedIdInclude? parent,
     this.selectedColumns,
   }) {
@@ -304,7 +304,7 @@ class ChildWithInheritedIdInclude extends _is.IncludeObject {
 }
 
 class ChildWithInheritedIdIncludeList extends _is.IncludeList {
-  ChildWithInheritedIdIncludeList.internal_({
+  ChildWithInheritedIdIncludeList._({
     _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
     super.limit,
     super.offset,
@@ -433,6 +433,89 @@ class ChildWithInheritedIdRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
+    _is.Transaction? transaction,
+    ChildWithInheritedIdInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ChildWithInheritedId>(
+      where: where?.call(ChildWithInheritedId.t),
+      orderBy: orderBy?.call(ChildWithInheritedId.t),
+      orderByList: orderByList?.call(ChildWithInheritedId.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ChildWithInheritedIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildWithInheritedIdTable>? orderByList,
+    _is.Transaction? transaction,
+    ChildWithInheritedIdInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ChildWithInheritedId>(
+      where: where?.call(ChildWithInheritedId.t),
+      orderBy: orderBy?.call(ChildWithInheritedId.t),
+      orderByList: orderByList?.call(ChildWithInheritedId.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ChildWithInheritedIdInclude? include,
+    _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ChildWithInheritedId>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ChildWithInheritedId.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

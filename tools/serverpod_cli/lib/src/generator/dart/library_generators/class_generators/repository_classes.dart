@@ -80,6 +80,9 @@ class BuildRepositoryClass {
           _buildFindMethod(className, relationFields),
           _buildFindFirstRow(className, relationFields),
           _buildFindByIdMethod(className, relationFields, idTypeReference),
+          _buildFindAsJsonMethod(className, relationFields),
+          _buildFindFirstRowAsJsonMethod(className, relationFields),
+          _buildFindByIdAsJsonMethod(className, relationFields),
           _buildInsertMethod(className),
           _buildInsertRowMethod(className),
           _buildUpsertMethod(className),
@@ -879,6 +882,446 @@ class BuildRepositoryClass {
                   )
                   .returned
                   .statement,
+    );
+  }
+
+  Method _buildFindAsJsonMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+///
+/// Use [select] to specify which columns to include from the root table.
+''')
+        ..name = 'findAsJson'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (r) => r
+                  ..symbol = 'List'
+                  ..types.add(
+                    TypeReference(
+                      (r) => r
+                        ..symbol = 'Map'
+                        ..types.addAll([
+                          TypeReference((r) => r..symbol = 'String'),
+                          TypeReference((r) => r..symbol = 'dynamic'),
+                        ]),
+                    ),
+                  ),
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'where'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'limit'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'offset'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+          if (objectRelationFields.isNotEmpty)
+            Parameter(
+              (p) => p
+                ..type = TypeReference(
+                  (b) => b
+                    ..isNullable = true
+                    ..symbol = '${className}Include',
+                )
+                ..name = 'include'
+                ..named = true,
+            ),
+          Parameter(
+            (p) => p
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'select'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
+        ])
+        ..body = refer('session')
+            .property('db')
+            .property('findAsJson')
+            .call(
+              [],
+              {
+                'where': refer('where').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'limit': refer('limit'),
+                'offset': refer('offset'),
+                'transaction': refer('transaction'),
+                if (objectRelationFields.isNotEmpty)
+                  'include': refer('include'),
+                'select': refer('select').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildFindFirstRowAsJsonMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+///
+/// Use [select] to specify which columns to include from the root table.
+''')
+        ..name = 'findFirstRowAsJson'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (r) => r
+                  ..isNullable = true
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    TypeReference((r) => r..symbol = 'String'),
+                    TypeReference((r) => r..symbol = 'dynamic'),
+                  ]),
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = typeWhereExpressionBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'where'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'int',
+              )
+              ..name = 'offset'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByBuilder(className, serverCode)
+              ..name = 'orderBy'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = typeOrderByListBuilder(className, serverCode)
+              ..name = 'orderByList'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+          if (objectRelationFields.isNotEmpty)
+            Parameter(
+              (p) => p
+                ..type = TypeReference(
+                  (b) => b
+                    ..isNullable = true
+                    ..symbol = '${className}Include',
+                )
+                ..name = 'include'
+                ..named = true,
+            ),
+          Parameter(
+            (p) => p
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'select'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
+        ])
+        ..body = refer('session')
+            .property('db')
+            .property('findFirstRowAsJson')
+            .call(
+              [],
+              {
+                'where': refer('where').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderBy': refer('orderBy').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'orderByList': refer('orderByList')
+                    .nullSafeProperty('call')
+                    .call(
+                      [refer(className).property('t')],
+                    ),
+                'offset': refer('offset'),
+                'transaction': refer('transaction'),
+                if (objectRelationFields.isNotEmpty)
+                  'include': refer('include'),
+                'select': refer('select').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement,
+    );
+  }
+
+  Method _buildFindByIdAsJsonMethod(
+    String className,
+    Iterable<SerializableModelFieldDefinition> objectRelationFields,
+  ) {
+    return Method(
+      (m) => m
+        ..docs.add('''
+/// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+///
+/// Use [select] to specify which columns to include from the root table.
+''')
+        ..name = 'findByIdAsJson'
+        ..returns = TypeReference(
+          (r) => r
+            ..symbol = 'Future'
+            ..types.add(
+              TypeReference(
+                (r) => r
+                  ..isNullable = true
+                  ..symbol = 'Map'
+                  ..types.addAll([
+                    TypeReference((r) => r..symbol = 'String'),
+                    TypeReference((r) => r..symbol = 'dynamic'),
+                  ]),
+              ),
+            ),
+        )
+        ..requiredParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = _sessionReference
+              ..name = 'session',
+          ),
+          Parameter(
+            (p) => p
+              ..type = refer('Object')
+              ..name = 'id',
+          ),
+        ])
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'Transaction'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'transaction'
+              ..named = true,
+          ),
+          if (objectRelationFields.isNotEmpty)
+            Parameter(
+              (p) => p
+                ..type = TypeReference(
+                  (b) => b
+                    ..isNullable = true
+                    ..symbol = '${className}Include',
+                )
+                ..name = 'include'
+                ..named = true,
+            ),
+          Parameter(
+            (p) => p
+              ..type = typeSelectColumnsBuilder(
+                className,
+                serverCode,
+              )
+              ..name = 'select'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockMode'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockMode'
+              ..named = true,
+          ),
+          Parameter(
+            (p) => p
+              ..type = TypeReference(
+                (b) => b
+                  ..isNullable = true
+                  ..symbol = 'LockBehavior'
+                  ..url = _databaseRuntimeUrl,
+              )
+              ..name = 'lockBehavior'
+              ..named = true,
+          ),
+        ])
+        ..body = refer('session')
+            .property('db')
+            .property('findByIdAsJson')
+            .call(
+              [refer('id')],
+              {
+                'transaction': refer('transaction'),
+                if (objectRelationFields.isNotEmpty)
+                  'include': refer('include'),
+                'select': refer('select').nullSafeProperty('call').call(
+                  [refer(className).property('t')],
+                ),
+                'lockMode': refer('lockMode'),
+                'lockBehavior': refer('lockBehavior'),
+              },
+              [refer(className)],
+            )
+            .returned
+            .statement,
     );
   }
 

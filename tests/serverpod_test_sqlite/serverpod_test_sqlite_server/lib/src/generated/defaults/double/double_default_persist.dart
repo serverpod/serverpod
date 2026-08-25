@@ -76,7 +76,7 @@ abstract class DoubleDefaultPersist
   static DoubleDefaultPersistInclude include({
     _is.SelectColumnsBuilder<DoubleDefaultPersistTable>? select,
   }) {
-    return DoubleDefaultPersistInclude.internal_(
+    return DoubleDefaultPersistInclude._(
       selectedColumns: select?.call(DoubleDefaultPersist.t),
     );
   }
@@ -90,7 +90,7 @@ abstract class DoubleDefaultPersist
     DoubleDefaultPersistInclude? include,
     _is.SelectColumnsBuilder<DoubleDefaultPersistTable>? select,
   }) {
-    return DoubleDefaultPersistIncludeList.internal_(
+    return DoubleDefaultPersistIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -169,7 +169,7 @@ class DoubleDefaultPersistTable extends _is.Table<int?> {
 }
 
 class DoubleDefaultPersistInclude extends _is.IncludeObject {
-  DoubleDefaultPersistInclude.internal_({this.selectedColumns});
+  DoubleDefaultPersistInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -182,7 +182,7 @@ class DoubleDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class DoubleDefaultPersistIncludeList extends _is.IncludeList {
-  DoubleDefaultPersistIncludeList.internal_({
+  DoubleDefaultPersistIncludeList._({
     _is.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
     super.limit,
     super.offset,
@@ -301,6 +301,83 @@ class DoubleDefaultPersistRepository {
     return session.db.findById<DoubleDefaultPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DoubleDefaultPersist>(
+      where: where?.call(DoubleDefaultPersist.t),
+      orderBy: orderBy?.call(DoubleDefaultPersist.t),
+      orderByList: orderByList?.call(DoubleDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DoubleDefaultPersistTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DoubleDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DoubleDefaultPersist>(
+      where: where?.call(DoubleDefaultPersist.t),
+      orderBy: orderBy?.call(DoubleDefaultPersist.t),
+      orderByList: orderByList?.call(DoubleDefaultPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DoubleDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DoubleDefaultPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(DoubleDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

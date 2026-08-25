@@ -161,7 +161,7 @@ class Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -200,7 +200,7 @@ class Database {
     List<Column>? orderByList,
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -272,7 +272,7 @@ class Database {
     Object id, {
     Transaction? transaction,
     Include? include,
-    SelectColumnsBuilder<dynamic>? select,
+    List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {

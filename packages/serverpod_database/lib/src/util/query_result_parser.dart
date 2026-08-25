@@ -13,6 +13,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   Map<String, dynamic> rawRow,
   Map<String, Map<Object, List<dynamic>>> resolvedListRelations, {
   Include? include,
+  List<Column>? selectedColumns,
   ColumnAliasResolver? aliasResolver,
   bool isRoot = true,
 }) {
@@ -22,8 +23,10 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   // threaded through the recursion.
   var resolver = aliasResolver ?? ColumnAliasResolver.forQuery(table, include);
 
-  var columnsToRead = include?.selectedColumns != null
-      ? include!.selectedColumns!.map((c) {
+  var effectiveSelectedColumns = include?.selectedColumns ?? selectedColumns;
+
+  var columnsToRead = effectiveSelectedColumns != null
+      ? effectiveSelectedColumns.map((c) {
           if (c is ColumnJsonField) return c;
           return table.columns.firstWhereOrNull(
                 (rc) => rc.columnName == c.columnName,
@@ -36,7 +39,7 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
   var resolvedTableRow = _createColumnMapFromQueryAliasColumns(
     [
       ...columnsToRead,
-      ...?include?.selectedColumns?.whereType<ColumnJsonField>(),
+      ...?effectiveSelectedColumns?.whereType<ColumnJsonField>(),
     ],
     rawRow,
     resolver,
@@ -61,7 +64,8 @@ Map<String, dynamic>? resolvePrefixedQueryRow(
     if (relationTable == null) return;
 
     if (relationInclude is IncludeList) {
-      var primaryKey = resolvedTableRow['id'];
+      var idQueryKey = resolver.resolve(table.id);
+      var primaryKey = resolvedTableRow['id'] ?? rawRow[idQueryKey];
       if (primaryKey == null) {
         throw ArgumentError('Cannot resolve list relation without id.');
       }

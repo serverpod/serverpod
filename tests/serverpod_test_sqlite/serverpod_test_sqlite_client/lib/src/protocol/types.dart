@@ -334,7 +334,7 @@ abstract class Types
   }
 
   static TypesInclude include({_isd.SelectColumnsBuilder<TypesTable>? select}) {
-    return TypesInclude.internal_(selectedColumns: select?.call(Types.t));
+    return TypesInclude._(selectedColumns: select?.call(Types.t));
   }
 
   static TypesIncludeList includeList({
@@ -346,7 +346,7 @@ abstract class Types
     TypesInclude? include,
     _isd.SelectColumnsBuilder<TypesTable>? select,
   }) {
-    return TypesIncludeList.internal_(
+    return TypesIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -857,7 +857,7 @@ class TypesTable extends _isd.Table<int?> {
 }
 
 class TypesInclude extends _isd.IncludeObject {
-  TypesInclude.internal_({this.selectedColumns});
+  TypesInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -870,7 +870,7 @@ class TypesInclude extends _isd.IncludeObject {
 }
 
 class TypesIncludeList extends _isd.IncludeList {
-  TypesIncludeList.internal_({
+  TypesIncludeList._({
     _isd.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
     super.offset,
@@ -989,6 +989,83 @@ class TypesRepository {
     return session.db.findById<Types>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TypesTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<TypesTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Types>(
+      where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Types.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<TypesTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<TypesTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Types>(
+      where: where?.call(Types.t),
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Types.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<TypesTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Types>(
+      id,
+      transaction: transaction,
+      select: select?.call(Types.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

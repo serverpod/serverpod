@@ -128,7 +128,7 @@ abstract class EnumDefaultModel
   static EnumDefaultModelInclude include({
     _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
   }) {
-    return EnumDefaultModelInclude.internal_(
+    return EnumDefaultModelInclude._(
       selectedColumns: select?.call(EnumDefaultModel.t),
     );
   }
@@ -142,7 +142,7 @@ abstract class EnumDefaultModel
     EnumDefaultModelInclude? include,
     _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
   }) {
-    return EnumDefaultModelIncludeList.internal_(
+    return EnumDefaultModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -281,7 +281,7 @@ class EnumDefaultModelTable extends _is.Table<int?> {
 }
 
 class EnumDefaultModelInclude extends _is.IncludeObject {
-  EnumDefaultModelInclude.internal_({this.selectedColumns});
+  EnumDefaultModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -294,7 +294,7 @@ class EnumDefaultModelInclude extends _is.IncludeObject {
 }
 
 class EnumDefaultModelIncludeList extends _is.IncludeList {
-  EnumDefaultModelIncludeList.internal_({
+  EnumDefaultModelIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
     super.limit,
     super.offset,
@@ -413,6 +413,83 @@ class EnumDefaultModelRepository {
     return session.db.findById<EnumDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EnumDefaultModel>(
+      where: where?.call(EnumDefaultModel.t),
+      orderBy: orderBy?.call(EnumDefaultModel.t),
+      orderByList: orderByList?.call(EnumDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EnumDefaultModel>(
+      where: where?.call(EnumDefaultModel.t),
+      orderBy: orderBy?.call(EnumDefaultModel.t),
+      orderByList: orderByList?.call(EnumDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EnumDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EnumDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(EnumDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

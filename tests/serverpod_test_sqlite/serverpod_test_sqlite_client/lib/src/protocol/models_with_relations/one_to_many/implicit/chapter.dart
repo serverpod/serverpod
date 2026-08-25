@@ -77,7 +77,7 @@ abstract class Chapter
   static ChapterInclude include({
     _isd.SelectColumnsBuilder<ChapterTable>? select,
   }) {
-    return ChapterInclude.internal_(selectedColumns: select?.call(Chapter.t));
+    return ChapterInclude._(selectedColumns: select?.call(Chapter.t));
   }
 
   static ChapterIncludeList includeList({
@@ -89,7 +89,7 @@ abstract class Chapter
     ChapterInclude? include,
     _isd.SelectColumnsBuilder<ChapterTable>? select,
   }) {
-    return ChapterIncludeList.internal_(
+    return ChapterIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -208,7 +208,7 @@ class ChapterTable extends _isd.Table<int?> {
 }
 
 class ChapterInclude extends _isd.IncludeObject {
-  ChapterInclude.internal_({this.selectedColumns});
+  ChapterInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -221,7 +221,7 @@ class ChapterInclude extends _isd.IncludeObject {
 }
 
 class ChapterIncludeList extends _isd.IncludeList {
-  ChapterIncludeList.internal_({
+  ChapterIncludeList._({
     _isd.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
@@ -340,6 +340,83 @@ class ChapterRepository {
     return session.db.findById<Chapter>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ChapterTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Chapter>(
+      where: where?.call(Chapter.t),
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Chapter.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ChapterTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Chapter>(
+      where: where?.call(Chapter.t),
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Chapter.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<ChapterTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Chapter>(
+      id,
+      transaction: transaction,
+      select: select?.call(Chapter.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

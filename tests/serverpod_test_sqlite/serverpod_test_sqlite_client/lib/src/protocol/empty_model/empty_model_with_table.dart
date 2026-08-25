@@ -56,7 +56,7 @@ abstract class EmptyModelWithTable
   static EmptyModelWithTableInclude include({
     _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
   }) {
-    return EmptyModelWithTableInclude.internal_(
+    return EmptyModelWithTableInclude._(
       selectedColumns: select?.call(EmptyModelWithTable.t),
     );
   }
@@ -70,7 +70,7 @@ abstract class EmptyModelWithTable
     EmptyModelWithTableInclude? include,
     _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
   }) {
-    return EmptyModelWithTableIncludeList.internal_(
+    return EmptyModelWithTableIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -119,7 +119,7 @@ class EmptyModelWithTableTable extends _isd.Table<int?> {
 }
 
 class EmptyModelWithTableInclude extends _isd.IncludeObject {
-  EmptyModelWithTableInclude.internal_({this.selectedColumns});
+  EmptyModelWithTableInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -132,7 +132,7 @@ class EmptyModelWithTableInclude extends _isd.IncludeObject {
 }
 
 class EmptyModelWithTableIncludeList extends _isd.IncludeList {
-  EmptyModelWithTableIncludeList.internal_({
+  EmptyModelWithTableIncludeList._({
     _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     super.limit,
     super.offset,
@@ -251,6 +251,83 @@ class EmptyModelWithTableRepository {
     return session.db.findById<EmptyModelWithTable>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmptyModelWithTable>(
+      where: where?.call(EmptyModelWithTable.t),
+      orderBy: orderBy?.call(EmptyModelWithTable.t),
+      orderByList: orderByList?.call(EmptyModelWithTable.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmptyModelWithTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmptyModelWithTable>(
+      where: where?.call(EmptyModelWithTable.t),
+      orderBy: orderBy?.call(EmptyModelWithTable.t),
+      orderByList: orderByList?.call(EmptyModelWithTable.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(EmptyModelWithTable.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmptyModelWithTable>(
+      id,
+      transaction: transaction,
+      select: select?.call(EmptyModelWithTable.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

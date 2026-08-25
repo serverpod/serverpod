@@ -112,7 +112,7 @@ abstract class DateTimeDefaultModel
   static DateTimeDefaultModelInclude include({
     _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
   }) {
-    return DateTimeDefaultModelInclude.internal_(
+    return DateTimeDefaultModelInclude._(
       selectedColumns: select?.call(DateTimeDefaultModel.t),
     );
   }
@@ -126,7 +126,7 @@ abstract class DateTimeDefaultModel
     DateTimeDefaultModelInclude? include,
     _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
   }) {
-    return DateTimeDefaultModelIncludeList.internal_(
+    return DateTimeDefaultModelIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -241,7 +241,7 @@ class DateTimeDefaultModelTable extends _is.Table<int?> {
 }
 
 class DateTimeDefaultModelInclude extends _is.IncludeObject {
-  DateTimeDefaultModelInclude.internal_({this.selectedColumns});
+  DateTimeDefaultModelInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -254,7 +254,7 @@ class DateTimeDefaultModelInclude extends _is.IncludeObject {
 }
 
 class DateTimeDefaultModelIncludeList extends _is.IncludeList {
-  DateTimeDefaultModelIncludeList.internal_({
+  DateTimeDefaultModelIncludeList._({
     _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     super.limit,
     super.offset,
@@ -373,6 +373,83 @@ class DateTimeDefaultModelRepository {
     return session.db.findById<DateTimeDefaultModel>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<DateTimeDefaultModel>(
+      where: where?.call(DateTimeDefaultModel.t),
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DateTimeDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<DateTimeDefaultModel>(
+      where: where?.call(DateTimeDefaultModel.t),
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(DateTimeDefaultModel.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<DateTimeDefaultModel>(
+      id,
+      transaction: transaction,
+      select: select?.call(DateTimeDefaultModel.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

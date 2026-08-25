@@ -110,7 +110,7 @@ abstract class Enrollment
     _iwlbbfis.CourseInclude? course,
     _is.SelectColumnsBuilder<EnrollmentTable>? select,
   }) {
-    return EnrollmentInclude.internal_(
+    return EnrollmentInclude._(
       student: student,
       course: course,
       selectedColumns: select?.call(Enrollment.t),
@@ -126,7 +126,7 @@ abstract class Enrollment
     EnrollmentInclude? include,
     _is.SelectColumnsBuilder<EnrollmentTable>? select,
   }) {
-    return EnrollmentIncludeList.internal_(
+    return EnrollmentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -266,7 +266,7 @@ class EnrollmentTable extends _is.Table<int?> {
 }
 
 class EnrollmentInclude extends _is.IncludeObject {
-  EnrollmentInclude.internal_({
+  EnrollmentInclude._({
     _i2rea1ue.StudentInclude? student,
     _iwlbbfis.CourseInclude? course,
     this.selectedColumns,
@@ -293,7 +293,7 @@ class EnrollmentInclude extends _is.IncludeObject {
 }
 
 class EnrollmentIncludeList extends _is.IncludeList {
-  EnrollmentIncludeList.internal_({
+  EnrollmentIncludeList._({
     _is.WhereExpressionBuilder<EnrollmentTable>? where,
     super.limit,
     super.offset,
@@ -420,6 +420,89 @@ class EnrollmentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    EnrollmentInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Enrollment>(
+      where: where?.call(Enrollment.t),
+      orderBy: orderBy?.call(Enrollment.t),
+      orderByList: orderByList?.call(Enrollment.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Enrollment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EnrollmentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    EnrollmentInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Enrollment>(
+      where: where?.call(Enrollment.t),
+      orderBy: orderBy?.call(Enrollment.t),
+      orderByList: orderByList?.call(Enrollment.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Enrollment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    EnrollmentInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Enrollment>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Enrollment.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

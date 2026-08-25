@@ -80,7 +80,7 @@ abstract class UserNote
   static UserNoteInclude include({
     _is.SelectColumnsBuilder<UserNoteTable>? select,
   }) {
-    return UserNoteInclude.internal_(selectedColumns: select?.call(UserNote.t));
+    return UserNoteInclude._(selectedColumns: select?.call(UserNote.t));
   }
 
   static UserNoteIncludeList includeList({
@@ -92,7 +92,7 @@ abstract class UserNote
     UserNoteInclude? include,
     _is.SelectColumnsBuilder<UserNoteTable>? select,
   }) {
-    return UserNoteIncludeList.internal_(
+    return UserNoteIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -217,7 +217,7 @@ class UserNoteTable extends _is.Table<int?> {
 }
 
 class UserNoteInclude extends _is.IncludeObject {
-  UserNoteInclude.internal_({this.selectedColumns});
+  UserNoteInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -230,7 +230,7 @@ class UserNoteInclude extends _is.IncludeObject {
 }
 
 class UserNoteIncludeList extends _is.IncludeList {
-  UserNoteIncludeList.internal_({
+  UserNoteIncludeList._({
     _is.WhereExpressionBuilder<UserNoteTable>? where,
     super.limit,
     super.offset,
@@ -349,6 +349,83 @@ class UserNoteRepository {
     return session.db.findById<UserNote>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UserNote>(
+      where: where?.call(UserNote.t),
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNote.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UserNote>(
+      where: where?.call(UserNote.t),
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UserNote.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UserNote>(
+      id,
+      transaction: transaction,
+      select: select?.call(UserNote.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

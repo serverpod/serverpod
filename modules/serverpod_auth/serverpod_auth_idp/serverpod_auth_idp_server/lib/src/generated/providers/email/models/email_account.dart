@@ -120,7 +120,7 @@ abstract class EmailAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<EmailAccountTable>? select,
   }) {
-    return EmailAccountInclude.internal_(
+    return EmailAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(EmailAccount.t),
     );
@@ -135,7 +135,7 @@ abstract class EmailAccount
     EmailAccountInclude? include,
     _is.SelectColumnsBuilder<EmailAccountTable>? select,
   }) {
-    return EmailAccountIncludeList.internal_(
+    return EmailAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -297,7 +297,7 @@ class EmailAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class EmailAccountInclude extends _is.IncludeObject {
-  EmailAccountInclude.internal_({
+  EmailAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -317,7 +317,7 @@ class EmailAccountInclude extends _is.IncludeObject {
 }
 
 class EmailAccountIncludeList extends _is.IncludeList {
-  EmailAccountIncludeList.internal_({
+  EmailAccountIncludeList._({
     _is.WhereExpressionBuilder<EmailAccountTable>? where,
     super.limit,
     super.offset,
@@ -444,6 +444,89 @@ class EmailAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<EmailAccount>(
+      where: where?.call(EmailAccount.t),
+      orderBy: orderBy?.call(EmailAccount.t),
+      orderByList: orderByList?.call(EmailAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    EmailAccountInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<EmailAccount>(
+      where: where?.call(EmailAccount.t),
+      orderBy: orderBy?.call(EmailAccount.t),
+      orderByList: orderByList?.call(EmailAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    EmailAccountInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<EmailAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(EmailAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

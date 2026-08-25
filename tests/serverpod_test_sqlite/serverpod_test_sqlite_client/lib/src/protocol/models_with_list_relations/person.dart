@@ -103,7 +103,7 @@ abstract class Person
     _i0ptycc3.OrganizationInclude? organization,
     _isd.SelectColumnsBuilder<PersonTable>? select,
   }) {
-    return PersonInclude.internal_(
+    return PersonInclude._(
       organization: organization,
       selectedColumns: select?.call(Person.t),
     );
@@ -118,7 +118,7 @@ abstract class Person
     PersonInclude? include,
     _isd.SelectColumnsBuilder<PersonTable>? select,
   }) {
-    return PersonIncludeList.internal_(
+    return PersonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -291,7 +291,7 @@ class PersonTable extends _isd.Table<int?> {
 }
 
 class PersonInclude extends _isd.IncludeObject {
-  PersonInclude.internal_({
+  PersonInclude._({
     _i0ptycc3.OrganizationInclude? organization,
     this.selectedColumns,
   }) {
@@ -311,7 +311,7 @@ class PersonInclude extends _isd.IncludeObject {
 }
 
 class PersonIncludeList extends _isd.IncludeList {
-  PersonIncludeList.internal_({
+  PersonIncludeList._({
     _isd.WhereExpressionBuilder<PersonTable>? where,
     super.limit,
     super.offset,
@@ -440,6 +440,89 @@ class PersonRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<PersonTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<PersonTable>? orderBy,
+    _isd.OrderByListBuilder<PersonTable>? orderByList,
+    _isd.Transaction? transaction,
+    PersonInclude? include,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Person>(
+      where: where?.call(Person.t),
+      orderBy: orderBy?.call(Person.t),
+      orderByList: orderByList?.call(Person.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Person.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<PersonTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<PersonTable>? orderBy,
+    _isd.OrderByListBuilder<PersonTable>? orderByList,
+    _isd.Transaction? transaction,
+    PersonInclude? include,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Person>(
+      where: where?.call(Person.t),
+      orderBy: orderBy?.call(Person.t),
+      orderByList: orderByList?.call(Person.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Person.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    PersonInclude? include,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Person>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Person.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

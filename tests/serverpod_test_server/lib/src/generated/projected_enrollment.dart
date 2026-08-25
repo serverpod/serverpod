@@ -109,7 +109,7 @@ abstract class ProjectedEnrollment
     _iotqocf1.ProjectedCourseInclude? course,
     _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
-    return ProjectedEnrollmentInclude.internal_(
+    return ProjectedEnrollmentInclude._(
       student: student,
       course: course,
       selectedColumns: select?.call(ProjectedEnrollment.t),
@@ -125,7 +125,7 @@ abstract class ProjectedEnrollment
     ProjectedEnrollmentInclude? include,
     _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
-    return ProjectedEnrollmentIncludeList.internal_(
+    return ProjectedEnrollmentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -269,7 +269,7 @@ class ProjectedEnrollmentTable extends _is.Table<int?> {
 }
 
 class ProjectedEnrollmentInclude extends _is.IncludeObject {
-  ProjectedEnrollmentInclude.internal_({
+  ProjectedEnrollmentInclude._({
     _iprfievr.ProjectedStudentInclude? student,
     _iotqocf1.ProjectedCourseInclude? course,
     this.selectedColumns,
@@ -296,7 +296,7 @@ class ProjectedEnrollmentInclude extends _is.IncludeObject {
 }
 
 class ProjectedEnrollmentIncludeList extends _is.IncludeList {
-  ProjectedEnrollmentIncludeList.internal_({
+  ProjectedEnrollmentIncludeList._({
     _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     super.limit,
     super.offset,
@@ -423,6 +423,89 @@ class ProjectedEnrollmentRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedEnrollmentInclude? include,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ProjectedEnrollment>(
+      where: where?.call(ProjectedEnrollment.t),
+      orderBy: orderBy?.call(ProjectedEnrollment.t),
+      orderByList: orderByList?.call(ProjectedEnrollment.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedEnrollment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    _is.Transaction? transaction,
+    ProjectedEnrollmentInclude? include,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ProjectedEnrollment>(
+      where: where?.call(ProjectedEnrollment.t),
+      orderBy: orderBy?.call(ProjectedEnrollment.t),
+      orderByList: orderByList?.call(ProjectedEnrollment.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedEnrollment.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ProjectedEnrollmentInclude? include,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ProjectedEnrollment>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ProjectedEnrollment.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

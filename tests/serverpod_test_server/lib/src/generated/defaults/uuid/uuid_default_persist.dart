@@ -107,7 +107,7 @@ abstract class UuidDefaultPersist
   static UuidDefaultPersistInclude include({
     _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
   }) {
-    return UuidDefaultPersistInclude.internal_(
+    return UuidDefaultPersistInclude._(
       selectedColumns: select?.call(UuidDefaultPersist.t),
     );
   }
@@ -121,7 +121,7 @@ abstract class UuidDefaultPersist
     UuidDefaultPersistInclude? include,
     _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
   }) {
-    return UuidDefaultPersistIncludeList.internal_(
+    return UuidDefaultPersistIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -243,7 +243,7 @@ class UuidDefaultPersistTable extends _is.Table<int?> {
 }
 
 class UuidDefaultPersistInclude extends _is.IncludeObject {
-  UuidDefaultPersistInclude.internal_({this.selectedColumns});
+  UuidDefaultPersistInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -256,7 +256,7 @@ class UuidDefaultPersistInclude extends _is.IncludeObject {
 }
 
 class UuidDefaultPersistIncludeList extends _is.IncludeList {
-  UuidDefaultPersistIncludeList.internal_({
+  UuidDefaultPersistIncludeList._({
     _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     super.limit,
     super.offset,
@@ -375,6 +375,83 @@ class UuidDefaultPersistRepository {
     return session.db.findById<UuidDefaultPersist>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UuidDefaultPersist>(
+      where: where?.call(UuidDefaultPersist.t),
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UuidDefaultPersist>(
+      where: where?.call(UuidDefaultPersist.t),
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UuidDefaultPersist>(
+      id,
+      transaction: transaction,
+      select: select?.call(UuidDefaultPersist.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

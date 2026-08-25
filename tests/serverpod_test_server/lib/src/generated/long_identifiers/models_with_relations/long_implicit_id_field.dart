@@ -80,7 +80,7 @@ abstract class LongImplicitIdField
   static LongImplicitIdFieldInclude include({
     _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
   }) {
-    return LongImplicitIdFieldInclude.internal_(
+    return LongImplicitIdFieldInclude._(
       selectedColumns: select?.call(LongImplicitIdField.t),
     );
   }
@@ -94,7 +94,7 @@ abstract class LongImplicitIdField
     LongImplicitIdFieldInclude? include,
     _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
   }) {
-    return LongImplicitIdFieldIncludeList.internal_(
+    return LongImplicitIdFieldIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -222,7 +222,7 @@ class LongImplicitIdFieldTable extends _is.Table<int?> {
 }
 
 class LongImplicitIdFieldInclude extends _is.IncludeObject {
-  LongImplicitIdFieldInclude.internal_({this.selectedColumns});
+  LongImplicitIdFieldInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -235,7 +235,7 @@ class LongImplicitIdFieldInclude extends _is.IncludeObject {
 }
 
 class LongImplicitIdFieldIncludeList extends _is.IncludeList {
-  LongImplicitIdFieldIncludeList.internal_({
+  LongImplicitIdFieldIncludeList._({
     _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     super.limit,
     super.offset,
@@ -354,6 +354,83 @@ class LongImplicitIdFieldRepository {
     return session.db.findById<LongImplicitIdField>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
+    _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<LongImplicitIdField>(
+      where: where?.call(LongImplicitIdField.t),
+      orderBy: orderBy?.call(LongImplicitIdField.t),
+      orderByList: orderByList?.call(LongImplicitIdField.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(LongImplicitIdField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    int? offset,
+    _is.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
+    _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<LongImplicitIdField>(
+      where: where?.call(LongImplicitIdField.t),
+      orderBy: orderBy?.call(LongImplicitIdField.t),
+      orderByList: orderByList?.call(LongImplicitIdField.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(LongImplicitIdField.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<LongImplicitIdField>(
+      id,
+      transaction: transaction,
+      select: select?.call(LongImplicitIdField.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

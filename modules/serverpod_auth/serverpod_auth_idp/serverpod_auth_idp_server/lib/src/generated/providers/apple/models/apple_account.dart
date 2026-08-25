@@ -203,7 +203,7 @@ abstract class AppleAccount
     _iacs.AuthUserInclude? authUser,
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
   }) {
-    return AppleAccountInclude.internal_(
+    return AppleAccountInclude._(
       authUser: authUser,
       selectedColumns: select?.call(AppleAccount.t),
     );
@@ -218,7 +218,7 @@ abstract class AppleAccount
     AppleAccountInclude? include,
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
   }) {
-    return AppleAccountIncludeList.internal_(
+    return AppleAccountIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -524,7 +524,7 @@ class AppleAccountTable extends _is.Table<_is.UuidValue?> {
 }
 
 class AppleAccountInclude extends _is.IncludeObject {
-  AppleAccountInclude.internal_({
+  AppleAccountInclude._({
     _iacs.AuthUserInclude? authUser,
     this.selectedColumns,
   }) {
@@ -544,7 +544,7 @@ class AppleAccountInclude extends _is.IncludeObject {
 }
 
 class AppleAccountIncludeList extends _is.IncludeList {
-  AppleAccountIncludeList.internal_({
+  AppleAccountIncludeList._({
     _is.WhereExpressionBuilder<AppleAccountTable>? where,
     super.limit,
     super.offset,
@@ -671,6 +671,89 @@ class AppleAccountRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AppleAccountTable>? orderBy,
+    _is.OrderByListBuilder<AppleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    AppleAccountInclude? include,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<AppleAccount>(
+      where: where?.call(AppleAccount.t),
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AppleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    int? offset,
+    _is.OrderByBuilder<AppleAccountTable>? orderBy,
+    _is.OrderByListBuilder<AppleAccountTable>? orderByList,
+    _is.Transaction? transaction,
+    AppleAccountInclude? include,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<AppleAccount>(
+      where: where?.call(AppleAccount.t),
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AppleAccount.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    AppleAccountInclude? include,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<AppleAccount>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(AppleAccount.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

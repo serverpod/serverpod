@@ -79,7 +79,7 @@ abstract class Service
   static ServiceInclude include({
     _is.SelectColumnsBuilder<ServiceTable>? select,
   }) {
-    return ServiceInclude.internal_(selectedColumns: select?.call(Service.t));
+    return ServiceInclude._(selectedColumns: select?.call(Service.t));
   }
 
   static ServiceIncludeList includeList({
@@ -91,7 +91,7 @@ abstract class Service
     ServiceInclude? include,
     _is.SelectColumnsBuilder<ServiceTable>? select,
   }) {
-    return ServiceIncludeList.internal_(
+    return ServiceIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -180,7 +180,7 @@ class ServiceTable extends _is.Table<int?> {
 }
 
 class ServiceInclude extends _is.IncludeObject {
-  ServiceInclude.internal_({this.selectedColumns});
+  ServiceInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -193,7 +193,7 @@ class ServiceInclude extends _is.IncludeObject {
 }
 
 class ServiceIncludeList extends _is.IncludeList {
-  ServiceIncludeList.internal_({
+  ServiceIncludeList._({
     _is.WhereExpressionBuilder<ServiceTable>? where,
     super.limit,
     super.offset,
@@ -312,6 +312,83 @@ class ServiceRepository {
     return session.db.findById<Service>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Service>(
+      where: where?.call(Service.t),
+      orderBy: orderBy?.call(Service.t),
+      orderByList: orderByList?.call(Service.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Service.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ServiceTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ServiceTable>? orderBy,
+    _is.OrderByListBuilder<ServiceTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Service>(
+      where: where?.call(Service.t),
+      orderBy: orderBy?.call(Service.t),
+      orderByList: orderByList?.call(Service.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(Service.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ServiceTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Service>(
+      id,
+      transaction: transaction,
+      select: select?.call(Service.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

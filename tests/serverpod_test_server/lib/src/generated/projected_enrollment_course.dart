@@ -79,8 +79,8 @@ abstract class ProjectedEnrollmentCourse
   }
 
   static ProjectedEnrollmentInclude include() {
-    return ProjectedEnrollmentInclude.internal_(
-      selectedColumns: [ProjectedEnrollment.t.id],
+    return ProjectedEnrollment.include(
+      select: (t) => [ProjectedEnrollment.t.id],
       course: _icve44wq.ProjectedCourseName.include(),
     );
   }

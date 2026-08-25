@@ -112,7 +112,7 @@ abstract class UriDefaultMix
   static UriDefaultMixInclude include({
     _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
   }) {
-    return UriDefaultMixInclude.internal_(
+    return UriDefaultMixInclude._(
       selectedColumns: select?.call(UriDefaultMix.t),
     );
   }
@@ -126,7 +126,7 @@ abstract class UriDefaultMix
     UriDefaultMixInclude? include,
     _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
   }) {
-    return UriDefaultMixIncludeList.internal_(
+    return UriDefaultMixIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -242,7 +242,7 @@ class UriDefaultMixTable extends _is.Table<int?> {
 }
 
 class UriDefaultMixInclude extends _is.IncludeObject {
-  UriDefaultMixInclude.internal_({this.selectedColumns});
+  UriDefaultMixInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -255,7 +255,7 @@ class UriDefaultMixInclude extends _is.IncludeObject {
 }
 
 class UriDefaultMixIncludeList extends _is.IncludeList {
-  UriDefaultMixIncludeList.internal_({
+  UriDefaultMixIncludeList._({
     _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
     super.limit,
     super.offset,
@@ -374,6 +374,83 @@ class UriDefaultMixRepository {
     return session.db.findById<UriDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UriDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UriDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UriDefaultMix>(
+      where: where?.call(UriDefaultMix.t),
+      orderBy: orderBy?.call(UriDefaultMix.t),
+      orderByList: orderByList?.call(UriDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UriDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UriDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UriDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UriDefaultMix>(
+      where: where?.call(UriDefaultMix.t),
+      orderBy: orderBy?.call(UriDefaultMix.t),
+      orderByList: orderByList?.call(UriDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UriDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UriDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(UriDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

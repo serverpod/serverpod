@@ -95,7 +95,7 @@ abstract class Company
     _i59ly1gg.TownInclude? town,
     _is.SelectColumnsBuilder<CompanyTable>? select,
   }) {
-    return CompanyInclude.internal_(
+    return CompanyInclude._(
       town: town,
       selectedColumns: select?.call(Company.t),
     );
@@ -110,7 +110,7 @@ abstract class Company
     CompanyInclude? include,
     _is.SelectColumnsBuilder<CompanyTable>? select,
   }) {
-    return CompanyIncludeList.internal_(
+    return CompanyIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -226,7 +226,7 @@ class CompanyTable extends _is.Table<int?> {
 }
 
 class CompanyInclude extends _is.IncludeObject {
-  CompanyInclude.internal_({
+  CompanyInclude._({
     _i59ly1gg.TownInclude? town,
     this.selectedColumns,
   }) {
@@ -246,7 +246,7 @@ class CompanyInclude extends _is.IncludeObject {
 }
 
 class CompanyIncludeList extends _is.IncludeList {
-  CompanyIncludeList.internal_({
+  CompanyIncludeList._({
     _is.WhereExpressionBuilder<CompanyTable>? where,
     super.limit,
     super.offset,
@@ -373,6 +373,89 @@ class CompanyRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CompanyTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CompanyTable>? orderBy,
+    _is.OrderByListBuilder<CompanyTable>? orderByList,
+    _is.Transaction? transaction,
+    CompanyInclude? include,
+    _is.SelectColumnsBuilder<CompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Company>(
+      where: where?.call(Company.t),
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Company.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CompanyTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CompanyTable>? orderBy,
+    _is.OrderByListBuilder<CompanyTable>? orderByList,
+    _is.Transaction? transaction,
+    CompanyInclude? include,
+    _is.SelectColumnsBuilder<CompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Company>(
+      where: where?.call(Company.t),
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Company.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CompanyInclude? include,
+    _is.SelectColumnsBuilder<CompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Company>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Company.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

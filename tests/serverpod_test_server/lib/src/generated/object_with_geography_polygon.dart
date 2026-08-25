@@ -95,7 +95,7 @@ abstract class ObjectWithGeographyPolygon
   static ObjectWithGeographyPolygonInclude include({
     _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
   }) {
-    return ObjectWithGeographyPolygonInclude.internal_(
+    return ObjectWithGeographyPolygonInclude._(
       selectedColumns: select?.call(ObjectWithGeographyPolygon.t),
     );
   }
@@ -109,7 +109,7 @@ abstract class ObjectWithGeographyPolygon
     ObjectWithGeographyPolygonInclude? include,
     _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
   }) {
-    return ObjectWithGeographyPolygonIncludeList.internal_(
+    return ObjectWithGeographyPolygonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -220,7 +220,7 @@ class ObjectWithGeographyPolygonTable extends _is.Table<int?> {
 }
 
 class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
-  ObjectWithGeographyPolygonInclude.internal_({this.selectedColumns});
+  ObjectWithGeographyPolygonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -233,7 +233,7 @@ class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
 }
 
 class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList {
-  ObjectWithGeographyPolygonIncludeList.internal_({
+  ObjectWithGeographyPolygonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     super.limit,
     super.offset,
@@ -352,6 +352,83 @@ class ObjectWithGeographyPolygonRepository {
     return session.db.findById<ObjectWithGeographyPolygon>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithGeographyPolygon>(
+      where: where?.call(ObjectWithGeographyPolygon.t),
+      orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
+      orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPolygon.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithGeographyPolygon>(
+      where: where?.call(ObjectWithGeographyPolygon.t),
+      orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
+      orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPolygon.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithGeographyPolygon>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithGeographyPolygon.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

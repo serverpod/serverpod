@@ -71,7 +71,7 @@ abstract class ObjectWithParent
   static ObjectWithParentInclude include({
     _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
   }) {
-    return ObjectWithParentInclude.internal_(
+    return ObjectWithParentInclude._(
       selectedColumns: select?.call(ObjectWithParent.t),
     );
   }
@@ -85,7 +85,7 @@ abstract class ObjectWithParent
     ObjectWithParentInclude? include,
     _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
   }) {
-    return ObjectWithParentIncludeList.internal_(
+    return ObjectWithParentIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -160,7 +160,7 @@ class ObjectWithParentTable extends _is.Table<int?> {
 }
 
 class ObjectWithParentInclude extends _is.IncludeObject {
-  ObjectWithParentInclude.internal_({this.selectedColumns});
+  ObjectWithParentInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -173,7 +173,7 @@ class ObjectWithParentInclude extends _is.IncludeObject {
 }
 
 class ObjectWithParentIncludeList extends _is.IncludeList {
-  ObjectWithParentIncludeList.internal_({
+  ObjectWithParentIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
     super.limit,
     super.offset,
@@ -292,6 +292,83 @@ class ObjectWithParentRepository {
     return session.db.findById<ObjectWithParent>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectWithParentTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithParentTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithParentTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ObjectWithParent>(
+      where: where?.call(ObjectWithParent.t),
+      orderBy: orderBy?.call(ObjectWithParent.t),
+      orderByList: orderByList?.call(ObjectWithParent.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<ObjectWithParentTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ObjectWithParent>(
+      id,
+      transaction: transaction,
+      select: select?.call(ObjectWithParent.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

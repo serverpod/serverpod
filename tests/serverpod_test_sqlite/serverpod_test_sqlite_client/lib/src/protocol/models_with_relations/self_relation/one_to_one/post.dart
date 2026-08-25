@@ -110,7 +110,7 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _ittc76ec.PostInclude? next,
     _isd.SelectColumnsBuilder<PostTable>? select,
   }) {
-    return PostInclude.internal_(
+    return PostInclude._(
       previous: previous,
       next: next,
       selectedColumns: select?.call(Post.t),
@@ -126,7 +126,7 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     PostInclude? include,
     _isd.SelectColumnsBuilder<PostTable>? select,
   }) {
-    return PostIncludeList.internal_(
+    return PostIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -266,7 +266,7 @@ class PostTable extends _isd.Table<int?> {
 }
 
 class PostInclude extends _isd.IncludeObject {
-  PostInclude.internal_({
+  PostInclude._({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
     this.selectedColumns,
@@ -293,7 +293,7 @@ class PostInclude extends _isd.IncludeObject {
 }
 
 class PostIncludeList extends _isd.IncludeList {
-  PostIncludeList.internal_({
+  PostIncludeList._({
     _isd.WhereExpressionBuilder<PostTable>? where,
     super.limit,
     super.offset,
@@ -422,6 +422,89 @@ class PostRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<PostTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<PostTable>? orderBy,
+    _isd.OrderByListBuilder<PostTable>? orderByList,
+    _isd.Transaction? transaction,
+    PostInclude? include,
+    _isd.SelectColumnsBuilder<PostTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Post>(
+      where: where?.call(Post.t),
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Post.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<PostTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<PostTable>? orderBy,
+    _isd.OrderByListBuilder<PostTable>? orderByList,
+    _isd.Transaction? transaction,
+    PostInclude? include,
+    _isd.SelectColumnsBuilder<PostTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Post>(
+      where: where?.call(Post.t),
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Post.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    PostInclude? include,
+    _isd.SelectColumnsBuilder<PostTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Post>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Post.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

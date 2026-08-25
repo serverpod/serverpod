@@ -137,7 +137,7 @@ abstract class CitizenInt
     _i441ok8u.CompanyUuidInclude? oldCompany,
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
-    return CitizenIntInclude.internal_(
+    return CitizenIntInclude._(
       address: address,
       company: company,
       oldCompany: oldCompany,
@@ -154,7 +154,7 @@ abstract class CitizenInt
     CitizenIntInclude? include,
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
-    return CitizenIntIncludeList.internal_(
+    return CitizenIntIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -342,7 +342,7 @@ class CitizenIntTable extends _is.Table<int?> {
 }
 
 class CitizenIntInclude extends _is.IncludeObject {
-  CitizenIntInclude.internal_({
+  CitizenIntInclude._({
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
     _i441ok8u.CompanyUuidInclude? oldCompany,
@@ -374,7 +374,7 @@ class CitizenIntInclude extends _is.IncludeObject {
 }
 
 class CitizenIntIncludeList extends _is.IncludeList {
-  CitizenIntIncludeList.internal_({
+  CitizenIntIncludeList._({
     _is.WhereExpressionBuilder<CitizenIntTable>? where,
     super.limit,
     super.offset,
@@ -503,6 +503,89 @@ class CitizenIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenIntInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CitizenInt>(
+      where: where?.call(CitizenInt.t),
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CitizenIntInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CitizenInt>(
+      where: where?.call(CitizenInt.t),
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CitizenIntInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CitizenInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CitizenInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

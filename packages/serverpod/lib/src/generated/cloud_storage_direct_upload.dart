@@ -104,7 +104,7 @@ abstract class CloudStorageDirectUploadEntry
   static CloudStorageDirectUploadEntryInclude include({
     _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
   }) {
-    return CloudStorageDirectUploadEntryInclude.internal_(
+    return CloudStorageDirectUploadEntryInclude._(
       selectedColumns: select?.call(CloudStorageDirectUploadEntry.t),
     );
   }
@@ -118,7 +118,7 @@ abstract class CloudStorageDirectUploadEntry
     CloudStorageDirectUploadEntryInclude? include,
     _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
   }) {
-    return CloudStorageDirectUploadEntryIncludeList.internal_(
+    return CloudStorageDirectUploadEntryIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -246,7 +246,7 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
 }
 
 class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
-  CloudStorageDirectUploadEntryInclude.internal_({this.selectedColumns});
+  CloudStorageDirectUploadEntryInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -259,7 +259,7 @@ class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
 }
 
 class CloudStorageDirectUploadEntryIncludeList extends _is.IncludeList {
-  CloudStorageDirectUploadEntryIncludeList.internal_({
+  CloudStorageDirectUploadEntryIncludeList._({
     _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     super.limit,
     super.offset,
@@ -378,6 +378,83 @@ class CloudStorageDirectUploadEntryRepository {
     return session.db.findById<CloudStorageDirectUploadEntry>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CloudStorageDirectUploadEntry>(
+      where: where?.call(CloudStorageDirectUploadEntry.t),
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(CloudStorageDirectUploadEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CloudStorageDirectUploadEntry>(
+      where: where?.call(CloudStorageDirectUploadEntry.t),
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(CloudStorageDirectUploadEntry.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CloudStorageDirectUploadEntry>(
+      id,
+      transaction: transaction,
+      select: select?.call(CloudStorageDirectUploadEntry.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

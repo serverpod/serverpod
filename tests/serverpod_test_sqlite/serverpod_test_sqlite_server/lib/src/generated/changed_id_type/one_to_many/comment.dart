@@ -98,7 +98,7 @@ abstract class CommentInt
     _ivss21qh.OrderUuidInclude? order,
     _is.SelectColumnsBuilder<CommentIntTable>? select,
   }) {
-    return CommentIntInclude.internal_(
+    return CommentIntInclude._(
       order: order,
       selectedColumns: select?.call(CommentInt.t),
     );
@@ -113,7 +113,7 @@ abstract class CommentInt
     CommentIntInclude? include,
     _is.SelectColumnsBuilder<CommentIntTable>? select,
   }) {
-    return CommentIntIncludeList.internal_(
+    return CommentIntIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,7 +230,7 @@ class CommentIntTable extends _is.Table<int?> {
 }
 
 class CommentIntInclude extends _is.IncludeObject {
-  CommentIntInclude.internal_({
+  CommentIntInclude._({
     _ivss21qh.OrderUuidInclude? order,
     this.selectedColumns,
   }) {
@@ -250,7 +250,7 @@ class CommentIntInclude extends _is.IncludeObject {
 }
 
 class CommentIntIncludeList extends _is.IncludeList {
-  CommentIntIncludeList.internal_({
+  CommentIntIncludeList._({
     _is.WhereExpressionBuilder<CommentIntTable>? where,
     super.limit,
     super.offset,
@@ -377,6 +377,89 @@ class CommentIntRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CommentIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CommentIntTable>? orderBy,
+    _is.OrderByListBuilder<CommentIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CommentIntInclude? include,
+    _is.SelectColumnsBuilder<CommentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<CommentInt>(
+      where: where?.call(CommentInt.t),
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CommentInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CommentIntTable>? where,
+    int? offset,
+    _is.OrderByBuilder<CommentIntTable>? orderBy,
+    _is.OrderByListBuilder<CommentIntTable>? orderByList,
+    _is.Transaction? transaction,
+    CommentIntInclude? include,
+    _is.SelectColumnsBuilder<CommentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<CommentInt>(
+      where: where?.call(CommentInt.t),
+      orderBy: orderBy?.call(CommentInt.t),
+      orderByList: orderByList?.call(CommentInt.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CommentInt.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    CommentIntInclude? include,
+    _is.SelectColumnsBuilder<CommentIntTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<CommentInt>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(CommentInt.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

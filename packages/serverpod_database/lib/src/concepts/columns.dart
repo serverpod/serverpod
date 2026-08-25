@@ -10,7 +10,7 @@ import '../adapters/sqlite/value_encoder.dart';
 typedef ColumnSelections<T extends Table> = List<Column> Function(T);
 
 /// A function that returns a list of [Column]s for a [Table] to be selected in queries.
-typedef SelectColumnsBuilder<T> = List<Column> Function(T table);
+typedef SelectColumnsBuilder<T extends Table> = List<Column> Function(T table);
 
 /// Abstract class representing a database [Column]. Subclassed by the different
 /// supported column types such as [ColumnInt] or [ColumnString].

@@ -132,7 +132,7 @@ abstract class Citizen
     _i2fdza8t.CompanyInclude? oldCompany,
     _isd.SelectColumnsBuilder<CitizenTable>? select,
   }) {
-    return CitizenInclude.internal_(
+    return CitizenInclude._(
       address: address,
       company: company,
       oldCompany: oldCompany,
@@ -149,7 +149,7 @@ abstract class Citizen
     CitizenInclude? include,
     _isd.SelectColumnsBuilder<CitizenTable>? select,
   }) {
-    return CitizenIncludeList.internal_(
+    return CitizenIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -331,7 +331,7 @@ class CitizenTable extends _isd.Table<int?> {
 }
 
 class CitizenInclude extends _isd.IncludeObject {
-  CitizenInclude.internal_({
+  CitizenInclude._({
     _i5rzbc0r.AddressInclude? address,
     _i2fdza8t.CompanyInclude? company,
     _i2fdza8t.CompanyInclude? oldCompany,
@@ -363,7 +363,7 @@ class CitizenInclude extends _isd.IncludeObject {
 }
 
 class CitizenIncludeList extends _isd.IncludeList {
-  CitizenIncludeList.internal_({
+  CitizenIncludeList._({
     _isd.WhereExpressionBuilder<CitizenTable>? where,
     super.limit,
     super.offset,
@@ -492,6 +492,89 @@ class CitizenRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CitizenTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CitizenTable>? orderBy,
+    _isd.OrderByListBuilder<CitizenTable>? orderByList,
+    _isd.Transaction? transaction,
+    CitizenInclude? include,
+    _isd.SelectColumnsBuilder<CitizenTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<Citizen>(
+      where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CitizenTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CitizenTable>? orderBy,
+    _isd.OrderByListBuilder<CitizenTable>? orderByList,
+    _isd.Transaction? transaction,
+    CitizenInclude? include,
+    _isd.SelectColumnsBuilder<CitizenTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<Citizen>(
+      where: where?.call(Citizen.t),
+      orderBy: orderBy?.call(Citizen.t),
+      orderByList: orderByList?.call(Citizen.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CitizenInclude? include,
+    _isd.SelectColumnsBuilder<CitizenTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<Citizen>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(Citizen.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

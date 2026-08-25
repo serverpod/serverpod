@@ -110,7 +110,7 @@ abstract class GeneratedRelationCompany
     _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
     _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
   }) {
-    return GeneratedRelationCompanyInclude.internal_(
+    return GeneratedRelationCompanyInclude._(
       office: office,
       employees: employees,
       selectedColumns: select?.call(GeneratedRelationCompany.t),
@@ -126,7 +126,7 @@ abstract class GeneratedRelationCompany
     GeneratedRelationCompanyInclude? include,
     _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
   }) {
-    return GeneratedRelationCompanyIncludeList.internal_(
+    return GeneratedRelationCompanyIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -281,7 +281,7 @@ class GeneratedRelationCompanyTable extends _is.Table<int?> {
 }
 
 class GeneratedRelationCompanyInclude extends _is.IncludeObject {
-  GeneratedRelationCompanyInclude.internal_({
+  GeneratedRelationCompanyInclude._({
     _im57bsix.GeneratedRelationOfficeInclude? office,
     _inw8ul07.GeneratedRelationEmployeeIncludeList? employees,
     this.selectedColumns,
@@ -308,7 +308,7 @@ class GeneratedRelationCompanyInclude extends _is.IncludeObject {
 }
 
 class GeneratedRelationCompanyIncludeList extends _is.IncludeList {
-  GeneratedRelationCompanyIncludeList.internal_({
+  GeneratedRelationCompanyIncludeList._({
     _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
     super.limit,
     super.offset,
@@ -439,6 +439,89 @@ class GeneratedRelationCompanyRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
+    GeneratedRelationCompanyInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<GeneratedRelationCompany>(
+      where: where?.call(GeneratedRelationCompany.t),
+      orderBy: orderBy?.call(GeneratedRelationCompany.t),
+      orderByList: orderByList?.call(GeneratedRelationCompany.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GeneratedRelationCompany.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    int? offset,
+    _is.OrderByBuilder<GeneratedRelationCompanyTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationCompanyTable>? orderByList,
+    _is.Transaction? transaction,
+    GeneratedRelationCompanyInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<GeneratedRelationCompany>(
+      where: where?.call(GeneratedRelationCompany.t),
+      orderBy: orderBy?.call(GeneratedRelationCompany.t),
+      orderByList: orderByList?.call(GeneratedRelationCompany.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GeneratedRelationCompany.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    GeneratedRelationCompanyInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<GeneratedRelationCompany>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(GeneratedRelationCompany.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

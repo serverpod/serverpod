@@ -108,7 +108,7 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _i0ptycc3.OrganizationIncludeList? organizations,
     _isd.SelectColumnsBuilder<CityTable>? select,
   }) {
-    return CityInclude.internal_(
+    return CityInclude._(
       citizens: citizens,
       organizations: organizations,
       selectedColumns: select?.call(City.t),
@@ -124,7 +124,7 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     CityInclude? include,
     _isd.SelectColumnsBuilder<CityTable>? select,
   }) {
-    return CityIncludeList.internal_(
+    return CityIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -292,7 +292,7 @@ class CityTable extends _isd.Table<int?> {
 }
 
 class CityInclude extends _isd.IncludeObject {
-  CityInclude.internal_({
+  CityInclude._({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
     this.selectedColumns,
@@ -319,7 +319,7 @@ class CityInclude extends _isd.IncludeObject {
 }
 
 class CityIncludeList extends _isd.IncludeList {
-  CityIncludeList.internal_({
+  CityIncludeList._({
     _isd.WhereExpressionBuilder<CityTable>? where,
     super.limit,
     super.offset,
@@ -452,6 +452,89 @@ class CityRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CityTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CityTable>? orderBy,
+    _isd.OrderByListBuilder<CityTable>? orderByList,
+    _isd.Transaction? transaction,
+    CityInclude? include,
+    _isd.SelectColumnsBuilder<CityTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<City>(
+      where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<CityTable>? where,
+    int? offset,
+    _isd.OrderByBuilder<CityTable>? orderBy,
+    _isd.OrderByListBuilder<CityTable>? orderByList,
+    _isd.Transaction? transaction,
+    CityInclude? include,
+    _isd.SelectColumnsBuilder<CityTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<City>(
+      where: where?.call(City.t),
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _isd.DatabaseSession session,
+    Object id, {
+    _isd.Transaction? transaction,
+    CityInclude? include,
+    _isd.SelectColumnsBuilder<CityTable>? select,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<City>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(City.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

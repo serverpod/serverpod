@@ -82,7 +82,7 @@ abstract class ParentEntity
     _i41rqetj.ChildEntityIncludeList? children,
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
-    return ParentEntityInclude.internal_(
+    return ParentEntityInclude._(
       children: children,
       selectedColumns: select?.call(ParentEntity.t),
     );
@@ -97,7 +97,7 @@ abstract class ParentEntity
     ParentEntityInclude? include,
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
-    return ParentEntityIncludeList.internal_(
+    return ParentEntityIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,7 +204,7 @@ class ParentEntityTable extends _is.Table<int?> {
 }
 
 class ParentEntityInclude extends _is.IncludeObject {
-  ParentEntityInclude.internal_({
+  ParentEntityInclude._({
     _i41rqetj.ChildEntityIncludeList? children,
     this.selectedColumns,
   }) {
@@ -224,7 +224,7 @@ class ParentEntityInclude extends _is.IncludeObject {
 }
 
 class ParentEntityIncludeList extends _is.IncludeList {
-  ParentEntityIncludeList.internal_({
+  ParentEntityIncludeList._({
     _is.WhereExpressionBuilder<ParentEntityTable>? where,
     super.limit,
     super.offset,
@@ -357,6 +357,89 @@ class ParentEntityRepository {
       id,
       transaction: transaction,
       include: include,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    ParentEntityInclude? include,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<ParentEntity>(
+      where: where?.call(ParentEntity.t),
+      orderBy: orderBy?.call(ParentEntity.t),
+      orderByList: orderByList?.call(ParentEntity.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ParentEntity.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    int? offset,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    _is.Transaction? transaction,
+    ParentEntityInclude? include,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<ParentEntity>(
+      where: where?.call(ParentEntity.t),
+      orderBy: orderBy?.call(ParentEntity.t),
+      orderByList: orderByList?.call(ParentEntity.t),
+      offset: offset,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ParentEntity.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    ParentEntityInclude? include,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<ParentEntity>(
+      id,
+      transaction: transaction,
+      include: include,
+      select: select?.call(ParentEntity.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );

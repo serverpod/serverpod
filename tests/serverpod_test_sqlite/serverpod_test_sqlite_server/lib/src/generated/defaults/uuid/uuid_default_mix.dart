@@ -112,7 +112,7 @@ abstract class UuidDefaultMix
   static UuidDefaultMixInclude include({
     _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
   }) {
-    return UuidDefaultMixInclude.internal_(
+    return UuidDefaultMixInclude._(
       selectedColumns: select?.call(UuidDefaultMix.t),
     );
   }
@@ -126,7 +126,7 @@ abstract class UuidDefaultMix
     UuidDefaultMixInclude? include,
     _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
   }) {
-    return UuidDefaultMixIncludeList.internal_(
+    return UuidDefaultMixIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,7 +244,7 @@ class UuidDefaultMixTable extends _is.Table<int?> {
 }
 
 class UuidDefaultMixInclude extends _is.IncludeObject {
-  UuidDefaultMixInclude.internal_({this.selectedColumns});
+  UuidDefaultMixInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -257,7 +257,7 @@ class UuidDefaultMixInclude extends _is.IncludeObject {
 }
 
 class UuidDefaultMixIncludeList extends _is.IncludeList {
-  UuidDefaultMixIncludeList.internal_({
+  UuidDefaultMixIncludeList._({
     _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
     super.limit,
     super.offset,
@@ -376,6 +376,83 @@ class UuidDefaultMixRepository {
     return session.db.findById<UuidDefaultMix>(
       id,
       transaction: transaction,
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<List<Map<String, dynamic>>> findAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findAsJson<UuidDefaultMix>(
+      where: where?.call(UuidDefaultMix.t),
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      limit: limit,
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findFirstRowAsJson(
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultMixTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findFirstRowAsJson<UuidDefaultMix>(
+      where: where?.call(UuidDefaultMix.t),
+      orderBy: orderBy?.call(UuidDefaultMix.t),
+      orderByList: orderByList?.call(UuidDefaultMix.t),
+      offset: offset,
+      transaction: transaction,
+      select: select?.call(UuidDefaultMix.t),
+      lockMode: lockMode,
+      lockBehavior: lockBehavior,
+    );
+  }
+
+  /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
+  ///
+  /// Use [select] to specify which columns to include from the root table.
+
+  Future<Map<String, dynamic>?> findByIdAsJson(
+    _is.DatabaseSession session,
+    Object id, {
+    _is.Transaction? transaction,
+    _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
+  }) {
+    return session.db.findByIdAsJson<UuidDefaultMix>(
+      id,
+      transaction: transaction,
+      select: select?.call(UuidDefaultMix.t),
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
