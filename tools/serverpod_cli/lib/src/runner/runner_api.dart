@@ -1,5 +1,7 @@
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/runner/migration_result.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 
 /// Everything the runner can do or report, independent of who is asking.
 ///
@@ -13,6 +15,28 @@ import 'package:serverpod_cli/src/runner/migration_result.dart';
 /// Conflicting commands are serialized, so overlapping migrations or reloads
 /// from two callers are well-defined rather than racy.
 abstract interface class RunnerApi {
+  /// Everything a client needs on connect: the bounded history, the operations
+  /// in flight, the per-app Flutter buffers, and the current startup stage.
+  ///
+  /// A client renders this first, then applies [events], so one attaching to a
+  /// runner that has been up for hours sees the whole picture.
+  RunnerSnapshot snapshot();
+
+  /// Everything after [snapshot].
+  ///
+  /// Broadcast. Several clients can attach.
+  Stream<RunnerEvent> get events;
+
+  /// Releases this surface. Stops emitting on [events] and closes whatever
+  /// backs it.
+  ///
+  /// The buffers a snapshot reads stay readable afterwards, so a final render
+  /// during teardown still shows what happened.
+  Future<void> close();
+
+  /// How far the runner has got.
+  RunnerStage get stage;
+
   /// Whether the server process is up.
   ///
   /// False during a degraded start, where the project failed to generate or
@@ -56,6 +80,13 @@ abstract interface class RunnerApi {
   ///
   /// Id-keyed throughout. Tab indices belong to the UI, not to the runner.
   List<FlutterAppConfig> get flutterApps;
+
+  /// Whether launching one of [flutterApps] can do anything.
+  ///
+  /// False outside development, where the launcher declines. Reported rather
+  /// than left for a client to infer, so a UI does not offer a key that
+  /// silently does nothing.
+  bool get canLaunchFlutterApps;
 
   /// Whether [appId] is running.
   bool isFlutterAppRunning(String appId);
