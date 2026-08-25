@@ -7,7 +7,7 @@ name: serverpod_auth_test_client
 description: Starting point for a Serverpod client.
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_auth_client: 4.0.0-beta.4

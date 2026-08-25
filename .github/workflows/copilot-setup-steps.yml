@@ -31,14 +31,14 @@ jobs:
       - name: Set up Flutter
         uses: ./.github/actions/use-flutter
         with:
-          flutter-version: '3.44.4'
+          flutter-version: '3.47.0'
           channel: "stable"
           cache: true
 
       - name: Verify Dart version
         run: |
           dart --version
-          echo "Dart SDK version should be >= 3.11.3"
+          echo "Dart SDK version should be >= 3.12.2"
 
       - name: Install Melos
         uses: ./.github/actions/retry

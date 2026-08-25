@@ -30,7 +30,7 @@ final class GeneratedDartFormatters {
 
   /// The formatter matching Serverpod's generated-code defaults.
   static final DartFormatter serverpodDefaultFormatter = DartFormatter(
-    languageVersion: Version(3, 10, 0),
+    languageVersion: Version(3, 12, 2),
     trailingCommas: TrailingCommas.preserve,
   );
 

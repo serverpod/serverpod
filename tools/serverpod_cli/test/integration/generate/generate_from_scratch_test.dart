@@ -17,7 +17,7 @@ Future<(Directory, Directory)> _buildProject() async {
   final generatedDir = Directory(
     p.join(projectDir.path, 'lib', 'src', 'generated'),
   );
-  await createTestEnvironment(projectDir, sdkConstraint: '^3.10.3');
+  await createTestEnvironment(projectDir, sdkConstraint: '^3.12.2');
 
   return (projectDir, generatedDir);
 }
@@ -790,7 +790,7 @@ Future<void> _createClientPackage(
 name: test_client
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_client:
@@ -839,7 +839,7 @@ Future<void> _createSharedPackage(Directory projectDir) async {
 name: test_shared
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_serialization:

@@ -8,7 +8,7 @@ description: Code shared between the SQLite test server and client
 version: 1.0.0
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_database: 4.0.0-beta.4

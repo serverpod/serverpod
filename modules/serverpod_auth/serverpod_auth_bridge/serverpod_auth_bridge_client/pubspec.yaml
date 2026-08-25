@@ -7,7 +7,7 @@ version: 4.0.0-beta.4
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_auth_core_client: 4.0.0-beta.4
