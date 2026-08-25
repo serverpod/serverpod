@@ -113,6 +113,21 @@ class StartLogHistory {
         () => BoundedQueueList<String>(maxFlutterLines),
       );
 
+  /// Replaces every app's retained output with [lines], dropping the buffer of
+  /// any app [lines] does not name.
+  ///
+  /// A reconnecting client can meet a runner whose project no longer
+  /// configures an app it holds output for.
+  void replaceFlutterLines(Map<String, List<String>> lines) {
+    _flutterLines.removeWhere((appId, _) => !lines.containsKey(appId));
+    for (final entry in lines.entries) {
+      flutterLinesFor(entry.key)
+        ..clear()
+        ..addAll(entry.value);
+    }
+    onChanged?.call();
+  }
+
   /// Appends [line] to the raw output of the Flutter app [appId].
   void addFlutterLine(String appId, String line) {
     flutterLinesFor(appId).add(line);
@@ -120,10 +135,40 @@ class StartLogHistory {
     onChanged?.call();
   }
 
+  /// Whether the runner is receiving the pod's structured log.
+  ///
+  /// False from the moment a pod process starts until the runner has
+  /// subscribed to its VM service, and again once that process is gone.
+  /// `postEvent` drops what it posts while nobody is listening, so for that
+  /// window - which covers the whole boot sequence - the raw line is the only
+  /// copy an entry has. After it, the pod's stdout writer repeats every entry
+  /// verbatim.
+  ///
+  /// This is the one place that knows the difference, so it is the one place
+  /// that decides: see [addServerLine].
+  bool _serverStructuredLogging = false;
+
+  /// Records that the pod's structured log is now reaching
+  /// [recordServerLogEvent].
+  void markServerStructuredLogging() => _serverStructuredLogging = true;
+
+  /// Records that the pod process is gone, taking its structured log with it.
+  void serverProcessGone() {
+    _serverStructuredLogging = false;
+    discardActiveServerScopes();
+  }
+
   /// Appends [line] to the pod's raw output.
+  ///
+  /// A line the pod's structured log does not also carry joins
+  /// [serverEntries]: it is part of the account, and putting it there is what
+  /// keeps that account in order, which two buffers with no shared timestamp
+  /// could not be merged into afterwards.
   void addServerLine(String line) {
+    final duplicatesEntry = _serverStructuredLogging;
     serverLines.add(line);
-    _emit(ServerLineEvent(line));
+    if (!duplicatesEntry) serverEntries.add(line);
+    _emit(ServerLineEvent(line, duplicatesEntry: duplicatesEntry));
     onServerLine?.call(line);
     onChanged?.call();
   }
@@ -265,8 +310,10 @@ class StartLogHistory {
         return;
     }
 
-    _addFlutterEntryLines(appId, entry);
-    _emit(FlutterLogEntryEvent(appId: appId, entry: entry));
+    addFlutterEntryLines(appId, entry);
+    _emit(
+      FlutterLogEntryEvent(appId: appId, entry: entry, appendedToLines: true),
+    );
     onFlutterEntry?.call(appId, entry);
     onChanged?.call();
   }
@@ -353,9 +400,11 @@ class StartLogHistory {
   /// Appends [entry]'s message, error and stack trace as raw lines of the
   /// Flutter app [appId], mirroring how the app would have printed them.
   ///
-  /// Emits nothing: the caller emits the structured entry covering the same
-  /// text, and a client rendering both events would print it twice.
-  void _addFlutterEntryLines(String appId, LogEntry entry) {
+  /// Emits no line events: the caller emits the structured entry covering the
+  /// same text, and a client rendering both would print it twice. That entry
+  /// carries `appendedToLines` instead, so an attached client can run this
+  /// against its own copy of the buffer and hold the same lines.
+  void addFlutterEntryLines(String appId, LogEntry entry) {
     final raw = StringBuffer(entry.message);
     if (entry.error != null) {
       if (raw.isNotEmpty) raw.writeln();

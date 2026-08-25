@@ -92,7 +92,8 @@ void main() {
 
         final snapshot = RunnerSnapshot.fromJson(
           Map<String, Object?>.from(
-            await client.peer.sendRequest(runnerSnapshotMethod) as Map,
+            await client.peer.sendRequest(runnerSnapshotMethod, const {})
+                as Map,
           ),
         );
 
@@ -124,7 +125,8 @@ void main() {
 
         final snapshot = RunnerSnapshot.fromJson(
           Map<String, Object?>.from(
-            await client.peer.sendRequest(runnerSnapshotMethod) as Map,
+            await client.peer.sendRequest(runnerSnapshotMethod, const {})
+                as Map,
           ),
         );
 
@@ -134,19 +136,39 @@ void main() {
     );
 
     test(
+      'when a client has not asked for the snapshot, '
+      'then nothing is forwarded to it until it does',
+      () async {
+        final client = await _attach(server.socketPath);
+        addTearDown(client.close);
+
+        runner.emit(const ServerLineEvent('before the snapshot'));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect(client.events, isEmpty);
+
+        await client.peer.sendRequest(runnerSnapshotMethod, const {});
+        runner.emit(const ServerLineEvent('after the snapshot'));
+        await _waitFor(() => client.events.isNotEmpty);
+
+        final line = client.events.single as ServerLineEvent;
+        expect(line.line, 'after the snapshot');
+      },
+    );
+
+    test(
       'when the runner emits events, '
       'then an attached client receives them after its snapshot',
       () async {
         final client = await _attach(server.socketPath);
         addTearDown(client.close);
-        await client.peer.sendRequest(runnerSnapshotMethod);
+        await client.peer.sendRequest(runnerSnapshotMethod, const {});
 
         runner
           ..emit(const StageChangedEvent(RunnerStage.running, isRunning: true))
           ..emit(
             const FlutterLineEvent(appId: 'admin', line: 'Reloaded in 12ms'),
           );
-        await pumpEventQueue();
+        await _waitFor(() => client.events.length >= 2);
 
         expect(client.events, hasLength(2));
         final stage = client.events.first as StageChangedEvent;
@@ -172,7 +194,9 @@ void main() {
         runner.emit(
           const StageChangedEvent(RunnerStage.stopping, isRunning: false),
         );
-        await pumpEventQueue();
+        await _waitFor(
+          () => first.events.isNotEmpty && second.events.isNotEmpty,
+        );
 
         expect(first.events, hasLength(1));
         expect(second.events, hasLength(1));
@@ -190,12 +214,11 @@ void main() {
         await second.peer.sendRequest(runnerSnapshotMethod);
 
         await first.close();
-        await pumpEventQueue();
 
         runner.emit(
           const StageChangedEvent(RunnerStage.running, isRunning: true),
         );
-        await pumpEventQueue();
+        await _waitFor(() => second.events.isNotEmpty);
 
         expect(second.events, hasLength(1));
       },
@@ -211,7 +234,7 @@ void main() {
         final client = await _attach(server.socketPath);
         addTearDown(client.close);
 
-        await client.peer.sendRequest('hotReload');
+        await client.peer.sendRequest('hotReload', const {});
 
         expect(reloads, 1);
       },
@@ -284,4 +307,21 @@ void main() {
       },
     );
   });
+}
+
+/// Polls [condition] until it holds.
+///
+/// Events cross a real socket, so a test can't assume how many event-loop
+/// turns they take. `pumpEventQueue` is not a barrier for pending I/O.
+Future<void> _waitFor(
+  bool Function() condition, {
+  Duration timeout = const Duration(seconds: 10),
+}) async {
+  final deadline = DateTime.now().add(timeout);
+  while (!condition()) {
+    if (DateTime.now().isAfter(deadline)) {
+      fail('Condition was not met within $timeout.');
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 10));
+  }
 }

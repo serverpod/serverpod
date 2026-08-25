@@ -31,7 +31,10 @@ sealed class RunnerEvent {
               as CompletedOperation,
           id: json['operationId'] as String? ?? '',
         ),
-        'serverLine' => ServerLineEvent(json['line'] as String? ?? ''),
+        'serverLine' => ServerLineEvent(
+          json['line'] as String? ?? '',
+          duplicatesEntry: json['duplicatesEntry'] as bool? ?? false,
+        ),
         'flutterLine' => FlutterLineEvent(
           appId: json['appId'] as String? ?? '',
           line: json['line'] as String? ?? '',
@@ -39,6 +42,7 @@ sealed class RunnerEvent {
         'flutterLog' => FlutterLogEntryEvent(
           appId: json['appId'] as String? ?? '',
           entry: decodeLogEntry(json),
+          appendedToLines: json['appendedToLines'] as bool? ?? false,
         ),
         'stage' => StageChangedEvent(
           RunnerStage.byName(json['stage'] as String?),
@@ -117,12 +121,28 @@ final class OperationCompletedEvent extends RunnerEvent {
 
 /// A raw output line the pod printed.
 final class ServerLineEvent extends RunnerEvent {
-  const ServerLineEvent(this.line);
+  const ServerLineEvent(this.line, {this.duplicatesEntry = false});
 
   final String line;
 
+  /// Whether a [ServerLogEvent] carries this same text.
+  ///
+  /// The pod writes every entry to its stdout as well as to its VM service,
+  /// so once the runner is receiving the structured half, the raw line is a
+  /// second copy and a client rendering both prints it twice. False for
+  /// output that never was an entry - `print`, a crash, anything logged
+  /// before the runner subscribed - where this is the only copy there is.
+  ///
+  /// The runner decides this; a client cannot, since the two copies arrive as
+  /// unrelated events.
+  final bool duplicatesEntry;
+
   @override
-  Map<String, Object?> toJson() => {'event': 'serverLine', 'line': line};
+  Map<String, Object?> toJson() => {
+    'event': 'serverLine',
+    'line': line,
+    if (duplicatesEntry) 'duplicatesEntry': true,
+  };
 }
 
 /// A raw output line from a Flutter app.
@@ -142,15 +162,32 @@ final class FlutterLineEvent extends RunnerEvent {
 
 /// A structured entry from a Flutter app.
 final class FlutterLogEntryEvent extends RunnerEvent {
-  const FlutterLogEntryEvent({required this.appId, required this.entry});
+  const FlutterLogEntryEvent({
+    required this.appId,
+    required this.entry,
+    this.appendedToLines = false,
+  });
 
   final String appId;
   final LogEntry entry;
+
+  /// Whether the runner also appended this entry's text to the app's raw line
+  /// buffer, which a client has to do too to hold the same buffer.
+  ///
+  /// True for an entry that reached the runner over the VM service, which the
+  /// app does not also print - structured errors are deliberately kept off
+  /// stderr - so the runner flattens it into the lines itself. False for one
+  /// decoded from output the app did print, where the line is already there.
+  ///
+  /// The runner decides this; a client cannot, since it sees the same event
+  /// either way.
+  final bool appendedToLines;
 
   @override
   Map<String, Object?> toJson() => {
     'event': 'flutterLog',
     'appId': appId,
+    if (appendedToLines) 'appendedToLines': true,
     ...encodeLogHistoryItem(entry),
   };
 }

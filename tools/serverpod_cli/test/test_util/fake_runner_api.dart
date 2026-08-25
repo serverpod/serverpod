@@ -38,7 +38,16 @@ class FakeRunnerApi implements InProcessRunnerApi {
   Future<void> close() => eventController.close();
 
   @override
-  RunnerSnapshot snapshot() => RunnerSnapshot(
+  RunnerSnapshot snapshot() {
+    snapshotCalls++;
+    return _snapshot();
+  }
+
+  /// How many times a client has asked for the snapshot, which is what marks
+  /// one as a UI rather than a one-shot command.
+  int snapshotCalls = 0;
+
+  RunnerSnapshot _snapshot() => RunnerSnapshot(
     stage: stage,
     isRunning: isRunning,
     watchModeEnabled: watchModeEnabled,

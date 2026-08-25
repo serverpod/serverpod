@@ -37,6 +37,9 @@ Map<String, Object?> encodeLogHistoryItem(Object item) {
       'completedAt': item.completedAt.toIso8601String(),
     };
   }
+  if (item is String) {
+    return {'type': 'line', 'value': item};
+  }
   return {'type': 'unknown', 'value': item.toString()};
 }
 
@@ -69,6 +72,7 @@ Object? _jsonSafe(Object? value) => switch (value) {
 Object? decodeLogHistoryItem(Map<String, Object?> json) =>
     switch (json['type']) {
       'log' => decodeLogEntry(json),
+      'line' => json['value'] as String? ?? '',
       'operation' => CompletedOperation(
         label: json['label'] as String? ?? '',
         success: json['success'] as bool? ?? true,

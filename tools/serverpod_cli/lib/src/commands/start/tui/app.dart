@@ -31,6 +31,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
+  VoidCallback? _onStopStack;
 
   @override
   ServerWatchState get state => _state;
@@ -50,6 +51,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
+    widgetState.onStopStack = _onStopStack;
   }
 
   @override
@@ -101,6 +103,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _onQuit = cb;
     _widgetState?.onQuit = cb;
   }
+
+  set onStopStack(VoidCallback? cb) {
+    _onStopStack = cb;
+    _widgetState?.onStopStack = cb;
+  }
 }
 
 /// Root TUI component for `serverpod start`.
@@ -132,6 +139,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
+  VoidCallback? onStopStack;
 
   bool _minSplashElapsed = false;
 
@@ -363,6 +371,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: _launchApp,
           onQuit: onQuit,
+          onStopStack: onStopStack,
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
           onStopOrCloseAppTab: _stopOrCloseAppTab,

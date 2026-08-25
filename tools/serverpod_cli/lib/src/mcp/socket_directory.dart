@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:stream_channel/stream_channel.dart';
 
 /// Canonical path of the MCP socket exposed by `serverpod start --watch`
@@ -12,9 +13,8 @@ import 'package:stream_channel/stream_channel.dart';
 /// so it is scoped, easy to discover, and ignored by VCS. There can be at
 /// most one `serverpod start --watch` process per project; a stale socket
 /// file left behind by a crashed runner is unlinked before the next bind.
-String serverpodMcpSocketPath(String serverDir) {
-  return p.join(serverDir, '.dart_tool', 'serverpod', 'mcp.sock');
-}
+String serverpodMcpSocketPath(String serverDir) =>
+    p.join(serverpodToolDirPath(serverDir), 'mcp.sock');
 
 /// Wraps [socket] in a [StreamChannel<String>] using line-delimited messages.
 ///
@@ -37,9 +37,17 @@ StreamChannel<String> socketChannel(Socket socket) {
 
   final outController = StreamController<String>();
   outController.stream.listen(
-    (line) => socket.write('$line\n'),
-    onDone: () => socket.close(),
+    (line) {
+      try {
+        socket.write('$line\n');
+      } on SocketException {
+        // Peer may have already disconnected
+      }
+    },
+    onDone: () => socket.close().catchError((_) {}),
   );
+
+  unawaited(socket.done.catchError((_) {}));
 
   return StreamChannel<String>(inStream, outController.sink);
 }
