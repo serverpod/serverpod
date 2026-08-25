@@ -483,6 +483,34 @@ void main() {
       },
     );
   });
+
+  test(
+    'Given an S3CompatCloudStorage using presigned PUT uploads, '
+    'when creating an upload description with default options, '
+    'then it returns an upload description',
+    () async {
+      final storage = S3CompatCloudStorage(
+        storageId: 'test-storage',
+        accessKey: 'test-access-key',
+        secretKey: 'test-secret-key',
+        bucket: 'test-bucket',
+        region: 'us-east-1',
+        public: true,
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.https('s3.us-east-1.amazonaws.com', '/'),
+        ),
+        uploadStrategy: PresignedPutUploadStrategy(),
+      );
+
+      await expectLater(
+        storage.createUploadDescription(
+          session: _FakeSession(),
+          path: 'uploads/file.txt',
+        ),
+        completion(isA<BinaryUploadDescription>()),
+      );
+    },
+  );
 }
 
 class _FakeSession implements Session {
