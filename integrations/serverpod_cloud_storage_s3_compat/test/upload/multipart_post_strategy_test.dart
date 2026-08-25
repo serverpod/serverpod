@@ -17,7 +17,7 @@ void main() {
     },
   );
 
-  group('Given a MultipartPostUploadStrategy with custom endpoints', () {
+  group('Given a MultipartPostUploadStrategy with custom endpoints,', () {
     late MultipartPostUploadStrategy strategy;
     late CustomEndpointConfig endpoints;
 
@@ -199,6 +199,45 @@ void main() {
         expect(
           policy['conditions'],
           contains(equals(['content-length-range', 0, 0])),
+        );
+      },
+    );
+
+    test(
+      'when creating direct upload description that expires in under a minute, '
+      'then the policy stays valid for the requested window',
+      () async {
+        const expiration = Duration(seconds: 30);
+        final before = DateTime.now().toUtc();
+
+        final description = await strategy.createUploadDescription(
+          accessKey: 'AKIAIOSFODNN7EXAMPLE',
+          secretKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
+          bucket: 'my-bucket',
+          region: 'us-east-1',
+          path: 'uploads/test-file.txt',
+          expiration: expiration,
+          maxFileSize: 1024,
+          public: true,
+          endpoints: endpoints,
+        );
+        final data = jsonDecode(description.encode()) as Map<String, dynamic>;
+        final fields = data['request-fields'] as Map<String, dynamic>;
+        final policy =
+            jsonDecode(
+                  utf8.decode(base64.decode(fields['Policy'] as String)),
+                )
+                as Map<String, dynamic>;
+
+        final expiresAt = DateTime.parse(policy['expiration'] as String);
+        final stillValidAt = before.add(
+          expiration - const Duration(seconds: 5),
+        );
+
+        expect(
+          expiresAt.isAfter(stillValidAt),
+          isTrue,
+          reason: 'Policy expires at $expiresAt, before $stillValidAt.',
         );
       },
     );

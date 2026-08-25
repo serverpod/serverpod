@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
@@ -383,4 +385,41 @@ void main() {
       });
     });
   });
+
+  test(
+    'Given a PresignedPutUploadStrategy, '
+    'when uploading data with custom metadata, '
+    'then the signed header names are lower case',
+    () async {
+      final server = await HttpServer.bind(InternetAddress.loopbackIPv4, 0);
+      addTearDown(() => server.close(force: true));
+
+      final authorization = server.first.then((request) async {
+        await request.drain<void>();
+        request.response.statusCode = 200;
+        await request.response.close();
+        return request.headers.value('authorization')!;
+      });
+
+      await PresignedPutUploadStrategy().uploadData(
+        accessKey: 'testAccessKey',
+        secretKey: 'testSecretKey',
+        bucket: 'test-bucket',
+        region: 'us-east-1',
+        data: ByteData(1),
+        path: 'uploads/test-file.txt',
+        public: false,
+        endpoints: CustomEndpointConfig(
+          baseUri: Uri.http('localhost:${server.port}', '/'),
+        ),
+        metadata: const FileMetadata(custom: {'UserId': '5'}),
+      );
+
+      final signedHeaders = RegExp(
+        r'SignedHeaders=([^,]+)',
+      ).firstMatch(await authorization)!.group(1);
+
+      expect(signedHeaders, contains('x-amz-meta-userid'));
+    },
+  );
 }

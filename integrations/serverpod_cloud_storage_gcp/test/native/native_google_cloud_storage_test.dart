@@ -729,7 +729,7 @@ void main() {
     });
   });
 
-  group('Given a NativeGoogleCloudStorage with signing credentials', () {
+  group('Given a NativeGoogleCloudStorage with signing credentials,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -837,6 +837,32 @@ void main() {
           contains('Quarterly%20report.pdf'),
         );
         expect(url.queryParameters, contains('X-Goog-Signature'));
+      },
+    );
+
+    test(
+      'when creating a temporary download URL with a download file name, '
+      'then the signed query percent-encodes reserved characters',
+      () async {
+        when(
+          () => mockObjects.get(
+            'test-bucket',
+            'downloads/report.pdf',
+            downloadOptions: any(named: 'downloadOptions'),
+          ),
+        ).thenAnswer((_) async => (gcs.Object()..size = '10'));
+
+        final url = await storage.temporaryDownloadUrl(
+          session: mockSession,
+          path: 'downloads/report.pdf',
+          options: const TemporaryDownloadUrlOptions(
+            downloadFileName: 'report.pdf',
+          ),
+        );
+
+        // GCS V4 signing requires everything outside A-Za-z0-9-._~ to be
+        // percent-encoded in the canonical query string.
+        expect(url.query, isNot(matches(RegExp(r"[!*'()]"))));
       },
     );
 
@@ -1135,7 +1161,7 @@ void main() {
     );
   });
 
-  group('Given a NativeGoogleCloudStorage with ADC (authClient) signing', () {
+  group('Given a NativeGoogleCloudStorage with ADC (authClient) signing,', () {
     late NativeGoogleCloudStorage storage;
     late MockStorageApi mockStorageApi;
     late MockObjectsResource mockObjects;
@@ -1149,7 +1175,7 @@ void main() {
       mockSession = MockSession();
       when(() => mockStorageApi.objects).thenReturn(mockObjects);
 
-      // Mock the IAM signBlob response — return a fixed signature for any
+      // Mock the IAM signBlob response - return a fixed signature for any
       // request to the signBlob endpoint.
       when(
         () => mockAuthClient.post(
