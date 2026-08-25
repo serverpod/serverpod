@@ -7,7 +7,7 @@ import 'database_connection.dart';
 import 'database_pool_manager.dart';
 import 'definition_restrictions.dart';
 import 'migration_runner.dart';
-import 'provider/io.dart' if (dart.library.html) 'provider/web.dart';
+import 'provider/io.dart' if (dart.library.js_interop) 'provider/web.dart';
 import 'serialization_manager.dart';
 
 /// Abstract interface for database providers.
