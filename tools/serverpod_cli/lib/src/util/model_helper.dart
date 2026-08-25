@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/util/unrendered_template_path.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 const String defaultModuleAlias = 'protocol';
@@ -211,10 +212,12 @@ class ModelHelper {
     }
 
     return modelSourceFileList.whereType<File>().where(
-      (file) => isModelFile(
-        file.path,
-        loadConfig: loadConfig,
-      ),
+      (file) =>
+          !isUnrenderedTemplatePath(file.path) &&
+          isModelFile(
+            file.path,
+            loadConfig: loadConfig,
+          ),
     );
   }
 
