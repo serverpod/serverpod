@@ -10,8 +10,10 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:test/test.dart';
 import 'package:vm_service/vm_service.dart';
 
+import '../../test_util/fake_runner_api.dart';
+
 void main() {
-  group('Given an McpSocketServer', skip: !hasUnixSocketSupport(), () {
+  group('Given an McpSocketServer,', skip: !hasUnixSocketSupport(), () {
     late Directory tempServerDir;
     late McpSocketServer server;
 
@@ -64,15 +66,64 @@ void main() {
     );
 
     test(
+      'when two clients connect at once, '
+      'then both are served and neither displaces the other',
+      () async {
+        var applyCalls = 0;
+        server.connect(
+          FakeRunnerApi()
+            ..onApplyMigrations = () async {
+              applyCalls++;
+            },
+        );
+
+        final first = await _connectMcpClient(server.socketPath);
+        final second = await _connectMcpClient(server.socketPath);
+        addTearDown(first.dispose);
+        addTearDown(second.dispose);
+
+        final firstResult = await first.connection.callTool(
+          CallToolRequest(name: 'apply_migrations'),
+        );
+        final secondResult = await second.connection.callTool(
+          CallToolRequest(name: 'apply_migrations'),
+        );
+
+        expect(firstResult.isError, anyOf(isNull, isFalse));
+        expect(secondResult.isError, anyOf(isNull, isFalse));
+        expect(applyCalls, 2);
+      },
+    );
+
+    test(
+      'when a runner is attached after a client connected, '
+      'then that client sees the new runner',
+      () async {
+        final client = await _connectMcpClient(server.socketPath);
+        addTearDown(client.dispose);
+
+        var applyCalls = 0;
+        server.connect(
+          FakeRunnerApi()
+            ..onApplyMigrations = () async {
+              applyCalls++;
+            },
+        );
+
+        final result = await client.connection.callTool(
+          CallToolRequest(name: 'apply_migrations'),
+        );
+
+        expect(result.isError, anyOf(isNull, isFalse));
+        expect(applyCalls, 1);
+      },
+    );
+
+    test(
       'when a client connects, '
       'then it can send and receive MCP messages',
       () async {
-        server.connect(
-          onApplyMigration: () async {},
-          getLogHistory: () => [],
-          getFlutterAppIds: () => [],
-          getFlutterLogHistory: (_) => [],
-        );
+        server.connect(FakeRunnerApi());
 
         final client = await Socket.connect(
           InternetAddress(server.socketPath, type: InternetAddressType.unix),
@@ -146,11 +197,12 @@ void main() {
           'Flutter log retained without a TUI.',
         );
         server.connect(
-          onApplyMigration: () async {},
-          getLogHistory: () => history.serverEntries.toList(),
-          getFlutterAppIds: () => ['admin'],
-          getFlutterLogHistory: (appId) =>
-              history.flutterLinesFor(appId).toList(),
+          FakeRunnerApi()
+            ..logHistory = history.serverEntries.toList()
+            ..flutterAppIds = ['admin']
+            ..flutterLogs = {
+              'admin': history.flutterLinesFor('admin').toList(),
+            },
         );
 
         final socket = await Socket.connect(
@@ -285,4 +337,26 @@ Future<void> _safeDelete(Directory dir) async {
   } on FileSystemException {
     // Best effort.
   }
+}
+
+/// Connects an MCP client to the socket at [socketPath] and initializes it.
+Future<({ServerConnection connection, Future<void> Function() dispose})>
+_connectMcpClient(String socketPath) async {
+  final socket = await Socket.connect(
+    InternetAddress(socketPath, type: InternetAddressType.unix),
+    0,
+  );
+  final client = MCPClient(
+    Implementation(name: 'test-client', version: '0.1.0'),
+  );
+  final connection = client.connectServer(socketChannel(socket));
+  await connection.initialize(
+    InitializeRequest(
+      protocolVersion: ProtocolVersion.latestSupported,
+      capabilities: ClientCapabilities(),
+      clientInfo: Implementation(name: 'test-client', version: '0.1.0'),
+    ),
+  );
+  connection.notifyInitialized();
+  return (connection: connection, dispose: connection.shutdown);
 }

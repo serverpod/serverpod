@@ -18,7 +18,6 @@ import 'package:serverpod_cli/src/commands/start/file_watcher.dart';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/kernel_compiler.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
-import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/native_assets_builder.dart';
 import 'package:serverpod_cli/src/commands/start/package_dependency_tracker.dart';
@@ -36,8 +35,9 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
-import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
-import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart';
+import 'package:serverpod_cli/src/runner/local_runner_api.dart';
+import 'package:serverpod_cli/src/runner/migration_result.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -886,39 +886,20 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   // point only ever has to await [shutdown.future]
   unawaited(session.done.then(shutdown.complete));
 
-  // Start MCP socket server for AI agent integration. Exposes the proxy
-  // URI (not the pod's) so MCP-initiated reloads flow through the same
-  // interceptor that IDE attach uses.
+  final runnerApi = LocalRunnerApi(
+    session: session,
+    flutterManager: flutterManager,
+    logHistory: logHistory,
+    config: config,
+    runMode: runMode,
+    vmServiceUri: () => proxy?.httpUri.toString(),
+    requestShutdown: shutdown.complete,
+  );
+
   McpSocketServer? mcpSocket = McpSocketServer(serverDir: serverDir);
   try {
     await mcpSocket.start();
-    mcpSocket.connect(
-      onApplyMigration: session.applyMigration,
-      onCreateMigration: ({String? tag, bool force = false}) =>
-          _createMigrationForMcp(config, tag: tag, force: force),
-      onCreateRepairMigration:
-          ({
-            String? tag,
-            bool force = false,
-            String? targetMigrationVersion,
-          }) => _createRepairMigrationForMcp(
-            config,
-            runMode: runMode,
-            tag: tag,
-            force: force,
-            targetMigrationVersion: targetMigrationVersion,
-          ),
-      onHotReload: session.forceReload,
-      onHotRestart: session.forceRestart,
-      getLogHistory: () => logHistory.serverEntries.toList(),
-      getFlutterAppIds: () => [for (final app in flutterManager.apps) app.id],
-      getFlutterLogHistory: (appId) =>
-          logHistory.flutterLinesFor(appId).toList(),
-      onSpawnFlutterApp: session.spawnFlutterApp,
-      getVmServiceUri: () => proxy?.httpUri.toString(),
-      getFlutterDtdUris: () => flutterManager.dtdUris,
-      vmServiceUriChanges: session.vmServiceUriChanges,
-    );
+    mcpSocket.connect(runnerApi);
     log.info('MCP server listening on ${mcpSocket.socketPath}');
   } on SocketException catch (e) {
     log.warning('Failed to start MCP server: $e');
@@ -930,6 +911,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   return WatchLoopReady(
     WatchLoopContext(
       session: session,
+      runnerApi: runnerApi,
       proxy: () => proxy,
       flutterManager: flutterManager,
       mcpSocket: mcpSocket,
@@ -1440,79 +1422,79 @@ Future<void> _runTuiBackend({
         shutdown.complete(exitCode);
         return;
       case WatchLoopReady(:final ctx):
+        final runner = ctx.runnerApi;
         // Offer Ctrl+R whenever a Flutter app could run here - even after a
         // `--no-flutter` start, where it acts as a "launch the app" button.
-        final apps = ctx.flutterManager.apps.toList();
+        final apps = runner.flutterApps;
         holder.state.canLaunchApps =
             apps.isNotEmpty &&
             runModeFromServerArgs(serverArgs) == 'development';
         holder.state.launchableApps = apps;
-        holder.state.isAppRunning = (appId) =>
-            ctx.flutterManager.isRunning(appId);
-        holder.state.isAppLaunching = (appId) =>
-            ctx.flutterManager.isLaunching(appId);
+        holder.state.isAppRunning = runner.isFlutterAppRunning;
+        holder.state.isAppLaunching = runner.isFlutterAppLaunching;
+        FlutterAppConfig? appAt(int index) {
+          final flutterApps = runner.flutterApps;
+          if (index < 0 || index >= flutterApps.length) return null;
+          return flutterApps[index];
+        }
+
         holder.onLaunchApp = (index) {
-          final flutterApps = ctx.flutterManager.apps.toList();
-          if (index < 0 || index >= flutterApps.length) return;
-          final app = flutterApps[index];
+          final app = appAt(index);
+          if (app == null) return;
           // Selecting an already-running app relaunches it; a stopped one is
           // launched. Either path focuses the app's tab via onEnsureAppTab.
-          final isRunning = ctx.flutterManager.isRunning(app.id);
+          final isRunning = runner.isFlutterAppRunning(app.id);
           runTrackedAction(
             holder,
             isRunning ? 'Relaunch ${app.name}' : 'Launch ${app.name}',
-            () => ctx.session.relaunchFlutterApp(app.id),
+            () => runner.restartFlutterApp(app.id),
           );
         };
         holder.onStopApp = (index) {
-          final flutterApps = ctx.flutterManager.apps.toList();
-          if (index < 0 || index >= flutterApps.length) return;
-          final app = flutterApps[index];
-          if (!ctx.flutterManager.isRunning(app.id)) return;
+          final app = appAt(index);
+          if (app == null || !runner.isFlutterAppRunning(app.id)) return;
           runTrackedAction(
             holder,
             'Stop ${app.name}',
-            () => ctx.session.stopFlutterApp(app.id),
+            () => runner.stopFlutterApp(app.id),
           );
         };
-        holder.onQuit = () => shutdown.complete(0);
+        holder.onQuit = runner.stop;
         holder.onHotReload = () {
-          runTrackedAction(holder, 'Hot reload', ctx.session.forceReload);
+          runTrackedAction(holder, 'Hot reload', runner.hotReload);
         };
         holder.onHotRestart = () {
           // While degraded (no server yet), the R action rebuilds and boots the
           // server via retryStart; once running it is an ordinary hot restart.
-          final running = ctx.session.isRunning;
+          final running = runner.isRunning;
           runTrackedAction(
             holder,
             running ? 'Hot restart' : 'Rebuild & start',
-            running ? ctx.session.forceRestart : ctx.session.retryStart,
+            running ? runner.hotRestart : runner.retryStart,
             allowWhenStartable: !running,
           );
         };
         holder.onRestartFlutterApp = () {
           runTrackedAction(
             holder,
-            ctx.session.isFlutterAppRunning
+            runner.isAnyFlutterAppRunning
                 ? 'Restart Flutter app'
                 : 'Start Flutter app',
             // Routed through the session so the relaunch is serialized behind
             // any in-flight reload/restart and guarded against re-spawning
             // during shutdown.
-            ctx.session.restartFlutterApp,
+            runner.restartFlutterApps,
           );
         };
         holder.onCreateMigration = ({bool force = false}) {
           runTrackedAction(
             holder,
             force ? 'Force-creating migration' : 'Creating migration',
-            () async {
-              await _runCreateMigrationForTui(
-                config,
-                force: force,
-              );
-              await _tryApplyMigrationForTui(ctx.session.applyMigration);
-            },
+            () => _createMigrationForTui(
+              runner,
+              () => runner.createMigration(force: force),
+              forceHint: 'Use ⇧+M to force-create it anyway.',
+            ),
           );
         };
         holder.onCreateRepairMigration = ({bool force = false}) {
@@ -1521,30 +1503,27 @@ Future<void> _runTuiBackend({
             force
                 ? 'Force-creating repair migration'
                 : 'Creating repair migration',
-            () async {
-              await _runCreateRepairMigrationForTui(
-                config,
-                runMode: runModeFromServerArgs(serverArgs),
-                force: force,
-              );
-              await _tryApplyMigrationForTui(ctx.session.applyMigration);
-            },
+            () => _createMigrationForTui(
+              runner,
+              () => runner.createRepairMigration(force: force),
+              forceHint: 'Use ⇧+P to force-create it anyway.',
+            ),
           );
         };
         holder.onApplyMigration = () {
           runTrackedAction(
             holder,
             'Applying migrations',
-            ctx.session.applyMigration,
+            runner.applyMigrations,
           );
         };
-        holder.state.serverReady = ctx.session.isRunning;
+        holder.state.serverReady = runner.isRunning;
         // Degraded start (no server yet): expose the manual "Start server"
         // recovery action. The watcher also auto-recovers in watch mode.
-        holder.state.serverStartable = !ctx.session.isRunning;
+        holder.state.serverStartable = !runner.isRunning;
         holder.markDirty();
 
-        if (ctx.session.isRunning) log.info(serverRunning);
+        if (runner.isRunning) log.info(serverRunning);
 
         // All termination triggers (Quit, SIGINT/SIGTERM, server crash,
         // unhandled errors) funnel through `shutdown`
@@ -1566,80 +1545,31 @@ Future<void> _runTuiBackend({
   }
 }
 
-/// Maps a [CreateMigrationOutcome] to a `(message, isError)` pair shared by
-/// the TUI and MCP wrappers. [forceHint] is the surface-specific instruction
-/// for retrying past warnings (e.g. `--force` for the CLI/TUI, `force: true`
-/// for the MCP tool).
-({String message, bool isError}) _describeCreateMigration(
-  CreateMigrationOutcome outcome, {
-  required String forceHint,
-  bool isServer = true,
-}) {
-  final label = '${isServer ? 'Server' : 'Client'} migration';
-  return switch (outcome) {
-    CreateMigrationCreated(:final versionName, :final migrationDirectory) => (
-      message: '$label "$versionName" created at $migrationDirectory.',
-      isError: false,
-    ),
-    CreateMigrationNoChanges() => (
-      message: '$label skipped. No changes detected.',
-      isError: false,
-    ),
-    CreateMigrationAborted() => (
-      message: '$label aborted due to warnings. $forceHint',
-      isError: true,
-    ),
-    CreateMigrationFailed(:final message) => (
-      message: message,
-      isError: true,
-    ),
-    CreateMigrationServerClientCreated(
-      :final serverResult,
-      :final clientResult,
-    ) =>
-      () {
-        final serverDescription = _describeCreateMigration(
-          serverResult,
-          forceHint: forceHint,
-          isServer: true,
-        );
-        final clientDescription = _describeCreateMigration(
-          clientResult,
-          forceHint: forceHint,
-          isServer: false,
-        );
-        return (
-          message: '${serverDescription.message}\n${clientDescription.message}',
-          isError: serverDescription.isError || clientDescription.isError,
-        );
-      }(),
-  };
-}
-
-/// Runs `create-migration` for the TUI's Create Migration button.
+/// Runs one of [runner]'s migration commands for a TUI button.
 ///
-/// Logs the outcome; throws on failure so [runTrackedAction] marks the
-/// operation red.
-Future<void> _runCreateMigrationForTui(
-  GeneratorConfig config, {
-  bool force = false,
+/// Logs the outcome and, when the command failed, throws so [runTrackedAction]
+/// marks the operation red. [forceHint] is the key binding that retries past
+/// warnings, appended only when the command actually stopped for want of
+/// `force` - [MigrationResult] carries no hint of its own, since the terminal
+/// UI words it as a key binding and MCP as a tool argument.
+///
+/// A successful create is followed by an apply, whose failure is reported
+/// without disturbing the tracked status of the create that did succeed.
+Future<void> _createMigrationForTui(
+  RunnerApi runner,
+  Future<MigrationResult> Function() create, {
+  required String forceHint,
 }) async {
-  final outcome = await createMigrationAction(config: config, force: force);
-  final result = _describeCreateMigration(
-    outcome,
-    forceHint: 'Use ⇧+M to force-create it anyway.',
-  );
-  if (result.isError) throw Exception(result.message);
-  log.info(result.message);
-}
+  final result = await create();
 
-/// Applies a newly created migration without changing the tracked status of
-/// the successful create operation if applying it fails.
-Future<void> _tryApplyMigrationForTui(
-  Future<void> Function() applyMigration,
-) async {
+  if (result.isError) {
+    final hint = result.abortedForWarnings ? ' $forceHint' : '';
+    throw Exception('${result.message}$hint');
+  }
+  log.info(result.message);
+
   try {
-    await applyMigration();
+    await runner.applyMigrations();
   } catch (error, stackTrace) {
     log.error(
       'Failed to apply migration: $error.',
@@ -1647,101 +1577,4 @@ Future<void> _tryApplyMigrationForTui(
     );
     log.info('Press A to retry apply migration');
   }
-}
-
-/// Runs `create-migration` for the MCP `create_migration` tool. Returns a
-/// structured result so the MCP server can flag errors.
-Future<CreateMigrationMcpResult> _createMigrationForMcp(
-  GeneratorConfig config, {
-  String? tag,
-  bool force = false,
-}) async {
-  final outcome = await createMigrationAction(
-    config: config,
-    tag: tag,
-    force: force,
-  );
-  final result = _describeCreateMigration(
-    outcome,
-    forceHint: 'Call again with `force: true` to create it anyway.',
-  );
-  final followUp = outcome is CreateMigrationCreated
-      ? ' Call `apply_migrations` to run it against the database.'
-      : '';
-  return CreateMigrationMcpResult(
-    message: result.message + followUp,
-    isError: result.isError,
-  );
-}
-
-/// Runs `create-repair-migration` for the TUI's Repair Migration button.
-///
-/// Logs the outcome; throws on failure so [runTrackedAction] marks the
-/// operation red.
-Future<void> _runCreateRepairMigrationForTui(
-  GeneratorConfig config, {
-  required String runMode,
-  bool force = false,
-}) async {
-  final File? file;
-  try {
-    file = await createRepairMigrationAction(
-      config: config,
-      runMode: runMode,
-      force: force,
-    );
-  } on MigrationAbortedException {
-    log.info('Use ⇧+P to force-create it anyway.');
-    rethrow;
-  }
-
-  if (file == null) {
-    log.info('Repair migration skipped. No schema drift detected.');
-    return;
-  }
-  final versionName = p.basenameWithoutExtension(file.path);
-  log.info('Repair migration "$versionName" created at ${file.path}.');
-}
-
-/// Runs `create-repair-migration` for the MCP `create_repair_migration` tool.
-/// Returns a structured result so the MCP server can flag errors.
-Future<CreateMigrationMcpResult> _createRepairMigrationForMcp(
-  GeneratorConfig config, {
-  required String runMode,
-  String? tag,
-  bool force = false,
-  String? targetMigrationVersion,
-}) async {
-  final File? file;
-  try {
-    file = await createRepairMigrationAction(
-      config: config,
-      tag: tag,
-      runMode: runMode,
-      force: force,
-      targetMigrationVersion: targetMigrationVersion,
-    );
-  } on MigrationAbortedException {
-    return const CreateMigrationMcpResult(
-      message:
-          'Repair migration aborted due to warnings. '
-          'Call again with `force: true` to create it anyway.',
-      isError: true,
-    );
-  } on Exception catch (e) {
-    return CreateMigrationMcpResult(message: '$e', isError: true);
-  }
-
-  if (file == null) {
-    return const CreateMigrationMcpResult(
-      message: 'Repair migration skipped. No schema drift detected.',
-    );
-  }
-
-  final versionName = p.basenameWithoutExtension(file.path);
-  return CreateMigrationMcpResult(
-    message:
-        'Repair migration "$versionName" created at ${file.path}. '
-        'Call `apply_migrations` to run it against the database.',
-  );
 }

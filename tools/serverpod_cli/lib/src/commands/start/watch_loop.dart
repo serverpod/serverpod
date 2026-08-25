@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -33,9 +34,14 @@ final class WatchLoopAborted extends WatchLoopSetupResult {
 class WatchLoopContext {
   final WatchSession session;
 
-  /// Resolves the server VM-service proxy at call time. A function rather than
-  /// a value because a degraded start has no proxy yet — it is mounted only
-  /// when the server first boots, after this context is constructed.
+  /// The runner's capabilities over [session], for whichever surface renders
+  /// this context.
+  final RunnerApi runnerApi;
+
+  /// Resolves the server VM-service proxy at call time.
+  ///
+  /// A function rather than a value, since a degraded start has no proxy until
+  /// the server first boots.
   final VmServiceProxy? Function() proxy;
   final FlutterAppManager flutterManager;
   final McpSocketServer? mcpSocket;
@@ -47,6 +53,7 @@ class WatchLoopContext {
 
   WatchLoopContext({
     required this.session,
+    required this.runnerApi,
     required this.proxy,
     required this.flutterManager,
     required this.mcpSocket,
