@@ -63,6 +63,13 @@ class RunnerManifestPublisher {
     await _write();
   }
 
+  /// Replaces the published manifest, e.g. when the pod reports the addresses
+  /// its listeners resolved to.
+  Future<void> replace(RunnerManifest manifest) {
+    _manifest = manifest;
+    return _write();
+  }
+
   /// Stops republishing and removes the manifest.
   Future<void> dispose() async {
     await _stopRepublishing();

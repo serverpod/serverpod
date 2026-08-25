@@ -331,8 +331,11 @@ of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
 Fallback applies when another Serverpod runner holds the port, which the runner
-recognizes by the manifest in the owning directory. A port held by anything else
-is an error.
+recognizes by that port appearing among the `servers` addresses a live runner
+published in its own manifest. Candidate runners are looked for in the sibling
+worktrees of this repository, but a live runner is only credited with the ports
+it actually claims: one bound elsewhere is not a reason to move aside. A port
+held by anything else is an error.
 
 Two consequences elsewhere.
 
