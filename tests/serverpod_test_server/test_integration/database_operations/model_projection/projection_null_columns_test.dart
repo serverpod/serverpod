@@ -407,5 +407,58 @@ void main() async {
         expect(descriptions, containsAll(['First order', 'Second order']));
       },
     );
+
+    test(
+      'Given organization with both object relation (city) and list relation (people) when querying with findAsJson selecting only name and omitting root id then list relation and object relation resolve correctly and internal id is not returned',
+      () async {
+        var city = await City.db.insertRow(
+          session,
+          City(name: 'Stockholm'),
+        );
+        var org = await Organization.db.insertRow(
+          session,
+          Organization(name: 'Serverpod AB', cityId: city.id),
+        );
+        await Person.db.insertRow(
+          session,
+          Person(name: 'Alice', organizationId: org.id!),
+        );
+        await Person.db.insertRow(
+          session,
+          Person(name: 'Charlie', organizationId: org.id!),
+        );
+
+        var results = await Organization.db.findAsJson(
+          session,
+          where: (t) => t.name.equals('Serverpod AB'),
+          select: (org) => [org.name],
+          include: Organization.include(
+            city: City.include(
+              select: (city) => [city.name],
+            ),
+            people: Person.includeList(
+              select: (person) => [person.name],
+            ),
+          ),
+        );
+
+        expect(results.length, 1);
+        var row = results.first;
+        expect(row['name'], 'Serverpod AB');
+        expect(row.containsKey('id'), isFalse);
+        expect(row['city'], isA<Map<String, dynamic>>());
+        expect(row['city']['name'], 'Stockholm');
+        expect(row['city'].containsKey('id'), isFalse);
+
+        var people = row['people'] as List;
+        expect(people.length, 2);
+        for (var person in people) {
+          expect(person, isA<Map<String, dynamic>>());
+          expect(person.containsKey('name'), isTrue);
+          expect(person.containsKey('id'), isFalse);
+          expect(person.containsKey('organizationId'), isFalse);
+        }
+      },
+    );
   });
 }

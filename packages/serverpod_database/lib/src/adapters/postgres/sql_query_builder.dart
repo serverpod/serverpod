@@ -64,7 +64,7 @@ class SelectQueryBuilder {
       // map the results back to the parent object.
       var foreignColumn = _listQueryAdditions!.foreignColumn;
       var hasFk = selectColumns.any(
-        (c) => c.columnName == foreignColumn.columnName,
+        (c) => c.queryAlias == foreignColumn.queryAlias,
       );
       if (!hasFk) {
         selectColumns.add(foreignColumn);
@@ -75,7 +75,7 @@ class SelectQueryBuilder {
       // Ensure the table's primary key is selected when list relations are included,
       // as it is required to extract IDs to query the child relations.
       var hasId = selectColumns.any(
-        (c) => c.columnName == _table.id.columnName,
+        (c) => c.queryAlias == _table.id.queryAlias,
       );
       if (!hasId) {
         selectColumns.add(_table.id);
