@@ -51,7 +51,7 @@ jobs:
       - name: Install all dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
 
       - name: Activate Serverpod CLI from source
         uses: ./.github/actions/retry

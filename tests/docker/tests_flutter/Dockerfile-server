@@ -10,6 +10,12 @@ WORKDIR /app
 # Copy the whole serverpod repo into the container.
 COPY . .
 
+# The server image is Dart-only, so Flutter packages must be excluded from the
+# workspace before `dart pub get`. The GitHub Actions job uses
+# .github/actions/use-dart-only-workspace; reuse that same helper here because
+# the override generated on the runner is not part of the Docker build context.
+RUN .github/actions/use-dart-only-workspace/write-overrides.sh /app
+
 # Install dependencies for test server.
 WORKDIR tests/serverpod_test_server
 RUN dart pub get
