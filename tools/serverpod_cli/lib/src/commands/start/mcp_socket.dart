@@ -2,47 +2,27 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 import 'mcp_server.dart';
 
 /// Manages a Unix socket that accepts MCP client connections.
 ///
-/// Each `serverpod start --watch` process listens on
-/// `<serverDir>/.dart_tool/serverpod/mcp.sock`. There is at most one socket
-/// per server project; a stale file left behind by a crashed previous run
-/// is unlinked before binding. Clients connect to interact with the running
-/// dev environment via JSON-RPC (MCP protocol). Only one client connection
-/// is active at a time.
+/// One per server project, at `<serverDir>/.dart_tool/serverpod/mcp.sock`.
+/// Clients speak JSON-RPC and drive the running dev environment.
+///
+/// Several may be attached at once, and [RunnerApi] serializes conflicting
+/// commands between them.
 class McpSocketServer {
   /// Absolute path to this server's socket file.
   final String socketPath;
 
   ServerSocket? _serverSocket;
-  Socket? _clientSocket;
-  ServerpodMcpServer? _mcpServer;
-  Future<void>? _pendingShutdown;
+  final Set<ServerpodMcpServer> _mcpServers = {};
+  final Set<Socket> _clientSockets = {};
+  InProcessRunnerApi? _runner;
   bool _closing = false;
-
-  /// Callbacks wired once via [connect].
-  Future<void> Function()? _onApplyMigration;
-  Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
-  _onCreateMigration;
-  Future<CreateMigrationMcpResult> Function({
-    String? tag,
-    bool force,
-    String? targetMigrationVersion,
-  })?
-  _onCreateRepairMigration;
-  Future<void> Function()? _onHotReload;
-  Future<void> Function()? _onHotRestart;
-  List<Object> Function()? _getLogHistory;
-  List<String> Function()? _getFlutterAppIds;
-  List<String> Function(String appId)? _getFlutterLogHistory;
-  Future<bool> Function(String appId)? _onSpawnFlutterApp;
-  String? Function()? _getVmServiceUri;
-  Map<String, String?> Function()? _getFlutterDtdUris;
-  Stream<void>? _vmServiceUriChanges;
 
   McpSocketServer({required String serverDir})
     : socketPath = serverpodMcpSocketPath(serverDir);
@@ -56,66 +36,28 @@ class McpSocketServer {
     _serverSocket!.listen(_handleConnection);
   }
 
-  /// Wire the MCP server to watch session callbacks. Can be called before or
-  /// after a client connects.
+  /// Wires the MCP servers to [runner].
   ///
-  /// Log-history callbacks are required because they belong to the watch
-  /// session, not to an optional presentation layer such as the TUI.
-  void connect({
-    required Future<void> Function() onApplyMigration,
-    required List<Object> Function() getLogHistory,
-    required List<String> Function() getFlutterAppIds,
-    required List<String> Function(String appId) getFlutterLogHistory,
-    Future<CreateMigrationMcpResult> Function({String? tag, bool force})?
-    onCreateMigration,
-    Future<CreateMigrationMcpResult> Function({
-      String? tag,
-      bool force,
-      String? targetMigrationVersion,
-    })?
-    onCreateRepairMigration,
-    Future<void> Function()? onHotReload,
-    Future<void> Function()? onHotRestart,
-    Future<bool> Function(String appId)? onSpawnFlutterApp,
-    String? Function()? getVmServiceUri,
-    Map<String, String?> Function()? getFlutterDtdUris,
-    Stream<void>? vmServiceUriChanges,
-  }) {
-    _onApplyMigration = onApplyMigration;
-    _onCreateMigration = onCreateMigration;
-    _onCreateRepairMigration = onCreateRepairMigration;
-    _onHotReload = onHotReload;
-    _onHotRestart = onHotRestart;
-    _getLogHistory = getLogHistory;
-    _getFlutterAppIds = getFlutterAppIds;
-    _getFlutterLogHistory = getFlutterLogHistory;
-    _onSpawnFlutterApp = onSpawnFlutterApp;
-    _getVmServiceUri = getVmServiceUri;
-    _getFlutterDtdUris = getFlutterDtdUris;
-    _vmServiceUriChanges = vmServiceUriChanges;
-    final server = _mcpServer;
-    if (server != null) {
-      server.onApplyMigration = onApplyMigration;
-      server.onCreateMigration = onCreateMigration;
-      server.onCreateRepairMigration = onCreateRepairMigration;
-      server.onHotReload = onHotReload;
-      server.onHotRestart = onHotRestart;
-      server.getLogHistory = getLogHistory;
-      server.getFlutterAppIds = getFlutterAppIds;
-      server.getFlutterLogHistory = getFlutterLogHistory;
-      server.onSpawnFlutterApp = onSpawnFlutterApp;
-      server.getVmServiceUri = getVmServiceUri;
-      server.getFlutterDtdUris = getFlutterDtdUris;
-      server.vmServiceUriChanges = vmServiceUriChanges;
+  /// Callable before or after clients connect. Already-connected ones are
+  /// updated in place.
+  void connect(InProcessRunnerApi runner) {
+    _runner = runner;
+    for (final server in _mcpServers) {
+      server.runner = runner;
     }
   }
 
-  /// Shut down the socket server and clean up.
+  /// Shuts the socket server and every connected client down.
   Future<void> close() async {
     _closing = true;
-    await _pendingShutdown;
-    await _mcpServer?.shutdown();
-    _clientSocket?.destroy();
+    await Future.wait([
+      for (final server in _mcpServers.toList()) server.shutdown(),
+    ]);
+    _mcpServers.clear();
+    for (final socket in _clientSockets.toList()) {
+      socket.destroy();
+    }
+    _clientSockets.clear();
     await _serverSocket?.close();
     try {
       File(socketPath).deleteSync();
@@ -124,58 +66,23 @@ class McpSocketServer {
     }
   }
 
-  Future<void> _handleConnection(Socket socket) async {
-    // Serialize connection handling - wait for any in-flight shutdown.
-    await _pendingShutdown;
-
+  void _handleConnection(Socket socket) {
     // Reject connections that arrive after close() has started.
     if (_closing) {
       socket.destroy();
       return;
     }
 
-    // Only one client at a time - shut down previous.
-    final shutdown = _mcpServer?.shutdown();
-    if (shutdown != null) {
-      _pendingShutdown = shutdown;
-      await shutdown;
-      _pendingShutdown = null;
-    }
+    _clientSockets.add(socket);
 
-    // Re-check after awaiting - close() may have been called in the meantime.
-    if (_closing) {
-      socket.destroy();
-      return;
-    }
-
-    _clientSocket?.destroy();
-    _clientSocket = socket;
-
-    final channel = socketChannel(socket);
-    final server = ServerpodMcpServer(channel);
-    _mcpServer = server;
-
-    // Wire callbacks if already connected.
-    server.onApplyMigration = _onApplyMigration;
-    server.onCreateMigration = _onCreateMigration;
-    server.onCreateRepairMigration = _onCreateRepairMigration;
-    server.onHotReload = _onHotReload;
-    server.onHotRestart = _onHotRestart;
-    server.getLogHistory = _getLogHistory;
-    server.getFlutterAppIds = _getFlutterAppIds;
-    server.getFlutterLogHistory = _getFlutterLogHistory;
-    server.onSpawnFlutterApp = _onSpawnFlutterApp;
-    server.getVmServiceUri = _getVmServiceUri;
-    server.getFlutterDtdUris = _getFlutterDtdUris;
-    server.vmServiceUriChanges = _vmServiceUriChanges;
+    final server = ServerpodMcpServer(socketChannel(socket))..runner = _runner;
+    _mcpServers.add(server);
 
     // Clean up on disconnect.
     unawaited(
       server.done.then((_) {
-        if (_mcpServer == server) {
-          _mcpServer = null;
-          _clientSocket = null;
-        }
+        _mcpServers.remove(server);
+        _clientSockets.remove(socket);
       }),
     );
   }

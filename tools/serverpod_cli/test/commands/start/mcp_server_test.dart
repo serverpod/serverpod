@@ -3,11 +3,21 @@ import 'dart:convert';
 
 import 'package:dart_mcp/client.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_server.dart';
+import 'package:serverpod_cli/src/runner/migration_result.dart';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:test/test.dart';
 
-/// Creates a connected server and client connection for testing.
-Future<({ServerpodMcpServer server, ServerConnection connection})>
+import '../../test_util/fake_runner_api.dart';
+
+/// Creates a connected server and client connection for testing, with a
+/// [FakeRunnerApi] already attached for the test to configure.
+Future<
+  ({
+    ServerpodMcpServer server,
+    ServerConnection connection,
+    FakeRunnerApi runner,
+  })
+>
 _createPair() async {
   final serverToClient = StreamController<String>();
   final clientToServer = StreamController<String>();
@@ -21,7 +31,8 @@ _createPair() async {
     clientToServer.sink,
   );
 
-  final server = ServerpodMcpServer(serverChannel);
+  final runner = FakeRunnerApi();
+  final server = ServerpodMcpServer(serverChannel)..runner = runner;
   final client = MCPClient(
     Implementation(name: 'test-client', version: '0.1.0'),
   );
@@ -36,18 +47,20 @@ _createPair() async {
     ),
   );
 
-  return (server: server, connection: connection);
+  return (server: server, connection: connection, runner: runner);
 }
 
 void main() {
-  group('Given a ServerpodMcpServer', () {
+  group('Given a ServerpodMcpServer,', () {
     late ServerpodMcpServer server;
     late ServerConnection connection;
+    late FakeRunnerApi runner;
 
     setUp(() async {
       final pair = await _createPair();
       server = pair.server;
       connection = pair.connection;
+      runner = pair.runner;
     });
 
     tearDown(() async {
@@ -78,7 +91,9 @@ void main() {
       },
     );
 
-    group('with no connected callback', () {
+    group('with no runner attached,', () {
+      setUp(() => server.runner = null);
+
       test(
         'when calling apply_migrations, '
         'then it returns an error',
@@ -191,13 +206,13 @@ void main() {
       );
     });
 
-    group('with a connected callback', () {
+    group('with a runner attached,', () {
       test(
         'when calling apply_migrations, '
         'then it invokes the callback and returns success',
         () async {
           var called = false;
-          server.onApplyMigration = () async {
+          runner.onApplyMigrations = () async {
             called = true;
           };
 
@@ -218,7 +233,7 @@ void main() {
         'when the callback throws, '
         'then it returns an error with the message',
         () async {
-          server.onApplyMigration = () async {
+          runner.onApplyMigrations = () async {
             throw Exception('database locked');
           };
 
@@ -240,10 +255,10 @@ void main() {
         () async {
           String? receivedTag;
           bool? receivedForce;
-          server.onCreateMigration = ({String? tag, bool force = false}) async {
+          runner.onCreateMigration = ({String? tag, bool force = false}) async {
             receivedTag = tag;
             receivedForce = force;
-            return const CreateMigrationMcpResult(
+            return const MigrationResult(
               message: 'Migration "v1" created at /tmp/v1.',
             );
           };
@@ -268,10 +283,10 @@ void main() {
         () async {
           String? receivedTag;
           bool? receivedForce;
-          server.onCreateMigration = ({String? tag, bool force = false}) async {
+          runner.onCreateMigration = ({String? tag, bool force = false}) async {
             receivedTag = tag;
             receivedForce = force;
-            return const CreateMigrationMcpResult(message: 'ok');
+            return const MigrationResult(message: 'ok');
           };
 
           await connection.callTool(
@@ -290,8 +305,8 @@ void main() {
         'when create_migration returns an error result, '
         'then the tool result is flagged as error',
         () async {
-          server.onCreateMigration = ({String? tag, bool force = false}) async {
-            return const CreateMigrationMcpResult(
+          runner.onCreateMigration = ({String? tag, bool force = false}) async {
+            return const MigrationResult(
               message: 'database feature disabled',
               isError: true,
             );
@@ -313,7 +328,7 @@ void main() {
         'when the create_migration callback throws, '
         'then the tool result is an error with the message',
         () async {
-          server.onCreateMigration = ({String? tag, bool force = false}) async {
+          runner.onCreateMigration = ({String? tag, bool force = false}) async {
             throw Exception('model parse failed');
           };
 
@@ -334,7 +349,7 @@ void main() {
         'then it invokes the callback and returns success',
         () async {
           var called = false;
-          server.onHotRestart = () async {
+          runner.onHotRestart = () async {
             called = true;
           };
 
@@ -355,7 +370,7 @@ void main() {
         'when the hot_restart callback throws, '
         'then the tool result is an error with the message',
         () async {
-          server.onHotRestart = () async {
+          runner.onHotRestart = () async {
             throw Exception('createServer null');
           };
 
@@ -378,16 +393,16 @@ void main() {
           String? receivedTag;
           bool? receivedForce;
           String? receivedVersion;
-          server.onCreateRepairMigration =
+          runner.onCreateRepairMigration =
               ({
                 String? tag,
                 bool force = false,
-                String? targetMigrationVersion,
+                String? targetVersion,
               }) async {
                 receivedTag = tag;
                 receivedForce = force;
-                receivedVersion = targetMigrationVersion;
-                return const CreateMigrationMcpResult(
+                receivedVersion = targetVersion;
+                return const MigrationResult(
                   message: 'Repair migration "v1" created at /tmp/v1.sql.',
                 );
               };
@@ -414,16 +429,16 @@ void main() {
           String? receivedTag;
           bool? receivedForce;
           String? receivedVersion;
-          server.onCreateRepairMigration =
+          runner.onCreateRepairMigration =
               ({
                 String? tag,
                 bool force = false,
-                String? targetMigrationVersion,
+                String? targetVersion,
               }) async {
                 receivedTag = tag;
                 receivedForce = force;
-                receivedVersion = targetMigrationVersion;
-                return const CreateMigrationMcpResult(message: 'ok');
+                receivedVersion = targetVersion;
+                return const MigrationResult(message: 'ok');
               };
 
           await connection.callTool(
@@ -447,13 +462,13 @@ void main() {
         'when create_repair_migration returns an error result, '
         'then the tool result is flagged as error',
         () async {
-          server.onCreateRepairMigration =
+          runner.onCreateRepairMigration =
               ({
                 String? tag,
                 bool force = false,
-                String? targetMigrationVersion,
+                String? targetVersion,
               }) async {
-                return const CreateMigrationMcpResult(
+                return const MigrationResult(
                   message: 'No repair migration created.',
                   isError: true,
                 );
@@ -475,11 +490,11 @@ void main() {
         'when the create_repair_migration callback throws, '
         'then the tool result is an error with the message',
         () async {
-          server.onCreateRepairMigration =
+          runner.onCreateRepairMigration =
               ({
                 String? tag,
                 bool force = false,
-                String? targetMigrationVersion,
+                String? targetVersion,
               }) async {
                 throw Exception('live db unreachable');
               };
@@ -495,16 +510,15 @@ void main() {
           );
         },
       );
-      group('with Flutter log history for one app', () {
+      group('with Flutter log history for one app,', () {
         setUp(() {
-          server.getFlutterAppIds = () => ['admin'];
-          server.getFlutterLogHistory = (appId) => switch (appId) {
-            'admin' => [
+          runner.flutterAppIds = ['admin'];
+          runner.flutterLogs = {
+            'admin': [
               'line 1',
               'line 2',
               'line 3',
             ],
-            _ => <String>[],
           };
         });
 
@@ -544,13 +558,12 @@ void main() {
         );
       });
 
-      group('with Flutter log history for several apps', () {
+      group('with Flutter log history for several apps,', () {
         setUp(() {
-          server.getFlutterAppIds = () => ['admin', 'customer'];
-          server.getFlutterLogHistory = (appId) => switch (appId) {
-            'admin' => ['a'],
-            'customer' => ['b', 'c'],
-            _ => <String>[],
+          runner.flutterAppIds = ['admin', 'customer'];
+          runner.flutterLogs = {
+            'admin': ['a'],
+            'customer': ['b', 'c'],
           };
         });
 
@@ -589,15 +602,15 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app wired to a single app', () {
+      group('with spawn_flutter_app wired to a single app,', () {
         late List<String> spawnCalls;
         late bool reportAlreadyRunning;
 
         setUp(() {
           spawnCalls = [];
           reportAlreadyRunning = false;
-          server.getFlutterAppIds = () => ['admin'];
-          server.onSpawnFlutterApp = (appId) async {
+          runner.flutterAppIds = ['admin'];
+          runner.onLaunchFlutterApp = (appId) async {
             spawnCalls.add(appId);
             return reportAlreadyRunning;
           };
@@ -646,7 +659,7 @@ void main() {
           'when the launch callback throws, '
           'then it returns an error naming the app',
           () async {
-            server.onSpawnFlutterApp = (_) async =>
+            runner.onLaunchFlutterApp = (_) async =>
                 throw StateError('flutter missing');
 
             final result = await connection.callTool(
@@ -662,13 +675,13 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app wired to several apps', () {
+      group('with spawn_flutter_app wired to several apps,', () {
         late List<String> spawnCalls;
 
         setUp(() {
           spawnCalls = [];
-          server.getFlutterAppIds = () => ['admin', 'customer'];
-          server.onSpawnFlutterApp = (appId) async {
+          runner.flutterAppIds = ['admin', 'customer'];
+          runner.onLaunchFlutterApp = (appId) async {
             spawnCalls.add(appId);
             return false;
           };
@@ -731,10 +744,10 @@ void main() {
         );
       });
 
-      group('with spawn_flutter_app but no configured apps', () {
+      group('with spawn_flutter_app but no configured apps,', () {
         setUp(() {
-          server.getFlutterAppIds = () => [];
-          server.onSpawnFlutterApp = (_) async => false;
+          runner.flutterAppIds = [];
+          runner.onLaunchFlutterApp = (_) async => false;
         });
 
         test(
@@ -754,11 +767,11 @@ void main() {
         );
       });
 
-      group('with launched Flutter apps', () {
+      group('with launched Flutter apps,', () {
         setUp(() {
           // "portal" is launched but not ready (null); "admin" is ready (URI).
           // A non-launched app would simply be absent from the map.
-          server.getFlutterDtdUris = () => {
+          runner.flutterDtdUris = {
             'admin': 'ws://127.0.0.1:9100/ws',
             'portal': null,
           };
@@ -781,9 +794,9 @@ void main() {
         );
       });
 
-      group('with no launched Flutter apps', () {
+      group('with no launched Flutter apps,', () {
         setUp(() {
-          server.getFlutterDtdUris = () => {};
+          runner.flutterDtdUris = {};
         });
 
         test(

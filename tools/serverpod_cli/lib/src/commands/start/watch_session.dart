@@ -187,6 +187,23 @@ class WatchSession {
     });
   }
 
+  /// Runs [body] behind any in-flight reload, restart or migration.
+  ///
+  /// For work that touches what those touch, such as writing a migration while
+  /// another caller applies one. Throws a [StateError] if the session has been
+  /// disposed, before or while [body] waits its turn.
+  Future<T> runSerialized<T>(Future<T> Function() body) {
+    if (_state == SessionState.disposed) {
+      throw StateError('Session has been disposed.');
+    }
+    return _chain(() async {
+      if (_state == SessionState.disposed) {
+        throw StateError('Session has been disposed.');
+      }
+      return body();
+    });
+  }
+
   final StreamController<void> _vmServiceUriChangesController =
       StreamController<void>.broadcast();
 
@@ -697,7 +714,7 @@ class WatchSession {
   /// success, compiles and boots the server.
   ///
   /// This is the manual counterpart to the automatic recovery that the file
-  /// watcher drives in watch mode — it is the recovery path for `--no-watch`,
+  /// watcher drives in watch mode - it is the recovery path for `--no-watch`,
   /// where no watcher exists. A no-op if a server is already running (use
   /// [forceRestart] then). Throws a [StateError] if the session has been
   /// disposed.

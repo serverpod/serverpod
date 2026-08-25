@@ -1121,7 +1121,7 @@ void main() {
     );
   });
 
-  group('Given applyMigration is called with an in-place action', () {
+  group('Given applyMigration is called with an in-place action,', () {
     late void Function() migrationRunner;
     late int actionCalls;
     late Completer<void>? gate;
@@ -1231,6 +1231,26 @@ void main() {
         await secondCall;
 
         expect(actionCalls, 2);
+      },
+    );
+
+    test(
+      'when other work is queued behind an apply, '
+      'then it runs after the apply finishes',
+      () async {
+        gate = Completer<void>();
+        final apply = inPlaceSession.applyMigration();
+        var ran = false;
+        final queued = inPlaceSession.runSerialized(() async => ran = true);
+
+        await Future<void>.delayed(Duration.zero);
+        expect(ran, isFalse, reason: 'queued work must wait for the apply');
+
+        gate!.complete();
+        await apply;
+        await queued;
+
+        expect(ran, isTrue);
       },
     );
   });
