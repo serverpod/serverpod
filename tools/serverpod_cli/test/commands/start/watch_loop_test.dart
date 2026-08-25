@@ -14,6 +14,8 @@ import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:test/fake.dart';
 import 'package:test/test.dart';
 
+import '../../test_util/fake_runner_api.dart';
+
 CompileResult _successResult({String? dillOutput = '/out.dill'}) {
   return CompileResultInternal.create(
     dillOutput: dillOutput,
@@ -153,7 +155,7 @@ void main() {
     );
   });
 
-  group('Given a WatchLoopContext', () {
+  group('Given a WatchLoopContext,', () {
     late _FakeCompiler compiler;
     late _FakeServer server;
     late _FakeProxy proxy;
@@ -212,6 +214,7 @@ void main() {
     WatchLoopContext build({bool startedDocker = false}) {
       return WatchLoopContext(
         session: _buildSession(compiler, server),
+        runnerApi: FakeRunnerApi(),
         proxy: () => proxy,
         flutterManager: flutterManager,
         mcpSocket: mcp,
@@ -307,6 +310,7 @@ void main() {
       () async {
         final ctx = WatchLoopContext(
           session: _buildSession(compiler, server),
+          runnerApi: FakeRunnerApi(),
           proxy: () => null,
           flutterManager: flutterManager,
           mcpSocket: null,
