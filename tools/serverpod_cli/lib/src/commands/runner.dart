@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/commands/start.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/watch_loop.dart';
 import 'package:serverpod_cli/src/commands/status.dart';
+import 'package:serverpod_cli/src/commands/stop.dart';
 import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -32,6 +33,7 @@ class RunnerCommand extends ServerpodCommand<OptionDefinition> {
     addSubcommand(RunnerStartCommand());
     addSubcommand(AttachCommand());
     addSubcommand(StatusCommand());
+    addSubcommand(StopCommand());
     addSubcommand(RunnerServeCommand());
   }
 
