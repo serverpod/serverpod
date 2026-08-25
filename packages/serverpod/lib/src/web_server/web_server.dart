@@ -148,9 +148,12 @@ class WebServer {
     }
 
     try {
+      // The port first bound rather than the configured one: a configured
+      // port of zero resolved to an ephemeral port then, and clients were
+      // built against that one.
       final server = await _app.serve(
         address: InternetAddress.anyIPv6,
-        port: _config.port,
+        port: _actualPort ?? _config.port,
         securityContext: _securityContext,
       );
       _actualPort = server.port;
@@ -164,7 +167,8 @@ class WebServer {
         e,
         stackTrace,
         message:
-            'Failed to bind socket, port ${_config.port} may already be in use.',
+            'Failed to bind socket, port ${_actualPort ?? _config.port} may '
+            'already be in use.',
       );
     }
     return _running;

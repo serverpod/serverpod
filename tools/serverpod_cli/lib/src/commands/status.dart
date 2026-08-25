@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/server_directory_finder.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
+import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodAddresses;
 
 /// Options for the `status` command.
 enum StatusOption<V> implements OptionDefinition<V> {
@@ -165,7 +166,7 @@ Future<RunnerResolution> resolveRunnerOrExit(String serverDir) async {
 }
 
 /// Prints the addresses a runner published, one line per server.
-void printServerUris(RunnerServerUris servers) {
+void printServerUris(ServerpodAddresses servers) {
   _printIfSet('  API:       ', servers.api);
   _printIfSet('  Insights:  ', servers.insights);
   _printIfSet('  Web:       ', servers.web);

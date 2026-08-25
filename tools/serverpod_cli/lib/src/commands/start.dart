@@ -36,6 +36,7 @@ import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/local_runner_api.dart';
+import 'package:serverpod_cli/src/runner/port_resolution.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart'
     show RunnerUnreachableException;
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
@@ -720,10 +721,42 @@ File? _findComposeFile(String serverDir) {
   return null;
 }
 
+/// Whether the stack serves web, and so whether a reload refreshes a browser.
+///
+/// [addresses] settles it once the pod has reported them. Before then the
+/// configuration answers. An unreadable configuration is no evidence of a
+/// missing web server, so that case keeps [WatchSession]'s default of a browser
+/// to refresh.
+bool stackServesWeb(ServerpodAddresses? addresses, ServerpodConfig? config) {
+  if (addresses != null) return addresses.web != null;
+  return config == null || config.webServer != null;
+}
+
+/// The server's resolved configuration, or null when it cannot be read.
+///
+/// Null is not exceptional, a project being mid-setup with an incomplete
+/// config. Every caller here then decides nothing and lets the pod report
+/// what is wrong.
+ServerpodConfig? _loadServerConfig({
+  required String serverDir,
+  required String runMode,
+}) {
+  try {
+    return ServerpodConfig.load(
+      runMode,
+      null,
+      PasswordManager(runMode: runMode).loadPasswords(serverDir: serverDir),
+      serverDir: serverDir,
+    );
+  } catch (_) {
+    return null;
+  }
+}
+
 bool _resolveStartDocker({
   required bool? dockerFlag,
   required String serverDir,
-  required String runMode,
+  required ServerpodConfig? serverConfig,
 }) {
   if (dockerFlag != null) return dockerFlag;
 
@@ -732,27 +765,75 @@ bool _resolveStartDocker({
   // explicit --docker treats a missing compose file as an error.
   if (_findComposeFile(serverDir) == null) return false;
 
-  try {
-    final passwords = PasswordManager(runMode: runMode).loadPasswords(
-      serverDir: serverDir,
-    );
-    final serverConfig = ServerpodConfig.load(
-      runMode,
-      null,
-      passwords,
-      serverDir: serverDir,
-    );
-    final database = serverConfig.database;
-    if (database is! PostgresDatabaseConfig || database.dataPath != null) {
-      return false;
-    }
-    return database.host.toLowerCase() == 'localhost' ||
-        database.host == '127.0.0.1';
-  } catch (_) {
-    // Config may be incomplete during early project setup; do not start
-    // Docker automatically. Users can still pass --docker explicitly.
+  if (serverConfig == null) return false;
+
+  final database = serverConfig.database;
+  if (database is! PostgresDatabaseConfig || database.dataPath != null) {
     return false;
   }
+  return database.host.toLowerCase() == 'localhost' ||
+      database.host == '127.0.0.1';
+}
+
+/// Decides which ports the pod should bind, as environment overrides.
+///
+/// An empty map when the configured ports are free, the ephemeral overrides
+/// when another Serverpod runner holds them, and null when something else
+/// does. Null is an error, not a fallback. A listener configured with port
+/// zero gets the override either way, so the port it binds is pinned for
+/// every later spawn.
+///
+/// Only development falls back. In production a taken port is a
+/// misconfiguration.
+Future<Map<String, String>?> _resolvePortEnvironment({
+  required String serverDir,
+  required String runMode,
+  required ServerpodConfig? serverConfig,
+}) async {
+  if (runMode != 'development') return const {};
+  if (serverConfig == null) return const {};
+
+  final ports = {
+    'api': serverConfig.apiServer.port,
+    if (serverConfig.insightsServer != null)
+      'insights': serverConfig.insightsServer!.port,
+    if (serverConfig.webServer != null) 'web': serverConfig.webServer!.port,
+  };
+
+  final resolution = await resolvePorts(serverDir: serverDir, ports: ports);
+
+  if (resolution.hasConflicts) {
+    for (final conflict in resolution.conflicts.entries) {
+      log.error(
+        'The ${conflict.key} server port ${conflict.value} is in use by '
+        'something that is not a Serverpod runner. Free it, or change the '
+        'port in config/$runMode.yaml.',
+      );
+    }
+    return null;
+  }
+
+  if (!resolution.useEphemeral) {
+    // Nothing to say.
+  } else if (resolution.unattributed.isEmpty) {
+    log.info(
+      'Another Serverpod runner holds the configured ports, or is starting '
+      'and may take them. Binding ephemeral ports instead. '
+      '`serverpod runner status` prints them.',
+    );
+  } else {
+    final held = resolution.unattributed.entries
+        .map((port) => '${port.key} (${port.value})')
+        .join(', ');
+    log.warning(
+      'Another Serverpod runner is starting and has not said which ports it '
+      'took, so $held could be its or something else\'s. Binding ephemeral '
+      'ports instead. `serverpod runner status` prints them. If no other '
+      'runner is meant to hold them, free them or change the ports in '
+      'config/$runMode.yaml.',
+    );
+  }
+  return ephemeralPortEnvironment(resolution.ephemeralListeners(ports));
 }
 
 /// Ensures Docker Compose services are running.
@@ -880,6 +961,13 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
 }) async {
+  void Function(ServerpodAddresses)? onServerAddresses;
+  ServerpodAddresses? lastServerAddresses;
+  void reportServerAddresses(ServerpodAddresses addresses) {
+    lastServerAddresses = addresses;
+    onServerAddresses?.call(addresses);
+  }
+
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
   final RunnerLock lock;
@@ -890,19 +978,25 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     return const WatchLoopAborted(1);
   }
 
+  final runMode = runModeFromServerArgs(serverArgs.value);
   final runnerApi = LocalRunnerApi(
     logHistory: logHistory,
     requestShutdown: shutdown.complete,
     watchModeEnabled: watch,
-    runMode: runModeFromServerArgs(serverArgs.value),
+    runMode: runMode,
   );
 
   final attachSocket = RunnerSocketServer(serverDir: serverDir);
 
+  final serverConfig = _loadServerConfig(
+    serverDir: serverDir,
+    runMode: runMode,
+  );
+
   final startDocker = _resolveStartDocker(
     dockerFlag: docker,
     serverDir: serverDir,
-    runMode: runModeFromServerArgs(serverArgs.value),
+    serverConfig: serverConfig,
   );
 
   final requestedServerArgs = [...serverArgs.value];
@@ -973,6 +1067,20 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       await releaseRunnerHold(exitCode: 0);
       return const WatchLoopAborted(0);
     }
+
+    final resolvedPorts = await _resolvePortEnvironment(
+      serverDir: serverDir,
+      runMode: runMode,
+      serverConfig: serverConfig,
+    );
+    if (resolvedPorts == null) {
+      await releaseRunnerHold(exitCode: 1);
+      return const WatchLoopAborted(1);
+    }
+    // Read at every pod spawn. Pinned to what the first pod bound once it
+    // reports, so a restart keeps the address the Flutter apps were built
+    // against.
+    var portEnvironment = resolvedPorts;
 
     var startedDocker = false;
     if (startDocker) {
@@ -1154,7 +1262,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
     // IDE-facing Flutter VM-service proxies. Bound now so info files exist at
     // session start regardless of whether `--flutter` was passed.
-    final runMode = runModeFromServerArgs(serverArgs.value);
     final serverPubspecFile = File(p.join(serverDir, 'pubspec.yaml'));
     final flutterManager = FlutterAppManager(
       runMode: runMode,
@@ -1204,13 +1311,18 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         stdoutSink: serverStdoutSink,
         stderrSink: serverStderrSink,
         onDispose: logHistory.serverProcessGone,
+        environment: portEnvironment.isEmpty ? null : portEnvironment,
       );
       await serverProcess.start(dillPath: dillPath);
       await serverProcess.connectToVmService();
-      await _recordExtensionEvents(
-        serverProcess.vmService,
-        logHistory.recordServerLogEvent,
-      );
+      await _recordExtensionEvents(serverProcess.vmService, (event) {
+        logHistory.recordServerLogEvent(event);
+        if (event.extensionKind == serverpodAddressesEvent) {
+          reportServerAddresses(
+            ServerpodAddresses.fromJson(event.extensionData?.data ?? const {}),
+          );
+        }
+      });
       runnerApi.setStage(RunnerStage.running);
       proxy = await _mountOrRetargetProxy(
         serverProcess: serverProcess,
@@ -1330,6 +1442,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
         serverDir: serverDir,
         runMode: runMode,
       ),
+      servesWeb: () => stackServesWeb(lastServerAddresses, serverConfig),
     );
 
     // Route IDE attach auto-launch through the session so it serializes with
@@ -1352,10 +1465,34 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     );
     runnerApi.recordFlutterApps(flutterManager.apps.toList());
 
+    // Auto-launch needs a UI attached and, under ephemeral ports, the address the
+    // pod bound, which is what the apps are built against. Whichever arrives last
+    // starts them, so a degraded start that is fixed later still launches them and
+    // a pod that never reports an address does not block on a future forever.
+    var clientAttached = false;
+    var appsLaunched = false;
+    var explainedTheWait = false;
+    void launchAppsIfReady() {
+      if (appsLaunched || !clientAttached) return;
+      if (portEnvironment.isNotEmpty && flutterManager.resolvedApiUrl == null) {
+        if (explainedTheWait) return;
+        explainedTheWait = true;
+        log.info(
+          'The Flutter apps start once the server reports the port it bound: '
+          'the configured ports were taken, so they are built against the '
+          'ephemeral one rather than another project\'s server.',
+        );
+        return;
+      }
+      appsLaunched = true;
+      unawaited(session.launchAutoLaunchApps());
+    }
+
     if (launchFlutterApp) {
-      attachSocket.onFirstClientAttached = () => unawaited(
-        session.launchAutoLaunchApps(),
-      );
+      attachSocket.onFirstClientAttached = () {
+        clientAttached = true;
+        launchAppsIfReady();
+      };
     }
 
     McpSocketServer? mcpSocket = McpSocketServer(serverDir: serverDir);
@@ -1386,6 +1523,24 @@ Future<WatchLoopSetupResult> setupWatchLoop({
             : null,
       ),
     );
+    onServerAddresses = (addresses) {
+      final servers = addresses;
+      // Only a stack moved to ephemeral ports builds the apps against the
+      // reported address. On the configured ports the apps keep their own
+      // config, which may name an emulator or LAN host, not the pod's.
+      if (portEnvironment.isNotEmpty) {
+        flutterManager.resolvedApiUrl = servers.api;
+      }
+      portEnvironment = pinResolvedPorts(portEnvironment, addresses);
+      final updated = manifestPublisher.manifest.copyWith(servers: servers);
+      runnerApi.recordManifest(updated);
+      unawaited(manifestPublisher.replace(updated));
+      launchAppsIfReady();
+    };
+    if (lastServerAddresses case final addresses?) {
+      onServerAddresses(addresses);
+    }
+
     manifestPublisher.republishOn(
       runnerApi.events.where((event) => event is StageChangedEvent),
       (current) => current.copyWith(stage: runnerApi.stage),
@@ -1433,19 +1588,27 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 /// enter the session's [StartLogHistory]. A stream that cannot be subscribed
 /// to costs those logs, not the session, so it is warned about, not thrown.
 ///
+/// The listener goes on before the stream is requested. DDS replays the
+/// Extension stream's history to a client that subscribes, and it does so
+/// before answering the request. The vm_service package drops an event that
+/// arrives with nobody listening, so listening afterwards loses what the
+/// process posted before this call. The resolved addresses go there, and the
+/// pod posts them once.
+///
 /// Returns whether [onEvent] is now hearing anything.
 Future<bool> _recordExtensionEvents(
   VmService? vmService,
   void Function(Event event) onEvent,
 ) async {
   if (vmService == null) return false;
+  final subscription = vmService.onExtensionEvent.listen(onEvent);
   try {
     await vmService.streamListen(EventStreams.kExtension);
   } on RPCError catch (e) {
+    await subscription.cancel();
     log.warning('Could not subscribe to the VM service log stream: $e');
     return false;
   }
-  vmService.onExtensionEvent.listen(onEvent);
   return true;
 }
 

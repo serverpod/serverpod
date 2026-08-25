@@ -7,13 +7,14 @@ import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
-import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
+import 'package:serverpod_shared/serverpod_shared.dart'
+    show FileEx, ServerpodAddresses;
 import 'package:test/test.dart';
 
 RunnerManifest _manifest({
   int pid = 4242,
   RunnerVmServiceUris? vmService,
-  RunnerServerUris? servers,
+  ServerpodAddresses? servers,
   RunnerDocker? docker,
   RunnerConfig? config,
 }) => RunnerManifest(
@@ -53,7 +54,7 @@ void main() {
           vmService: const RunnerVmServiceUris(
             proxy: 'http://127.0.0.1:51234/abc=/',
           ),
-          servers: const RunnerServerUris(
+          servers: const ServerpodAddresses(
             api: 'http://localhost:8080',
             insights: 'http://localhost:8081',
             web: 'http://localhost:8082',
@@ -97,7 +98,7 @@ void main() {
       'then the manifest stops naming it, so `runner status` reports no server',
       () {
         final published = _manifest(
-          servers: const RunnerServerUris(api: 'http://localhost:8080'),
+          servers: const ServerpodAddresses(api: 'http://localhost:8080'),
         );
 
         expect(published.copyWith(servers: null).servers, isNull);
@@ -127,7 +128,7 @@ void main() {
       'then the published addresses are carried along',
       () {
         final published = _manifest(
-          servers: const RunnerServerUris(api: 'http://localhost:8080'),
+          servers: const ServerpodAddresses(api: 'http://localhost:8080'),
         );
 
         expect(

@@ -6,7 +6,7 @@ import 'package:serverpod_cli/src/generated/version.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
-    show FileEx, FileWriteEx;
+    show FileEx, FileWriteEx, ServerpodAddresses;
 
 /// The default of every [RunnerManifest.copyWith] field that can be cleared,
 /// distinguishing "not passed" from "passed as null".
@@ -62,7 +62,7 @@ class RunnerManifest {
   /// The addresses the pod's listeners resolved to.
   ///
   /// Null until the pod reports them.
-  final RunnerServerUris? servers;
+  final ServerpodAddresses? servers;
 
   /// The Docker Compose services this runner started or attached to.
   ///
@@ -114,7 +114,7 @@ class RunnerManifest {
         : vmService as RunnerVmServiceUris?,
     servers: identical(servers, _keep)
         ? this.servers
-        : servers as RunnerServerUris?,
+        : servers as ServerpodAddresses?,
     docker: identical(docker, _keep) ? this.docker : docker as RunnerDocker?,
     stage: stage ?? this.stage,
     exitCode: exitCode ?? this.exitCode,
@@ -145,7 +145,7 @@ class RunnerManifest {
       _ => null,
     },
     servers: switch (_map(json['servers'])) {
-      final map? => RunnerServerUris.fromJson(map),
+      final map? => ServerpodAddresses.fromJson(map),
       _ => null,
     },
     docker: switch (_map(json['docker'])) {
@@ -219,28 +219,6 @@ class RunnerVmServiceUris {
 
   static RunnerVmServiceUris fromJson(Map<String, Object?> json) =>
       RunnerVmServiceUris(proxy: json['proxy'] as String?);
-}
-
-/// The addresses the pod's listeners resolved to.
-class RunnerServerUris {
-  const RunnerServerUris({this.api, this.insights, this.web});
-
-  final String? api;
-  final String? insights;
-  final String? web;
-
-  Map<String, Object?> toJson() => {
-    if (api != null) 'api': api,
-    if (insights != null) 'insights': insights,
-    if (web != null) 'web': web,
-  };
-
-  static RunnerServerUris fromJson(Map<String, Object?> json) =>
-      RunnerServerUris(
-        api: json['api'] as String?,
-        insights: json['insights'] as String?,
-        web: json['web'] as String?,
-      );
 }
 
 /// Whether this runner started the Docker Compose services, and under which
