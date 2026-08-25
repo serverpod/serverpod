@@ -9,6 +9,8 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: '^3.12.2'
 
+resolution: workspace
+
 dependencies:
   clock: ^1.1.1
   dart_jsonwebtoken: ^3.1.0
@@ -29,24 +31,6 @@ dev_dependencies:
   serverpod_test: 4.0.0-beta.4
   test: ^1.25.5
   test_descriptor: ^2.0.2
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_auth_core_server:
-    path: ../../serverpod_auth_core/serverpod_auth_core_server
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared
-  serverpod_test:
-    path: ../../../../packages/serverpod_test
 
 false_secrets:
   - test/config/from_passwords_config_test.dart

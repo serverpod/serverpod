@@ -12,6 +12,8 @@ environment:
   sdk: '^3.12.2'
   flutter: '^3.44.4'
 
+resolution: workspace
+
 dependencies:
   connectivity_plus: '>=6.0.3 <8.0.0'
   flutter:
@@ -22,13 +24,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_lints: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization
 
 flutter:

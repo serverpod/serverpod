@@ -10,6 +10,8 @@ environment:
   sdk: '^3.12.2'
   flutter: '^3.44.4'
 
+resolution: workspace
+
 dependencies:
   animations: ^2.1.0
   crypto: ^3.0.2
@@ -32,20 +34,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_lints: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_auth_core_client:
-    path: ../../serverpod_auth_core/serverpod_auth_core_client
-  serverpod_auth_core_flutter:
-    path: ../../serverpod_auth_core/serverpod_auth_core_flutter
-  serverpod_auth_idp_client:
-    path: ../serverpod_auth_idp_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
 
 flutter:
   uses-material-design: true
