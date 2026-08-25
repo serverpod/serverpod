@@ -800,8 +800,13 @@ class ModuleConfig implements ModelLoadConfig {
     required this.migrationVersions,
     required this.serverPackageDirectoryPathParts,
     this.sharedPackageRootPathParts = const {},
-  }) : dartClientPackage = '${name}_client',
-       serverPackage = '${name}_server';
+  }) : // The internal serverpod module does not follow the module naming
+       // convention: its server package is `serverpod` and its generated
+       // client lives in `serverpod_service_client`.
+       dartClientPackage = name == 'serverpod'
+           ? 'serverpod_service_client'
+           : '${name}_client',
+       serverPackage = name == 'serverpod' ? 'serverpod' : '${name}_server';
 
   /// The url when importing this module in dart code.
   String dartImportUrl(bool serverCode) {

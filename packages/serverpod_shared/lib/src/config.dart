@@ -55,6 +55,11 @@ class ServerpodConfig {
   /// Configuration for the Insights server.
   final ServerConfig? insightsServer;
 
+  /// Whether the Insights server serves the raw database access endpoints
+  /// (executing SQL and exporting table data). Off by default; enabled with
+  /// `enableDatabaseAccess: true` under `insightsServer` in the config.
+  final bool insightsDatabaseAccessEnabled;
+
   /// Configuration for the web server (optional).
   final ServerConfig? webServer;
 
@@ -133,6 +138,7 @@ class ServerpodConfig {
     this.applyRepairMigration = false,
     this.maxRequestSize = 524288,
     this.insightsServer,
+    this.insightsDatabaseAccessEnabled = false,
     this.webServer,
     this.database,
     this.redis,
@@ -230,6 +236,13 @@ class ServerpodConfig {
         : _createDefaultApiServer();
 
     var insightsConfig = _insightsConfigMap(configMap, environment);
+    // Extracted before [ServerConfig._fromJson], which validates strictly
+    // against the keys shared by all servers.
+    var insightsDatabaseAccessEnabled =
+        insightsConfig?.remove(
+          ServerpodServerConfigMap.enableDatabaseAccess,
+        ) ==
+        true;
     var insightsServer = insightsConfig != null
         ? ServerConfig._fromJson(
             insightsConfig,
@@ -326,6 +339,7 @@ class ServerpodConfig {
       apiServer: apiServer,
       maxRequestSize: maxRequestSize,
       insightsServer: insightsServer,
+      insightsDatabaseAccessEnabled: insightsDatabaseAccessEnabled,
       webServer: webServer,
       database: database,
       redis: redis,
@@ -386,6 +400,7 @@ class ServerpodConfig {
     bool? applyRepairMigration,
     int? maxRequestSize,
     ServerConfig? insightsServer,
+    bool? insightsDatabaseAccessEnabled,
     ServerConfig? webServer,
     DatabaseConfig? database,
     RedisConfig? redis,
@@ -410,6 +425,8 @@ class ServerpodConfig {
       applyRepairMigration: applyRepairMigration ?? this.applyRepairMigration,
       maxRequestSize: maxRequestSize ?? this.maxRequestSize,
       insightsServer: insightsServer ?? this.insightsServer,
+      insightsDatabaseAccessEnabled:
+          insightsDatabaseAccessEnabled ?? this.insightsDatabaseAccessEnabled,
       webServer: webServer ?? this.webServer,
       database: database ?? this.database,
       redis: redis ?? this.redis,
@@ -1421,6 +1438,7 @@ Map? _insightsConfigMap(
     (ServerpodEnv.insightsPublicHost, null),
     (ServerpodEnv.insightsPublicPort, int.parse),
     (ServerpodEnv.insightsPublicScheme, null),
+    (ServerpodEnv.insightsEnableDatabaseAccess, bool.parse),
   ]);
 }
 

@@ -38,6 +38,9 @@ class ServerpodServerConfigMap {
 
   /// The public scheme for the server.
   static const String publicScheme = 'publicScheme';
+
+  /// Whether the database access endpoints are served. Insights server only.
+  static const String enableDatabaseAccess = 'enableDatabaseAccess';
 }
 
 /// The configuration sections for the future call configuration.
@@ -125,6 +128,9 @@ enum ServerpodEnv {
 
   /// The public scheme for the insights server.
   insightsPublicScheme,
+
+  /// Whether the insights server serves the database access endpoints.
+  insightsEnableDatabaseAccess,
 
   /// The local port for the web server.
   webPort,
@@ -252,6 +258,8 @@ enum ServerpodEnv {
       (ServerpodEnv.insightsPublicPort) => ServerpodServerConfigMap.publicPort,
       (ServerpodEnv.insightsPublicScheme) =>
         ServerpodServerConfigMap.publicScheme,
+      (ServerpodEnv.insightsEnableDatabaseAccess) =>
+        ServerpodServerConfigMap.enableDatabaseAccess,
       (ServerpodEnv.webPort) => ServerpodServerConfigMap.port,
       (ServerpodEnv.webPublicHost) => ServerpodServerConfigMap.publicHost,
       (ServerpodEnv.webPublicPort) => ServerpodServerConfigMap.publicPort,
@@ -320,6 +328,8 @@ enum ServerpodEnv {
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT',
       (ServerpodEnv.insightsPublicScheme) =>
         'SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME',
+      (ServerpodEnv.insightsEnableDatabaseAccess) =>
+        'SERVERPOD_INSIGHTS_SERVER_ENABLE_DATABASE_ACCESS',
       (ServerpodEnv.webPort) => 'SERVERPOD_WEB_SERVER_PORT',
       (ServerpodEnv.webPublicHost) => 'SERVERPOD_WEB_SERVER_PUBLIC_HOST',
       (ServerpodEnv.webPublicPort) => 'SERVERPOD_WEB_SERVER_PUBLIC_PORT',
