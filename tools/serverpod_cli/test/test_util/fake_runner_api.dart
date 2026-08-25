@@ -18,6 +18,9 @@ class FakeRunnerApi implements InProcessRunnerApi {
   @override
   RunnerStage stage = RunnerStage.running;
 
+  /// What the snapshot names as the exit code of a stopping runner.
+  int? exitCode;
+
   bool watchModeEnabled = true;
 
   @override
@@ -38,8 +41,18 @@ class FakeRunnerApi implements InProcessRunnerApi {
   Future<void> close() => eventController.close();
 
   @override
-  RunnerSnapshot snapshot() => RunnerSnapshot(
+  RunnerSnapshot snapshot() {
+    snapshotCalls++;
+    return _snapshot();
+  }
+
+  /// How many times a client has asked for the snapshot, which is what marks
+  /// one as a UI rather than a one-shot command.
+  int snapshotCalls = 0;
+
+  RunnerSnapshot _snapshot() => RunnerSnapshot(
     stage: stage,
+    exitCode: exitCode,
     isRunning: isRunning,
     watchModeEnabled: watchModeEnabled,
     canLaunchFlutterApps: canLaunchFlutterApps,

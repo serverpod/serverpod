@@ -36,6 +36,9 @@ Map<String, Object?> encodeLogHistoryItem(Object item) {
       'completedAt': item.completedAt.toIso8601String(),
     };
   }
+  if (item is String) {
+    return {'type': 'line', 'value': item};
+  }
   return {'type': 'unknown', 'value': item.toString()};
 }
 

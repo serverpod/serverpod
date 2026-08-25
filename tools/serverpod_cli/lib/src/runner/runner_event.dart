@@ -24,7 +24,10 @@ sealed class RunnerEvent {
   /// A newer runner may emit events an older client has never heard of.
   static RunnerEvent? fromJson(Map<String, Object?> json) =>
       switch (json['event']) {
-        'log' => ServerLogEvent(decodeLogEntry(json)),
+        'log' => ServerLogEvent(
+          decodeLogEntry(json),
+          duplicatesLine: json['duplicatesLine'] as bool? ?? false,
+        ),
         'operationStarted' => _operationStarted(json),
         'operationCompleted' => OperationCompletedEvent(
           decodeLogHistoryItem({...json, 'type': 'operation'})
@@ -39,6 +42,7 @@ sealed class RunnerEvent {
         'flutterLog' => FlutterLogEntryEvent(
           appId: json['appId'] as String? ?? '',
           entry: decodeLogEntry(json),
+          appendedToLines: json['appendedToLines'] as bool? ?? false,
         ),
         'stage' => StageChangedEvent(
           RunnerStage.byName(json['stage'] as String?),
@@ -68,14 +72,22 @@ sealed class RunnerEvent {
 
 /// A structured entry appended to the server log.
 final class ServerLogEvent extends RunnerEvent {
-  const ServerLogEvent(this.entry);
+  const ServerLogEvent(this.entry, {this.duplicatesLine = false});
 
   final LogEntry entry;
+
+  /// Whether a [ServerLineEvent] carries this entry as well.
+  ///
+  /// The pod writes every entry to its stdout and posts it over its VM
+  /// service, so an entry from the pod always has a line. An entry the
+  /// runner records on its own behalf has none.
+  final bool duplicatesLine;
 
   @override
   Map<String, Object?> toJson() => {
     'event': 'log',
     ...encodeLogHistoryItem(entry),
+    if (duplicatesLine) 'duplicatesLine': true,
   };
 }
 
@@ -146,15 +158,31 @@ final class FlutterLineEvent extends RunnerEvent {
 
 /// A structured entry from a Flutter app.
 final class FlutterLogEntryEvent extends RunnerEvent {
-  const FlutterLogEntryEvent({required this.appId, required this.entry});
+  const FlutterLogEntryEvent({
+    required this.appId,
+    required this.entry,
+    this.appendedToLines = false,
+  });
 
   final String appId;
   final LogEntry entry;
+
+  /// Whether the runner also appended this entry's text to the app's raw line
+  /// buffer, which a client has to do too to hold the same buffer.
+  ///
+  /// True for an entry that reached the runner over the VM service, which the
+  /// app does not also print, so the runner flattens it into the lines itself.
+  /// False for one decoded from output the app did print.
+  ///
+  /// The runner decides this; a client cannot, since it sees the same event
+  /// either way.
+  final bool appendedToLines;
 
   @override
   Map<String, Object?> toJson() => {
     'event': 'flutterLog',
     'appId': appId,
+    if (appendedToLines) 'appendedToLines': true,
     ...encodeLogHistoryItem(entry),
   };
 }

@@ -35,6 +35,67 @@ void main() {
     history = StartLogHistory();
   });
 
+  group('Given a pod that prints what it logs,', () {
+    final posted = _logEvent({
+      'type': 'log',
+      'level': 'info',
+      'message': 'Server started',
+      'time': '2026-04-10T12:00:00.000Z',
+    });
+    late List<RunnerEvent> events;
+
+    setUp(() {
+      events = [];
+      history = StartLogHistory()..events.listen(events.add);
+    });
+
+    test(
+      'when an entry arrives as a raw line and as the structured event, '
+      'then the entry says a line carries it and the line stands on its own',
+      () async {
+        history.addServerLine('Server started');
+        history.recordServerLogEvent(posted);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(history.serverLines, ['Server started']);
+        expect(history.serverEntries.single, isA<LogEntry>());
+        expect(events, [
+          isA<ServerLineEvent>().having(
+            (e) => e.line,
+            'line',
+            'Server started',
+          ),
+          isA<ServerLogEvent>().having(
+            (e) => e.duplicatesLine,
+            'duplicatesLine',
+            isTrue,
+          ),
+        ]);
+      },
+    );
+
+    test(
+      'when the runner records an entry of its own, '
+      'then the event says no line carries it',
+      () async {
+        history.recordCliLogEntry(
+          LogEntry(
+            time: DateTime.utc(2026, 4, 10),
+            level: LogLevel.info,
+            message: 'Starting server',
+            scope: LogScope.root('serverpod'),
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          events.whereType<ServerLogEvent>().single.duplicatesLine,
+          isFalse,
+        );
+      },
+    );
+  });
+
   group('Given a log event, when it is recorded,', () {
     setUp(() {
       history.recordServerLogEvent(

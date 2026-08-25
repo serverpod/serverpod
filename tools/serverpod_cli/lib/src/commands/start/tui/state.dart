@@ -27,7 +27,7 @@ class ServerWatchState extends TuiState {
   /// Raw stdout/stderr lines shown in the raw server logs overlay
   /// (toggled with the backtick or `.` shortcut).
   @override
-  final rawLines = BoundedQueueList<String>(maxRawLines);
+  BoundedQueueList<String> get rawLines => history.serverLines;
 
   /// Currently active tracked operations (keyed by ID).
   @override
@@ -142,9 +142,6 @@ class ServerWatchState extends TuiState {
   /// on demand via the backtick or `.` shortcut.
   bool showRawServerLogs = false;
 
-  /// Maximum number of raw lines to keep.
-  static const maxRawLines = 10000;
-
   /// The [launchableApps] index of the currently selected app tab, or 0 when
   /// none is open. Used to start the launch panel cursor on the active app.
   int get activeLaunchableIndex {
@@ -193,12 +190,15 @@ class ServerWatchState extends TuiState {
     if (existing != null) return existing;
 
     createAppsTabAreaIfNeeded();
-    // Renders the session's line buffer, so a tab opened after the app started
-    // shows everything it has produced.
+    // Opens on what the app has printed so far, so a tab opened after the
+    // app started, or by a client that attached later, is not blank.
+    final lines = history.flutterLinesFor(appId);
     final tab = AppLogTab(
       appId: appId,
       label: label,
-      lines: history.flutterLinesFor(appId),
+      lines: lines,
+      logHistory: BoundedQueueList<Object>(AppLogTab.maxLogEntries)
+        ..addAll(lines),
     );
     tabs.addTab(tab);
     return tab;
@@ -219,7 +219,6 @@ class ServerWatchState extends TuiState {
   void clearLogs() {
     // Also drops the lines of apps that have no open tab.
     history.clear();
-    rawLines.clear();
     _toggledStackTraces.clear();
     for (final tab in appsTabArea?.tabs ?? []) {
       if (tab is AppLogTab) {

@@ -29,8 +29,12 @@ class ServerProcess {
   final IOSink _stdout;
   final IOSink _stderr;
 
-  /// Called at most once after a started process and its VM-service resources
-  /// have been discarded, whether it stopped normally or exited unexpectedly.
+  /// Called at most once as a started process is discarded, whether stopped
+  /// normally or exited unexpectedly.
+  ///
+  /// Fires before teardown, while the process's last output is still arriving
+  /// on the sinks this is about to cancel. Told afterwards, a listener would
+  /// read that output as coming from a process it still believes alive.
   final void Function()? _onDispose;
 
   /// Path to write the VM service info JSON file to. When set, passed
@@ -334,7 +338,7 @@ class ServerProcess {
     final completer = Completer<void>();
     _cleanupCompleter = completer;
 
-    unawaited(completer.future.whenComplete(() => _onDispose?.call()));
+    _onDispose?.call();
 
     try {
       _process = null;

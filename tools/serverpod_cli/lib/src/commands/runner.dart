@@ -1,4 +1,5 @@
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/attach.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/status.dart';
 
@@ -9,6 +10,7 @@ import 'package:serverpod_cli/src/commands/status.dart';
 /// verb under it is an action on that runner.
 class RunnerCommand extends ServerpodCommand<OptionDefinition> {
   RunnerCommand() : super(options: const []) {
+    addSubcommand(AttachCommand());
     addSubcommand(StatusCommand());
   }
 

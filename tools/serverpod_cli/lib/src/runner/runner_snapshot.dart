@@ -22,6 +22,7 @@ class RunnerSnapshot {
     required this.flutterLines,
     required this.flutterApps,
     required this.runningFlutterApps,
+    this.exitCode,
   });
 
   /// The snapshot of a runner whose buffers live in [history].
@@ -36,6 +37,7 @@ class RunnerSnapshot {
     required bool canLaunchFlutterApps,
     required List<FlutterAppConfig> flutterApps,
     required Set<String> runningFlutterApps,
+    int? exitCode,
   }) => RunnerSnapshot(
     stage: stage,
     isRunning: isRunning,
@@ -57,6 +59,7 @@ class RunnerSnapshot {
     },
     flutterApps: flutterApps,
     runningFlutterApps: runningFlutterApps,
+    exitCode: exitCode,
   );
 
   final RunnerStage stage;
@@ -91,6 +94,12 @@ class RunnerSnapshot {
   /// Which of [flutterApps] are running.
   final Set<String> runningFlutterApps;
 
+  /// What the runner leaves with, once its stage is [RunnerStage.stopping].
+  ///
+  /// A client attaching after the announcement has no other way to learn it:
+  /// the event stream does not replay.
+  final int? exitCode;
+
   Map<String, Object?> toJson() => {
     'stage': stage.name,
     'isRunning': isRunning,
@@ -109,6 +118,7 @@ class RunnerSnapshot {
       for (final app in flutterApps) encodeFlutterApp(app),
     ],
     'runningFlutterApps': runningFlutterApps.toList(),
+    if (exitCode != null) 'exitCode': exitCode,
   };
 
   static RunnerSnapshot fromJson(Map<String, Object?> json) => RunnerSnapshot(
@@ -142,6 +152,7 @@ class RunnerSnapshot {
     runningFlutterApps: {
       for (final id in json['runningFlutterApps'] as List? ?? const []) '$id',
     },
+    exitCode: json['exitCode'] as int?,
   );
 }
 
