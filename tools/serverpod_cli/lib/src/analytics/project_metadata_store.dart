@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:serverpod_shared/serverpod_shared.dart' show FileWriteEx;
 import 'package:uuid/uuid.dart';
 
 import 'project_identity.dart';
@@ -10,7 +11,7 @@ import 'project_metadata.dart';
 
 /// Reads and writes the per-server checkout analytics metadata file.
 ///
-/// Its directory is resolved by [ProjectIdentity.metadataDirectory] — the
+/// Its directory is resolved by [ProjectIdentity.metadataDirectory] - the
 /// server-specific directory under the shared git common dir inside a repo (so
 /// matching servers in worktrees share one file), or
 /// `<serverDir>/.dart_tool/serverpod` outside a repo.
@@ -73,14 +74,9 @@ class ProjectMetadataStore {
       await dir.create(recursive: true);
     }
 
-    final file = File(metadataFilePath(serverDir));
-    final tempFile = File(
-      '${file.path}.${DateTime.now().microsecondsSinceEpoch}.tmp',
-    );
-    await tempFile.writeAsString(
+    await File(metadataFilePath(serverDir)).writeAsStringAtomically(
       const JsonEncoder.withIndent('  ').convert(metadata.toJson()),
     );
-    await tempFile.rename(file.path);
   }
 
   static Future<DateTime> _resolveProjectCreatedAt(String serverDir) async {
@@ -133,7 +129,7 @@ class ProjectMetadataStore {
   /// Stamps [projectCreatedAt] for a freshly scaffolded project.
   ///
   /// Metadata is keyed by server within a git clone, so recreating the same
-  /// server with `create --force` must not discard its checkout id or counters —
+  /// server with `create --force` must not discard its checkout id or counters -
   /// only the creation date is authoritative here.
   static Future<ProjectMetadata> initializeNewProject(
     String serverDir, {

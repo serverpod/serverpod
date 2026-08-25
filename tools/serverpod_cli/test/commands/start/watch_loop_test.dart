@@ -279,6 +279,35 @@ void main() {
     );
 
     test(
+      'when a teardown step throws, '
+      'then the steps after it still run, so nothing is left behind',
+      () async {
+        final ctx = WatchLoopContext(
+          session: _buildSession(compiler, server),
+          runnerApi: FakeRunnerApi(),
+          proxy: () => proxy,
+          flutterManager: flutterManager,
+          mcpSocket: mcp,
+          stopFileWatcher: () => stopFileWatcherCalls++,
+          closeAnalyzers: () async {
+            closeAnalyzersCalls++;
+            throw StateError('analyzer isolate is already gone');
+          },
+          stopDocker: () async {
+            stopDockerCalls++;
+          },
+          vmServiceInfoFile: vmServiceInfoFile,
+        );
+
+        await expectLater(ctx.dispose(), completes);
+
+        expect(server.calls, contains('stop'));
+        expect(File(vmServiceInfoFile).existsSync(), isFalse);
+        expect(stopDockerCalls, 1);
+      },
+    );
+
+    test(
       'when stopDocker is null (Docker was not started), '
       'then dispose skips the Docker step',
       () async {
