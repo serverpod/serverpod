@@ -290,22 +290,6 @@ void main() {
       );
 
       test(
-        'when the strategy cannot enforce maxFileSize without contentLength '
-        'then it throws unsupported',
-        () {
-          mockUploadStrategy.canEnforceMaxFileSize = false;
-
-          expect(
-            () => storage.createUploadDescription(
-              session: _FakeSession(),
-              path: 'upload/target.txt',
-            ),
-            throwsA(isA<CloudStorageUnsupportedOperationException>()),
-          );
-        },
-      );
-
-      test(
         'when contentLength exceeds maxFileSize '
         'then it throws a cloud storage exception',
         () async {
@@ -562,7 +546,6 @@ class MockS3Client extends S3Client {
 // Simple mock upload strategy for testing
 class MockUploadStrategy implements S3UploadStrategy {
   Object? uploadError;
-  bool canEnforceMaxFileSize = true;
   String? uploadedPath;
   ByteData? uploadedData;
   bool? uploadedPreventOverwrite;
@@ -580,9 +563,6 @@ class MockUploadStrategy implements S3UploadStrategy {
 
   @override
   bool get supportsPreventOverwrite => true;
-
-  @override
-  bool get supportsMaxFileSize => canEnforceMaxFileSize;
 
   @override
   Future<void> uploadData({

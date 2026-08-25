@@ -261,12 +261,6 @@ class S3CompatCloudStorage extends CloudStorage {
   }) async {
     options.validate();
     _checkPreventOverwrite(options.preventOverwrite);
-    if (options.contentLength == null && !uploadStrategy.supportsMaxFileSize) {
-      throw CloudStorageUnsupportedOperationException(
-        storageId: storageId,
-        operation: 'maxFileSize enforcement without an exact contentLength',
-      );
-    }
     return uploadStrategy.createUploadDescription(
       accessKey: accessKey,
       secretKey: secretKey,

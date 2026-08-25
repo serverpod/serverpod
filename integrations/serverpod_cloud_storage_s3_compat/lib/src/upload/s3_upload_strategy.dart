@@ -55,8 +55,4 @@ abstract class S3UploadStrategy {
 
   /// Whether this strategy can atomically prevent overwriting an object.
   bool get supportsPreventOverwrite;
-
-  /// Whether this strategy can enforce `maxFileSize` without an exact
-  /// `contentLength`.
-  bool get supportsMaxFileSize;
 }
