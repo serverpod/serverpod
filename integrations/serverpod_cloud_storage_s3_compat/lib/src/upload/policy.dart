@@ -63,7 +63,7 @@ class Policy {
   /// [key] is the destination path for the file.
   /// [bucket] is the target bucket name.
   /// [accessKeyId] is the access key for signing.
-  /// [expiryMinutes] is how long the policy is valid.
+  /// [expirationDuration] is how long the policy is valid.
   /// [maxFileSize] is the maximum allowed upload size in bytes.
   /// [region] is the AWS region (default: 'us-east-1').
   /// [public] determines if the file should be publicly readable.
@@ -71,7 +71,7 @@ class Policy {
     String key,
     String bucket,
     String accessKeyId,
-    int expiryMinutes,
+    Duration expirationDuration,
     int maxFileSize, {
     String region = 'us-east-1',
     bool public = true,
@@ -80,7 +80,7 @@ class Policy {
     Map<String, String> fields = const {},
   }) {
     final datetime = SigV4.generateDatetime();
-    final exp = DateTime.now().add(Duration(minutes: expiryMinutes)).toUtc();
+    final exp = DateTime.now().add(expirationDuration).toUtc();
     final expiration =
         '${exp.year}-'
         '${exp.month.toString().padLeft(2, '0')}-'

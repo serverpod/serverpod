@@ -23,9 +23,6 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
   bool get supportsPreventOverwrite => false;
 
   @override
-  bool get supportsMaxFileSize => true;
-
-  @override
   Future<void> uploadData({
     required String accessKey,
     required String secretKey,
@@ -61,7 +58,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       path,
       bucket,
       accessKey,
-      15,
+      Duration(minutes: 15),
       length,
       region: region,
       public: public,
@@ -130,7 +127,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       path,
       bucket,
       accessKey,
-      expiration.inMinutes,
+      expiration,
       contentLength ?? maxFileSize,
       region: region,
       public: public,
