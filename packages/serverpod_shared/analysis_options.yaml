@@ -1,4 +1,3 @@
-analyzer: {plugins: [tuid]}
 include: package:serverpod_lints/public.yaml
 
 linter:
