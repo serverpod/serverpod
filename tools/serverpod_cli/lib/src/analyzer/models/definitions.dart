@@ -282,12 +282,17 @@ final class ModelClassDefinition extends ClassDefinition {
   List<SerializableModelIndexDefinition> get inheritedIndexes {
     var inherited = parentClass?.indexesIncludingInherited ?? [];
     if (tableName == null) return inherited;
-    return [for (var index in inherited) index.copyWithPrefix(tableName!)];
+    return [
+      for (var index in inherited) index.copyWithPrefix(tableName!),
+    ];
   }
 
   /// Returns a list of all indexes in this class, including inherited indexes.
   List<SerializableModelIndexDefinition> get indexesIncludingInherited {
-    return [...inheritedIndexes, ...indexes];
+    return [
+      ...inheritedIndexes,
+      ...indexes,
+    ];
   }
 }
 
@@ -546,7 +551,11 @@ class SerializableModelFieldDefinition {
 }
 
 /// The scope of a field.
-enum ModelFieldScopeDefinition { all, serverOnly, none }
+enum ModelFieldScopeDefinition {
+  all,
+  serverOnly,
+  none,
+}
 
 /// The side that should generate table-backed database code for a model.
 enum ModelDatabaseDefinition {
@@ -813,7 +822,9 @@ class ObjectRelationDefinition extends RelationDefinition {
   }) : super(name, isForeignKeyOrigin);
 }
 
-enum UnresolvableReason { relationAlreadyDefinedForField }
+enum UnresolvableReason {
+  relationAlreadyDefinedForField,
+}
 
 /// Stores information about a relation that could not be resolved.
 /// This is used to report errors to the user in the analyzer.

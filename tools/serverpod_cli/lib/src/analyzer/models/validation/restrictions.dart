@@ -734,7 +734,9 @@ class Restrictions {
           ];
         }
 
-        return [SourceSpanSeverityException(baseMessage, span)];
+        return [
+          SourceSpanSeverityException(baseMessage, span),
+        ];
       }
     }
 
@@ -1015,7 +1017,9 @@ class Restrictions {
     return true;
   }
 
-  bool _hasUniqueFieldIndex(SerializableModelFieldDefinition? field) {
+  bool _hasUniqueFieldIndex(
+    SerializableModelFieldDefinition? field,
+  ) {
     if (field == null) return false;
 
     var fieldIndexesWithUnique = field.indexes.where((index) => index.unique);
@@ -1991,7 +1995,10 @@ class Restrictions {
         VectorDistanceFunction.cosine,
         if (index.type == 'hnsw') VectorDistanceFunction.l1,
       },
-      'Bit': {VectorDistanceFunction.jaccard, VectorDistanceFunction.hamming},
+      'Bit': {
+        VectorDistanceFunction.jaccard,
+        VectorDistanceFunction.hamming,
+      },
     };
 
     var validFunctions = validFunctionsPerClassName[field.type.className]?.map(
@@ -2391,7 +2398,10 @@ class Restrictions {
 
     if (name is! String) {
       return [
-        SourceSpanSeverityException('The property must be a String.', span),
+        SourceSpanSeverityException(
+          'The property must be a String.',
+          span,
+        ),
       ];
     }
 
@@ -2403,7 +2413,9 @@ class Restrictions {
       field,
     );
 
-    var foreignClassName = parsedModels.extractReferenceClassName(field);
+    var foreignClassName = parsedModels.extractReferenceClassName(
+      field,
+    );
     if (foreignFields.isEmpty) {
       return [
         SourceSpanSeverityException(
@@ -2544,7 +2556,10 @@ class Restrictions {
     }
 
     if (enumCount[enumValue] != 1) {
-      return SourceSpanSeverityException('Enum values must be unique.', span);
+      return SourceSpanSeverityException(
+        'Enum values must be unique.',
+        span,
+      );
     }
 
     if (_globallyRestrictedKeywords.contains(enumValue)) {
@@ -3043,26 +3058,32 @@ class Restrictions {
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInParentHierarchy(currentModel, (ancestor) {
-      var parentFieldNames = ancestor.fields.map((field) => field.name);
+    return _findInParentHierarchy(
+      currentModel,
+      (ancestor) {
+        var parentFieldNames = ancestor.fields.map((field) => field.name);
 
-      if (parentFieldNames.contains(fieldName)) {
-        return ancestor;
-      }
+        if (parentFieldNames.contains(fieldName)) {
+          return ancestor;
+        }
 
-      return null;
-    });
+        return null;
+      },
+    );
   }
 
   SerializableModelFieldDefinition? _findFieldWithDuplicatedName(
     ClassDefinition currentModel,
     String fieldName,
   ) {
-    return _findInParentHierarchy(currentModel, (ancestor) {
-      return ancestor.fields
-          .where((field) => field.name == fieldName)
-          .firstOrNull;
-    });
+    return _findInParentHierarchy(
+      currentModel,
+      (ancestor) {
+        return ancestor.fields
+            .where((field) => field.name == fieldName)
+            .firstOrNull;
+      },
+    );
   }
 
   List<SerializableModelFieldDefinition> _findFieldsWithColumn(
@@ -3087,7 +3108,9 @@ class Restrictions {
     return switch (relation) {
       ObjectRelationDefinition(:final fieldName) => fieldName,
       UnresolvedObjectRelationDefinition(:final fieldName) => fieldName,
-      UnresolvableObjectRelationDefinition(:final objectRelationDefinition) =>
+      UnresolvableObjectRelationDefinition(
+        :final objectRelationDefinition,
+      ) =>
         objectRelationDefinition.fieldName,
       _ => null,
     };
