@@ -107,10 +107,8 @@ class RunnerClient implements RunnerApi {
 
   /// Opens a connection to issue commands on, nothing more.
   ///
-  /// No snapshot, no reconnect: `serverpod stop` sends one command and expects
-  /// the runner to go away under it. Asking for the snapshot is what marks a
-  /// client as a UI - it is what arms the Flutter auto-launch - so a command
-  /// that is not a UI must not ask for one.
+  /// No snapshot, no reconnect. Asking for the snapshot marks a client as a
+  /// UI and arms the Flutter auto-launch.
   ///
   /// Throws [RunnerUnreachableException] when nothing is listening.
   Future<void> connect() async {
@@ -128,8 +126,10 @@ class RunnerClient implements RunnerApi {
     await connect();
   }
 
-  /// Detaches. Never stops the runner: that is `serverpod stop`, or `⇧+Q`
-  /// in the UI.
+  /// Detaches.
+  ///
+  /// Never stops the runner: that is `serverpod runner stop`, or `⇧+Q` in the
+  /// UI.
   @override
   Future<void> close() async {
     _closed = true;
@@ -213,7 +213,7 @@ class RunnerClient implements RunnerApi {
   /// Runs [peer] until the runner goes away, then starts reconnecting.
   ///
   /// A runner shutting down mid-message ends the peer with an error, which is
-  /// the ordinary way a `serverpod stop` reaches an attached client.
+  /// the ordinary way a `serverpod runner stop` reaches an attached client.
   ///
   /// Only the peer this client is on reports a disconnect. Listening starts
   /// before the snapshot request, since `sendRequest` needs it to pump the
@@ -466,7 +466,7 @@ class RunnerClient implements RunnerApi {
       history.flutterLinesFor(appId).toList();
 
   /// Not carried over the attach protocol: an attached UI never drives the VM
-  /// service, and `serverpod status` reads it from the manifest.
+  /// service, and `serverpod runner status` reads it from the manifest.
   @override
   String? get vmServiceUri => null;
 

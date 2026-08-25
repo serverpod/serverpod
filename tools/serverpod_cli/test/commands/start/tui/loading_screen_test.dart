@@ -36,7 +36,7 @@ void main() {
     });
   });
 
-  group('Given a running TUI start app whose splash has been dismissed', () {
+  group('Given a running TUI start app whose splash has been dismissed,', () {
     late NoctermTester tester;
     late ServerWatchState state;
     late StartAppStateHolder holder;
@@ -47,7 +47,7 @@ void main() {
       holder = StartAppStateHolder(state);
       tester = await NoctermTester.create(size: const Size(80, 24));
       await tester.pumpComponent(
-        ServerpodWatchApp(holder: holder, onReady: (_) {}),
+        ServerpodWatchApp(holder: holder),
       );
     });
 

@@ -40,12 +40,12 @@ class FlutterAppManager {
   FlutterAppManager({
     required this.serverpodToolDir,
     required this.runMode,
-    required this.onProgress,
+    this.onProgress,
     required this.onReady,
     required this.onStart,
     required this.onStop,
     required this.onLaunchFailed,
-    required this.onEnsureAppTab,
+    this.onEnsureAppTab,
     required this.onLog,
     required this.stdoutSinkFor,
     required this.stderrSinkFor,
@@ -96,7 +96,12 @@ class FlutterAppManager {
   /// Apps are configured and listed in every run mode, but only development
   /// launches them.
   bool get canLaunchApps => runMode == 'development';
-  final void Function(FlutterAppConfig app, String stage) onProgress;
+
+  /// Launch progress for a presentation layer that shows stages of its own.
+  ///
+  /// Null in the runner, which reports progress as log lines an attached client
+  /// renders like any other.
+  final void Function(FlutterAppConfig app, String stage)? onProgress;
 
   /// Fires once per launch when the app is up: on the published web URL
   /// for web devices, or on the daemon's `app.started` event otherwise
@@ -106,7 +111,12 @@ class FlutterAppManager {
   onStart;
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
-  final void Function(FlutterAppConfig app) onEnsureAppTab;
+
+  /// Asks a presentation layer to make sure [app] has somewhere to render.
+  ///
+  /// Null in the runner: an attached client opens its own tabs from the app
+  /// list the snapshot and [FlutterAppsChangedEvent] carry.
+  final void Function(FlutterAppConfig app)? onEnsureAppTab;
   final void Function(FlutterAppConfig app, FlutterLogEvent event) onLog;
   final IOSink Function(FlutterAppConfig app) stdoutSinkFor;
   final IOSink Function(FlutterAppConfig app) stderrSinkFor;
@@ -116,7 +126,13 @@ class FlutterAppManager {
   final File serverPubspecFile;
   final List<String> serverPackageDirectoryPathParts;
   final String projectName;
-  final bool launchFlutterApp;
+
+  /// Whether an app flagged `auto_launch` is launched when the configuration
+  /// is loaded.
+  ///
+  /// Starts false in the runner and is armed by [launchAutoLaunchApps] when
+  /// a UI first attaches.
+  bool launchFlutterApp;
 
   String? _cachedFlutterAppsFingerprint;
 
@@ -262,7 +278,7 @@ class FlutterAppManager {
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
-    onEnsureAppTab(runtime.app);
+    onEnsureAppTab?.call(runtime.app);
 
     final device =
         runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
@@ -279,7 +295,7 @@ class FlutterAppManager {
       stderrSink: stderrSinkFor(runtime.app),
       onLog: (event) => onLog(runtime.app, event),
       onProgress: (stage) {
-        onProgress(runtime.app, stage);
+        onProgress?.call(runtime.app, stage);
         log.info('  ${runtime.app.name}: $stage');
       },
       // The ready signal for non-web devices, which never publish a URL. Web
@@ -422,6 +438,19 @@ class FlutterAppManager {
       if (launchFlutterApp && app.autoLaunch) {
         await launch(app.id);
       }
+    }
+  }
+
+  /// Arms auto-launch and launches every configured app flagged
+  /// `auto_launch` that is not already running.
+  ///
+  /// Idempotent. A second call launches nothing new.
+  Future<void> launchAutoLaunchApps() async {
+    if (launchFlutterApp) return;
+    launchFlutterApp = true;
+    for (final app in _apps) {
+      if (!app.autoLaunch || isRunning(app.id)) continue;
+      await launch(app.id);
     }
   }
 

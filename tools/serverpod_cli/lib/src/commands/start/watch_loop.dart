@@ -111,11 +111,11 @@ class WatchLoopContext {
       'removing the VM service info file',
       () => File(vmServiceInfoFile).deleteIfExists(),
     );
+    await _step('stopping the Docker services', () async => stopDocker?.call());
     await _step(
       'removing the manifest',
       () async => manifestPublisher?.dispose(),
     );
-    await _step('stopping the Docker services', () async => stopDocker?.call());
     await _step('releasing the lock', () async => lock?.release());
   }
 

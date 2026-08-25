@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/config/config.dart'
     show ServerpodProjectNotFoundException;
@@ -15,15 +16,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Options for the `status` command.
 enum StatusOption<V> implements OptionDefinition<V> {
-  directory(
-    StringOption(
-      argName: 'directory',
-      argAbbrev: 'd',
-      helpText:
-          'The server directory (defaults to auto-detect from current '
-          'directory).',
-    ),
-  ),
+  directory<String>(clientDirectoryOption),
   ;
 
   const StatusOption(this.option);

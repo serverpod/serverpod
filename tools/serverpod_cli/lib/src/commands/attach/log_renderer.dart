@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
@@ -51,7 +52,11 @@ Future<int> attachWithLogStream(
   void leaveIfUnrecoverable(RunnerStage stage) {
     if (stage != RunnerStage.degraded || client.watchModeEnabled) return;
     if (done.isCompleted) return;
-    sink.writeln('--- nothing will rebuild it from here ---');
+    sink.writeln(
+      '--- nothing will rebuild it from here: the runner is still up, '
+      'rebuild it from `serverpod runner attach` once the errors are fixed, '
+      'or stop it with `serverpod runner stop` ---',
+    );
     done.complete(1);
   }
 
@@ -107,12 +112,12 @@ String _stageLine(RunnerStage stage) => switch (stage) {
 };
 
 String? _formatEvent(RunnerEvent event) => switch (event) {
-  ServerLogEvent(:final entry) => _formatLogEntry(entry),
+  ServerLogEvent(:final entry) => formatLogEntryLine(entry),
   ServerLineEvent(:final line, :final duplicatesEntry) =>
     duplicatesEntry ? null : line,
   FlutterLineEvent(:final appId, :final line) => '[$appId] $line',
   FlutterLogEntryEvent(:final appId, :final entry) =>
-    '[$appId] ${_formatLogEntry(entry)}',
+    '[$appId] ${formatLogEntryLine(entry)}',
   OperationStartedEvent(:final operation) => '... ${operation.label}',
   OperationCompletedEvent(:final operation) =>
     '${operation.success ? '✓' : '✗'} ${operation.label} '
@@ -126,18 +131,6 @@ String? _formatEvent(RunnerEvent event) => switch (event) {
 };
 
 String formatHistoryEntry(Object entry) => switch (entry) {
-  LogEntry() => _formatLogEntry(entry),
+  LogEntry() => formatLogEntryLine(entry),
   _ => entry.toString(),
 };
-
-String _formatLogEntry(LogEntry entry) {
-  final buffer = StringBuffer()
-    ..write(entry.time.toIso8601String())
-    ..write(' [')
-    ..write(entry.level.name.toUpperCase())
-    ..write('] ')
-    ..write(entry.message);
-  if (entry.error != null) buffer.write('\n${entry.error}');
-  if (entry.stackTrace != null) buffer.write('\n${entry.stackTrace}');
-  return buffer.toString();
-}

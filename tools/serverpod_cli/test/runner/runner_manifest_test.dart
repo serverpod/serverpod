@@ -382,4 +382,84 @@ void main() {
       },
     );
   });
+
+  group('Given a runner configuration spawning a serve command,', () {
+    test(
+      'when the arguments are built, '
+      'then every stack-shaping option is stated explicitly',
+      () {
+        const config = RunnerConfig(
+          watch: false,
+          flutter: true,
+          serverArgs: ['--role', 'monolith'],
+        );
+
+        expect(config.toServeArgs(directory: '/srv/my_server'), [
+          '--directory',
+          '/srv/my_server',
+          '--no-watch',
+          '--flutter',
+          '--',
+          '--role',
+          'monolith',
+        ]);
+      },
+    );
+
+    test(
+      'when the caller has no opinion on Docker, '
+      'then no flag is passed, so the runner derives it from the project',
+      () {
+        const config = RunnerConfig(
+          watch: true,
+          flutter: true,
+          serverArgs: [],
+        );
+
+        expect(
+          config.toServeArgs(directory: '/srv'),
+          isNot(contains(anyOf('--docker', '--no-docker'))),
+        );
+      },
+    );
+
+    test(
+      'when the caller has an explicit opinion on Docker, '
+      'then the flag it asked for is stated',
+      () {
+        const config = RunnerConfig(
+          watch: true,
+          flutter: true,
+          serverArgs: [],
+          docker: false,
+        );
+
+        expect(
+          config.toServeArgs(directory: '/srv'),
+          contains('--no-docker'),
+        );
+      },
+    );
+
+    test(
+      'when the arguments are compared with what a runner reports, '
+      'then a round trip through them differs in nothing',
+      () {
+        const asked = RunnerConfig(
+          watch: false,
+          flutter: false,
+          serverArgs: ['-m', 'staging'],
+        );
+
+        final args = asked.toServeArgs(directory: '/srv');
+        final served = RunnerConfig(
+          watch: args.contains('--watch'),
+          flutter: args.contains('--flutter'),
+          serverArgs: args.sublist(args.indexOf('--') + 1),
+        );
+
+        expect(served.differencesFrom(asked), isEmpty);
+      },
+    );
+  });
 }

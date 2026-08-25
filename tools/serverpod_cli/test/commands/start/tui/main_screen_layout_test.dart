@@ -131,7 +131,7 @@ Future<NoctermTester> _pump(
     await holder.dispose();
   });
   await tester.pumpComponent(
-    ServerpodWatchApp(holder: holder, onReady: (_) {}),
+    ServerpodWatchApp(holder: holder),
   );
   await tester.pump();
   return tester;

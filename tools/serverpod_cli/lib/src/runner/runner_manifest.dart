@@ -291,6 +291,23 @@ class RunnerConfig {
       'server arguments after --',
   ];
 
+  /// The `serverpod runner serve` arguments that reproduce this configuration.
+  ///
+  /// `serverpod start` spawns `runner serve` with these, then compares what
+  /// came back via [differencesFrom]. A null [docker] passes neither flag,
+  /// leaving the runner to take the default from the project.
+  List<String> toServeArgs({required String directory}) {
+    return [
+      '--directory',
+      directory,
+      if (watch) '--watch' else '--no-watch',
+      if (flutter) '--flutter' else '--no-flutter',
+      if (docker == true) '--docker',
+      if (docker == false) '--no-docker',
+      if (serverArgs.isNotEmpty) ...['--', ...serverArgs],
+    ];
+  }
+
   Map<String, Object?> toJson() => {
     'watch': watch,
     'flutter': flutter,

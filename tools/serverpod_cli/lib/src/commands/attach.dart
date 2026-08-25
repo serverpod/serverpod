@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:serverpod_cli/src/commands/attach/log_renderer.dart';
+import 'package:serverpod_cli/src/commands/attach/log_renderer.dart'
+    show attachWithLogStream, formatHistoryEntry;
 import 'package:serverpod_cli/src/commands/attach/state_binding.dart';
+import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
@@ -13,21 +15,17 @@ import 'package:serverpod_cli/src/commands/status.dart'
     show resolveServerDirectory;
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_discovery.dart';
+import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
 
+export 'package:serverpod_cli/src/commands/attach/log_renderer.dart'
+    show attachWithLogStream;
+
 /// Options for the `attach` command.
 enum AttachOption<V> implements OptionDefinition<V> {
-  directory(
-    StringOption(
-      argName: 'directory',
-      argAbbrev: 'd',
-      helpText:
-          'The server directory (defaults to auto-detect from current '
-          'directory).',
-    ),
-  ),
+  directory<String>(clientDirectoryOption),
   tui(
     FlagOption(
       argName: 'tui',
@@ -49,7 +47,7 @@ enum AttachOption<V> implements OptionDefinition<V> {
 /// socket, renders what arrives, and reconnects when the runner restarts.
 ///
 /// Detaching does not stop the runner, whoever started it. The stack is
-/// stopped with `serverpod stop`, or with `⇧+Q` in the UI, so the same
+/// stopped with `serverpod runner stop`, or with `⇧+Q` in the UI, so the same
 /// keystroke never means "stop the server" in one session and "leave it
 /// running" in another.
 class AttachCommand extends ServerpodCommand<AttachOption> {
@@ -85,14 +83,7 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
         throw ExitException.error();
       case LiveRunner(:final manifest, :final versionWarning):
         if (versionWarning != null) log.warning(versionWarning);
-        if (manifest.sockets.tui.isEmpty) {
-          log.error(
-            'The running runner does not serve an attach socket. '
-            'Stop it with `serverpod stop` and start it again.',
-          );
-          throw ExitException.error();
-        }
-        socketPath = manifest.sockets.tui;
+        socketPath = requireAttachSocket(manifest);
     }
 
     final useTui = commandConfig.value(AttachOption.tui) && stdout.hasTerminal;
@@ -110,7 +101,7 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
 Future<int> attachTo(String socketPath, {required bool useTui}) async {
   try {
     return useTui
-        ? await _attachWithTui(socketPath)
+        ? await attachWithTui(socketPath)
         : await attachWithLogStream(socketPath);
   } on RunnerUnreachableException catch (e) {
     log.error('$e');
@@ -118,13 +109,32 @@ Future<int> attachTo(String socketPath, {required bool useTui}) async {
   }
 }
 
-/// Renders the runner in the terminal UI.
+/// The attach socket [manifest] names.
+///
+/// A runner aborts its start rather than run without one, so an empty path
+/// comes from another build of the CLI. Throws an [ExitException] saying how
+/// to replace such a runner.
+String requireAttachSocket(RunnerManifest manifest) {
+  if (manifest.sockets.tui.isEmpty) {
+    log.error(
+      'The running runner does not serve an attach socket. '
+      'Stop it with `serverpod runner stop` and start it again.',
+    );
+    throw ExitException.error();
+  }
+  return manifest.sockets.tui;
+}
+
+/// Renders the runner in the terminal UI, returning the exit code to leave
+/// with.
+///
+/// Shared with `serverpod start`, which attaches after bringing the runner up.
 ///
 /// None of the in-process integration this used to need survives the split:
 /// with the backend in another process there is no [Completer] handing state
 /// back, no logger buffering messages emitted before the UI existed, and no
 /// ordering dance to print a crash after the alternate screen is gone.
-Future<int> _attachWithTui(String socketPath) async {
+Future<int> attachWithTui(String socketPath) async {
   final holder = StartAppStateHolder(ServerWatchState());
   final client = RunnerClient(
     socketPath: socketPath,
@@ -159,7 +169,7 @@ Future<int> _attachWithTui(String socketPath) async {
 
   try {
     await runTuiApp(
-      ServerpodWatchApp(holder: holder, onReady: (_) {}),
+      ServerpodWatchApp(holder: holder),
       backend: ServerpodTerminalBackend(preExit: (_) async {}),
       onShutdownSignal: requestExit,
     );

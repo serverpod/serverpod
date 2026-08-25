@@ -693,11 +693,23 @@ class WatchSession {
     }, whenDisposed: () {});
   }
 
+  /// Arms auto-launch and launches every app flagged `auto_launch` that is not
+  /// already running.
+  ///
+  /// Serialized behind any in-flight reload, restart or migration, and a no-op
+  /// once disposed, so a UI attaching during shutdown cannot spawn a process
+  /// nothing will clean up.
+  Future<void> launchAutoLaunchApps() {
+    return _chainGuarded(() async {
+      await _flutterManager?.launchAutoLaunchApps();
+    }, whenDisposed: () {});
+  }
+
   /// Recovers from a degraded start: re-runs a full code generation and, on
   /// success, compiles and boots the server.
   ///
   /// This is the manual counterpart to the automatic recovery that the file
-  /// watcher drives in watch mode — it is the recovery path for `--no-watch`,
+  /// watcher drives in watch mode - it is the recovery path for `--no-watch`,
   /// where no watcher exists. A no-op if a server is already running (use
   /// [forceRestart] then). Throws a [StateError] if the session has been
   /// disposed.

@@ -306,6 +306,47 @@ void main() {
         expect(result['alreadyRunning'], isTrue);
       },
     );
+
+    test(
+      'when a liveness probe connects and disconnects without a request, '
+      'then no client counts as attached',
+      () async {
+        var attached = 0;
+        server.onFirstClientAttached = () => attached++;
+
+        final probe = await Socket.connect(
+          InternetAddress(server.socketPath, type: InternetAddressType.unix),
+          0,
+        );
+        probe.destroy();
+        await pumpEventQueue();
+
+        expect(attached, 0);
+      },
+    );
+
+    test(
+      'when a client asks for the snapshot, '
+      'then it counts as attached exactly once, however many attach after',
+      () async {
+        var attached = 0;
+        server.onFirstClientAttached = () => attached++;
+
+        final first = await _attach(server.socketPath);
+        addTearDown(first.close);
+        await first.peer.sendRequest(runnerSnapshotMethod, <String, Object?>{});
+        expect(attached, 1);
+
+        final second = await _attach(server.socketPath);
+        addTearDown(second.close);
+        await second.peer.sendRequest(
+          runnerSnapshotMethod,
+          <String, Object?>{},
+        );
+
+        expect(attached, 1);
+      },
+    );
   });
 }
 

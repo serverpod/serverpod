@@ -50,7 +50,7 @@ final class IncompatibleRunner extends RunnerResolution {
       'A serverpod runner is already running for this project, but it speaks '
       'attach protocol version ${manifest.protocolVersion} while this CLI '
       'speaks ${RunnerManifest.currentProtocolVersion}. '
-      'Stop it with `serverpod stop` and start it again to pick up this '
+      'Stop it with `serverpod runner stop` and start it again to pick up this '
       'version of the CLI.';
 }
 
@@ -90,11 +90,15 @@ Future<RunnerResolution> resolveRunner(
         ? null
         : 'The running runner was started by serverpod_cli '
               '${manifest.cliVersion}, but this is $templateVersion. '
-              'Restart it with `serverpod stop` to pick up this version.',
+              'Restart it with `serverpod runner stop` to pick up this version.',
   );
 }
 
 /// Whether something accepts a connection on the Unix socket at [path].
+///
+/// Says nothing before disconnecting. The runner counts a client as attached
+/// only once it asks for the snapshot, so a silent probe is not a UI
+/// arriving.
 Future<bool> _isListening(String path, Duration timeout) async {
   if (path.isEmpty) return false;
   try {

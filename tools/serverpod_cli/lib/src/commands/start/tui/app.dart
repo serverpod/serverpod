@@ -112,13 +112,7 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
 
 /// Root TUI component for `serverpod start`.
 class ServerpodWatchApp extends TuiApp<StartAppStateHolder> {
-  const ServerpodWatchApp({
-    super.key,
-    required super.holder,
-    required this.onReady,
-  });
-
-  final void Function(StartAppStateHolder holder) onReady;
+  const ServerpodWatchApp({super.key, required super.holder});
 
   @override
   TuiAppState createState() => ServerpodWatchAppState();
@@ -157,9 +151,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
     Timer(const Duration(seconds: 5), () {
       _minSplashElapsed = true;
       _tryDismissSplash();
-    });
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      component.onReady(component.holder);
     });
   }
 
