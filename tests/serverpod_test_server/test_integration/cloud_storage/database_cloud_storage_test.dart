@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
-  withServerpod('Given the default database cloud storage', (
+  withServerpod('Given the default database cloud storage,', (
     sessionBuilder,
     _,
   ) {
@@ -130,6 +130,31 @@ void main() {
         expect(url.queryParameters['storage'], storageId);
         expect(url.queryParameters['path'], path);
         expect(url.queryParameters['key'], isNotEmpty);
+      },
+    );
+
+    test(
+      'when statting a file whose custom metadata is not all strings, '
+      'then the returned metadata map is readable',
+      () async {
+        const path = 'cloud-storage/non-string-metadata.txt';
+        await session.storage.storeFile(
+          storageId: storageId,
+          path: path,
+          byteData: ByteData(1),
+        );
+        await session.db.unsafeExecute(
+          'UPDATE "serverpod_cloud_storage" '
+          'SET "customMetadata" = \'{"count": 5}\' '
+          'WHERE "path" = \'$path\'',
+        );
+
+        final stat = await session.storage.statFile(
+          storageId: storageId,
+          path: path,
+        );
+
+        expect(() => Map<String, String>.of(stat.custom), returnsNormally);
       },
     );
 
