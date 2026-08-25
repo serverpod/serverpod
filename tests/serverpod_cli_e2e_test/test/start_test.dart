@@ -78,6 +78,26 @@ Future<void> waitForServerRunning(KeywordSearchInStream streamSearch) async {
   await Future.delayed(const Duration(seconds: 1));
 }
 
+/// Stops the runner serving [serverDirPath], if one is still up.
+///
+/// Killing the `serverpod start` process is not enough. It is only a client of
+/// a detached runner, and SIGINT detaches the client rather than stopping the
+/// stack. A runner left behind holds the project, and refuses the next test
+/// that starts one with different options.
+Future<void> stopRunner(String serverDirPath) async {
+  var result = await runServerpod(
+    ['runner', 'stop'],
+    workingDirectory: serverDirPath,
+  );
+  expect(
+    result.exitCode,
+    0,
+    reason:
+        'Could not stop the runner for $serverDirPath, so it would outlive '
+        'this test:\n${result.stdout}\n${result.stderr}',
+  );
+}
+
 Future<void> waitForGeneratedOutput(
   bool Function() isReady, {
   Duration timeout = const Duration(seconds: 30),
@@ -94,8 +114,38 @@ Future<void> waitForGeneratedOutput(
   }
 }
 
+/// What `serverpod start` says, and what it leaves on disk, once the runner it
+/// spawned throws after publishing its manifest.
+void expectRunnerStoppedDuringStartup(
+  ProcessResult result,
+  String serverDirPath,
+) {
+  var output = '${result.stdout}\n${result.stderr}';
+
+  expect(result.exitCode, isNot(0), reason: output);
+  expect(
+    output,
+    isNot(contains('did not come up in time')),
+    reason:
+        'start waited out the runner deadline instead of hearing '
+        'that the runner stopped:\n$output',
+  );
+  expect(output, contains('stopped during startup'), reason: output);
+  expect(output, contains('runner.log'), reason: output);
+  // Left behind on purpose, so the spawner reads how the runner stopped. What
+  // must not remain is a manifest still at `starting`.
+  var manifest = File(
+    path.join(serverDirPath, '.dart_tool', 'serverpod', 'runner.json'),
+  );
+  expect(
+    manifest.existsSync() ? manifest.readAsStringSync() : '',
+    isNot(contains('"starting"')),
+    reason: 'the runner left its manifest at starting:\n$output',
+  );
+}
+
 void main() async {
-  group('Given a server project', () {
+  group('Given a server project,', () {
     late String sandboxDir;
     var projectName =
         'test_${const Uuid().v4().replaceAll('-', '_').toLowerCase()}';
@@ -126,6 +176,7 @@ void main() async {
     tearDown(() async {
       await serverProcess?.killAndWaitForExit();
       streamSearch?.cancel();
+      await stopRunner(path.join(sandboxDir, serverDir));
 
       serverProcess = null;
       streamSearch = null;
@@ -319,6 +370,85 @@ fields:
       retry: 3,
     );
 
+    group('when the runner throws after publishing its manifest,', () {
+      // Once the pod publishes its VM service URI, the runner writes the
+      // proxy's URI to vm-service-info.json. A directory in its place makes
+      // that write throw, past the point where the runner has published its
+      // manifest, generated code and booted the pod. The one way from outside
+      // to make the runner throw rather than fail cleanly.
+      late Directory blocker;
+
+      setUp(() async {
+        blocker = Directory(
+          path.join(
+            sandboxDir,
+            serverDir,
+            '.dart_tool',
+            'serverpod',
+            'vm-service-info.json',
+          ),
+        );
+        await blocker.create(recursive: true);
+      });
+
+      tearDown(() async {
+        await blocker.delete(recursive: true);
+      });
+
+      test(
+        'then start reports the failure at once, with the runner log',
+        () async {
+          var result = await runServerpod(
+            ['start', '--no-watch', '--no-attach', '--no-docker'],
+            workingDirectory: path.join(sandboxDir, serverDir),
+          );
+          expectRunnerStoppedDuringStartup(
+            result,
+            path.join(sandboxDir, serverDir),
+          );
+        },
+      );
+    });
+
+    group('when the runner throws before booting the pod,', () {
+      // A vm-service-info.json that is not a JSON object makes the check for
+      // an existing server throw a TypeError, which is not an Exception it
+      // catches. Past the manifest, before ports, Docker and the pod.
+      late File blocker;
+
+      setUp(() async {
+        blocker = File(
+          path.join(
+            sandboxDir,
+            serverDir,
+            '.dart_tool',
+            'serverpod',
+            'vm-service-info.json',
+          ),
+        );
+        await blocker.create(recursive: true);
+        await blocker.writeAsString('[]');
+      });
+
+      tearDown(() async {
+        if (await blocker.exists()) await blocker.delete();
+      });
+
+      test(
+        'then start reports the failure at once, with the runner log, and the manifest says the runner stopped',
+        () async {
+          var result = await runServerpod(
+            ['start', '--no-watch', '--no-attach', '--no-docker'],
+            workingDirectory: path.join(sandboxDir, serverDir),
+          );
+          expectRunnerStoppedDuringStartup(
+            result,
+            path.join(sandboxDir, serverDir),
+          );
+        },
+      );
+    });
+
     group("when running 'serverpod start'", () {
       setUp(() async {
         (serverProcess, streamSearch) = await startServerpodWithStreamSearch(
@@ -357,7 +487,7 @@ fields:
     });
   });
 
-  group('Given a project with a configured Flutter app', () {
+  group('Given a project with a configured Flutter app,', () {
     const projectName = 'vscode_test_app';
     late String sandboxDir;
     late String serverDir;
@@ -425,6 +555,7 @@ fields:
       await serverProcess?.killAndWaitForExit();
       await stdoutSubscription?.cancel();
       await stderrSubscription?.cancel();
+      await stopRunner(serverDir);
       serverProcess = null;
       stdoutSubscription = null;
       stderrSubscription = null;
