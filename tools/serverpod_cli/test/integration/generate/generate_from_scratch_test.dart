@@ -565,11 +565,14 @@ values:
           await analyzers.performGenerate(config: config);
         });
 
-        test('then the trailing comma is preserved.', () async {
-          final generatedEnum = await File(generatedEnumPath).readAsString();
+        test(
+          'then the enum terminator is formatted without a trailing comma.',
+          () async {
+            final generatedEnum = await File(generatedEnumPath).readAsString();
 
-          expect(generatedEnum, contains('  assistant,\n  system,\n  ;'));
-        });
+            expect(generatedEnum, contains('  assistant,\n  system;'));
+          },
+        );
 
         test('then the generated enum is format-clean.', () async {
           final formatResult = await Process.run(
