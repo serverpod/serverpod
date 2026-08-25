@@ -24,9 +24,6 @@ class PresignedPutUploadStrategy implements S3UploadStrategy {
   bool get supportsPreventOverwrite => true;
 
   @override
-  bool get supportsMaxFileSize => false;
-
-  @override
   Future<void> uploadData({
     required String accessKey,
     required String secretKey,
@@ -286,6 +283,6 @@ UNSIGNED-PAYLOAD''';
     if (metadata.contentEncoding != null)
       'content-encoding': metadata.contentEncoding!,
     for (final entry in metadata.custom.entries)
-      'x-amz-meta-${entry.key}': entry.value,
+      'x-amz-meta-${entry.key.toLowerCase()}': entry.value,
   };
 }

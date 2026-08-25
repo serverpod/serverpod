@@ -170,6 +170,6 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     if (metadata.contentEncoding != null)
       'Content-Encoding': metadata.contentEncoding!,
     for (final entry in metadata.custom.entries)
-      'x-amz-meta-${entry.key}': entry.value,
+      'x-amz-meta-${entry.key.toLowerCase()}': entry.value,
   };
 }

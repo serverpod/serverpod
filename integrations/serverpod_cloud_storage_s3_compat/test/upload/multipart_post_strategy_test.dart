@@ -161,7 +161,7 @@ void main() {
           endpoints: endpoints,
           metadata: const FileMetadata(
             contentType: 'application/custom',
-            custom: {'tenant': 'acme'},
+            custom: {'Tenant': 'acme'},
           ),
         );
         final data = jsonDecode(description.encode()) as Map<String, dynamic>;
@@ -169,6 +169,7 @@ void main() {
 
         expect(fields['Content-Type'], 'application/custom');
         expect(fields['x-amz-meta-tenant'], 'acme');
+        expect(fields, isNot(contains('x-amz-meta-Tenant')));
       },
     );
 
