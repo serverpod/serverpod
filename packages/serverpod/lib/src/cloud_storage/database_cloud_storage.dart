@@ -75,6 +75,28 @@ class DatabaseCloudStorage extends CloudStorage {
   }
 
   @override
+  Future<bool> fileExists({
+    required Session session,
+    required String path,
+  }) async {
+    final now = DateTime.now().toUtc();
+    try {
+      final count = await CloudStorageEntry.db.count(
+        session,
+        where: (t) =>
+            t.storageId.equals(storageId) &
+            t.path.equals(path) &
+            t.verified.equals(true) &
+            (t.expiration.equals(null) | (t.expiration > now)),
+        limit: 1,
+      );
+      return count > 0;
+    } catch (error) {
+      throw CloudStorageException('Failed to check if file exists. ($error)');
+    }
+  }
+
+  @override
   Future<Uri> publicDownloadUrl({
     required Session session,
     required String path,
