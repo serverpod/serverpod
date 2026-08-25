@@ -347,6 +347,38 @@ class GeneratorConfig implements ModelLoadConfig {
   /// All the modules including my self and internal modules.
   List<ModuleConfig> get modulesAll => _modules;
 
+  /// The absolute server package directory [serverRootDir] names.
+  ///
+  /// An empty value, what `--directory` defaults to, means "find it": the
+  /// search starts at [startDir], or the current directory when that is null.
+  /// Separate from [load] because the runner needs the directory before it has
+  /// a config, to open its log file where every other runner artifact lives.
+  ///
+  /// [interactive] controls whether the search may prompt when it finds more
+  /// than one project. Defaults to true unless running in a CI environment.
+  static Future<String> resolveServerRootDir(
+    String serverRootDir, {
+    required bool? interactive,
+    Directory? startDir,
+  }) async {
+    // Auto-detect server directory if not specified
+    if (serverRootDir.isEmpty) {
+      // Determine if we should use interactive mode
+      // Priority: explicit flag > CI detection > default (true)
+      final isInteractive = interactive ?? !ci.isCI;
+
+      var serverDir = await ServerDirectoryFinder.findOrPrompt(
+        startDir: startDir,
+        interactive: isInteractive,
+      );
+      serverRootDir = serverDir.path;
+    }
+
+    // Anchor the path once at resolution time,
+    // so a later cwd change doesn't silently retarget config lookups.
+    return p.normalize(p.absolute(serverRootDir));
+  }
+
   /// Create a new [GeneratorConfig] by loading the configuration in the [serverRootDir].
   ///
   /// If [serverRootDir] is empty, the server directory will be automatically
@@ -359,21 +391,10 @@ class GeneratorConfig implements ModelLoadConfig {
     String serverRootDir = '',
     required bool? interactive,
   }) async {
-    // Auto-detect server directory if not specified
-    if (serverRootDir.isEmpty) {
-      // Determine if we should use interactive mode
-      // Priority: explicit flag > CI detection > default (true)
-      final isInteractive = interactive ?? !ci.isCI;
-
-      var serverDir = await ServerDirectoryFinder.findOrPrompt(
-        interactive: isInteractive,
-      );
-      serverRootDir = serverDir.path;
-    }
-
-    // Anchor the path once at resolution time,
-    // so a later cwd change doesn't silently retarget config lookups.
-    serverRootDir = p.normalize(p.absolute(serverRootDir));
+    serverRootDir = await resolveServerRootDir(
+      serverRootDir,
+      interactive: interactive,
+    );
 
     var serverPackageDirectoryPathParts = p.split(serverRootDir);
 

@@ -41,4 +41,24 @@ void main() {
       },
     );
   });
+
+  group('Given a log entry stamped in UTC,', () {
+    test(
+      'when it is formatted as a line, '
+      'then the time is local',
+      () {
+        final time = DateTime.utc(2026, 8, 25, 10, 30);
+        final line = formatLogEntryLine(
+          LogEntry(
+            time: time,
+            level: LogLevel.info,
+            message: 'hello',
+            scope: LogScope.root('server'),
+          ),
+        );
+
+        expect(line, '${time.toLocal().toIso8601String()} [INFO] hello');
+      },
+    );
+  });
 }
