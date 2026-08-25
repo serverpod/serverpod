@@ -32,8 +32,7 @@ enum EmailAccountPasswordResetExceptionReason
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown,
-  ;
+  unknown;
 
   static EmailAccountPasswordResetExceptionReason fromJson(String name) {
     switch (name) {

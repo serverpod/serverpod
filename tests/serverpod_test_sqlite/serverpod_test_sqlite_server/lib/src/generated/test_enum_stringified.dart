@@ -16,8 +16,7 @@ import 'package:serverpod/serverpod.dart' as _is;
 enum TestEnumStringified implements _is.SerializableModel {
   one,
   two,
-  three,
-  ;
+  three;
 
   static TestEnumStringified fromJson(String name) {
     switch (name) {

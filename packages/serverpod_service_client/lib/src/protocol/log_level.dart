@@ -18,8 +18,7 @@ enum LogLevel implements _isc.SerializableModel {
   info,
   warning,
   error,
-  fatal,
-  ;
+  fatal;
 
   static LogLevel fromJson(int index) {
     switch (index) {

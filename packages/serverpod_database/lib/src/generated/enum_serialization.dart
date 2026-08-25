@@ -14,8 +14,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 enum EnumSerialization implements _iss.SerializableModel {
   byName,
-  byIndex,
-  ;
+  byIndex;
 
   static EnumSerialization fromJson(int index) {
     switch (index) {
