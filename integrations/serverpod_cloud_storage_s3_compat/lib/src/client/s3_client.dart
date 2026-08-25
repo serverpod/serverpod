@@ -130,12 +130,10 @@ UNSIGNED-PAYLOAD''';
       stringToSign,
     );
 
-    return Uri(
-      scheme: bucketUri.scheme,
-      host: bucketUri.host,
-      port: bucketUri.port,
+    return _buildUri(
+      bucketUri: bucketUri,
       path: unencodedPath,
-      queryParameters: signedQuery,
+      canonicalQuery: SigV4.buildCanonicalQueryString(signedQuery),
     );
   }
 
@@ -151,12 +149,11 @@ UNSIGNED-PAYLOAD''';
     final unencodedPath = bucketUri.path.endsWith('/')
         ? '${bucketUri.path}$key'
         : '${bucketUri.path}/$key';
-    final uri = Uri(
-      scheme: bucketUri.scheme,
-      host: bucketUri.host,
-      port: bucketUri.port,
+    final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+    final uri = _buildUri(
+      bucketUri: bucketUri,
       path: unencodedPath,
-      queryParameters: queryParams?.isNotEmpty == true ? queryParams : null,
+      canonicalQuery: canonicalQuery,
     );
 
     // For signing, include port in host header for non-standard ports
@@ -170,7 +167,6 @@ UNSIGNED-PAYLOAD''';
       _service,
     );
 
-    final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
     // Normalize the path to avoid double slashes, then encode each segment
     final normalizedPath = unencodedPath.startsWith('/')
         ? unencodedPath
@@ -265,6 +261,21 @@ $payload''';
       return uri.host;
     }
     return '${uri.host}:${uri.port}';
+  }
+
+  Uri _buildUri({
+    required Uri bucketUri,
+    required String path,
+    required String canonicalQuery,
+  }) {
+    final uri = Uri(
+      scheme: bucketUri.scheme,
+      host: bucketUri.host,
+      port: bucketUri.port,
+      path: path,
+    );
+    if (canonicalQuery.isEmpty) return uri;
+    return Uri.parse('$uri?$canonicalQuery');
   }
 }
 

@@ -243,6 +243,7 @@ void main() {
         );
       },
     );
+
     test(
       'when building a presigned URL with a query value containing a space, '
       'then the emitted query uses the encoding that was signed',
