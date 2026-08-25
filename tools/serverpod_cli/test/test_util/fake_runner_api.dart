@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/runner/migration_result.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
+import 'package:serverpod_tui/serverpod_tui.dart' show TrackedOperation;
 
 /// A [RunnerApi] whose every member is a settable field, so a test overrides
 /// only the capability it exercises.
@@ -11,6 +14,45 @@ import 'package:serverpod_cli/src/runner/runner_api.dart';
 class FakeRunnerApi implements InProcessRunnerApi {
   @override
   bool isRunning = true;
+
+  @override
+  RunnerStage stage = RunnerStage.running;
+
+  bool watchModeEnabled = true;
+
+  @override
+  bool canLaunchFlutterApps = true;
+
+  List<String> serverLines = const [];
+
+  final StreamController<RunnerEvent> eventController =
+      StreamController<RunnerEvent>.broadcast();
+
+  @override
+  Stream<RunnerEvent> get events => eventController.stream;
+
+  /// Pushes [event] to every attached client.
+  void emit(RunnerEvent event) => eventController.add(event);
+
+  @override
+  Future<void> close() => eventController.close();
+
+  @override
+  RunnerSnapshot snapshot() => RunnerSnapshot(
+    stage: stage,
+    isRunning: isRunning,
+    watchModeEnabled: watchModeEnabled,
+    canLaunchFlutterApps: canLaunchFlutterApps,
+    serverLines: serverLines,
+    serverEntries: logHistory,
+    activeOperations: activeOperations,
+    flutterLines: flutterLogs,
+    flutterApps: flutterApps,
+    runningFlutterApps: runningFlutterApps,
+  );
+
+  List<({TrackedOperation operation, DateTime startedAt})> activeOperations =
+      const [];
 
   Future<void> Function() onHotReload = () async {};
   Future<void> Function() onHotRestart = () async {};

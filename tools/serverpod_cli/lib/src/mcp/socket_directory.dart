@@ -20,11 +20,23 @@ String serverpodMcpSocketPath(String serverDir) {
 ///
 /// Matches the framing used by `dart_mcp`'s stdio transport so the same
 /// `MCPServer`/`MCPClient` plumbing works over a Unix socket.
-StreamChannel<String> socketChannel(Socket socket) {
-  final inStream = socket
-      .cast<List<int>>()
+///
+/// [input] stands in for the socket's own stream when a caller has already
+/// subscribed to that, to look at the first bytes before deciding what the
+/// connection is.
+StreamChannel<String> socketChannel(
+  Socket socket, {
+  Stream<List<int>>? input,
+}) {
+  final inStream = (input ?? socket.cast<List<int>>())
       .transform(utf8.decoder)
-      .transform(const LineSplitter());
+      .transform(const LineSplitter())
+      // dart:io closes the stream right after a socket error, so the peer ends
+      // either way. Handed on, json_rpc_2 completes `listen()` with the error
+      // and nothing awaits that. Linux resets a Unix socket whose peer closed
+      // with bytes unread, so a plain client exit raises one. A decoding error
+      // keeps flowing. It carries no `done`, and the peer needs it to end.
+      .handleError((_) {}, test: (error) => error is SocketException);
 
   final outController = StreamController<String>();
   outController.stream.listen(
