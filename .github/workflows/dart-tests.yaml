@@ -842,7 +842,12 @@ jobs:
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
       # Firefox for the browser run; xvfb provides the virtual display (xvfb-run).
+      # Pinned: Firefox 154.0.1 extended Local Network Access permission prompts to
+      # WebSocket connections from HTTP pages, which blocks ws://serverpod_test_server
+      # under xvfb (nobody can click "Allow"). See the tracking issue linked in the PR.
       - uses: browser-actions/setup-firefox@0bc507ddf224827e3b1af68e014d5e42ab93e795 # v1.7.2
+        with:
+          firefox-version: '154.0'
       - name: Install xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
       - name: Run e2e web tests
