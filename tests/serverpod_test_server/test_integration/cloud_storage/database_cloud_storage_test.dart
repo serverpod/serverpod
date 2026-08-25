@@ -134,6 +134,43 @@ void main() {
     );
 
     test(
+      'when temporary download URLs expire, '
+      'then their authorizations are removed',
+      () async {
+        const path = 'cloud-storage/temporary-cleanup.txt';
+        await session.storage.storeFile(
+          storageId: storageId,
+          path: path,
+          byteData: ByteData(1),
+        );
+
+        for (var i = 0; i < 3; i++) {
+          await session.storage.temporaryDownloadUrl(
+            storageId: storageId,
+            path: path,
+            options: const TemporaryDownloadUrlOptions(
+              expirationDuration: Duration(seconds: 1),
+            ),
+          );
+        }
+        await Future<void>.delayed(const Duration(seconds: 2));
+        // Give any cleanup a chance to run by using the storage again.
+        await session.storage.temporaryDownloadUrl(
+          storageId: storageId,
+          path: path,
+        );
+
+        final expired = await session.db.unsafeQuery(
+          'SELECT COUNT(*) FROM "serverpod_cloud_storage_direct_download" '
+          'WHERE "path" = \'$path\' '
+          "AND \"expiration\" <= (clock_timestamp() AT TIME ZONE 'UTC')",
+        );
+
+        expect(expired.first.first, 0);
+      },
+    );
+
+    test(
       'when statting a file whose custom metadata is not all strings, '
       'then the returned metadata map is readable',
       () async {
