@@ -179,7 +179,11 @@ class CloudStoragePublicEndpoint extends Endpoint {
     if (metadata == null) return const {};
     final decoded = jsonDecode(metadata);
     if (decoded is! Map) return const {};
-    return decoded.cast<String, String>();
+    return {
+      for (final entry in decoded.entries)
+        if (entry.key is String && entry.value is String)
+          entry.key as String: entry.value as String,
+    };
   }
 
   /// Registers the endpoint with the Serverpod by manually adding an
