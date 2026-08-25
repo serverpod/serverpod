@@ -303,25 +303,34 @@ void main() {
         expect(changeNotifications, 1);
       });
 
-      test(
-        'then a delayed scope_end event does not remove a replacement operation.',
+      group(
+        'when a discarded server scope ID is reused for a new active tracked operation',
         () {
-          final replacement = TrackedOperation(
-            id: 'scope_1',
-            label: 'CLI replacement',
-          );
-          history.activeOperations['scope_1'] = replacement;
+          late TrackedOperation replacement;
 
-          history.recordServerLogEvent(
-            _logEvent({
-              'type': 'scope_end',
-              'id': 'scope_1',
-              'success': true,
-            }),
-          );
+          setUp(() {
+            replacement = TrackedOperation(
+              id: 'scope_1',
+              label: 'CLI replacement',
+            );
+            history.activeOperations['scope_1'] = replacement;
+          });
 
-          expect(history.serverEntries, isEmpty);
-          expect(history.activeOperations['scope_1'], same(replacement));
+          test(
+            'then a scope_end event recorded on the server log does not remove the new tracked operation.',
+            () {
+              history.recordServerLogEvent(
+                _logEvent({
+                  'type': 'scope_end',
+                  'id': 'scope_1',
+                  'success': true,
+                }),
+              );
+
+              expect(history.serverEntries, isEmpty);
+              expect(history.activeOperations['scope_1'], same(replacement));
+            },
+          );
         },
       );
 
