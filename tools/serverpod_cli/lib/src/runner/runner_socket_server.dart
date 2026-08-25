@@ -97,15 +97,51 @@ class RunnerSocketServer {
     }
 
     _sockets.add(socket);
-    final peer = json_rpc.Peer(socketChannel(socket));
-    _register(peer);
 
-    unawaited(
-      peer.listen().catchError((_) {}).whenComplete(() {
-        _peers.remove(peer);
-        _sockets.remove(socket);
-      }),
+    // Most connections are liveness probes: `resolveRunner` connects and hangs
+    // up without a byte, four times a second from a start waiting on a cold
+    // build. A peer, with its dozen handlers, is built for a client that
+    // speaks.
+    json_rpc.Peer? peer;
+    final input = StreamController<List<int>>();
+    unawaited(socket.done.catchError((_) {}));
+    socket.listen(
+      (chunk) {
+        if (peer == null) {
+          final served = json_rpc.Peer(
+            socketChannel(socket, input: input.stream),
+          );
+          peer = served;
+          _register(served);
+          unawaited(_serve(served, socket));
+        }
+        input.add(chunk);
+      },
+      onError: input.addError,
+      onDone: () {
+        input.close();
+        if (peer == null) {
+          _sockets.remove(socket);
+          socket.destroy();
+        }
+      },
+      cancelOnError: false,
     );
+  }
+
+  /// Serves [peer] until it goes away, then forgets it.
+  ///
+  /// A client that drops mid-message ends its peer with an error. That is a
+  /// disconnect, not a runner fault, so it must not escape and take the
+  /// runner's event forwarding with it.
+  Future<void> _serve(json_rpc.Peer peer, Socket socket) async {
+    try {
+      await peer.listen();
+    } catch (_) {
+    } finally {
+      _peers.remove(peer);
+      _sockets.remove(socket);
+    }
   }
 
   void _register(json_rpc.Peer peer) {

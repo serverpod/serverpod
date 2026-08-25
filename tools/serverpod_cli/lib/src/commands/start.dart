@@ -787,7 +787,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: podInfoFile,
       stdoutSink: serverStdoutSink,
       stderrSink: serverStderrSink,
-      onDispose: logHistory.discardActiveServerScopes,
+      onDispose: logHistory.serverProcessGone,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();
@@ -1010,18 +1010,21 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 /// This is where the structured logs of the server and of every Flutter app
 /// enter the session's [StartLogHistory]. A stream that cannot be subscribed
 /// to costs those logs, not the session, so it is warned about, not thrown.
-Future<void> _recordExtensionEvents(
+///
+/// Returns whether [onEvent] is now hearing anything.
+Future<bool> _recordExtensionEvents(
   VmService? vmService,
   void Function(Event event) onEvent,
 ) async {
-  if (vmService == null) return;
+  if (vmService == null) return false;
   try {
     await vmService.streamListen(EventStreams.kExtension);
   } on RPCError catch (e) {
     log.warning('Could not subscribe to the VM service log stream: $e');
-    return;
+    return false;
   }
   vmService.onExtensionEvent.listen(onEvent);
+  return true;
 }
 
 /// Boots the initial server process, recovering once from a corrupt cached
@@ -1185,7 +1188,7 @@ Future<bool> _detectExistingInstance(GeneratorConfig config) async {
     case LiveRunner(:final manifest):
       log.info(
         'A serverpod runner for "${config.name}" is already running '
-        '(pid ${manifest.pid}). Attach to it with `serverpod attach`, or '
+        '(pid ${manifest.pid}). Attach to it with `serverpod runner attach`, or '
         'stop it with `serverpod stop`.',
       );
       return true;

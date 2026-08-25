@@ -13,6 +13,7 @@ import 'package:test/test.dart';
 
 import '../test_util/fake_runner_api.dart';
 import '../test_util/short_temp_dir.dart';
+import '../test_util/wait_for.dart';
 
 /// A client attached to the server socket, with the events it has received.
 class _AttachedClient {
@@ -93,7 +94,8 @@ void main() {
 
         final snapshot = RunnerSnapshot.fromJson(
           Map<String, Object?>.from(
-            await client.peer.sendRequest(runnerSnapshotMethod) as Map,
+            await client.peer.sendRequest(runnerSnapshotMethod, const {})
+                as Map,
           ),
         );
 
@@ -125,7 +127,8 @@ void main() {
 
         final snapshot = RunnerSnapshot.fromJson(
           Map<String, Object?>.from(
-            await client.peer.sendRequest(runnerSnapshotMethod) as Map,
+            await client.peer.sendRequest(runnerSnapshotMethod, const {})
+                as Map,
           ),
         );
 
@@ -135,19 +138,39 @@ void main() {
     );
 
     test(
+      'when a client has not asked for the snapshot, '
+      'then nothing is forwarded to it until it does',
+      () async {
+        final client = await _attach(server.socketPath);
+        addTearDown(client.close);
+
+        runner.emit(const ServerLineEvent('before the snapshot'));
+        await Future<void>.delayed(const Duration(milliseconds: 50));
+        expect(client.events, isEmpty);
+
+        await client.peer.sendRequest(runnerSnapshotMethod, const {});
+        runner.emit(const ServerLineEvent('after the snapshot'));
+        await waitFor(() => client.events.isNotEmpty);
+
+        final line = client.events.single as ServerLineEvent;
+        expect(line.line, 'after the snapshot');
+      },
+    );
+
+    test(
       'when the runner emits events, '
       'then an attached client receives them after its snapshot',
       () async {
         final client = await _attach(server.socketPath);
         addTearDown(client.close);
-        await client.peer.sendRequest(runnerSnapshotMethod);
+        await client.peer.sendRequest(runnerSnapshotMethod, const {});
 
         runner
           ..emit(const StageChangedEvent(RunnerStage.running))
           ..emit(
             const FlutterLineEvent(appId: 'admin', line: 'Reloaded in 12ms'),
           );
-        await pumpEventQueue();
+        await waitFor(() => client.events.length >= 2);
 
         expect(client.events, hasLength(2));
         final stage = client.events.first as StageChangedEvent;
@@ -173,7 +196,9 @@ void main() {
         runner.emit(
           const StageChangedEvent(RunnerStage.stopping),
         );
-        await pumpEventQueue();
+        await waitFor(
+          () => first.events.isNotEmpty && second.events.isNotEmpty,
+        );
 
         expect(first.events, hasLength(1));
         expect(second.events, hasLength(1));
@@ -191,12 +216,11 @@ void main() {
         await second.peer.sendRequest(runnerSnapshotMethod);
 
         await first.close();
-        await pumpEventQueue();
 
         runner.emit(
           const StageChangedEvent(RunnerStage.running),
         );
-        await pumpEventQueue();
+        await waitFor(() => second.events.isNotEmpty);
 
         expect(second.events, hasLength(1));
       },
@@ -212,7 +236,7 @@ void main() {
         final client = await _attach(server.socketPath);
         addTearDown(client.close);
 
-        await client.peer.sendRequest('hotReload');
+        await client.peer.sendRequest('hotReload', const {});
 
         expect(reloads, 1);
       },

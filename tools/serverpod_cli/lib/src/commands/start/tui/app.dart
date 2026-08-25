@@ -31,6 +31,13 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
   void Function({bool force})? _onCreateRepairMigration;
   VoidCallback? _onApplyMigration;
   VoidCallback? _onQuit;
+  VoidCallback? _onStopStack;
+
+  /// Called once the app has mounted and can be shut down.
+  ///
+  /// Wire anything that may end the app here. A shutdown requested before
+  /// the terminal binding exists has nothing to shut down and crashes.
+  VoidCallback? onAttached;
 
   @override
   ServerWatchState get state => _state;
@@ -50,6 +57,8 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     widgetState.onCreateRepairMigration = _onCreateRepairMigration;
     widgetState.onApplyMigration = _onApplyMigration;
     widgetState.onQuit = _onQuit;
+    widgetState.onStopStack = _onStopStack;
+    onAttached?.call();
   }
 
   @override
@@ -101,6 +110,11 @@ class StartAppStateHolder extends TuiAppStateHolder<ServerWatchState> {
     _onQuit = cb;
     _widgetState?.onQuit = cb;
   }
+
+  set onStopStack(VoidCallback? cb) {
+    _onStopStack = cb;
+    _widgetState?.onStopStack = cb;
+  }
 }
 
 /// Root TUI component for `serverpod start`.
@@ -132,6 +146,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   void Function({bool force})? onCreateRepairMigration;
   VoidCallback? onApplyMigration;
   VoidCallback? onQuit;
+  VoidCallback? onStopStack;
 
   bool _minSplashElapsed = false;
 
@@ -144,7 +159,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   @override
   void initState() {
     super.initState();
-    component.holder.attach(this);
     // Keep splash visible for at least 5 seconds.
     Timer(const Duration(seconds: 5), () {
       _minSplashElapsed = true;
@@ -158,7 +172,6 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
   @override
   void dispose() {
     _launchPanelCloseTimer?.cancel();
-    component.holder.detach(this);
     rawScrollController.dispose();
     helpScrollController.dispose();
     appPanelScrollController.dispose();
@@ -363,6 +376,7 @@ class ServerpodWatchAppState extends TuiAppState<ServerpodWatchApp> {
           },
           onLaunchApp: _launchApp,
           onQuit: onQuit,
+          onStopStack: onStopStack,
           onCopyAlert: copyAlert,
           onDismissAlert: dismissAlert,
           onStopOrCloseAppTab: _stopOrCloseAppTab,

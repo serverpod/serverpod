@@ -70,9 +70,6 @@ class StartLogHistory {
   /// line buffer.
   void Function(String appId, LogEntry entry)? onFlutterEntry;
 
-  /// Called for each raw server output line appended to [serverLines].
-  void Function(String line)? onServerLine;
-
   /// When each of [activeOperations] began, so a client attaching mid-operation
   /// can tell how long it has been running.
   ///
@@ -112,6 +109,21 @@ class StartLogHistory {
         () => BoundedQueueList<String>(maxFlutterLines),
       );
 
+  /// Replaces every app's retained output with [lines], dropping the buffer of
+  /// any app [lines] does not name.
+  ///
+  /// A reconnecting client can meet a runner whose project no longer
+  /// configures an app it holds output for.
+  void replaceFlutterLines(Map<String, List<String>> lines) {
+    _flutterLines.removeWhere((appId, _) => !lines.containsKey(appId));
+    for (final entry in lines.entries) {
+      flutterLinesFor(entry.key)
+        ..clear()
+        ..addAll(entry.value);
+    }
+    onChanged?.call();
+  }
+
   /// Appends [line] to the raw output of the Flutter app [appId].
   void addFlutterLine(String appId, String line) {
     flutterLinesFor(appId).add(line);
@@ -119,11 +131,13 @@ class StartLogHistory {
     onChanged?.call();
   }
 
+  /// Records that the pod process is gone, taking its open scopes with it.
+  void serverProcessGone() => discardActiveServerScopes();
+
   /// Appends [line] to the pod's raw output.
   void addServerLine(String line) {
     serverLines.add(line);
     _emit(ServerLineEvent(line));
-    onServerLine?.call(line);
     onChanged?.call();
   }
 
@@ -153,7 +167,8 @@ class StartLogHistory {
       case 'log':
         final entry = _logEntryFromEventData(data, scopeLabel: 'server');
         serverEntries.add(entry);
-        _emit(ServerLogEvent(entry));
+        // The pod prints every entry it posts, so a line carries it too.
+        _emit(ServerLogEvent(entry, duplicatesLine: true));
         onServerEntry?.call(entry);
 
       case 'scope_start':
@@ -264,8 +279,10 @@ class StartLogHistory {
         return;
     }
 
-    _addFlutterEntryLines(appId, entry);
-    _emit(FlutterLogEntryEvent(appId: appId, entry: entry));
+    addFlutterEntryLines(appId, entry);
+    _emit(
+      FlutterLogEntryEvent(appId: appId, entry: entry, appendedToLines: true),
+    );
     onFlutterEntry?.call(appId, entry);
     onChanged?.call();
   }
@@ -352,9 +369,11 @@ class StartLogHistory {
   /// Appends [entry]'s message, error and stack trace as raw lines of the
   /// Flutter app [appId], mirroring how the app would have printed them.
   ///
-  /// Emits nothing: the caller emits the structured entry covering the same
-  /// text, and a client rendering both events would print it twice.
-  void _addFlutterEntryLines(String appId, LogEntry entry) {
+  /// Emits no line events: the caller emits the structured entry covering the
+  /// same text, and a client rendering both would print it twice. That entry
+  /// carries `appendedToLines` instead, so an attached client can run this
+  /// against its own copy of the buffer and hold the same lines.
+  void addFlutterEntryLines(String appId, LogEntry entry) {
     final raw = StringBuffer(entry.message);
     if (entry.error != null) {
       if (raw.isNotEmpty) raw.writeln();

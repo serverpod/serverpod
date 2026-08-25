@@ -41,6 +41,53 @@ void main() {
     );
 
     test(
+      'when a server entry that duplicates a line is sent, '
+      'then the flag survives',
+      () {
+        final decoded =
+            _roundTrip(
+                  ServerLogEvent(
+                    LogEntry(
+                      time: DateTime.utc(2026, 8, 25),
+                      level: LogLevel.info,
+                      message: 'Booted.',
+                      scope: LogScope.root('server'),
+                    ),
+                    duplicatesLine: true,
+                  ),
+                )
+                as ServerLogEvent;
+
+        expect(decoded.entry.message, 'Booted.');
+        expect(decoded.duplicatesLine, isTrue);
+      },
+    );
+
+    test(
+      'when a Flutter entry already appended to the lines is sent, '
+      'then the flag survives',
+      () {
+        final decoded =
+            _roundTrip(
+                  FlutterLogEntryEvent(
+                    appId: 'admin',
+                    entry: LogEntry(
+                      time: DateTime.utc(2026, 8, 25),
+                      level: LogLevel.info,
+                      message: 'Reloaded.',
+                      scope: LogScope.root('admin'),
+                    ),
+                    appendedToLines: true,
+                  ),
+                )
+                as FlutterLogEntryEvent;
+
+        expect(decoded.appId, 'admin');
+        expect(decoded.appendedToLines, isTrue);
+      },
+    );
+
+    test(
       'when an operation starts, '
       'then its label and start time survive, so a late client can time it',
       () {

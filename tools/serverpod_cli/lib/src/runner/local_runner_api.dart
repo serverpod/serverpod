@@ -59,6 +59,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
       StreamController<RunnerEvent>.broadcast();
 
   RunnerStage _stage = RunnerStage.starting;
+  int? _exitCode;
 
   @override
   RunnerStage get stage => _stage;
@@ -75,6 +76,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
   void setStage(RunnerStage stage, {int? exitCode}) {
     if (_stage == stage && exitCode == null) return;
     _stage = stage;
+    if (exitCode != null) _exitCode = exitCode;
     _emit(
       StageChangedEvent(
         stage,
@@ -117,6 +119,7 @@ class LocalRunnerApi implements InProcessRunnerApi {
   RunnerSnapshot snapshot() => RunnerSnapshot.from(
     history: _logHistory,
     stage: _stage,
+    exitCode: _exitCode,
     isRunning: isRunning,
     watchModeEnabled: _watchModeEnabled,
     canLaunchFlutterApps: canLaunchFlutterApps,

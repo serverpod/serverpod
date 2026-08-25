@@ -23,6 +23,19 @@ void main() {
     },
   );
 
+  test(
+    'Given a ServerWatchState, '
+    'when a raw line reaches its history, '
+    'then the raw overlay renders it',
+    () {
+      final state = ServerWatchState();
+
+      state.history.addServerLine('raw server line');
+
+      expect(state.rawLines, ['raw server line']);
+    },
+  );
+
   group('Given a ServerWatchState with entries in every log buffer', () {
     late ServerWatchState state;
     late AppLogTab appTab;
