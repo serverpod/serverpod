@@ -590,7 +590,10 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   /// URI-encodes a string according to RFC 3986.
   String _uriEncode(String input) {
-    return Uri.encodeComponent(input).replaceAll('+', '%2B');
+    return Uri.encodeComponent(input).replaceAllMapped(
+      RegExp(r"[!*'()]"),
+      (match) => '%${match[0]!.codeUnitAt(0).toRadixString(16).toUpperCase()}',
+    );
   }
 
   @override
