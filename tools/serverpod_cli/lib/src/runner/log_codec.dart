@@ -9,6 +9,24 @@ import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart'
     show CompletedOperation, TrackedOperation;
 
+/// One log entry as a plain-text line: `<iso8601> [LEVEL] <message>`, with the
+/// error and stack trace on lines of their own.
+///
+/// The runner's log file and `serverpod runner attach --no-tui` are meant to be
+/// greppable the same way, so the format is stated once rather than in each.
+/// The time is local, whichever zone the entry came in.
+String formatLogEntryLine(LogEntry entry) {
+  final buffer = StringBuffer()
+    ..write(entry.time.toLocal().toIso8601String())
+    ..write(' [')
+    ..write(entry.level.name.toUpperCase())
+    ..write('] ')
+    ..write(entry.message);
+  if (entry.error != null) buffer.write('\n${entry.error}');
+  if (entry.stackTrace != null) buffer.write('\n${entry.stackTrace}');
+  return buffer.toString();
+}
+
 /// Encodes one entry of the runner's server history, which holds [LogEntry]
 /// and [CompletedOperation].
 ///
