@@ -52,8 +52,6 @@ export function activate(context: ExtensionContext) {
 	const clientOptions: LanguageClientOptions = {
 		revealOutputChannelOn: RevealOutputChannelOn.Info,
 		documentSelector: [
-			{ scheme: 'file', language: 'yaml', pattern: '**/protocol/**/*.yaml' },
-			{ scheme: 'file', language: 'yaml', pattern: '**/models/**/*.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yaml' },
 			{ scheme: 'file', pattern: '**/*.spy.yml' },
 			{ scheme: 'file', pattern: '**/*.spy' },
