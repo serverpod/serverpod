@@ -136,8 +136,8 @@ ServerpodCommandRunner buildCommandRunner() {
     CreateRepairMigrationCommand(),
     MigrateCommand(),
     RunCommand(),
-    StartCommand(),
     RunnerCommand(),
+    StartCommand(),
     UpgradeCommand(),
     VersionCommand(version),
   ]);

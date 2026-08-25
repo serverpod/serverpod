@@ -69,8 +69,8 @@ void main(final List<String> args) {
         CreateRepairMigrationCommand(),
         MigrateCommand(),
         RunCommand(),
-        StartCommand(),
         RunnerCommand(),
+        StartCommand(),
         UpgradeCommand(),
         VersionCommand(version),
       ]);

@@ -74,6 +74,22 @@ class RunnerLock {
     return RunnerLock._(handle, lockPath);
   }
 
+  /// Whether a runner holds the lock for the server package at [serverDir].
+  ///
+  /// Takes and releases the lock when it is free, which is safe: a runner
+  /// holds its lock from before it publishes until after everything else is
+  /// released, so a free lock is a runner that is gone.
+  static Future<bool> isHeld(String serverDir) async {
+    final RunnerLock probe;
+    try {
+      probe = await acquire(serverDir);
+    } on RunnerLockedException {
+      return true;
+    }
+    await probe.release();
+    return false;
+  }
+
   /// Releases the lock and closes the file.
   ///
   /// Idempotent.

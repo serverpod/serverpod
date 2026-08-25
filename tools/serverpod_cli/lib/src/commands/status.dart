@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
+import 'package:serverpod_cli/src/commands/runner_options.dart';
 import 'package:serverpod_cli/src/commands/serverpod_command.dart';
 import 'package:serverpod_cli/src/config/config.dart'
     show ServerpodProjectNotFoundException;
@@ -15,15 +16,7 @@ import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
 /// Options for the `status` command.
 enum StatusOption<V> implements OptionDefinition<V> {
-  directory(
-    StringOption(
-      argName: 'directory',
-      argAbbrev: 'd',
-      helpText:
-          'The server directory (defaults to auto-detect from current '
-          'directory).',
-    ),
-  ),
+  directory<String>(clientDirectoryOption),
   ;
 
   const StatusOption(this.option);
@@ -56,8 +49,15 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
       commandConfig.optionalValue(StatusOption.directory),
     );
 
-    final resolution = await resolveRunner(serverDir.path);
+    final resolution = await resolveRunnerOrExit(serverDir.path);
     switch (resolution) {
+      case NoRunner(staleManifest: final manifest?, lockHeld: true):
+        log.info(
+          'A runner (pid ${manifest.pid}) holds the project but is not '
+          'answering: it is shutting down, or busy. '
+          '`serverpod runner stop` stops it.',
+        );
+
       case NoRunner(:final staleManifest):
         log.info('Not running.');
         if (staleManifest case RunnerManifest(:final pid, :final exitCode?)) {
@@ -96,9 +96,7 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
     if (servers == null) {
       log.info('  Servers:    not yet published');
     } else {
-      _printIfSet('  API:       ', servers.api);
-      _printIfSet('  Insights:  ', servers.insights);
-      _printIfSet('  Web:       ', servers.web);
+      printServerUris(servers);
     }
 
     final vmService = manifest.vmService;
@@ -127,11 +125,6 @@ class StatusCommand extends ServerpodCommand<StatusOption> {
     );
   }
 
-  void _printIfSet(String label, String? value) {
-    if (value == null) return;
-    log.info('$label $value');
-  }
-
   String _onOff(bool value) => value ? 'on' : 'off';
 }
 
@@ -155,4 +148,30 @@ Future<Directory> resolveServerDirectory(
     log.error('${e.message}\nPass $flag <path> to point at one.');
     throw ExitException.error();
   }
+}
+
+/// Resolves the runner for [serverDir], or exits with the reason it cannot
+/// be reached.
+///
+/// A runner whose sockets no path fits is a configuration to report, not an
+/// internal error: the exception names both paths tried.
+Future<RunnerResolution> resolveRunnerOrExit(String serverDir) async {
+  try {
+    return await resolveRunner(serverDir);
+  } on SocketException catch (e) {
+    log.error(e.message);
+    throw ExitException.error();
+  }
+}
+
+/// Prints the addresses a runner published, one line per server.
+void printServerUris(RunnerServerUris servers) {
+  _printIfSet('  API:       ', servers.api);
+  _printIfSet('  Insights:  ', servers.insights);
+  _printIfSet('  Web:       ', servers.web);
+}
+
+void _printIfSet(String label, String? value) {
+  if (value == null) return;
+  log.info('$label $value');
 }

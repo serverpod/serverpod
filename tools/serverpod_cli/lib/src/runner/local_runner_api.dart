@@ -23,35 +23,47 @@ import 'package:serverpod_shared/serverpod_shared.dart'
 /// collaborators, for callers running inside the runner.
 class LocalRunnerApi implements InProcessRunnerApi {
   LocalRunnerApi({
-    required WatchSession session,
-    required FlutterAppManager flutterManager,
     required StartLogHistory logHistory,
-    required GeneratorConfig config,
-    required String runMode,
-    required String? Function() vmServiceUri,
     required void Function() requestShutdown,
     required bool watchModeEnabled,
-  }) : _session = session,
+    required String runMode,
+  }) : _logHistory = logHistory,
+       _requestShutdown = requestShutdown,
        _watchModeEnabled = watchModeEnabled,
-       _flutterManager = flutterManager,
-       _logHistory = logHistory,
-       _config = config,
-       _runMode = runMode,
-       _vmServiceUri = vmServiceUri,
-       _requestShutdown = requestShutdown;
+       _runMode = runMode;
 
-  final WatchSession _session;
-  final FlutterAppManager _flutterManager;
   final StartLogHistory _logHistory;
-  final GeneratorConfig _config;
-  final String _runMode;
-  final bool _watchModeEnabled;
-
-  /// Resolved at call time rather than held, since a degraded start has no
-  /// proxy until the server first boots.
-  final String? Function() _vmServiceUri;
-
   final void Function() _requestShutdown;
+  final bool _watchModeEnabled;
+  final String _runMode;
+
+  /// The stack, null until [bindStack] provides one.
+  _Stack? _stack;
+
+  /// Wires the stack this serves.
+  ///
+  /// Everything that needs one reports [RunnerStartingException] until this
+  /// is called. [stop] works throughout.
+  void bindStack({
+    required WatchSession session,
+    required FlutterAppManager flutterManager,
+    required GeneratorConfig config,
+    required String? Function() vmServiceUri,
+  }) {
+    _stack = _Stack(
+      session: session,
+      flutterManager: flutterManager,
+      config: config,
+      vmServiceUri: vmServiceUri,
+    );
+  }
+
+  /// The stack, or [RunnerStartingException] naming what could not run.
+  _Stack _require(String command) {
+    final stack = _stack;
+    if (stack == null) throw RunnerStartingException(command);
+    return stack;
+  }
 
   /// Stage transitions and Flutter app state, merged with the log history's
   /// events in [_eventGroup].
@@ -141,16 +153,17 @@ class LocalRunnerApi implements InProcessRunnerApi {
   }
 
   @override
-  bool get isRunning => _session.isRunning;
+  bool get isRunning => _stack?.session.isRunning ?? false;
 
   @override
-  Future<void> hotReload() => _session.forceReload();
+  Future<void> hotReload() => _require('hot reload').session.forceReload();
 
   @override
-  Future<void> hotRestart() => _session.forceRestart();
+  Future<void> hotRestart() => _require('hot restart').session.forceRestart();
 
   @override
-  Future<void> retryStart() => _session.retryStart();
+  Future<void> retryStart() =>
+      _require('retrying the start').session.retryStart();
 
   @override
   Future<void> stop() async => _requestShutdown();
@@ -160,11 +173,26 @@ class LocalRunnerApi implements InProcessRunnerApi {
     String? tag,
     bool force = false,
   }) async {
-    return migrationResultFor(
-      await _session.runSerialized(
-        () => createMigrationAction(config: _config, tag: tag, force: force),
-      ),
-    );
+    try {
+      final stack = _require('creating a migration');
+      return migrationResultFor(
+        await stack.session.runSerialized(
+          () => createMigrationAction(
+            config: stack.config,
+            tag: tag,
+            force: force,
+          ),
+        ),
+      );
+    } on MigrationAbortedException {
+      return const MigrationResult(
+        message: 'Migration aborted due to warnings.',
+        isError: true,
+        abortedForWarnings: true,
+      );
+    } on Exception catch (e) {
+      return MigrationResult(message: '$e', isError: true);
+    }
   }
 
   @override
@@ -175,9 +203,10 @@ class LocalRunnerApi implements InProcessRunnerApi {
   }) async {
     final File? file;
     try {
-      file = await _session.runSerialized(
+      final stack = _require('creating a repair migration');
+      file = await stack.session.runSerialized(
         () => createRepairMigrationAction(
-          config: _config,
+          config: stack.config,
           runMode: _runMode,
           tag: tag,
           force: force,
@@ -208,40 +237,49 @@ class LocalRunnerApi implements InProcessRunnerApi {
   }
 
   @override
-  Future<void> applyMigrations() => _session.applyMigration();
+  Future<void> applyMigrations() =>
+      _require('applying migrations').session.applyMigration();
 
   @override
-  List<FlutterAppConfig> get flutterApps => _flutterManager.apps.toList();
+  List<FlutterAppConfig> get flutterApps =>
+      _stack?.flutterManager.apps.toList() ?? const [];
 
   @override
-  bool isFlutterAppRunning(String appId) => _flutterManager.isRunning(appId);
+  bool isFlutterAppRunning(String appId) =>
+      _stack?.flutterManager.isRunning(appId) ?? false;
 
   @override
   bool isFlutterAppLaunching(String appId) =>
-      _flutterManager.isLaunching(appId);
+      _stack?.flutterManager.isLaunching(appId) ?? false;
 
+  // The run mode alone decides it, so it is known before the stack is, and the
+  // snapshot a client attaches with already carries the final value.
   @override
   bool get canLaunchFlutterApps => FlutterAppManager.canLaunchAppsIn(_runMode);
 
   @override
-  bool get isAnyFlutterAppRunning => _session.isFlutterAppRunning;
+  bool get isAnyFlutterAppRunning =>
+      _stack?.session.isFlutterAppRunning ?? false;
 
   @override
   Future<bool> launchFlutterApp(String appId) =>
-      _session.spawnFlutterApp(appId);
+      _require('launching an app').session.spawnFlutterApp(appId);
 
   @override
   Future<void> restartFlutterApp(String appId) =>
-      _session.relaunchFlutterApp(appId);
+      _require('restarting an app').session.relaunchFlutterApp(appId);
 
   @override
-  Future<void> stopFlutterApp(String appId) => _session.stopFlutterApp(appId);
+  Future<void> stopFlutterApp(String appId) =>
+      _require('stopping an app').session.stopFlutterApp(appId);
 
   @override
-  Future<void> restartFlutterApps() => _session.restartFlutterApp();
+  Future<void> restartFlutterApps() =>
+      _require('restarting the apps').session.restartFlutterApp();
 
   @override
-  Map<String, String?> get flutterDtdUris => _flutterManager.dtdUris;
+  Map<String, String?> get flutterDtdUris =>
+      _stack?.flutterManager.dtdUris ?? const {};
 
   @override
   List<Object> get logHistory => _logHistory.serverEntries.toList();
@@ -251,10 +289,29 @@ class LocalRunnerApi implements InProcessRunnerApi {
       _logHistory.flutterLinesFor(appId).toList();
 
   @override
-  String? get vmServiceUri => _vmServiceUri();
+  String? get vmServiceUri => _stack?.vmServiceUri();
 
   @override
-  Stream<void> get vmServiceUriChanges => _session.vmServiceUriChanges;
+  Stream<void> get vmServiceUriChanges =>
+      _stack?.session.vmServiceUriChanges ?? const Stream.empty();
+}
+
+/// The collaborators that only exist once the stack is up.
+class _Stack {
+  _Stack({
+    required this.session,
+    required this.flutterManager,
+    required this.config,
+    required this.vmServiceUri,
+  });
+
+  final WatchSession session;
+  final FlutterAppManager flutterManager;
+  final GeneratorConfig config;
+
+  /// The VM service proxy's URI, resolved at call time. A degraded start has
+  /// no proxy until the server boots.
+  final String? Function() vmServiceUri;
 }
 
 /// Returns [outcome] as a [MigrationResult].

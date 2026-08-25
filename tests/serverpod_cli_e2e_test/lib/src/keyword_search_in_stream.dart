@@ -2,6 +2,10 @@ import 'dart:async';
 
 /// Searches the [onData] string for the [keywords].
 ///
+/// A keyword matches anywhere in a line. `serverpod start` frames the runner's
+/// output as log entries, so "Server running." arrives as
+/// `2026-01-01T00:00:00.000Z [INFO] Server running.`.
+///
 /// The class will search for the keywords and set the [_found] flag to true
 /// if the keyword is found. If the keyword is not found within the timeout
 /// period, the [_found] flag will be set to false.
@@ -44,7 +48,7 @@ class KeywordSearchInStream {
       return;
     }
 
-    if (keywords.contains(data.trim())) {
+    if (keywords.any(data.contains)) {
       _found = true;
     }
 
