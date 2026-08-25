@@ -91,9 +91,9 @@ tests proving the behavior is unchanged before any switch.
 Validate changes with the minimum SDK versions and run:
 
 ```console
-melos bootstrap
-melos downgrade
-melos lint_loose
+dart pub get
+melos run downgrade
+melos run lint_loose
 serverpod analyze-pubspecs
 ```
 
@@ -112,5 +112,5 @@ Two things to confirm about the run itself:
   earlier release will not have the branch's ignore paths and reports
   mismatches that do not exist.
 
-`melos downgrade` rewrites every lockfile to the declared floors. Restore a
-normal resolution afterwards, otherwise later work runs against the floor graph.
+`melos run downgrade` rewrites the root lockfile to the declared floors. Restore a
+normal resolution afterwards with `dart pub get`, otherwise later work runs against the floor graph.
