@@ -8,7 +8,6 @@ library;
 
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
-import 'package:serverpod_database/serverpod_database.dart';
 
 /// The field every synced model must declare to hold the owner scope of a row.
 const String syncScopeIdFieldName = 'scopeId';
@@ -55,103 +54,80 @@ extension ModelClassDefinitionSync on ModelClassDefinition {
   }
 }
 
-/// Whether [foreignKeyField] carries the ownership link to the scopes table.
-bool isSyncScopeRelation(SerializableModelFieldDefinition foreignKeyField) {
-  var relation = foreignKeyField.relation;
-  return foreignKeyField.columnName == syncScopeIdFieldName &&
-      relation is ForeignRelationDefinition &&
-      relation.parentTable == syncScopesTableName;
-}
-
-/// Validates that the primary key of [model] is a UUID.
-String? validateSyncIdField(ModelClassDefinition model) {
-  if (model.idField.type.className == 'UuidValue') return null;
-
-  return 'Tables with "database: sync" must have a UUID primary key. '
-      'Declare the id field as "id: UuidValue?, defaultPersist=random_v7".';
-}
-
-/// Validates that [model] declares the `scopeId` ownership field with the
-/// expected type and relation.
-List<String> validateSyncScopeIdField(ModelClassDefinition model) {
-  var field = model.syncScopeIdField;
-  if (field == null) {
-    return [
-      'Tables with "database: sync" must declare the field '
-          '"$syncScopeIdFieldDeclaration".',
-    ];
-  }
-
-  var errors = <String>[];
-
-  if (field.type.className != 'int' || !field.type.nullable) {
-    errors.add(
-      'The "$syncScopeIdFieldName" field must be of type "int?" on tables '
-      'with "database: sync".',
-    );
-  }
-
-  if (field.columnName != syncScopeIdFieldName) {
-    errors.add(
-      'The "$syncScopeIdFieldName" field must not override its column name '
-      'on tables with "database: sync".',
-    );
-  }
-
-  if (!field.shouldPersist) {
-    errors.add(
-      'The "$syncScopeIdFieldName" field must be persisted on tables with '
-      '"database: sync".',
-    );
-  }
-
-  var relation = field.relation;
-  if (relation is! ForeignRelationDefinition ||
-      relation.parentTable != syncScopesTableName) {
-    errors.add(
-      'The "$syncScopeIdFieldName" field must declare the relation '
-      '"relation(parent=$syncScopesTableName, onDelete=Cascade)" on tables '
-      'with "database: sync".',
-    );
-  }
-
-  return errors;
-}
-
-/// Validates the relation on the `scopeId` field of a sync table.
+/// Whether [foreignKeyField] is the `scopeId` ownership link of a sync table.
 ///
-/// [foreignKeyField] must satisfy [isSyncScopeRelation].
-List<String> validateSyncScopeRelation(
-  SerializableModelFieldDefinition foreignKeyField,
-) {
-  var relation = foreignKeyField.relation as ForeignRelationDefinition;
-  return [
-    if (relation.onDelete != ForeignKeyAction.cascade)
-      'The "$syncScopeIdFieldName" relation must use "onDelete=Cascade".',
-    if (relation.deferrable != null)
-      'The "$syncScopeIdFieldName" relation must not be deferrable or '
-          'deferred.',
-  ];
+/// The link is identified by the field name alone. Its parent table, delete
+/// action and column name are validated separately, so a mistake on one of
+/// them is reported once instead of cascading into the errors meant for the
+/// remaining relations.
+bool isSyncScopeRelation(SerializableModelFieldDefinition foreignKeyField) {
+  return foreignKeyField.name == syncScopeIdFieldName &&
+      foreignKeyField.relation is ForeignRelationDefinition;
 }
 
-/// Validates that the foreign key originated by [field] on the sync table
-/// [model] is deferred, unless it is the `scopeId` ownership link.
-String? validateSyncRelationDeferred(
-  ModelClassDefinition model,
+/// The error reported when the primary key of a sync table is not a UUID.
+const String syncIdFieldError =
+    'Tables with "database: sync" must have a UUID primary key. Declare the '
+    'id field as "id: UuidValue?, defaultPersist=random_v7".';
+
+/// The error reported when a sync table does not declare the `scopeId` field.
+const String syncScopeIdMissingError =
+    'Tables with "database: sync" must declare the field '
+    '"$syncScopeIdFieldDeclaration".';
+
+/// Validates that the primary key [idField] of a sync table is a UUID.
+String? validateSyncIdField(SerializableModelFieldDefinition idField) {
+  if (idField.type.className == 'UuidValue') return null;
+  return syncIdFieldError;
+}
+
+/// Validates the type of the `scopeId` [field] of a sync table.
+String? validateSyncScopeIdFieldType(SerializableModelFieldDefinition field) {
+  if (field.type.className == 'int' && field.type.nullable) return null;
+  return 'The "$syncScopeIdFieldName" field must be of type "int?" on tables '
+      'with "database: sync".';
+}
+
+/// Validates that the `scopeId` [field] of a sync table declares a relation
+/// to the scopes table.
+String? validateSyncScopeIdFieldRelation(
   SerializableModelFieldDefinition field,
 ) {
-  var foreignKeyField = model.syncForeignKeyField(field);
-  if (foreignKeyField == null) return null;
-  if (isSyncScopeRelation(foreignKeyField)) return null;
-
-  var relation = foreignKeyField.relation as ForeignRelationDefinition;
-  if (relation.deferrable == DeferrableConstraint.initiallyDeferred) {
-    return null;
-  }
-
-  return 'Relations on tables with "database: sync" must be deferred. Add '
-      'the "deferred" keyword to the relation.';
+  var relation = field.relation;
+  if (relation is ForeignRelationDefinition) return null;
+  return 'The "$syncScopeIdFieldName" field must declare the relation '
+      '"relation(parent=$syncScopesTableName, onDelete=Cascade)" on tables '
+      'with "database: sync".';
 }
+
+/// Validates that the `scopeId` field of a sync table references the scopes
+/// table through [parentTable].
+String? validateSyncScopeIdParentTable(String parentTable) {
+  if (parentTable == syncScopesTableName) return null;
+  return 'The "$syncScopeIdFieldName" field must reference the '
+      '"$syncScopesTableName" table on tables with "database: sync".';
+}
+
+/// The error reported when the `scopeId` field of a sync table overrides its
+/// column name.
+const String syncScopeIdColumnNameError =
+    'The "$syncScopeIdFieldName" field must not override its column name on '
+    'tables with "database: sync".';
+
+/// The error reported when the `scopeId` relation of a sync table does not
+/// cascade on delete.
+const String syncScopeRelationOnDeleteError =
+    'The "$syncScopeIdFieldName" relation must use "onDelete=Cascade".';
+
+/// The error reported when the `scopeId` relation of a sync table is
+/// deferrable or deferred.
+const String syncScopeRelationDeferrableError =
+    'The "$syncScopeIdFieldName" relation must not be deferrable or deferred.';
+
+/// The error reported when a foreign key of a sync table is not deferred.
+const String syncRelationDeferredError =
+    'Relations on tables with "database: sync" must be deferred. Add the '
+    '"deferred" keyword to the relation.';
 
 /// Validates that a relation between [model] and [relatedModel] does not
 /// cross the boundary between synced and non-synced tables.

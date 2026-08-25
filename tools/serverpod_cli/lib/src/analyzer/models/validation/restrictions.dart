@@ -264,6 +264,14 @@ class Restrictions {
       ];
     }
 
+    // Without a "fields" key, the missing sync fields have no other key to
+    // be reported on.
+    if (definition is ModelClassDefinition &&
+        definition.isSyncTable &&
+        !documentContents.containsKey(Keyword.fields)) {
+      return validateFieldsKey(parentNodeName, Keyword.fields, span);
+    }
+
     return [];
   }
 
@@ -347,33 +355,34 @@ class Restrictions {
       );
     }
 
-    if (database == ModelDatabaseDefinition.sync) {
-      errors.addAll(_validateSyncTable(definition, span));
-    }
-
     return errors;
   }
 
-  /// Validates the table-level rules of a model with `database: sync`.
-  ///
-  /// Rules tied to a specific field or index are validated where they are
-  /// declared. Inherited indexes have no span in this document, so they are
-  /// validated here.
-  List<SourceSpanSeverityException> _validateSyncTable(
-    ModelClassDefinition definition,
+  /// Validates the "fields" key of a model with `database: sync`, reporting
+  /// the fields it must declare but does not.
+  List<SourceSpanSeverityException> validateFieldsKey(
+    String parentNodeName,
+    String _,
     SourceSpan? span,
   ) {
-    if (definition.tableName == null) return [];
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition || !definition.isSyncTable) {
+      return [];
+    }
 
-    var messages = [
-      ?validateSyncIdField(definition),
-      ...validateSyncScopeIdField(definition),
-      for (var index in definition.inheritedIndexes)
-        ?validateSyncUniqueIndex(definition, index, parsedModels),
-    ];
+    // The id field is implicit unless declared in this document or inherited.
+    // Declared and inherited id fields are validated where they are declared.
+    var fields = documentContents.nodes[Keyword.fields];
+    var declaresId =
+        fields is YamlMap && fields.containsKey(defaultPrimaryKeyName);
 
     return [
-      for (var message in messages) SourceSpanSeverityException(message, span),
+      if (!declaresId &&
+          !definition.isIdInherited &&
+          validateSyncIdField(definition.idField) != null)
+        SourceSpanSeverityException(syncIdFieldError, span),
+      if (definition.syncScopeIdField == null)
+        SourceSpanSeverityException(syncScopeIdMissingError, span),
     ];
   }
 
@@ -548,6 +557,16 @@ class Restrictions {
       }
     }
 
+    var definition = documentDefinition;
+    if (definition is ModelClassDefinition && definition.isSyncTable) {
+      return [
+        for (var index in definition.inheritedIndexes)
+          if (validateSyncUniqueIndex(definition, index, parsedModels)
+              case var syncError?)
+            SourceSpanSeverityException(syncError, span),
+      ];
+    }
+
     return [];
   }
 
@@ -593,6 +612,52 @@ class Restrictions {
           span,
         ),
       ];
+    }
+
+    if (definition is ModelClassDefinition &&
+        definition.isSyncTable &&
+        field != null) {
+      return _validateSyncDatabaseActionKey(definition, field, key, span);
+    }
+
+    return [];
+  }
+
+  /// Validates the foreign key action keys declared on [field] of the sync
+  /// table [definition].
+  ///
+  /// The `scopeId` relation must cascade on delete and must not be deferrable
+  /// or deferred. Every other relation must be `deferred`, so `deferrable` is
+  /// not enough.
+  List<SourceSpanSeverityException> _validateSyncDatabaseActionKey(
+    ModelClassDefinition definition,
+    SerializableModelFieldDefinition field,
+    String key,
+    SourceSpan? span,
+  ) {
+    var foreignKeyField = definition.syncForeignKeyField(field);
+    if (foreignKeyField == null) return [];
+
+    var relation = foreignKeyField.relation as ForeignRelationDefinition;
+
+    if (isSyncScopeRelation(foreignKeyField)) {
+      if (key == Keyword.onDelete &&
+          relation.onDelete != ForeignKeyAction.cascade) {
+        return [
+          SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
+        ];
+      }
+      if (key == Keyword.deferred || key == Keyword.deferrable) {
+        return [
+          SourceSpanSeverityException(syncScopeRelationDeferrableError, span),
+        ];
+      }
+      return [];
+    }
+
+    if (key == Keyword.deferrable &&
+        relation.deferrable != DeferrableConstraint.initiallyDeferred) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
     }
 
     return [];
@@ -777,6 +842,18 @@ class Restrictions {
           span,
         ),
       ];
+    }
+
+    if (def is ModelClassDefinition &&
+        def.isSyncTable &&
+        fieldName == syncScopeIdFieldName) {
+      var field = def.findField(fieldName);
+      var syncError = field == null
+          ? null
+          : validateSyncScopeIdFieldRelation(field);
+      if (syncError != null) {
+        return [SourceSpanSeverityException(syncError, span)];
+      }
     }
 
     if (_globallyRestrictedKeywords.contains(fieldName)) {
@@ -1177,6 +1254,17 @@ class Restrictions {
       ];
     }
 
+    if (classDefinition is ModelClassDefinition &&
+        classDefinition.isSyncTable) {
+      var syncErrors = _validateSyncRelation(
+        classDefinition,
+        field,
+        content,
+        span,
+      );
+      if (syncErrors.isNotEmpty) return syncErrors;
+    }
+
     var relation = field.relation;
     if (relation is! ObjectRelationDefinition) return const [];
 
@@ -1249,6 +1337,15 @@ class Restrictions {
       ];
     }
 
+    if (definition is ModelClassDefinition &&
+        definition.isSyncTable &&
+        parentNodeName == syncScopeIdFieldName) {
+      var syncError = validateSyncScopeIdParentTable(content);
+      if (syncError != null) {
+        return [SourceSpanSeverityException(syncError, span)];
+      }
+    }
+
     var parentDefinition = parsedModels.findByTableName(content);
     if (definition is ModelClassDefinition &&
         parentDefinition is ModelClassDefinition) {
@@ -1304,6 +1401,7 @@ class Restrictions {
 
     errors.addAll(_validateFieldDataType(field.type, span));
     errors.addAll(_validateIdFieldDataType(field, span));
+    errors.addAll(_validateSyncScopeIdFieldType(field, span));
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -1358,6 +1456,10 @@ class Restrictions {
           span,
         ),
       ];
+    }
+
+    if (definition.isSyncTable && parentNodeName == syncScopeIdFieldName) {
+      return [SourceSpanSeverityException(syncScopeIdColumnNameError, span)];
     }
 
     if (column.length > _maxColumnNameLength) {
@@ -1547,9 +1649,33 @@ class Restrictions {
           span,
         ),
       );
+    } else if (classDefinition.isSyncTable) {
+      var syncError = validateSyncIdField(field);
+      if (syncError != null) {
+        errors.add(SourceSpanSeverityException(syncError, span));
+      }
     }
 
     return errors;
+  }
+
+  /// Validates the type of the `scopeId` field on tables with
+  /// `database: sync`.
+  List<SourceSpanSeverityException> _validateSyncScopeIdFieldType(
+    SerializableModelFieldDefinition field,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ModelClassDefinition ||
+        !classDefinition.isSyncTable ||
+        field.name != syncScopeIdFieldName) {
+      return [];
+    }
+
+    var syncError = validateSyncScopeIdFieldType(field);
+    if (syncError == null) return [];
+
+    return [SourceSpanSeverityException(syncError, span)];
   }
 
   List<SourceSpanSeverityException> _validateFieldDataType(
@@ -2215,31 +2341,42 @@ class Restrictions {
       }
     }
 
-    if (definition.isSyncTable) {
-      return _validateSyncRelation(definition, field, span);
-    }
-
     return [];
   }
 
   /// Validates the relation declared on [field] of the sync table
-  /// [definition]: the `scopeId` relation must be a plain cascade to the
-  /// scopes table, and every other foreign key must be deferred.
+  /// [definition] for requirements whose key is absent from the relation
+  /// [content]: the `scopeId` relation must cascade on delete, and every
+  /// other foreign key must be deferred. When the offending key is present,
+  /// the error is reported on that key instead.
   List<SourceSpanSeverityException> _validateSyncRelation(
     ModelClassDefinition definition,
     SerializableModelFieldDefinition field,
+    dynamic content,
     SourceSpan? span,
   ) {
     var foreignKeyField = definition.syncForeignKeyField(field);
     if (foreignKeyField == null) return [];
 
-    var messages = isSyncScopeRelation(foreignKeyField)
-        ? validateSyncScopeRelation(foreignKeyField)
-        : [?validateSyncRelationDeferred(definition, field)];
+    var relation = foreignKeyField.relation as ForeignRelationDefinition;
+    var declaredKeys = content is YamlMap ? content.keys.toSet() : <dynamic>{};
 
-    return [
-      for (var message in messages) SourceSpanSeverityException(message, span),
-    ];
+    if (isSyncScopeRelation(foreignKeyField)) {
+      if (relation.onDelete != ForeignKeyAction.cascade &&
+          !declaredKeys.contains(Keyword.onDelete)) {
+        return [
+          SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
+        ];
+      }
+      return [];
+    }
+
+    if (relation.deferrable != DeferrableConstraint.initiallyDeferred &&
+        !declaredKeys.contains(Keyword.deferrable)) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
+    }
+
+    return [];
   }
 
   List<SourceSpanSeverityException> validateScopeKey(

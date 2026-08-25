@@ -71,6 +71,7 @@ class ClassYamlDefinition {
       ValidateNode(
         Keyword.fields,
         isRequired: false,
+        keyRestriction: restrictions.validateFieldsKey,
         nested: {
           ValidateNode(
             Keyword.any,
