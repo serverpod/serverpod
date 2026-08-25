@@ -388,7 +388,29 @@ class StudentRepository {
   /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
   ///
   /// Use [select] to specify which columns to include from the root table.
-
+  /// If none is specified, all columns will be returned.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// ```dart
+  /// var persons = await Persons.db.findAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.lastName],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.firstName,
+  ///   limit: 100,
+  /// );
+  /// ```
   Future<List<Map<String, dynamic>>> findAsJson(
     _isd.DatabaseSession session, {
     _isd.WhereExpressionBuilder<StudentTable>? where,
@@ -419,7 +441,24 @@ class StudentRepository {
   /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
   ///
   /// Use [select] to specify which columns to include from the root table.
-
+  /// If none is specified, all columns will be returned.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// ```dart
+  /// var youngestPerson = await Persons.db.findFirstRowAsJson(
+  ///   session,
+  ///   select: (t) => [t.firstName, t.age],
+  ///   where: (t) => t.lastName.equals('Jones'),
+  ///   orderBy: (t) => t.age,
+  /// );
+  /// ```
   Future<Map<String, dynamic>?> findFirstRowAsJson(
     _isd.DatabaseSession session, {
     _isd.WhereExpressionBuilder<StudentTable>? where,
@@ -448,6 +487,7 @@ class StudentRepository {
   /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
   ///
   /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

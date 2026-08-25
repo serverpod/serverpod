@@ -153,6 +153,25 @@ class Database {
   /// Returns a list of [Map<String, dynamic>] matching the given query parameters.
   ///
   /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order of the items use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// The maximum number of items can be set by [limit]. If no limit is set,
+  /// all items matching the query will be returned.
+  ///
+  /// [offset] defines how many items to skip, after which [limit] (or all)
+  /// items are read from the database.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned rows. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   Future<List<Map<String, dynamic>>> findAsJson<T extends TableRow>({
     Expression? where,
     int? limit,
@@ -189,10 +208,24 @@ class Database {
     );
   }
 
-  /// Returns a single [Map<String, dynamic>] matching the given query parameters or null
-  /// if no matching row is found.
+  /// Returns the first matching [Map<String, dynamic>] matching the given query parameters.
   ///
   /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  ///
+  /// Use [where] to specify which items to include in the return value.
+  /// If none is specified, all items will be returned.
+  ///
+  /// To specify the order use [orderBy] or [orderByList]
+  /// when sorting by multiple columns.
+  ///
+  /// [offset] defines how many items to skip, after which the next one will be picked.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   Future<Map<String, dynamic>?> findFirstRowAsJson<T extends TableRow>({
     Expression? where,
     int? offset,
@@ -268,6 +301,13 @@ class Database {
   /// Finds a single [Map<String, dynamic>] by its [id] or null if no such row exists.
   ///
   /// Use [select] to specify which columns to include from the root table.
+  /// If none is specified, all columns will be returned.
+  ///
+  /// [lockMode] acquires a row-level lock on the returned row. Requires
+  /// a [transaction]. See [LockMode] for available lock types.
+  ///
+  /// [lockBehavior] controls what happens when a row is already locked.
+  /// Defaults to [LockBehavior.wait]. See [LockBehavior] for options.
   Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
     Object id, {
     Transaction? transaction,
