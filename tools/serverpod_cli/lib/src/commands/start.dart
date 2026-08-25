@@ -33,11 +33,15 @@ import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/config_info/config_info.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/generator/isolated_analyzers.dart';
-import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/migrations/cli_migration_runner.dart';
 import 'package:serverpod_cli/src/runner/local_runner_api.dart';
 import 'package:serverpod_cli/src/runner/migration_result.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_discovery.dart';
+import 'package:serverpod_cli/src/runner/runner_lock.dart';
+import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
+import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
 import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -515,7 +519,15 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 }) async {
   log.info(watch ? 'Starting server in watch mode...' : 'Starting server...');
 
-  final serverpodToolDir = p.join(serverDir, '.dart_tool', 'serverpod');
+  final RunnerLock lock;
+  try {
+    lock = await RunnerLock.acquire(serverDir);
+  } on RunnerLockedException catch (e) {
+    log.error('$e');
+    return const WatchLoopAborted(1);
+  }
+
+  final serverpodToolDir = serverpodToolDirPath(serverDir);
   final vmServiceInfoFile = p.join(serverpodToolDir, 'vm-service-info.json');
   // The pod always writes its raw VM service URI to a separate file; the
   // user-facing vm-service-info.json receives the proxy URI written by
@@ -530,6 +542,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
   if (existingUri != null) {
     log.info('Existing server found.');
     log.info('VM service proxy listening on $existingUri');
+    await lock.release();
     return const WatchLoopAborted(0);
   }
 
@@ -546,7 +559,10 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       dockerStarted = await _ensureDockerServices(serverDir);
       return dockerStarted != null;
     });
-    if (dockerStarted == null) return const WatchLoopAborted(1);
+    if (dockerStarted == null) {
+      await lock.release();
+      return const WatchLoopAborted(1);
+    }
     startedDocker = dockerStarted!;
   }
 
@@ -556,6 +572,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
   Future<void> rollbackProvisioning() async {
     await stopDockerIfStarted();
+    await lock.release();
   }
 
   // Apply pending migrations from the CLI before booting the pod.
@@ -908,6 +925,37 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
 
   setupFileWatcher();
 
+  final publisher = RunnerManifestPublisher(
+    serverDir: serverDir,
+    manifest: RunnerManifest(
+      pid: pid,
+      sockets: RunnerSockets(
+        tui: '',
+        mcp: mcpSocket?.socketPath ?? '',
+      ),
+      vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
+      docker: startDocker
+          ? RunnerDocker(
+              startedByRunner: startedDocker,
+              project: composeProjectName(serverDir),
+            )
+          : null,
+      config: RunnerConfig(
+        watch: watch,
+        flutter: launchFlutterApp,
+        docker: startDocker,
+        serverArgs: serverArgs.value,
+      ),
+    ),
+  );
+  await publisher.publish();
+  publisher.republishOn(
+    session.vmServiceUriChanges,
+    (current) => current.copyWith(
+      vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
+    ),
+  );
+
   return WatchLoopReady(
     WatchLoopContext(
       session: session,
@@ -919,6 +967,8 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       stopFileWatcher: () => fileChangeSub?.cancel(),
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
+      manifestPublisher: publisher,
+      lock: lock,
     ),
   );
 }
@@ -1130,32 +1180,31 @@ class _ShutdownSignal {
   }
 }
 
-/// Cheap pre-flight check for an existing `serverpod start` instance for
-/// [config]'s project, by probing the per-project MCP socket. Logs a
-/// message and returns `true` when another process is listening on it, so
-/// callers can bail before any further setup - in particular before the
-/// TUI takes over the terminal, where the message would otherwise be
-/// invisible.
+/// Cheap pre-flight check for a runner already serving [config]'s project,
+/// by resolving its manifest and probing the socket that names.
+///
+/// Logs a message and returns `true` when one is live, so callers can bail
+/// before any further setup - in particular before the TUI takes over the
+/// terminal, where the message would otherwise be invisible.
+///
+/// A crashed runner leaves its manifest behind, so a manifest whose socket
+/// refuses the connection counts as no runner and is replaced.
 Future<bool> _detectExistingInstance(GeneratorConfig config) async {
   final serverDir = p.joinAll(config.serverPackageDirectoryPathParts);
-  final socketPath = serverpodMcpSocketPath(serverDir);
-  try {
-    final probe = await connectUnixSocket(
-      socketPath,
-      timeout: const Duration(seconds: 1),
-    );
-    probe.destroy();
-  } catch (_) {
-    // No live listener (or path doesn't fit / no support) - safe to take
-    // over. A stale file left behind by a crashed runner is unlinked by
-    // [bindUnixSocket] when we actually bind.
-    return false;
+  switch (await resolveRunner(serverDir)) {
+    case NoRunner():
+      return false;
+    case IncompatibleRunner(:final message):
+      log.error(message);
+      return true;
+    case LiveRunner(:final manifest):
+      log.info(
+        'A serverpod runner for "${config.name}" is already running '
+        '(pid ${manifest.pid}). Attach to it with `serverpod attach`, or '
+        'stop it with `serverpod stop`.',
+      );
+      return true;
   }
-  log.info(
-    'A serverpod instance for "${config.name}" is already running '
-    '(MCP socket: $socketPath).',
-  );
-  return true;
 }
 
 /// Checks if a server is already running by reading the VM service info file

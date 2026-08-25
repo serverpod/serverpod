@@ -5,6 +5,9 @@ import 'package:serverpod_cli/src/commands/start/flutter_app_manager.dart';
 import 'package:serverpod_cli/src/commands/start/mcp_socket.dart';
 import 'package:serverpod_cli/src/commands/start/watch_session.dart';
 import 'package:serverpod_cli/src/runner/runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_lock.dart';
+import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
+import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
@@ -49,6 +52,16 @@ class WatchLoopContext {
   final Future<void> Function()? stopDocker;
   final void Function() stopFileWatcher;
   final String vmServiceInfoFile;
+
+  /// Keeps `runner.json` current, and removes it on dispose.
+  ///
+  /// Null in tests that build a context without publishing one.
+  final RunnerManifestPublisher? manifestPublisher;
+
+  /// The one-runner-per-package lock, released last so nothing else can claim
+  /// the package while this one is still tearing down.
+  final RunnerLock? lock;
+
   bool _disposed = false;
 
   WatchLoopContext({
@@ -61,6 +74,8 @@ class WatchLoopContext {
     required this.stopDocker,
     required this.stopFileWatcher,
     required this.vmServiceInfoFile,
+    this.manifestPublisher,
+    this.lock,
   });
 
   /// Whether [dispose] has been called.
@@ -70,12 +85,33 @@ class WatchLoopContext {
     if (_disposed) return;
     _disposed = true;
     stopFileWatcher();
-    await mcpSocket?.close();
-    await closeAnalyzers();
-    await session.dispose();
-    await proxy()?.close();
-    await flutterManager.dispose();
-    await File(vmServiceInfoFile).deleteIfExists();
-    await stopDocker?.call();
+    await _step('closing the MCP socket', () async => mcpSocket?.close());
+    await _step('closing the analyzers', closeAnalyzers);
+    await _step('stopping the server', session.dispose);
+    await _step('closing the VM service proxy', () async => proxy()?.close());
+    await _step('stopping the Flutter apps', flutterManager.dispose);
+    await _step(
+      'removing the VM service info file',
+      () => File(vmServiceInfoFile).deleteIfExists(),
+    );
+    await _step(
+      'removing the manifest',
+      () async => manifestPublisher?.dispose(),
+    );
+    await _step('stopping the Docker services', () async => stopDocker?.call());
+    await _step('releasing the lock', () async => lock?.release());
+  }
+
+  /// Runs one teardown step, keeping its failure to itself.
+  ///
+  /// The steps that outlive this process go last, the manifest, the Docker
+  /// services, and the lock the next runner needs. A socket dying mid-close
+  /// must not skip them.
+  Future<void> _step(String what, Future<void> Function() body) async {
+    try {
+      await body();
+    } catch (e) {
+      log.warning('Failed while $what: $e');
+    }
   }
 }
