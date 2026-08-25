@@ -16,6 +16,7 @@ import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
 import 'package:serverpod_shared/log_io.dart' show TestLogWriter;
+import 'package:serverpod_shared/serverpod_shared.dart' show ServerpodAddresses;
 import 'package:test/test.dart';
 import 'package:test_descriptor/test_descriptor.dart' as d;
 
@@ -150,7 +151,7 @@ void main() {
         await starting
             .copyWith(
               stage: RunnerStage.running,
-              servers: const RunnerServerUris(api: 'http://localhost:8080'),
+              servers: const ServerpodAddresses(api: 'http://localhost:8080'),
             )
             .writeTo(tempDir.path);
 
@@ -204,7 +205,7 @@ void main() {
         await starting
             .copyWith(
               stage: RunnerStage.running,
-              servers: const RunnerServerUris(api: 'http://localhost:8080'),
+              servers: const ServerpodAddresses(api: 'http://localhost:8080'),
             )
             .writeTo(tempDir.path);
 
@@ -241,7 +242,7 @@ void main() {
         reportRunnerReady(
           starting.copyWith(
             stage: RunnerStage.running,
-            servers: const RunnerServerUris(
+            servers: const ServerpodAddresses(
               api: 'http://localhost:8080',
               web: 'http://localhost:8082',
             ),
@@ -469,6 +470,40 @@ void main() {
           throwsA(isA<ExitException>()),
         );
         expect(await RunnerManifest.readFrom(serverDir), isNotNull);
+      },
+    );
+  });
+
+  group('Given a stack that may serve web,', () {
+    test(
+      'when the pod has published its addresses, '
+      'then the addresses decide',
+      () {
+        expect(
+          stackServesWeb(
+            const ServerpodAddresses(
+              api: 'http://localhost:8080',
+              web: 'http://localhost:8082',
+            ),
+            null,
+          ),
+          isTrue,
+        );
+        expect(
+          stackServesWeb(
+            const ServerpodAddresses(api: 'http://localhost:8080'),
+            null,
+          ),
+          isFalse,
+        );
+      },
+    );
+
+    test(
+      'when the pod has published nothing and the config cannot be read, '
+      'then the refresh stays on',
+      () {
+        expect(stackServesWeb(null, null), isTrue);
       },
     );
   });

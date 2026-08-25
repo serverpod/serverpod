@@ -38,6 +38,10 @@ class Server implements RouterInjectable {
   /// Port the server is listening on.
   /// Returns the actual port from the running server if available,
   /// otherwise returns the configured port.
+  ///
+  /// A restart binds this port again rather than the configured one: a
+  /// configured port of zero resolved to an ephemeral port on the first bind,
+  /// and clients were built against that one.
   int get port => _actualPort ?? _port;
 
   /// The [ServerpodRunMode] the server is running in.
@@ -180,7 +184,7 @@ class Server implements RouterInjectable {
     try {
       final server = await _app.serve(
         address: io.InternetAddress.anyIPv6,
-        port: _port,
+        port: port,
         securityContext: _securityContext,
       );
       _actualPort = server.port;
@@ -189,7 +193,7 @@ class Server implements RouterInjectable {
       await _reportFrameworkException(
         e,
         stackTrace,
-        message: 'Failed to bind socket, port $_port may already be in use.',
+        message: 'Failed to bind socket, port $port may already be in use.',
       );
       return false;
     }

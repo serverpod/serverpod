@@ -380,16 +380,21 @@ of an address that changes on every restart. The three listeners fall back as a
 block rather than independently.
 
 Fallback applies when another Serverpod runner holds the port, which the runner
-recognizes by the manifest in the owning directory. A port held by anything else
-is an error.
+recognizes by that port appearing among the `servers` addresses a live runner
+published in its own manifest. Candidate runners come from the per-user
+registry every runner registers itself in when it publishes, so a checkout
+anywhere on the machine counts, whether or not it sits in a repository. A live
+runner is only credited with the ports it claims. One bound elsewhere is not a
+reason to move aside. A port held by anything else is an error.
 
 Two consequences elsewhere.
 
 - `ServerConfig` in `serverpod_shared/lib/src/config.dart` distinguishes the
   bind `port` from the advertised `publicHost`, `publicPort`, and
   `publicScheme`, and the server builds client-facing URLs from the latter.
-  `publicPort` has to be derived from the resolved bind port, or the server
-  advertises 8080 while listening elsewhere.
+  A `publicPort` of 0 follows the resolved bind port, so the runner sets both
+  to 0 when it moves a listener to an ephemeral port. Any other `publicPort`
+  stays: a deployment behind a proxy advertises a port it does not bind.
 - Flutter apps the runner launches receive the resolved URL through
   `--dart-define`. Apps started by hand, browser tabs, and `curl` read it from
   the manifest, which `serverpod status` prints.
@@ -536,7 +541,7 @@ The split also makes the UI testable without a pty.
 ### `serverpod`
 
 - Resolve the bind ports dynamically when the configured ports are unavailable,
-  and derive `publicPort` from the resolved value.
+  with a `publicPort` of 0 following the resolved value.
 
 ### Repository
 

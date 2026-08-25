@@ -69,7 +69,9 @@ class ServerProcess {
     IOSink? stdoutSink,
     IOSink? stderrSink,
     void Function()? onDispose,
+    Map<String, String>? environment,
   }) : _serverDir = serverDir,
+       _environment = environment,
        _serverArgs = serverArgs,
        _dartExecutable = dartExecutable ?? p.join(getSdkPath(), 'bin', 'dart'),
        _enableVmService = enableVmService,
@@ -77,6 +79,9 @@ class ServerProcess {
        _stdout = stdoutSink ?? stdout,
        _stderr = stderrSink ?? stderr,
        _onDispose = onDispose;
+
+  /// Extra environment for the pod, merged over the inherited one.
+  final Map<String, String>? _environment;
 
   /// Whether the server process is currently running.
   bool get isRunning => _process != null;
@@ -134,6 +139,7 @@ class ServerProcess {
       _dartExecutable,
       args,
       workingDirectory: _serverDir,
+      environment: _environment,
     );
     _process = process;
 
