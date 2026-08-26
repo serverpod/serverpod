@@ -350,7 +350,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     TypesInclude? include,
   }) {
     return TypesIncludeList._(
-      where: where,
+      where: where?.call(Types.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Types.t),
@@ -387,7 +387,7 @@ abstract class Types implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<TypesTable>? select,
   }) {
     return _TypesJsonIncludeList._(
-      where: where,
+      where: where?.call(Types.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Types.t),
@@ -913,15 +913,13 @@ final class TypesInclude extends _is.IncludeObject
 final class TypesIncludeList extends _is.IncludeList
     implements TypesJsonIncludeList, _is.FullModelInclude {
   TypesIncludeList._({
-    _is.WhereExpressionBuilder<TypesTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TypesInclude? super.include,
-  }) {
-    super.where = where?.call(Types.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -947,16 +945,14 @@ final class _TypesJsonInclude extends _is.IncludeObject
 final class _TypesJsonIncludeList extends _is.IncludeList
     implements TypesJsonIncludeList {
   _TypesJsonIncludeList._({
-    _is.WhereExpressionBuilder<TypesTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TypesJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Types.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

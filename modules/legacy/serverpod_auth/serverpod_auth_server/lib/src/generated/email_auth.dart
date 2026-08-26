@@ -107,7 +107,7 @@ abstract class EmailAuth
     EmailAuthInclude? include,
   }) {
     return EmailAuthIncludeList._(
-      where: where,
+      where: where?.call(EmailAuth.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAuth.t),
@@ -144,7 +144,7 @@ abstract class EmailAuth
     _is.SelectColumnsBuilder<EmailAuthTable>? select,
   }) {
     return _EmailAuthJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailAuth.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAuth.t),
@@ -271,15 +271,13 @@ final class EmailAuthInclude extends _is.IncludeObject
 final class EmailAuthIncludeList extends _is.IncludeList
     implements EmailAuthJsonIncludeList, _is.FullModelInclude {
   EmailAuthIncludeList._({
-    _is.WhereExpressionBuilder<EmailAuthTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAuthInclude? super.include,
-  }) {
-    super.where = where?.call(EmailAuth.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -305,16 +303,14 @@ final class _EmailAuthJsonInclude extends _is.IncludeObject
 final class _EmailAuthJsonIncludeList extends _is.IncludeList
     implements EmailAuthJsonIncludeList {
   _EmailAuthJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailAuthTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAuthJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailAuth.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

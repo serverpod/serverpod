@@ -96,7 +96,7 @@ abstract class IntDefaultModel
     IntDefaultModelInclude? include,
   }) {
     return IntDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(IntDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(IntDefaultModel.t),
@@ -135,7 +135,7 @@ abstract class IntDefaultModel
     _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
   }) {
     return _IntDefaultModelJsonIncludeList._(
-      where: where,
+      where: where?.call(IntDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(IntDefaultModel.t),
@@ -243,15 +243,13 @@ final class IntDefaultModelInclude extends _is.IncludeObject
 final class IntDefaultModelIncludeList extends _is.IncludeList
     implements IntDefaultModelJsonIncludeList, _is.FullModelInclude {
   IntDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     IntDefaultModelInclude? super.include,
-  }) {
-    super.where = where?.call(IntDefaultModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -277,16 +275,14 @@ final class _IntDefaultModelJsonInclude extends _is.IncludeObject
 final class _IntDefaultModelJsonIncludeList extends _is.IncludeList
     implements IntDefaultModelJsonIncludeList {
   _IntDefaultModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     IntDefaultModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(IntDefaultModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

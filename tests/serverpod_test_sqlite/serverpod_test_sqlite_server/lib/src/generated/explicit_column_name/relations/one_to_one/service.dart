@@ -95,7 +95,7 @@ abstract class Service
     ServiceInclude? include,
   }) {
     return ServiceIncludeList._(
-      where: where,
+      where: where?.call(Service.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Service.t),
@@ -132,7 +132,7 @@ abstract class Service
     _is.SelectColumnsBuilder<ServiceTable>? select,
   }) {
     return _ServiceJsonIncludeList._(
-      where: where,
+      where: where?.call(Service.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Service.t),
@@ -239,15 +239,13 @@ final class ServiceInclude extends _is.IncludeObject
 final class ServiceIncludeList extends _is.IncludeList
     implements ServiceJsonIncludeList, _is.FullModelInclude {
   ServiceIncludeList._({
-    _is.WhereExpressionBuilder<ServiceTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServiceInclude? super.include,
-  }) {
-    super.where = where?.call(Service.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -273,16 +271,14 @@ final class _ServiceJsonInclude extends _is.IncludeObject
 final class _ServiceJsonIncludeList extends _is.IncludeList
     implements ServiceJsonIncludeList {
   _ServiceJsonIncludeList._({
-    _is.WhereExpressionBuilder<ServiceTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServiceJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Service.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

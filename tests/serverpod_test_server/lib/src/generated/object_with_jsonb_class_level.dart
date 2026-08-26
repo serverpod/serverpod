@@ -112,7 +112,7 @@ abstract class ObjectWithJsonbClassLevel
     ObjectWithJsonbClassLevelInclude? include,
   }) {
     return ObjectWithJsonbClassLevelIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithJsonbClassLevel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
@@ -151,7 +151,7 @@ abstract class ObjectWithJsonbClassLevel
     _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
   }) {
     return _ObjectWithJsonbClassLevelJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithJsonbClassLevel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
@@ -283,15 +283,13 @@ final class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject
 final class ObjectWithJsonbClassLevelIncludeList extends _is.IncludeList
     implements ObjectWithJsonbClassLevelJsonIncludeList, _is.FullModelInclude {
   ObjectWithJsonbClassLevelIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithJsonbClassLevelInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithJsonbClassLevel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -317,16 +315,14 @@ final class _ObjectWithJsonbClassLevelJsonInclude extends _is.IncludeObject
 final class _ObjectWithJsonbClassLevelJsonIncludeList extends _is.IncludeList
     implements ObjectWithJsonbClassLevelJsonIncludeList {
   _ObjectWithJsonbClassLevelJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithJsonbClassLevelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithJsonbClassLevel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

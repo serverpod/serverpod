@@ -149,7 +149,7 @@ abstract class ObjectWithHalfVector
     ObjectWithHalfVectorInclude? include,
   }) {
     return ObjectWithHalfVectorIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithHalfVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
@@ -188,7 +188,7 @@ abstract class ObjectWithHalfVector
     _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
   }) {
     return _ObjectWithHalfVectorJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithHalfVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithHalfVector.t),
@@ -385,15 +385,13 @@ final class ObjectWithHalfVectorInclude extends _is.IncludeObject
 final class ObjectWithHalfVectorIncludeList extends _is.IncludeList
     implements ObjectWithHalfVectorJsonIncludeList, _is.FullModelInclude {
   ObjectWithHalfVectorIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithHalfVectorInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithHalfVector.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -419,16 +417,14 @@ final class _ObjectWithHalfVectorJsonInclude extends _is.IncludeObject
 final class _ObjectWithHalfVectorJsonIncludeList extends _is.IncludeList
     implements ObjectWithHalfVectorJsonIncludeList {
   _ObjectWithHalfVectorJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithHalfVectorJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithHalfVector.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

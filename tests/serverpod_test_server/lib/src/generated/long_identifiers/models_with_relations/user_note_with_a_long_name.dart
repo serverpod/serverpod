@@ -98,7 +98,7 @@ abstract class UserNoteWithALongName
     UserNoteWithALongNameInclude? include,
   }) {
     return UserNoteWithALongNameIncludeList._(
-      where: where,
+      where: where?.call(UserNoteWithALongName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
@@ -137,7 +137,7 @@ abstract class UserNoteWithALongName
     _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
   }) {
     return _UserNoteWithALongNameJsonIncludeList._(
-      where: where,
+      where: where?.call(UserNoteWithALongName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteWithALongName.t),
@@ -283,15 +283,13 @@ final class UserNoteWithALongNameInclude extends _is.IncludeObject
 final class UserNoteWithALongNameIncludeList extends _is.IncludeList
     implements UserNoteWithALongNameJsonIncludeList, _is.FullModelInclude {
   UserNoteWithALongNameIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserNoteWithALongNameInclude? super.include,
-  }) {
-    super.where = where?.call(UserNoteWithALongName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -317,16 +315,14 @@ final class _UserNoteWithALongNameJsonInclude extends _is.IncludeObject
 final class _UserNoteWithALongNameJsonIncludeList extends _is.IncludeList
     implements UserNoteWithALongNameJsonIncludeList {
   _UserNoteWithALongNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserNoteWithALongNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UserNoteWithALongName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -109,7 +109,7 @@ abstract class EmailReset
     EmailResetInclude? include,
   }) {
     return EmailResetIncludeList._(
-      where: where,
+      where: where?.call(EmailReset.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailReset.t),
@@ -148,7 +148,7 @@ abstract class EmailReset
     _is.SelectColumnsBuilder<EmailResetTable>? select,
   }) {
     return _EmailResetJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailReset.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailReset.t),
@@ -277,15 +277,13 @@ final class EmailResetInclude extends _is.IncludeObject
 final class EmailResetIncludeList extends _is.IncludeList
     implements EmailResetJsonIncludeList, _is.FullModelInclude {
   EmailResetIncludeList._({
-    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailResetInclude? super.include,
-  }) {
-    super.where = where?.call(EmailReset.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -311,16 +309,14 @@ final class _EmailResetJsonInclude extends _is.IncludeObject
 final class _EmailResetJsonIncludeList extends _is.IncludeList
     implements EmailResetJsonIncludeList {
   _EmailResetJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailResetJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailReset.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -144,7 +144,7 @@ abstract class RateLimitedRequestAttempt
     RateLimitedRequestAttemptInclude? include,
   }) {
     return RateLimitedRequestAttemptIncludeList._(
-      where: where,
+      where: where?.call(RateLimitedRequestAttempt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
@@ -183,7 +183,7 @@ abstract class RateLimitedRequestAttempt
     _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
   }) {
     return _RateLimitedRequestAttemptJsonIncludeList._(
-      where: where,
+      where: where?.call(RateLimitedRequestAttempt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
@@ -379,15 +379,13 @@ final class RateLimitedRequestAttemptInclude extends _is.IncludeObject
 final class RateLimitedRequestAttemptIncludeList extends _is.IncludeList
     implements RateLimitedRequestAttemptJsonIncludeList, _is.FullModelInclude {
   RateLimitedRequestAttemptIncludeList._({
-    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RateLimitedRequestAttemptInclude? super.include,
-  }) {
-    super.where = where?.call(RateLimitedRequestAttempt.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -413,16 +411,14 @@ final class _RateLimitedRequestAttemptJsonInclude extends _is.IncludeObject
 final class _RateLimitedRequestAttemptJsonIncludeList extends _is.IncludeList
     implements RateLimitedRequestAttemptJsonIncludeList {
   _RateLimitedRequestAttemptJsonIncludeList._({
-    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RateLimitedRequestAttemptJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(RateLimitedRequestAttempt.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

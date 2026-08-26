@@ -102,7 +102,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     ChildEntityInclude? include,
   }) {
     return ChildEntityIncludeList._(
-      where: where,
+      where: where?.call(ChildEntity.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildEntity.t),
@@ -141,7 +141,7 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     _is.SelectColumnsBuilder<ChildEntityTable>? select,
   }) {
     return _ChildEntityJsonIncludeList._(
-      where: where,
+      where: where?.call(ChildEntity.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildEntity.t),
@@ -301,15 +301,13 @@ final class ChildEntityInclude extends _is.IncludeObject
 final class ChildEntityIncludeList extends _is.IncludeList
     implements ChildEntityJsonIncludeList, _is.FullModelInclude {
   ChildEntityIncludeList._({
-    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildEntityInclude? super.include,
-  }) {
-    super.where = where?.call(ChildEntity.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -335,16 +333,14 @@ final class _ChildEntityJsonInclude extends _is.IncludeObject
 final class _ChildEntityJsonIncludeList extends _is.IncludeList
     implements ChildEntityJsonIncludeList {
   _ChildEntityJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildEntityJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChildEntity.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

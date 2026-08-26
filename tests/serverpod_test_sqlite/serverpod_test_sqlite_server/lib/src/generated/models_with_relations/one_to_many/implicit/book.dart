@@ -105,7 +105,7 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     BookInclude? include,
   }) {
     return BookIncludeList._(
-      where: where,
+      where: where?.call(Book.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Book.t),
@@ -146,7 +146,7 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<BookTable>? select,
   }) {
     return _BookJsonIncludeList._(
-      where: where,
+      where: where?.call(Book.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Book.t),
@@ -290,15 +290,13 @@ final class BookInclude extends _is.IncludeObject
 final class BookIncludeList extends _is.IncludeList
     implements BookJsonIncludeList, _is.FullModelInclude {
   BookIncludeList._({
-    _is.WhereExpressionBuilder<BookTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BookInclude? super.include,
-  }) {
-    super.where = where?.call(Book.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -331,16 +329,14 @@ final class _BookJsonInclude extends _is.IncludeObject
 final class _BookJsonIncludeList extends _is.IncludeList
     implements BookJsonIncludeList {
   _BookJsonIncludeList._({
-    _is.WhereExpressionBuilder<BookTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BookJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Book.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

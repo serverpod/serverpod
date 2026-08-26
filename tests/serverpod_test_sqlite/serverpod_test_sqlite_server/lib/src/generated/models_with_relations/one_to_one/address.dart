@@ -111,7 +111,7 @@ abstract class Address
     AddressInclude? include,
   }) {
     return AddressIncludeList._(
-      where: where,
+      where: where?.call(Address.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Address.t),
@@ -152,7 +152,7 @@ abstract class Address
     _is.SelectColumnsBuilder<AddressTable>? select,
   }) {
     return _AddressJsonIncludeList._(
-      where: where,
+      where: where?.call(Address.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Address.t),
@@ -292,15 +292,13 @@ final class AddressInclude extends _is.IncludeObject
 final class AddressIncludeList extends _is.IncludeList
     implements AddressJsonIncludeList, _is.FullModelInclude {
   AddressIncludeList._({
-    _is.WhereExpressionBuilder<AddressTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AddressInclude? super.include,
-  }) {
-    super.where = where?.call(Address.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -333,16 +331,14 @@ final class _AddressJsonInclude extends _is.IncludeObject
 final class _AddressJsonIncludeList extends _is.IncludeList
     implements AddressJsonIncludeList {
   _AddressJsonIncludeList._({
-    _is.WhereExpressionBuilder<AddressTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AddressJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Address.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

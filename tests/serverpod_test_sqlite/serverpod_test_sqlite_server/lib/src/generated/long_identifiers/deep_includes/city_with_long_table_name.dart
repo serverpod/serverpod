@@ -134,7 +134,7 @@ abstract class CityWithLongTableName
     CityWithLongTableNameInclude? include,
   }) {
     return CityWithLongTableNameIncludeList._(
-      where: where,
+      where: where?.call(CityWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CityWithLongTableName.t),
@@ -177,7 +177,7 @@ abstract class CityWithLongTableName
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
   }) {
     return _CityWithLongTableNameJsonIncludeList._(
-      where: where,
+      where: where?.call(CityWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CityWithLongTableName.t),
@@ -396,15 +396,13 @@ final class CityWithLongTableNameInclude extends _is.IncludeObject
 final class CityWithLongTableNameIncludeList extends _is.IncludeList
     implements CityWithLongTableNameJsonIncludeList, _is.FullModelInclude {
   CityWithLongTableNameIncludeList._({
-    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CityWithLongTableNameInclude? super.include,
-  }) {
-    super.where = where?.call(CityWithLongTableName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -444,16 +442,14 @@ final class _CityWithLongTableNameJsonInclude extends _is.IncludeObject
 final class _CityWithLongTableNameJsonIncludeList extends _is.IncludeList
     implements CityWithLongTableNameJsonIncludeList {
   _CityWithLongTableNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CityWithLongTableNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(CityWithLongTableName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

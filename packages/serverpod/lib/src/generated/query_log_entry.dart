@@ -172,7 +172,7 @@ abstract class QueryLogEntry
     QueryLogEntryInclude? include,
   }) {
     return QueryLogEntryIncludeList._(
-      where: where,
+      where: where?.call(QueryLogEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
@@ -211,7 +211,7 @@ abstract class QueryLogEntry
     _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
   }) {
     return _QueryLogEntryJsonIncludeList._(
-      where: where,
+      where: where?.call(QueryLogEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(QueryLogEntry.t),
@@ -459,15 +459,13 @@ final class QueryLogEntryInclude extends _is.IncludeObject
 final class QueryLogEntryIncludeList extends _is.IncludeList
     implements QueryLogEntryJsonIncludeList, _is.FullModelInclude {
   QueryLogEntryIncludeList._({
-    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     QueryLogEntryInclude? super.include,
-  }) {
-    super.where = where?.call(QueryLogEntry.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -493,16 +491,14 @@ final class _QueryLogEntryJsonInclude extends _is.IncludeObject
 final class _QueryLogEntryJsonIncludeList extends _is.IncludeList
     implements QueryLogEntryJsonIncludeList {
   _QueryLogEntryJsonIncludeList._({
-    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     QueryLogEntryJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(QueryLogEntry.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -621,7 +617,7 @@ class QueryLogEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -674,7 +670,7 @@ class QueryLogEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -720,7 +716,7 @@ class QueryLogEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

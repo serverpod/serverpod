@@ -97,7 +97,7 @@ abstract class TableWithExplicitColumnName
     TableWithExplicitColumnNameInclude? include,
   }) {
     return TableWithExplicitColumnNameIncludeList._(
-      where: where,
+      where: where?.call(TableWithExplicitColumnName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
@@ -136,7 +136,7 @@ abstract class TableWithExplicitColumnName
     _is.SelectColumnsBuilder<TableWithExplicitColumnNameTable>? select,
   }) {
     return _TableWithExplicitColumnNameJsonIncludeList._(
-      where: where,
+      where: where?.call(TableWithExplicitColumnName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TableWithExplicitColumnName.t),
@@ -250,15 +250,13 @@ final class TableWithExplicitColumnNameIncludeList extends _is.IncludeList
         TableWithExplicitColumnNameJsonIncludeList,
         _is.FullModelInclude {
   TableWithExplicitColumnNameIncludeList._({
-    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TableWithExplicitColumnNameInclude? super.include,
-  }) {
-    super.where = where?.call(TableWithExplicitColumnName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -284,16 +282,14 @@ final class _TableWithExplicitColumnNameJsonInclude extends _is.IncludeObject
 final class _TableWithExplicitColumnNameJsonIncludeList extends _is.IncludeList
     implements TableWithExplicitColumnNameJsonIncludeList {
   _TableWithExplicitColumnNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<TableWithExplicitColumnNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TableWithExplicitColumnNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(TableWithExplicitColumnName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -103,7 +103,7 @@ abstract class UpsertTestModel
     UpsertTestModelInclude? include,
   }) {
     return UpsertTestModelIncludeList._(
-      where: where,
+      where: where?.call(UpsertTestModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
@@ -142,7 +142,7 @@ abstract class UpsertTestModel
     _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
   }) {
     return _UpsertTestModelJsonIncludeList._(
-      where: where,
+      where: where?.call(UpsertTestModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UpsertTestModel.t),
@@ -266,15 +266,13 @@ final class UpsertTestModelInclude extends _is.IncludeObject
 final class UpsertTestModelIncludeList extends _is.IncludeList
     implements UpsertTestModelJsonIncludeList, _is.FullModelInclude {
   UpsertTestModelIncludeList._({
-    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UpsertTestModelInclude? super.include,
-  }) {
-    super.where = where?.call(UpsertTestModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -300,16 +298,14 @@ final class _UpsertTestModelJsonInclude extends _is.IncludeObject
 final class _UpsertTestModelJsonIncludeList extends _is.IncludeList
     implements UpsertTestModelJsonIncludeList {
   _UpsertTestModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UpsertTestModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UpsertTestModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -405,7 +405,7 @@ abstract class SharedModelContainer
     SharedModelContainerInclude? include,
   }) {
     return SharedModelContainerIncludeList._(
-      where: where,
+      where: where?.call(SharedModelContainer.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
@@ -444,7 +444,7 @@ abstract class SharedModelContainer
     _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
   }) {
     return _SharedModelContainerJsonIncludeList._(
-      where: where,
+      where: where?.call(SharedModelContainer.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModelContainer.t),
@@ -1009,15 +1009,13 @@ final class SharedModelContainerInclude extends _is.IncludeObject
 final class SharedModelContainerIncludeList extends _is.IncludeList
     implements SharedModelContainerJsonIncludeList, _is.FullModelInclude {
   SharedModelContainerIncludeList._({
-    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedModelContainerInclude? super.include,
-  }) {
-    super.where = where?.call(SharedModelContainer.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -1043,16 +1041,14 @@ final class _SharedModelContainerJsonInclude extends _is.IncludeObject
 final class _SharedModelContainerJsonIncludeList extends _is.IncludeList
     implements SharedModelContainerJsonIncludeList {
   _SharedModelContainerJsonIncludeList._({
-    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedModelContainerJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SharedModelContainer.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

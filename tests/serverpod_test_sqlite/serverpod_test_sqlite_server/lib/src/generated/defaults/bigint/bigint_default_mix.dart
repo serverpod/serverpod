@@ -127,7 +127,7 @@ abstract class BigIntDefaultMix
     BigIntDefaultMixInclude? include,
   }) {
     return BigIntDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(BigIntDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultMix.t),
@@ -166,7 +166,7 @@ abstract class BigIntDefaultMix
     _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
   }) {
     return _BigIntDefaultMixJsonIncludeList._(
-      where: where,
+      where: where?.call(BigIntDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultMix.t),
@@ -304,15 +304,13 @@ final class BigIntDefaultMixInclude extends _is.IncludeObject
 final class BigIntDefaultMixIncludeList extends _is.IncludeList
     implements BigIntDefaultMixJsonIncludeList, _is.FullModelInclude {
   BigIntDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BigIntDefaultMixInclude? super.include,
-  }) {
-    super.where = where?.call(BigIntDefaultMix.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -338,16 +336,14 @@ final class _BigIntDefaultMixJsonInclude extends _is.IncludeObject
 final class _BigIntDefaultMixJsonIncludeList extends _is.IncludeList
     implements BigIntDefaultMixJsonIncludeList {
   _BigIntDefaultMixJsonIncludeList._({
-    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BigIntDefaultMixJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(BigIntDefaultMix.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

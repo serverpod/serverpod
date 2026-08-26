@@ -99,7 +99,7 @@ abstract class StringDefaultModel
     StringDefaultModelInclude? include,
   }) {
     return StringDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(StringDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
@@ -138,7 +138,7 @@ abstract class StringDefaultModel
     _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
   }) {
     return _StringDefaultModelJsonIncludeList._(
-      where: where,
+      where: where?.call(StringDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(StringDefaultModel.t),
@@ -250,15 +250,13 @@ final class StringDefaultModelInclude extends _is.IncludeObject
 final class StringDefaultModelIncludeList extends _is.IncludeList
     implements StringDefaultModelJsonIncludeList, _is.FullModelInclude {
   StringDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     StringDefaultModelInclude? super.include,
-  }) {
-    super.where = where?.call(StringDefaultModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -284,16 +282,14 @@ final class _StringDefaultModelJsonInclude extends _is.IncludeObject
 final class _StringDefaultModelJsonIncludeList extends _is.IncludeList
     implements StringDefaultModelJsonIncludeList {
   _StringDefaultModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     StringDefaultModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(StringDefaultModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

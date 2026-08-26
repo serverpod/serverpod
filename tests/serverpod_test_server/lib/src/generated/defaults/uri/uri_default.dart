@@ -101,7 +101,7 @@ abstract class UriDefault
     UriDefaultInclude? include,
   }) {
     return UriDefaultIncludeList._(
-      where: where,
+      where: where?.call(UriDefault.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefault.t),
@@ -140,7 +140,7 @@ abstract class UriDefault
     _is.SelectColumnsBuilder<UriDefaultTable>? select,
   }) {
     return _UriDefaultJsonIncludeList._(
-      where: where,
+      where: where?.call(UriDefault.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefault.t),
@@ -251,15 +251,13 @@ final class UriDefaultInclude extends _is.IncludeObject
 final class UriDefaultIncludeList extends _is.IncludeList
     implements UriDefaultJsonIncludeList, _is.FullModelInclude {
   UriDefaultIncludeList._({
-    _is.WhereExpressionBuilder<UriDefaultTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UriDefaultInclude? super.include,
-  }) {
-    super.where = where?.call(UriDefault.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -285,16 +283,14 @@ final class _UriDefaultJsonInclude extends _is.IncludeObject
 final class _UriDefaultJsonIncludeList extends _is.IncludeList
     implements UriDefaultJsonIncludeList {
   _UriDefaultJsonIncludeList._({
-    _is.WhereExpressionBuilder<UriDefaultTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UriDefaultJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UriDefault.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

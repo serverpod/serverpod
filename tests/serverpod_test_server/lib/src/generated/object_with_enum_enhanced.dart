@@ -150,7 +150,7 @@ abstract class ObjectWithEnumEnhanced
     ObjectWithEnumEnhancedInclude? include,
   }) {
     return ObjectWithEnumEnhancedIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithEnumEnhanced.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
@@ -189,7 +189,7 @@ abstract class ObjectWithEnumEnhanced
     _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
   }) {
     return _ObjectWithEnumEnhancedJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithEnumEnhanced.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
@@ -390,15 +390,13 @@ final class ObjectWithEnumEnhancedInclude extends _is.IncludeObject
 final class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList
     implements ObjectWithEnumEnhancedJsonIncludeList, _is.FullModelInclude {
   ObjectWithEnumEnhancedIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithEnumEnhancedInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithEnumEnhanced.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -424,16 +422,14 @@ final class _ObjectWithEnumEnhancedJsonInclude extends _is.IncludeObject
 final class _ObjectWithEnumEnhancedJsonIncludeList extends _is.IncludeList
     implements ObjectWithEnumEnhancedJsonIncludeList {
   _ObjectWithEnumEnhancedJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithEnumEnhancedJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithEnumEnhanced.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

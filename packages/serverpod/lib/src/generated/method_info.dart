@@ -98,7 +98,7 @@ abstract class MethodInfo
     MethodInfoInclude? include,
   }) {
     return MethodInfoIncludeList._(
-      where: where,
+      where: where?.call(MethodInfo.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MethodInfo.t),
@@ -137,7 +137,7 @@ abstract class MethodInfo
     _is.SelectColumnsBuilder<MethodInfoTable>? select,
   }) {
     return _MethodInfoJsonIncludeList._(
-      where: where,
+      where: where?.call(MethodInfo.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MethodInfo.t),
@@ -247,15 +247,13 @@ final class MethodInfoInclude extends _is.IncludeObject
 final class MethodInfoIncludeList extends _is.IncludeList
     implements MethodInfoJsonIncludeList, _is.FullModelInclude {
   MethodInfoIncludeList._({
-    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MethodInfoInclude? super.include,
-  }) {
-    super.where = where?.call(MethodInfo.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -281,16 +279,14 @@ final class _MethodInfoJsonInclude extends _is.IncludeObject
 final class _MethodInfoJsonIncludeList extends _is.IncludeList
     implements MethodInfoJsonIncludeList {
   _MethodInfoJsonIncludeList._({
-    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MethodInfoJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(MethodInfo.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -409,7 +405,7 @@ class MethodInfoRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -462,7 +458,7 @@ class MethodInfoRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -508,7 +504,7 @@ class MethodInfoRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

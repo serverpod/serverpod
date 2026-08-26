@@ -95,7 +95,7 @@ abstract class ModifiedColumnName
     ModifiedColumnNameInclude? include,
   }) {
     return ModifiedColumnNameIncludeList._(
-      where: where,
+      where: where?.call(ModifiedColumnName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ModifiedColumnName.t),
@@ -134,7 +134,7 @@ abstract class ModifiedColumnName
     _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
   }) {
     return _ModifiedColumnNameJsonIncludeList._(
-      where: where,
+      where: where?.call(ModifiedColumnName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ModifiedColumnName.t),
@@ -246,15 +246,13 @@ final class ModifiedColumnNameInclude extends _is.IncludeObject
 final class ModifiedColumnNameIncludeList extends _is.IncludeList
     implements ModifiedColumnNameJsonIncludeList, _is.FullModelInclude {
   ModifiedColumnNameIncludeList._({
-    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ModifiedColumnNameInclude? super.include,
-  }) {
-    super.where = where?.call(ModifiedColumnName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -280,16 +278,14 @@ final class _ModifiedColumnNameJsonInclude extends _is.IncludeObject
 final class _ModifiedColumnNameJsonIncludeList extends _is.IncludeList
     implements ModifiedColumnNameJsonIncludeList {
   _ModifiedColumnNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ModifiedColumnNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ModifiedColumnName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

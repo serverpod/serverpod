@@ -152,7 +152,7 @@ abstract class UuidDefault
     UuidDefaultInclude? include,
   }) {
     return UuidDefaultIncludeList._(
-      where: where,
+      where: where?.call(UuidDefault.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefault.t),
@@ -191,7 +191,7 @@ abstract class UuidDefault
     _is.SelectColumnsBuilder<UuidDefaultTable>? select,
   }) {
     return _UuidDefaultJsonIncludeList._(
-      where: where,
+      where: where?.call(UuidDefault.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefault.t),
@@ -365,15 +365,13 @@ final class UuidDefaultInclude extends _is.IncludeObject
 final class UuidDefaultIncludeList extends _is.IncludeList
     implements UuidDefaultJsonIncludeList, _is.FullModelInclude {
   UuidDefaultIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultInclude? super.include,
-  }) {
-    super.where = where?.call(UuidDefault.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -399,16 +397,14 @@ final class _UuidDefaultJsonInclude extends _is.IncludeObject
 final class _UuidDefaultJsonIncludeList extends _is.IncludeList
     implements UuidDefaultJsonIncludeList {
   _UuidDefaultJsonIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UuidDefault.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

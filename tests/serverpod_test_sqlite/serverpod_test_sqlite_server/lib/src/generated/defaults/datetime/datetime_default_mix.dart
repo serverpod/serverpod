@@ -130,7 +130,7 @@ abstract class DateTimeDefaultMix
     DateTimeDefaultMixInclude? include,
   }) {
     return DateTimeDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
@@ -169,7 +169,7 @@ abstract class DateTimeDefaultMix
     _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
   }) {
     return _DateTimeDefaultMixJsonIncludeList._(
-      where: where,
+      where: where?.call(DateTimeDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultMix.t),
@@ -309,15 +309,13 @@ final class DateTimeDefaultMixInclude extends _is.IncludeObject
 final class DateTimeDefaultMixIncludeList extends _is.IncludeList
     implements DateTimeDefaultMixJsonIncludeList, _is.FullModelInclude {
   DateTimeDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DateTimeDefaultMixInclude? super.include,
-  }) {
-    super.where = where?.call(DateTimeDefaultMix.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -343,16 +341,14 @@ final class _DateTimeDefaultMixJsonInclude extends _is.IncludeObject
 final class _DateTimeDefaultMixJsonIncludeList extends _is.IncludeList
     implements DateTimeDefaultMixJsonIncludeList {
   _DateTimeDefaultMixJsonIncludeList._({
-    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DateTimeDefaultMixJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DateTimeDefaultMix.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

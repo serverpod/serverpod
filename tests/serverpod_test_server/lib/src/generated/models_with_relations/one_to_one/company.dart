@@ -110,7 +110,7 @@ abstract class Company
     CompanyInclude? include,
   }) {
     return CompanyIncludeList._(
-      where: where,
+      where: where?.call(Company.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Company.t),
@@ -151,7 +151,7 @@ abstract class Company
     _is.SelectColumnsBuilder<CompanyTable>? select,
   }) {
     return _CompanyJsonIncludeList._(
-      where: where,
+      where: where?.call(Company.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Company.t),
@@ -289,15 +289,13 @@ final class CompanyInclude extends _is.IncludeObject
 final class CompanyIncludeList extends _is.IncludeList
     implements CompanyJsonIncludeList, _is.FullModelInclude {
   CompanyIncludeList._({
-    _is.WhereExpressionBuilder<CompanyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CompanyInclude? super.include,
-  }) {
-    super.where = where?.call(Company.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -330,16 +328,14 @@ final class _CompanyJsonInclude extends _is.IncludeObject
 final class _CompanyJsonIncludeList extends _is.IncludeList
     implements CompanyJsonIncludeList {
   _CompanyJsonIncludeList._({
-    _is.WhereExpressionBuilder<CompanyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CompanyJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Company.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -130,7 +130,7 @@ abstract class LegacySession
     LegacySessionInclude? include,
   }) {
     return LegacySessionIncludeList._(
-      where: where,
+      where: where?.call(LegacySession.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
@@ -171,7 +171,7 @@ abstract class LegacySession
     _is.SelectColumnsBuilder<LegacySessionTable>? select,
   }) {
     return _LegacySessionJsonIncludeList._(
-      where: where,
+      where: where?.call(LegacySession.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacySession.t),
@@ -353,15 +353,13 @@ final class LegacySessionInclude extends _is.IncludeObject
 final class LegacySessionIncludeList extends _is.IncludeList
     implements LegacySessionJsonIncludeList, _is.FullModelInclude {
   LegacySessionIncludeList._({
-    _is.WhereExpressionBuilder<LegacySessionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacySessionInclude? super.include,
-  }) {
-    super.where = where?.call(LegacySession.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -394,16 +392,14 @@ final class _LegacySessionJsonInclude extends _is.IncludeObject
 final class _LegacySessionJsonIncludeList extends _is.IncludeList
     implements LegacySessionJsonIncludeList {
   _LegacySessionJsonIncludeList._({
-    _is.WhereExpressionBuilder<LegacySessionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacySessionJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(LegacySession.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

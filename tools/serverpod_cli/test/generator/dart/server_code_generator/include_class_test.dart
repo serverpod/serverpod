@@ -315,10 +315,7 @@ void main() {
               );
 
               var params = constructor?.parameters.toSource();
-              expect(
-                params,
-                contains('WhereExpressionBuilder<ExampleTable>? where'),
-              );
+              expect(params, contains('super.where'));
               expect(params, contains('super.limit'));
               expect(params, contains('super.offset'));
               expect(params, contains('super.orderBy'));

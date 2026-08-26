@@ -104,7 +104,7 @@ abstract class ArenaUuid
     ArenaUuidInclude? include,
   }) {
     return ArenaUuidIncludeList._(
-      where: where,
+      where: where?.call(ArenaUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ArenaUuid.t),
@@ -145,7 +145,7 @@ abstract class ArenaUuid
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
   }) {
     return _ArenaUuidJsonIncludeList._(
-      where: where,
+      where: where?.call(ArenaUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ArenaUuid.t),
@@ -267,15 +267,13 @@ final class ArenaUuidInclude extends _is.IncludeObject
 final class ArenaUuidIncludeList extends _is.IncludeList
     implements ArenaUuidJsonIncludeList, _is.FullModelInclude {
   ArenaUuidIncludeList._({
-    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ArenaUuidInclude? super.include,
-  }) {
-    super.where = where?.call(ArenaUuid.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -308,16 +306,14 @@ final class _ArenaUuidJsonInclude extends _is.IncludeObject
 final class _ArenaUuidJsonIncludeList extends _is.IncludeList
     implements ArenaUuidJsonIncludeList {
   _ArenaUuidJsonIncludeList._({
-    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ArenaUuidJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ArenaUuid.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

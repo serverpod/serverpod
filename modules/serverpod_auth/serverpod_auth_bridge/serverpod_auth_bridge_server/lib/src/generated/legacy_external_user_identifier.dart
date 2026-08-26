@@ -119,7 +119,7 @@ abstract class LegacyExternalUserIdentifier
     LegacyExternalUserIdentifierInclude? include,
   }) {
     return LegacyExternalUserIdentifierIncludeList._(
-      where: where,
+      where: where?.call(LegacyExternalUserIdentifier.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
@@ -160,7 +160,7 @@ abstract class LegacyExternalUserIdentifier
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
     return _LegacyExternalUserIdentifierJsonIncludeList._(
-      where: where,
+      where: where?.call(LegacyExternalUserIdentifier.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
@@ -312,15 +312,13 @@ final class LegacyExternalUserIdentifierIncludeList extends _is.IncludeList
         LegacyExternalUserIdentifierJsonIncludeList,
         _is.FullModelInclude {
   LegacyExternalUserIdentifierIncludeList._({
-    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacyExternalUserIdentifierInclude? super.include,
-  }) {
-    super.where = where?.call(LegacyExternalUserIdentifier.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -353,16 +351,14 @@ final class _LegacyExternalUserIdentifierJsonInclude extends _is.IncludeObject
 final class _LegacyExternalUserIdentifierJsonIncludeList extends _is.IncludeList
     implements LegacyExternalUserIdentifierJsonIncludeList {
   _LegacyExternalUserIdentifierJsonIncludeList._({
-    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacyExternalUserIdentifierJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(LegacyExternalUserIdentifier.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

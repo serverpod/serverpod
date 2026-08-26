@@ -127,7 +127,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     MemberInclude? include,
   }) {
     return MemberIncludeList._(
-      where: where,
+      where: where?.call(Member.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Member.t),
@@ -170,7 +170,7 @@ abstract class Member implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return _MemberJsonIncludeList._(
-      where: where,
+      where: where?.call(Member.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Member.t),
@@ -369,15 +369,13 @@ final class MemberInclude extends _is.IncludeObject
 final class MemberIncludeList extends _is.IncludeList
     implements MemberJsonIncludeList, _is.FullModelInclude {
   MemberIncludeList._({
-    _is.WhereExpressionBuilder<MemberTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MemberInclude? super.include,
-  }) {
-    super.where = where?.call(Member.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -417,16 +415,14 @@ final class _MemberJsonInclude extends _is.IncludeObject
 final class _MemberJsonIncludeList extends _is.IncludeList
     implements MemberJsonIncludeList {
   _MemberJsonIncludeList._({
-    _is.WhereExpressionBuilder<MemberTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MemberJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Member.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

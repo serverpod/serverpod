@@ -128,7 +128,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     ChildWithInheritedIdInclude? include,
   }) {
     return ChildWithInheritedIdIncludeList._(
-      where: where,
+      where: where?.call(ChildWithInheritedId.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
@@ -169,7 +169,7 @@ abstract class ChildWithInheritedId extends _iv35mfmj.ParentWithChangedId
     _is.SelectColumnsBuilder<ChildWithInheritedIdTable>? select,
   }) {
     return _ChildWithInheritedIdJsonIncludeList._(
-      where: where,
+      where: where?.call(ChildWithInheritedId.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildWithInheritedId.t),
@@ -351,15 +351,13 @@ final class ChildWithInheritedIdInclude extends _is.IncludeObject
 final class ChildWithInheritedIdIncludeList extends _is.IncludeList
     implements ChildWithInheritedIdJsonIncludeList, _is.FullModelInclude {
   ChildWithInheritedIdIncludeList._({
-    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildWithInheritedIdInclude? super.include,
-  }) {
-    super.where = where?.call(ChildWithInheritedId.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -392,16 +390,14 @@ final class _ChildWithInheritedIdJsonInclude extends _is.IncludeObject
 final class _ChildWithInheritedIdJsonIncludeList extends _is.IncludeList
     implements ChildWithInheritedIdJsonIncludeList {
   _ChildWithInheritedIdJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChildWithInheritedIdTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildWithInheritedIdJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChildWithInheritedId.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

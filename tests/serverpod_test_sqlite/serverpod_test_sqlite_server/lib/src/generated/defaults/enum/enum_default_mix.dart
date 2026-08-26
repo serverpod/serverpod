@@ -133,7 +133,7 @@ abstract class EnumDefaultMix
     EnumDefaultMixInclude? include,
   }) {
     return EnumDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(EnumDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultMix.t),
@@ -172,7 +172,7 @@ abstract class EnumDefaultMix
     _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
   }) {
     return _EnumDefaultMixJsonIncludeList._(
-      where: where,
+      where: where?.call(EnumDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultMix.t),
@@ -318,15 +318,13 @@ final class EnumDefaultMixInclude extends _is.IncludeObject
 final class EnumDefaultMixIncludeList extends _is.IncludeList
     implements EnumDefaultMixJsonIncludeList, _is.FullModelInclude {
   EnumDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnumDefaultMixInclude? super.include,
-  }) {
-    super.where = where?.call(EnumDefaultMix.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -352,16 +350,14 @@ final class _EnumDefaultMixJsonInclude extends _is.IncludeObject
 final class _EnumDefaultMixJsonIncludeList extends _is.IncludeList
     implements EnumDefaultMixJsonIncludeList {
   _EnumDefaultMixJsonIncludeList._({
-    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnumDefaultMixJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EnumDefaultMix.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

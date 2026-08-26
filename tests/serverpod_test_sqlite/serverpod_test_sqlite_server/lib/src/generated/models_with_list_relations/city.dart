@@ -127,7 +127,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
     CityInclude? include,
   }) {
     return CityIncludeList._(
-      where: where,
+      where: where?.call(City.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(City.t),
@@ -170,7 +170,7 @@ abstract class City implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<CityTable>? select,
   }) {
     return _CityJsonIncludeList._(
-      where: where,
+      where: where?.call(City.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(City.t),
@@ -368,15 +368,13 @@ final class CityInclude extends _is.IncludeObject
 final class CityIncludeList extends _is.IncludeList
     implements CityJsonIncludeList, _is.FullModelInclude {
   CityIncludeList._({
-    _is.WhereExpressionBuilder<CityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CityInclude? super.include,
-  }) {
-    super.where = where?.call(City.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -416,16 +414,14 @@ final class _CityJsonInclude extends _is.IncludeObject
 final class _CityJsonIncludeList extends _is.IncludeList
     implements CityJsonIncludeList {
   _CityJsonIncludeList._({
-    _is.WhereExpressionBuilder<CityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CityJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(City.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -108,7 +108,7 @@ abstract class EmailFailedSignIn
     EmailFailedSignInInclude? include,
   }) {
     return EmailFailedSignInIncludeList._(
-      where: where,
+      where: where?.call(EmailFailedSignIn.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
@@ -147,7 +147,7 @@ abstract class EmailFailedSignIn
     _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
   }) {
     return _EmailFailedSignInJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailFailedSignIn.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailFailedSignIn.t),
@@ -275,15 +275,13 @@ final class EmailFailedSignInInclude extends _is.IncludeObject
 final class EmailFailedSignInIncludeList extends _is.IncludeList
     implements EmailFailedSignInJsonIncludeList, _is.FullModelInclude {
   EmailFailedSignInIncludeList._({
-    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailFailedSignInInclude? super.include,
-  }) {
-    super.where = where?.call(EmailFailedSignIn.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -309,16 +307,14 @@ final class _EmailFailedSignInJsonInclude extends _is.IncludeObject
 final class _EmailFailedSignInJsonIncludeList extends _is.IncludeList
     implements EmailFailedSignInJsonIncludeList {
   _EmailFailedSignInJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailFailedSignInJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailFailedSignIn.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

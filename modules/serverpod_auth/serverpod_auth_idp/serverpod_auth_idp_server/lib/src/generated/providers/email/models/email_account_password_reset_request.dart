@@ -174,7 +174,7 @@ abstract class EmailAccountPasswordResetRequest
     EmailAccountPasswordResetRequestInclude? include,
   }) {
     return EmailAccountPasswordResetRequestIncludeList._(
-      where: where,
+      where: where?.call(EmailAccountPasswordResetRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
@@ -219,7 +219,7 @@ abstract class EmailAccountPasswordResetRequest
     _is.SelectColumnsBuilder<EmailAccountPasswordResetRequestTable>? select,
   }) {
     return _EmailAccountPasswordResetRequestJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailAccountPasswordResetRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountPasswordResetRequest.t),
@@ -477,15 +477,13 @@ final class EmailAccountPasswordResetRequestIncludeList extends _is.IncludeList
         EmailAccountPasswordResetRequestJsonIncludeList,
         _is.FullModelInclude {
   EmailAccountPasswordResetRequestIncludeList._({
-    _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAccountPasswordResetRequestInclude? super.include,
-  }) {
-    super.where = where?.call(EmailAccountPasswordResetRequest.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -532,16 +530,14 @@ final class _EmailAccountPasswordResetRequestJsonIncludeList
     extends _is.IncludeList
     implements EmailAccountPasswordResetRequestJsonIncludeList {
   _EmailAccountPasswordResetRequestJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailAccountPasswordResetRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAccountPasswordResetRequestJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailAccountPasswordResetRequest.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

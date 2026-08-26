@@ -121,7 +121,7 @@ abstract class AuthUser
     AuthUserInclude? include,
   }) {
     return AuthUserIncludeList._(
-      where: where,
+      where: where?.call(AuthUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthUser.t),
@@ -158,7 +158,7 @@ abstract class AuthUser
     _is.SelectColumnsBuilder<AuthUserTable>? select,
   }) {
     return _AuthUserJsonIncludeList._(
-      where: where,
+      where: where?.call(AuthUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthUser.t),
@@ -287,15 +287,13 @@ final class AuthUserInclude extends _is.IncludeObject
 final class AuthUserIncludeList extends _is.IncludeList
     implements AuthUserJsonIncludeList, _is.FullModelInclude {
   AuthUserIncludeList._({
-    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AuthUserInclude? super.include,
-  }) {
-    super.where = where?.call(AuthUser.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -321,16 +319,14 @@ final class _AuthUserJsonInclude extends _is.IncludeObject
 final class _AuthUserJsonIncludeList extends _is.IncludeList
     implements AuthUserJsonIncludeList {
   _AuthUserJsonIncludeList._({
-    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AuthUserJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(AuthUser.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

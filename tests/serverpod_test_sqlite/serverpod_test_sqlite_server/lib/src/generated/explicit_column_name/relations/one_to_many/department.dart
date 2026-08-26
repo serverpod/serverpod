@@ -108,7 +108,7 @@ abstract class Department
     DepartmentInclude? include,
   }) {
     return DepartmentIncludeList._(
-      where: where,
+      where: where?.call(Department.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Department.t),
@@ -149,7 +149,7 @@ abstract class Department
     _is.SelectColumnsBuilder<DepartmentTable>? select,
   }) {
     return _DepartmentJsonIncludeList._(
-      where: where,
+      where: where?.call(Department.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Department.t),
@@ -294,15 +294,13 @@ final class DepartmentInclude extends _is.IncludeObject
 final class DepartmentIncludeList extends _is.IncludeList
     implements DepartmentJsonIncludeList, _is.FullModelInclude {
   DepartmentIncludeList._({
-    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DepartmentInclude? super.include,
-  }) {
-    super.where = where?.call(Department.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -335,16 +333,14 @@ final class _DepartmentJsonInclude extends _is.IncludeObject
 final class _DepartmentJsonIncludeList extends _is.IncludeList
     implements DepartmentJsonIncludeList {
   _DepartmentJsonIncludeList._({
-    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DepartmentJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Department.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

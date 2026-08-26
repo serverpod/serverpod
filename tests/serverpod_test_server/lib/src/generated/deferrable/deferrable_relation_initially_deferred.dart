@@ -90,7 +90,7 @@ abstract class DeferrableRelationInitiallyDeferred
     DeferrableRelationInitiallyDeferredInclude? include,
   }) {
     return DeferrableRelationInitiallyDeferredIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationInitiallyDeferred.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
@@ -130,7 +130,7 @@ abstract class DeferrableRelationInitiallyDeferred
     _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
   }) {
     return _DeferrableRelationInitiallyDeferredJsonIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationInitiallyDeferred.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
@@ -229,15 +229,13 @@ final class DeferrableRelationInitiallyDeferredIncludeList
         DeferrableRelationInitiallyDeferredJsonIncludeList,
         _is.FullModelInclude {
   DeferrableRelationInitiallyDeferredIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationInitiallyDeferredInclude? super.include,
-  }) {
-    super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -265,16 +263,14 @@ final class _DeferrableRelationInitiallyDeferredJsonIncludeList
     extends _is.IncludeList
     implements DeferrableRelationInitiallyDeferredJsonIncludeList {
   _DeferrableRelationInitiallyDeferredJsonIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationInitiallyDeferredJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

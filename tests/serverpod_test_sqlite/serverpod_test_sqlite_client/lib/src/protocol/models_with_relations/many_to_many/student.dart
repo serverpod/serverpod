@@ -110,7 +110,7 @@ abstract class Student
     StudentInclude? include,
   }) {
     return StudentIncludeList._(
-      where: where,
+      where: where?.call(Student.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Student.t),
@@ -151,7 +151,7 @@ abstract class Student
     _isd.SelectColumnsBuilder<StudentTable>? select,
   }) {
     return _StudentJsonIncludeList._(
-      where: where,
+      where: where?.call(Student.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Student.t),
@@ -296,15 +296,13 @@ final class StudentInclude extends _isd.IncludeObject
 final class StudentIncludeList extends _isd.IncludeList
     implements StudentJsonIncludeList, _isd.FullModelInclude {
   StudentIncludeList._({
-    _isd.WhereExpressionBuilder<StudentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     StudentInclude? super.include,
-  }) {
-    super.where = where?.call(Student.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -337,16 +335,14 @@ final class _StudentJsonInclude extends _isd.IncludeObject
 final class _StudentJsonIncludeList extends _isd.IncludeList
     implements StudentJsonIncludeList {
   _StudentJsonIncludeList._({
-    _isd.WhereExpressionBuilder<StudentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     StudentJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Student.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

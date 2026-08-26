@@ -128,7 +128,7 @@ abstract class DateTimeDefaultModel
     DateTimeDefaultModelInclude? include,
   }) {
     return DateTimeDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(DateTimeDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
@@ -167,7 +167,7 @@ abstract class DateTimeDefaultModel
     _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
   }) {
     return _DateTimeDefaultModelJsonIncludeList._(
-      where: where,
+      where: where?.call(DateTimeDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DateTimeDefaultModel.t),
@@ -300,15 +300,13 @@ final class DateTimeDefaultModelInclude extends _is.IncludeObject
 final class DateTimeDefaultModelIncludeList extends _is.IncludeList
     implements DateTimeDefaultModelJsonIncludeList, _is.FullModelInclude {
   DateTimeDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DateTimeDefaultModelInclude? super.include,
-  }) {
-    super.where = where?.call(DateTimeDefaultModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -334,16 +332,14 @@ final class _DateTimeDefaultModelJsonInclude extends _is.IncludeObject
 final class _DateTimeDefaultModelJsonIncludeList extends _is.IncludeList
     implements DateTimeDefaultModelJsonIncludeList {
   _DateTimeDefaultModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DateTimeDefaultModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DateTimeDefaultModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

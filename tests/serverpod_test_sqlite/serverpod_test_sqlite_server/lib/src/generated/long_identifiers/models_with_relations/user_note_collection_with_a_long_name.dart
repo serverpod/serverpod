@@ -110,7 +110,7 @@ abstract class UserNoteCollectionWithALongName
     UserNoteCollectionWithALongNameInclude? include,
   }) {
     return UserNoteCollectionWithALongNameIncludeList._(
-      where: where,
+      where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
@@ -151,7 +151,7 @@ abstract class UserNoteCollectionWithALongName
     _is.SelectColumnsBuilder<UserNoteCollectionWithALongNameTable>? select,
   }) {
     return _UserNoteCollectionWithALongNameJsonIncludeList._(
-      where: where,
+      where: where?.call(UserNoteCollectionWithALongName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserNoteCollectionWithALongName.t),
@@ -315,15 +315,13 @@ final class UserNoteCollectionWithALongNameIncludeList extends _is.IncludeList
         UserNoteCollectionWithALongNameJsonIncludeList,
         _is.FullModelInclude {
   UserNoteCollectionWithALongNameIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserNoteCollectionWithALongNameInclude? super.include,
-  }) {
-    super.where = where?.call(UserNoteCollectionWithALongName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -358,16 +356,14 @@ final class _UserNoteCollectionWithALongNameJsonIncludeList
     extends _is.IncludeList
     implements UserNoteCollectionWithALongNameJsonIncludeList {
   _UserNoteCollectionWithALongNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<UserNoteCollectionWithALongNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserNoteCollectionWithALongNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UserNoteCollectionWithALongName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

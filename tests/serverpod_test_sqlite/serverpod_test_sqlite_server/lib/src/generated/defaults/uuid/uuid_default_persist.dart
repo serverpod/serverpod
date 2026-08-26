@@ -123,7 +123,7 @@ abstract class UuidDefaultPersist
     UuidDefaultPersistInclude? include,
   }) {
     return UuidDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(UuidDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultPersist.t),
@@ -162,7 +162,7 @@ abstract class UuidDefaultPersist
     _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
   }) {
     return _UuidDefaultPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(UuidDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultPersist.t),
@@ -302,15 +302,13 @@ final class UuidDefaultPersistInclude extends _is.IncludeObject
 final class UuidDefaultPersistIncludeList extends _is.IncludeList
     implements UuidDefaultPersistJsonIncludeList, _is.FullModelInclude {
   UuidDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultPersistInclude? super.include,
-  }) {
-    super.where = where?.call(UuidDefaultPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -336,16 +334,14 @@ final class _UuidDefaultPersistJsonInclude extends _is.IncludeObject
 final class _UuidDefaultPersistJsonIncludeList extends _is.IncludeList
     implements UuidDefaultPersistJsonIncludeList {
   _UuidDefaultPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UuidDefaultPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

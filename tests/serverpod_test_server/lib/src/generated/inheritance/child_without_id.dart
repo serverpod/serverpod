@@ -103,7 +103,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     ChildClassWithoutIdInclude? include,
   }) {
     return ChildClassWithoutIdIncludeList._(
-      where: where,
+      where: where?.call(ChildClassWithoutId.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassWithoutId.t),
@@ -142,7 +142,7 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
   }) {
     return _ChildClassWithoutIdJsonIncludeList._(
-      where: where,
+      where: where?.call(ChildClassWithoutId.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassWithoutId.t),
@@ -268,15 +268,13 @@ final class ChildClassWithoutIdInclude extends _is.IncludeObject
 final class ChildClassWithoutIdIncludeList extends _is.IncludeList
     implements ChildClassWithoutIdJsonIncludeList, _is.FullModelInclude {
   ChildClassWithoutIdIncludeList._({
-    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildClassWithoutIdInclude? super.include,
-  }) {
-    super.where = where?.call(ChildClassWithoutId.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -302,16 +300,14 @@ final class _ChildClassWithoutIdJsonInclude extends _is.IncludeObject
 final class _ChildClassWithoutIdJsonIncludeList extends _is.IncludeList
     implements ChildClassWithoutIdJsonIncludeList {
   _ChildClassWithoutIdJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildClassWithoutIdJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChildClassWithoutId.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

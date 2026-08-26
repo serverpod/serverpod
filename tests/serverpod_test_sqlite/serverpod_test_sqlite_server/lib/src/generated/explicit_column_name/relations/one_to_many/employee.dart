@@ -95,7 +95,7 @@ abstract class Employee
     EmployeeInclude? include,
   }) {
     return EmployeeIncludeList._(
-      where: where,
+      where: where?.call(Employee.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
@@ -132,7 +132,7 @@ abstract class Employee
     _is.SelectColumnsBuilder<EmployeeTable>? select,
   }) {
     return _EmployeeJsonIncludeList._(
-      where: where,
+      where: where?.call(Employee.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Employee.t),
@@ -240,15 +240,13 @@ final class EmployeeInclude extends _is.IncludeObject
 final class EmployeeIncludeList extends _is.IncludeList
     implements EmployeeJsonIncludeList, _is.FullModelInclude {
   EmployeeIncludeList._({
-    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmployeeInclude? super.include,
-  }) {
-    super.where = where?.call(Employee.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -274,16 +272,14 @@ final class _EmployeeJsonInclude extends _is.IncludeObject
 final class _EmployeeJsonIncludeList extends _is.IncludeList
     implements EmployeeJsonIncludeList {
   _EmployeeJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmployeeJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Employee.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

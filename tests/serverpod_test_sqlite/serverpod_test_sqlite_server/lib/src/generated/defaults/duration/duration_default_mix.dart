@@ -148,7 +148,7 @@ abstract class DurationDefaultMix
     DurationDefaultMixInclude? include,
   }) {
     return DurationDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(DurationDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultMix.t),
@@ -187,7 +187,7 @@ abstract class DurationDefaultMix
     _is.SelectColumnsBuilder<DurationDefaultMixTable>? select,
   }) {
     return _DurationDefaultMixJsonIncludeList._(
-      where: where,
+      where: where?.call(DurationDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultMix.t),
@@ -327,15 +327,13 @@ final class DurationDefaultMixInclude extends _is.IncludeObject
 final class DurationDefaultMixIncludeList extends _is.IncludeList
     implements DurationDefaultMixJsonIncludeList, _is.FullModelInclude {
   DurationDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DurationDefaultMixInclude? super.include,
-  }) {
-    super.where = where?.call(DurationDefaultMix.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -361,16 +359,14 @@ final class _DurationDefaultMixJsonInclude extends _is.IncludeObject
 final class _DurationDefaultMixJsonIncludeList extends _is.IncludeList
     implements DurationDefaultMixJsonIncludeList {
   _DurationDefaultMixJsonIncludeList._({
-    _is.WhereExpressionBuilder<DurationDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DurationDefaultMixJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DurationDefaultMix.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -111,7 +111,7 @@ abstract class ObjectWithGeographyLineString
     ObjectWithGeographyLineStringInclude? include,
   }) {
     return ObjectWithGeographyLineStringIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyLineString.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
@@ -150,7 +150,7 @@ abstract class ObjectWithGeographyLineString
     _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
   }) {
     return _ObjectWithGeographyLineStringJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyLineString.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
@@ -283,15 +283,13 @@ final class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList
         ObjectWithGeographyLineStringJsonIncludeList,
         _is.FullModelInclude {
   ObjectWithGeographyLineStringIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyLineStringInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithGeographyLineString.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -318,16 +316,14 @@ final class _ObjectWithGeographyLineStringJsonIncludeList
     extends _is.IncludeList
     implements ObjectWithGeographyLineStringJsonIncludeList {
   _ObjectWithGeographyLineStringJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyLineStringJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithGeographyLineString.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

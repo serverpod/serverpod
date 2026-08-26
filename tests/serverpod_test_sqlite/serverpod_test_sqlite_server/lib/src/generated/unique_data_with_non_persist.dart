@@ -105,7 +105,7 @@ abstract class UniqueDataWithNonPersist
     UniqueDataWithNonPersistInclude? include,
   }) {
     return UniqueDataWithNonPersistIncludeList._(
-      where: where,
+      where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
@@ -144,7 +144,7 @@ abstract class UniqueDataWithNonPersist
     _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
     return _UniqueDataWithNonPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
@@ -257,15 +257,13 @@ final class UniqueDataWithNonPersistInclude extends _is.IncludeObject
 final class UniqueDataWithNonPersistIncludeList extends _is.IncludeList
     implements UniqueDataWithNonPersistJsonIncludeList, _is.FullModelInclude {
   UniqueDataWithNonPersistIncludeList._({
-    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataWithNonPersistInclude? super.include,
-  }) {
-    super.where = where?.call(UniqueDataWithNonPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -291,16 +289,14 @@ final class _UniqueDataWithNonPersistJsonInclude extends _is.IncludeObject
 final class _UniqueDataWithNonPersistJsonIncludeList extends _is.IncludeList
     implements UniqueDataWithNonPersistJsonIncludeList {
   _UniqueDataWithNonPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataWithNonPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UniqueDataWithNonPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

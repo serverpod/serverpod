@@ -129,7 +129,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
     PostInclude? include,
   }) {
     return PostIncludeList._(
-      where: where,
+      where: where?.call(Post.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Post.t),
@@ -172,7 +172,7 @@ abstract class Post implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<PostTable>? select,
   }) {
     return _PostJsonIncludeList._(
-      where: where,
+      where: where?.call(Post.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Post.t),
@@ -342,15 +342,13 @@ final class PostInclude extends _is.IncludeObject
 final class PostIncludeList extends _is.IncludeList
     implements PostJsonIncludeList, _is.FullModelInclude {
   PostIncludeList._({
-    _is.WhereExpressionBuilder<PostTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PostInclude? super.include,
-  }) {
-    super.where = where?.call(Post.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -390,16 +388,14 @@ final class _PostJsonInclude extends _is.IncludeObject
 final class _PostJsonIncludeList extends _is.IncludeList
     implements PostJsonIncludeList {
   _PostJsonIncludeList._({
-    _is.WhereExpressionBuilder<PostTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PostJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Post.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

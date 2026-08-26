@@ -100,7 +100,7 @@ abstract class PasskeyChallenge
     PasskeyChallengeInclude? include,
   }) {
     return PasskeyChallengeIncludeList._(
-      where: where,
+      where: where?.call(PasskeyChallenge.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyChallenge.t),
@@ -139,7 +139,7 @@ abstract class PasskeyChallenge
     _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
   }) {
     return _PasskeyChallengeJsonIncludeList._(
-      where: where,
+      where: where?.call(PasskeyChallenge.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyChallenge.t),
@@ -253,15 +253,13 @@ final class PasskeyChallengeInclude extends _is.IncludeObject
 final class PasskeyChallengeIncludeList extends _is.IncludeList
     implements PasskeyChallengeJsonIncludeList, _is.FullModelInclude {
   PasskeyChallengeIncludeList._({
-    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PasskeyChallengeInclude? super.include,
-  }) {
-    super.where = where?.call(PasskeyChallenge.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -287,16 +285,14 @@ final class _PasskeyChallengeJsonInclude extends _is.IncludeObject
 final class _PasskeyChallengeJsonIncludeList extends _is.IncludeList
     implements PasskeyChallengeJsonIncludeList {
   _PasskeyChallengeJsonIncludeList._({
-    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PasskeyChallengeJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(PasskeyChallenge.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

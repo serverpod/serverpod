@@ -130,7 +130,7 @@ abstract class Blocking
     BlockingInclude? include,
   }) {
     return BlockingIncludeList._(
-      where: where,
+      where: where?.call(Blocking.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Blocking.t),
@@ -173,7 +173,7 @@ abstract class Blocking
     _is.SelectColumnsBuilder<BlockingTable>? select,
   }) {
     return _BlockingJsonIncludeList._(
-      where: where,
+      where: where?.call(Blocking.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Blocking.t),
@@ -346,15 +346,13 @@ final class BlockingInclude extends _is.IncludeObject
 final class BlockingIncludeList extends _is.IncludeList
     implements BlockingJsonIncludeList, _is.FullModelInclude {
   BlockingIncludeList._({
-    _is.WhereExpressionBuilder<BlockingTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BlockingInclude? super.include,
-  }) {
-    super.where = where?.call(Blocking.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -394,16 +392,14 @@ final class _BlockingJsonInclude extends _is.IncludeObject
 final class _BlockingJsonIncludeList extends _is.IncludeList
     implements BlockingJsonIncludeList {
   _BlockingJsonIncludeList._({
-    _is.WhereExpressionBuilder<BlockingTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BlockingJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Blocking.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

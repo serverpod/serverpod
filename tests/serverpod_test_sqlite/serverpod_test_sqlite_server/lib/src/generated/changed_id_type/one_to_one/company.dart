@@ -113,7 +113,7 @@ abstract class CompanyUuid
     CompanyUuidInclude? include,
   }) {
     return CompanyUuidIncludeList._(
-      where: where,
+      where: where?.call(CompanyUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CompanyUuid.t),
@@ -154,7 +154,7 @@ abstract class CompanyUuid
     _is.SelectColumnsBuilder<CompanyUuidTable>? select,
   }) {
     return _CompanyUuidJsonIncludeList._(
-      where: where,
+      where: where?.call(CompanyUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CompanyUuid.t),
@@ -292,15 +292,13 @@ final class CompanyUuidInclude extends _is.IncludeObject
 final class CompanyUuidIncludeList extends _is.IncludeList
     implements CompanyUuidJsonIncludeList, _is.FullModelInclude {
   CompanyUuidIncludeList._({
-    _is.WhereExpressionBuilder<CompanyUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CompanyUuidInclude? super.include,
-  }) {
-    super.where = where?.call(CompanyUuid.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -333,16 +331,14 @@ final class _CompanyUuidJsonInclude extends _is.IncludeObject
 final class _CompanyUuidJsonIncludeList extends _is.IncludeList
     implements CompanyUuidJsonIncludeList {
   _CompanyUuidJsonIncludeList._({
-    _is.WhereExpressionBuilder<CompanyUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CompanyUuidJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(CompanyUuid.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

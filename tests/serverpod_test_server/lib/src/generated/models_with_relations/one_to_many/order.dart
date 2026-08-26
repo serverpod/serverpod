@@ -130,7 +130,7 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     OrderInclude? include,
   }) {
     return OrderIncludeList._(
-      where: where,
+      where: where?.call(Order.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Order.t),
@@ -173,7 +173,7 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return _OrderJsonIncludeList._(
-      where: where,
+      where: where?.call(Order.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Order.t),
@@ -367,15 +367,13 @@ final class OrderInclude extends _is.IncludeObject
 final class OrderIncludeList extends _is.IncludeList
     implements OrderJsonIncludeList, _is.FullModelInclude {
   OrderIncludeList._({
-    _is.WhereExpressionBuilder<OrderTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrderInclude? super.include,
-  }) {
-    super.where = where?.call(Order.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -415,16 +413,14 @@ final class _OrderJsonInclude extends _is.IncludeObject
 final class _OrderJsonIncludeList extends _is.IncludeList
     implements OrderJsonIncludeList {
   _OrderJsonIncludeList._({
-    _is.WhereExpressionBuilder<OrderTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrderJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Order.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

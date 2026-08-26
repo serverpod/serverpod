@@ -103,7 +103,7 @@ abstract class FutureCallClaimEntry
     FutureCallClaimEntryInclude? include,
   }) {
     return FutureCallClaimEntryIncludeList._(
-      where: where,
+      where: where?.call(FutureCallClaimEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
@@ -142,7 +142,7 @@ abstract class FutureCallClaimEntry
     _is.SelectColumnsBuilder<FutureCallClaimEntryTable>? select,
   }) {
     return _FutureCallClaimEntryJsonIncludeList._(
-      where: where,
+      where: where?.call(FutureCallClaimEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FutureCallClaimEntry.t),
@@ -255,15 +255,13 @@ final class FutureCallClaimEntryInclude extends _is.IncludeObject
 final class FutureCallClaimEntryIncludeList extends _is.IncludeList
     implements FutureCallClaimEntryJsonIncludeList, _is.FullModelInclude {
   FutureCallClaimEntryIncludeList._({
-    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FutureCallClaimEntryInclude? super.include,
-  }) {
-    super.where = where?.call(FutureCallClaimEntry.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -289,16 +287,14 @@ final class _FutureCallClaimEntryJsonInclude extends _is.IncludeObject
 final class _FutureCallClaimEntryJsonIncludeList extends _is.IncludeList
     implements FutureCallClaimEntryJsonIncludeList {
   _FutureCallClaimEntryJsonIncludeList._({
-    _is.WhereExpressionBuilder<FutureCallClaimEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FutureCallClaimEntryJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(FutureCallClaimEntry.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -417,7 +413,7 @@ class FutureCallClaimEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -470,7 +466,7 @@ class FutureCallClaimEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -516,7 +512,7 @@ class FutureCallClaimEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

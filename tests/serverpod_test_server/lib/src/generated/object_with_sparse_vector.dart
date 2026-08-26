@@ -127,7 +127,7 @@ abstract class ObjectWithSparseVector
     ObjectWithSparseVectorInclude? include,
   }) {
     return ObjectWithSparseVectorIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithSparseVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
@@ -166,7 +166,7 @@ abstract class ObjectWithSparseVector
     _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
   }) {
     return _ObjectWithSparseVectorJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithSparseVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSparseVector.t),
@@ -323,15 +323,13 @@ final class ObjectWithSparseVectorInclude extends _is.IncludeObject
 final class ObjectWithSparseVectorIncludeList extends _is.IncludeList
     implements ObjectWithSparseVectorJsonIncludeList, _is.FullModelInclude {
   ObjectWithSparseVectorIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithSparseVectorInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithSparseVector.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -357,16 +355,14 @@ final class _ObjectWithSparseVectorJsonInclude extends _is.IncludeObject
 final class _ObjectWithSparseVectorJsonIncludeList extends _is.IncludeList
     implements ObjectWithSparseVectorJsonIncludeList {
   _ObjectWithSparseVectorJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithSparseVectorJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithSparseVector.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

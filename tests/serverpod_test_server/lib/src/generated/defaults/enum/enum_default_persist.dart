@@ -111,7 +111,7 @@ abstract class EnumDefaultPersist
     EnumDefaultPersistInclude? include,
   }) {
     return EnumDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(EnumDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultPersist.t),
@@ -150,7 +150,7 @@ abstract class EnumDefaultPersist
     _is.SelectColumnsBuilder<EnumDefaultPersistTable>? select,
   }) {
     return _EnumDefaultPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(EnumDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnumDefaultPersist.t),
@@ -271,15 +271,13 @@ final class EnumDefaultPersistInclude extends _is.IncludeObject
 final class EnumDefaultPersistIncludeList extends _is.IncludeList
     implements EnumDefaultPersistJsonIncludeList, _is.FullModelInclude {
   EnumDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnumDefaultPersistInclude? super.include,
-  }) {
-    super.where = where?.call(EnumDefaultPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -305,16 +303,14 @@ final class _EnumDefaultPersistJsonInclude extends _is.IncludeObject
 final class _EnumDefaultPersistJsonIncludeList extends _is.IncludeList
     implements EnumDefaultPersistJsonIncludeList {
   _EnumDefaultPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<EnumDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnumDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EnumDefaultPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

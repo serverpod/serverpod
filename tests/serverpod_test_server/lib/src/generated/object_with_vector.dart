@@ -139,7 +139,7 @@ abstract class ObjectWithVector
     ObjectWithVectorInclude? include,
   }) {
     return ObjectWithVectorIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithVector.t),
@@ -178,7 +178,7 @@ abstract class ObjectWithVector
     _is.SelectColumnsBuilder<ObjectWithVectorTable>? select,
   }) {
     return _ObjectWithVectorJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithVector.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithVector.t),
@@ -373,15 +373,13 @@ final class ObjectWithVectorInclude extends _is.IncludeObject
 final class ObjectWithVectorIncludeList extends _is.IncludeList
     implements ObjectWithVectorJsonIncludeList, _is.FullModelInclude {
   ObjectWithVectorIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithVectorInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithVector.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -407,16 +405,14 @@ final class _ObjectWithVectorJsonInclude extends _is.IncludeObject
 final class _ObjectWithVectorJsonIncludeList extends _is.IncludeList
     implements ObjectWithVectorJsonIncludeList {
   _ObjectWithVectorJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithVectorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithVectorJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithVector.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

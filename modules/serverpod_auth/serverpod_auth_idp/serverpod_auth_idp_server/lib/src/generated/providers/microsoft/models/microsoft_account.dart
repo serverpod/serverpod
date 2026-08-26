@@ -138,7 +138,7 @@ abstract class MicrosoftAccount
     MicrosoftAccountInclude? include,
   }) {
     return MicrosoftAccountIncludeList._(
-      where: where,
+      where: where?.call(MicrosoftAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
@@ -179,7 +179,7 @@ abstract class MicrosoftAccount
     _is.SelectColumnsBuilder<MicrosoftAccountTable>? select,
   }) {
     return _MicrosoftAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(MicrosoftAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MicrosoftAccount.t),
@@ -368,15 +368,13 @@ final class MicrosoftAccountInclude extends _is.IncludeObject
 final class MicrosoftAccountIncludeList extends _is.IncludeList
     implements MicrosoftAccountJsonIncludeList, _is.FullModelInclude {
   MicrosoftAccountIncludeList._({
-    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MicrosoftAccountInclude? super.include,
-  }) {
-    super.where = where?.call(MicrosoftAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -409,16 +407,14 @@ final class _MicrosoftAccountJsonInclude extends _is.IncludeObject
 final class _MicrosoftAccountJsonIncludeList extends _is.IncludeList
     implements MicrosoftAccountJsonIncludeList {
   _MicrosoftAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MicrosoftAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(MicrosoftAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

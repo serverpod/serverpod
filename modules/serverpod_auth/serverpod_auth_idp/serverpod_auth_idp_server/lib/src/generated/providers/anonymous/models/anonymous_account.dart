@@ -117,7 +117,7 @@ abstract class AnonymousAccount
     AnonymousAccountInclude? include,
   }) {
     return AnonymousAccountIncludeList._(
-      where: where,
+      where: where?.call(AnonymousAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
@@ -158,7 +158,7 @@ abstract class AnonymousAccount
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
   }) {
     return _AnonymousAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(AnonymousAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AnonymousAccount.t),
@@ -305,15 +305,13 @@ final class AnonymousAccountInclude extends _is.IncludeObject
 final class AnonymousAccountIncludeList extends _is.IncludeList
     implements AnonymousAccountJsonIncludeList, _is.FullModelInclude {
   AnonymousAccountIncludeList._({
-    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AnonymousAccountInclude? super.include,
-  }) {
-    super.where = where?.call(AnonymousAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -346,16 +344,14 @@ final class _AnonymousAccountJsonInclude extends _is.IncludeObject
 final class _AnonymousAccountJsonIncludeList extends _is.IncludeList
     implements AnonymousAccountJsonIncludeList {
   _AnonymousAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AnonymousAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(AnonymousAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

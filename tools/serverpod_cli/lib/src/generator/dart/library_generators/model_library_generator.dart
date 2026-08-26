@@ -1811,7 +1811,9 @@ class SerializableModelLibraryGenerator {
         ..body = refer('${className}IncludeList')
             .property('_')
             .call([], {
-              'where': refer('where'),
+              'where': refer('where').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
               'limit': refer('limit'),
               'offset': refer('offset'),
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
@@ -1962,7 +1964,9 @@ class SerializableModelLibraryGenerator {
         ..body = refer('_${className}JsonIncludeList')
             .property('_')
             .call([], {
-              'where': refer('where'),
+              'where': refer('where').nullSafeProperty('call').call([
+                refer(className).property('t'),
+              ]),
               'limit': refer('limit'),
               'offset': refer('offset'),
               'orderBy': refer('orderBy').nullSafeProperty('call').call(
@@ -3616,10 +3620,7 @@ class SerializableModelLibraryGenerator {
         Parameter(
           (p) => p
             ..name = 'where'
-            ..type = typeWhereExpressionBuilder(
-              className,
-              serverCode,
-            )
+            ..toSuper = true
             ..named = true,
         ),
         Parameter(
@@ -3660,17 +3661,6 @@ class SerializableModelLibraryGenerator {
               ..toThis = true
               ..named = true,
           ),
-      ]);
-
-      constructorBuilder.body = Block.of([
-        refer('super')
-            .property('where')
-            .assign(
-              refer('where').nullSafeProperty('call').call(
-                [refer(className).property('t')],
-              ),
-            )
-            .statement,
       ]);
     });
   }

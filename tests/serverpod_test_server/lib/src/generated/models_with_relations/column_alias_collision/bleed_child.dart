@@ -94,7 +94,7 @@ abstract class BleedChild
     BleedChildInclude? include,
   }) {
     return BleedChildIncludeList._(
-      where: where,
+      where: where?.call(BleedChild.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BleedChild.t),
@@ -133,7 +133,7 @@ abstract class BleedChild
     _is.SelectColumnsBuilder<BleedChildTable>? select,
   }) {
     return _BleedChildJsonIncludeList._(
-      where: where,
+      where: where?.call(BleedChild.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BleedChild.t),
@@ -225,15 +225,13 @@ final class BleedChildInclude extends _is.IncludeObject
 final class BleedChildIncludeList extends _is.IncludeList
     implements BleedChildJsonIncludeList, _is.FullModelInclude {
   BleedChildIncludeList._({
-    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BleedChildInclude? super.include,
-  }) {
-    super.where = where?.call(BleedChild.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -259,16 +257,14 @@ final class _BleedChildJsonInclude extends _is.IncludeObject
 final class _BleedChildJsonIncludeList extends _is.IncludeList
     implements BleedChildJsonIncludeList {
   _BleedChildJsonIncludeList._({
-    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BleedChildJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(BleedChild.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

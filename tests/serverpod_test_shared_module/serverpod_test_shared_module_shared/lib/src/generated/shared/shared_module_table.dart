@@ -103,7 +103,7 @@ abstract class SharedModuleTable
     SharedModuleTableInclude? include,
   }) {
     return SharedModuleTableIncludeList._(
-      where: where,
+      where: where?.call(SharedModuleTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModuleTable.t),
@@ -142,7 +142,7 @@ abstract class SharedModuleTable
     _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
   }) {
     return _SharedModuleTableJsonIncludeList._(
-      where: where,
+      where: where?.call(SharedModuleTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedModuleTable.t),
@@ -251,15 +251,13 @@ final class SharedModuleTableInclude extends _isd.IncludeObject
 final class SharedModuleTableIncludeList extends _isd.IncludeList
     implements SharedModuleTableJsonIncludeList, _isd.FullModelInclude {
   SharedModuleTableIncludeList._({
-    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedModuleTableInclude? super.include,
-  }) {
-    super.where = where?.call(SharedModuleTable.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -285,16 +283,14 @@ final class _SharedModuleTableJsonInclude extends _isd.IncludeObject
 final class _SharedModuleTableJsonIncludeList extends _isd.IncludeList
     implements SharedModuleTableJsonIncludeList {
   _SharedModuleTableJsonIncludeList._({
-    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedModuleTableJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SharedModuleTable.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

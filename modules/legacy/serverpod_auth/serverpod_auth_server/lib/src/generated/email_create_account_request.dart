@@ -119,7 +119,7 @@ abstract class EmailCreateAccountRequest
     EmailCreateAccountRequestInclude? include,
   }) {
     return EmailCreateAccountRequestIncludeList._(
-      where: where,
+      where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
@@ -158,7 +158,7 @@ abstract class EmailCreateAccountRequest
     _is.SelectColumnsBuilder<EmailCreateAccountRequestTable>? select,
   }) {
     return _EmailCreateAccountRequestJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailCreateAccountRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailCreateAccountRequest.t),
@@ -304,15 +304,13 @@ final class EmailCreateAccountRequestInclude extends _is.IncludeObject
 final class EmailCreateAccountRequestIncludeList extends _is.IncludeList
     implements EmailCreateAccountRequestJsonIncludeList, _is.FullModelInclude {
   EmailCreateAccountRequestIncludeList._({
-    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailCreateAccountRequestInclude? super.include,
-  }) {
-    super.where = where?.call(EmailCreateAccountRequest.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -338,16 +336,14 @@ final class _EmailCreateAccountRequestJsonInclude extends _is.IncludeObject
 final class _EmailCreateAccountRequestJsonIncludeList extends _is.IncludeList
     implements EmailCreateAccountRequestJsonIncludeList {
   _EmailCreateAccountRequestJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailCreateAccountRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailCreateAccountRequestJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailCreateAccountRequest.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

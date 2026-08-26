@@ -93,7 +93,7 @@ abstract class Chapter
     ChapterInclude? include,
   }) {
     return ChapterIncludeList._(
-      where: where,
+      where: where?.call(Chapter.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Chapter.t),
@@ -130,7 +130,7 @@ abstract class Chapter
     _isd.SelectColumnsBuilder<ChapterTable>? select,
   }) {
     return _ChapterJsonIncludeList._(
-      where: where,
+      where: where?.call(Chapter.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Chapter.t),
@@ -267,15 +267,13 @@ final class ChapterInclude extends _isd.IncludeObject
 final class ChapterIncludeList extends _isd.IncludeList
     implements ChapterJsonIncludeList, _isd.FullModelInclude {
   ChapterIncludeList._({
-    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChapterInclude? super.include,
-  }) {
-    super.where = where?.call(Chapter.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -301,16 +299,14 @@ final class _ChapterJsonInclude extends _isd.IncludeObject
 final class _ChapterJsonIncludeList extends _isd.IncludeList
     implements ChapterJsonIncludeList {
   _ChapterJsonIncludeList._({
-    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChapterJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Chapter.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

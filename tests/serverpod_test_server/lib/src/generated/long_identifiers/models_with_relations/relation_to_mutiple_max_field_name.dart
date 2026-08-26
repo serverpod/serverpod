@@ -115,7 +115,7 @@ abstract class RelationToMultipleMaxFieldName
     RelationToMultipleMaxFieldNameInclude? include,
   }) {
     return RelationToMultipleMaxFieldNameIncludeList._(
-      where: where,
+      where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
@@ -156,7 +156,7 @@ abstract class RelationToMultipleMaxFieldName
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
     return _RelationToMultipleMaxFieldNameJsonIncludeList._(
-      where: where,
+      where: where?.call(RelationToMultipleMaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
@@ -323,15 +323,13 @@ final class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList
         RelationToMultipleMaxFieldNameJsonIncludeList,
         _is.FullModelInclude {
   RelationToMultipleMaxFieldNameIncludeList._({
-    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RelationToMultipleMaxFieldNameInclude? super.include,
-  }) {
-    super.where = where?.call(RelationToMultipleMaxFieldName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -367,16 +365,14 @@ final class _RelationToMultipleMaxFieldNameJsonIncludeList
     extends _is.IncludeList
     implements RelationToMultipleMaxFieldNameJsonIncludeList {
   _RelationToMultipleMaxFieldNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RelationToMultipleMaxFieldNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(RelationToMultipleMaxFieldName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

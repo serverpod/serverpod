@@ -118,7 +118,7 @@ abstract class BoolDefaultModel
     BoolDefaultModelInclude? include,
   }) {
     return BoolDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(BoolDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultModel.t),
@@ -157,7 +157,7 @@ abstract class BoolDefaultModel
     _is.SelectColumnsBuilder<BoolDefaultModelTable>? select,
   }) {
     return _BoolDefaultModelJsonIncludeList._(
-      where: where,
+      where: where?.call(BoolDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultModel.t),
@@ -287,15 +287,13 @@ final class BoolDefaultModelInclude extends _is.IncludeObject
 final class BoolDefaultModelIncludeList extends _is.IncludeList
     implements BoolDefaultModelJsonIncludeList, _is.FullModelInclude {
   BoolDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BoolDefaultModelInclude? super.include,
-  }) {
-    super.where = where?.call(BoolDefaultModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -321,16 +319,14 @@ final class _BoolDefaultModelJsonInclude extends _is.IncludeObject
 final class _BoolDefaultModelJsonIncludeList extends _is.IncludeList
     implements BoolDefaultModelJsonIncludeList {
   _BoolDefaultModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BoolDefaultModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(BoolDefaultModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

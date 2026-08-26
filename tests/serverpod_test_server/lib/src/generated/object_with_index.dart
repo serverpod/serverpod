@@ -95,7 +95,7 @@ abstract class ObjectWithIndex
     ObjectWithIndexInclude? include,
   }) {
     return ObjectWithIndexIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithIndex.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithIndex.t),
@@ -134,7 +134,7 @@ abstract class ObjectWithIndex
     _is.SelectColumnsBuilder<ObjectWithIndexTable>? select,
   }) {
     return _ObjectWithIndexJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithIndex.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithIndex.t),
@@ -242,15 +242,13 @@ final class ObjectWithIndexInclude extends _is.IncludeObject
 final class ObjectWithIndexIncludeList extends _is.IncludeList
     implements ObjectWithIndexJsonIncludeList, _is.FullModelInclude {
   ObjectWithIndexIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithIndexInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithIndex.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -276,16 +274,14 @@ final class _ObjectWithIndexJsonInclude extends _is.IncludeObject
 final class _ObjectWithIndexJsonIncludeList extends _is.IncludeList
     implements ObjectWithIndexJsonIncludeList {
   _ObjectWithIndexJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithIndexTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithIndexJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithIndex.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -116,7 +116,7 @@ abstract class LegacyEmailPassword
     LegacyEmailPasswordInclude? include,
   }) {
     return LegacyEmailPasswordIncludeList._(
-      where: where,
+      where: where?.call(LegacyEmailPassword.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
@@ -157,7 +157,7 @@ abstract class LegacyEmailPassword
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
     return _LegacyEmailPasswordJsonIncludeList._(
-      where: where,
+      where: where?.call(LegacyEmailPassword.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LegacyEmailPassword.t),
@@ -305,15 +305,13 @@ final class LegacyEmailPasswordInclude extends _is.IncludeObject
 final class LegacyEmailPasswordIncludeList extends _is.IncludeList
     implements LegacyEmailPasswordJsonIncludeList, _is.FullModelInclude {
   LegacyEmailPasswordIncludeList._({
-    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacyEmailPasswordInclude? super.include,
-  }) {
-    super.where = where?.call(LegacyEmailPassword.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -346,16 +344,14 @@ final class _LegacyEmailPasswordJsonInclude extends _is.IncludeObject
 final class _LegacyEmailPasswordJsonIncludeList extends _is.IncludeList
     implements LegacyEmailPasswordJsonIncludeList {
   _LegacyEmailPasswordJsonIncludeList._({
-    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LegacyEmailPasswordJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(LegacyEmailPassword.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

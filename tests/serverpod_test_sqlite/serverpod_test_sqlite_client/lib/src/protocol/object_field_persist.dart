@@ -111,7 +111,7 @@ abstract class ObjectFieldPersist
     ObjectFieldPersistInclude? include,
   }) {
     return ObjectFieldPersistIncludeList._(
-      where: where,
+      where: where?.call(ObjectFieldPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
@@ -150,7 +150,7 @@ abstract class ObjectFieldPersist
     _isd.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
   }) {
     return _ObjectFieldPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectFieldPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldPersist.t),
@@ -251,15 +251,13 @@ final class ObjectFieldPersistInclude extends _isd.IncludeObject
 final class ObjectFieldPersistIncludeList extends _isd.IncludeList
     implements ObjectFieldPersistJsonIncludeList, _isd.FullModelInclude {
   ObjectFieldPersistIncludeList._({
-    _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectFieldPersistInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectFieldPersist.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -285,16 +283,14 @@ final class _ObjectFieldPersistJsonInclude extends _isd.IncludeObject
 final class _ObjectFieldPersistJsonIncludeList extends _isd.IncludeList
     implements ObjectFieldPersistJsonIncludeList {
   _ObjectFieldPersistJsonIncludeList._({
-    _isd.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectFieldPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectFieldPersist.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

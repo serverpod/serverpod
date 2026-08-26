@@ -109,7 +109,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     PlayerInclude? include,
   }) {
     return PlayerIncludeList._(
-      where: where,
+      where: where?.call(Player.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Player.t),
@@ -150,7 +150,7 @@ abstract class Player implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<PlayerTable>? select,
   }) {
     return _PlayerJsonIncludeList._(
-      where: where,
+      where: where?.call(Player.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Player.t),
@@ -288,15 +288,13 @@ final class PlayerInclude extends _is.IncludeObject
 final class PlayerIncludeList extends _is.IncludeList
     implements PlayerJsonIncludeList, _is.FullModelInclude {
   PlayerIncludeList._({
-    _is.WhereExpressionBuilder<PlayerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PlayerInclude? super.include,
-  }) {
-    super.where = where?.call(Player.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -329,16 +327,14 @@ final class _PlayerJsonInclude extends _is.IncludeObject
 final class _PlayerJsonIncludeList extends _is.IncludeList
     implements PlayerJsonIncludeList {
   _PlayerJsonIncludeList._({
-    _is.WhereExpressionBuilder<PlayerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PlayerJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Player.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

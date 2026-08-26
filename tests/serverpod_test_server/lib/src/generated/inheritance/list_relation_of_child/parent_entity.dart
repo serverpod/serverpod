@@ -99,7 +99,7 @@ abstract class ParentEntity
     ParentEntityInclude? include,
   }) {
     return ParentEntityIncludeList._(
-      where: where,
+      where: where?.call(ParentEntity.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
@@ -140,7 +140,7 @@ abstract class ParentEntity
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
     return _ParentEntityJsonIncludeList._(
-      where: where,
+      where: where?.call(ParentEntity.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentEntity.t),
@@ -269,15 +269,13 @@ final class ParentEntityInclude extends _is.IncludeObject
 final class ParentEntityIncludeList extends _is.IncludeList
     implements ParentEntityJsonIncludeList, _is.FullModelInclude {
   ParentEntityIncludeList._({
-    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentEntityInclude? super.include,
-  }) {
-    super.where = where?.call(ParentEntity.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -310,16 +308,14 @@ final class _ParentEntityJsonInclude extends _is.IncludeObject
 final class _ParentEntityJsonIncludeList extends _is.IncludeList
     implements ParentEntityJsonIncludeList {
   _ParentEntityJsonIncludeList._({
-    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentEntityJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ParentEntity.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

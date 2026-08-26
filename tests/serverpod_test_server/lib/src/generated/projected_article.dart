@@ -128,7 +128,7 @@ abstract class ProjectedArticle
     ProjectedArticleInclude? include,
   }) {
     return ProjectedArticleIncludeList._(
-      where: where,
+      where: where?.call(ProjectedArticle.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedArticle.t),
@@ -169,7 +169,7 @@ abstract class ProjectedArticle
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
     return _ProjectedArticleJsonIncludeList._(
-      where: where,
+      where: where?.call(ProjectedArticle.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedArticle.t),
@@ -343,15 +343,13 @@ final class ProjectedArticleInclude extends _is.IncludeObject
 final class ProjectedArticleIncludeList extends _is.IncludeList
     implements ProjectedArticleJsonIncludeList, _is.FullModelInclude {
   ProjectedArticleIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedArticleInclude? super.include,
-  }) {
-    super.where = where?.call(ProjectedArticle.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -384,16 +382,14 @@ final class _ProjectedArticleJsonInclude extends _is.IncludeObject
 final class _ProjectedArticleJsonIncludeList extends _is.IncludeList
     implements ProjectedArticleJsonIncludeList {
   _ProjectedArticleJsonIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedArticleJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ProjectedArticle.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

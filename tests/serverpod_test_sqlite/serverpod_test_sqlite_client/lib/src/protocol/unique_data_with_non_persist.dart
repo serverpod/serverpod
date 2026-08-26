@@ -106,7 +106,7 @@ abstract class UniqueDataWithNonPersist
     UniqueDataWithNonPersistInclude? include,
   }) {
     return UniqueDataWithNonPersistIncludeList._(
-      where: where,
+      where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
@@ -145,7 +145,7 @@ abstract class UniqueDataWithNonPersist
     _isd.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
     return _UniqueDataWithNonPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(UniqueDataWithNonPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
@@ -258,15 +258,13 @@ final class UniqueDataWithNonPersistInclude extends _isd.IncludeObject
 final class UniqueDataWithNonPersistIncludeList extends _isd.IncludeList
     implements UniqueDataWithNonPersistJsonIncludeList, _isd.FullModelInclude {
   UniqueDataWithNonPersistIncludeList._({
-    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataWithNonPersistInclude? super.include,
-  }) {
-    super.where = where?.call(UniqueDataWithNonPersist.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -292,16 +290,14 @@ final class _UniqueDataWithNonPersistJsonInclude extends _isd.IncludeObject
 final class _UniqueDataWithNonPersistJsonIncludeList extends _isd.IncludeList
     implements UniqueDataWithNonPersistJsonIncludeList {
   _UniqueDataWithNonPersistJsonIncludeList._({
-    _isd.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataWithNonPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UniqueDataWithNonPersist.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

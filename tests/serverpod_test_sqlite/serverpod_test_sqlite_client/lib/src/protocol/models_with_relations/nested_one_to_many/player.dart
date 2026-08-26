@@ -112,7 +112,7 @@ abstract class Player
     PlayerInclude? include,
   }) {
     return PlayerIncludeList._(
-      where: where,
+      where: where?.call(Player.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Player.t),
@@ -153,7 +153,7 @@ abstract class Player
     _isd.SelectColumnsBuilder<PlayerTable>? select,
   }) {
     return _PlayerJsonIncludeList._(
-      where: where,
+      where: where?.call(Player.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Player.t),
@@ -291,15 +291,13 @@ final class PlayerInclude extends _isd.IncludeObject
 final class PlayerIncludeList extends _isd.IncludeList
     implements PlayerJsonIncludeList, _isd.FullModelInclude {
   PlayerIncludeList._({
-    _isd.WhereExpressionBuilder<PlayerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PlayerInclude? super.include,
-  }) {
-    super.where = where?.call(Player.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -332,16 +330,14 @@ final class _PlayerJsonInclude extends _isd.IncludeObject
 final class _PlayerJsonIncludeList extends _isd.IncludeList
     implements PlayerJsonIncludeList {
   _PlayerJsonIncludeList._({
-    _isd.WhereExpressionBuilder<PlayerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PlayerJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Player.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

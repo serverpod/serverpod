@@ -96,7 +96,7 @@ abstract class LongImplicitIdField
     LongImplicitIdFieldInclude? include,
   }) {
     return LongImplicitIdFieldIncludeList._(
-      where: where,
+      where: where?.call(LongImplicitIdField.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LongImplicitIdField.t),
@@ -135,7 +135,7 @@ abstract class LongImplicitIdField
     _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
   }) {
     return _LongImplicitIdFieldJsonIncludeList._(
-      where: where,
+      where: where?.call(LongImplicitIdField.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(LongImplicitIdField.t),
@@ -281,15 +281,13 @@ final class LongImplicitIdFieldInclude extends _is.IncludeObject
 final class LongImplicitIdFieldIncludeList extends _is.IncludeList
     implements LongImplicitIdFieldJsonIncludeList, _is.FullModelInclude {
   LongImplicitIdFieldIncludeList._({
-    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LongImplicitIdFieldInclude? super.include,
-  }) {
-    super.where = where?.call(LongImplicitIdField.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -315,16 +313,14 @@ final class _LongImplicitIdFieldJsonInclude extends _is.IncludeObject
 final class _LongImplicitIdFieldJsonIncludeList extends _is.IncludeList
     implements LongImplicitIdFieldJsonIncludeList {
   _LongImplicitIdFieldJsonIncludeList._({
-    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     LongImplicitIdFieldJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(LongImplicitIdField.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

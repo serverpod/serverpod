@@ -129,7 +129,7 @@ abstract class AuthKey
     AuthKeyInclude? include,
   }) {
     return AuthKeyIncludeList._(
-      where: where,
+      where: where?.call(AuthKey.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
@@ -166,7 +166,7 @@ abstract class AuthKey
     _is.SelectColumnsBuilder<AuthKeyTable>? select,
   }) {
     return _AuthKeyJsonIncludeList._(
-      where: where,
+      where: where?.call(AuthKey.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AuthKey.t),
@@ -315,15 +315,13 @@ final class AuthKeyInclude extends _is.IncludeObject
 final class AuthKeyIncludeList extends _is.IncludeList
     implements AuthKeyJsonIncludeList, _is.FullModelInclude {
   AuthKeyIncludeList._({
-    _is.WhereExpressionBuilder<AuthKeyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AuthKeyInclude? super.include,
-  }) {
-    super.where = where?.call(AuthKey.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -349,16 +347,14 @@ final class _AuthKeyJsonInclude extends _is.IncludeObject
 final class _AuthKeyJsonIncludeList extends _is.IncludeList
     implements AuthKeyJsonIncludeList {
   _AuthKeyJsonIncludeList._({
-    _is.WhereExpressionBuilder<AuthKeyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AuthKeyJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(AuthKey.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

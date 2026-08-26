@@ -98,7 +98,7 @@ abstract class GoogleRefreshToken
     GoogleRefreshTokenInclude? include,
   }) {
     return GoogleRefreshTokenIncludeList._(
-      where: where,
+      where: where?.call(GoogleRefreshToken.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleRefreshToken.t),
@@ -137,7 +137,7 @@ abstract class GoogleRefreshToken
     _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
   }) {
     return _GoogleRefreshTokenJsonIncludeList._(
-      where: where,
+      where: where?.call(GoogleRefreshToken.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleRefreshToken.t),
@@ -248,15 +248,13 @@ final class GoogleRefreshTokenInclude extends _is.IncludeObject
 final class GoogleRefreshTokenIncludeList extends _is.IncludeList
     implements GoogleRefreshTokenJsonIncludeList, _is.FullModelInclude {
   GoogleRefreshTokenIncludeList._({
-    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GoogleRefreshTokenInclude? super.include,
-  }) {
-    super.where = where?.call(GoogleRefreshToken.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -282,16 +280,14 @@ final class _GoogleRefreshTokenJsonInclude extends _is.IncludeObject
 final class _GoogleRefreshTokenJsonIncludeList extends _is.IncludeList
     implements GoogleRefreshTokenJsonIncludeList {
   _GoogleRefreshTokenJsonIncludeList._({
-    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GoogleRefreshTokenJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(GoogleRefreshToken.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

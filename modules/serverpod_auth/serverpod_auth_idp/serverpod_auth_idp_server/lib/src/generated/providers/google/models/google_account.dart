@@ -136,7 +136,7 @@ abstract class GoogleAccount
     GoogleAccountInclude? include,
   }) {
     return GoogleAccountIncludeList._(
-      where: where,
+      where: where?.call(GoogleAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleAccount.t),
@@ -177,7 +177,7 @@ abstract class GoogleAccount
     _is.SelectColumnsBuilder<GoogleAccountTable>? select,
   }) {
     return _GoogleAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(GoogleAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GoogleAccount.t),
@@ -363,15 +363,13 @@ final class GoogleAccountInclude extends _is.IncludeObject
 final class GoogleAccountIncludeList extends _is.IncludeList
     implements GoogleAccountJsonIncludeList, _is.FullModelInclude {
   GoogleAccountIncludeList._({
-    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GoogleAccountInclude? super.include,
-  }) {
-    super.where = where?.call(GoogleAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -404,16 +402,14 @@ final class _GoogleAccountJsonInclude extends _is.IncludeObject
 final class _GoogleAccountJsonIncludeList extends _is.IncludeList
     implements GoogleAccountJsonIncludeList {
   _GoogleAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GoogleAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(GoogleAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -218,7 +218,7 @@ abstract class AppleAccount
     AppleAccountInclude? include,
   }) {
     return AppleAccountIncludeList._(
-      where: where,
+      where: where?.call(AppleAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AppleAccount.t),
@@ -259,7 +259,7 @@ abstract class AppleAccount
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
   }) {
     return _AppleAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(AppleAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AppleAccount.t),
@@ -587,15 +587,13 @@ final class AppleAccountInclude extends _is.IncludeObject
 final class AppleAccountIncludeList extends _is.IncludeList
     implements AppleAccountJsonIncludeList, _is.FullModelInclude {
   AppleAccountIncludeList._({
-    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AppleAccountInclude? super.include,
-  }) {
-    super.where = where?.call(AppleAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -628,16 +626,14 @@ final class _AppleAccountJsonInclude extends _is.IncludeObject
 final class _AppleAccountJsonIncludeList extends _is.IncludeList
     implements AppleAccountJsonIncludeList {
   _AppleAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AppleAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(AppleAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

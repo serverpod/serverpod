@@ -89,7 +89,7 @@ abstract class ObjectWithDuration
     ObjectWithDurationInclude? include,
   }) {
     return ObjectWithDurationIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithDuration.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
@@ -128,7 +128,7 @@ abstract class ObjectWithDuration
     _is.SelectColumnsBuilder<ObjectWithDurationTable>? select,
   }) {
     return _ObjectWithDurationJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithDuration.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithDuration.t),
@@ -222,15 +222,13 @@ final class ObjectWithDurationInclude extends _is.IncludeObject
 final class ObjectWithDurationIncludeList extends _is.IncludeList
     implements ObjectWithDurationJsonIncludeList, _is.FullModelInclude {
   ObjectWithDurationIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithDurationInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithDuration.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -256,16 +254,14 @@ final class _ObjectWithDurationJsonInclude extends _is.IncludeObject
 final class _ObjectWithDurationJsonIncludeList extends _is.IncludeList
     implements ObjectWithDurationJsonIncludeList {
   _ObjectWithDurationJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithDurationTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithDurationJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithDuration.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

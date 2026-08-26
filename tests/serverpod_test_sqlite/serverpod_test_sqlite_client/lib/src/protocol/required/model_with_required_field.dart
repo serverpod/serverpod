@@ -106,7 +106,7 @@ abstract class ModelWithRequiredField
     ModelWithRequiredFieldInclude? include,
   }) {
     return ModelWithRequiredFieldIncludeList._(
-      where: where,
+      where: where?.call(ModelWithRequiredField.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ModelWithRequiredField.t),
@@ -145,7 +145,7 @@ abstract class ModelWithRequiredField
     _isd.SelectColumnsBuilder<ModelWithRequiredFieldTable>? select,
   }) {
     return _ModelWithRequiredFieldJsonIncludeList._(
-      where: where,
+      where: where?.call(ModelWithRequiredField.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ModelWithRequiredField.t),
@@ -270,15 +270,13 @@ final class ModelWithRequiredFieldInclude extends _isd.IncludeObject
 final class ModelWithRequiredFieldIncludeList extends _isd.IncludeList
     implements ModelWithRequiredFieldJsonIncludeList, _isd.FullModelInclude {
   ModelWithRequiredFieldIncludeList._({
-    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ModelWithRequiredFieldInclude? super.include,
-  }) {
-    super.where = where?.call(ModelWithRequiredField.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -304,16 +302,14 @@ final class _ModelWithRequiredFieldJsonInclude extends _isd.IncludeObject
 final class _ModelWithRequiredFieldJsonIncludeList extends _isd.IncludeList
     implements ModelWithRequiredFieldJsonIncludeList {
   _ModelWithRequiredFieldJsonIncludeList._({
-    _isd.WhereExpressionBuilder<ModelWithRequiredFieldTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ModelWithRequiredFieldJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ModelWithRequiredField.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

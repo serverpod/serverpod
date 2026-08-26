@@ -96,7 +96,7 @@ abstract class BigIntDefaultPersist
     BigIntDefaultPersistInclude? include,
   }) {
     return BigIntDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(BigIntDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
@@ -135,7 +135,7 @@ abstract class BigIntDefaultPersist
     _is.SelectColumnsBuilder<BigIntDefaultPersistTable>? select,
   }) {
     return _BigIntDefaultPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(BigIntDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BigIntDefaultPersist.t),
@@ -232,15 +232,13 @@ final class BigIntDefaultPersistInclude extends _is.IncludeObject
 final class BigIntDefaultPersistIncludeList extends _is.IncludeList
     implements BigIntDefaultPersistJsonIncludeList, _is.FullModelInclude {
   BigIntDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<BigIntDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BigIntDefaultPersistInclude? super.include,
-  }) {
-    super.where = where?.call(BigIntDefaultPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -266,16 +264,14 @@ final class _BigIntDefaultPersistJsonInclude extends _is.IncludeObject
 final class _BigIntDefaultPersistJsonIncludeList extends _is.IncludeList
     implements BigIntDefaultPersistJsonIncludeList {
   _BigIntDefaultPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<BigIntDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BigIntDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(BigIntDefaultPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

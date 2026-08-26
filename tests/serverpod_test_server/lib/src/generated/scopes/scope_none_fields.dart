@@ -87,7 +87,7 @@ abstract class ScopeNoneFields
     ScopeNoneFieldsInclude? include,
   }) {
     return ScopeNoneFieldsIncludeList._(
-      where: where,
+      where: where?.call(ScopeNoneFields.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
@@ -126,7 +126,7 @@ abstract class ScopeNoneFields
     _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
   }) {
     return _ScopeNoneFieldsJsonIncludeList._(
-      where: where,
+      where: where?.call(ScopeNoneFields.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ScopeNoneFields.t),
@@ -255,15 +255,13 @@ final class ScopeNoneFieldsInclude extends _is.IncludeObject
 final class ScopeNoneFieldsIncludeList extends _is.IncludeList
     implements ScopeNoneFieldsJsonIncludeList, _is.FullModelInclude {
   ScopeNoneFieldsIncludeList._({
-    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ScopeNoneFieldsInclude? super.include,
-  }) {
-    super.where = where?.call(ScopeNoneFields.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -289,16 +287,14 @@ final class _ScopeNoneFieldsJsonInclude extends _is.IncludeObject
 final class _ScopeNoneFieldsJsonIncludeList extends _is.IncludeList
     implements ScopeNoneFieldsJsonIncludeList {
   _ScopeNoneFieldsJsonIncludeList._({
-    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ScopeNoneFieldsJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ScopeNoneFields.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

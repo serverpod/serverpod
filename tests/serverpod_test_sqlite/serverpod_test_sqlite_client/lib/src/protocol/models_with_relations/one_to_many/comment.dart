@@ -112,7 +112,7 @@ abstract class Comment
     CommentInclude? include,
   }) {
     return CommentIncludeList._(
-      where: where,
+      where: where?.call(Comment.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
@@ -153,7 +153,7 @@ abstract class Comment
     _isd.SelectColumnsBuilder<CommentTable>? select,
   }) {
     return _CommentJsonIncludeList._(
-      where: where,
+      where: where?.call(Comment.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Comment.t),
@@ -292,15 +292,13 @@ final class CommentInclude extends _isd.IncludeObject
 final class CommentIncludeList extends _isd.IncludeList
     implements CommentJsonIncludeList, _isd.FullModelInclude {
   CommentIncludeList._({
-    _isd.WhereExpressionBuilder<CommentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CommentInclude? super.include,
-  }) {
-    super.where = where?.call(Comment.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -333,16 +331,14 @@ final class _CommentJsonInclude extends _isd.IncludeObject
 final class _CommentJsonIncludeList extends _isd.IncludeList
     implements CommentJsonIncludeList {
   _CommentJsonIncludeList._({
-    _isd.WhereExpressionBuilder<CommentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CommentJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Comment.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

@@ -95,7 +95,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     ParentClassInclude? include,
   }) {
     return ParentClassIncludeList._(
-      where: where,
+      where: where?.call(ParentClass.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
@@ -134,7 +134,7 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     _is.SelectColumnsBuilder<ParentClassTable>? select,
   }) {
     return _ParentClassJsonIncludeList._(
-      where: where,
+      where: where?.call(ParentClass.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentClass.t),
@@ -215,15 +215,13 @@ final class ParentClassInclude extends _is.IncludeObject
 final class ParentClassIncludeList extends _is.IncludeList
     implements ParentClassJsonIncludeList, _is.FullModelInclude {
   ParentClassIncludeList._({
-    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentClassInclude? super.include,
-  }) {
-    super.where = where?.call(ParentClass.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -249,16 +247,14 @@ final class _ParentClassJsonInclude extends _is.IncludeObject
 final class _ParentClassJsonIncludeList extends _is.IncludeList
     implements ParentClassJsonIncludeList {
   _ParentClassJsonIncludeList._({
-    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentClassJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ParentClass.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

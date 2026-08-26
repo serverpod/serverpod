@@ -91,7 +91,7 @@ abstract class DeferrableRelationInitiallyImmediate
     DeferrableRelationInitiallyImmediateInclude? include,
   }) {
     return DeferrableRelationInitiallyImmediateIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationInitiallyImmediate.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
@@ -132,7 +132,7 @@ abstract class DeferrableRelationInitiallyImmediate
     _is.SelectColumnsBuilder<DeferrableRelationInitiallyImmediateTable>? select,
   }) {
     return _DeferrableRelationInitiallyImmediateJsonIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationInitiallyImmediate.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationInitiallyImmediate.t),
@@ -232,16 +232,13 @@ final class DeferrableRelationInitiallyImmediateIncludeList
         DeferrableRelationInitiallyImmediateJsonIncludeList,
         _is.FullModelInclude {
   DeferrableRelationInitiallyImmediateIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
-    where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationInitiallyImmediateInclude? super.include,
-  }) {
-    super.where = where?.call(DeferrableRelationInitiallyImmediate.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -269,17 +266,14 @@ final class _DeferrableRelationInitiallyImmediateJsonIncludeList
     extends _is.IncludeList
     implements DeferrableRelationInitiallyImmediateJsonIncludeList {
   _DeferrableRelationInitiallyImmediateJsonIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationInitiallyImmediateTable>?
-    where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationInitiallyImmediateJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DeferrableRelationInitiallyImmediate.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

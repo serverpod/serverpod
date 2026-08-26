@@ -104,7 +104,7 @@ abstract class CustomerInt
     CustomerIntInclude? include,
   }) {
     return CustomerIntIncludeList._(
-      where: where,
+      where: where?.call(CustomerInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CustomerInt.t),
@@ -145,7 +145,7 @@ abstract class CustomerInt
     _is.SelectColumnsBuilder<CustomerIntTable>? select,
   }) {
     return _CustomerIntJsonIncludeList._(
-      where: where,
+      where: where?.call(CustomerInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CustomerInt.t),
@@ -290,15 +290,13 @@ final class CustomerIntInclude extends _is.IncludeObject
 final class CustomerIntIncludeList extends _is.IncludeList
     implements CustomerIntJsonIncludeList, _is.FullModelInclude {
   CustomerIntIncludeList._({
-    _is.WhereExpressionBuilder<CustomerIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CustomerIntInclude? super.include,
-  }) {
-    super.where = where?.call(CustomerInt.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -331,16 +329,14 @@ final class _CustomerIntJsonInclude extends _is.IncludeObject
 final class _CustomerIntJsonIncludeList extends _is.IncludeList
     implements CustomerIntJsonIncludeList {
   _CustomerIntJsonIncludeList._({
-    _is.WhereExpressionBuilder<CustomerIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CustomerIntJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(CustomerInt.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

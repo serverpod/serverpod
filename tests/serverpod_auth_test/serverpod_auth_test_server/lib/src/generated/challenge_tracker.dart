@@ -122,7 +122,7 @@ abstract class ChallengeTracker
     ChallengeTrackerInclude? include,
   }) {
     return ChallengeTrackerIncludeList._(
-      where: where,
+      where: where?.call(ChallengeTracker.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
@@ -163,7 +163,7 @@ abstract class ChallengeTracker
     _is.SelectColumnsBuilder<ChallengeTrackerTable>? select,
   }) {
     return _ChallengeTrackerJsonIncludeList._(
-      where: where,
+      where: where?.call(ChallengeTracker.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChallengeTracker.t),
@@ -329,15 +329,13 @@ final class ChallengeTrackerInclude extends _is.IncludeObject
 final class ChallengeTrackerIncludeList extends _is.IncludeList
     implements ChallengeTrackerJsonIncludeList, _is.FullModelInclude {
   ChallengeTrackerIncludeList._({
-    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChallengeTrackerInclude? super.include,
-  }) {
-    super.where = where?.call(ChallengeTracker.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -372,16 +370,14 @@ final class _ChallengeTrackerJsonInclude extends _is.IncludeObject
 final class _ChallengeTrackerJsonIncludeList extends _is.IncludeList
     implements ChallengeTrackerJsonIncludeList {
   _ChallengeTrackerJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChallengeTrackerTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChallengeTrackerJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChallengeTracker.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -102,7 +102,7 @@ abstract class ObjectFieldScopes
     ObjectFieldScopesInclude? include,
   }) {
     return ObjectFieldScopesIncludeList._(
-      where: where,
+      where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
@@ -141,7 +141,7 @@ abstract class ObjectFieldScopes
     _is.SelectColumnsBuilder<ObjectFieldScopesTable>? select,
   }) {
     return _ObjectFieldScopesJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectFieldScopes.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectFieldScopes.t),
@@ -254,15 +254,13 @@ final class ObjectFieldScopesInclude extends _is.IncludeObject
 final class ObjectFieldScopesIncludeList extends _is.IncludeList
     implements ObjectFieldScopesJsonIncludeList, _is.FullModelInclude {
   ObjectFieldScopesIncludeList._({
-    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectFieldScopesInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectFieldScopes.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -288,16 +286,14 @@ final class _ObjectFieldScopesJsonInclude extends _is.IncludeObject
 final class _ObjectFieldScopesJsonIncludeList extends _is.IncludeList
     implements ObjectFieldScopesJsonIncludeList {
   _ObjectFieldScopesJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectFieldScopesTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectFieldScopesJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectFieldScopes.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

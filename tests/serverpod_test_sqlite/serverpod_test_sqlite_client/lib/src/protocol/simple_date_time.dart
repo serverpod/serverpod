@@ -92,7 +92,7 @@ abstract class SimpleDateTime
     SimpleDateTimeInclude? include,
   }) {
     return SimpleDateTimeIncludeList._(
-      where: where,
+      where: where?.call(SimpleDateTime.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
@@ -131,7 +131,7 @@ abstract class SimpleDateTime
     _isd.SelectColumnsBuilder<SimpleDateTimeTable>? select,
   }) {
     return _SimpleDateTimeJsonIncludeList._(
-      where: where,
+      where: where?.call(SimpleDateTime.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleDateTime.t),
@@ -225,15 +225,13 @@ final class SimpleDateTimeInclude extends _isd.IncludeObject
 final class SimpleDateTimeIncludeList extends _isd.IncludeList
     implements SimpleDateTimeJsonIncludeList, _isd.FullModelInclude {
   SimpleDateTimeIncludeList._({
-    _isd.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SimpleDateTimeInclude? super.include,
-  }) {
-    super.where = where?.call(SimpleDateTime.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -259,16 +257,14 @@ final class _SimpleDateTimeJsonInclude extends _isd.IncludeObject
 final class _SimpleDateTimeJsonIncludeList extends _isd.IncludeList
     implements SimpleDateTimeJsonIncludeList {
   _SimpleDateTimeJsonIncludeList._({
-    _isd.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SimpleDateTimeJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SimpleDateTime.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

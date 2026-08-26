@@ -149,7 +149,7 @@ abstract class UserProfileImage
     UserProfileImageInclude? include,
   }) {
     return UserProfileImageIncludeList._(
-      where: where,
+      where: where?.call(UserProfileImage.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
@@ -190,7 +190,7 @@ abstract class UserProfileImage
     _is.SelectColumnsBuilder<UserProfileImageTable>? select,
   }) {
     return _UserProfileImageJsonIncludeList._(
-      where: where,
+      where: where?.call(UserProfileImage.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserProfileImage.t),
@@ -389,15 +389,13 @@ final class UserProfileImageInclude extends _is.IncludeObject
 final class UserProfileImageIncludeList extends _is.IncludeList
     implements UserProfileImageJsonIncludeList, _is.FullModelInclude {
   UserProfileImageIncludeList._({
-    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserProfileImageInclude? super.include,
-  }) {
-    super.where = where?.call(UserProfileImage.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -430,16 +428,14 @@ final class _UserProfileImageJsonInclude extends _is.IncludeObject
 final class _UserProfileImageJsonIncludeList extends _is.IncludeList
     implements UserProfileImageJsonIncludeList {
   _UserProfileImageJsonIncludeList._({
-    _is.WhereExpressionBuilder<UserProfileImageTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserProfileImageJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UserProfileImage.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

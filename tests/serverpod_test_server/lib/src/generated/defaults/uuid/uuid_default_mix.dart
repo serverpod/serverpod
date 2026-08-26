@@ -128,7 +128,7 @@ abstract class UuidDefaultMix
     UuidDefaultMixInclude? include,
   }) {
     return UuidDefaultMixIncludeList._(
-      where: where,
+      where: where?.call(UuidDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultMix.t),
@@ -167,7 +167,7 @@ abstract class UuidDefaultMix
     _is.SelectColumnsBuilder<UuidDefaultMixTable>? select,
   }) {
     return _UuidDefaultMixJsonIncludeList._(
-      where: where,
+      where: where?.call(UuidDefaultMix.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UuidDefaultMix.t),
@@ -303,15 +303,13 @@ final class UuidDefaultMixInclude extends _is.IncludeObject
 final class UuidDefaultMixIncludeList extends _is.IncludeList
     implements UuidDefaultMixJsonIncludeList, _is.FullModelInclude {
   UuidDefaultMixIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultMixInclude? super.include,
-  }) {
-    super.where = where?.call(UuidDefaultMix.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -337,16 +335,14 @@ final class _UuidDefaultMixJsonInclude extends _is.IncludeObject
 final class _UuidDefaultMixJsonIncludeList extends _is.IncludeList
     implements UuidDefaultMixJsonIncludeList {
   _UuidDefaultMixJsonIncludeList._({
-    _is.WhereExpressionBuilder<UuidDefaultMixTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UuidDefaultMixJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UuidDefaultMix.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

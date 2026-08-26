@@ -111,7 +111,7 @@ abstract class ObjectWithGeographyPolygon
     ObjectWithGeographyPolygonInclude? include,
   }) {
     return ObjectWithGeographyPolygonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyPolygon.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
@@ -150,7 +150,7 @@ abstract class ObjectWithGeographyPolygon
     _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
   }) {
     return _ObjectWithGeographyPolygonJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyPolygon.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
@@ -279,15 +279,13 @@ final class ObjectWithGeographyPolygonInclude extends _is.IncludeObject
 final class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList
     implements ObjectWithGeographyPolygonJsonIncludeList, _is.FullModelInclude {
   ObjectWithGeographyPolygonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyPolygonInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithGeographyPolygon.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -313,16 +311,14 @@ final class _ObjectWithGeographyPolygonJsonInclude extends _is.IncludeObject
 final class _ObjectWithGeographyPolygonJsonIncludeList extends _is.IncludeList
     implements ObjectWithGeographyPolygonJsonIncludeList {
   _ObjectWithGeographyPolygonJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyPolygonJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithGeographyPolygon.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

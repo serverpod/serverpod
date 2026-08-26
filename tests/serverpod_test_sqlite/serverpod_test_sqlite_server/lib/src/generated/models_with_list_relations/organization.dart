@@ -132,7 +132,7 @@ abstract class Organization
     OrganizationInclude? include,
   }) {
     return OrganizationIncludeList._(
-      where: where,
+      where: where?.call(Organization.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
@@ -175,7 +175,7 @@ abstract class Organization
     _is.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
     return _OrganizationJsonIncludeList._(
-      where: where,
+      where: where?.call(Organization.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Organization.t),
@@ -367,15 +367,13 @@ final class OrganizationInclude extends _is.IncludeObject
 final class OrganizationIncludeList extends _is.IncludeList
     implements OrganizationJsonIncludeList, _is.FullModelInclude {
   OrganizationIncludeList._({
-    _is.WhereExpressionBuilder<OrganizationTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrganizationInclude? super.include,
-  }) {
-    super.where = where?.call(Organization.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -415,16 +413,14 @@ final class _OrganizationJsonInclude extends _is.IncludeObject
 final class _OrganizationJsonIncludeList extends _is.IncludeList
     implements OrganizationJsonIncludeList {
   _OrganizationJsonIncludeList._({
-    _is.WhereExpressionBuilder<OrganizationTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrganizationJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Organization.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

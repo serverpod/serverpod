@@ -116,7 +116,7 @@ abstract class MultipleMaxFieldName
     MultipleMaxFieldNameInclude? include,
   }) {
     return MultipleMaxFieldNameIncludeList._(
-      where: where,
+      where: where?.call(MultipleMaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
@@ -155,7 +155,7 @@ abstract class MultipleMaxFieldName
     _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
   }) {
     return _MultipleMaxFieldNameJsonIncludeList._(
-      where: where,
+      where: where?.call(MultipleMaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MultipleMaxFieldName.t),
@@ -345,15 +345,13 @@ final class MultipleMaxFieldNameInclude extends _is.IncludeObject
 final class MultipleMaxFieldNameIncludeList extends _is.IncludeList
     implements MultipleMaxFieldNameJsonIncludeList, _is.FullModelInclude {
   MultipleMaxFieldNameIncludeList._({
-    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MultipleMaxFieldNameInclude? super.include,
-  }) {
-    super.where = where?.call(MultipleMaxFieldName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -379,16 +377,14 @@ final class _MultipleMaxFieldNameJsonInclude extends _is.IncludeObject
 final class _MultipleMaxFieldNameJsonIncludeList extends _is.IncludeList
     implements MultipleMaxFieldNameJsonIncludeList {
   _MultipleMaxFieldNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MultipleMaxFieldNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(MultipleMaxFieldName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

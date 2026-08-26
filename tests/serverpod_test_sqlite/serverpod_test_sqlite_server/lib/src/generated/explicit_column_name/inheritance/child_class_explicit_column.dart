@@ -97,7 +97,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     ChildClassExplicitColumnInclude? include,
   }) {
     return ChildClassExplicitColumnIncludeList._(
-      where: where,
+      where: where?.call(ChildClassExplicitColumn.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
@@ -136,7 +136,7 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
   }) {
     return _ChildClassExplicitColumnJsonIncludeList._(
-      where: where,
+      where: where?.call(ChildClassExplicitColumn.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChildClassExplicitColumn.t),
@@ -248,15 +248,13 @@ final class ChildClassExplicitColumnInclude extends _is.IncludeObject
 final class ChildClassExplicitColumnIncludeList extends _is.IncludeList
     implements ChildClassExplicitColumnJsonIncludeList, _is.FullModelInclude {
   ChildClassExplicitColumnIncludeList._({
-    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildClassExplicitColumnInclude? super.include,
-  }) {
-    super.where = where?.call(ChildClassExplicitColumn.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -282,16 +280,14 @@ final class _ChildClassExplicitColumnJsonInclude extends _is.IncludeObject
 final class _ChildClassExplicitColumnJsonIncludeList extends _is.IncludeList
     implements ChildClassExplicitColumnJsonIncludeList {
   _ChildClassExplicitColumnJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChildClassExplicitColumnJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChildClassExplicitColumn.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

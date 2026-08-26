@@ -117,7 +117,7 @@ abstract class GeneratedRelationOffice
     GeneratedRelationOfficeInclude? include,
   }) {
     return GeneratedRelationOfficeIncludeList._(
-      where: where,
+      where: where?.call(GeneratedRelationOffice.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
@@ -158,7 +158,7 @@ abstract class GeneratedRelationOffice
     _is.SelectColumnsBuilder<GeneratedRelationOfficeTable>? select,
   }) {
     return _GeneratedRelationOfficeJsonIncludeList._(
-      where: where,
+      where: where?.call(GeneratedRelationOffice.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GeneratedRelationOffice.t),
@@ -305,15 +305,13 @@ final class GeneratedRelationOfficeInclude extends _is.IncludeObject
 final class GeneratedRelationOfficeIncludeList extends _is.IncludeList
     implements GeneratedRelationOfficeJsonIncludeList, _is.FullModelInclude {
   GeneratedRelationOfficeIncludeList._({
-    _is.WhereExpressionBuilder<GeneratedRelationOfficeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GeneratedRelationOfficeInclude? super.include,
-  }) {
-    super.where = where?.call(GeneratedRelationOffice.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -346,16 +344,14 @@ final class _GeneratedRelationOfficeJsonInclude extends _is.IncludeObject
 final class _GeneratedRelationOfficeJsonIncludeList extends _is.IncludeList
     implements GeneratedRelationOfficeJsonIncludeList {
   _GeneratedRelationOfficeJsonIncludeList._({
-    _is.WhereExpressionBuilder<GeneratedRelationOfficeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GeneratedRelationOfficeJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(GeneratedRelationOffice.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

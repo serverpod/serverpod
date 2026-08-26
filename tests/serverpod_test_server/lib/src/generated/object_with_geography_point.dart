@@ -111,7 +111,7 @@ abstract class ObjectWithGeographyPoint
     ObjectWithGeographyPointInclude? include,
   }) {
     return ObjectWithGeographyPointIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyPoint.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
@@ -150,7 +150,7 @@ abstract class ObjectWithGeographyPoint
     _is.SelectColumnsBuilder<ObjectWithGeographyPointTable>? select,
   }) {
     return _ObjectWithGeographyPointJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithGeographyPoint.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithGeographyPoint.t),
@@ -281,15 +281,13 @@ final class ObjectWithGeographyPointInclude extends _is.IncludeObject
 final class ObjectWithGeographyPointIncludeList extends _is.IncludeList
     implements ObjectWithGeographyPointJsonIncludeList, _is.FullModelInclude {
   ObjectWithGeographyPointIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyPointInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithGeographyPoint.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -315,16 +313,14 @@ final class _ObjectWithGeographyPointJsonInclude extends _is.IncludeObject
 final class _ObjectWithGeographyPointJsonIncludeList extends _is.IncludeList
     implements ObjectWithGeographyPointJsonIncludeList {
   _ObjectWithGeographyPointJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithGeographyPointTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithGeographyPointJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithGeographyPoint.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

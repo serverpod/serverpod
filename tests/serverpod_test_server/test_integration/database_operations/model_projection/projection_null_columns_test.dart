@@ -491,6 +491,15 @@ void main() async {
           ),
         );
 
+        var results2 = await Organization.db.find(
+          session,
+          where: (t) => t.name.equals('Serverpod Labs'),
+          include: Organization.include(
+            city: City.include(),
+            people: Person.includeList(),
+          ),
+        );
+
         expect(results.length, 1);
         var row = results.first;
         expect(row['name'], 'Serverpod Labs');
@@ -501,6 +510,13 @@ void main() async {
         var people = row['people'] as List;
         expect(people.length, 1);
         expect(people.first['name'], 'Eve');
+
+        expect(results2.length, 1);
+        var item2 = results2.first;
+        expect(item2.name, 'Serverpod Labs');
+        expect(item2.city?.name, 'Uppsala');
+        expect(item2.people?.length, 1);
+        expect(item2.people?.first.name, 'Eve');
       },
     );
 

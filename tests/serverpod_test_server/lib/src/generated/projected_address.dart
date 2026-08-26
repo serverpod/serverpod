@@ -103,7 +103,7 @@ abstract class ProjectedAddress
     ProjectedAddressInclude? include,
   }) {
     return ProjectedAddressIncludeList._(
-      where: where,
+      where: where?.call(ProjectedAddress.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAddress.t),
@@ -142,7 +142,7 @@ abstract class ProjectedAddress
     _is.SelectColumnsBuilder<ProjectedAddressTable>? select,
   }) {
     return _ProjectedAddressJsonIncludeList._(
-      where: where,
+      where: where?.call(ProjectedAddress.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAddress.t),
@@ -267,15 +267,13 @@ final class ProjectedAddressInclude extends _is.IncludeObject
 final class ProjectedAddressIncludeList extends _is.IncludeList
     implements ProjectedAddressJsonIncludeList, _is.FullModelInclude {
   ProjectedAddressIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedAddressInclude? super.include,
-  }) {
-    super.where = where?.call(ProjectedAddress.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -301,16 +299,14 @@ final class _ProjectedAddressJsonInclude extends _is.IncludeObject
 final class _ProjectedAddressJsonIncludeList extends _is.IncludeList
     implements ProjectedAddressJsonIncludeList {
   _ProjectedAddressJsonIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedAddressJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ProjectedAddress.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

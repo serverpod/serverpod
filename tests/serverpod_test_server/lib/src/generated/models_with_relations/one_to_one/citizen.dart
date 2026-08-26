@@ -151,7 +151,7 @@ abstract class Citizen
     CitizenInclude? include,
   }) {
     return CitizenIncludeList._(
-      where: where,
+      where: where?.call(Citizen.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
@@ -196,7 +196,7 @@ abstract class Citizen
     _is.SelectColumnsBuilder<CitizenTable>? select,
   }) {
     return _CitizenJsonIncludeList._(
-      where: where,
+      where: where?.call(Citizen.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Citizen.t),
@@ -414,15 +414,13 @@ final class CitizenInclude extends _is.IncludeObject
 final class CitizenIncludeList extends _is.IncludeList
     implements CitizenJsonIncludeList, _is.FullModelInclude {
   CitizenIncludeList._({
-    _is.WhereExpressionBuilder<CitizenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CitizenInclude? super.include,
-  }) {
-    super.where = where?.call(Citizen.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -467,16 +465,14 @@ final class _CitizenJsonInclude extends _is.IncludeObject
 final class _CitizenJsonIncludeList extends _is.IncludeList
     implements CitizenJsonIncludeList {
   _CitizenJsonIncludeList._({
-    _is.WhereExpressionBuilder<CitizenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CitizenJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Citizen.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

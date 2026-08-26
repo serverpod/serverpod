@@ -130,7 +130,7 @@ abstract class GeneratedRelationCompany
     GeneratedRelationCompanyInclude? include,
   }) {
     return GeneratedRelationCompanyIncludeList._(
-      where: where,
+      where: where?.call(GeneratedRelationCompany.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
@@ -173,7 +173,7 @@ abstract class GeneratedRelationCompany
     _is.SelectColumnsBuilder<GeneratedRelationCompanyTable>? select,
   }) {
     return _GeneratedRelationCompanyJsonIncludeList._(
-      where: where,
+      where: where?.call(GeneratedRelationCompany.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GeneratedRelationCompany.t),
@@ -359,15 +359,13 @@ final class GeneratedRelationCompanyInclude extends _is.IncludeObject
 final class GeneratedRelationCompanyIncludeList extends _is.IncludeList
     implements GeneratedRelationCompanyJsonIncludeList, _is.FullModelInclude {
   GeneratedRelationCompanyIncludeList._({
-    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GeneratedRelationCompanyInclude? super.include,
-  }) {
-    super.where = where?.call(GeneratedRelationCompany.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -407,16 +405,14 @@ final class _GeneratedRelationCompanyJsonInclude extends _is.IncludeObject
 final class _GeneratedRelationCompanyJsonIncludeList extends _is.IncludeList
     implements GeneratedRelationCompanyJsonIncludeList {
   _GeneratedRelationCompanyJsonIncludeList._({
-    _is.WhereExpressionBuilder<GeneratedRelationCompanyTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GeneratedRelationCompanyJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(GeneratedRelationCompany.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

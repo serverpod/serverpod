@@ -89,7 +89,7 @@ abstract class ObjectWithSelfParent
     ObjectWithSelfParentInclude? include,
   }) {
     return ObjectWithSelfParentIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
@@ -128,7 +128,7 @@ abstract class ObjectWithSelfParent
     _is.SelectColumnsBuilder<ObjectWithSelfParentTable>? select,
   }) {
     return _ObjectWithSelfParentJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithSelfParent.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithSelfParent.t),
@@ -221,15 +221,13 @@ final class ObjectWithSelfParentInclude extends _is.IncludeObject
 final class ObjectWithSelfParentIncludeList extends _is.IncludeList
     implements ObjectWithSelfParentJsonIncludeList, _is.FullModelInclude {
   ObjectWithSelfParentIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithSelfParentInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithSelfParent.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -255,16 +253,14 @@ final class _ObjectWithSelfParentJsonInclude extends _is.IncludeObject
 final class _ObjectWithSelfParentJsonIncludeList extends _is.IncludeList
     implements ObjectWithSelfParentJsonIncludeList {
   _ObjectWithSelfParentJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithSelfParentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithSelfParentJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithSelfParent.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

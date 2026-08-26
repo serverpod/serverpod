@@ -134,7 +134,7 @@ abstract class EnrollmentInt
     EnrollmentIntInclude? include,
   }) {
     return EnrollmentIntIncludeList._(
-      where: where,
+      where: where?.call(EnrollmentInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnrollmentInt.t),
@@ -177,7 +177,7 @@ abstract class EnrollmentInt
     _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
   }) {
     return _EnrollmentIntJsonIncludeList._(
-      where: where,
+      where: where?.call(EnrollmentInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EnrollmentInt.t),
@@ -354,15 +354,13 @@ final class EnrollmentIntInclude extends _is.IncludeObject
 final class EnrollmentIntIncludeList extends _is.IncludeList
     implements EnrollmentIntJsonIncludeList, _is.FullModelInclude {
   EnrollmentIntIncludeList._({
-    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnrollmentIntInclude? super.include,
-  }) {
-    super.where = where?.call(EnrollmentInt.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -402,16 +400,14 @@ final class _EnrollmentIntJsonInclude extends _is.IncludeObject
 final class _EnrollmentIntJsonIncludeList extends _is.IncludeList
     implements EnrollmentIntJsonIncludeList {
   _EnrollmentIntJsonIncludeList._({
-    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EnrollmentIntJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EnrollmentInt.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

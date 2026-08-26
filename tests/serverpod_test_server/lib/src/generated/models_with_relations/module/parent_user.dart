@@ -95,7 +95,7 @@ abstract class ParentUser
     ParentUserInclude? include,
   }) {
     return ParentUserIncludeList._(
-      where: where,
+      where: where?.call(ParentUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentUser.t),
@@ -134,7 +134,7 @@ abstract class ParentUser
     _is.SelectColumnsBuilder<ParentUserTable>? select,
   }) {
     return _ParentUserJsonIncludeList._(
-      where: where,
+      where: where?.call(ParentUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ParentUser.t),
@@ -241,15 +241,13 @@ final class ParentUserInclude extends _is.IncludeObject
 final class ParentUserIncludeList extends _is.IncludeList
     implements ParentUserJsonIncludeList, _is.FullModelInclude {
   ParentUserIncludeList._({
-    _is.WhereExpressionBuilder<ParentUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentUserInclude? super.include,
-  }) {
-    super.where = where?.call(ParentUser.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -275,16 +273,14 @@ final class _ParentUserJsonInclude extends _is.IncludeObject
 final class _ParentUserJsonIncludeList extends _is.IncludeList
     implements ParentUserJsonIncludeList {
   _ParentUserJsonIncludeList._({
-    _is.WhereExpressionBuilder<ParentUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ParentUserJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ParentUser.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

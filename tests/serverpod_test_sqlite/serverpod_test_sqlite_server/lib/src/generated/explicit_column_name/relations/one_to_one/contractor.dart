@@ -112,7 +112,7 @@ abstract class Contractor
     ContractorInclude? include,
   }) {
     return ContractorIncludeList._(
-      where: where,
+      where: where?.call(Contractor.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Contractor.t),
@@ -153,7 +153,7 @@ abstract class Contractor
     _is.SelectColumnsBuilder<ContractorTable>? select,
   }) {
     return _ContractorJsonIncludeList._(
-      where: where,
+      where: where?.call(Contractor.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Contractor.t),
@@ -296,15 +296,13 @@ final class ContractorInclude extends _is.IncludeObject
 final class ContractorIncludeList extends _is.IncludeList
     implements ContractorJsonIncludeList, _is.FullModelInclude {
   ContractorIncludeList._({
-    _is.WhereExpressionBuilder<ContractorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ContractorInclude? super.include,
-  }) {
-    super.where = where?.call(Contractor.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -337,16 +335,14 @@ final class _ContractorJsonInclude extends _is.IncludeObject
 final class _ContractorJsonIncludeList extends _is.IncludeList
     implements ContractorJsonIncludeList {
   _ContractorJsonIncludeList._({
-    _is.WhereExpressionBuilder<ContractorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ContractorJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Contractor.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -75,7 +75,7 @@ abstract class ServerOnlyChangedIdFieldClass
     ServerOnlyChangedIdFieldClassInclude? include,
   }) {
     return ServerOnlyChangedIdFieldClassIncludeList._(
-      where: where,
+      where: where?.call(ServerOnlyChangedIdFieldClass.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
@@ -114,7 +114,7 @@ abstract class ServerOnlyChangedIdFieldClass
     _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
   }) {
     return _ServerOnlyChangedIdFieldClassJsonIncludeList._(
-      where: where,
+      where: where?.call(ServerOnlyChangedIdFieldClass.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
@@ -185,15 +185,13 @@ final class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList
         ServerOnlyChangedIdFieldClassJsonIncludeList,
         _is.FullModelInclude {
   ServerOnlyChangedIdFieldClassIncludeList._({
-    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerOnlyChangedIdFieldClassInclude? super.include,
-  }) {
-    super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -220,16 +218,14 @@ final class _ServerOnlyChangedIdFieldClassJsonIncludeList
     extends _is.IncludeList
     implements ServerOnlyChangedIdFieldClassJsonIncludeList {
   _ServerOnlyChangedIdFieldClassJsonIncludeList._({
-    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerOnlyChangedIdFieldClassJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

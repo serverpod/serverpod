@@ -128,7 +128,7 @@ abstract class MigratedUser
     MigratedUserInclude? include,
   }) {
     return MigratedUserIncludeList._(
-      where: where,
+      where: where?.call(MigratedUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
@@ -171,7 +171,7 @@ abstract class MigratedUser
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
     return _MigratedUserJsonIncludeList._(
-      where: where,
+      where: where?.call(MigratedUser.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MigratedUser.t),
@@ -349,15 +349,13 @@ final class MigratedUserInclude extends _is.IncludeObject
 final class MigratedUserIncludeList extends _is.IncludeList
     implements MigratedUserJsonIncludeList, _is.FullModelInclude {
   MigratedUserIncludeList._({
-    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MigratedUserInclude? super.include,
-  }) {
-    super.where = where?.call(MigratedUser.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -397,16 +395,14 @@ final class _MigratedUserJsonInclude extends _is.IncludeObject
 final class _MigratedUserJsonIncludeList extends _is.IncludeList
     implements MigratedUserJsonIncludeList {
   _MigratedUserJsonIncludeList._({
-    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MigratedUserJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(MigratedUser.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

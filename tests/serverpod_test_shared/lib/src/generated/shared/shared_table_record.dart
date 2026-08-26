@@ -120,7 +120,7 @@ abstract class SharedTableRecord
     SharedTableRecordInclude? include,
   }) {
     return SharedTableRecordIncludeList._(
-      where: where,
+      where: where?.call(SharedTableRecord.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedTableRecord.t),
@@ -159,7 +159,7 @@ abstract class SharedTableRecord
     _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
   }) {
     return _SharedTableRecordJsonIncludeList._(
-      where: where,
+      where: where?.call(SharedTableRecord.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SharedTableRecord.t),
@@ -307,15 +307,13 @@ final class SharedTableRecordInclude extends _isd.IncludeObject
 final class SharedTableRecordIncludeList extends _isd.IncludeList
     implements SharedTableRecordJsonIncludeList, _isd.FullModelInclude {
   SharedTableRecordIncludeList._({
-    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedTableRecordInclude? super.include,
-  }) {
-    super.where = where?.call(SharedTableRecord.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -341,16 +339,14 @@ final class _SharedTableRecordJsonInclude extends _isd.IncludeObject
 final class _SharedTableRecordJsonIncludeList extends _isd.IncludeList
     implements SharedTableRecordJsonIncludeList {
   _SharedTableRecordJsonIncludeList._({
-    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SharedTableRecordJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SharedTableRecord.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

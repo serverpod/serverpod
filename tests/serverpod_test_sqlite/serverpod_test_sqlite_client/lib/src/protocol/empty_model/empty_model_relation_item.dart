@@ -98,7 +98,7 @@ abstract class EmptyModelRelationItem
     EmptyModelRelationItemInclude? include,
   }) {
     return EmptyModelRelationItemIncludeList._(
-      where: where,
+      where: where?.call(EmptyModelRelationItem.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
@@ -137,7 +137,7 @@ abstract class EmptyModelRelationItem
     _isd.SelectColumnsBuilder<EmptyModelRelationItemTable>? select,
   }) {
     return _EmptyModelRelationItemJsonIncludeList._(
-      where: where,
+      where: where?.call(EmptyModelRelationItem.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelRelationItem.t),
@@ -280,15 +280,13 @@ final class EmptyModelRelationItemInclude extends _isd.IncludeObject
 final class EmptyModelRelationItemIncludeList extends _isd.IncludeList
     implements EmptyModelRelationItemJsonIncludeList, _isd.FullModelInclude {
   EmptyModelRelationItemIncludeList._({
-    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmptyModelRelationItemInclude? super.include,
-  }) {
-    super.where = where?.call(EmptyModelRelationItem.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -314,16 +312,14 @@ final class _EmptyModelRelationItemJsonInclude extends _isd.IncludeObject
 final class _EmptyModelRelationItemJsonIncludeList extends _isd.IncludeList
     implements EmptyModelRelationItemJsonIncludeList {
   _EmptyModelRelationItemJsonIncludeList._({
-    _isd.WhereExpressionBuilder<EmptyModelRelationItemTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmptyModelRelationItemJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmptyModelRelationItem.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

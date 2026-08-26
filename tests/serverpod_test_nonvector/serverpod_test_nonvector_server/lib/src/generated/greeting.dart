@@ -109,7 +109,7 @@ abstract class Greeting
     GreetingInclude? include,
   }) {
     return GreetingIncludeList._(
-      where: where,
+      where: where?.call(Greeting.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Greeting.t),
@@ -146,7 +146,7 @@ abstract class Greeting
     _is.SelectColumnsBuilder<GreetingTable>? select,
   }) {
     return _GreetingJsonIncludeList._(
-      where: where,
+      where: where?.call(Greeting.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Greeting.t),
@@ -273,15 +273,13 @@ final class GreetingInclude extends _is.IncludeObject
 final class GreetingIncludeList extends _is.IncludeList
     implements GreetingJsonIncludeList, _is.FullModelInclude {
   GreetingIncludeList._({
-    _is.WhereExpressionBuilder<GreetingTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GreetingInclude? super.include,
-  }) {
-    super.where = where?.call(Greeting.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -307,16 +305,14 @@ final class _GreetingJsonInclude extends _is.IncludeObject
 final class _GreetingJsonIncludeList extends _is.IncludeList
     implements GreetingJsonIncludeList {
   _GreetingJsonIncludeList._({
-    _is.WhereExpressionBuilder<GreetingTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GreetingJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Greeting.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

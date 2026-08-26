@@ -119,7 +119,7 @@ abstract class ImmutableObjectWithTable
     ImmutableObjectWithTableInclude? include,
   }) {
     return ImmutableObjectWithTableIncludeList._(
-      where: where,
+      where: where?.call(ImmutableObjectWithTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
@@ -158,7 +158,7 @@ abstract class ImmutableObjectWithTable
     _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
   }) {
     return _ImmutableObjectWithTableJsonIncludeList._(
-      where: where,
+      where: where?.call(ImmutableObjectWithTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ImmutableObjectWithTable.t),
@@ -251,15 +251,13 @@ final class ImmutableObjectWithTableInclude extends _is.IncludeObject
 final class ImmutableObjectWithTableIncludeList extends _is.IncludeList
     implements ImmutableObjectWithTableJsonIncludeList, _is.FullModelInclude {
   ImmutableObjectWithTableIncludeList._({
-    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ImmutableObjectWithTableInclude? super.include,
-  }) {
-    super.where = where?.call(ImmutableObjectWithTable.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -285,16 +283,14 @@ final class _ImmutableObjectWithTableJsonInclude extends _is.IncludeObject
 final class _ImmutableObjectWithTableJsonIncludeList extends _is.IncludeList
     implements ImmutableObjectWithTableJsonIncludeList {
   _ImmutableObjectWithTableJsonIncludeList._({
-    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ImmutableObjectWithTableJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ImmutableObjectWithTable.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

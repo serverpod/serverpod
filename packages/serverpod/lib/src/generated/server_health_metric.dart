@@ -139,7 +139,7 @@ abstract class ServerHealthMetric
     ServerHealthMetricInclude? include,
   }) {
     return ServerHealthMetricIncludeList._(
-      where: where,
+      where: where?.call(ServerHealthMetric.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerHealthMetric.t),
@@ -178,7 +178,7 @@ abstract class ServerHealthMetric
     _is.SelectColumnsBuilder<ServerHealthMetricTable>? select,
   }) {
     return _ServerHealthMetricJsonIncludeList._(
-      where: where,
+      where: where?.call(ServerHealthMetric.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerHealthMetric.t),
@@ -359,15 +359,13 @@ final class ServerHealthMetricInclude extends _is.IncludeObject
 final class ServerHealthMetricIncludeList extends _is.IncludeList
     implements ServerHealthMetricJsonIncludeList, _is.FullModelInclude {
   ServerHealthMetricIncludeList._({
-    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerHealthMetricInclude? super.include,
-  }) {
-    super.where = where?.call(ServerHealthMetric.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -393,16 +391,14 @@ final class _ServerHealthMetricJsonInclude extends _is.IncludeObject
 final class _ServerHealthMetricJsonIncludeList extends _is.IncludeList
     implements ServerHealthMetricJsonIncludeList {
   _ServerHealthMetricJsonIncludeList._({
-    _is.WhereExpressionBuilder<ServerHealthMetricTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerHealthMetricJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ServerHealthMetric.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -521,7 +517,7 @@ class ServerHealthMetricRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -574,7 +570,7 @@ class ServerHealthMetricRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -620,7 +616,7 @@ class ServerHealthMetricRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

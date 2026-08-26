@@ -35,20 +35,20 @@ abstract class IncludeList extends Include implements JsonCompatibleInclude {
   });
 
   /// Where expression to filter the included list.
-  Expression? where;
+  final Expression? where;
 
   /// The maximum number of rows to return.
-  int? limit;
+  final int? limit;
 
   /// The number of rows to skip.
-  int? offset;
+  final int? offset;
 
   /// The column to order by.
-  Column? orderBy;
+  final Column? orderBy;
 
   /// The columns to order by.
-  List<Column>? orderByList;
+  final List<Column>? orderByList;
 
   /// The nested includes
-  JsonCompatibleInclude? include;
+  final JsonCompatibleInclude? include;
 }

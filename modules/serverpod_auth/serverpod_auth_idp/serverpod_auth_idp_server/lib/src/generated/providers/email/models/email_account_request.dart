@@ -159,7 +159,7 @@ abstract class EmailAccountRequest
     EmailAccountRequestInclude? include,
   }) {
     return EmailAccountRequestIncludeList._(
-      where: where,
+      where: where?.call(EmailAccountRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountRequest.t),
@@ -202,7 +202,7 @@ abstract class EmailAccountRequest
     _is.SelectColumnsBuilder<EmailAccountRequestTable>? select,
   }) {
     return _EmailAccountRequestJsonIncludeList._(
-      where: where,
+      where: where?.call(EmailAccountRequest.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmailAccountRequest.t),
@@ -425,15 +425,13 @@ final class EmailAccountRequestInclude extends _is.IncludeObject
 final class EmailAccountRequestIncludeList extends _is.IncludeList
     implements EmailAccountRequestJsonIncludeList, _is.FullModelInclude {
   EmailAccountRequestIncludeList._({
-    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAccountRequestInclude? super.include,
-  }) {
-    super.where = where?.call(EmailAccountRequest.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -473,16 +471,14 @@ final class _EmailAccountRequestJsonInclude extends _is.IncludeObject
 final class _EmailAccountRequestJsonIncludeList extends _is.IncludeList
     implements EmailAccountRequestJsonIncludeList {
   _EmailAccountRequestJsonIncludeList._({
-    _is.WhereExpressionBuilder<EmailAccountRequestTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmailAccountRequestJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmailAccountRequest.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

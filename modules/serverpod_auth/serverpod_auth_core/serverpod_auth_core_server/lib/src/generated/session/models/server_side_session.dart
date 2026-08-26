@@ -203,7 +203,7 @@ abstract class ServerSideSession
     ServerSideSessionInclude? include,
   }) {
     return ServerSideSessionIncludeList._(
-      where: where,
+      where: where?.call(ServerSideSession.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerSideSession.t),
@@ -244,7 +244,7 @@ abstract class ServerSideSession
     _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
   }) {
     return _ServerSideSessionJsonIncludeList._(
-      where: where,
+      where: where?.call(ServerSideSession.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ServerSideSession.t),
@@ -536,15 +536,13 @@ final class ServerSideSessionInclude extends _is.IncludeObject
 final class ServerSideSessionIncludeList extends _is.IncludeList
     implements ServerSideSessionJsonIncludeList, _is.FullModelInclude {
   ServerSideSessionIncludeList._({
-    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerSideSessionInclude? super.include,
-  }) {
-    super.where = where?.call(ServerSideSession.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -577,16 +575,14 @@ final class _ServerSideSessionJsonInclude extends _is.IncludeObject
 final class _ServerSideSessionJsonIncludeList extends _is.IncludeList
     implements ServerSideSessionJsonIncludeList {
   _ServerSideSessionJsonIncludeList._({
-    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ServerSideSessionJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ServerSideSession.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

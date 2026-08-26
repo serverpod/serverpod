@@ -137,7 +137,7 @@ abstract class ObjectWithBit
     ObjectWithBitInclude? include,
   }) {
     return ObjectWithBitIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithBit.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithBit.t),
@@ -176,7 +176,7 @@ abstract class ObjectWithBit
     _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
   }) {
     return _ObjectWithBitJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithBit.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithBit.t),
@@ -365,15 +365,13 @@ final class ObjectWithBitInclude extends _is.IncludeObject
 final class ObjectWithBitIncludeList extends _is.IncludeList
     implements ObjectWithBitJsonIncludeList, _is.FullModelInclude {
   ObjectWithBitIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithBitInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithBit.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -399,16 +397,14 @@ final class _ObjectWithBitJsonInclude extends _is.IncludeObject
 final class _ObjectWithBitJsonIncludeList extends _is.IncludeList
     implements ObjectWithBitJsonIncludeList {
   _ObjectWithBitJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithBitJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithBit.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

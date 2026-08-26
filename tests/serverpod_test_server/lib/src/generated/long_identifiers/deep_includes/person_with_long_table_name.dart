@@ -126,7 +126,7 @@ abstract class PersonWithLongTableName
     PersonWithLongTableNameInclude? include,
   }) {
     return PersonWithLongTableNameIncludeList._(
-      where: where,
+      where: where?.call(PersonWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PersonWithLongTableName.t),
@@ -167,7 +167,7 @@ abstract class PersonWithLongTableName
     _is.SelectColumnsBuilder<PersonWithLongTableNameTable>? select,
   }) {
     return _PersonWithLongTableNameJsonIncludeList._(
-      where: where,
+      where: where?.call(PersonWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PersonWithLongTableName.t),
@@ -375,15 +375,13 @@ final class PersonWithLongTableNameInclude extends _is.IncludeObject
 final class PersonWithLongTableNameIncludeList extends _is.IncludeList
     implements PersonWithLongTableNameJsonIncludeList, _is.FullModelInclude {
   PersonWithLongTableNameIncludeList._({
-    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PersonWithLongTableNameInclude? super.include,
-  }) {
-    super.where = where?.call(PersonWithLongTableName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -416,16 +414,14 @@ final class _PersonWithLongTableNameJsonInclude extends _is.IncludeObject
 final class _PersonWithLongTableNameJsonIncludeList extends _is.IncludeList
     implements PersonWithLongTableNameJsonIncludeList {
   _PersonWithLongTableNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<PersonWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PersonWithLongTableNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(PersonWithLongTableName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

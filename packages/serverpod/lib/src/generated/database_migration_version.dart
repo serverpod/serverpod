@@ -105,7 +105,7 @@ abstract class DatabaseMigrationVersion
     DatabaseMigrationVersionInclude? include,
   }) {
     return DatabaseMigrationVersionIncludeList._(
-      where: where,
+      where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
@@ -144,7 +144,7 @@ abstract class DatabaseMigrationVersion
     _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
   }) {
     return _DatabaseMigrationVersionJsonIncludeList._(
-      where: where,
+      where: where?.call(DatabaseMigrationVersion.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DatabaseMigrationVersion.t),
@@ -273,15 +273,13 @@ final class DatabaseMigrationVersionInclude extends _is.IncludeObject
 final class DatabaseMigrationVersionIncludeList extends _is.IncludeList
     implements DatabaseMigrationVersionJsonIncludeList, _is.FullModelInclude {
   DatabaseMigrationVersionIncludeList._({
-    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DatabaseMigrationVersionInclude? super.include,
-  }) {
-    super.where = where?.call(DatabaseMigrationVersion.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -307,16 +305,14 @@ final class _DatabaseMigrationVersionJsonInclude extends _is.IncludeObject
 final class _DatabaseMigrationVersionJsonIncludeList extends _is.IncludeList
     implements DatabaseMigrationVersionJsonIncludeList {
   _DatabaseMigrationVersionJsonIncludeList._({
-    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DatabaseMigrationVersionJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DatabaseMigrationVersion.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -435,7 +431,7 @@ class DatabaseMigrationVersionRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -488,7 +484,7 @@ class DatabaseMigrationVersionRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -534,7 +530,7 @@ class DatabaseMigrationVersionRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

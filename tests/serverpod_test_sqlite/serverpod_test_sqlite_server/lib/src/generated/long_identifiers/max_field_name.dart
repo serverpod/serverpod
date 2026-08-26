@@ -92,7 +92,7 @@ abstract class MaxFieldName
     MaxFieldNameInclude? include,
   }) {
     return MaxFieldNameIncludeList._(
-      where: where,
+      where: where?.call(MaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MaxFieldName.t),
@@ -131,7 +131,7 @@ abstract class MaxFieldName
     _is.SelectColumnsBuilder<MaxFieldNameTable>? select,
   }) {
     return _MaxFieldNameJsonIncludeList._(
-      where: where,
+      where: where?.call(MaxFieldName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(MaxFieldName.t),
@@ -231,15 +231,13 @@ final class MaxFieldNameInclude extends _is.IncludeObject
 final class MaxFieldNameIncludeList extends _is.IncludeList
     implements MaxFieldNameJsonIncludeList, _is.FullModelInclude {
   MaxFieldNameIncludeList._({
-    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MaxFieldNameInclude? super.include,
-  }) {
-    super.where = where?.call(MaxFieldName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -265,16 +263,14 @@ final class _MaxFieldNameJsonInclude extends _is.IncludeObject
 final class _MaxFieldNameJsonIncludeList extends _is.IncludeList
     implements MaxFieldNameJsonIncludeList {
   _MaxFieldNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<MaxFieldNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MaxFieldNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(MaxFieldName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

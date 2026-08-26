@@ -129,7 +129,7 @@ abstract class Member
     MemberInclude? include,
   }) {
     return MemberIncludeList._(
-      where: where,
+      where: where?.call(Member.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Member.t),
@@ -172,7 +172,7 @@ abstract class Member
     _isd.SelectColumnsBuilder<MemberTable>? select,
   }) {
     return _MemberJsonIncludeList._(
-      where: where,
+      where: where?.call(Member.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Member.t),
@@ -371,15 +371,13 @@ final class MemberInclude extends _isd.IncludeObject
 final class MemberIncludeList extends _isd.IncludeList
     implements MemberJsonIncludeList, _isd.FullModelInclude {
   MemberIncludeList._({
-    _isd.WhereExpressionBuilder<MemberTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MemberInclude? super.include,
-  }) {
-    super.where = where?.call(Member.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -419,16 +417,14 @@ final class _MemberJsonInclude extends _isd.IncludeObject
 final class _MemberJsonIncludeList extends _isd.IncludeList
     implements MemberJsonIncludeList {
   _MemberJsonIncludeList._({
-    _isd.WhereExpressionBuilder<MemberTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     MemberJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Member.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

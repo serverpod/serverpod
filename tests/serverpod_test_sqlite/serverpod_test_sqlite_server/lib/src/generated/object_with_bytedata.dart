@@ -90,7 +90,7 @@ abstract class ObjectWithByteData
     ObjectWithByteDataInclude? include,
   }) {
     return ObjectWithByteDataIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithByteData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithByteData.t),
@@ -129,7 +129,7 @@ abstract class ObjectWithByteData
     _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
   }) {
     return _ObjectWithByteDataJsonIncludeList._(
-      where: where,
+      where: where?.call(ObjectWithByteData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ObjectWithByteData.t),
@@ -223,15 +223,13 @@ final class ObjectWithByteDataInclude extends _is.IncludeObject
 final class ObjectWithByteDataIncludeList extends _is.IncludeList
     implements ObjectWithByteDataJsonIncludeList, _is.FullModelInclude {
   ObjectWithByteDataIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithByteDataInclude? super.include,
-  }) {
-    super.where = where?.call(ObjectWithByteData.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -257,16 +255,14 @@ final class _ObjectWithByteDataJsonInclude extends _is.IncludeObject
 final class _ObjectWithByteDataJsonIncludeList extends _is.IncludeList
     implements ObjectWithByteDataJsonIncludeList {
   _ObjectWithByteDataJsonIncludeList._({
-    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ObjectWithByteDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ObjectWithByteData.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

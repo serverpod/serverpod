@@ -198,7 +198,7 @@ abstract class RefreshToken
     RefreshTokenInclude? include,
   }) {
     return RefreshTokenIncludeList._(
-      where: where,
+      where: where?.call(RefreshToken.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RefreshToken.t),
@@ -239,7 +239,7 @@ abstract class RefreshToken
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
   }) {
     return _RefreshTokenJsonIncludeList._(
-      where: where,
+      where: where?.call(RefreshToken.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RefreshToken.t),
@@ -520,15 +520,13 @@ final class RefreshTokenInclude extends _is.IncludeObject
 final class RefreshTokenIncludeList extends _is.IncludeList
     implements RefreshTokenJsonIncludeList, _is.FullModelInclude {
   RefreshTokenIncludeList._({
-    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RefreshTokenInclude? super.include,
-  }) {
-    super.where = where?.call(RefreshToken.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -561,16 +559,14 @@ final class _RefreshTokenJsonInclude extends _is.IncludeObject
 final class _RefreshTokenJsonIncludeList extends _is.IncludeList
     implements RefreshTokenJsonIncludeList {
   _RefreshTokenJsonIncludeList._({
-    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RefreshTokenJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(RefreshToken.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

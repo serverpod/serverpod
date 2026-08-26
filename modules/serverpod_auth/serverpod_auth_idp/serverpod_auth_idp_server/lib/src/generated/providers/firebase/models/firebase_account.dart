@@ -146,7 +146,7 @@ abstract class FirebaseAccount
     FirebaseAccountInclude? include,
   }) {
     return FirebaseAccountIncludeList._(
-      where: where,
+      where: where?.call(FirebaseAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FirebaseAccount.t),
@@ -187,7 +187,7 @@ abstract class FirebaseAccount
     _is.SelectColumnsBuilder<FirebaseAccountTable>? select,
   }) {
     return _FirebaseAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(FirebaseAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FirebaseAccount.t),
@@ -392,15 +392,13 @@ final class FirebaseAccountInclude extends _is.IncludeObject
 final class FirebaseAccountIncludeList extends _is.IncludeList
     implements FirebaseAccountJsonIncludeList, _is.FullModelInclude {
   FirebaseAccountIncludeList._({
-    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FirebaseAccountInclude? super.include,
-  }) {
-    super.where = where?.call(FirebaseAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -433,16 +431,14 @@ final class _FirebaseAccountJsonInclude extends _is.IncludeObject
 final class _FirebaseAccountJsonIncludeList extends _is.IncludeList
     implements FirebaseAccountJsonIncludeList {
   _FirebaseAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<FirebaseAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FirebaseAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(FirebaseAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

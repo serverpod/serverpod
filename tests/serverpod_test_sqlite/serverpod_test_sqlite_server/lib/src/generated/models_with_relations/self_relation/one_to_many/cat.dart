@@ -131,7 +131,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     CatInclude? include,
   }) {
     return CatIncludeList._(
-      where: where,
+      where: where?.call(Cat.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
@@ -174,7 +174,7 @@ abstract class Cat implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<CatTable>? select,
   }) {
     return _CatJsonIncludeList._(
-      where: where,
+      where: where?.call(Cat.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Cat.t),
@@ -365,15 +365,13 @@ final class CatInclude extends _is.IncludeObject
 final class CatIncludeList extends _is.IncludeList
     implements CatJsonIncludeList, _is.FullModelInclude {
   CatIncludeList._({
-    _is.WhereExpressionBuilder<CatTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CatInclude? super.include,
-  }) {
-    super.where = where?.call(Cat.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -413,16 +411,14 @@ final class _CatJsonInclude extends _is.IncludeObject
 final class _CatJsonIncludeList extends _is.IncludeList
     implements CatJsonIncludeList {
   _CatJsonIncludeList._({
-    _is.WhereExpressionBuilder<CatTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CatJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Cat.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -133,7 +133,7 @@ abstract class Order
     OrderInclude? include,
   }) {
     return OrderIncludeList._(
-      where: where,
+      where: where?.call(Order.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Order.t),
@@ -176,7 +176,7 @@ abstract class Order
     _isd.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return _OrderJsonIncludeList._(
-      where: where,
+      where: where?.call(Order.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Order.t),
@@ -371,15 +371,13 @@ final class OrderInclude extends _isd.IncludeObject
 final class OrderIncludeList extends _isd.IncludeList
     implements OrderJsonIncludeList, _isd.FullModelInclude {
   OrderIncludeList._({
-    _isd.WhereExpressionBuilder<OrderTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrderInclude? super.include,
-  }) {
-    super.where = where?.call(Order.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -419,16 +417,14 @@ final class _OrderJsonInclude extends _isd.IncludeObject
 final class _OrderJsonIncludeList extends _isd.IncludeList
     implements OrderJsonIncludeList {
   _OrderJsonIncludeList._({
-    _isd.WhereExpressionBuilder<OrderTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrderJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Order.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

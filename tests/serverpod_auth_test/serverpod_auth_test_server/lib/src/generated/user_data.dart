@@ -125,7 +125,7 @@ abstract class UserData
     UserDataInclude? include,
   }) {
     return UserDataIncludeList._(
-      where: where,
+      where: where?.call(UserData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
@@ -166,7 +166,7 @@ abstract class UserData
     _is.SelectColumnsBuilder<UserDataTable>? select,
   }) {
     return _UserDataJsonIncludeList._(
-      where: where,
+      where: where?.call(UserData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UserData.t),
@@ -327,15 +327,13 @@ final class UserDataInclude extends _is.IncludeObject
 final class UserDataIncludeList extends _is.IncludeList
     implements UserDataJsonIncludeList, _is.FullModelInclude {
   UserDataIncludeList._({
-    _is.WhereExpressionBuilder<UserDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserDataInclude? super.include,
-  }) {
-    super.where = where?.call(UserData.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -368,16 +366,14 @@ final class _UserDataJsonInclude extends _is.IncludeObject
 final class _UserDataJsonIncludeList extends _is.IncludeList
     implements UserDataJsonIncludeList {
   _UserDataJsonIncludeList._({
-    _is.WhereExpressionBuilder<UserDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UserDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UserData.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

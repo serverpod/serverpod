@@ -108,7 +108,7 @@ abstract class Course
     CourseInclude? include,
   }) {
     return CourseIncludeList._(
-      where: where,
+      where: where?.call(Course.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Course.t),
@@ -149,7 +149,7 @@ abstract class Course
     _isd.SelectColumnsBuilder<CourseTable>? select,
   }) {
     return _CourseJsonIncludeList._(
-      where: where,
+      where: where?.call(Course.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Course.t),
@@ -294,15 +294,13 @@ final class CourseInclude extends _isd.IncludeObject
 final class CourseIncludeList extends _isd.IncludeList
     implements CourseJsonIncludeList, _isd.FullModelInclude {
   CourseIncludeList._({
-    _isd.WhereExpressionBuilder<CourseTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CourseInclude? super.include,
-  }) {
-    super.where = where?.call(Course.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -335,16 +333,14 @@ final class _CourseJsonInclude extends _isd.IncludeObject
 final class _CourseJsonIncludeList extends _isd.IncludeList
     implements CourseJsonIncludeList {
   _CourseJsonIncludeList._({
-    _isd.WhereExpressionBuilder<CourseTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CourseJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Course.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

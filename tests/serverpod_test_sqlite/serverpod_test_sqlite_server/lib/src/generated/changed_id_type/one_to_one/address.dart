@@ -113,7 +113,7 @@ abstract class AddressUuid
     AddressUuidInclude? include,
   }) {
     return AddressUuidIncludeList._(
-      where: where,
+      where: where?.call(AddressUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AddressUuid.t),
@@ -154,7 +154,7 @@ abstract class AddressUuid
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
   }) {
     return _AddressUuidJsonIncludeList._(
-      where: where,
+      where: where?.call(AddressUuid.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(AddressUuid.t),
@@ -294,15 +294,13 @@ final class AddressUuidInclude extends _is.IncludeObject
 final class AddressUuidIncludeList extends _is.IncludeList
     implements AddressUuidJsonIncludeList, _is.FullModelInclude {
   AddressUuidIncludeList._({
-    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AddressUuidInclude? super.include,
-  }) {
-    super.where = where?.call(AddressUuid.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -335,16 +333,14 @@ final class _AddressUuidJsonInclude extends _is.IncludeObject
 final class _AddressUuidJsonIncludeList extends _is.IncludeList
     implements AddressUuidJsonIncludeList {
   _AddressUuidJsonIncludeList._({
-    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     AddressUuidJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(AddressUuid.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

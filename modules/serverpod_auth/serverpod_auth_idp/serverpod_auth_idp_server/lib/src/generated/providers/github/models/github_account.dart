@@ -138,7 +138,7 @@ abstract class GitHubAccount
     GitHubAccountInclude? include,
   }) {
     return GitHubAccountIncludeList._(
-      where: where,
+      where: where?.call(GitHubAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GitHubAccount.t),
@@ -179,7 +179,7 @@ abstract class GitHubAccount
     _is.SelectColumnsBuilder<GitHubAccountTable>? select,
   }) {
     return _GitHubAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(GitHubAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(GitHubAccount.t),
@@ -367,15 +367,13 @@ final class GitHubAccountInclude extends _is.IncludeObject
 final class GitHubAccountIncludeList extends _is.IncludeList
     implements GitHubAccountJsonIncludeList, _is.FullModelInclude {
   GitHubAccountIncludeList._({
-    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GitHubAccountInclude? super.include,
-  }) {
-    super.where = where?.call(GitHubAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -408,16 +406,14 @@ final class _GitHubAccountJsonInclude extends _is.IncludeObject
 final class _GitHubAccountJsonIncludeList extends _is.IncludeList
     implements GitHubAccountJsonIncludeList {
   _GitHubAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     GitHubAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(GitHubAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

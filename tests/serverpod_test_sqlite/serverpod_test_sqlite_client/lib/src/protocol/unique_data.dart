@@ -96,7 +96,7 @@ abstract class UniqueData
     UniqueDataInclude? include,
   }) {
     return UniqueDataIncludeList._(
-      where: where,
+      where: where?.call(UniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueData.t),
@@ -135,7 +135,7 @@ abstract class UniqueData
     _isd.SelectColumnsBuilder<UniqueDataTable>? select,
   }) {
     return _UniqueDataJsonIncludeList._(
-      where: where,
+      where: where?.call(UniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UniqueData.t),
@@ -242,15 +242,13 @@ final class UniqueDataInclude extends _isd.IncludeObject
 final class UniqueDataIncludeList extends _isd.IncludeList
     implements UniqueDataJsonIncludeList, _isd.FullModelInclude {
   UniqueDataIncludeList._({
-    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataInclude? super.include,
-  }) {
-    super.where = where?.call(UniqueData.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -276,16 +274,14 @@ final class _UniqueDataJsonInclude extends _isd.IncludeObject
 final class _UniqueDataJsonIncludeList extends _isd.IncludeList
     implements UniqueDataJsonIncludeList {
   _UniqueDataJsonIncludeList._({
-    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UniqueDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UniqueData.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

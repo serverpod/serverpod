@@ -111,7 +111,7 @@ abstract class ProjectedAuthor
     ProjectedAuthorInclude? include,
   }) {
     return ProjectedAuthorIncludeList._(
-      where: where,
+      where: where?.call(ProjectedAuthor.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAuthor.t),
@@ -150,7 +150,7 @@ abstract class ProjectedAuthor
     _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
   }) {
     return _ProjectedAuthorJsonIncludeList._(
-      where: where,
+      where: where?.call(ProjectedAuthor.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ProjectedAuthor.t),
@@ -290,15 +290,13 @@ final class ProjectedAuthorInclude extends _is.IncludeObject
 final class ProjectedAuthorIncludeList extends _is.IncludeList
     implements ProjectedAuthorJsonIncludeList, _is.FullModelInclude {
   ProjectedAuthorIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedAuthorInclude? super.include,
-  }) {
-    super.where = where?.call(ProjectedAuthor.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -324,16 +322,14 @@ final class _ProjectedAuthorJsonInclude extends _is.IncludeObject
 final class _ProjectedAuthorJsonIncludeList extends _is.IncludeList
     implements ProjectedAuthorJsonIncludeList {
   _ProjectedAuthorJsonIncludeList._({
-    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ProjectedAuthorJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ProjectedAuthor.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

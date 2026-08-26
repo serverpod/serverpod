@@ -114,7 +114,7 @@ abstract class RelatedUniqueData
     RelatedUniqueDataInclude? include,
   }) {
     return RelatedUniqueDataIncludeList._(
-      where: where,
+      where: where?.call(RelatedUniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
@@ -155,7 +155,7 @@ abstract class RelatedUniqueData
     _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
     return _RelatedUniqueDataJsonIncludeList._(
-      where: where,
+      where: where?.call(RelatedUniqueData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(RelatedUniqueData.t),
@@ -297,15 +297,13 @@ final class RelatedUniqueDataInclude extends _isd.IncludeObject
 final class RelatedUniqueDataIncludeList extends _isd.IncludeList
     implements RelatedUniqueDataJsonIncludeList, _isd.FullModelInclude {
   RelatedUniqueDataIncludeList._({
-    _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RelatedUniqueDataInclude? super.include,
-  }) {
-    super.where = where?.call(RelatedUniqueData.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -338,16 +336,14 @@ final class _RelatedUniqueDataJsonInclude extends _isd.IncludeObject
 final class _RelatedUniqueDataJsonIncludeList extends _isd.IncludeList
     implements RelatedUniqueDataJsonIncludeList {
   _RelatedUniqueDataJsonIncludeList._({
-    _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     RelatedUniqueDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(RelatedUniqueData.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

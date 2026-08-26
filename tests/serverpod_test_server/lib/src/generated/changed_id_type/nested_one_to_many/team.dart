@@ -133,7 +133,7 @@ abstract class TeamInt
     TeamIntInclude? include,
   }) {
     return TeamIntIncludeList._(
-      where: where,
+      where: where?.call(TeamInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TeamInt.t),
@@ -176,7 +176,7 @@ abstract class TeamInt
     _is.SelectColumnsBuilder<TeamIntTable>? select,
   }) {
     return _TeamIntJsonIncludeList._(
-      where: where,
+      where: where?.call(TeamInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TeamInt.t),
@@ -369,15 +369,13 @@ final class TeamIntInclude extends _is.IncludeObject
 final class TeamIntIncludeList extends _is.IncludeList
     implements TeamIntJsonIncludeList, _is.FullModelInclude {
   TeamIntIncludeList._({
-    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TeamIntInclude? super.include,
-  }) {
-    super.where = where?.call(TeamInt.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -417,16 +415,14 @@ final class _TeamIntJsonInclude extends _is.IncludeObject
 final class _TeamIntJsonIncludeList extends _is.IncludeList
     implements TeamIntJsonIncludeList {
   _TeamIntJsonIncludeList._({
-    _is.WhereExpressionBuilder<TeamIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TeamIntJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(TeamInt.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -72,7 +72,7 @@ abstract class EmptyModelWithTable
     EmptyModelWithTableInclude? include,
   }) {
     return EmptyModelWithTableIncludeList._(
-      where: where,
+      where: where?.call(EmptyModelWithTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelWithTable.t),
@@ -111,7 +111,7 @@ abstract class EmptyModelWithTable
     _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
   }) {
     return _EmptyModelWithTableJsonIncludeList._(
-      where: where,
+      where: where?.call(EmptyModelWithTable.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(EmptyModelWithTable.t),
@@ -178,15 +178,13 @@ final class EmptyModelWithTableInclude extends _isd.IncludeObject
 final class EmptyModelWithTableIncludeList extends _isd.IncludeList
     implements EmptyModelWithTableJsonIncludeList, _isd.FullModelInclude {
   EmptyModelWithTableIncludeList._({
-    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmptyModelWithTableInclude? super.include,
-  }) {
-    super.where = where?.call(EmptyModelWithTable.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -212,16 +210,14 @@ final class _EmptyModelWithTableJsonInclude extends _isd.IncludeObject
 final class _EmptyModelWithTableJsonIncludeList extends _isd.IncludeList
     implements EmptyModelWithTableJsonIncludeList {
   _EmptyModelWithTableJsonIncludeList._({
-    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     EmptyModelWithTableJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(EmptyModelWithTable.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

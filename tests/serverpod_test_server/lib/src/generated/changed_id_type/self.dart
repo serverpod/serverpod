@@ -172,7 +172,7 @@ abstract class ChangedIdTypeSelf
     ChangedIdTypeSelfInclude? include,
   }) {
     return ChangedIdTypeSelfIncludeList._(
-      where: where,
+      where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
@@ -219,7 +219,7 @@ abstract class ChangedIdTypeSelf
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
     return _ChangedIdTypeSelfJsonIncludeList._(
-      where: where,
+      where: where?.call(ChangedIdTypeSelf.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ChangedIdTypeSelf.t),
@@ -490,15 +490,13 @@ final class ChangedIdTypeSelfInclude extends _is.IncludeObject
 final class ChangedIdTypeSelfIncludeList extends _is.IncludeList
     implements ChangedIdTypeSelfJsonIncludeList, _is.FullModelInclude {
   ChangedIdTypeSelfIncludeList._({
-    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChangedIdTypeSelfInclude? super.include,
-  }) {
-    super.where = where?.call(ChangedIdTypeSelf.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -548,16 +546,14 @@ final class _ChangedIdTypeSelfJsonInclude extends _is.IncludeObject
 final class _ChangedIdTypeSelfJsonIncludeList extends _is.IncludeList
     implements ChangedIdTypeSelfJsonIncludeList {
   _ChangedIdTypeSelfJsonIncludeList._({
-    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ChangedIdTypeSelfJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ChangedIdTypeSelf.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

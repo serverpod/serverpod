@@ -90,7 +90,7 @@ abstract class ReadWriteTestEntry
     ReadWriteTestEntryInclude? include,
   }) {
     return ReadWriteTestEntryIncludeList._(
-      where: where,
+      where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
@@ -129,7 +129,7 @@ abstract class ReadWriteTestEntry
     _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
   }) {
     return _ReadWriteTestEntryJsonIncludeList._(
-      where: where,
+      where: where?.call(ReadWriteTestEntry.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(ReadWriteTestEntry.t),
@@ -223,15 +223,13 @@ final class ReadWriteTestEntryInclude extends _is.IncludeObject
 final class ReadWriteTestEntryIncludeList extends _is.IncludeList
     implements ReadWriteTestEntryJsonIncludeList, _is.FullModelInclude {
   ReadWriteTestEntryIncludeList._({
-    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ReadWriteTestEntryInclude? super.include,
-  }) {
-    super.where = where?.call(ReadWriteTestEntry.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -257,16 +255,14 @@ final class _ReadWriteTestEntryJsonInclude extends _is.IncludeObject
 final class _ReadWriteTestEntryJsonIncludeList extends _is.IncludeList
     implements ReadWriteTestEntryJsonIncludeList {
   _ReadWriteTestEntryJsonIncludeList._({
-    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     ReadWriteTestEntryJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(ReadWriteTestEntry.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -385,7 +381,7 @@ class ReadWriteTestEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -438,7 +434,7 @@ class ReadWriteTestEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -484,7 +480,7 @@ class ReadWriteTestEntryRepository {
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
   /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
-  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

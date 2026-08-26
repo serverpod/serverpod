@@ -158,7 +158,7 @@ abstract class CitizenInt
     CitizenIntInclude? include,
   }) {
     return CitizenIntIncludeList._(
-      where: where,
+      where: where?.call(CitizenInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
@@ -203,7 +203,7 @@ abstract class CitizenInt
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
     return _CitizenIntJsonIncludeList._(
-      where: where,
+      where: where?.call(CitizenInt.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(CitizenInt.t),
@@ -427,15 +427,13 @@ final class CitizenIntInclude extends _is.IncludeObject
 final class CitizenIntIncludeList extends _is.IncludeList
     implements CitizenIntJsonIncludeList, _is.FullModelInclude {
   CitizenIntIncludeList._({
-    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CitizenIntInclude? super.include,
-  }) {
-    super.where = where?.call(CitizenInt.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -480,16 +478,14 @@ final class _CitizenIntJsonInclude extends _is.IncludeObject
 final class _CitizenIntJsonIncludeList extends _is.IncludeList
     implements CitizenIntJsonIncludeList {
   _CitizenIntJsonIncludeList._({
-    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     CitizenIntJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(CitizenInt.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

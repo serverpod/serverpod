@@ -89,7 +89,7 @@ abstract class DeferrableRelationParent
     DeferrableRelationParentInclude? include,
   }) {
     return DeferrableRelationParentIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationParent.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationParent.t),
@@ -128,7 +128,7 @@ abstract class DeferrableRelationParent
     _is.SelectColumnsBuilder<DeferrableRelationParentTable>? select,
   }) {
     return _DeferrableRelationParentJsonIncludeList._(
-      where: where,
+      where: where?.call(DeferrableRelationParent.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DeferrableRelationParent.t),
@@ -221,15 +221,13 @@ final class DeferrableRelationParentInclude extends _is.IncludeObject
 final class DeferrableRelationParentIncludeList extends _is.IncludeList
     implements DeferrableRelationParentJsonIncludeList, _is.FullModelInclude {
   DeferrableRelationParentIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationParentInclude? super.include,
-  }) {
-    super.where = where?.call(DeferrableRelationParent.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -255,16 +253,14 @@ final class _DeferrableRelationParentJsonInclude extends _is.IncludeObject
 final class _DeferrableRelationParentJsonIncludeList extends _is.IncludeList
     implements DeferrableRelationParentJsonIncludeList {
   _DeferrableRelationParentJsonIncludeList._({
-    _is.WhereExpressionBuilder<DeferrableRelationParentTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DeferrableRelationParentJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DeferrableRelationParent.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

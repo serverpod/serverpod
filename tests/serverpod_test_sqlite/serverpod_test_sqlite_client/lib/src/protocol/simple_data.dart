@@ -92,7 +92,7 @@ abstract class SimpleData
     SimpleDataInclude? include,
   }) {
     return SimpleDataIncludeList._(
-      where: where,
+      where: where?.call(SimpleData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleData.t),
@@ -131,7 +131,7 @@ abstract class SimpleData
     _isd.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
     return _SimpleDataJsonIncludeList._(
-      where: where,
+      where: where?.call(SimpleData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SimpleData.t),
@@ -225,15 +225,13 @@ final class SimpleDataInclude extends _isd.IncludeObject
 final class SimpleDataIncludeList extends _isd.IncludeList
     implements SimpleDataJsonIncludeList, _isd.FullModelInclude {
   SimpleDataIncludeList._({
-    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SimpleDataInclude? super.include,
-  }) {
-    super.where = where?.call(SimpleData.t);
-  }
+  });
 
   @override
   Map<String, _isd.Include?> get includes => include?.includes ?? {};
@@ -259,16 +257,14 @@ final class _SimpleDataJsonInclude extends _isd.IncludeObject
 final class _SimpleDataJsonIncludeList extends _isd.IncludeList
     implements SimpleDataJsonIncludeList {
   _SimpleDataJsonIncludeList._({
-    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SimpleDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SimpleData.t);
-  }
+  });
 
   @override
   final List<_isd.Column>? selectedColumns;

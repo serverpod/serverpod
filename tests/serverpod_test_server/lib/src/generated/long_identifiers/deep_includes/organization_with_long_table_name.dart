@@ -136,7 +136,7 @@ abstract class OrganizationWithLongTableName
     OrganizationWithLongTableNameInclude? include,
   }) {
     return OrganizationWithLongTableNameIncludeList._(
-      where: where,
+      where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
@@ -179,7 +179,7 @@ abstract class OrganizationWithLongTableName
     _is.SelectColumnsBuilder<OrganizationWithLongTableNameTable>? select,
   }) {
     return _OrganizationWithLongTableNameJsonIncludeList._(
-      where: where,
+      where: where?.call(OrganizationWithLongTableName.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(OrganizationWithLongTableName.t),
@@ -385,15 +385,13 @@ final class OrganizationWithLongTableNameIncludeList extends _is.IncludeList
         OrganizationWithLongTableNameJsonIncludeList,
         _is.FullModelInclude {
   OrganizationWithLongTableNameIncludeList._({
-    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrganizationWithLongTableNameInclude? super.include,
-  }) {
-    super.where = where?.call(OrganizationWithLongTableName.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -434,16 +432,14 @@ final class _OrganizationWithLongTableNameJsonIncludeList
     extends _is.IncludeList
     implements OrganizationWithLongTableNameJsonIncludeList {
   _OrganizationWithLongTableNameJsonIncludeList._({
-    _is.WhereExpressionBuilder<OrganizationWithLongTableNameTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     OrganizationWithLongTableNameJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(OrganizationWithLongTableName.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

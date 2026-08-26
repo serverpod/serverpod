@@ -164,7 +164,7 @@ abstract class FacebookAccount
     FacebookAccountInclude? include,
   }) {
     return FacebookAccountIncludeList._(
-      where: where,
+      where: where?.call(FacebookAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FacebookAccount.t),
@@ -205,7 +205,7 @@ abstract class FacebookAccount
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
   }) {
     return _FacebookAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(FacebookAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(FacebookAccount.t),
@@ -446,15 +446,13 @@ final class FacebookAccountInclude extends _is.IncludeObject
 final class FacebookAccountIncludeList extends _is.IncludeList
     implements FacebookAccountJsonIncludeList, _is.FullModelInclude {
   FacebookAccountIncludeList._({
-    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FacebookAccountInclude? super.include,
-  }) {
-    super.where = where?.call(FacebookAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -487,16 +485,14 @@ final class _FacebookAccountJsonInclude extends _is.IncludeObject
 final class _FacebookAccountJsonIncludeList extends _is.IncludeList
     implements FacebookAccountJsonIncludeList {
   _FacebookAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     FacebookAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(FacebookAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -125,7 +125,7 @@ abstract class DurationDefaultModel
     DurationDefaultModelInclude? include,
   }) {
     return DurationDefaultModelIncludeList._(
-      where: where,
+      where: where?.call(DurationDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultModel.t),
@@ -164,7 +164,7 @@ abstract class DurationDefaultModel
     _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
   }) {
     return _DurationDefaultModelJsonIncludeList._(
-      where: where,
+      where: where?.call(DurationDefaultModel.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(DurationDefaultModel.t),
@@ -278,15 +278,13 @@ final class DurationDefaultModelInclude extends _is.IncludeObject
 final class DurationDefaultModelIncludeList extends _is.IncludeList
     implements DurationDefaultModelJsonIncludeList, _is.FullModelInclude {
   DurationDefaultModelIncludeList._({
-    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DurationDefaultModelInclude? super.include,
-  }) {
-    super.where = where?.call(DurationDefaultModel.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -312,16 +310,14 @@ final class _DurationDefaultModelJsonInclude extends _is.IncludeObject
 final class _DurationDefaultModelJsonIncludeList extends _is.IncludeList
     implements DurationDefaultModelJsonIncludeList {
   _DurationDefaultModelJsonIncludeList._({
-    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     DurationDefaultModelJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(DurationDefaultModel.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

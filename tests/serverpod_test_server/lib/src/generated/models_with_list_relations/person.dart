@@ -115,7 +115,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     PersonInclude? include,
   }) {
     return PersonIncludeList._(
-      where: where,
+      where: where?.call(Person.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Person.t),
@@ -156,7 +156,7 @@ abstract class Person implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.SelectColumnsBuilder<PersonTable>? select,
   }) {
     return _PersonJsonIncludeList._(
-      where: where,
+      where: where?.call(Person.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(Person.t),
@@ -350,15 +350,13 @@ final class PersonInclude extends _is.IncludeObject
 final class PersonIncludeList extends _is.IncludeList
     implements PersonJsonIncludeList, _is.FullModelInclude {
   PersonIncludeList._({
-    _is.WhereExpressionBuilder<PersonTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PersonInclude? super.include,
-  }) {
-    super.where = where?.call(Person.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -391,16 +389,14 @@ final class _PersonJsonInclude extends _is.IncludeObject
 final class _PersonJsonIncludeList extends _is.IncludeList
     implements PersonJsonIncludeList {
   _PersonJsonIncludeList._({
-    _is.WhereExpressionBuilder<PersonTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PersonJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(Person.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

@@ -90,7 +90,7 @@ abstract class SecretChallenge
     SecretChallengeInclude? include,
   }) {
     return SecretChallengeIncludeList._(
-      where: where,
+      where: where?.call(SecretChallenge.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SecretChallenge.t),
@@ -129,7 +129,7 @@ abstract class SecretChallenge
     _is.SelectColumnsBuilder<SecretChallengeTable>? select,
   }) {
     return _SecretChallengeJsonIncludeList._(
-      where: where,
+      where: where?.call(SecretChallenge.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(SecretChallenge.t),
@@ -225,15 +225,13 @@ final class SecretChallengeInclude extends _is.IncludeObject
 final class SecretChallengeIncludeList extends _is.IncludeList
     implements SecretChallengeJsonIncludeList, _is.FullModelInclude {
   SecretChallengeIncludeList._({
-    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SecretChallengeInclude? super.include,
-  }) {
-    super.where = where?.call(SecretChallenge.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -259,16 +257,14 @@ final class _SecretChallengeJsonInclude extends _is.IncludeObject
 final class _SecretChallengeJsonIncludeList extends _is.IncludeList
     implements SecretChallengeJsonIncludeList {
   _SecretChallengeJsonIncludeList._({
-    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     SecretChallengeJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(SecretChallenge.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

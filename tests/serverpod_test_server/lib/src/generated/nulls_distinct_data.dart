@@ -113,7 +113,7 @@ abstract class NullsDistinctData
     NullsDistinctDataInclude? include,
   }) {
     return NullsDistinctDataIncludeList._(
-      where: where,
+      where: where?.call(NullsDistinctData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(NullsDistinctData.t),
@@ -152,7 +152,7 @@ abstract class NullsDistinctData
     _is.SelectColumnsBuilder<NullsDistinctDataTable>? select,
   }) {
     return _NullsDistinctDataJsonIncludeList._(
-      where: where,
+      where: where?.call(NullsDistinctData.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(NullsDistinctData.t),
@@ -295,15 +295,13 @@ final class NullsDistinctDataInclude extends _is.IncludeObject
 final class NullsDistinctDataIncludeList extends _is.IncludeList
     implements NullsDistinctDataJsonIncludeList, _is.FullModelInclude {
   NullsDistinctDataIncludeList._({
-    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     NullsDistinctDataInclude? super.include,
-  }) {
-    super.where = where?.call(NullsDistinctData.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -329,16 +327,14 @@ final class _NullsDistinctDataJsonInclude extends _is.IncludeObject
 final class _NullsDistinctDataJsonIncludeList extends _is.IncludeList
     implements NullsDistinctDataJsonIncludeList {
   _NullsDistinctDataJsonIncludeList._({
-    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     NullsDistinctDataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(NullsDistinctData.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

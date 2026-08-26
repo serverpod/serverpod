@@ -93,7 +93,7 @@ abstract class UriDefaultPersist
     UriDefaultPersistInclude? include,
   }) {
     return UriDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(UriDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
@@ -132,7 +132,7 @@ abstract class UriDefaultPersist
     _is.SelectColumnsBuilder<UriDefaultPersistTable>? select,
   }) {
     return _UriDefaultPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(UriDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(UriDefaultPersist.t),
@@ -228,15 +228,13 @@ final class UriDefaultPersistInclude extends _is.IncludeObject
 final class UriDefaultPersistIncludeList extends _is.IncludeList
     implements UriDefaultPersistJsonIncludeList, _is.FullModelInclude {
   UriDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<UriDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UriDefaultPersistInclude? super.include,
-  }) {
-    super.where = where?.call(UriDefaultPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -262,16 +260,14 @@ final class _UriDefaultPersistJsonInclude extends _is.IncludeObject
 final class _UriDefaultPersistJsonIncludeList extends _is.IncludeList
     implements UriDefaultPersistJsonIncludeList {
   _UriDefaultPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<UriDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     UriDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(UriDefaultPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

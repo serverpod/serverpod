@@ -162,7 +162,7 @@ abstract class PasskeyAccount
     PasskeyAccountInclude? include,
   }) {
     return PasskeyAccountIncludeList._(
-      where: where,
+      where: where?.call(PasskeyAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyAccount.t),
@@ -203,7 +203,7 @@ abstract class PasskeyAccount
     _is.SelectColumnsBuilder<PasskeyAccountTable>? select,
   }) {
     return _PasskeyAccountJsonIncludeList._(
-      where: where,
+      where: where?.call(PasskeyAccount.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(PasskeyAccount.t),
@@ -441,15 +441,13 @@ final class PasskeyAccountInclude extends _is.IncludeObject
 final class PasskeyAccountIncludeList extends _is.IncludeList
     implements PasskeyAccountJsonIncludeList, _is.FullModelInclude {
   PasskeyAccountIncludeList._({
-    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PasskeyAccountInclude? super.include,
-  }) {
-    super.where = where?.call(PasskeyAccount.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -482,16 +480,14 @@ final class _PasskeyAccountJsonInclude extends _is.IncludeObject
 final class _PasskeyAccountJsonIncludeList extends _is.IncludeList
     implements PasskeyAccountJsonIncludeList {
   _PasskeyAccountJsonIncludeList._({
-    _is.WhereExpressionBuilder<PasskeyAccountTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     PasskeyAccountJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(PasskeyAccount.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

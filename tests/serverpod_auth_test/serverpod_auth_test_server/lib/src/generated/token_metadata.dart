@@ -136,7 +136,7 @@ abstract class TokenMetadata
     TokenMetadataInclude? include,
   }) {
     return TokenMetadataIncludeList._(
-      where: where,
+      where: where?.call(TokenMetadata.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TokenMetadata.t),
@@ -177,7 +177,7 @@ abstract class TokenMetadata
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
     return _TokenMetadataJsonIncludeList._(
-      where: where,
+      where: where?.call(TokenMetadata.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(TokenMetadata.t),
@@ -373,15 +373,13 @@ final class TokenMetadataInclude extends _is.IncludeObject
 final class TokenMetadataIncludeList extends _is.IncludeList
     implements TokenMetadataJsonIncludeList, _is.FullModelInclude {
   TokenMetadataIncludeList._({
-    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TokenMetadataInclude? super.include,
-  }) {
-    super.where = where?.call(TokenMetadata.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -414,16 +412,14 @@ final class _TokenMetadataJsonInclude extends _is.IncludeObject
 final class _TokenMetadataJsonIncludeList extends _is.IncludeList
     implements TokenMetadataJsonIncludeList {
   _TokenMetadataJsonIncludeList._({
-    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     TokenMetadataJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(TokenMetadata.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;

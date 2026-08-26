@@ -109,7 +109,7 @@ abstract class BoolDefaultPersist
     BoolDefaultPersistInclude? include,
   }) {
     return BoolDefaultPersistIncludeList._(
-      where: where,
+      where: where?.call(BoolDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultPersist.t),
@@ -148,7 +148,7 @@ abstract class BoolDefaultPersist
     _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
   }) {
     return _BoolDefaultPersistJsonIncludeList._(
-      where: where,
+      where: where?.call(BoolDefaultPersist.t),
       limit: limit,
       offset: offset,
       orderBy: orderBy?.call(BoolDefaultPersist.t),
@@ -265,15 +265,13 @@ final class BoolDefaultPersistInclude extends _is.IncludeObject
 final class BoolDefaultPersistIncludeList extends _is.IncludeList
     implements BoolDefaultPersistJsonIncludeList, _is.FullModelInclude {
   BoolDefaultPersistIncludeList._({
-    _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BoolDefaultPersistInclude? super.include,
-  }) {
-    super.where = where?.call(BoolDefaultPersist.t);
-  }
+  });
 
   @override
   Map<String, _is.Include?> get includes => include?.includes ?? {};
@@ -299,16 +297,14 @@ final class _BoolDefaultPersistJsonInclude extends _is.IncludeObject
 final class _BoolDefaultPersistJsonIncludeList extends _is.IncludeList
     implements BoolDefaultPersistJsonIncludeList {
   _BoolDefaultPersistJsonIncludeList._({
-    _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
+    super.where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
     BoolDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
-  }) {
-    super.where = where?.call(BoolDefaultPersist.t);
-  }
+  });
 
   @override
   final List<_is.Column>? selectedColumns;
