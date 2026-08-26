@@ -10,6 +10,7 @@ part '20260625141124530/migration.dart';
 part '20260708135909929/migration.dart';
 part '20260711023021788/migration.dart';
 part '20260805140851716/migration.dart';
+part '20260824182833991/migration.dart';
 
 /// Migration registry for the client-side database.
 class MigrationRegistry {
@@ -22,6 +23,7 @@ class MigrationRegistry {
     _Migration20260708135909929(),
     _Migration20260711023021788(),
     _Migration20260805140851716(),
+    _Migration20260824182833991(),
   ];
 
   /// List of all client-side database migration versions.

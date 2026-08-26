@@ -384,163 +384,133 @@ final class StorageAccess {
 
   StorageAccess._(this._session);
 
+  CloudStorage _storage(String storageId) {
+    final storage = _session.server.serverpod.storage[storageId];
+    if (storage == null) {
+      throw CloudStorageException('Storage $storageId is not registered');
+    }
+    return storage;
+  }
+
   /// Store a file in the cloud storage. [storageId] is typically 'public' or
   /// 'private'. The public storage can be accessed through a public URL. The
   /// file is stored at the [path] relative to the cloud storage root directory,
   /// if a file already exists it will be replaced.
   ///
-  /// Set [preventOverwrite] to true to prevent overwriting existing files
-  /// (supported by some storage implementations).
+  /// Set [StoreFileOptions.preventOverwrite] to true to prevent overwriting
+  /// existing files.
   Future<void> storeFile({
     required String storageId,
     required String path,
     required ByteData byteData,
-    DateTime? expiration,
-    bool preventOverwrite = false,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    if (preventOverwrite && storage is CloudStorageWithOptions) {
-      await storage.storeFileWithOptions(
-        session: _session,
-        path: path,
-        byteData: byteData,
-        expiration: expiration,
-        options: CloudStorageOptions(preventOverwrite: preventOverwrite),
-      );
-    } else {
-      await storage.storeFile(
-        session: _session,
-        path: path,
-        byteData: byteData,
-        expiration: expiration,
-      );
-    }
-  }
+    StoreFileOptions options = const StoreFileOptions(),
+  }) => _storage(storageId).storeFile(
+    session: _session,
+    path: path,
+    byteData: byteData,
+    options: options,
+  );
 
   /// Retrieve a file from cloud storage.
-  Future<ByteData?> retrieveFile({
+  Future<ByteData> retrieveFile({
     required String storageId,
     required String path,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
+  }) => _storage(
+    storageId,
+  ).retrieveFile(session: _session, path: path);
 
-    return await storage.retrieveFile(session: _session, path: path);
-  }
+  /// Returns metadata and properties for a file in cloud storage.
+  Future<FileStat> statFile({
+    required String storageId,
+    required String path,
+  }) => _storage(storageId).statFile(session: _session, path: path);
 
   /// Checks if a file exists in cloud storage.
   Future<bool> fileExists({
     required String storageId,
     required String path,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    return await storage.fileExists(session: _session, path: path);
-  }
+  }) => _storage(storageId).fileExists(session: _session, path: path);
 
   /// Deletes a file from cloud storage.
   Future<void> deleteFile({
     required String storageId,
     required String path,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    await storage.deleteFile(session: _session, path: path);
-  }
+  }) => _storage(storageId).deleteFile(session: _session, path: path);
 
   /// Gets the public URL for a file, if the [storageId] is a public storage.
-  Future<Uri?> getPublicUrl({
+  Future<Uri> publicDownloadUrl({
     required String storageId,
     required String path,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    return await storage.getPublicUrl(session: _session, path: path);
-  }
+  }) => _storage(
+    storageId,
+  ).publicDownloadUrl(session: _session, path: path);
 
   /// Bulk lookup of a list of public links to files given a list of paths in
   /// the storage. If any given file isn't public or if no such file exists,
   /// null is stored at the corresponding position in the output list. Saves
   /// on server roundtrips if a large number of public URLs must be fetched,
-  /// relative to calling [getPublicUrl] via an endpoint for each one.
-  Future<List<Uri?>> getPublicUrls({
+  /// relative to calling [publicDownloadUrl] via an endpoint for each one.
+  Future<List<Uri?>> publicDownloadUrls({
     required String storageId,
     required List<String> paths,
-  }) => Future.wait(
-    paths.map((path) => getPublicUrl(storageId: storageId, path: path)),
-  );
+  }) {
+    final storage = _storage(storageId);
+    return Future.wait(
+      paths.map((path) async {
+        try {
+          return await storage.publicDownloadUrl(
+            session: _session,
+            path: path,
+          );
+        } on CloudStorageException {
+          return null;
+        }
+      }),
+    );
+  }
+
+  /// Creates a temporary download URL for a file in cloud storage.
+  Future<Uri> temporaryDownloadUrl({
+    required String storageId,
+    required String path,
+    TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
+  }) {
+    options.validate();
+    return _storage(storageId).temporaryDownloadUrl(
+      session: _session,
+      path: path,
+      options: options,
+    );
+  }
 
   /// Creates a new file upload description, that can be passed to the client's
   /// [FileUploader]. After the file has been uploaded, the
-  /// [verifyDirectFileUpload] method should be called, or the file may be
+  /// [verifyUpload] method should be called, or the file may be
   /// deleted.
   ///
-  /// [contentLength] hints the exact upload size to the storage provider.
-  /// [preventOverwrite] prevents overwriting existing files (supported by
-  /// some storage implementations).
-  Future<String?> createDirectFileUploadDescription({
+  /// [UploadOptions.contentLength] hints the exact upload size to the storage
+  /// provider. [UploadOptions.preventOverwrite] prevents overwriting an
+  /// existing file.
+  Future<String> createUploadDescription({
     required String storageId,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    int? contentLength,
-    bool preventOverwrite = false,
+    UploadOptions options = const UploadOptions(),
   }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    final hasOptions = contentLength != null || preventOverwrite;
-    if (hasOptions && storage is CloudStorageWithOptions) {
-      return await storage.createDirectFileUploadDescriptionWithOptions(
-        session: _session,
-        path: path,
-        expirationDuration: expirationDuration,
-        maxFileSize: maxFileSize,
-        options: CloudStorageOptions(
-          contentLength: contentLength,
-          preventOverwrite: preventOverwrite,
-        ),
-      );
-    } else {
-      return await storage.createDirectFileUploadDescription(
-        session: _session,
-        path: path,
-        expirationDuration: expirationDuration,
-        maxFileSize: maxFileSize,
-      );
-    }
+    options.validate();
+    final description = await _storage(storageId).createUploadDescription(
+      session: _session,
+      path: path,
+      options: options,
+    );
+    return description.encode();
   }
 
   /// Call this method after a file has been uploaded. It will return true
   /// if the file was successfully uploaded.
-  Future<bool> verifyDirectFileUpload({
+  Future<bool> verifyUpload({
     required String storageId,
     required String path,
-  }) async {
-    var storage = _session.server.serverpod.storage[storageId];
-    if (storage == null) {
-      throw CloudStorageException('Storage $storageId is not registered');
-    }
-
-    return await storage.verifyDirectFileUpload(session: _session, path: path);
-  }
+  }) => _storage(storageId).verifyUpload(session: _session, path: path);
 }
 
 /// Provides access to the Serverpod's [MessageCentral].

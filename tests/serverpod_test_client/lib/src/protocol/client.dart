@@ -343,15 +343,15 @@ class EndpointCloudStorage extends _isc.EndpointRef {
     },
   );
 
-  _ida.Future<_idt.ByteData?> retrievePublicFile(String path) =>
-      caller.callServerEndpoint<_idt.ByteData?>(
+  _ida.Future<_idt.ByteData> retrievePublicFile(String path) =>
+      caller.callServerEndpoint<_idt.ByteData>(
         'cloudStorage',
         'retrievePublicFile',
         {'path': path},
       );
 
-  _ida.Future<bool?> existsPublicFile(String path) =>
-      caller.callServerEndpoint<bool?>(
+  _ida.Future<bool> existsPublicFile(String path) =>
+      caller.callServerEndpoint<bool>(
         'cloudStorage',
         'existsPublicFile',
         {'path': path},
@@ -364,24 +364,31 @@ class EndpointCloudStorage extends _isc.EndpointRef {
         {'path': path},
       );
 
-  _ida.Future<String?> getPublicUrlForFile(String path) =>
-      caller.callServerEndpoint<String?>(
+  _ida.Future<String> publicDownloadUrlForFile(String path) =>
+      caller.callServerEndpoint<String>(
         'cloudStorage',
-        'getPublicUrlForFile',
+        'publicDownloadUrlForFile',
         {'path': path},
       );
 
-  _ida.Future<String?> getDirectFilePostUrl(String path) =>
-      caller.callServerEndpoint<String?>(
+  _ida.Future<String> temporaryDownloadUrlForFile(String path) =>
+      caller.callServerEndpoint<String>(
         'cloudStorage',
-        'getDirectFilePostUrl',
+        'temporaryDownloadUrlForFile',
         {'path': path},
       );
 
-  _ida.Future<bool> verifyDirectFileUpload(String path) =>
+  _ida.Future<String> createUploadDescriptionForFile(String path) =>
+      caller.callServerEndpoint<String>(
+        'cloudStorage',
+        'createUploadDescriptionForFile',
+        {'path': path},
+      );
+
+  _ida.Future<bool> verifyUpload(String path) =>
       caller.callServerEndpoint<bool>(
         'cloudStorage',
-        'verifyDirectFileUpload',
+        'verifyUpload',
         {'path': path},
       );
 }
@@ -405,15 +412,15 @@ class EndpointS3CloudStorage extends _isc.EndpointRef {
     },
   );
 
-  _ida.Future<_idt.ByteData?> retrievePublicFile(String path) =>
-      caller.callServerEndpoint<_idt.ByteData?>(
+  _ida.Future<_idt.ByteData> retrievePublicFile(String path) =>
+      caller.callServerEndpoint<_idt.ByteData>(
         's3CloudStorage',
         'retrievePublicFile',
         {'path': path},
       );
 
-  _ida.Future<bool?> existsPublicFile(String path) =>
-      caller.callServerEndpoint<bool?>(
+  _ida.Future<bool> existsPublicFile(String path) =>
+      caller.callServerEndpoint<bool>(
         's3CloudStorage',
         'existsPublicFile',
         {'path': path},
@@ -426,24 +433,24 @@ class EndpointS3CloudStorage extends _isc.EndpointRef {
         {'path': path},
       );
 
-  _ida.Future<String?> getPublicUrlForFile(String path) =>
-      caller.callServerEndpoint<String?>(
+  _ida.Future<String> publicDownloadUrlForFile(String path) =>
+      caller.callServerEndpoint<String>(
         's3CloudStorage',
-        'getPublicUrlForFile',
+        'publicDownloadUrlForFile',
         {'path': path},
       );
 
-  _ida.Future<String?> getDirectFilePostUrl(String path) =>
-      caller.callServerEndpoint<String?>(
+  _ida.Future<String> createUploadDescriptionForFile(String path) =>
+      caller.callServerEndpoint<String>(
         's3CloudStorage',
-        'getDirectFilePostUrl',
+        'createUploadDescriptionForFile',
         {'path': path},
       );
 
-  _ida.Future<bool> verifyDirectFileUpload(String path) =>
+  _ida.Future<bool> verifyUpload(String path) =>
       caller.callServerEndpoint<bool>(
         's3CloudStorage',
-        'verifyDirectFileUpload',
+        'verifyUpload',
         {'path': path},
       );
 }

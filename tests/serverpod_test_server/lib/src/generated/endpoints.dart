@@ -1205,8 +1205,8 @@ class Endpoints extends _is.EndpointDispatch {
                         params['path'],
                       ),
         ),
-        'getPublicUrlForFile': _is.MethodConnector(
-          name: 'getPublicUrlForFile',
+        'publicDownloadUrlForFile': _is.MethodConnector(
+          name: 'publicDownloadUrlForFile',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1220,13 +1220,13 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['cloudStorage'] as _i539zsf6.CloudStorageEndpoint)
-                      .getPublicUrlForFile(
+                      .publicDownloadUrlForFile(
                         session,
                         params['path'],
                       ),
         ),
-        'getDirectFilePostUrl': _is.MethodConnector(
-          name: 'getDirectFilePostUrl',
+        'temporaryDownloadUrlForFile': _is.MethodConnector(
+          name: 'temporaryDownloadUrlForFile',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1240,13 +1240,13 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['cloudStorage'] as _i539zsf6.CloudStorageEndpoint)
-                      .getDirectFilePostUrl(
+                      .temporaryDownloadUrlForFile(
                         session,
                         params['path'],
                       ),
         ),
-        'verifyDirectFileUpload': _is.MethodConnector(
-          name: 'verifyDirectFileUpload',
+        'createUploadDescriptionForFile': _is.MethodConnector(
+          name: 'createUploadDescriptionForFile',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1260,7 +1260,27 @@ class Endpoints extends _is.EndpointDispatch {
                 Map<String, dynamic> params,
               ) async =>
                   (endpoints['cloudStorage'] as _i539zsf6.CloudStorageEndpoint)
-                      .verifyDirectFileUpload(
+                      .createUploadDescriptionForFile(
+                        session,
+                        params['path'],
+                      ),
+        ),
+        'verifyUpload': _is.MethodConnector(
+          name: 'verifyUpload',
+          params: {
+            'path': _is.ParameterDescription(
+              name: 'path',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['cloudStorage'] as _i539zsf6.CloudStorageEndpoint)
+                      .verifyUpload(
                         session,
                         params['path'],
                       ),
@@ -1361,8 +1381,8 @@ class Endpoints extends _is.EndpointDispatch {
                         params['path'],
                       ),
         ),
-        'getPublicUrlForFile': _is.MethodConnector(
-          name: 'getPublicUrlForFile',
+        'publicDownloadUrlForFile': _is.MethodConnector(
+          name: 'publicDownloadUrlForFile',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1377,13 +1397,13 @@ class Endpoints extends _is.EndpointDispatch {
               ) async =>
                   (endpoints['s3CloudStorage']
                           as _iez7ug2d.S3CloudStorageEndpoint)
-                      .getPublicUrlForFile(
+                      .publicDownloadUrlForFile(
                         session,
                         params['path'],
                       ),
         ),
-        'getDirectFilePostUrl': _is.MethodConnector(
-          name: 'getDirectFilePostUrl',
+        'createUploadDescriptionForFile': _is.MethodConnector(
+          name: 'createUploadDescriptionForFile',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1398,13 +1418,13 @@ class Endpoints extends _is.EndpointDispatch {
               ) async =>
                   (endpoints['s3CloudStorage']
                           as _iez7ug2d.S3CloudStorageEndpoint)
-                      .getDirectFilePostUrl(
+                      .createUploadDescriptionForFile(
                         session,
                         params['path'],
                       ),
         ),
-        'verifyDirectFileUpload': _is.MethodConnector(
-          name: 'verifyDirectFileUpload',
+        'verifyUpload': _is.MethodConnector(
+          name: 'verifyUpload',
           params: {
             'path': _is.ParameterDescription(
               name: 'path',
@@ -1419,7 +1439,7 @@ class Endpoints extends _is.EndpointDispatch {
               ) async =>
                   (endpoints['s3CloudStorage']
                           as _iez7ug2d.S3CloudStorageEndpoint)
-                      .verifyDirectFileUpload(
+                      .verifyUpload(
                         session,
                         params['path'],
                       ),

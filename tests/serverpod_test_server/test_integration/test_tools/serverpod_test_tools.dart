@@ -1608,7 +1608,7 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<_idt.ByteData?> retrievePublicFile(
+  _ida.Future<_idt.ByteData> retrievePublicFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1631,7 +1631,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<_idt.ByteData?>);
+                as _ida.Future<_idt.ByteData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1639,7 +1639,7 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<bool?> existsPublicFile(
+  _ida.Future<bool> existsPublicFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1662,7 +1662,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<bool?>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1701,7 +1701,7 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<String?> getPublicUrlForFile(
+  _ida.Future<String> publicDownloadUrlForFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1709,13 +1709,13 @@ class _CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'getPublicUrlForFile',
+            method: 'publicDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'getPublicUrlForFile',
+          methodName: 'publicDownloadUrlForFile',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
@@ -1724,7 +1724,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1732,7 +1732,7 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<String?> getDirectFilePostUrl(
+  _ida.Future<String> temporaryDownloadUrlForFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1740,13 +1740,13 @@ class _CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'getDirectFilePostUrl',
+            method: 'temporaryDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'getDirectFilePostUrl',
+          methodName: 'temporaryDownloadUrlForFile',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
@@ -1755,7 +1755,7 @@ class _CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1763,7 +1763,7 @@ class _CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<bool> verifyDirectFileUpload(
+  _ida.Future<String> createUploadDescriptionForFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1771,13 +1771,44 @@ class _CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 'cloudStorage',
-            method: 'verifyDirectFileUpload',
+            method: 'createUploadDescriptionForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 'cloudStorage',
-          methodName: 'verifyDirectFileUpload',
+          methodName: 'createUploadDescriptionForFile',
+          parameters: _ist.testObjectToJson({'path': path}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<String>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _ida.Future<bool> verifyUpload(
+    _ist.TestSessionBuilder sessionBuilder,
+    String path,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'cloudStorage',
+            method: 'verifyUpload',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'cloudStorage',
+          methodName: 'verifyUpload',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
@@ -1840,7 +1871,7 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<_idt.ByteData?> retrievePublicFile(
+  _ida.Future<_idt.ByteData> retrievePublicFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1863,7 +1894,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<_idt.ByteData?>);
+                as _ida.Future<_idt.ByteData>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1871,7 +1902,7 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<bool?> existsPublicFile(
+  _ida.Future<bool> existsPublicFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1894,7 +1925,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<bool?>);
+                as _ida.Future<bool>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1933,7 +1964,7 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<String?> getPublicUrlForFile(
+  _ida.Future<String> publicDownloadUrlForFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1941,13 +1972,13 @@ class _S3CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'getPublicUrlForFile',
+            method: 'publicDownloadUrlForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'getPublicUrlForFile',
+          methodName: 'publicDownloadUrlForFile',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
@@ -1956,7 +1987,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1964,7 +1995,7 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<String?> getDirectFilePostUrl(
+  _ida.Future<String> createUploadDescriptionForFile(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -1972,13 +2003,13 @@ class _S3CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'getDirectFilePostUrl',
+            method: 'createUploadDescriptionForFile',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'getDirectFilePostUrl',
+          methodName: 'createUploadDescriptionForFile',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );
@@ -1987,7 +2018,7 @@ class _S3CloudStorageEndpoint {
                   _localUniqueSession,
                   _localCallContext.arguments,
                 )
-                as _ida.Future<String?>);
+                as _ida.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -1995,7 +2026,7 @@ class _S3CloudStorageEndpoint {
     });
   }
 
-  _ida.Future<bool> verifyDirectFileUpload(
+  _ida.Future<bool> verifyUpload(
     _ist.TestSessionBuilder sessionBuilder,
     String path,
   ) async {
@@ -2003,13 +2034,13 @@ class _S3CloudStorageEndpoint {
       var _localUniqueSession =
           (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
             endpoint: 's3CloudStorage',
-            method: 'verifyDirectFileUpload',
+            method: 'verifyUpload',
           );
       try {
         var _localCallContext = await _endpointDispatch.getMethodCallContext(
           createSessionCallback: (_) => _localUniqueSession,
           endpointPath: 's3CloudStorage',
-          methodName: 'verifyDirectFileUpload',
+          methodName: 'verifyUpload',
           parameters: _ist.testObjectToJson({'path': path}),
           serializationManager: _serializationManager,
         );

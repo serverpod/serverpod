@@ -16,6 +16,7 @@ import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'cache_info.dart' as _ihncus9g;
 import 'caches_info.dart' as _iuu4tkmh;
 import 'cloud_storage.dart' as _il44s43u;
+import 'cloud_storage_direct_download.dart' as _i97jjzdk;
 import 'cloud_storage_direct_upload.dart' as _ihrv9246;
 import 'cluster_info.dart' as _ix58cu06;
 import 'cluster_server_info.dart' as _i0iseagh;
@@ -47,6 +48,7 @@ import 'session_log_result.dart' as _idz92mnt;
 export 'cache_info.dart';
 export 'caches_info.dart';
 export 'cloud_storage.dart';
+export 'cloud_storage_direct_download.dart';
 export 'cloud_storage_direct_upload.dart';
 export 'cluster_info.dart';
 export 'cluster_server_info.dart';
@@ -121,6 +123,9 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _il44s43u.CloudStorageEntry) {
       return _il44s43u.CloudStorageEntry.fromJson(data) as T;
+    }
+    if (t == _i97jjzdk.CloudStorageDirectDownloadEntry) {
+      return _i97jjzdk.CloudStorageDirectDownloadEntry.fromJson(data) as T;
     }
     if (t == _ihrv9246.CloudStorageDirectUploadEntry) {
       return _ihrv9246.CloudStorageDirectUploadEntry.fromJson(data) as T;
@@ -217,6 +222,12 @@ class Protocol extends _isc.SerializationManager {
     }
     if (t == _isc.getType<_il44s43u.CloudStorageEntry?>()) {
       return (data != null ? _il44s43u.CloudStorageEntry.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i97jjzdk.CloudStorageDirectDownloadEntry?>()) {
+      return (data != null
+              ? _i97jjzdk.CloudStorageDirectDownloadEntry.fromJson(data)
+              : null)
           as T;
     }
     if (t == _isc.getType<_ihrv9246.CloudStorageDirectUploadEntry?>()) {
@@ -452,6 +463,8 @@ class Protocol extends _isc.SerializationManager {
       _ihncus9g.CacheInfo => 'CacheInfo',
       _iuu4tkmh.CachesInfo => 'CachesInfo',
       _il44s43u.CloudStorageEntry => 'CloudStorageEntry',
+      _i97jjzdk.CloudStorageDirectDownloadEntry =>
+        'CloudStorageDirectDownloadEntry',
       _ihrv9246.CloudStorageDirectUploadEntry =>
         'CloudStorageDirectUploadEntry',
       _ix58cu06.ClusterInfo => 'ClusterInfo',
@@ -502,6 +515,8 @@ class Protocol extends _isc.SerializationManager {
         return 'CachesInfo';
       case _il44s43u.CloudStorageEntry():
         return 'CloudStorageEntry';
+      case _i97jjzdk.CloudStorageDirectDownloadEntry():
+        return 'CloudStorageDirectDownloadEntry';
       case _ihrv9246.CloudStorageDirectUploadEntry():
         return 'CloudStorageDirectUploadEntry';
       case _ix58cu06.ClusterInfo():
@@ -584,6 +599,11 @@ class Protocol extends _isc.SerializationManager {
     }
     if (dataClassName == 'CloudStorageEntry') {
       return deserialize<_il44s43u.CloudStorageEntry>(data['data']);
+    }
+    if (dataClassName == 'CloudStorageDirectDownloadEntry') {
+      return deserialize<_i97jjzdk.CloudStorageDirectDownloadEntry>(
+        data['data'],
+      );
     }
     if (dataClassName == 'CloudStorageDirectUploadEntry') {
       return deserialize<_ihrv9246.CloudStorageDirectUploadEntry>(data['data']);

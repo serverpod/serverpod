@@ -1,3 +1,4 @@
+import 'dart:io' show HttpDate;
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
@@ -30,7 +31,7 @@ import 'upload/s3_upload_strategy.dart';
 ///       );
 /// }
 /// ```
-class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
+class S3CompatCloudStorage extends CloudStorage {
   /// The access key for S3 authentication.
   final String accessKey;
 
@@ -100,23 +101,42 @@ class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required Session session,
     required String path,
     required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
+    StoreFileOptions options = const StoreFileOptions(),
   }) async {
-    await uploadStrategy.uploadData(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      region: region,
-      data: byteData,
-      path: path,
-      public: public,
-      endpoints: endpoints,
-    );
+    if (options.expiration != null) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'per-file expiration',
+      );
+    }
+    _checkPreventOverwrite(options.preventOverwrite);
+
+    try {
+      await uploadStrategy.uploadData(
+        accessKey: accessKey,
+        secretKey: secretKey,
+        bucket: bucket,
+        region: region,
+        data: byteData,
+        path: path,
+        public: public,
+        endpoints: endpoints,
+        metadata: options.metadata,
+        preventOverwrite: options.preventOverwrite,
+      );
+    } on S3Exception catch (error) {
+      if (options.preventOverwrite && error.response.statusCode == 412) {
+        throw CloudStorageFileAlreadyExistsException(
+          storageId: storageId,
+          path: path,
+        );
+      }
+      rethrow;
+    }
   }
 
   @override
-  Future<ByteData?> retrieveFile({
+  Future<ByteData> retrieveFile({
     required Session session,
     required String path,
   }) async {
@@ -124,32 +144,102 @@ class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
     if (response.statusCode == 200) {
       return ByteData.sublistView(response.bodyBytes);
     }
-    if (response.statusCode == 404) return null;
+    if (response.statusCode == 404) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
     _throwForResponse(response);
   }
 
   @override
-  Future<Uri?> getPublicUrl({
-    required Session session,
-    required String path,
-  }) async {
-    if (!public) return null;
-
-    if (await fileExists(session: session, path: path)) {
-      return endpoints.buildPublicUri(bucket, region, path);
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> fileExists({
+  Future<FileStat> statFile({
     required Session session,
     required String path,
   }) async {
     final response = await _client.headObject(path);
-    if (response.statusCode == 200) return true;
-    if (response.statusCode == 404) return false;
-    _throwForResponse(response);
+    if (response.statusCode == 404) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+    if (response.statusCode != 200) _throwForResponse(response);
+
+    final size = int.tryParse(response.headers['content-length'] ?? '');
+    if (size == null) {
+      throw CloudStorageException(
+        'S3 did not return Content-Length for file "$path".',
+      );
+    }
+    DateTime? lastModified;
+    final lastModifiedHeader = response.headers['last-modified'];
+    if (lastModifiedHeader != null) {
+      try {
+        lastModified = HttpDate.parse(lastModifiedHeader);
+      } on FormatException catch (error) {
+        throw CloudStorageException(
+          'S3 returned an invalid Last-Modified value for file "$path". '
+          '($error)',
+        );
+      }
+    }
+    final custom = <String, String>{};
+    for (final entry in response.headers.entries) {
+      if (entry.key.startsWith('x-amz-meta-')) {
+        custom[entry.key.substring('x-amz-meta-'.length)] = entry.value;
+      }
+    }
+
+    return FileStat(
+      size: size,
+      lastModified: lastModified,
+      contentType: response.headers['content-type'],
+      cacheControl: response.headers['cache-control'],
+      contentDisposition: response.headers['content-disposition'],
+      contentEncoding: response.headers['content-encoding'],
+      etag: response.headers['etag'],
+      custom: custom,
+    );
+  }
+
+  @override
+  Future<Uri> publicDownloadUrl({
+    required Session session,
+    required String path,
+  }) async {
+    if (!public) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'public download URLs',
+      );
+    }
+    await statFile(session: session, path: path);
+    return endpoints.buildPublicUri(bucket, region, path);
+  }
+
+  @override
+  Future<Uri> temporaryDownloadUrl({
+    required Session session,
+    required String path,
+    TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
+  }) async {
+    options.validate();
+    await statFile(session: session, path: path);
+    final responseOverrides = <String, String>{
+      if (options.contentType != null)
+        'response-content-type': options.contentType!,
+      if (options.downloadFileName != null)
+        'response-content-disposition':
+            "attachment; filename*=UTF-8''${Uri.encodeComponent(options.downloadFileName!)}",
+    };
+    return _client.buildPresignedUri(
+      key: path,
+      method: 'GET',
+      expiration: options.expirationDuration,
+      queryParams: responseOverrides,
+    );
   }
 
   @override
@@ -163,90 +253,56 @@ class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
     _throwForResponse(response);
   }
 
-  /// Throws an appropriate exception for a non-success response.
-  Never _throwForResponse(http.Response response) {
-    if (response.statusCode == 403) {
-      throw NoPermissionsException(response);
-    }
-    throw S3Exception(response);
-  }
-
   @override
-  Future<String?> createDirectFileUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
+    UploadOptions options = const UploadOptions(),
   }) async {
-    return uploadStrategy.createDirectUploadDescription(
+    options.validate();
+    _checkPreventOverwrite(options.preventOverwrite);
+    return uploadStrategy.createUploadDescription(
       accessKey: accessKey,
       secretKey: secretKey,
       bucket: bucket,
       region: region,
       path: path,
-      expiration: expirationDuration,
-      maxFileSize: maxFileSize,
+      expiration: options.expirationDuration,
+      maxFileSize: options.maxFileSize,
       public: public,
       endpoints: endpoints,
-    );
-  }
-
-  @override
-  Future<void> storeFileWithOptions({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-    required CloudStorageOptions options,
-  }) async {
-    await uploadStrategy.uploadData(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      region: region,
-      data: byteData,
-      path: path,
-      public: public,
-      endpoints: endpoints,
-      preventOverwrite: options.preventOverwrite,
-    );
-  }
-
-  @override
-  Future<String?> createDirectFileUploadDescriptionWithOptions({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    required CloudStorageOptions options,
-  }) async {
-    if (options.contentLength != null && options.contentLength! > maxFileSize) {
-      throw CloudStorageException(
-        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
-      );
-    }
-
-    return uploadStrategy.createDirectUploadDescription(
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      region: region,
-      path: path,
-      expiration: expirationDuration,
-      maxFileSize: maxFileSize,
-      public: public,
-      endpoints: endpoints,
+      metadata: options.metadata,
       contentLength: options.contentLength,
       preventOverwrite: options.preventOverwrite,
     );
   }
 
   @override
-  Future<bool> verifyDirectFileUpload({
+  Future<bool> verifyUpload({
     required Session session,
     required String path,
   }) async {
-    return fileExists(session: session, path: path);
+    try {
+      await statFile(session: session, path: path);
+      return true;
+    } on CloudStorageFileNotFoundException {
+      return false;
+    }
+  }
+
+  void _checkPreventOverwrite(bool preventOverwrite) {
+    if (preventOverwrite && !uploadStrategy.supportsPreventOverwrite) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'preventOverwrite uploads',
+      );
+    }
+  }
+
+  Never _throwForResponse(http.Response response) {
+    if (response.statusCode == 403) {
+      throw NoPermissionsException(response);
+    }
+    throw S3Exception(response);
   }
 }
