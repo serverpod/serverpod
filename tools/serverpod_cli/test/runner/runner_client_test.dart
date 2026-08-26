@@ -70,6 +70,31 @@ void main() {
     );
 
     test(
+      'when the runner behind the socket is swapped, '
+      'then the output of an app the new one does not serve is dropped',
+      () async {
+        runner
+          ..flutterAppIds = ['admin']
+          ..flutterLogs = {
+            'admin': ['app line'],
+          };
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+        expect(client.history.flutterLinesFor('admin'), ['app line']);
+
+        final replaced = expectLater(client.snapshotChanges, emits(anything));
+        final started = FakeRunnerApi()..flutterAppIds = ['web'];
+        addTearDown(started.eventController.close);
+        server.connect(started);
+        await replaced;
+
+        expect(client.history.flutterLines, isNot(contains('admin')));
+      },
+    );
+
+    test(
       'when the runner emits a log entry, '
       'then it lands in the client history',
       () async {
@@ -248,6 +273,35 @@ void main() {
         );
       },
       timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when the runner behind the socket is swapped, '
+      'then the client replaces the scalars its first snapshot carried',
+      () async {
+        runner
+          ..stage = RunnerStage.starting
+          ..isRunning = false
+          ..canLaunchFlutterApps = false;
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+        expect(client.canLaunchFlutterApps, isFalse);
+
+        final replaced = expectLater(client.snapshotChanges, emits(anything));
+        final started = FakeRunnerApi()
+          ..stage = RunnerStage.running
+          ..canLaunchFlutterApps = true
+          ..flutterAppIds = ['admin'];
+        addTearDown(started.eventController.close);
+        server.connect(started);
+        await replaced;
+
+        expect(client.canLaunchFlutterApps, isTrue);
+        expect(client.stage, RunnerStage.running);
+        expect(client.flutterApps.single.id, 'admin');
+      },
     );
 
     test(

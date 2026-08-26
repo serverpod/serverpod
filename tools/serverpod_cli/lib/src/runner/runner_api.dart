@@ -144,3 +144,17 @@ abstract interface class InProcessRunnerApi implements RunnerApi {
   /// crash recovery but not on hot reload.
   Stream<void> get vmServiceUriChanges;
 }
+
+/// Thrown by every command a runner cannot serve until its stack is up.
+///
+/// The runner binds its attach socket before it has a stack. Everything
+/// that needs the stack reports this until then. `stop` works throughout.
+class RunnerStartingException implements Exception {
+  const RunnerStartingException(this.command);
+
+  final String command;
+
+  @override
+  String toString() =>
+      'The runner is still starting; $command is not available yet.';
+}

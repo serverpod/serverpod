@@ -54,6 +54,7 @@ class RunnerStateBinding {
     _applyRunnerState();
 
     _subs.add(client.events.listen(_onEvent));
+    _subs.add(client.snapshotChanges.listen((_) => _applyRunnerState()));
     _subs.add(
       client.connectionChanges.listen((connected) {
         if (connected) _applyRunnerState();

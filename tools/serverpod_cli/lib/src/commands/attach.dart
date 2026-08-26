@@ -43,13 +43,11 @@ enum AttachOption<V> implements OptionDefinition<V> {
 
 /// Attaches a UI to a runner that is already up.
 ///
-/// Holds no orchestration: it resolves the server directory, connects to a
-/// socket, renders what arrives, and reconnects when the runner restarts.
+/// Resolves the server directory, connects to the runner's socket, renders
+/// what arrives, and reconnects when the runner restarts.
 ///
-/// Detaching does not stop the runner, whoever started it. The stack is
-/// stopped with `serverpod runner stop`, or with `⇧+Q` in the UI, so the same
-/// keystroke never means "stop the server" in one session and "leave it
-/// running" in another.
+/// Detaching never stops the runner. Only `serverpod runner stop` and Shift+Q
+/// in the UI do.
 class AttachCommand extends ServerpodCommand<AttachOption> {
   @override
   final name = 'attach';
@@ -94,15 +92,18 @@ class AttachCommand extends ServerpodCommand<AttachOption> {
 
 /// Renders the runner at [socketPath], returning the exit code to leave with.
 ///
-/// The two commands that attach differ in how they found the runner, not in
-/// what they do with it, including what they say when it turns out not to
-/// answer: a runner resolves and then goes away between the two, and an
-/// unhandled [RunnerUnreachableException] would report that as a crash.
-Future<int> attachTo(String socketPath, {required bool useTui}) async {
+/// [useTui] picks the terminal UI over the plain log stream. [waitForRunner]
+/// bounds how long a refused connection is retried, for a caller that just
+/// brought the runner up and knows the socket is coming.
+Future<int> attachTo(
+  String socketPath, {
+  required bool useTui,
+  Duration? waitForRunner,
+}) async {
   try {
     return useTui
-        ? await attachWithTui(socketPath)
-        : await attachWithLogStream(socketPath);
+        ? await attachWithTui(socketPath, waitForRunner: waitForRunner)
+        : await attachWithLogStream(socketPath, waitForRunner: waitForRunner);
   } on RunnerUnreachableException catch (e) {
     log.error('$e');
     throw ExitException.error();
@@ -129,18 +130,13 @@ String requireAttachSocket(RunnerManifest manifest) {
 /// with.
 ///
 /// Shared with `serverpod start`, which attaches after bringing the runner up.
-///
-/// None of the in-process integration this used to need survives the split:
-/// with the backend in another process there is no [Completer] handing state
-/// back, no logger buffering messages emitted before the UI existed, and no
-/// ordering dance to print a crash after the alternate screen is gone.
-Future<int> attachWithTui(String socketPath) async {
+Future<int> attachWithTui(String socketPath, {Duration? waitForRunner}) async {
   final holder = StartAppStateHolder(ServerWatchState());
   final client = RunnerClient(
     socketPath: socketPath,
     history: holder.state.history,
   );
-  await client.attach();
+  await client.attach(waitFor: waitForRunner);
 
   final exitCompleter = Completer<int>();
   void requestExit([int code = 0]) {
@@ -183,11 +179,8 @@ Future<int> attachWithTui(String socketPath) async {
   return exitCode;
 }
 
-/// Prints the last of what the runner said, once the alternate screen is gone.
-///
-/// A UI leaving on the runner's exit code takes the screen with it, and with
-/// it the error the code is about. This is the replay the in-process UI used
-/// to do before exiting.
+/// Prints the last [lines] server entries of [history], once the alternate
+/// screen is gone and has taken the error with it.
 void _printLogTail(StartLogHistory history, {int lines = 20}) {
   final entries = history.serverEntries.toList();
   if (entries.isEmpty) return;

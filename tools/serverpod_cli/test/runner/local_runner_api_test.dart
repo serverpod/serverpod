@@ -1,8 +1,127 @@
+import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/migrations/create_migration_action.dart';
 import 'package:serverpod_cli/src/runner/local_runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_api.dart';
+import 'package:serverpod_cli/src/runner/runner_event.dart';
+import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Given a runner that has not been handed a stack yet,', () {
+    late StartLogHistory history;
+    late LocalRunnerApi api;
+    var shutdowns = 0;
+
+    setUp(() {
+      shutdowns = 0;
+      history = StartLogHistory();
+      api = LocalRunnerApi(
+        logHistory: history,
+        requestShutdown: () => shutdowns++,
+        watchModeEnabled: true,
+      );
+    });
+
+    tearDown(() async => api.close());
+
+    test(
+      'when it is asked what it is doing, '
+      'then it reports the starting stage rather than a running stack',
+      () {
+        expect(api.stage, RunnerStage.starting);
+        expect(api.isRunning, isFalse);
+        expect(api.canLaunchFlutterApps, isFalse);
+        expect(api.flutterApps, isEmpty);
+      },
+    );
+
+    test(
+      'when two surfaces listen to its events, '
+      'then both receive them, as several clients may attach at once',
+      () async {
+        final first = <RunnerEvent>[];
+        final second = <RunnerEvent>[];
+        final events = api.events;
+        final firstSub = events.listen(first.add);
+        final secondSub = events.listen(second.add);
+        addTearDown(() async {
+          await firstSub.cancel();
+          await secondSub.cancel();
+        });
+
+        api.setStage(RunnerStage.running);
+        await pumpEventQueue();
+
+        expect(first, hasLength(1));
+        expect(second, hasLength(1));
+      },
+    );
+
+    test(
+      'when the running stage is announced before the stack is bound, '
+      'then the event says the server is running, as the stage does',
+      () async {
+        final events = <RunnerEvent>[];
+        final sub = api.events.listen(events.add);
+        addTearDown(sub.cancel);
+
+        api.setStage(RunnerStage.running);
+        await pumpEventQueue();
+
+        final stage = events.single as StageChangedEvent;
+        expect(stage.stage, RunnerStage.running);
+        expect(stage.isRunning, isTrue);
+      },
+    );
+
+    test(
+      'when the runner was started in watch mode, '
+      'then a client attaching before the stack is up is told so',
+      () {
+        expect(api.snapshot().watchModeEnabled, isTrue);
+      },
+    );
+
+    test(
+      'when a command needing the stack is issued, '
+      'then it reports that the runner is still starting',
+      () {
+        expect(
+          api.hotReload,
+          throwsA(isA<RunnerStartingException>()),
+        );
+        expect(
+          api.applyMigrations,
+          throwsA(isA<RunnerStartingException>()),
+        );
+        expect(
+          () => api.launchFlutterApp('admin'),
+          throwsA(isA<RunnerStartingException>()),
+        );
+      },
+    );
+
+    test(
+      'when stopping is asked for, '
+      'then it works, because a start going nowhere is what one abandons',
+      () async {
+        await api.stop();
+
+        expect(shutdowns, 1);
+      },
+    );
+
+    test(
+      'when the log history fills before the stack exists, '
+      'then a snapshot carries it',
+      () {
+        history.addServerLine('Generating code...');
+
+        expect(api.snapshot().serverLines, contains('Generating code...'));
+      },
+    );
+  });
+
   group('Given a create-migration outcome,', () {
     test(
       'when a migration was created, '

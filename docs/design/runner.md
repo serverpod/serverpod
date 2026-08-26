@@ -86,6 +86,27 @@ the runner.
 `serverpod start` attaches by default. `--no-attach` brings the runner up, prints
 its address, and returns, which is the path an agent takes.
 
+An invocation that spawns the runner attaches to it immediately rather than
+waiting for it to come up. The runner binds its attach socket as soon as it
+holds the lock and publishes its manifest there and then - before the
+existing-server check, port resolution, Docker, generation and the first
+compile - so the client resolves the runner, attaches, and renders that work as
+it happens instead of leaving the terminal blank for the minutes a cold start
+takes. A startup that fails is then watched rather than reported after a
+timeout: the runner announces the stop with the code it is leaving with, and
+takes the manifest back down. Published any later, a start that aborts - a port
+held by something else, Docker refusing - has nothing to attach to, and the
+caller learns only that no runner came up in time, with the reason in the
+runner's log file. Until there is a stack, the socket serves the log
+history alone: commands answer that the runner is still starting, except
+`stop`, which has to work on a start that is going nowhere. `--no-attach` still
+waits, since it has nothing to render: the manifest carries the runner's
+`stage`, and the command returns once it leaves `starting`. A runner whose
+stack is up returns zero; one that aborted returns the runner's own exit code
+with the tail of its log, and one that is up but degraded - the project does
+not build, so no server runs - returns non-zero and says the runner is still
+there to recover from.
+
 `--tui` / `--no-tui` keeps its current meaning and selects the renderer. The
 terminal UI is used when `--tui` holds and `stdout.hasTerminal`, and a
 plain-text log stream in the foreground otherwise. `serverpod attach` takes the

@@ -15,10 +15,14 @@ import '../test_util/fake_runner_api.dart';
 
 /// A client attached to [socketPath], with the events it has received.
 class _AttachedClient {
-  _AttachedClient(this.peer, this.events, this._socket);
+  _AttachedClient(this.peer, this.events, this.snapshots, this._socket);
 
   final json_rpc.Peer peer;
   final List<RunnerEvent> events;
+
+  /// Snapshots the runner pushed unasked, not the one requested on connect.
+  final List<RunnerSnapshot> snapshots;
+
   final Socket _socket;
 
   Future<void> close() async {
@@ -40,8 +44,14 @@ Future<_AttachedClient> _attach(String socketPath) async {
     );
     if (event != null) events.add(event);
   });
+  final snapshots = <RunnerSnapshot>[];
+  peer.registerMethod(runnerSnapshotNotification, (json_rpc.Parameters params) {
+    snapshots.add(
+      RunnerSnapshot.fromJson(Map<String, Object?>.from(params.value as Map)),
+    );
+  });
   unawaited(peer.listen());
-  return _AttachedClient(peer, events, socket);
+  return _AttachedClient(peer, events, snapshots, socket);
 }
 
 void main() {
@@ -345,6 +355,45 @@ void main() {
         );
 
         expect(attached, 1);
+      },
+    );
+    test(
+      'when the runner behind the socket is swapped, '
+      'then an attached client is handed the new snapshot',
+      () async {
+        runner
+          ..stage = RunnerStage.starting
+          ..isRunning = false
+          ..canLaunchFlutterApps = false;
+        final client = await _attach(server.socketPath);
+        addTearDown(client.close);
+        await client.peer.sendRequest(runnerSnapshotMethod);
+
+        final started = FakeRunnerApi()
+          ..stage = RunnerStage.running
+          ..canLaunchFlutterApps = true
+          ..flutterAppIds = ['admin'];
+        addTearDown(started.eventController.close);
+        server.connect(started);
+        await _waitFor(() => client.snapshots.isNotEmpty);
+
+        final pushed = client.snapshots.single;
+        expect(pushed.stage, RunnerStage.running);
+        expect(pushed.canLaunchFlutterApps, isTrue);
+        expect(pushed.flutterApps.single.id, 'admin');
+      },
+    );
+
+    test(
+      'when the runner is swapped with nobody attached, '
+      'then no snapshot is taken',
+      () async {
+        final started = FakeRunnerApi();
+        addTearDown(started.eventController.close);
+
+        server.connect(started);
+
+        expect(started.snapshotCalls, 0);
       },
     );
   });

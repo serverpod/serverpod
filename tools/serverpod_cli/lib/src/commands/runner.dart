@@ -19,6 +19,7 @@ import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_logging_cli/serverpod_logging_cli.dart';
+import 'package:serverpod_shared/log.dart' show MultiLogWriter;
 
 /// The commands that act on the development stack: the runner itself, and the
 /// clients that drive one.
@@ -141,9 +142,10 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: false,
+      awaitManifest: true,
     );
 
-    log.info('Runner ready (pid ${manifest.pid}).');
+    log.info('Runner ready (pid ${manifest!.pid}).');
     log.info(
       'Attach with `serverpod runner attach`, '
       'stop with `serverpod runner stop`.',
@@ -253,10 +255,18 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
     // still the logger's, and a detached runner's last words, the exit-path
     // error, come after this command returns.
     final logFile = RunnerLogFile.forServer(directory);
-    if (detached) {
-      await logFile.open();
+    final logHistory = StartLogHistory();
+    if (detached) await logFile.open();
+    if (detached || loggerIsDefault) {
       await closeLogger();
-      initializeLoggerWith(ServerpodCliLogger(RunnerLogFileWriter(logFile)));
+      initializeLoggerWith(
+        ServerpodCliLogger(
+          MultiLogWriter([
+            StartLogHistoryWriter(logHistory),
+            if (detached) RunnerLogFileWriter(logFile) else stdOutLogWriter(),
+          ]),
+        ),
+      );
     }
 
     final shutdown = ShutdownSignal();
@@ -275,11 +285,15 @@ class RunnerServeCommand extends ServerpodCommand<RunnerServeOption> {
         docker: commandConfig.optionalValue(RunnerServeOption.docker),
         launchFlutterApp: commandConfig.value(RunnerServeOption.flutter),
         shutdown: shutdown,
-        logHistory: StartLogHistory(),
-        serverStdoutSink: detached ? RunnerLogFileSink(logFile) : null,
-        serverStderrSink: detached
-            ? RunnerLogFileSink(logFile, prefix: 'stderr: ')
-            : null,
+        logHistory: logHistory,
+        serverStdoutSink: logHistory.serverOutputSink(
+          forwardTo: detached ? RunnerLogFileSink(logFile) : stdout,
+        ),
+        serverStderrSink: logHistory.serverOutputSink(
+          forwardTo: detached
+              ? RunnerLogFileSink(logFile, prefix: 'stderr: ')
+              : stderr,
+        ),
         flutterStdoutEcho: detached
             ? RunnerLogFileSink(logFile, prefix: 'flutter: ')
             : stdout,
