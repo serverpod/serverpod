@@ -3,6 +3,7 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
@@ -606,7 +607,7 @@ class Restrictions {
     String key,
     SourceSpan? span,
   ) {
-    var foreignKeyField = definition.syncForeignKeyField(field);
+    var foreignKeyField = definition.foreignKeyField(field);
     if (foreignKeyField == null) return [];
 
     var relation = foreignKeyField.relation as ForeignRelationDefinition;
@@ -1846,7 +1847,7 @@ class Restrictions {
       var syncBoundaryError = validateSyncRelationBoundary(
         model: classWithRelation,
         relatedModel: referenceClass,
-        foreignKeyField: classWithRelation.syncForeignKeyField(field),
+        foreignKeyField: classWithRelation.foreignKeyField(field),
       );
       if (syncBoundaryError != null) {
         errors.add(SourceSpanSeverityException(syncBoundaryError, span));
@@ -2336,7 +2337,7 @@ class Restrictions {
     dynamic content,
     SourceSpan? span,
   ) {
-    var foreignKeyField = definition.syncForeignKeyField(field);
+    var foreignKeyField = definition.foreignKeyField(field);
     if (foreignKeyField == null) return [];
 
     var relation = foreignKeyField.relation as ForeignRelationDefinition;

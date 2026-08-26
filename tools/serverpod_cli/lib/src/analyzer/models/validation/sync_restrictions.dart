@@ -26,27 +26,6 @@ extension ModelClassDefinitionSync on ModelClassDefinition {
       fieldsIncludingInherited
           .where((field) => field.name == syncScopeIdFieldName)
           .firstOrNull;
-
-  /// The field carrying the foreign key column that [field] originates, or
-  /// null when [field] does not originate a foreign key on this table.
-  ///
-  /// For id fields this is the field itself. For object relations declared
-  /// on the foreign key side, it is the (explicit or implicit) id field.
-  SerializableModelFieldDefinition? syncForeignKeyField(
-    SerializableModelFieldDefinition field,
-  ) {
-    var relation = field.relation;
-    if (relation is ForeignRelationDefinition) return field;
-    if (relation is ObjectRelationDefinition && relation.isForeignKeyOrigin) {
-      var foreignKeyField = fieldsIncludingInherited
-          .where((f) => f.name == relation.fieldName)
-          .firstOrNull;
-      if (foreignKeyField?.relation is ForeignRelationDefinition) {
-        return foreignKeyField;
-      }
-    }
-    return null;
-  }
 }
 
 /// Whether [foreignKeyField] is the `scopeId` ownership link of a sync table.
