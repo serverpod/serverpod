@@ -325,10 +325,9 @@ class ChatEndpoint extends Endpoint {
 
     var filePath = _generateAttachmentFilePath(userId, fileName);
 
-    var uploadDescription = await session.storage.createUploadDescription(
-      storageId: 'public',
-      path: filePath,
-    );
+    var uploadDescription = await session.storage
+        .createDirectFileUploadDescription(storageId: 'public', path: filePath);
+    if (uploadDescription == null) return null;
 
     return ChatMessageAttachmentUploadDescription(
       filePath: filePath,
@@ -342,11 +341,11 @@ class ChatEndpoint extends Endpoint {
     String fileName,
     String filePath,
   ) async {
-    var success = await session.storage.verifyUpload(
+    var success = await session.storage.verifyDirectFileUpload(
       storageId: 'public',
       path: filePath,
     );
-    var url = await session.storage.publicDownloadUrl(
+    var url = await session.storage.getPublicUrl(
       storageId: 'public',
       path: filePath,
     );
@@ -362,7 +361,7 @@ class ChatEndpoint extends Endpoint {
     try {
       var ext = path.extension(filePath.toLowerCase());
       if ({'.jpg', '.jpeg', '.png', '.gif'}.contains(ext)) {
-        var response = await http.get(url);
+        var response = await http.get(url!);
         var bytes = response.bodyBytes;
         // Run thumbnail generation in an isolate, because it is CPU-intensive
         var thumbnail = await Isolate.run(() {
@@ -389,7 +388,7 @@ class ChatEndpoint extends Endpoint {
             path: thumbPath,
             byteData: thumbnail.byteData,
           );
-          thumbUrl = await session.storage.publicDownloadUrl(
+          thumbUrl = await session.storage.getPublicUrl(
             storageId: 'public',
             path: thumbPath,
           );
