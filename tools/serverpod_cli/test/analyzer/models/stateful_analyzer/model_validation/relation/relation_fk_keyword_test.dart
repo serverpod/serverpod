@@ -560,4 +560,111 @@ void main() {
       );
     },
   );
+
+  group(
+    'Given an id field relation with the fk property, '
+    'when the model is analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withYaml(
+            '''
+        class: Example
+        table: example
+        fields:
+          parentId: int, relation(parent=example_parent, fk)
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('example_parent').withYaml(
+            '''
+        class: ExampleParent
+        table: example_parent
+        fields:
+          name: String
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test(
+        'then an error is collected that fk can only be used on an object relation.',
+        () {
+          expect(
+            collector.errors.single.message,
+            'The "fk" property can only be used on an object relation.',
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given a named one-to-one relation with fk on one side and field on the other, '
+    'when the models are analyzed,',
+    () {
+      late final CodeGenerationCollector collector;
+
+      setUpAll(() {
+        var models = [
+          ModelSourceBuilder().withFileName('user').withYaml(
+            '''
+        class: User
+        table: user
+        fields:
+          address: Address?, relation(name=user_address, fk)
+        indexes:
+          address_index_idx:
+            fields: addressId
+            unique: true
+        ''',
+          ).build(),
+          ModelSourceBuilder().withFileName('address').withYaml(
+            '''
+        class: Address
+        table: address
+        fields:
+          user: User?, relation(name=user_address, field=userId)
+          userId: int
+        indexes:
+          user_index_idx:
+            fields: userId
+            unique: true
+        ''',
+          ).build(),
+        ];
+
+        collector = CodeGenerationCollector();
+        StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
+
+      test(
+        'then each side reports that only one may store the foreign key.',
+        () {
+          expect(collector.errors.length, 2);
+          expect(
+            collector.errors.map((error) => error.message).toSet(),
+            {
+              'Only one side of the relation is allowed to store the foreign '
+                  'key, remove the "fk" property from one side.',
+              'Only one side of the relation is allowed to store the foreign '
+                  'key, remove the specified "field" reference from one side.',
+            },
+          );
+        },
+      );
+    },
+  );
 }
