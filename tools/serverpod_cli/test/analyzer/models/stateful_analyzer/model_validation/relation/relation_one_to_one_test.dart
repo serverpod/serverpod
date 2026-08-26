@@ -867,12 +867,16 @@ void main() {
         () {
           expect(
             errors.first.message,
-            'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=user_address, field=addressId)',
+            'The relation is ambiguous, unable to resolve which side should hold '
+            'the relation. Use either the "fk" or "field=" properties to mark the '
+            'side that holds the foreign key. E.g. relation(name=user_address, fk)',
           );
 
           expect(
             errors.last.message,
-            'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=user_address, field=userId)',
+            'The relation is ambiguous, unable to resolve which side should hold '
+            'the relation. Use either the "fk" or "field=" properties to mark the '
+            'side that holds the foreign key. E.g. relation(name=user_address, fk)',
           );
         },
         skip: errors.isEmpty,

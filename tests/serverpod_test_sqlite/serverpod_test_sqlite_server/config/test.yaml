@@ -13,6 +13,7 @@ insightsServer:
   publicHost: serverpod_test_sqlite_server
   publicPort: 0
   publicScheme: http
+  enableDatabaseAccess: true
 
 webServer:
   port: 0

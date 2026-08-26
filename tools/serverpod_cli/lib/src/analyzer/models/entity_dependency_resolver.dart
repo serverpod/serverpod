@@ -229,6 +229,7 @@ class ModelDependencyResolver {
         relationFieldName,
       );
     } else if (relation.name == null ||
+        relation.isForeignKeyOrigin ||
         (foreignField != null && foreignField.type.isListType)) {
       _resolveImplicitDefinedRelation(
         classDefinition,
@@ -333,6 +334,13 @@ class ModelDependencyResolver {
       fieldDefinition,
       foreignRelationField,
     );
+
+    // The foreign key field is injected after the main resolver loop has
+    // already resolved the indexes of every declared field, so the indexes of
+    // the injected field have to be resolved here. Without this, a unique
+    // index declared on the generated column is invisible to the one-to-one
+    // validation and the relation is wrongly reported as missing it.
+    _resolveFieldIndexes(foreignRelationField, classDefinition);
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,

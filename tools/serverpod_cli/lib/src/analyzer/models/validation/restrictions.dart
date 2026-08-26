@@ -782,6 +782,37 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.field,
+      removalMessage:
+          'remove the specified "${Keyword.field}" reference from one side',
+    );
+  }
+
+  List<SourceSpanSeverityException> validateRelationFkKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.fk,
+      removalMessage: 'remove the "${Keyword.fk}" property from one side',
+    );
+  }
+
+  /// Shared validation for the properties that mark the side of a relation
+  /// holding the foreign key. Both may only be used on an object relation and
+  /// only one side of a relation is allowed to own the key.
+  List<SourceSpanSeverityException> _validateForeignKeyOwnerProperty(
+    String parentNodeName,
+    SourceSpan? span, {
+    required String propertyName,
+    required String removalMessage,
+  }) {
     var classDefinition = documentDefinition;
 
     if (classDefinition is! ModelClassDefinition) return [];
@@ -789,19 +820,10 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    if (field.type.isListType) {
+    if (field.type.isListType || field.type.isIdType) {
       return [
         SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
-          span,
-        ),
-      ];
-    }
-
-    if (field.type.isIdType) {
-      return [
-        SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
+          'The "$propertyName" property can only be used on an object relation.',
           span,
         ),
       ];
@@ -815,7 +837,8 @@ class Restrictions {
     if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
       return [
         SourceSpanSeverityException(
-          'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
+          'Only one side of the relation is allowed to store the foreign key, '
+          '$removalMessage.',
           span,
         ),
       ];
@@ -2324,7 +2347,9 @@ class Restrictions {
     if (!_isForeignKeyDefinedOnAnySide(field, foreignFields)) {
       return [
         SourceSpanSeverityException(
-          'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          'The relation is ambiguous, unable to resolve which side should hold '
+          'the relation. Use either the "fk" or "field=" properties to mark '
+          'the side that holds the foreign key. E.g. relation(name=$name, fk)',
           span,
         ),
       ];

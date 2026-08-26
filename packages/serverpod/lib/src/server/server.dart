@@ -438,7 +438,11 @@ class Server implements RouterInjectable {
         );
       }
 
-      return WebSocketUpgrade((webSocket) async {
+      // Origin policy is enforced above through `allowedOrigins`; opt out of
+      // relic's own same-host check (default since relic 2.0.0-rc.1) so a
+      // web client served from a different host than the API server can
+      // still open method streams when no allow-list is configured.
+      return WebSocketUpgrade(allowAnyOrigin: true, (webSocket) async {
         try {
           webSocket.pingInterval = serverpod.config.websocketPingInterval;
           var websocketKey = const Uuid().v4();
