@@ -144,12 +144,17 @@ class CloudStoragePublicEndpoint extends Endpoint {
     String? downloadFileName,
   }) async {
     try {
-      final results = await Future.wait([
-        session.storage.retrieveFile(storageId: storageId, path: path),
-        session.storage.statFile(storageId: storageId, path: path),
-      ]);
-      final file = results.first as ByteData;
-      final stat = results.last as FileStat;
+      final storage = server.serverpod.storage[storageId];
+      if (storage is! DatabaseCloudStorage) {
+        throw EndpointNotFoundException(
+          'Expected DatabaseCloudStorage instance but got: ${storage.runtimeType}',
+        );
+      }
+
+      final (:file, :stat) = await storage.retrieveFileWithStat(
+        session: session,
+        path: path,
+      );
 
       final extension = p.extension(path).toLowerCase();
       final mimeType = switch (contentTypeOverride ?? stat.contentType) {

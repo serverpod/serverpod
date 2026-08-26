@@ -50,6 +50,27 @@ class DatabaseCloudStorage extends CloudStorage {
     return entry.byteData;
   }
 
+  /// Retrieves a file and its metadata.
+  ///
+  /// This method is used by Serverpod's built-in cloud storage endpoint to
+  /// avoid loading the stored file into memory once for [retrieveFile] and
+  /// again for [statFile].
+  /// Application code should normally use those methods directly.
+  Future<({ByteData file, FileStat stat})> retrieveFileWithStat({
+    required Session session,
+    required String path,
+  }) async {
+    final entry = await _findAvailableEntry(session, path);
+    if (entry == null) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+
+    return (file: entry.byteData, stat: _fileStat(entry));
+  }
+
   @override
   Future<FileStat> statFile({
     required Session session,
@@ -63,15 +84,7 @@ class DatabaseCloudStorage extends CloudStorage {
       );
     }
 
-    return FileStat(
-      size: entry.byteData.lengthInBytes,
-      lastModified: entry.addedTime,
-      contentType: entry.contentType,
-      cacheControl: entry.cacheControl,
-      contentDisposition: entry.contentDisposition,
-      contentEncoding: entry.contentEncoding,
-      custom: _decodeCustomMetadata(entry.customMetadata),
-    );
+    return _fileStat(entry);
   }
 
   @override
@@ -360,6 +373,18 @@ class DatabaseCloudStorage extends CloudStorage {
         if (entry.key is String && entry.value is String)
           entry.key as String: entry.value as String,
     };
+  }
+
+  FileStat _fileStat(CloudStorageEntry entry) {
+    return FileStat(
+      size: entry.byteData.lengthInBytes,
+      lastModified: entry.addedTime,
+      contentType: entry.contentType,
+      cacheControl: entry.cacheControl,
+      contentDisposition: entry.contentDisposition,
+      contentEncoding: entry.contentEncoding,
+      custom: _decodeCustomMetadata(entry.customMetadata),
+    );
   }
 
   void _scheduleTemporaryDownloadDeletion({
