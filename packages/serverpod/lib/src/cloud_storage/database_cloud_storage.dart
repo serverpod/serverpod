@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
@@ -15,10 +14,6 @@ import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 class DatabaseCloudStorage extends CloudStorage {
   /// Creates a new [DatabaseCloudStorage].
   DatabaseCloudStorage(super.storageId);
-
-  /// Serializes best-effort deletion of expired temporary download
-  /// authorizations so scheduled cleanup tasks do not overlap with each other.
-  Future<void> _temporaryDownloadDeletionQueue = Future.value();
 
   @override
   Future<void> deleteFile({
@@ -138,6 +133,12 @@ class DatabaseCloudStorage extends CloudStorage {
     TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   }) async {
     options.validate();
+
+    await CloudStorageDirectDownloadEntry.db.deleteWhere(
+      session,
+      where: (t) => t.expiration < DateTime.now().toUtc(),
+    );
+
     final exists = await fileExists(session: session, path: path);
     if (!exists) {
       throw CloudStorageFileNotFoundException(
@@ -167,21 +168,6 @@ class DatabaseCloudStorage extends CloudStorage {
         'Failed to create a temporary download URL. ($error)',
       );
     }
-
-    _scheduleTemporaryDownloadDeletion(
-      session: session,
-      delay: options.expirationDuration,
-      delete: () async {
-        await CloudStorageDirectDownloadEntry.db.deleteWhere(
-          session,
-          where: (t) =>
-              t.storageId.equals(inserted.storageId) &
-              t.path.equals(inserted.path) &
-              t.authKey.equals(inserted.authKey),
-          noReturn: true,
-        );
-      },
-    );
 
     return _endpointUri(session, {
       'method': 'temporaryFile',
@@ -391,27 +377,6 @@ class DatabaseCloudStorage extends CloudStorage {
       contentEncoding: entry.contentEncoding,
       custom: _decodeCustomMetadata(entry.customMetadata),
     );
-  }
-
-  void _scheduleTemporaryDownloadDeletion({
-    required Session session,
-    required Duration delay,
-    required Future<void> Function() delete,
-  }) {
-    Timer(delay, () {
-      _temporaryDownloadDeletionQueue = _temporaryDownloadDeletionQueue.then((
-        _,
-      ) async {
-        try {
-          await delete();
-        } catch (error) {
-          session.server.serverpod.logVerbose(
-            'Failed to delete an expired temporary download authorization. '
-            '($error)',
-          );
-        }
-      });
-    });
   }
 
   static String _generateAuthKey() {

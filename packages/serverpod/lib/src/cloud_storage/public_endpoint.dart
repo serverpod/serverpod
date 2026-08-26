@@ -50,6 +50,10 @@ class CloudStoragePublicEndpoint extends Endpoint {
           (t.expiration > DateTime.now().toUtc()),
     );
     if (download == null) {
+      await CloudStorageDirectDownloadEntry.db.deleteWhere(
+        session,
+        where: (t) => t.expiration < DateTime.now().toUtc(),
+      );
       throw EndpointNotFoundException('Temporary download URL is invalid.');
     }
 
