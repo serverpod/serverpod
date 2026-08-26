@@ -7,9 +7,9 @@
 # Melos derives its package list from the workspace, so `melos exec` -- and
 # every script built on top of it -- silently skips these. They are covered by:
 #
-#   * `melos bootstrap`, via its post hook, which resolves them.
-#   * `melos lint` / `lint_loose` / `lint_strict`, via `util/analyze_non_workspace`.
-#   * `melos test`, via `util/run_tests_non_workspace`.
+#   * `dart run melos bootstrap`, via its post hook, which resolves them.
+#   * `dart run melos run lint` / `lint_loose` / `lint_strict`, via `util/analyze_non_workspace`.
+#   * `dart run melos run test`, via `util/run_tests_non_workspace`.
 #
 # Why each package is excluded:
 #

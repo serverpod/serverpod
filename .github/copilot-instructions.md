@@ -42,9 +42,9 @@ When working with pull requests in this repository, **ALWAYS**:
 
 **REQUIRES DART/FLUTTER** (cannot validate without network access):
 
-- ⚠️ `melos run test_unit` - Requires Dart SDK
+- ⚠️ `dart run melos run test_unit` - Requires Dart SDK
 - ⚠️ `util/run_tests_analyze` - Requires Dart SDK
-- ⚠️ `melos` commands - Requires Dart SDK and Melos package
+- ⚠️ `dart run melos` commands - Requires Dart SDK
 - ⚠️ `dart pub get` operations - Require network access
 
 **NOTE**: All timing estimates are based on CI pipeline analysis and repository examination.
@@ -58,7 +58,7 @@ When working with pull requests in this repository, **ALWAYS**:
 2. **Flutter SDK**: `^3.44.4` (required for Flutter components)
 3. **Git**: Any recent version
 4. **Docker & Docker Compose**: Required for integration tests and local development
-5. **Melos**: For monorepo management (`dart pub global activate melos`)
+5. **Melos**: For monorepo management (`dart run melos ...`)
 6. **Bash**: Required for scripts (use Git Bash on Windows)
 
 ### Installation Commands (Run these exactly)
@@ -77,9 +77,6 @@ export PATH="$PATH:/opt/flutter/bin"
 
 # Method 3: Using snap (Ubuntu/Linux)
 sudo snap install flutter --classic
-
-# Install Melos for monorepo management
-dart pub global activate melos
 
 # Verify installations
 dart --version     # Should be ^3.12.2
@@ -101,11 +98,12 @@ git --version      # Should work
 ### Initial Setup (Run from repository root)
 
 ```bash
-# Alternative: dart pub get
-dart pub global activate melos
-
 # Install all dependencies - NEVER CANCEL.
-dart pub get
+# Resolves the pub workspace AND the packages that are not workspace members
+# (see util/non_workspace_packages). A plain `dart pub get` only does the
+# former, which is enough for CI jobs scoped to workspace packages but leaves
+# the rest unresolved.
+dart run melos bootstrap
 
 # Activate CLI from source (required for development)
 cd tools/serverpod_cli
@@ -117,7 +115,7 @@ cd ../..
 export SERVERPOD_HOME=$(pwd)
 ```
 
-**TIMING**: `dart pub get` takes 1-2 minutes. Set timeout to 30+ minutes.
+**TIMING**: `dart run melos bootstrap` takes 1-2 minutes. Set timeout to 30+ minutes.
 
 ### Build Commands
 
@@ -129,7 +127,7 @@ util/generate_all
 util/update_pubspecs
 
 # Full repository dependency installation - NEVER CANCEL.
-dart pub get
+dart run melos bootstrap
 ```
 
 ## Testing Infrastructure
@@ -143,8 +141,8 @@ dart pub get
 
 **CRITICAL TIMING NOTES** (Based on CI Analysis):
 
-- **Repository setup**: `dart pub get` - 1-2 minutes - Set timeout to 5 minutes
-- **Unit tests**: `melos run test_unit` - 5-15 minutes - Set timeout to 30+ minutes
+- **Repository setup**: `dart run melos bootstrap` - 1-2 minutes - Set timeout to 5 minutes
+- **Unit tests**: `dart run melos run test_unit` - 5-15 minutes - Set timeout to 30+ minutes
 - **Integration tests**: `util/run_tests_integration` - 15-30 minutes - Set timeout to 45+ minutes
 - **E2E tests**: `util/run_tests_e2e` - 20-45 minutes - Set timeout to 60+ minutes
 - **Bootstrap tests**: `util/run_tests_bootstrap` - 30-60 minutes - Set timeout to 90+ minutes
@@ -155,7 +153,7 @@ dart pub get
 
 ```bash
 # Unit tests (Dart-only packages)
-melos run test_unit
+dart run melos run test_unit
 # NEVER CANCEL - Takes 5-10 minutes
 
 # Integration tests (requires Docker)
@@ -232,9 +230,9 @@ util/run_tests_analyze --allow-infos     # Less strict
 util/run_tests_analyze --allow-warnings  # Least strict
 
 # Alternative: Melos-based analysis
-melos run lint_strict  # Matches CI strict mode
-melos run lint         # Standard linting
-melos run lint_loose   # For downgrade tests
+dart run melos run lint_strict  # Matches CI strict mode
+dart run melos run lint         # Standard linting
+dart run melos run lint_loose   # For downgrade tests
 
 # Single package analysis
 dart analyze --fatal-infos package_name/
@@ -324,18 +322,15 @@ git clone https://github.com/serverpod/serverpod.git
 cd serverpod
 export SERVERPOD_HOME=$(pwd)
 
-# 2. Install melos
-dart pub global activate melos
+# 2. Install dependencies (10-15 minutes - NEVER CANCEL)
+dart run melos bootstrap
 
-# 3. Install dependencies (10-15 minutes - NEVER CANCEL)
-dart pub get
-
-# 4. Activate CLI
+# 3. Activate CLI
 cd tools/serverpod_cli
 dart pub global activate --source path .
 cd ../..
 
-# 5. Verify setup
+# 4. Verify setup
 serverpod --version
 ```
 
@@ -382,7 +377,7 @@ dart format .
 util/run_tests_analyze
 
 # 2. Run unit tests (5-15 minutes)
-melos run test_unit
+dart run melos run test_unit
 
 # 3. Test example project still works
 cd examples/legacy/auth_example/auth_example_server
@@ -404,7 +399,7 @@ dart test --reporter=failures-only
 util/run_tests_integration
 
 # Always run full CI suite before major PRs
-melos run test_unit && util/run_tests_integration
+dart run melos run test_unit && util/run_tests_integration
 ```
 
 ### Working on CLI
@@ -443,14 +438,14 @@ dart test -t integration --reporter=failures-only
 
    ```bash
    dart format .
-   melos run lint_strict
+   dart run melos run lint_strict
    ```
 
 2. **Test affected components**:
 
    ```bash
    # For core changes
-   melos run test_unit
+   dart run melos run test_unit
 
    # For integration changes
    util/run_tests_integration
@@ -521,7 +516,7 @@ Before submitting a PR, ensure:
 
 1. **Title follows conventional commits format**
 2. **Code is formatted**: `dart format .`
-3. **Linting passes**: `melos run lint_strict`
+3. **Linting passes**: `dart run melos run lint_strict`
 4. **Tests pass**: Run relevant test suites for your changes
 5. **Examples still work**: Verify at least one example project starts successfully
 6. **Documentation updated**: If adding features or changing APIs
@@ -530,7 +525,7 @@ Before submitting a PR, ensure:
 
 - **"Dart not found"**: Ensure Flutter is installed and in PATH
 - **"Docker connection failed"**: Ensure Docker daemon is running
-- **"pub get failed"**: Run `dart pub get --offline` for cached deps
+- **"pub get failed"**: Run `dart run melos bootstrap --offline` for cached deps
 - **"Tests hanging"**: Wait full timeout period - tests can take 45+ minutes
 - **"CLI not updated"**: Rerun `dart pub global activate --source path tools/serverpod_cli`
 - **"Template not found"**: Ensure `SERVERPOD_HOME` environment variable is set

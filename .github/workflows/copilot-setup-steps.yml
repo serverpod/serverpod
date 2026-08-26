@@ -40,11 +40,6 @@ jobs:
           dart --version
           echo "Dart SDK version should be >= 3.12.2"
 
-      - name: Install Melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
-
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 

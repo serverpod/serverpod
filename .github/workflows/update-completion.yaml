@@ -32,11 +32,6 @@ jobs:
           flutter-version: "3.47.0"
           cache: true
 
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
-
       - name: Bootstrap
         uses: ./.github/actions/retry
         with:

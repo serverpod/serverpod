@@ -82,10 +82,6 @@ jobs:
         with:
           flutter-version: ${{ matrix.check.flutter-version }}
           cache: false
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
@@ -96,7 +92,7 @@ jobs:
         with:
           command: dart pub downgrade
       - name: Run lint
-        run: melos run ${{ matrix.check.lint }}
+        run: dart run melos run ${{ matrix.check.lint }}
 
   # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
   # jobs below don't each re-resolve and compile it.
@@ -550,10 +546,6 @@ jobs:
           sdk: stable
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
@@ -793,7 +785,7 @@ jobs:
       - uses: ./.github/actions/use-pod-bundle
         with:
           pod: serverpod_test_server
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -824,7 +816,7 @@ jobs:
       - uses: ./.github/actions/use-pod-bundle
         with:
           pod: serverpod_test_server
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -856,7 +848,7 @@ jobs:
       - uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
       - name: Retry transient Dart build-hook failures
         uses: ./.github/actions/use-dart-test-retry
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
@@ -963,10 +955,6 @@ jobs:
           sdk: ${{ matrix.dart-version }}
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
@@ -996,10 +984,6 @@ jobs:
           sdk: ${{ matrix.dart-version }}
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
@@ -1189,10 +1173,6 @@ jobs:
         with:
           flutter-version: "3.44.4"
           cache: false
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Run version change test
         run: util/run_tests_version_change
 
@@ -1319,10 +1299,6 @@ jobs:
           flutter-version: "3.44.4"
           cache: false
       - uses: ./.github/actions/use-dart-test-retry
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
@@ -1340,15 +1316,11 @@ jobs:
         with:
           flutter-version: "3.44.4"
           cache: false
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Run publish check
         continue-on-error: true
         id: run_publish
         shell: bash
-        run: melos publish --dry-run --yes 2>&1 | tee publish_output.txt
+        run: dart run melos publish --dry-run --yes 2>&1 | tee publish_output.txt
       - name: Highlight publish errors
         shell: bash
         run: |
