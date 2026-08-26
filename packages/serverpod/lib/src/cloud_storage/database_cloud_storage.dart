@@ -119,7 +119,13 @@ class DatabaseCloudStorage extends CloudStorage {
     TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   }) async {
     options.validate();
-    await statFile(session: session, path: path);
+    final exists = await fileExists(session: session, path: path);
+    if (!exists) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
 
     final entry = CloudStorageDirectDownloadEntry(
       storageId: storageId,
@@ -129,7 +135,9 @@ class DatabaseCloudStorage extends CloudStorage {
       downloadFileName: options.downloadFileName,
       contentType: options.contentType,
     );
+
     late CloudStorageDirectDownloadEntry inserted;
+
     try {
       inserted = await CloudStorageDirectDownloadEntry.db.insertRow(
         session,
