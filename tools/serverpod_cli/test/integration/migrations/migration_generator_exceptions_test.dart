@@ -113,7 +113,7 @@ void main() {
           'lib',
           'src',
           'protocol',
-          'example.yaml',
+          'example.spy.yaml',
         ),
       );
       modelFile.createSync(recursive: true);
@@ -217,7 +217,7 @@ fields:
           'lib',
           'src',
           'protocol',
-          'example.yaml',
+          'example.spy.yaml',
         ),
       );
       modelFile.createSync(recursive: true);

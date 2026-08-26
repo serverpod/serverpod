@@ -50,7 +50,7 @@ name: ${projectName}_server
       ),
     )..createSync(recursive: true);
     File(
-      path.join(sharedModelsDir.path, 'shared_table_record.yaml'),
+      path.join(sharedModelsDir.path, 'shared_table_record.spy.yaml'),
     ).writeAsStringSync('''
 class: SharedTableRecord
 table: shared_table_record
@@ -65,7 +65,7 @@ fields:
       path.join(serverDirectory.path, 'lib', 'src', 'models'),
     )..createSync(recursive: true);
     File(
-      path.join(hostModelsDir.path, 'example.yaml'),
+      path.join(hostModelsDir.path, 'example.spy.yaml'),
     ).writeAsStringSync('''
 class: Example
 table: example
@@ -87,7 +87,7 @@ fields:
       path.join(moduleServerDirectory.path, 'lib', 'src', 'models'),
     )..createSync(recursive: true);
     File(
-      path.join(moduleModelsDir.path, 'user_info.yaml'),
+      path.join(moduleModelsDir.path, 'user_info.spy.yaml'),
     ).writeAsStringSync('''
 class: UserInfo
 table: serverpod_user_info

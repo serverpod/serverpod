@@ -242,7 +242,7 @@ void _writeSharedModel(Directory projectDir) {
         'lib',
         'src',
         'models',
-        'shared_record.yaml',
+        'shared_record.spy.yaml',
       ),
     )
     ..createSync(recursive: true)
