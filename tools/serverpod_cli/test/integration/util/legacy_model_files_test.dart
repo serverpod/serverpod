@@ -150,7 +150,8 @@ values:
   });
 
   group(
-    'Given a server package with non-model yaml files in lib/src/models',
+    'Given a server package with unreadable and non-model yaml files in '
+    'lib/src/models',
     () {
       setUp(() async {
         await d.dir('server/lib/src/models', [
@@ -158,6 +159,16 @@ values:
           d.file('list.yaml', '- a\n- b\n'),
           d.file('broken.yaml', 'class: [\n'),
           d.file('empty.yaml', ''),
+          d.file('binary.yaml', [
+            0xff,
+            0xfe,
+            0x00,
+            0x63,
+            0x6c,
+            0x61,
+            0x73,
+            0x73,
+          ]),
         ]).create();
       });
 

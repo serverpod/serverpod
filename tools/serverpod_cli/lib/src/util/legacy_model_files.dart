@@ -128,7 +128,8 @@ abstract final class LegacyModelFiles {
   }
 
   /// Whether [file] has a bare yaml extension and a top-level model key.
-  /// Files that do not parse as yaml maps are not models, and are ignored.
+  /// Files that cannot be read or parsed as yaml maps are not models, and
+  /// are ignored.
   static bool _isLegacyModelFile(File file) {
     var path = file.path;
     if (ModelHelper.isModelFile(path)) return false;
@@ -138,6 +139,8 @@ abstract final class LegacyModelFiles {
       var document = loadYaml(file.readAsStringSync());
       return document is YamlMap &&
           _modelKeys.any((key) => document.containsKey(key));
+    } on FileSystemException {
+      return false;
     } on YamlException {
       return false;
     }
