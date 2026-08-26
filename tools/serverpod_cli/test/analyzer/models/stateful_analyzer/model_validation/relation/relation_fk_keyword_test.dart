@@ -262,6 +262,7 @@ void main() {
     'when the models are analyzed,',
     () {
       late final CodeGenerationCollector collector;
+      late final ClassDefinition memberDefinition;
 
       setUpAll(() {
         var models = [
@@ -290,16 +291,28 @@ void main() {
         ];
 
         collector = CodeGenerationCollector();
-        StatefulAnalyzer(
+        var definitions = StatefulAnalyzer(
           config,
           models,
           onErrorsCollector(collector),
         ).validateAll();
+
+        memberDefinition = definitions.whereType<ClassDefinition>().firstWhere(
+          (definition) => definition.className == 'Member',
+        );
       });
 
       test('then no errors are collected.', () {
         expect(collector.errors, isEmpty);
       });
+
+      test(
+        'then the generated companyId field has the parent table id type.',
+        () {
+          var field = memberDefinition.findField('companyId');
+          expect(field?.type.className, 'UuidValue');
+        },
+      );
     },
   );
 
