@@ -756,6 +756,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: podInfoFile,
       stdoutSink: serverStdoutSink,
       stderrSink: serverStderrSink,
+      onDispose: logHistory.discardActiveServerScopes,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();

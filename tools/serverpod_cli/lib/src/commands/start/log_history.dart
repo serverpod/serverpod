@@ -33,6 +33,12 @@ class StartLogHistory {
   /// by scope id.
   final Map<String, TrackedOperation> activeOperations = {};
 
+  /// IDs of operations opened by the current server process.
+  ///
+  /// These distinguish server scopes from CLI-driven operations when the
+  /// process exits before it can emit matching `scope_end` events.
+  final Set<String> _activeServerScopeIds = {};
+
   final Map<String, BoundedQueueList<String>> _flutterLines = {};
 
   /// Called after every mutation so a presentation layer can schedule a
@@ -92,9 +98,14 @@ class StartLogHistory {
         if (label == 'INTERNAL') break;
         final id = data['id'] as String? ?? '';
         activeOperations[id] = TrackedOperation(id: id, label: label);
+        _activeServerScopeIds.add(id);
 
       case 'scope_end':
         final id = data['id'] as String? ?? '';
+        // Ignore events from a process whose scopes have already been
+        // discarded. This also prevents a delayed event from removing a
+        // non-server operation that later reused the same id.
+        if (!_activeServerScopeIds.remove(id)) break;
         final operation = activeOperations.remove(id);
         if (operation == null) break;
         operation.stopwatch.stop();
@@ -110,6 +121,18 @@ class StartLogHistory {
         );
     }
     onChanged?.call();
+  }
+
+  /// Discards every owned active scope.
+  void discardActiveServerScopes() {
+    if (_activeServerScopeIds.isEmpty) return;
+
+    var changed = false;
+    for (final id in _activeServerScopeIds) {
+      changed = activeOperations.remove(id) != null || changed;
+    }
+    _activeServerScopeIds.clear();
+    if (changed) onChanged?.call();
   }
 
   /// Records a structured log [event] from the Flutter app [appId], as

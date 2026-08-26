@@ -381,6 +381,32 @@ void main() {
       completer.complete();
     });
 
+    test(
+      'when active server scopes are discarded during an action '
+      'then only the server scopes are removed',
+      () async {
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'scope_start',
+            'id': 'stream_scope',
+            'label': 'GET /api/stream',
+          }),
+        );
+        final completer = Completer<void>();
+        runTrackedAction(holder, 'Restarting server', () => completer.future);
+
+        expect(state.activeOperations, hasLength(2));
+
+        history.discardActiveServerScopes();
+
+        expect(state.activeOperations, hasLength(1));
+        expect(state.activeOperations.values.single.label, 'Restarting server');
+        expect(state.actionBusy, isTrue);
+
+        completer.complete();
+      },
+    );
+
     test('when action succeeds then clears busy and adds completed', () async {
       runTrackedAction(holder, 'Reload', () async {});
 
