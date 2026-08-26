@@ -782,46 +782,13 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
-    var classDefinition = documentDefinition;
-
-    if (classDefinition is! ModelClassDefinition) return [];
-
-    var field = classDefinition.findField(parentNodeName);
-    if (field == null) return [];
-
-    if (field.type.isListType) {
-      return [
-        SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
-          span,
-        ),
-      ];
-    }
-
-    if (field.type.isIdType) {
-      return [
-        SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
-          span,
-        ),
-      ];
-    }
-
-    var foreignFields = parsedModels.findNamedForeignRelationFields(
-      classDefinition,
-      field,
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.field,
+      removalMessage:
+          'remove the specified "${Keyword.field}" reference from one side',
     );
-
-    if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
-      return [
-        SourceSpanSeverityException(
-          'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
-          span,
-        ),
-      ];
-    }
-
-    return [];
   }
 
   List<SourceSpanSeverityException> validateRelationFkKey(
@@ -829,6 +796,23 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.fk,
+      removalMessage: 'remove the "${Keyword.fk}" property from one side',
+    );
+  }
+
+  /// Shared validation for the properties that mark the side of a relation
+  /// holding the foreign key. Both may only be used on an object relation and
+  /// only one side of a relation is allowed to own the key.
+  List<SourceSpanSeverityException> _validateForeignKeyOwnerProperty(
+    String parentNodeName,
+    SourceSpan? span, {
+    required String propertyName,
+    required String removalMessage,
+  }) {
     var classDefinition = documentDefinition;
 
     if (classDefinition is! ModelClassDefinition) return [];
@@ -839,7 +823,7 @@ class Restrictions {
     if (field.type.isListType || field.type.isIdType) {
       return [
         SourceSpanSeverityException(
-          'The "fk" property can only be used on an object relation.',
+          'The "$propertyName" property can only be used on an object relation.',
           span,
         ),
       ];
@@ -854,7 +838,7 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'Only one side of the relation is allowed to store the foreign key, '
-          'remove the "fk" property from one side.',
+          '$removalMessage.',
           span,
         ),
       ];
