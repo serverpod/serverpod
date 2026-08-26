@@ -184,6 +184,11 @@ import 'models_with_relations/column_alias_collision/bleed_child.dart'
     as _iepu1h7u;
 import 'models_with_relations/column_alias_collision/bleed_root.dart'
     as _ipkncx5k;
+import 'models_with_relations/fk_relation/fk_relation_company.dart'
+    as _icno6wzp;
+import 'models_with_relations/fk_relation/fk_relation_employee.dart'
+    as _is64bt6d;
+import 'models_with_relations/fk_relation/fk_relation_office.dart' as _iu6o6gsh;
 import 'models_with_relations/generated_relation_field/generated_relation_company.dart'
     as _ilvqc6dx;
 import 'models_with_relations/generated_relation_field/generated_relation_employee.dart'
@@ -419,6 +424,9 @@ export 'models_with_list_relations/organization.dart';
 export 'models_with_list_relations/person.dart';
 export 'models_with_relations/column_alias_collision/bleed_child.dart';
 export 'models_with_relations/column_alias_collision/bleed_root.dart';
+export 'models_with_relations/fk_relation/fk_relation_company.dart';
+export 'models_with_relations/fk_relation/fk_relation_employee.dart';
+export 'models_with_relations/fk_relation/fk_relation_office.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_company.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_employee.dart';
 export 'models_with_relations/generated_relation_field/generated_relation_office.dart';
@@ -2851,6 +2859,142 @@ class Protocol extends _is.DatabaseSerializationManager {
       ],
       foreignKeys: [],
       indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'fk_relation_company',
+      dartName: 'FkRelationCompany',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+      ],
+      foreignKeys: [],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'fk_relation_employee',
+      dartName: 'FkRelationEmployee',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'name',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'companyId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+        _isp.ColumnDefinition(
+          name: 'previousCompanyId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: true,
+          dartType: 'int?',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'fk_relation_employee_fk_0',
+          columns: ['companyId'],
+          referenceTable: 'fk_relation_company',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+        _isp.ForeignKeyDefinition(
+          constraintName: 'fk_relation_employee_fk_1',
+          columns: ['previousCompanyId'],
+          referenceTable: 'fk_relation_company',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [],
+      managed: true,
+    ),
+    _isp.TableDefinition(
+      name: 'fk_relation_office',
+      dartName: 'FkRelationOffice',
+      schema: 'public',
+      module: 'serverpod_test',
+      columns: [
+        _isp.ColumnDefinition(
+          name: 'id',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int?',
+          columnDefault: 'serial',
+        ),
+        _isp.ColumnDefinition(
+          name: 'address',
+          columnType: _isp.ColumnType.text,
+          isNullable: false,
+          dartType: 'String',
+        ),
+        _isp.ColumnDefinition(
+          name: 'companyId',
+          columnType: _isp.ColumnType.bigint,
+          isNullable: false,
+          dartType: 'int',
+        ),
+      ],
+      foreignKeys: [
+        _isp.ForeignKeyDefinition(
+          constraintName: 'fk_relation_office_fk_0',
+          columns: ['companyId'],
+          referenceTable: 'fk_relation_company',
+          referenceTableSchema: 'public',
+          referenceColumns: ['id'],
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
+          matchType: null,
+        ),
+      ],
+      indexes: [
+        _isp.IndexDefinition(
+          indexName: 'fk_relation_office_company_unique_idx',
+          tableSpace: null,
+          elements: [
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
+              definition: 'companyId',
+            ),
+          ],
+          type: 'btree',
+          isUnique: true,
+          isPrimary: false,
+        ),
+      ],
       managed: true,
     ),
     _isp.TableDefinition(
@@ -7495,6 +7639,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _ipkncx5k.BleedRoot) {
       return _ipkncx5k.BleedRoot.fromJson(data) as T;
     }
+    if (t == _icno6wzp.FkRelationCompany) {
+      return _icno6wzp.FkRelationCompany.fromJson(data) as T;
+    }
+    if (t == _is64bt6d.FkRelationEmployee) {
+      return _is64bt6d.FkRelationEmployee.fromJson(data) as T;
+    }
+    if (t == _iu6o6gsh.FkRelationOffice) {
+      return _iu6o6gsh.FkRelationOffice.fromJson(data) as T;
+    }
     if (t == _ilvqc6dx.GeneratedRelationCompany) {
       return _ilvqc6dx.GeneratedRelationCompany.fromJson(data) as T;
     }
@@ -8427,6 +8580,18 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (t == _is.getType<_ipkncx5k.BleedRoot?>()) {
       return (data != null ? _ipkncx5k.BleedRoot.fromJson(data) : null) as T;
     }
+    if (t == _is.getType<_icno6wzp.FkRelationCompany?>()) {
+      return (data != null ? _icno6wzp.FkRelationCompany.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_is64bt6d.FkRelationEmployee?>()) {
+      return (data != null ? _is64bt6d.FkRelationEmployee.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iu6o6gsh.FkRelationOffice?>()) {
+      return (data != null ? _iu6o6gsh.FkRelationOffice.fromJson(data) : null)
+          as T;
+    }
     if (t == _is.getType<_ilvqc6dx.GeneratedRelationCompany?>()) {
       return (data != null
               ? _ilvqc6dx.GeneratedRelationCompany.fromJson(data)
@@ -9128,6 +9293,20 @@ class Protocol extends _is.DatabaseSerializationManager {
       return (data != null
               ? (data as List)
                     .map((e) => deserialize<_iffzpgud.Organization>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_is64bt6d.FkRelationEmployee>) {
+      return (data as List)
+              .map((e) => deserialize<_is64bt6d.FkRelationEmployee>(e))
+              .toList()
+          as T;
+    }
+    if (t == _is.getType<List<_is64bt6d.FkRelationEmployee>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_is64bt6d.FkRelationEmployee>(e))
                     .toList()
               : null)
           as T;
@@ -13186,6 +13365,9 @@ class Protocol extends _is.DatabaseSerializationManager {
       _i9x7ls0c.Person => 'Person',
       _iepu1h7u.BleedChild => 'BleedChild',
       _ipkncx5k.BleedRoot => 'BleedRoot',
+      _icno6wzp.FkRelationCompany => 'FkRelationCompany',
+      _is64bt6d.FkRelationEmployee => 'FkRelationEmployee',
+      _iu6o6gsh.FkRelationOffice => 'FkRelationOffice',
       _ilvqc6dx.GeneratedRelationCompany => 'GeneratedRelationCompany',
       _i3ralext.GeneratedRelationEmployee => 'GeneratedRelationEmployee',
       _isfv2yco.GeneratedRelationOffice => 'GeneratedRelationOffice',
@@ -13598,6 +13780,12 @@ class Protocol extends _is.DatabaseSerializationManager {
         return 'BleedChild';
       case _ipkncx5k.BleedRoot():
         return 'BleedRoot';
+      case _icno6wzp.FkRelationCompany():
+        return 'FkRelationCompany';
+      case _is64bt6d.FkRelationEmployee():
+        return 'FkRelationEmployee';
+      case _iu6o6gsh.FkRelationOffice():
+        return 'FkRelationOffice';
       case _ilvqc6dx.GeneratedRelationCompany():
         return 'GeneratedRelationCompany';
       case _i3ralext.GeneratedRelationEmployee():
@@ -14355,6 +14543,15 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (dataClassName == 'BleedRoot') {
       return deserialize<_ipkncx5k.BleedRoot>(data['data']);
     }
+    if (dataClassName == 'FkRelationCompany') {
+      return deserialize<_icno6wzp.FkRelationCompany>(data['data']);
+    }
+    if (dataClassName == 'FkRelationEmployee') {
+      return deserialize<_is64bt6d.FkRelationEmployee>(data['data']);
+    }
+    if (dataClassName == 'FkRelationOffice') {
+      return deserialize<_iu6o6gsh.FkRelationOffice>(data['data']);
+    }
     if (dataClassName == 'GeneratedRelationCompany') {
       return deserialize<_ilvqc6dx.GeneratedRelationCompany>(data['data']);
     }
@@ -14959,6 +15156,12 @@ class Protocol extends _is.DatabaseSerializationManager {
         return _iepu1h7u.BleedChild.t;
       case _ipkncx5k.BleedRoot:
         return _ipkncx5k.BleedRoot.t;
+      case _icno6wzp.FkRelationCompany:
+        return _icno6wzp.FkRelationCompany.t;
+      case _is64bt6d.FkRelationEmployee:
+        return _is64bt6d.FkRelationEmployee.t;
+      case _iu6o6gsh.FkRelationOffice:
+        return _iu6o6gsh.FkRelationOffice.t;
       case _ilvqc6dx.GeneratedRelationCompany:
         return _ilvqc6dx.GeneratedRelationCompany.t;
       case _i3ralext.GeneratedRelationEmployee:
