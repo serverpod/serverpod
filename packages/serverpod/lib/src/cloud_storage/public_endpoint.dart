@@ -99,21 +99,25 @@ class CloudStoragePublicEndpoint extends Endpoint {
     var storage = server.serverpod.storage[storageId];
     if (storage is! DatabaseCloudStorage) return false;
 
-    await storage.storeUnverifiedFile(
-      session: session,
-      path: path,
-      byteData: byteData,
-      options: StoreFileOptions(
-        preventOverwrite: uploadInfo.preventOverwrite,
-        metadata: FileMetadata(
-          contentType: uploadInfo.contentType,
-          cacheControl: uploadInfo.cacheControl,
-          contentDisposition: uploadInfo.contentDisposition,
-          contentEncoding: uploadInfo.contentEncoding,
-          custom: _decodeCustomMetadata(uploadInfo.customMetadata),
+    try {
+      await storage.storeUnverifiedFile(
+        session: session,
+        path: path,
+        byteData: byteData,
+        options: StoreFileOptions(
+          preventOverwrite: uploadInfo.preventOverwrite,
+          metadata: FileMetadata(
+            contentType: uploadInfo.contentType,
+            cacheControl: uploadInfo.cacheControl,
+            contentDisposition: uploadInfo.contentDisposition,
+            contentEncoding: uploadInfo.contentEncoding,
+            custom: _decodeCustomMetadata(uploadInfo.customMetadata),
+          ),
         ),
-      ),
-    );
+      );
+    } on CloudStorageFileAlreadyExistsException {
+      return false;
+    }
 
     await CloudStorageDirectUploadEntry.db.deleteRow(session, uploadInfo);
 
