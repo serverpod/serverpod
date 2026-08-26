@@ -6,8 +6,20 @@ environment:
 
 workspace:
   - examples/auth/*
+  # `auth_example_flutter` is intentionally excluded, see
+  # util/non_workspace_packages.
+  - examples/legacy/auth_example/auth_example_client
+  - examples/legacy/auth_example/auth_example_server
   - examples/middleware/*
   - integrations/*
+  # `serverpod_auth_google_flutter` is intentionally excluded, see
+  # util/non_workspace_packages.
+  - modules/legacy/serverpod_auth/serverpod_auth_apple_flutter
+  - modules/legacy/serverpod_auth/serverpod_auth_client
+  - modules/legacy/serverpod_auth/serverpod_auth_email_flutter
+  - modules/legacy/serverpod_auth/serverpod_auth_firebase_flutter
+  - modules/legacy/serverpod_auth/serverpod_auth_server
+  - modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
   - modules/serverpod_auth/*/*
   - packages/*
   - tests/*
@@ -18,36 +30,33 @@ dev_dependencies:
   melos: ^8.0.0
   sort_pubspec_dependencies: ^0.0.2
 
-dependency_overrides:
-  serverpod_auth_client:
-    path: modules/legacy/serverpod_auth/serverpod_auth_client
-  serverpod_auth_server:
-    path: modules/legacy/serverpod_auth/serverpod_auth_server
-
 melos:
   command:
     bootstrap:
       hooks:
-        post: |
-          for pkg in \
-            modules/legacy/serverpod_chat/serverpod_chat_server \
-            modules/legacy/serverpod_chat/serverpod_chat_client \
-            modules/legacy/serverpod_chat/serverpod_chat_flutter \
-            examples/legacy/chat/chat_server \
-            examples/legacy/chat/chat_client \
-            examples/legacy/chat/chat_flutter \
-            modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_flutter/storybook
-          do
-            echo "Resolving $pkg"
-            (cd "$MELOS_ROOT_PATH/$pkg" && dart pub get)
-          done
+        # Resolve the packages that cannot join the workspace. The list, and why
+        # each package is excluded, lives in util/non_workspace_packages.
+        post: cd "$MELOS_ROOT_PATH" && util/pub_get_non_workspace
   scripts:
+    # The lint scripts analyze the workspace and, via
+    # util/analyze_non_workspace, the packages that are not workspace members.
+    # Melos is a dev_dependency rather than a global install, so it is not on
+    # the PATH: nested invocations have to go through `dart run melos`.
     lint:
-      run: melos exec --ignore="serverpod_templates" -- dart analyze --fatal-warnings
+      description: Analyze every package, warnings fatal.
+      steps:
+        - dart run melos exec --ignore="serverpod_templates" -- dart analyze --fatal-warnings
+        - util/analyze_non_workspace --fatal-warnings
     lint_loose:
-      run: melos exec --ignore="serverpod_templates" -- dart analyze
+      description: Analyze every package, nothing fatal beyond errors.
+      steps:
+        - dart run melos exec --ignore="serverpod_templates" -- dart analyze
+        - util/analyze_non_workspace
     lint_strict:
-      run: melos exec --ignore="serverpod_templates" -- dart analyze --fatal-infos --fatal-warnings
+      description: Analyze every package, infos and warnings fatal.
+      steps:
+        - dart run melos exec --ignore="serverpod_templates" -- dart analyze --fatal-infos --fatal-warnings
+        - util/analyze_non_workspace --fatal-infos --fatal-warnings
     test:
       description: >-
         Run the primary host test suites via `dart test`. Embedded PostgreSQL is
@@ -60,6 +69,7 @@ melos:
         - test_unit
         - test_bootstrap
         - test_integration
+        - test_non_workspace
     test_unit:
       description: Unit tests across all Dart-only packages.
       run: melos exec --concurrency 1 --no-flutter --dir-exists=test --ignore="serverpod_cli_e2e_test" --ignore="bootstrap_project" --ignore="serverpod_templates" --ignore="modulename*" --ignore="projectname*" -- dart test -x integration --reporter=failures-only
@@ -79,6 +89,12 @@ melos:
         - test_integration_server
         - test_integration_modules
         - test_integration_sqlite_server
+    test_non_workspace:
+      description: >-
+        Unit tests of the packages that are not workspace members, which
+        `melos exec` cannot reach. See util/non_workspace_packages. Needs the
+        Flutter SDK, since most of these packages are Flutter packages.
+      run: util/run_tests_non_workspace
     test_integration_embedded_pg_build:
       description: >-
         Build the embedded PostgreSQL bundle from source in an isolated cache,

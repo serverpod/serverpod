@@ -6,6 +6,7 @@ linter:
     avoid_escaping_inner_quotes: false
     directives_ordering: false
     prefer_final_in_for_each: false
+    prefer_initializing_formals: false
     prefer_final_locals: false
     sort_pub_dependencies: false
 

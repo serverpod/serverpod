@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Resolves the packages that are not members of the pub workspace. See
+# util/non_workspace_packages for why they are excluded.
+#
+# Run by the `melos bootstrap` post hook, and by util/analyze_non_workspace and
+# util/run_tests_non_workspace so those also work in CI jobs that only do a
+# plain `dart pub get` at the workspace root.
+
+if [ ! -f util/.serverpod_util_root ]; then
+    echo "Run this script from the root of the Serverpod repository"
+    echo "I.e. util/pub_get_non_workspace"
+    exit 1
+fi
+
+. "util/non_workspace_packages"
+
+exit_code=0
+
+for pkg in "${NON_WORKSPACE_PACKAGE_PATHS[@]}"
+do
+    echo "### Resolving $pkg"
+    (cd "$pkg" && dart pub get) || exit_code=1
+done
+
+exit $exit_code

@@ -10,12 +10,9 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
   sdk: '^3.12.2'
+
+resolution: workspace
+
 dependencies:
   lints: '>=3.0.0 <7.0.0'
   serverpod_client: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
