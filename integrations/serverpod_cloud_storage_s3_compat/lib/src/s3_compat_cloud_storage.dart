@@ -142,6 +142,22 @@ class S3CompatCloudStorage extends CloudStorage with CloudStorageWithOptions {
   }
 
   @override
+  Future<Uri?> getPresignedUrl({
+    required Session session,
+    required String path,
+    String method = 'GET',
+    Duration expiration = const Duration(minutes: 15),
+  }) async {
+    if (!await fileExists(session: session, path: path)) return null;
+
+    return _client.getPresignedUrl(
+      key: path,
+      method: method,
+      expiration: expiration,
+    );
+  }
+
+  @override
   Future<bool> fileExists({
     required Session session,
     required String path,
