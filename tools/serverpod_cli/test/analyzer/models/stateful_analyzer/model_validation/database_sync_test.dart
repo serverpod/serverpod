@@ -135,7 +135,7 @@ $indexes
 
     test(
       'with an implicit primary key when validating then an error is '
-      'generated on the fields key.',
+      'generated on the database key.',
       () {
         var errors = validate([
           crdtScopeModel,
@@ -151,15 +151,15 @@ $indexes
                 'Tables with "database: sync" must have a UUID primary key. '
                 'Declare the id field as '
                 '"id: UuidValue?, defaultPersist=random_v7".',
-            span: 'fields',
+            span: 'sync',
           ),
         ]);
       },
     );
 
     test(
-      'without any fields when validating then the errors are generated on '
-      'the table key.',
+      'without any fields when validating then an error is generated on '
+      'the database key.',
       () {
         var errors = validate([crdtScopeModel, personModel(fields: null)]);
 
@@ -169,7 +169,7 @@ $indexes
                 'Tables with "database: sync" must have a UUID primary key. '
                 'Declare the id field as '
                 '"id: UuidValue?, defaultPersist=random_v7".',
-            span: 'table',
+            span: 'sync',
           ),
         ]);
       },
@@ -752,7 +752,7 @@ $indexes
   group('Given a child model with "database: sync"', () {
     test(
       'inheriting a unique index without scopeId when validating then an '
-      'error is generated on the extends key.',
+      'error is generated on the table key.',
       () {
         var errors = validate([
           crdtScopeModel,
@@ -787,7 +787,7 @@ $indexes
                 'field on tables with "database: sync". Only unique indexes '
                 'composed exclusively of relations to other tables with '
                 '"database: sync" can be global.',
-            span: 'Base',
+            span: 'child',
           ),
         ]);
       },
