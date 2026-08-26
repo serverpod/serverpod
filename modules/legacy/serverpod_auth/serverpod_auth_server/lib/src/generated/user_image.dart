@@ -88,11 +88,15 @@ abstract class UserImage
     };
   }
 
-  static UserImageInclude include({
-    _is.SelectColumnsBuilder<UserImageTable>? select,
-  }) {
-    return UserImageInclude._(selectedColumns: select?.call(UserImage.t));
+  /// Builds a complete [UserImageInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UserImageInclude include() {
+    return UserImageInclude._();
   }
+
+  /// Builds a complete [UserImageIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserImageIncludeList includeList({
     _is.WhereExpressionBuilder<UserImageTable>? where,
@@ -101,9 +105,45 @@ abstract class UserImage
     _is.OrderByBuilder<UserImageTable>? orderBy,
     _is.OrderByListBuilder<UserImageTable>? orderByList,
     UserImageInclude? include,
-    _is.SelectColumnsBuilder<UserImageTable>? select,
   }) {
     return UserImageIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserImage.t),
+      orderByList: orderByList?.call(UserImage.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserImageJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserImageJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+  }) {
+    return _UserImageJsonInclude._(selectedColumns: select?.call(UserImage.t));
+  }
+
+  /// Builds a JSON-compatible [UserImageJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserImageJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserImageTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserImageTable>? orderBy,
+    _is.OrderByListBuilder<UserImageTable>? orderByList,
+    UserImageJsonInclude? include,
+    _is.SelectColumnsBuilder<UserImageTable>? select,
+  }) {
+    return _UserImageJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -211,8 +251,46 @@ class UserImageTable extends _is.Table<int?> {
   ];
 }
 
-class UserImageInclude extends _is.IncludeObject {
-  UserImageInclude._({this.selectedColumns});
+abstract interface class UserImageJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserImageJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserImageInclude extends _is.IncludeObject
+    implements UserImageJsonInclude, _is.FullModelInclude {
+  UserImageInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserImage.t;
+}
+
+final class UserImageIncludeList extends _is.IncludeList
+    implements UserImageJsonIncludeList, _is.FullModelInclude {
+  UserImageIncludeList._({
+    _is.WhereExpressionBuilder<UserImageTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserImageInclude? super.include,
+  }) {
+    super.where = where?.call(UserImage.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserImage.t;
+}
+
+final class _UserImageJsonInclude extends _is.IncludeObject
+    implements UserImageJsonInclude {
+  _UserImageJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -224,14 +302,15 @@ class UserImageInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserImage.t;
 }
 
-class UserImageIncludeList extends _is.IncludeList {
-  UserImageIncludeList._({
+final class _UserImageJsonIncludeList extends _is.IncludeList
+    implements UserImageJsonIncludeList {
+  _UserImageJsonIncludeList._({
     _is.WhereExpressionBuilder<UserImageTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserImageJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserImage.t);
@@ -353,6 +432,8 @@ class UserImageRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -404,6 +485,8 @@ class UserImageRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -448,6 +531,8 @@ class UserImageRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -102,11 +102,15 @@ abstract class AuthUser
     };
   }
 
-  static AuthUserInclude include({
-    _is.SelectColumnsBuilder<AuthUserTable>? select,
-  }) {
-    return AuthUserInclude._(selectedColumns: select?.call(AuthUser.t));
+  /// Builds a complete [AuthUserInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AuthUserInclude include() {
+    return AuthUserInclude._();
   }
+
+  /// Builds a complete [AuthUserIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AuthUserIncludeList includeList({
     _is.WhereExpressionBuilder<AuthUserTable>? where,
@@ -115,9 +119,45 @@ abstract class AuthUser
     _is.OrderByBuilder<AuthUserTable>? orderBy,
     _is.OrderByListBuilder<AuthUserTable>? orderByList,
     AuthUserInclude? include,
-    _is.SelectColumnsBuilder<AuthUserTable>? select,
   }) {
     return AuthUserIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthUser.t),
+      orderByList: orderByList?.call(AuthUser.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AuthUserJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AuthUserJsonInclude includeJson({
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+  }) {
+    return _AuthUserJsonInclude._(selectedColumns: select?.call(AuthUser.t));
+  }
+
+  /// Builds a JSON-compatible [AuthUserJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AuthUserJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AuthUserTable>? orderBy,
+    _is.OrderByListBuilder<AuthUserTable>? orderByList,
+    AuthUserJsonInclude? include,
+    _is.SelectColumnsBuilder<AuthUserTable>? select,
+  }) {
+    return _AuthUserJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,8 +267,46 @@ class AuthUserTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class AuthUserInclude extends _is.IncludeObject {
-  AuthUserInclude._({this.selectedColumns});
+abstract interface class AuthUserJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class AuthUserJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class AuthUserInclude extends _is.IncludeObject
+    implements AuthUserJsonInclude, _is.FullModelInclude {
+  AuthUserInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AuthUser.t;
+}
+
+final class AuthUserIncludeList extends _is.IncludeList
+    implements AuthUserJsonIncludeList, _is.FullModelInclude {
+  AuthUserIncludeList._({
+    _is.WhereExpressionBuilder<AuthUserTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AuthUserInclude? super.include,
+  }) {
+    super.where = where?.call(AuthUser.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AuthUser.t;
+}
+
+final class _AuthUserJsonInclude extends _is.IncludeObject
+    implements AuthUserJsonInclude {
+  _AuthUserJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -240,14 +318,15 @@ class AuthUserInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => AuthUser.t;
 }
 
-class AuthUserIncludeList extends _is.IncludeList {
-  AuthUserIncludeList._({
+final class _AuthUserJsonIncludeList extends _is.IncludeList
+    implements AuthUserJsonIncludeList {
+  _AuthUserJsonIncludeList._({
     _is.WhereExpressionBuilder<AuthUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AuthUserJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(AuthUser.t);
@@ -369,6 +448,8 @@ class AuthUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -420,6 +501,8 @@ class AuthUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -464,6 +547,8 @@ class AuthUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

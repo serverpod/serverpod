@@ -89,13 +89,15 @@ abstract class EmailFailedSignIn
     };
   }
 
-  static EmailFailedSignInInclude include({
-    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
-  }) {
-    return EmailFailedSignInInclude._(
-      selectedColumns: select?.call(EmailFailedSignIn.t),
-    );
+  /// Builds a complete [EmailFailedSignInInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EmailFailedSignInInclude include() {
+    return EmailFailedSignInInclude._();
   }
+
+  /// Builds a complete [EmailFailedSignInIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmailFailedSignInIncludeList includeList({
     _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
@@ -104,9 +106,47 @@ abstract class EmailFailedSignIn
     _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
     _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
-    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
   }) {
     return EmailFailedSignInIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailFailedSignIn.t),
+      orderByList: orderByList?.call(EmailFailedSignIn.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailFailedSignInJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmailFailedSignInJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+  }) {
+    return _EmailFailedSignInJsonInclude._(
+      selectedColumns: select?.call(EmailFailedSignIn.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailFailedSignInJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmailFailedSignInJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    EmailFailedSignInJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailFailedSignInTable>? select,
+  }) {
+    return _EmailFailedSignInJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -215,8 +255,46 @@ class EmailFailedSignInTable extends _is.Table<int?> {
   ];
 }
 
-class EmailFailedSignInInclude extends _is.IncludeObject {
-  EmailFailedSignInInclude._({this.selectedColumns});
+abstract interface class EmailFailedSignInJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmailFailedSignInJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmailFailedSignInInclude extends _is.IncludeObject
+    implements EmailFailedSignInJsonInclude, _is.FullModelInclude {
+  EmailFailedSignInInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EmailFailedSignIn.t;
+}
+
+final class EmailFailedSignInIncludeList extends _is.IncludeList
+    implements EmailFailedSignInJsonIncludeList, _is.FullModelInclude {
+  EmailFailedSignInIncludeList._({
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmailFailedSignInInclude? super.include,
+  }) {
+    super.where = where?.call(EmailFailedSignIn.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EmailFailedSignIn.t;
+}
+
+final class _EmailFailedSignInJsonInclude extends _is.IncludeObject
+    implements EmailFailedSignInJsonInclude {
+  _EmailFailedSignInJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -228,14 +306,15 @@ class EmailFailedSignInInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EmailFailedSignIn.t;
 }
 
-class EmailFailedSignInIncludeList extends _is.IncludeList {
-  EmailFailedSignInIncludeList._({
+final class _EmailFailedSignInJsonIncludeList extends _is.IncludeList
+    implements EmailFailedSignInJsonIncludeList {
+  _EmailFailedSignInJsonIncludeList._({
     _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmailFailedSignInJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EmailFailedSignIn.t);
@@ -357,6 +436,8 @@ class EmailFailedSignInRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -408,6 +489,8 @@ class EmailFailedSignInRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -452,6 +535,8 @@ class EmailFailedSignInRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -77,13 +77,15 @@ abstract class LongImplicitIdField
     };
   }
 
-  static LongImplicitIdFieldInclude include({
-    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
-  }) {
-    return LongImplicitIdFieldInclude._(
-      selectedColumns: select?.call(LongImplicitIdField.t),
-    );
+  /// Builds a complete [LongImplicitIdFieldInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static LongImplicitIdFieldInclude include() {
+    return LongImplicitIdFieldInclude._();
   }
+
+  /// Builds a complete [LongImplicitIdFieldIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static LongImplicitIdFieldIncludeList includeList({
     _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
@@ -92,9 +94,47 @@ abstract class LongImplicitIdField
     _is.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
     _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
     LongImplicitIdFieldInclude? include,
-    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
   }) {
     return LongImplicitIdFieldIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LongImplicitIdField.t),
+      orderByList: orderByList?.call(LongImplicitIdField.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [LongImplicitIdFieldJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static LongImplicitIdFieldJsonInclude includeJson({
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+  }) {
+    return _LongImplicitIdFieldJsonInclude._(
+      selectedColumns: select?.call(LongImplicitIdField.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [LongImplicitIdFieldJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static LongImplicitIdFieldJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LongImplicitIdFieldTable>? orderBy,
+    _is.OrderByListBuilder<LongImplicitIdFieldTable>? orderByList,
+    LongImplicitIdFieldJsonInclude? include,
+    _is.SelectColumnsBuilder<LongImplicitIdFieldTable>? select,
+  }) {
+    return _LongImplicitIdFieldJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -221,8 +261,46 @@ class LongImplicitIdFieldTable extends _is.Table<int?> {
   ];
 }
 
-class LongImplicitIdFieldInclude extends _is.IncludeObject {
-  LongImplicitIdFieldInclude._({this.selectedColumns});
+abstract interface class LongImplicitIdFieldJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class LongImplicitIdFieldJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class LongImplicitIdFieldInclude extends _is.IncludeObject
+    implements LongImplicitIdFieldJsonInclude, _is.FullModelInclude {
+  LongImplicitIdFieldInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => LongImplicitIdField.t;
+}
+
+final class LongImplicitIdFieldIncludeList extends _is.IncludeList
+    implements LongImplicitIdFieldJsonIncludeList, _is.FullModelInclude {
+  LongImplicitIdFieldIncludeList._({
+    _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    LongImplicitIdFieldInclude? super.include,
+  }) {
+    super.where = where?.call(LongImplicitIdField.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => LongImplicitIdField.t;
+}
+
+final class _LongImplicitIdFieldJsonInclude extends _is.IncludeObject
+    implements LongImplicitIdFieldJsonInclude {
+  _LongImplicitIdFieldJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -234,14 +312,15 @@ class LongImplicitIdFieldInclude extends _is.IncludeObject {
   _is.Table<int?> get table => LongImplicitIdField.t;
 }
 
-class LongImplicitIdFieldIncludeList extends _is.IncludeList {
-  LongImplicitIdFieldIncludeList._({
+final class _LongImplicitIdFieldJsonIncludeList extends _is.IncludeList
+    implements LongImplicitIdFieldJsonIncludeList {
+  _LongImplicitIdFieldJsonIncludeList._({
     _is.WhereExpressionBuilder<LongImplicitIdFieldTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    LongImplicitIdFieldJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(LongImplicitIdField.t);
@@ -363,6 +442,8 @@ class LongImplicitIdFieldRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -414,6 +495,8 @@ class LongImplicitIdFieldRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -458,6 +541,8 @@ class LongImplicitIdFieldRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

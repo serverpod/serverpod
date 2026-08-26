@@ -125,13 +125,15 @@ abstract class RateLimitedRequestAttempt
     return {};
   }
 
-  static RateLimitedRequestAttemptInclude include({
-    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
-  }) {
-    return RateLimitedRequestAttemptInclude._(
-      selectedColumns: select?.call(RateLimitedRequestAttempt.t),
-    );
+  /// Builds a complete [RateLimitedRequestAttemptInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static RateLimitedRequestAttemptInclude include() {
+    return RateLimitedRequestAttemptInclude._();
   }
+
+  /// Builds a complete [RateLimitedRequestAttemptIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RateLimitedRequestAttemptIncludeList includeList({
     _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
@@ -140,9 +142,47 @@ abstract class RateLimitedRequestAttempt
     _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
     _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
     RateLimitedRequestAttemptInclude? include,
-    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
   }) {
     return RateLimitedRequestAttemptIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RateLimitedRequestAttempt.t),
+      orderByList: orderByList?.call(RateLimitedRequestAttempt.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RateLimitedRequestAttemptJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RateLimitedRequestAttemptJsonInclude includeJson({
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+  }) {
+    return _RateLimitedRequestAttemptJsonInclude._(
+      selectedColumns: select?.call(RateLimitedRequestAttempt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RateLimitedRequestAttemptJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RateLimitedRequestAttemptJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RateLimitedRequestAttemptTable>? orderBy,
+    _is.OrderByListBuilder<RateLimitedRequestAttemptTable>? orderByList,
+    RateLimitedRequestAttemptJsonInclude? include,
+    _is.SelectColumnsBuilder<RateLimitedRequestAttemptTable>? select,
+  }) {
+    return _RateLimitedRequestAttemptJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -319,8 +359,46 @@ class RateLimitedRequestAttemptTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
-  RateLimitedRequestAttemptInclude._({this.selectedColumns});
+abstract interface class RateLimitedRequestAttemptJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class RateLimitedRequestAttemptJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class RateLimitedRequestAttemptInclude extends _is.IncludeObject
+    implements RateLimitedRequestAttemptJsonInclude, _is.FullModelInclude {
+  RateLimitedRequestAttemptInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => RateLimitedRequestAttempt.t;
+}
+
+final class RateLimitedRequestAttemptIncludeList extends _is.IncludeList
+    implements RateLimitedRequestAttemptJsonIncludeList, _is.FullModelInclude {
+  RateLimitedRequestAttemptIncludeList._({
+    _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RateLimitedRequestAttemptInclude? super.include,
+  }) {
+    super.where = where?.call(RateLimitedRequestAttempt.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => RateLimitedRequestAttempt.t;
+}
+
+final class _RateLimitedRequestAttemptJsonInclude extends _is.IncludeObject
+    implements RateLimitedRequestAttemptJsonInclude {
+  _RateLimitedRequestAttemptJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -332,14 +410,15 @@ class RateLimitedRequestAttemptInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => RateLimitedRequestAttempt.t;
 }
 
-class RateLimitedRequestAttemptIncludeList extends _is.IncludeList {
-  RateLimitedRequestAttemptIncludeList._({
+final class _RateLimitedRequestAttemptJsonIncludeList extends _is.IncludeList
+    implements RateLimitedRequestAttemptJsonIncludeList {
+  _RateLimitedRequestAttemptJsonIncludeList._({
     _is.WhereExpressionBuilder<RateLimitedRequestAttemptTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RateLimitedRequestAttemptJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RateLimitedRequestAttempt.t);
@@ -461,6 +540,8 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -512,6 +593,8 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -556,6 +639,8 @@ class RateLimitedRequestAttemptRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

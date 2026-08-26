@@ -179,15 +179,15 @@ abstract class RefreshToken
     return {};
   }
 
-  static RefreshTokenInclude include({
-    _ivyervu7.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
-  }) {
-    return RefreshTokenInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(RefreshToken.t),
-    );
+  /// Builds a complete [RefreshTokenInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static RefreshTokenInclude include({_ivyervu7.AuthUserInclude? authUser}) {
+    return RefreshTokenInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [RefreshTokenIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RefreshTokenIncludeList includeList({
     _is.WhereExpressionBuilder<RefreshTokenTable>? where,
@@ -196,9 +196,49 @@ abstract class RefreshToken
     _is.OrderByBuilder<RefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     RefreshTokenInclude? include,
-    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
   }) {
     return RefreshTokenIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RefreshToken.t),
+      orderByList: orderByList?.call(RefreshToken.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RefreshTokenJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RefreshTokenJsonInclude includeJson({
+    _ivyervu7.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+  }) {
+    return _RefreshTokenJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(RefreshToken.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RefreshTokenJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RefreshTokenJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
+    RefreshTokenJsonInclude? include,
+    _is.SelectColumnsBuilder<RefreshTokenTable>? select,
+  }) {
+    return _RefreshTokenJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -456,15 +496,57 @@ class RefreshTokenTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class RefreshTokenInclude extends _is.IncludeObject {
-  RefreshTokenInclude._({
-    _ivyervu7.AuthUserInclude? authUser,
+abstract interface class RefreshTokenJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class RefreshTokenJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class RefreshTokenInclude extends _is.IncludeObject
+    implements RefreshTokenJsonInclude, _is.FullModelInclude {
+  RefreshTokenInclude._({_ivyervu7.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _ivyervu7.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => RefreshToken.t;
+}
+
+final class RefreshTokenIncludeList extends _is.IncludeList
+    implements RefreshTokenJsonIncludeList, _is.FullModelInclude {
+  RefreshTokenIncludeList._({
+    _is.WhereExpressionBuilder<RefreshTokenTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RefreshTokenInclude? super.include,
+  }) {
+    super.where = where?.call(RefreshToken.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => RefreshToken.t;
+}
+
+final class _RefreshTokenJsonInclude extends _is.IncludeObject
+    implements RefreshTokenJsonInclude {
+  _RefreshTokenJsonInclude._({
+    _ivyervu7.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _ivyervu7.AuthUserInclude? _authUser;
+  _ivyervu7.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -476,14 +558,15 @@ class RefreshTokenInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => RefreshToken.t;
 }
 
-class RefreshTokenIncludeList extends _is.IncludeList {
-  RefreshTokenIncludeList._({
+final class _RefreshTokenJsonIncludeList extends _is.IncludeList
+    implements RefreshTokenJsonIncludeList {
+  _RefreshTokenJsonIncludeList._({
     _is.WhereExpressionBuilder<RefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RefreshTokenJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RefreshToken.t);
@@ -613,6 +696,8 @@ class RefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -643,7 +728,7 @@ class RefreshTokenRepository {
     _is.OrderByBuilder<RefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _is.Transaction? transaction,
-    RefreshTokenInclude? include,
+    RefreshTokenJsonInclude? include,
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -666,6 +751,8 @@ class RefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -690,7 +777,7 @@ class RefreshTokenRepository {
     _is.OrderByBuilder<RefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<RefreshTokenTable>? orderByList,
     _is.Transaction? transaction,
-    RefreshTokenInclude? include,
+    RefreshTokenJsonInclude? include,
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -712,12 +799,14 @@ class RefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    RefreshTokenInclude? include,
+    RefreshTokenJsonInclude? include,
     _is.SelectColumnsBuilder<RefreshTokenTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

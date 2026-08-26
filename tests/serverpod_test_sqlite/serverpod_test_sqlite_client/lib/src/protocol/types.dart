@@ -333,9 +333,15 @@ abstract class Types
     };
   }
 
-  static TypesInclude include({_isd.SelectColumnsBuilder<TypesTable>? select}) {
-    return TypesInclude._(selectedColumns: select?.call(Types.t));
+  /// Builds a complete [TypesInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static TypesInclude include() {
+    return TypesInclude._();
   }
+
+  /// Builds a complete [TypesIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static TypesIncludeList includeList({
     _isd.WhereExpressionBuilder<TypesTable>? where,
@@ -344,9 +350,45 @@ abstract class Types
     _isd.OrderByBuilder<TypesTable>? orderBy,
     _isd.OrderByListBuilder<TypesTable>? orderByList,
     TypesInclude? include,
-    _isd.SelectColumnsBuilder<TypesTable>? select,
   }) {
     return TypesIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Types.t),
+      orderByList: orderByList?.call(Types.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [TypesJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static TypesJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<TypesTable>? select,
+  }) {
+    return _TypesJsonInclude._(selectedColumns: select?.call(Types.t));
+  }
+
+  /// Builds a JSON-compatible [TypesJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static TypesJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<TypesTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<TypesTable>? orderBy,
+    _isd.OrderByListBuilder<TypesTable>? orderByList,
+    TypesJsonInclude? include,
+    _isd.SelectColumnsBuilder<TypesTable>? select,
+  }) {
+    return _TypesJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -856,8 +898,46 @@ class TypesTable extends _isd.Table<int?> {
   ];
 }
 
-class TypesInclude extends _isd.IncludeObject {
-  TypesInclude._({this.selectedColumns});
+abstract interface class TypesJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class TypesJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class TypesInclude extends _isd.IncludeObject
+    implements TypesJsonInclude, _isd.FullModelInclude {
+  TypesInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => Types.t;
+}
+
+final class TypesIncludeList extends _isd.IncludeList
+    implements TypesJsonIncludeList, _isd.FullModelInclude {
+  TypesIncludeList._({
+    _isd.WhereExpressionBuilder<TypesTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    TypesInclude? super.include,
+  }) {
+    super.where = where?.call(Types.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Types.t;
+}
+
+final class _TypesJsonInclude extends _isd.IncludeObject
+    implements TypesJsonInclude {
+  _TypesJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -869,14 +949,15 @@ class TypesInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Types.t;
 }
 
-class TypesIncludeList extends _isd.IncludeList {
-  TypesIncludeList._({
+final class _TypesJsonIncludeList extends _isd.IncludeList
+    implements TypesJsonIncludeList {
+  _TypesJsonIncludeList._({
     _isd.WhereExpressionBuilder<TypesTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    TypesJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Types.t);
@@ -998,6 +1079,8 @@ class TypesRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -1049,6 +1132,8 @@ class TypesRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -1093,6 +1178,8 @@ class TypesRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

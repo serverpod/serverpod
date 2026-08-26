@@ -76,13 +76,15 @@ abstract class ModifiedColumnName
     };
   }
 
-  static ModifiedColumnNameInclude include({
-    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
-  }) {
-    return ModifiedColumnNameInclude._(
-      selectedColumns: select?.call(ModifiedColumnName.t),
-    );
+  /// Builds a complete [ModifiedColumnNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ModifiedColumnNameInclude include() {
+    return ModifiedColumnNameInclude._();
   }
+
+  /// Builds a complete [ModifiedColumnNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ModifiedColumnNameIncludeList includeList({
     _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
@@ -91,9 +93,47 @@ abstract class ModifiedColumnName
     _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
     _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
     ModifiedColumnNameInclude? include,
-    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
   }) {
     return ModifiedColumnNameIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ModifiedColumnName.t),
+      orderByList: orderByList?.call(ModifiedColumnName.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ModifiedColumnNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ModifiedColumnNameJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+  }) {
+    return _ModifiedColumnNameJsonInclude._(
+      selectedColumns: select?.call(ModifiedColumnName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ModifiedColumnNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ModifiedColumnNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ModifiedColumnNameTable>? orderBy,
+    _is.OrderByListBuilder<ModifiedColumnNameTable>? orderByList,
+    ModifiedColumnNameJsonInclude? include,
+    _is.SelectColumnsBuilder<ModifiedColumnNameTable>? select,
+  }) {
+    return _ModifiedColumnNameJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -186,8 +226,46 @@ class ModifiedColumnNameTable extends _is.Table<int?> {
   ];
 }
 
-class ModifiedColumnNameInclude extends _is.IncludeObject {
-  ModifiedColumnNameInclude._({this.selectedColumns});
+abstract interface class ModifiedColumnNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ModifiedColumnNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ModifiedColumnNameInclude extends _is.IncludeObject
+    implements ModifiedColumnNameJsonInclude, _is.FullModelInclude {
+  ModifiedColumnNameInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ModifiedColumnName.t;
+}
+
+final class ModifiedColumnNameIncludeList extends _is.IncludeList
+    implements ModifiedColumnNameJsonIncludeList, _is.FullModelInclude {
+  ModifiedColumnNameIncludeList._({
+    _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ModifiedColumnNameInclude? super.include,
+  }) {
+    super.where = where?.call(ModifiedColumnName.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ModifiedColumnName.t;
+}
+
+final class _ModifiedColumnNameJsonInclude extends _is.IncludeObject
+    implements ModifiedColumnNameJsonInclude {
+  _ModifiedColumnNameJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -199,14 +277,15 @@ class ModifiedColumnNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ModifiedColumnName.t;
 }
 
-class ModifiedColumnNameIncludeList extends _is.IncludeList {
-  ModifiedColumnNameIncludeList._({
+final class _ModifiedColumnNameJsonIncludeList extends _is.IncludeList
+    implements ModifiedColumnNameJsonIncludeList {
+  _ModifiedColumnNameJsonIncludeList._({
     _is.WhereExpressionBuilder<ModifiedColumnNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ModifiedColumnNameJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ModifiedColumnName.t);
@@ -328,6 +407,8 @@ class ModifiedColumnNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -379,6 +460,8 @@ class ModifiedColumnNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -423,6 +506,8 @@ class ModifiedColumnNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

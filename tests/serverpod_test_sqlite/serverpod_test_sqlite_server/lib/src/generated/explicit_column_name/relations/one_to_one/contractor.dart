@@ -93,15 +93,15 @@ abstract class Contractor
     };
   }
 
-  static ContractorInclude include({
-    _iml73r3x.ServiceInclude? service,
-    _is.SelectColumnsBuilder<ContractorTable>? select,
-  }) {
-    return ContractorInclude._(
-      service: service,
-      selectedColumns: select?.call(Contractor.t),
-    );
+  /// Builds a complete [ContractorInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ContractorInclude include({_iml73r3x.ServiceInclude? service}) {
+    return ContractorInclude._(service: service);
   }
+
+  /// Builds a complete [ContractorIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ContractorIncludeList includeList({
     _is.WhereExpressionBuilder<ContractorTable>? where,
@@ -110,9 +110,49 @@ abstract class Contractor
     _is.OrderByBuilder<ContractorTable>? orderBy,
     _is.OrderByListBuilder<ContractorTable>? orderByList,
     ContractorInclude? include,
-    _is.SelectColumnsBuilder<ContractorTable>? select,
   }) {
     return ContractorIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Contractor.t),
+      orderByList: orderByList?.call(Contractor.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ContractorJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ContractorJsonInclude includeJson({
+    _iml73r3x.ServiceJsonInclude? service,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+  }) {
+    return _ContractorJsonInclude._(
+      service: service,
+      selectedColumns: select?.call(Contractor.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ContractorJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ContractorJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ContractorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ContractorTable>? orderBy,
+    _is.OrderByListBuilder<ContractorTable>? orderByList,
+    ContractorJsonInclude? include,
+    _is.SelectColumnsBuilder<ContractorTable>? select,
+  }) {
+    return _ContractorJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -232,15 +272,57 @@ class ContractorTable extends _is.Table<int?> {
   }
 }
 
-class ContractorInclude extends _is.IncludeObject {
-  ContractorInclude._({
-    _iml73r3x.ServiceInclude? service,
+abstract interface class ContractorJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ContractorJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ContractorInclude extends _is.IncludeObject
+    implements ContractorJsonInclude, _is.FullModelInclude {
+  ContractorInclude._({_iml73r3x.ServiceInclude? service}) {
+    _service = service;
+  }
+
+  _iml73r3x.ServiceInclude? _service;
+
+  @override
+  Map<String, _is.Include?> get includes => {'service': _service};
+
+  @override
+  _is.Table<int?> get table => Contractor.t;
+}
+
+final class ContractorIncludeList extends _is.IncludeList
+    implements ContractorJsonIncludeList, _is.FullModelInclude {
+  ContractorIncludeList._({
+    _is.WhereExpressionBuilder<ContractorTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ContractorInclude? super.include,
+  }) {
+    super.where = where?.call(Contractor.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Contractor.t;
+}
+
+final class _ContractorJsonInclude extends _is.IncludeObject
+    implements ContractorJsonInclude {
+  _ContractorJsonInclude._({
+    _iml73r3x.ServiceJsonInclude? service,
     this.selectedColumns,
   }) {
     _service = service;
   }
 
-  _iml73r3x.ServiceInclude? _service;
+  _iml73r3x.ServiceJsonInclude? _service;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -252,14 +334,15 @@ class ContractorInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Contractor.t;
 }
 
-class ContractorIncludeList extends _is.IncludeList {
-  ContractorIncludeList._({
+final class _ContractorJsonIncludeList extends _is.IncludeList
+    implements ContractorJsonIncludeList {
+  _ContractorJsonIncludeList._({
     _is.WhereExpressionBuilder<ContractorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ContractorJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Contractor.t);
@@ -391,6 +474,8 @@ class ContractorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -421,7 +506,7 @@ class ContractorRepository {
     _is.OrderByBuilder<ContractorTable>? orderBy,
     _is.OrderByListBuilder<ContractorTable>? orderByList,
     _is.Transaction? transaction,
-    ContractorInclude? include,
+    ContractorJsonInclude? include,
     _is.SelectColumnsBuilder<ContractorTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -444,6 +529,8 @@ class ContractorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -468,7 +555,7 @@ class ContractorRepository {
     _is.OrderByBuilder<ContractorTable>? orderBy,
     _is.OrderByListBuilder<ContractorTable>? orderByList,
     _is.Transaction? transaction,
-    ContractorInclude? include,
+    ContractorJsonInclude? include,
     _is.SelectColumnsBuilder<ContractorTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -490,12 +577,14 @@ class ContractorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ContractorInclude? include,
+    ContractorJsonInclude? include,
     _is.SelectColumnsBuilder<ContractorTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

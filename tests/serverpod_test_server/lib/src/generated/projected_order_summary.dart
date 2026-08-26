@@ -70,8 +70,8 @@ abstract class ProjectedOrderSummary
     };
   }
 
-  static ProjectedOrderInclude include() {
-    return ProjectedOrder.include(
+  static ProjectedOrderJsonInclude include() {
+    return ProjectedOrder.includeJson(
       select: (t) => [
         ProjectedOrder.t.id,
         ProjectedOrder.t.summary,
@@ -79,14 +79,14 @@ abstract class ProjectedOrderSummary
     );
   }
 
-  static ProjectedOrderIncludeList includeList({
+  static ProjectedOrderJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedOrderTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedOrderTable>? orderBy,
     _is.OrderByListBuilder<ProjectedOrderTable>? orderByList,
   }) {
-    return ProjectedOrder.includeList(
+    return ProjectedOrder.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

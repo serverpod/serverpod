@@ -386,13 +386,15 @@ abstract class SharedModelContainer
     };
   }
 
-  static SharedModelContainerInclude include({
-    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
-  }) {
-    return SharedModelContainerInclude._(
-      selectedColumns: select?.call(SharedModelContainer.t),
-    );
+  /// Builds a complete [SharedModelContainerInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SharedModelContainerInclude include() {
+    return SharedModelContainerInclude._();
   }
+
+  /// Builds a complete [SharedModelContainerIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SharedModelContainerIncludeList includeList({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
@@ -401,9 +403,47 @@ abstract class SharedModelContainer
     _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
     _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
     SharedModelContainerInclude? include,
-    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
   }) {
     return SharedModelContainerIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SharedModelContainer.t),
+      orderByList: orderByList?.call(SharedModelContainer.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModelContainerJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SharedModelContainerJsonInclude includeJson({
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+  }) {
+    return _SharedModelContainerJsonInclude._(
+      selectedColumns: select?.call(SharedModelContainer.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModelContainerJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SharedModelContainerJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SharedModelContainerTable>? orderBy,
+    _is.OrderByListBuilder<SharedModelContainerTable>? orderByList,
+    SharedModelContainerJsonInclude? include,
+    _is.SelectColumnsBuilder<SharedModelContainerTable>? select,
+  }) {
+    return _SharedModelContainerJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -949,8 +989,46 @@ class SharedModelContainerTable extends _is.Table<int?> {
   ];
 }
 
-class SharedModelContainerInclude extends _is.IncludeObject {
-  SharedModelContainerInclude._({this.selectedColumns});
+abstract interface class SharedModelContainerJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SharedModelContainerJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SharedModelContainerInclude extends _is.IncludeObject
+    implements SharedModelContainerJsonInclude, _is.FullModelInclude {
+  SharedModelContainerInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => SharedModelContainer.t;
+}
+
+final class SharedModelContainerIncludeList extends _is.IncludeList
+    implements SharedModelContainerJsonIncludeList, _is.FullModelInclude {
+  SharedModelContainerIncludeList._({
+    _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SharedModelContainerInclude? super.include,
+  }) {
+    super.where = where?.call(SharedModelContainer.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SharedModelContainer.t;
+}
+
+final class _SharedModelContainerJsonInclude extends _is.IncludeObject
+    implements SharedModelContainerJsonInclude {
+  _SharedModelContainerJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -962,14 +1040,15 @@ class SharedModelContainerInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SharedModelContainer.t;
 }
 
-class SharedModelContainerIncludeList extends _is.IncludeList {
-  SharedModelContainerIncludeList._({
+final class _SharedModelContainerJsonIncludeList extends _is.IncludeList
+    implements SharedModelContainerJsonIncludeList {
+  _SharedModelContainerJsonIncludeList._({
     _is.WhereExpressionBuilder<SharedModelContainerTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SharedModelContainerJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SharedModelContainer.t);
@@ -1091,6 +1170,8 @@ class SharedModelContainerRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -1142,6 +1223,8 @@ class SharedModelContainerRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -1186,6 +1269,8 @@ class SharedModelContainerRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

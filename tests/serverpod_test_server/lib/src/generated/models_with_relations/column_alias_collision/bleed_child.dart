@@ -75,11 +75,15 @@ abstract class BleedChild
     };
   }
 
-  static BleedChildInclude include({
-    _is.SelectColumnsBuilder<BleedChildTable>? select,
-  }) {
-    return BleedChildInclude._(selectedColumns: select?.call(BleedChild.t));
+  /// Builds a complete [BleedChildInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BleedChildInclude include() {
+    return BleedChildInclude._();
   }
+
+  /// Builds a complete [BleedChildIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BleedChildIncludeList includeList({
     _is.WhereExpressionBuilder<BleedChildTable>? where,
@@ -88,9 +92,47 @@ abstract class BleedChild
     _is.OrderByBuilder<BleedChildTable>? orderBy,
     _is.OrderByListBuilder<BleedChildTable>? orderByList,
     BleedChildInclude? include,
-    _is.SelectColumnsBuilder<BleedChildTable>? select,
   }) {
     return BleedChildIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BleedChild.t),
+      orderByList: orderByList?.call(BleedChild.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BleedChildJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BleedChildJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+  }) {
+    return _BleedChildJsonInclude._(
+      selectedColumns: select?.call(BleedChild.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BleedChildJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BleedChildJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BleedChildTable>? orderBy,
+    _is.OrderByListBuilder<BleedChildTable>? orderByList,
+    BleedChildJsonInclude? include,
+    _is.SelectColumnsBuilder<BleedChildTable>? select,
+  }) {
+    return _BleedChildJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,8 +205,46 @@ class BleedChildTable extends _is.Table<int?> {
   ];
 }
 
-class BleedChildInclude extends _is.IncludeObject {
-  BleedChildInclude._({this.selectedColumns});
+abstract interface class BleedChildJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BleedChildJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BleedChildInclude extends _is.IncludeObject
+    implements BleedChildJsonInclude, _is.FullModelInclude {
+  BleedChildInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BleedChild.t;
+}
+
+final class BleedChildIncludeList extends _is.IncludeList
+    implements BleedChildJsonIncludeList, _is.FullModelInclude {
+  BleedChildIncludeList._({
+    _is.WhereExpressionBuilder<BleedChildTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BleedChildInclude? super.include,
+  }) {
+    super.where = where?.call(BleedChild.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BleedChild.t;
+}
+
+final class _BleedChildJsonInclude extends _is.IncludeObject
+    implements BleedChildJsonInclude {
+  _BleedChildJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -176,14 +256,15 @@ class BleedChildInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BleedChild.t;
 }
 
-class BleedChildIncludeList extends _is.IncludeList {
-  BleedChildIncludeList._({
+final class _BleedChildJsonIncludeList extends _is.IncludeList
+    implements BleedChildJsonIncludeList {
+  _BleedChildJsonIncludeList._({
     _is.WhereExpressionBuilder<BleedChildTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BleedChildJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(BleedChild.t);
@@ -305,6 +386,8 @@ class BleedChildRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -356,6 +439,8 @@ class BleedChildRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +485,8 @@ class BleedChildRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

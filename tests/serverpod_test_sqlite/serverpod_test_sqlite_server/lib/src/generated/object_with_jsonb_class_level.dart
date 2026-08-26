@@ -94,13 +94,15 @@ abstract class ObjectWithJsonbClassLevel
     };
   }
 
-  static ObjectWithJsonbClassLevelInclude include({
-    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
-  }) {
-    return ObjectWithJsonbClassLevelInclude._(
-      selectedColumns: select?.call(ObjectWithJsonbClassLevel.t),
-    );
+  /// Builds a complete [ObjectWithJsonbClassLevelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithJsonbClassLevelInclude include() {
+    return ObjectWithJsonbClassLevelInclude._();
   }
+
+  /// Builds a complete [ObjectWithJsonbClassLevelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithJsonbClassLevelIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
@@ -109,9 +111,47 @@ abstract class ObjectWithJsonbClassLevel
     _is.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
     ObjectWithJsonbClassLevelInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
   }) {
     return ObjectWithJsonbClassLevelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithJsonbClassLevel.t),
+      orderByList: orderByList?.call(ObjectWithJsonbClassLevel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithJsonbClassLevelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithJsonbClassLevelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
+  }) {
+    return _ObjectWithJsonbClassLevelJsonInclude._(
+      selectedColumns: select?.call(ObjectWithJsonbClassLevel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithJsonbClassLevelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithJsonbClassLevelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithJsonbClassLevelTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithJsonbClassLevelTable>? orderByList,
+    ObjectWithJsonbClassLevelJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithJsonbClassLevelTable>? select,
+  }) {
+    return _ObjectWithJsonbClassLevelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -224,8 +264,46 @@ class ObjectWithJsonbClassLevelTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
-  ObjectWithJsonbClassLevelInclude._({this.selectedColumns});
+abstract interface class ObjectWithJsonbClassLevelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithJsonbClassLevelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject
+    implements ObjectWithJsonbClassLevelJsonInclude, _is.FullModelInclude {
+  ObjectWithJsonbClassLevelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithJsonbClassLevel.t;
+}
+
+final class ObjectWithJsonbClassLevelIncludeList extends _is.IncludeList
+    implements ObjectWithJsonbClassLevelJsonIncludeList, _is.FullModelInclude {
+  ObjectWithJsonbClassLevelIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithJsonbClassLevelInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithJsonbClassLevel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithJsonbClassLevel.t;
+}
+
+final class _ObjectWithJsonbClassLevelJsonInclude extends _is.IncludeObject
+    implements ObjectWithJsonbClassLevelJsonInclude {
+  _ObjectWithJsonbClassLevelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -237,14 +315,15 @@ class ObjectWithJsonbClassLevelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithJsonbClassLevel.t;
 }
 
-class ObjectWithJsonbClassLevelIncludeList extends _is.IncludeList {
-  ObjectWithJsonbClassLevelIncludeList._({
+final class _ObjectWithJsonbClassLevelJsonIncludeList extends _is.IncludeList
+    implements ObjectWithJsonbClassLevelJsonIncludeList {
+  _ObjectWithJsonbClassLevelJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithJsonbClassLevelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithJsonbClassLevelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithJsonbClassLevel.t);
@@ -366,6 +445,8 @@ class ObjectWithJsonbClassLevelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -417,6 +498,8 @@ class ObjectWithJsonbClassLevelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -461,6 +544,8 @@ class ObjectWithJsonbClassLevelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

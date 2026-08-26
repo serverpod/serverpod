@@ -109,17 +109,21 @@ abstract class CityWithLongTableName
     };
   }
 
+  /// Builds a complete [CityWithLongTableNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CityWithLongTableNameInclude include({
     _i5nficvp.PersonWithLongTableNameIncludeList? citizens,
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
-    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
   }) {
     return CityWithLongTableNameInclude._(
       citizens: citizens,
       organizations: organizations,
-      selectedColumns: select?.call(CityWithLongTableName.t),
     );
   }
+
+  /// Builds a complete [CityWithLongTableNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CityWithLongTableNameIncludeList includeList({
     _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
@@ -128,9 +132,51 @@ abstract class CityWithLongTableName
     _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
     _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     CityWithLongTableNameInclude? include,
-    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
   }) {
     return CityWithLongTableNameIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CityWithLongTableName.t),
+      orderByList: orderByList?.call(CityWithLongTableName.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CityWithLongTableNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CityWithLongTableNameJsonInclude includeJson({
+    _i5nficvp.PersonWithLongTableNameJsonIncludeList? citizens,
+    _imc5i9r4.OrganizationWithLongTableNameJsonIncludeList? organizations,
+    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
+  }) {
+    return _CityWithLongTableNameJsonInclude._(
+      citizens: citizens,
+      organizations: organizations,
+      selectedColumns: select?.call(CityWithLongTableName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CityWithLongTableNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CityWithLongTableNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
+    _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
+    CityWithLongTableNameJsonInclude? include,
+    _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
+  }) {
+    return _CityWithLongTableNameJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -317,11 +363,17 @@ class CityWithLongTableNameTable extends _is.Table<int?> {
   }
 }
 
-class CityWithLongTableNameInclude extends _is.IncludeObject {
+abstract interface class CityWithLongTableNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CityWithLongTableNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CityWithLongTableNameInclude extends _is.IncludeObject
+    implements CityWithLongTableNameJsonInclude, _is.FullModelInclude {
   CityWithLongTableNameInclude._({
     _i5nficvp.PersonWithLongTableNameIncludeList? citizens,
     _imc5i9r4.OrganizationWithLongTableNameIncludeList? organizations,
-    this.selectedColumns,
   }) {
     _citizens = citizens;
     _organizations = organizations;
@@ -330,6 +382,51 @@ class CityWithLongTableNameInclude extends _is.IncludeObject {
   _i5nficvp.PersonWithLongTableNameIncludeList? _citizens;
 
   _imc5i9r4.OrganizationWithLongTableNameIncludeList? _organizations;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'citizens': _citizens,
+    'organizations': _organizations,
+  };
+
+  @override
+  _is.Table<int?> get table => CityWithLongTableName.t;
+}
+
+final class CityWithLongTableNameIncludeList extends _is.IncludeList
+    implements CityWithLongTableNameJsonIncludeList, _is.FullModelInclude {
+  CityWithLongTableNameIncludeList._({
+    _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CityWithLongTableNameInclude? super.include,
+  }) {
+    super.where = where?.call(CityWithLongTableName.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => CityWithLongTableName.t;
+}
+
+final class _CityWithLongTableNameJsonInclude extends _is.IncludeObject
+    implements CityWithLongTableNameJsonInclude {
+  _CityWithLongTableNameJsonInclude._({
+    _i5nficvp.PersonWithLongTableNameJsonIncludeList? citizens,
+    _imc5i9r4.OrganizationWithLongTableNameJsonIncludeList? organizations,
+    this.selectedColumns,
+  }) {
+    _citizens = citizens;
+    _organizations = organizations;
+  }
+
+  _i5nficvp.PersonWithLongTableNameJsonIncludeList? _citizens;
+
+  _imc5i9r4.OrganizationWithLongTableNameJsonIncludeList? _organizations;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -344,14 +441,15 @@ class CityWithLongTableNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => CityWithLongTableName.t;
 }
 
-class CityWithLongTableNameIncludeList extends _is.IncludeList {
-  CityWithLongTableNameIncludeList._({
+final class _CityWithLongTableNameJsonIncludeList extends _is.IncludeList
+    implements CityWithLongTableNameJsonIncludeList {
+  _CityWithLongTableNameJsonIncludeList._({
     _is.WhereExpressionBuilder<CityWithLongTableNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CityWithLongTableNameJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(CityWithLongTableName.t);
@@ -487,6 +585,8 @@ class CityWithLongTableNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -517,7 +617,7 @@ class CityWithLongTableNameRepository {
     _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
     _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _is.Transaction? transaction,
-    CityWithLongTableNameInclude? include,
+    CityWithLongTableNameJsonInclude? include,
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -540,6 +640,8 @@ class CityWithLongTableNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -564,7 +666,7 @@ class CityWithLongTableNameRepository {
     _is.OrderByBuilder<CityWithLongTableNameTable>? orderBy,
     _is.OrderByListBuilder<CityWithLongTableNameTable>? orderByList,
     _is.Transaction? transaction,
-    CityWithLongTableNameInclude? include,
+    CityWithLongTableNameJsonInclude? include,
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -586,12 +688,14 @@ class CityWithLongTableNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    CityWithLongTableNameInclude? include,
+    CityWithLongTableNameJsonInclude? include,
     _is.SelectColumnsBuilder<CityWithLongTableNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

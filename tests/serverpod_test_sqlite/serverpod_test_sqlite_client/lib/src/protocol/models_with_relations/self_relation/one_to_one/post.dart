@@ -105,17 +105,21 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [PostInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static PostInclude include({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
-    _isd.SelectColumnsBuilder<PostTable>? select,
   }) {
     return PostInclude._(
       previous: previous,
       next: next,
-      selectedColumns: select?.call(Post.t),
     );
   }
+
+  /// Builds a complete [PostIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PostIncludeList includeList({
     _isd.WhereExpressionBuilder<PostTable>? where,
@@ -124,9 +128,51 @@ abstract class Post implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<PostTable>? orderBy,
     _isd.OrderByListBuilder<PostTable>? orderByList,
     PostInclude? include,
-    _isd.SelectColumnsBuilder<PostTable>? select,
   }) {
     return PostIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Post.t),
+      orderByList: orderByList?.call(Post.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PostJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PostJsonInclude includeJson({
+    _ittc76ec.PostJsonInclude? previous,
+    _ittc76ec.PostJsonInclude? next,
+    _isd.SelectColumnsBuilder<PostTable>? select,
+  }) {
+    return _PostJsonInclude._(
+      previous: previous,
+      next: next,
+      selectedColumns: select?.call(Post.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PostJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PostJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<PostTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<PostTable>? orderBy,
+    _isd.OrderByListBuilder<PostTable>? orderByList,
+    PostJsonInclude? include,
+    _isd.SelectColumnsBuilder<PostTable>? select,
+  }) {
+    return _PostJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -265,11 +311,17 @@ class PostTable extends _isd.Table<int?> {
   }
 }
 
-class PostInclude extends _isd.IncludeObject {
+abstract interface class PostJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class PostJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class PostInclude extends _isd.IncludeObject
+    implements PostJsonInclude, _isd.FullModelInclude {
   PostInclude._({
     _ittc76ec.PostInclude? previous,
     _ittc76ec.PostInclude? next,
-    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -278,6 +330,51 @@ class PostInclude extends _isd.IncludeObject {
   _ittc76ec.PostInclude? _previous;
 
   _ittc76ec.PostInclude? _next;
+
+  @override
+  Map<String, _isd.Include?> get includes => {
+    'previous': _previous,
+    'next': _next,
+  };
+
+  @override
+  _isd.Table<int?> get table => Post.t;
+}
+
+final class PostIncludeList extends _isd.IncludeList
+    implements PostJsonIncludeList, _isd.FullModelInclude {
+  PostIncludeList._({
+    _isd.WhereExpressionBuilder<PostTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PostInclude? super.include,
+  }) {
+    super.where = where?.call(Post.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Post.t;
+}
+
+final class _PostJsonInclude extends _isd.IncludeObject
+    implements PostJsonInclude {
+  _PostJsonInclude._({
+    _ittc76ec.PostJsonInclude? previous,
+    _ittc76ec.PostJsonInclude? next,
+    this.selectedColumns,
+  }) {
+    _previous = previous;
+    _next = next;
+  }
+
+  _ittc76ec.PostJsonInclude? _previous;
+
+  _ittc76ec.PostJsonInclude? _next;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -292,14 +389,15 @@ class PostInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Post.t;
 }
 
-class PostIncludeList extends _isd.IncludeList {
-  PostIncludeList._({
+final class _PostJsonIncludeList extends _isd.IncludeList
+    implements PostJsonIncludeList {
+  _PostJsonIncludeList._({
     _isd.WhereExpressionBuilder<PostTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    PostJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Post.t);
@@ -431,6 +529,8 @@ class PostRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -461,7 +561,7 @@ class PostRepository {
     _isd.OrderByBuilder<PostTable>? orderBy,
     _isd.OrderByListBuilder<PostTable>? orderByList,
     _isd.Transaction? transaction,
-    PostInclude? include,
+    PostJsonInclude? include,
     _isd.SelectColumnsBuilder<PostTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -484,6 +584,8 @@ class PostRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -508,7 +610,7 @@ class PostRepository {
     _isd.OrderByBuilder<PostTable>? orderBy,
     _isd.OrderByListBuilder<PostTable>? orderByList,
     _isd.Transaction? transaction,
-    PostInclude? include,
+    PostJsonInclude? include,
     _isd.SelectColumnsBuilder<PostTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -530,12 +632,14 @@ class PostRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    PostInclude? include,
+    PostJsonInclude? include,
     _isd.SelectColumnsBuilder<PostTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

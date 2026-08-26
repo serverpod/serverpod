@@ -80,13 +80,15 @@ abstract class StringDefaultModel
     };
   }
 
-  static StringDefaultModelInclude include({
-    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
-  }) {
-    return StringDefaultModelInclude._(
-      selectedColumns: select?.call(StringDefaultModel.t),
-    );
+  /// Builds a complete [StringDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static StringDefaultModelInclude include() {
+    return StringDefaultModelInclude._();
   }
+
+  /// Builds a complete [StringDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static StringDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
@@ -95,9 +97,47 @@ abstract class StringDefaultModel
     _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     StringDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
   }) {
     return StringDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultModel.t),
+      orderByList: orderByList?.call(StringDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static StringDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+  }) {
+    return _StringDefaultModelJsonInclude._(
+      selectedColumns: select?.call(StringDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static StringDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    StringDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultModelTable>? select,
+  }) {
+    return _StringDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,8 +230,46 @@ class StringDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class StringDefaultModelInclude extends _is.IncludeObject {
-  StringDefaultModelInclude._({this.selectedColumns});
+abstract interface class StringDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class StringDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class StringDefaultModelInclude extends _is.IncludeObject
+    implements StringDefaultModelJsonInclude, _is.FullModelInclude {
+  StringDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultModel.t;
+}
+
+final class StringDefaultModelIncludeList extends _is.IncludeList
+    implements StringDefaultModelJsonIncludeList, _is.FullModelInclude {
+  StringDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    StringDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(StringDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultModel.t;
+}
+
+final class _StringDefaultModelJsonInclude extends _is.IncludeObject
+    implements StringDefaultModelJsonInclude {
+  _StringDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -203,14 +281,15 @@ class StringDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => StringDefaultModel.t;
 }
 
-class StringDefaultModelIncludeList extends _is.IncludeList {
-  StringDefaultModelIncludeList._({
+final class _StringDefaultModelJsonIncludeList extends _is.IncludeList
+    implements StringDefaultModelJsonIncludeList {
+  _StringDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    StringDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(StringDefaultModel.t);
@@ -332,6 +411,8 @@ class StringDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -383,6 +464,8 @@ class StringDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -427,6 +510,8 @@ class StringDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -71,13 +71,15 @@ abstract class ReadWriteTestEntry
     };
   }
 
-  static ReadWriteTestEntryInclude include({
-    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
-  }) {
-    return ReadWriteTestEntryInclude._(
-      selectedColumns: select?.call(ReadWriteTestEntry.t),
-    );
+  /// Builds a complete [ReadWriteTestEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ReadWriteTestEntryInclude include() {
+    return ReadWriteTestEntryInclude._();
   }
+
+  /// Builds a complete [ReadWriteTestEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ReadWriteTestEntryIncludeList includeList({
     _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
@@ -86,9 +88,47 @@ abstract class ReadWriteTestEntry
     _is.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
     _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
     ReadWriteTestEntryInclude? include,
-    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
   }) {
     return ReadWriteTestEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ReadWriteTestEntry.t),
+      orderByList: orderByList?.call(ReadWriteTestEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ReadWriteTestEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ReadWriteTestEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+  }) {
+    return _ReadWriteTestEntryJsonInclude._(
+      selectedColumns: select?.call(ReadWriteTestEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ReadWriteTestEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ReadWriteTestEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ReadWriteTestEntryTable>? orderBy,
+    _is.OrderByListBuilder<ReadWriteTestEntryTable>? orderByList,
+    ReadWriteTestEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<ReadWriteTestEntryTable>? select,
+  }) {
+    return _ReadWriteTestEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,8 +203,46 @@ class ReadWriteTestEntryTable extends _is.Table<int?> {
   ];
 }
 
-class ReadWriteTestEntryInclude extends _is.IncludeObject {
-  ReadWriteTestEntryInclude._({this.selectedColumns});
+abstract interface class ReadWriteTestEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ReadWriteTestEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ReadWriteTestEntryInclude extends _is.IncludeObject
+    implements ReadWriteTestEntryJsonInclude, _is.FullModelInclude {
+  ReadWriteTestEntryInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ReadWriteTestEntry.t;
+}
+
+final class ReadWriteTestEntryIncludeList extends _is.IncludeList
+    implements ReadWriteTestEntryJsonIncludeList, _is.FullModelInclude {
+  ReadWriteTestEntryIncludeList._({
+    _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ReadWriteTestEntryInclude? super.include,
+  }) {
+    super.where = where?.call(ReadWriteTestEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ReadWriteTestEntry.t;
+}
+
+final class _ReadWriteTestEntryJsonInclude extends _is.IncludeObject
+    implements ReadWriteTestEntryJsonInclude {
+  _ReadWriteTestEntryJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -176,14 +254,15 @@ class ReadWriteTestEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ReadWriteTestEntry.t;
 }
 
-class ReadWriteTestEntryIncludeList extends _is.IncludeList {
-  ReadWriteTestEntryIncludeList._({
+final class _ReadWriteTestEntryJsonIncludeList extends _is.IncludeList
+    implements ReadWriteTestEntryJsonIncludeList {
+  _ReadWriteTestEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<ReadWriteTestEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ReadWriteTestEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ReadWriteTestEntry.t);
@@ -305,6 +384,8 @@ class ReadWriteTestEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -356,6 +437,8 @@ class ReadWriteTestEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +483,8 @@ class ReadWriteTestEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

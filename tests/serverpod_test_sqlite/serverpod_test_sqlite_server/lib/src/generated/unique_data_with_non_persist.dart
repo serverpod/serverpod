@@ -86,13 +86,15 @@ abstract class UniqueDataWithNonPersist
     };
   }
 
-  static UniqueDataWithNonPersistInclude include({
-    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
-  }) {
-    return UniqueDataWithNonPersistInclude._(
-      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
-    );
+  /// Builds a complete [UniqueDataWithNonPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UniqueDataWithNonPersistInclude include() {
+    return UniqueDataWithNonPersistInclude._();
   }
+
+  /// Builds a complete [UniqueDataWithNonPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UniqueDataWithNonPersistIncludeList includeList({
     _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
@@ -101,9 +103,47 @@ abstract class UniqueDataWithNonPersist
     _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
     _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
-    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
   }) {
     return UniqueDataWithNonPersistIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UniqueDataWithNonPersist.t),
+      orderByList: orderByList?.call(UniqueDataWithNonPersist.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataWithNonPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UniqueDataWithNonPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+  }) {
+    return _UniqueDataWithNonPersistJsonInclude._(
+      selectedColumns: select?.call(UniqueDataWithNonPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataWithNonPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UniqueDataWithNonPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    UniqueDataWithNonPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<UniqueDataWithNonPersistTable>? select,
+  }) {
+    return _UniqueDataWithNonPersistJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -197,8 +237,46 @@ class UniqueDataWithNonPersistTable extends _is.Table<int?> {
   ];
 }
 
-class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
-  UniqueDataWithNonPersistInclude._({this.selectedColumns});
+abstract interface class UniqueDataWithNonPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UniqueDataWithNonPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UniqueDataWithNonPersistInclude extends _is.IncludeObject
+    implements UniqueDataWithNonPersistJsonInclude, _is.FullModelInclude {
+  UniqueDataWithNonPersistInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UniqueDataWithNonPersist.t;
+}
+
+final class UniqueDataWithNonPersistIncludeList extends _is.IncludeList
+    implements UniqueDataWithNonPersistJsonIncludeList, _is.FullModelInclude {
+  UniqueDataWithNonPersistIncludeList._({
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UniqueDataWithNonPersistInclude? super.include,
+  }) {
+    super.where = where?.call(UniqueDataWithNonPersist.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UniqueDataWithNonPersist.t;
+}
+
+final class _UniqueDataWithNonPersistJsonInclude extends _is.IncludeObject
+    implements UniqueDataWithNonPersistJsonInclude {
+  _UniqueDataWithNonPersistJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -210,14 +288,15 @@ class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UniqueDataWithNonPersist.t;
 }
 
-class UniqueDataWithNonPersistIncludeList extends _is.IncludeList {
-  UniqueDataWithNonPersistIncludeList._({
+final class _UniqueDataWithNonPersistJsonIncludeList extends _is.IncludeList
+    implements UniqueDataWithNonPersistJsonIncludeList {
+  _UniqueDataWithNonPersistJsonIncludeList._({
     _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UniqueDataWithNonPersistJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UniqueDataWithNonPersist.t);
@@ -339,6 +418,8 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -390,6 +471,8 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -434,6 +517,8 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

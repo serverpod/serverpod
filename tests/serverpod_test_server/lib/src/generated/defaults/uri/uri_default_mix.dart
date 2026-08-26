@@ -109,13 +109,15 @@ abstract class UriDefaultMix
     };
   }
 
-  static UriDefaultMixInclude include({
-    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
-  }) {
-    return UriDefaultMixInclude._(
-      selectedColumns: select?.call(UriDefaultMix.t),
-    );
+  /// Builds a complete [UriDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UriDefaultMixInclude include() {
+    return UriDefaultMixInclude._();
   }
+
+  /// Builds a complete [UriDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UriDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
@@ -124,9 +126,47 @@ abstract class UriDefaultMix
     _is.OrderByBuilder<UriDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<UriDefaultMixTable>? orderByList,
     UriDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
   }) {
     return UriDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UriDefaultMix.t),
+      orderByList: orderByList?.call(UriDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UriDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UriDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+  }) {
+    return _UriDefaultMixJsonInclude._(
+      selectedColumns: select?.call(UriDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UriDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UriDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UriDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<UriDefaultMixTable>? orderByList,
+    UriDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<UriDefaultMixTable>? select,
+  }) {
+    return _UriDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -241,8 +281,46 @@ class UriDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class UriDefaultMixInclude extends _is.IncludeObject {
-  UriDefaultMixInclude._({this.selectedColumns});
+abstract interface class UriDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UriDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UriDefaultMixInclude extends _is.IncludeObject
+    implements UriDefaultMixJsonInclude, _is.FullModelInclude {
+  UriDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UriDefaultMix.t;
+}
+
+final class UriDefaultMixIncludeList extends _is.IncludeList
+    implements UriDefaultMixJsonIncludeList, _is.FullModelInclude {
+  UriDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UriDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(UriDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UriDefaultMix.t;
+}
+
+final class _UriDefaultMixJsonInclude extends _is.IncludeObject
+    implements UriDefaultMixJsonInclude {
+  _UriDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -254,14 +332,15 @@ class UriDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UriDefaultMix.t;
 }
 
-class UriDefaultMixIncludeList extends _is.IncludeList {
-  UriDefaultMixIncludeList._({
+final class _UriDefaultMixJsonIncludeList extends _is.IncludeList
+    implements UriDefaultMixJsonIncludeList {
+  _UriDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<UriDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UriDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UriDefaultMix.t);
@@ -383,6 +462,8 @@ class UriDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -434,6 +515,8 @@ class UriDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -478,6 +561,8 @@ class UriDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

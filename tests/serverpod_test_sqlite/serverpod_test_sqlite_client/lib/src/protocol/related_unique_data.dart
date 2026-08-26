@@ -93,15 +93,17 @@ abstract class RelatedUniqueData
     };
   }
 
+  /// Builds a complete [RelatedUniqueDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static RelatedUniqueDataInclude include({
     _iufhyrjh.UniqueDataInclude? uniqueData,
-    _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
-    return RelatedUniqueDataInclude._(
-      uniqueData: uniqueData,
-      selectedColumns: select?.call(RelatedUniqueData.t),
-    );
+    return RelatedUniqueDataInclude._(uniqueData: uniqueData);
   }
+
+  /// Builds a complete [RelatedUniqueDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RelatedUniqueDataIncludeList includeList({
     _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
@@ -110,9 +112,49 @@ abstract class RelatedUniqueData
     _isd.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _isd.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     RelatedUniqueDataInclude? include,
-    _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
   }) {
     return RelatedUniqueDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelatedUniqueData.t),
+      orderByList: orderByList?.call(RelatedUniqueData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RelatedUniqueDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RelatedUniqueDataJsonInclude includeJson({
+    _iufhyrjh.UniqueDataJsonInclude? uniqueData,
+    _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+  }) {
+    return _RelatedUniqueDataJsonInclude._(
+      uniqueData: uniqueData,
+      selectedColumns: select?.call(RelatedUniqueData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RelatedUniqueDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RelatedUniqueDataJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
+    _isd.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
+    RelatedUniqueDataJsonInclude? include,
+    _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
+  }) {
+    return _RelatedUniqueDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -231,15 +273,57 @@ class RelatedUniqueDataTable extends _isd.Table<int?> {
   }
 }
 
-class RelatedUniqueDataInclude extends _isd.IncludeObject {
-  RelatedUniqueDataInclude._({
-    _iufhyrjh.UniqueDataInclude? uniqueData,
+abstract interface class RelatedUniqueDataJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class RelatedUniqueDataJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class RelatedUniqueDataInclude extends _isd.IncludeObject
+    implements RelatedUniqueDataJsonInclude, _isd.FullModelInclude {
+  RelatedUniqueDataInclude._({_iufhyrjh.UniqueDataInclude? uniqueData}) {
+    _uniqueData = uniqueData;
+  }
+
+  _iufhyrjh.UniqueDataInclude? _uniqueData;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'uniqueData': _uniqueData};
+
+  @override
+  _isd.Table<int?> get table => RelatedUniqueData.t;
+}
+
+final class RelatedUniqueDataIncludeList extends _isd.IncludeList
+    implements RelatedUniqueDataJsonIncludeList, _isd.FullModelInclude {
+  RelatedUniqueDataIncludeList._({
+    _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RelatedUniqueDataInclude? super.include,
+  }) {
+    super.where = where?.call(RelatedUniqueData.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => RelatedUniqueData.t;
+}
+
+final class _RelatedUniqueDataJsonInclude extends _isd.IncludeObject
+    implements RelatedUniqueDataJsonInclude {
+  _RelatedUniqueDataJsonInclude._({
+    _iufhyrjh.UniqueDataJsonInclude? uniqueData,
     this.selectedColumns,
   }) {
     _uniqueData = uniqueData;
   }
 
-  _iufhyrjh.UniqueDataInclude? _uniqueData;
+  _iufhyrjh.UniqueDataJsonInclude? _uniqueData;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -251,14 +335,15 @@ class RelatedUniqueDataInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => RelatedUniqueData.t;
 }
 
-class RelatedUniqueDataIncludeList extends _isd.IncludeList {
-  RelatedUniqueDataIncludeList._({
+final class _RelatedUniqueDataJsonIncludeList extends _isd.IncludeList
+    implements RelatedUniqueDataJsonIncludeList {
+  _RelatedUniqueDataJsonIncludeList._({
     _isd.WhereExpressionBuilder<RelatedUniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RelatedUniqueDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RelatedUniqueData.t);
@@ -388,6 +473,8 @@ class RelatedUniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -418,7 +505,7 @@ class RelatedUniqueDataRepository {
     _isd.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _isd.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _isd.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
+    RelatedUniqueDataJsonInclude? include,
     _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -441,6 +528,8 @@ class RelatedUniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -465,7 +554,7 @@ class RelatedUniqueDataRepository {
     _isd.OrderByBuilder<RelatedUniqueDataTable>? orderBy,
     _isd.OrderByListBuilder<RelatedUniqueDataTable>? orderByList,
     _isd.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
+    RelatedUniqueDataJsonInclude? include,
     _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -487,12 +576,14 @@ class RelatedUniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    RelatedUniqueDataInclude? include,
+    RelatedUniqueDataJsonInclude? include,
     _isd.SelectColumnsBuilder<RelatedUniqueDataTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

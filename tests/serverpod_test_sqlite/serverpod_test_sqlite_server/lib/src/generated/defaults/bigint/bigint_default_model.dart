@@ -92,13 +92,15 @@ abstract class BigIntDefaultModel
     };
   }
 
-  static BigIntDefaultModelInclude include({
-    _is.SelectColumnsBuilder<BigIntDefaultModelTable>? select,
-  }) {
-    return BigIntDefaultModelInclude._(
-      selectedColumns: select?.call(BigIntDefaultModel.t),
-    );
+  /// Builds a complete [BigIntDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BigIntDefaultModelInclude include() {
+    return BigIntDefaultModelInclude._();
   }
+
+  /// Builds a complete [BigIntDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BigIntDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<BigIntDefaultModelTable>? where,
@@ -107,9 +109,47 @@ abstract class BigIntDefaultModel
     _is.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
     BigIntDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<BigIntDefaultModelTable>? select,
   }) {
     return BigIntDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultModel.t),
+      orderByList: orderByList?.call(BigIntDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BigIntDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BigIntDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BigIntDefaultModelTable>? select,
+  }) {
+    return _BigIntDefaultModelJsonInclude._(
+      selectedColumns: select?.call(BigIntDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BigIntDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BigIntDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BigIntDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BigIntDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultModelTable>? orderByList,
+    BigIntDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<BigIntDefaultModelTable>? select,
+  }) {
+    return _BigIntDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -204,8 +244,46 @@ class BigIntDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class BigIntDefaultModelInclude extends _is.IncludeObject {
-  BigIntDefaultModelInclude._({this.selectedColumns});
+abstract interface class BigIntDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BigIntDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BigIntDefaultModelInclude extends _is.IncludeObject
+    implements BigIntDefaultModelJsonInclude, _is.FullModelInclude {
+  BigIntDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BigIntDefaultModel.t;
+}
+
+final class BigIntDefaultModelIncludeList extends _is.IncludeList
+    implements BigIntDefaultModelJsonIncludeList, _is.FullModelInclude {
+  BigIntDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<BigIntDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BigIntDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(BigIntDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BigIntDefaultModel.t;
+}
+
+final class _BigIntDefaultModelJsonInclude extends _is.IncludeObject
+    implements BigIntDefaultModelJsonInclude {
+  _BigIntDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -217,14 +295,15 @@ class BigIntDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BigIntDefaultModel.t;
 }
 
-class BigIntDefaultModelIncludeList extends _is.IncludeList {
-  BigIntDefaultModelIncludeList._({
+final class _BigIntDefaultModelJsonIncludeList extends _is.IncludeList
+    implements BigIntDefaultModelJsonIncludeList {
+  _BigIntDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<BigIntDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BigIntDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefaultModel.t);
@@ -346,6 +425,8 @@ class BigIntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -397,6 +478,8 @@ class BigIntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -441,6 +524,8 @@ class BigIntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

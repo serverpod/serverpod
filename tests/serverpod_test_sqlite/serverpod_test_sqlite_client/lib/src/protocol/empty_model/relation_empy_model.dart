@@ -79,15 +79,17 @@ abstract class RelationEmptyModel
     };
   }
 
+  /// Builds a complete [RelationEmptyModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static RelationEmptyModelInclude include({
     _iq60yogb.EmptyModelRelationItemIncludeList? items,
-    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
-    return RelationEmptyModelInclude._(
-      items: items,
-      selectedColumns: select?.call(RelationEmptyModel.t),
-    );
+    return RelationEmptyModelInclude._(items: items);
   }
+
+  /// Builds a complete [RelationEmptyModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RelationEmptyModelIncludeList includeList({
     _isd.WhereExpressionBuilder<RelationEmptyModelTable>? where,
@@ -96,9 +98,49 @@ abstract class RelationEmptyModel
     _isd.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _isd.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     RelationEmptyModelInclude? include,
-    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
   }) {
     return RelationEmptyModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelationEmptyModel.t),
+      orderByList: orderByList?.call(RelationEmptyModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RelationEmptyModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RelationEmptyModelJsonInclude includeJson({
+    _iq60yogb.EmptyModelRelationItemJsonIncludeList? items,
+    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
+  }) {
+    return _RelationEmptyModelJsonInclude._(
+      items: items,
+      selectedColumns: select?.call(RelationEmptyModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RelationEmptyModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RelationEmptyModelJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<RelationEmptyModelTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<RelationEmptyModelTable>? orderBy,
+    _isd.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
+    RelationEmptyModelJsonInclude? include,
+    _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
+  }) {
+    return _RelationEmptyModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -214,15 +256,59 @@ class RelationEmptyModelTable extends _isd.Table<int?> {
   }
 }
 
-class RelationEmptyModelInclude extends _isd.IncludeObject {
+abstract interface class RelationEmptyModelJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class RelationEmptyModelJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class RelationEmptyModelInclude extends _isd.IncludeObject
+    implements RelationEmptyModelJsonInclude, _isd.FullModelInclude {
   RelationEmptyModelInclude._({
     _iq60yogb.EmptyModelRelationItemIncludeList? items,
-    this.selectedColumns,
   }) {
     _items = items;
   }
 
   _iq60yogb.EmptyModelRelationItemIncludeList? _items;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'items': _items};
+
+  @override
+  _isd.Table<int?> get table => RelationEmptyModel.t;
+}
+
+final class RelationEmptyModelIncludeList extends _isd.IncludeList
+    implements RelationEmptyModelJsonIncludeList, _isd.FullModelInclude {
+  RelationEmptyModelIncludeList._({
+    _isd.WhereExpressionBuilder<RelationEmptyModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RelationEmptyModelInclude? super.include,
+  }) {
+    super.where = where?.call(RelationEmptyModel.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => RelationEmptyModel.t;
+}
+
+final class _RelationEmptyModelJsonInclude extends _isd.IncludeObject
+    implements RelationEmptyModelJsonInclude {
+  _RelationEmptyModelJsonInclude._({
+    _iq60yogb.EmptyModelRelationItemJsonIncludeList? items,
+    this.selectedColumns,
+  }) {
+    _items = items;
+  }
+
+  _iq60yogb.EmptyModelRelationItemJsonIncludeList? _items;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -234,14 +320,15 @@ class RelationEmptyModelInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => RelationEmptyModel.t;
 }
 
-class RelationEmptyModelIncludeList extends _isd.IncludeList {
-  RelationEmptyModelIncludeList._({
+final class _RelationEmptyModelJsonIncludeList extends _isd.IncludeList
+    implements RelationEmptyModelJsonIncludeList {
+  _RelationEmptyModelJsonIncludeList._({
     _isd.WhereExpressionBuilder<RelationEmptyModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RelationEmptyModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RelationEmptyModel.t);
@@ -377,6 +464,8 @@ class RelationEmptyModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -407,7 +496,7 @@ class RelationEmptyModelRepository {
     _isd.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _isd.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _isd.Transaction? transaction,
-    RelationEmptyModelInclude? include,
+    RelationEmptyModelJsonInclude? include,
     _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -430,6 +519,8 @@ class RelationEmptyModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -454,7 +545,7 @@ class RelationEmptyModelRepository {
     _isd.OrderByBuilder<RelationEmptyModelTable>? orderBy,
     _isd.OrderByListBuilder<RelationEmptyModelTable>? orderByList,
     _isd.Transaction? transaction,
-    RelationEmptyModelInclude? include,
+    RelationEmptyModelJsonInclude? include,
     _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -476,12 +567,14 @@ class RelationEmptyModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    RelationEmptyModelInclude? include,
+    RelationEmptyModelJsonInclude? include,
     _isd.SelectColumnsBuilder<RelationEmptyModelTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

@@ -153,13 +153,15 @@ abstract class QueryLogEntry
     };
   }
 
-  static QueryLogEntryInclude include({
-    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
-  }) {
-    return QueryLogEntryInclude._(
-      selectedColumns: select?.call(QueryLogEntry.t),
-    );
+  /// Builds a complete [QueryLogEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static QueryLogEntryInclude include() {
+    return QueryLogEntryInclude._();
   }
+
+  /// Builds a complete [QueryLogEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static QueryLogEntryIncludeList includeList({
     _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
@@ -168,9 +170,47 @@ abstract class QueryLogEntry
     _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
     _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
     QueryLogEntryInclude? include,
-    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
   }) {
     return QueryLogEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(QueryLogEntry.t),
+      orderByList: orderByList?.call(QueryLogEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [QueryLogEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static QueryLogEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+  }) {
+    return _QueryLogEntryJsonInclude._(
+      selectedColumns: select?.call(QueryLogEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [QueryLogEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static QueryLogEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<QueryLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<QueryLogEntryTable>? orderByList,
+    QueryLogEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<QueryLogEntryTable>? select,
+  }) {
+    return _QueryLogEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -399,8 +439,46 @@ class QueryLogEntryTable extends _is.Table<int?> {
   ];
 }
 
-class QueryLogEntryInclude extends _is.IncludeObject {
-  QueryLogEntryInclude._({this.selectedColumns});
+abstract interface class QueryLogEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class QueryLogEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class QueryLogEntryInclude extends _is.IncludeObject
+    implements QueryLogEntryJsonInclude, _is.FullModelInclude {
+  QueryLogEntryInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => QueryLogEntry.t;
+}
+
+final class QueryLogEntryIncludeList extends _is.IncludeList
+    implements QueryLogEntryJsonIncludeList, _is.FullModelInclude {
+  QueryLogEntryIncludeList._({
+    _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    QueryLogEntryInclude? super.include,
+  }) {
+    super.where = where?.call(QueryLogEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => QueryLogEntry.t;
+}
+
+final class _QueryLogEntryJsonInclude extends _is.IncludeObject
+    implements QueryLogEntryJsonInclude {
+  _QueryLogEntryJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -412,14 +490,15 @@ class QueryLogEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => QueryLogEntry.t;
 }
 
-class QueryLogEntryIncludeList extends _is.IncludeList {
-  QueryLogEntryIncludeList._({
+final class _QueryLogEntryJsonIncludeList extends _is.IncludeList
+    implements QueryLogEntryJsonIncludeList {
+  _QueryLogEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<QueryLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    QueryLogEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(QueryLogEntry.t);
@@ -541,6 +620,8 @@ class QueryLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -592,6 +673,8 @@ class QueryLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -636,6 +719,8 @@ class QueryLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

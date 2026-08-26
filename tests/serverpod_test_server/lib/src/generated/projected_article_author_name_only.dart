@@ -88,27 +88,27 @@ abstract class ProjectedArticleAuthorNameOnly
     };
   }
 
-  static ProjectedArticleInclude include() {
-    return ProjectedArticle.include(
+  static ProjectedArticleJsonInclude include() {
+    return ProjectedArticle.includeJson(
       select: (t) => [
         ProjectedArticle.t.id,
         ProjectedArticle.t.title,
         ProjectedArticle.t.summary,
       ],
-      author: _iq5hz6n4.ProjectedAuthor.include(
+      author: _iq5hz6n4.ProjectedAuthor.includeJson(
         select: (t) => [_iq5hz6n4.ProjectedAuthor.t.name],
       ),
     );
   }
 
-  static ProjectedArticleIncludeList includeList({
+  static ProjectedArticleJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
   }) {
-    return ProjectedArticle.includeList(
+    return ProjectedArticle.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

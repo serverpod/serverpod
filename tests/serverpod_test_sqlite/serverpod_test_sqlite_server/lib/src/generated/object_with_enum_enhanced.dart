@@ -132,13 +132,15 @@ abstract class ObjectWithEnumEnhanced
     };
   }
 
-  static ObjectWithEnumEnhancedInclude include({
-    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
-  }) {
-    return ObjectWithEnumEnhancedInclude._(
-      selectedColumns: select?.call(ObjectWithEnumEnhanced.t),
-    );
+  /// Builds a complete [ObjectWithEnumEnhancedInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithEnumEnhancedInclude include() {
+    return ObjectWithEnumEnhancedInclude._();
   }
+
+  /// Builds a complete [ObjectWithEnumEnhancedIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithEnumEnhancedIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
@@ -147,9 +149,47 @@ abstract class ObjectWithEnumEnhanced
     _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
     ObjectWithEnumEnhancedInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
   }) {
     return ObjectWithEnumEnhancedIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithEnumEnhanced.t),
+      orderByList: orderByList?.call(ObjectWithEnumEnhanced.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithEnumEnhancedJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithEnumEnhancedJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+  }) {
+    return _ObjectWithEnumEnhancedJsonInclude._(
+      selectedColumns: select?.call(ObjectWithEnumEnhanced.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithEnumEnhancedJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithEnumEnhancedJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithEnumEnhancedTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithEnumEnhancedTable>? orderByList,
+    ObjectWithEnumEnhancedJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithEnumEnhancedTable>? select,
+  }) {
+    return _ObjectWithEnumEnhancedJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -331,8 +371,46 @@ class ObjectWithEnumEnhancedTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
-  ObjectWithEnumEnhancedInclude._({this.selectedColumns});
+abstract interface class ObjectWithEnumEnhancedJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithEnumEnhancedJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithEnumEnhancedInclude extends _is.IncludeObject
+    implements ObjectWithEnumEnhancedJsonInclude, _is.FullModelInclude {
+  ObjectWithEnumEnhancedInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithEnumEnhanced.t;
+}
+
+final class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList
+    implements ObjectWithEnumEnhancedJsonIncludeList, _is.FullModelInclude {
+  ObjectWithEnumEnhancedIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithEnumEnhancedInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithEnumEnhanced.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithEnumEnhanced.t;
+}
+
+final class _ObjectWithEnumEnhancedJsonInclude extends _is.IncludeObject
+    implements ObjectWithEnumEnhancedJsonInclude {
+  _ObjectWithEnumEnhancedJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -344,14 +422,15 @@ class ObjectWithEnumEnhancedInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithEnumEnhanced.t;
 }
 
-class ObjectWithEnumEnhancedIncludeList extends _is.IncludeList {
-  ObjectWithEnumEnhancedIncludeList._({
+final class _ObjectWithEnumEnhancedJsonIncludeList extends _is.IncludeList
+    implements ObjectWithEnumEnhancedJsonIncludeList {
+  _ObjectWithEnumEnhancedJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithEnumEnhancedTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithEnumEnhancedJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithEnumEnhanced.t);
@@ -473,6 +552,8 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -524,6 +605,8 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -568,6 +651,8 @@ class ObjectWithEnumEnhancedRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

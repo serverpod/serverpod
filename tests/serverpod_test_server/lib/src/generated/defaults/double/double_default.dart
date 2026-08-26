@@ -78,13 +78,15 @@ abstract class DoubleDefault
     };
   }
 
-  static DoubleDefaultInclude include({
-    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
-  }) {
-    return DoubleDefaultInclude._(
-      selectedColumns: select?.call(DoubleDefault.t),
-    );
+  /// Builds a complete [DoubleDefaultInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DoubleDefaultInclude include() {
+    return DoubleDefaultInclude._();
   }
+
+  /// Builds a complete [DoubleDefaultIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DoubleDefaultIncludeList includeList({
     _is.WhereExpressionBuilder<DoubleDefaultTable>? where,
@@ -93,9 +95,47 @@ abstract class DoubleDefault
     _is.OrderByBuilder<DoubleDefaultTable>? orderBy,
     _is.OrderByListBuilder<DoubleDefaultTable>? orderByList,
     DoubleDefaultInclude? include,
-    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
   }) {
     return DoubleDefaultIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DoubleDefault.t),
+      orderByList: orderByList?.call(DoubleDefault.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DoubleDefaultJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DoubleDefaultJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
+  }) {
+    return _DoubleDefaultJsonInclude._(
+      selectedColumns: select?.call(DoubleDefault.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DoubleDefaultJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DoubleDefaultJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DoubleDefaultTable>? orderBy,
+    _is.OrderByListBuilder<DoubleDefaultTable>? orderByList,
+    DoubleDefaultJsonInclude? include,
+    _is.SelectColumnsBuilder<DoubleDefaultTable>? select,
+  }) {
+    return _DoubleDefaultJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,8 +230,46 @@ class DoubleDefaultTable extends _is.Table<int?> {
   ];
 }
 
-class DoubleDefaultInclude extends _is.IncludeObject {
-  DoubleDefaultInclude._({this.selectedColumns});
+abstract interface class DoubleDefaultJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DoubleDefaultJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DoubleDefaultInclude extends _is.IncludeObject
+    implements DoubleDefaultJsonInclude, _is.FullModelInclude {
+  DoubleDefaultInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DoubleDefault.t;
+}
+
+final class DoubleDefaultIncludeList extends _is.IncludeList
+    implements DoubleDefaultJsonIncludeList, _is.FullModelInclude {
+  DoubleDefaultIncludeList._({
+    _is.WhereExpressionBuilder<DoubleDefaultTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DoubleDefaultInclude? super.include,
+  }) {
+    super.where = where?.call(DoubleDefault.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DoubleDefault.t;
+}
+
+final class _DoubleDefaultJsonInclude extends _is.IncludeObject
+    implements DoubleDefaultJsonInclude {
+  _DoubleDefaultJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -203,14 +281,15 @@ class DoubleDefaultInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DoubleDefault.t;
 }
 
-class DoubleDefaultIncludeList extends _is.IncludeList {
-  DoubleDefaultIncludeList._({
+final class _DoubleDefaultJsonIncludeList extends _is.IncludeList
+    implements DoubleDefaultJsonIncludeList {
+  _DoubleDefaultJsonIncludeList._({
     _is.WhereExpressionBuilder<DoubleDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DoubleDefaultJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DoubleDefault.t);
@@ -332,6 +411,8 @@ class DoubleDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -383,6 +464,8 @@ class DoubleDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -427,6 +510,8 @@ class DoubleDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -108,13 +108,15 @@ abstract class BigIntDefaultMix
     };
   }
 
-  static BigIntDefaultMixInclude include({
-    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
-  }) {
-    return BigIntDefaultMixInclude._(
-      selectedColumns: select?.call(BigIntDefaultMix.t),
-    );
+  /// Builds a complete [BigIntDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BigIntDefaultMixInclude include() {
+    return BigIntDefaultMixInclude._();
   }
+
+  /// Builds a complete [BigIntDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BigIntDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
@@ -123,9 +125,47 @@ abstract class BigIntDefaultMix
     _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
     BigIntDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
   }) {
     return BigIntDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BigIntDefaultMix.t),
+      orderByList: orderByList?.call(BigIntDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BigIntDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BigIntDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
+  }) {
+    return _BigIntDefaultMixJsonInclude._(
+      selectedColumns: select?.call(BigIntDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BigIntDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BigIntDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BigIntDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BigIntDefaultMixTable>? orderByList,
+    BigIntDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<BigIntDefaultMixTable>? select,
+  }) {
+    return _BigIntDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,8 +284,46 @@ class BigIntDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class BigIntDefaultMixInclude extends _is.IncludeObject {
-  BigIntDefaultMixInclude._({this.selectedColumns});
+abstract interface class BigIntDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BigIntDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BigIntDefaultMixInclude extends _is.IncludeObject
+    implements BigIntDefaultMixJsonInclude, _is.FullModelInclude {
+  BigIntDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BigIntDefaultMix.t;
+}
+
+final class BigIntDefaultMixIncludeList extends _is.IncludeList
+    implements BigIntDefaultMixJsonIncludeList, _is.FullModelInclude {
+  BigIntDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BigIntDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(BigIntDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BigIntDefaultMix.t;
+}
+
+final class _BigIntDefaultMixJsonInclude extends _is.IncludeObject
+    implements BigIntDefaultMixJsonInclude {
+  _BigIntDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -257,14 +335,15 @@ class BigIntDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BigIntDefaultMix.t;
 }
 
-class BigIntDefaultMixIncludeList extends _is.IncludeList {
-  BigIntDefaultMixIncludeList._({
+final class _BigIntDefaultMixJsonIncludeList extends _is.IncludeList
+    implements BigIntDefaultMixJsonIncludeList {
+  _BigIntDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<BigIntDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BigIntDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(BigIntDefaultMix.t);
@@ -386,6 +465,8 @@ class BigIntDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -437,6 +518,8 @@ class BigIntDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -481,6 +564,8 @@ class BigIntDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

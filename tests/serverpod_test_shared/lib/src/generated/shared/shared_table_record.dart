@@ -101,13 +101,15 @@ abstract class SharedTableRecord
     };
   }
 
-  static SharedTableRecordInclude include({
-    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
-  }) {
-    return SharedTableRecordInclude._(
-      selectedColumns: select?.call(SharedTableRecord.t),
-    );
+  /// Builds a complete [SharedTableRecordInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SharedTableRecordInclude include() {
+    return SharedTableRecordInclude._();
   }
+
+  /// Builds a complete [SharedTableRecordIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SharedTableRecordIncludeList includeList({
     _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
@@ -116,9 +118,47 @@ abstract class SharedTableRecord
     _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
     _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
     SharedTableRecordInclude? include,
-    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
   }) {
     return SharedTableRecordIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SharedTableRecord.t),
+      orderByList: orderByList?.call(SharedTableRecord.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedTableRecordJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SharedTableRecordJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+  }) {
+    return _SharedTableRecordJsonInclude._(
+      selectedColumns: select?.call(SharedTableRecord.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedTableRecordJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SharedTableRecordJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SharedTableRecordTable>? orderBy,
+    _isd.OrderByListBuilder<SharedTableRecordTable>? orderByList,
+    SharedTableRecordJsonInclude? include,
+    _isd.SelectColumnsBuilder<SharedTableRecordTable>? select,
+  }) {
+    return _SharedTableRecordJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -247,8 +287,46 @@ class SharedTableRecordTable extends _isd.Table<int?> {
   ];
 }
 
-class SharedTableRecordInclude extends _isd.IncludeObject {
-  SharedTableRecordInclude._({this.selectedColumns});
+abstract interface class SharedTableRecordJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class SharedTableRecordJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class SharedTableRecordInclude extends _isd.IncludeObject
+    implements SharedTableRecordJsonInclude, _isd.FullModelInclude {
+  SharedTableRecordInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => SharedTableRecord.t;
+}
+
+final class SharedTableRecordIncludeList extends _isd.IncludeList
+    implements SharedTableRecordJsonIncludeList, _isd.FullModelInclude {
+  SharedTableRecordIncludeList._({
+    _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SharedTableRecordInclude? super.include,
+  }) {
+    super.where = where?.call(SharedTableRecord.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => SharedTableRecord.t;
+}
+
+final class _SharedTableRecordJsonInclude extends _isd.IncludeObject
+    implements SharedTableRecordJsonInclude {
+  _SharedTableRecordJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -260,14 +338,15 @@ class SharedTableRecordInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => SharedTableRecord.t;
 }
 
-class SharedTableRecordIncludeList extends _isd.IncludeList {
-  SharedTableRecordIncludeList._({
+final class _SharedTableRecordJsonIncludeList extends _isd.IncludeList
+    implements SharedTableRecordJsonIncludeList {
+  _SharedTableRecordJsonIncludeList._({
     _isd.WhereExpressionBuilder<SharedTableRecordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SharedTableRecordJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SharedTableRecord.t);
@@ -389,6 +468,8 @@ class SharedTableRecordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -440,6 +521,8 @@ class SharedTableRecordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -484,6 +567,8 @@ class SharedTableRecordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

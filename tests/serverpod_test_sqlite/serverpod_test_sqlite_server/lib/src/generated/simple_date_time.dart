@@ -72,13 +72,15 @@ abstract class SimpleDateTime
     };
   }
 
-  static SimpleDateTimeInclude include({
-    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
-  }) {
-    return SimpleDateTimeInclude._(
-      selectedColumns: select?.call(SimpleDateTime.t),
-    );
+  /// Builds a complete [SimpleDateTimeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SimpleDateTimeInclude include() {
+    return SimpleDateTimeInclude._();
   }
+
+  /// Builds a complete [SimpleDateTimeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SimpleDateTimeIncludeList includeList({
     _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
@@ -87,9 +89,47 @@ abstract class SimpleDateTime
     _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
     _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
     SimpleDateTimeInclude? include,
-    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
   }) {
     return SimpleDateTimeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleDateTime.t),
+      orderByList: orderByList?.call(SimpleDateTime.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDateTimeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SimpleDateTimeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+  }) {
+    return _SimpleDateTimeJsonInclude._(
+      selectedColumns: select?.call(SimpleDateTime.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDateTimeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SimpleDateTimeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SimpleDateTimeTable>? orderBy,
+    _is.OrderByListBuilder<SimpleDateTimeTable>? orderByList,
+    SimpleDateTimeJsonInclude? include,
+    _is.SelectColumnsBuilder<SimpleDateTimeTable>? select,
+  }) {
+    return _SimpleDateTimeJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -164,8 +204,46 @@ class SimpleDateTimeTable extends _is.Table<int?> {
   ];
 }
 
-class SimpleDateTimeInclude extends _is.IncludeObject {
-  SimpleDateTimeInclude._({this.selectedColumns});
+abstract interface class SimpleDateTimeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SimpleDateTimeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SimpleDateTimeInclude extends _is.IncludeObject
+    implements SimpleDateTimeJsonInclude, _is.FullModelInclude {
+  SimpleDateTimeInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => SimpleDateTime.t;
+}
+
+final class SimpleDateTimeIncludeList extends _is.IncludeList
+    implements SimpleDateTimeJsonIncludeList, _is.FullModelInclude {
+  SimpleDateTimeIncludeList._({
+    _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SimpleDateTimeInclude? super.include,
+  }) {
+    super.where = where?.call(SimpleDateTime.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SimpleDateTime.t;
+}
+
+final class _SimpleDateTimeJsonInclude extends _is.IncludeObject
+    implements SimpleDateTimeJsonInclude {
+  _SimpleDateTimeJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -177,14 +255,15 @@ class SimpleDateTimeInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SimpleDateTime.t;
 }
 
-class SimpleDateTimeIncludeList extends _is.IncludeList {
-  SimpleDateTimeIncludeList._({
+final class _SimpleDateTimeJsonIncludeList extends _is.IncludeList
+    implements SimpleDateTimeJsonIncludeList {
+  _SimpleDateTimeJsonIncludeList._({
     _is.WhereExpressionBuilder<SimpleDateTimeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SimpleDateTimeJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SimpleDateTime.t);
@@ -306,6 +385,8 @@ class SimpleDateTimeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -357,6 +438,8 @@ class SimpleDateTimeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -401,6 +484,8 @@ class SimpleDateTimeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

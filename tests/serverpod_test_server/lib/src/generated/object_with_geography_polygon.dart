@@ -92,13 +92,15 @@ abstract class ObjectWithGeographyPolygon
     };
   }
 
-  static ObjectWithGeographyPolygonInclude include({
-    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
-  }) {
-    return ObjectWithGeographyPolygonInclude._(
-      selectedColumns: select?.call(ObjectWithGeographyPolygon.t),
-    );
+  /// Builds a complete [ObjectWithGeographyPolygonInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithGeographyPolygonInclude include() {
+    return ObjectWithGeographyPolygonInclude._();
   }
+
+  /// Builds a complete [ObjectWithGeographyPolygonIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithGeographyPolygonIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
@@ -107,9 +109,47 @@ abstract class ObjectWithGeographyPolygon
     _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
     ObjectWithGeographyPolygonInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
   }) {
     return ObjectWithGeographyPolygonIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithGeographyPolygon.t),
+      orderByList: orderByList?.call(ObjectWithGeographyPolygon.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithGeographyPolygonJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithGeographyPolygonJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+  }) {
+    return _ObjectWithGeographyPolygonJsonInclude._(
+      selectedColumns: select?.call(ObjectWithGeographyPolygon.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithGeographyPolygonJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithGeographyPolygonJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyPolygonTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyPolygonTable>? orderByList,
+    ObjectWithGeographyPolygonJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyPolygonTable>? select,
+  }) {
+    return _ObjectWithGeographyPolygonJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -219,8 +259,46 @@ class ObjectWithGeographyPolygonTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
-  ObjectWithGeographyPolygonInclude._({this.selectedColumns});
+abstract interface class ObjectWithGeographyPolygonJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithGeographyPolygonJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithGeographyPolygonInclude extends _is.IncludeObject
+    implements ObjectWithGeographyPolygonJsonInclude, _is.FullModelInclude {
+  ObjectWithGeographyPolygonInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithGeographyPolygon.t;
+}
+
+final class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList
+    implements ObjectWithGeographyPolygonJsonIncludeList, _is.FullModelInclude {
+  ObjectWithGeographyPolygonIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithGeographyPolygonInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithGeographyPolygon.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithGeographyPolygon.t;
+}
+
+final class _ObjectWithGeographyPolygonJsonInclude extends _is.IncludeObject
+    implements ObjectWithGeographyPolygonJsonInclude {
+  _ObjectWithGeographyPolygonJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -232,14 +310,15 @@ class ObjectWithGeographyPolygonInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithGeographyPolygon.t;
 }
 
-class ObjectWithGeographyPolygonIncludeList extends _is.IncludeList {
-  ObjectWithGeographyPolygonIncludeList._({
+final class _ObjectWithGeographyPolygonJsonIncludeList extends _is.IncludeList
+    implements ObjectWithGeographyPolygonJsonIncludeList {
+  _ObjectWithGeographyPolygonJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyPolygonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithGeographyPolygonJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyPolygon.t);
@@ -361,6 +440,8 @@ class ObjectWithGeographyPolygonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -412,6 +493,8 @@ class ObjectWithGeographyPolygonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -456,6 +539,8 @@ class ObjectWithGeographyPolygonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

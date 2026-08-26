@@ -89,15 +89,15 @@ abstract class Course
     };
   }
 
-  static CourseInclude include({
-    _im07rq0v.EnrollmentIncludeList? enrollments,
-    _isd.SelectColumnsBuilder<CourseTable>? select,
-  }) {
-    return CourseInclude._(
-      enrollments: enrollments,
-      selectedColumns: select?.call(Course.t),
-    );
+  /// Builds a complete [CourseInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static CourseInclude include({_im07rq0v.EnrollmentIncludeList? enrollments}) {
+    return CourseInclude._(enrollments: enrollments);
   }
+
+  /// Builds a complete [CourseIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CourseIncludeList includeList({
     _isd.WhereExpressionBuilder<CourseTable>? where,
@@ -106,9 +106,49 @@ abstract class Course
     _isd.OrderByBuilder<CourseTable>? orderBy,
     _isd.OrderByListBuilder<CourseTable>? orderByList,
     CourseInclude? include,
-    _isd.SelectColumnsBuilder<CourseTable>? select,
   }) {
     return CourseIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Course.t),
+      orderByList: orderByList?.call(Course.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CourseJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CourseJsonInclude includeJson({
+    _im07rq0v.EnrollmentJsonIncludeList? enrollments,
+    _isd.SelectColumnsBuilder<CourseTable>? select,
+  }) {
+    return _CourseJsonInclude._(
+      enrollments: enrollments,
+      selectedColumns: select?.call(Course.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CourseJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CourseJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CourseTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CourseTable>? orderBy,
+    _isd.OrderByListBuilder<CourseTable>? orderByList,
+    CourseJsonInclude? include,
+    _isd.SelectColumnsBuilder<CourseTable>? select,
+  }) {
+    return _CourseJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,15 +270,57 @@ class CourseTable extends _isd.Table<int?> {
   }
 }
 
-class CourseInclude extends _isd.IncludeObject {
-  CourseInclude._({
-    _im07rq0v.EnrollmentIncludeList? enrollments,
+abstract interface class CourseJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CourseJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CourseInclude extends _isd.IncludeObject
+    implements CourseJsonInclude, _isd.FullModelInclude {
+  CourseInclude._({_im07rq0v.EnrollmentIncludeList? enrollments}) {
+    _enrollments = enrollments;
+  }
+
+  _im07rq0v.EnrollmentIncludeList? _enrollments;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'enrollments': _enrollments};
+
+  @override
+  _isd.Table<int?> get table => Course.t;
+}
+
+final class CourseIncludeList extends _isd.IncludeList
+    implements CourseJsonIncludeList, _isd.FullModelInclude {
+  CourseIncludeList._({
+    _isd.WhereExpressionBuilder<CourseTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CourseInclude? super.include,
+  }) {
+    super.where = where?.call(Course.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Course.t;
+}
+
+final class _CourseJsonInclude extends _isd.IncludeObject
+    implements CourseJsonInclude {
+  _CourseJsonInclude._({
+    _im07rq0v.EnrollmentJsonIncludeList? enrollments,
     this.selectedColumns,
   }) {
     _enrollments = enrollments;
   }
 
-  _im07rq0v.EnrollmentIncludeList? _enrollments;
+  _im07rq0v.EnrollmentJsonIncludeList? _enrollments;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -250,14 +332,15 @@ class CourseInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Course.t;
 }
 
-class CourseIncludeList extends _isd.IncludeList {
-  CourseIncludeList._({
+final class _CourseJsonIncludeList extends _isd.IncludeList
+    implements CourseJsonIncludeList {
+  _CourseJsonIncludeList._({
     _isd.WhereExpressionBuilder<CourseTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CourseJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Course.t);
@@ -389,6 +472,8 @@ class CourseRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -419,7 +504,7 @@ class CourseRepository {
     _isd.OrderByBuilder<CourseTable>? orderBy,
     _isd.OrderByListBuilder<CourseTable>? orderByList,
     _isd.Transaction? transaction,
-    CourseInclude? include,
+    CourseJsonInclude? include,
     _isd.SelectColumnsBuilder<CourseTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -442,6 +527,8 @@ class CourseRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -466,7 +553,7 @@ class CourseRepository {
     _isd.OrderByBuilder<CourseTable>? orderBy,
     _isd.OrderByListBuilder<CourseTable>? orderByList,
     _isd.Transaction? transaction,
-    CourseInclude? include,
+    CourseJsonInclude? include,
     _isd.SelectColumnsBuilder<CourseTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -488,12 +575,14 @@ class CourseRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    CourseInclude? include,
+    CourseJsonInclude? include,
     _isd.SelectColumnsBuilder<CourseTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

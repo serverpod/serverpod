@@ -103,17 +103,21 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [CityInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CityInclude include({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
-    _isd.SelectColumnsBuilder<CityTable>? select,
   }) {
     return CityInclude._(
       citizens: citizens,
       organizations: organizations,
-      selectedColumns: select?.call(City.t),
     );
   }
+
+  /// Builds a complete [CityIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CityIncludeList includeList({
     _isd.WhereExpressionBuilder<CityTable>? where,
@@ -122,9 +126,51 @@ abstract class City implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<CityTable>? orderBy,
     _isd.OrderByListBuilder<CityTable>? orderByList,
     CityInclude? include,
-    _isd.SelectColumnsBuilder<CityTable>? select,
   }) {
     return CityIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(City.t),
+      orderByList: orderByList?.call(City.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CityJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CityJsonInclude includeJson({
+    _ijqkgw0m.PersonJsonIncludeList? citizens,
+    _i0ptycc3.OrganizationJsonIncludeList? organizations,
+    _isd.SelectColumnsBuilder<CityTable>? select,
+  }) {
+    return _CityJsonInclude._(
+      citizens: citizens,
+      organizations: organizations,
+      selectedColumns: select?.call(City.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CityJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CityJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CityTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CityTable>? orderBy,
+    _isd.OrderByListBuilder<CityTable>? orderByList,
+    CityJsonInclude? include,
+    _isd.SelectColumnsBuilder<CityTable>? select,
+  }) {
+    return _CityJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -291,11 +337,17 @@ class CityTable extends _isd.Table<int?> {
   }
 }
 
-class CityInclude extends _isd.IncludeObject {
+abstract interface class CityJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CityJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CityInclude extends _isd.IncludeObject
+    implements CityJsonInclude, _isd.FullModelInclude {
   CityInclude._({
     _ijqkgw0m.PersonIncludeList? citizens,
     _i0ptycc3.OrganizationIncludeList? organizations,
-    this.selectedColumns,
   }) {
     _citizens = citizens;
     _organizations = organizations;
@@ -304,6 +356,51 @@ class CityInclude extends _isd.IncludeObject {
   _ijqkgw0m.PersonIncludeList? _citizens;
 
   _i0ptycc3.OrganizationIncludeList? _organizations;
+
+  @override
+  Map<String, _isd.Include?> get includes => {
+    'citizens': _citizens,
+    'organizations': _organizations,
+  };
+
+  @override
+  _isd.Table<int?> get table => City.t;
+}
+
+final class CityIncludeList extends _isd.IncludeList
+    implements CityJsonIncludeList, _isd.FullModelInclude {
+  CityIncludeList._({
+    _isd.WhereExpressionBuilder<CityTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CityInclude? super.include,
+  }) {
+    super.where = where?.call(City.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => City.t;
+}
+
+final class _CityJsonInclude extends _isd.IncludeObject
+    implements CityJsonInclude {
+  _CityJsonInclude._({
+    _ijqkgw0m.PersonJsonIncludeList? citizens,
+    _i0ptycc3.OrganizationJsonIncludeList? organizations,
+    this.selectedColumns,
+  }) {
+    _citizens = citizens;
+    _organizations = organizations;
+  }
+
+  _ijqkgw0m.PersonJsonIncludeList? _citizens;
+
+  _i0ptycc3.OrganizationJsonIncludeList? _organizations;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -318,14 +415,15 @@ class CityInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => City.t;
 }
 
-class CityIncludeList extends _isd.IncludeList {
-  CityIncludeList._({
+final class _CityJsonIncludeList extends _isd.IncludeList
+    implements CityJsonIncludeList {
+  _CityJsonIncludeList._({
     _isd.WhereExpressionBuilder<CityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CityJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(City.t);
@@ -461,6 +559,8 @@ class CityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -491,7 +591,7 @@ class CityRepository {
     _isd.OrderByBuilder<CityTable>? orderBy,
     _isd.OrderByListBuilder<CityTable>? orderByList,
     _isd.Transaction? transaction,
-    CityInclude? include,
+    CityJsonInclude? include,
     _isd.SelectColumnsBuilder<CityTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -514,6 +614,8 @@ class CityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -538,7 +640,7 @@ class CityRepository {
     _isd.OrderByBuilder<CityTable>? orderBy,
     _isd.OrderByListBuilder<CityTable>? orderByList,
     _isd.Transaction? transaction,
-    CityInclude? include,
+    CityJsonInclude? include,
     _isd.SelectColumnsBuilder<CityTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -560,12 +662,14 @@ class CityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    CityInclude? include,
+    CityJsonInclude? include,
     _isd.SelectColumnsBuilder<CityTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

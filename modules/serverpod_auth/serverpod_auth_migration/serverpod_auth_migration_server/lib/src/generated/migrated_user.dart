@@ -103,17 +103,21 @@ abstract class MigratedUser
     return {};
   }
 
+  /// Builds a complete [MigratedUserInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static MigratedUserInclude include({
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
-    _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
     return MigratedUserInclude._(
       oldUser: oldUser,
       newAuthUser: newAuthUser,
-      selectedColumns: select?.call(MigratedUser.t),
     );
   }
+
+  /// Builds a complete [MigratedUserIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static MigratedUserIncludeList includeList({
     _is.WhereExpressionBuilder<MigratedUserTable>? where,
@@ -122,9 +126,51 @@ abstract class MigratedUser
     _is.OrderByBuilder<MigratedUserTable>? orderBy,
     _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
-    _is.SelectColumnsBuilder<MigratedUserTable>? select,
   }) {
     return MigratedUserIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MigratedUser.t),
+      orderByList: orderByList?.call(MigratedUser.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [MigratedUserJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static MigratedUserJsonInclude includeJson({
+    _i1n3uhu0.UserInfoJsonInclude? oldUser,
+    _iacs.AuthUserJsonInclude? newAuthUser,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
+  }) {
+    return _MigratedUserJsonInclude._(
+      oldUser: oldUser,
+      newAuthUser: newAuthUser,
+      selectedColumns: select?.call(MigratedUser.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [MigratedUserJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static MigratedUserJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    MigratedUserJsonInclude? include,
+    _is.SelectColumnsBuilder<MigratedUserTable>? select,
+  }) {
+    return _MigratedUserJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -270,11 +316,17 @@ class MigratedUserTable extends _is.Table<int?> {
   }
 }
 
-class MigratedUserInclude extends _is.IncludeObject {
+abstract interface class MigratedUserJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class MigratedUserJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class MigratedUserInclude extends _is.IncludeObject
+    implements MigratedUserJsonInclude, _is.FullModelInclude {
   MigratedUserInclude._({
     _i1n3uhu0.UserInfoInclude? oldUser,
     _iacs.AuthUserInclude? newAuthUser,
-    this.selectedColumns,
   }) {
     _oldUser = oldUser;
     _newAuthUser = newAuthUser;
@@ -283,6 +335,51 @@ class MigratedUserInclude extends _is.IncludeObject {
   _i1n3uhu0.UserInfoInclude? _oldUser;
 
   _iacs.AuthUserInclude? _newAuthUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'oldUser': _oldUser,
+    'newAuthUser': _newAuthUser,
+  };
+
+  @override
+  _is.Table<int?> get table => MigratedUser.t;
+}
+
+final class MigratedUserIncludeList extends _is.IncludeList
+    implements MigratedUserJsonIncludeList, _is.FullModelInclude {
+  MigratedUserIncludeList._({
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    MigratedUserInclude? super.include,
+  }) {
+    super.where = where?.call(MigratedUser.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => MigratedUser.t;
+}
+
+final class _MigratedUserJsonInclude extends _is.IncludeObject
+    implements MigratedUserJsonInclude {
+  _MigratedUserJsonInclude._({
+    _i1n3uhu0.UserInfoJsonInclude? oldUser,
+    _iacs.AuthUserJsonInclude? newAuthUser,
+    this.selectedColumns,
+  }) {
+    _oldUser = oldUser;
+    _newAuthUser = newAuthUser;
+  }
+
+  _i1n3uhu0.UserInfoJsonInclude? _oldUser;
+
+  _iacs.AuthUserJsonInclude? _newAuthUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -297,14 +394,15 @@ class MigratedUserInclude extends _is.IncludeObject {
   _is.Table<int?> get table => MigratedUser.t;
 }
 
-class MigratedUserIncludeList extends _is.IncludeList {
-  MigratedUserIncludeList._({
+final class _MigratedUserJsonIncludeList extends _is.IncludeList
+    implements MigratedUserJsonIncludeList {
+  _MigratedUserJsonIncludeList._({
     _is.WhereExpressionBuilder<MigratedUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    MigratedUserJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(MigratedUser.t);
@@ -434,6 +532,8 @@ class MigratedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -464,7 +564,7 @@ class MigratedUserRepository {
     _is.OrderByBuilder<MigratedUserTable>? orderBy,
     _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     _is.Transaction? transaction,
-    MigratedUserInclude? include,
+    MigratedUserJsonInclude? include,
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -487,6 +587,8 @@ class MigratedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -511,7 +613,7 @@ class MigratedUserRepository {
     _is.OrderByBuilder<MigratedUserTable>? orderBy,
     _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     _is.Transaction? transaction,
-    MigratedUserInclude? include,
+    MigratedUserJsonInclude? include,
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -533,12 +635,14 @@ class MigratedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    MigratedUserInclude? include,
+    MigratedUserJsonInclude? include,
     _is.SelectColumnsBuilder<MigratedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

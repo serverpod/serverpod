@@ -78,15 +78,17 @@ abstract class ParentEntity
     };
   }
 
+  /// Builds a complete [ParentEntityInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ParentEntityInclude include({
     _i41rqetj.ChildEntityIncludeList? children,
-    _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
-    return ParentEntityInclude._(
-      children: children,
-      selectedColumns: select?.call(ParentEntity.t),
-    );
+    return ParentEntityInclude._(children: children);
   }
+
+  /// Builds a complete [ParentEntityIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ParentEntityIncludeList includeList({
     _is.WhereExpressionBuilder<ParentEntityTable>? where,
@@ -95,9 +97,49 @@ abstract class ParentEntity
     _is.OrderByBuilder<ParentEntityTable>? orderBy,
     _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     ParentEntityInclude? include,
-    _is.SelectColumnsBuilder<ParentEntityTable>? select,
   }) {
     return ParentEntityIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentEntity.t),
+      orderByList: orderByList?.call(ParentEntity.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ParentEntityJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ParentEntityJsonInclude includeJson({
+    _i41rqetj.ChildEntityJsonIncludeList? children,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
+  }) {
+    return _ParentEntityJsonInclude._(
+      children: children,
+      selectedColumns: select?.call(ParentEntity.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ParentEntityJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ParentEntityJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ParentEntityTable>? orderBy,
+    _is.OrderByListBuilder<ParentEntityTable>? orderByList,
+    ParentEntityJsonInclude? include,
+    _is.SelectColumnsBuilder<ParentEntityTable>? select,
+  }) {
+    return _ParentEntityJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -203,15 +245,57 @@ class ParentEntityTable extends _is.Table<int?> {
   }
 }
 
-class ParentEntityInclude extends _is.IncludeObject {
-  ParentEntityInclude._({
-    _i41rqetj.ChildEntityIncludeList? children,
+abstract interface class ParentEntityJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ParentEntityJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ParentEntityInclude extends _is.IncludeObject
+    implements ParentEntityJsonInclude, _is.FullModelInclude {
+  ParentEntityInclude._({_i41rqetj.ChildEntityIncludeList? children}) {
+    _children = children;
+  }
+
+  _i41rqetj.ChildEntityIncludeList? _children;
+
+  @override
+  Map<String, _is.Include?> get includes => {'children': _children};
+
+  @override
+  _is.Table<int?> get table => ParentEntity.t;
+}
+
+final class ParentEntityIncludeList extends _is.IncludeList
+    implements ParentEntityJsonIncludeList, _is.FullModelInclude {
+  ParentEntityIncludeList._({
+    _is.WhereExpressionBuilder<ParentEntityTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ParentEntityInclude? super.include,
+  }) {
+    super.where = where?.call(ParentEntity.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ParentEntity.t;
+}
+
+final class _ParentEntityJsonInclude extends _is.IncludeObject
+    implements ParentEntityJsonInclude {
+  _ParentEntityJsonInclude._({
+    _i41rqetj.ChildEntityJsonIncludeList? children,
     this.selectedColumns,
   }) {
     _children = children;
   }
 
-  _i41rqetj.ChildEntityIncludeList? _children;
+  _i41rqetj.ChildEntityJsonIncludeList? _children;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -223,14 +307,15 @@ class ParentEntityInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ParentEntity.t;
 }
 
-class ParentEntityIncludeList extends _is.IncludeList {
-  ParentEntityIncludeList._({
+final class _ParentEntityJsonIncludeList extends _is.IncludeList
+    implements ParentEntityJsonIncludeList {
+  _ParentEntityJsonIncludeList._({
     _is.WhereExpressionBuilder<ParentEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ParentEntityJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ParentEntity.t);
@@ -366,6 +451,8 @@ class ParentEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -396,7 +483,7 @@ class ParentEntityRepository {
     _is.OrderByBuilder<ParentEntityTable>? orderBy,
     _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     _is.Transaction? transaction,
-    ParentEntityInclude? include,
+    ParentEntityJsonInclude? include,
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -419,6 +506,8 @@ class ParentEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -443,7 +532,7 @@ class ParentEntityRepository {
     _is.OrderByBuilder<ParentEntityTable>? orderBy,
     _is.OrderByListBuilder<ParentEntityTable>? orderByList,
     _is.Transaction? transaction,
-    ParentEntityInclude? include,
+    ParentEntityJsonInclude? include,
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -465,12 +554,14 @@ class ParentEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ParentEntityInclude? include,
+    ParentEntityJsonInclude? include,
     _is.SelectColumnsBuilder<ParentEntityTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

@@ -122,17 +122,21 @@ abstract class GeneratedRelationEmployee
     };
   }
 
+  /// Builds a complete [GeneratedRelationEmployeeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static GeneratedRelationEmployeeInclude include({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
-    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
   }) {
     return GeneratedRelationEmployeeInclude._(
       company: company,
       previousCompany: previousCompany,
-      selectedColumns: select?.call(GeneratedRelationEmployee.t),
     );
   }
+
+  /// Builds a complete [GeneratedRelationEmployeeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static GeneratedRelationEmployeeIncludeList includeList({
     _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
@@ -141,9 +145,51 @@ abstract class GeneratedRelationEmployee
     _is.OrderByBuilder<GeneratedRelationEmployeeTable>? orderBy,
     _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
     GeneratedRelationEmployeeInclude? include,
-    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
   }) {
     return GeneratedRelationEmployeeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GeneratedRelationEmployee.t),
+      orderByList: orderByList?.call(GeneratedRelationEmployee.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [GeneratedRelationEmployeeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static GeneratedRelationEmployeeJsonInclude includeJson({
+    _ipeijyfj.GeneratedRelationCompanyJsonInclude? company,
+    _ipeijyfj.GeneratedRelationCompanyJsonInclude? previousCompany,
+    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
+  }) {
+    return _GeneratedRelationEmployeeJsonInclude._(
+      company: company,
+      previousCompany: previousCompany,
+      selectedColumns: select?.call(GeneratedRelationEmployee.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [GeneratedRelationEmployeeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static GeneratedRelationEmployeeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GeneratedRelationEmployeeTable>? orderBy,
+    _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
+    GeneratedRelationEmployeeJsonInclude? include,
+    _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
+  }) {
+    return _GeneratedRelationEmployeeJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -311,11 +357,17 @@ class GeneratedRelationEmployeeTable extends _is.Table<int?> {
   }
 }
 
-class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
+abstract interface class GeneratedRelationEmployeeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class GeneratedRelationEmployeeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class GeneratedRelationEmployeeInclude extends _is.IncludeObject
+    implements GeneratedRelationEmployeeJsonInclude, _is.FullModelInclude {
   GeneratedRelationEmployeeInclude._({
     _ipeijyfj.GeneratedRelationCompanyInclude? company,
     _ipeijyfj.GeneratedRelationCompanyInclude? previousCompany,
-    this.selectedColumns,
   }) {
     _company = company;
     _previousCompany = previousCompany;
@@ -324,6 +376,51 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
   _ipeijyfj.GeneratedRelationCompanyInclude? _company;
 
   _ipeijyfj.GeneratedRelationCompanyInclude? _previousCompany;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'company': _company,
+    'previousCompany': _previousCompany,
+  };
+
+  @override
+  _is.Table<int?> get table => GeneratedRelationEmployee.t;
+}
+
+final class GeneratedRelationEmployeeIncludeList extends _is.IncludeList
+    implements GeneratedRelationEmployeeJsonIncludeList, _is.FullModelInclude {
+  GeneratedRelationEmployeeIncludeList._({
+    _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    GeneratedRelationEmployeeInclude? super.include,
+  }) {
+    super.where = where?.call(GeneratedRelationEmployee.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => GeneratedRelationEmployee.t;
+}
+
+final class _GeneratedRelationEmployeeJsonInclude extends _is.IncludeObject
+    implements GeneratedRelationEmployeeJsonInclude {
+  _GeneratedRelationEmployeeJsonInclude._({
+    _ipeijyfj.GeneratedRelationCompanyJsonInclude? company,
+    _ipeijyfj.GeneratedRelationCompanyJsonInclude? previousCompany,
+    this.selectedColumns,
+  }) {
+    _company = company;
+    _previousCompany = previousCompany;
+  }
+
+  _ipeijyfj.GeneratedRelationCompanyJsonInclude? _company;
+
+  _ipeijyfj.GeneratedRelationCompanyJsonInclude? _previousCompany;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -338,14 +435,15 @@ class GeneratedRelationEmployeeInclude extends _is.IncludeObject {
   _is.Table<int?> get table => GeneratedRelationEmployee.t;
 }
 
-class GeneratedRelationEmployeeIncludeList extends _is.IncludeList {
-  GeneratedRelationEmployeeIncludeList._({
+final class _GeneratedRelationEmployeeJsonIncludeList extends _is.IncludeList
+    implements GeneratedRelationEmployeeJsonIncludeList {
+  _GeneratedRelationEmployeeJsonIncludeList._({
     _is.WhereExpressionBuilder<GeneratedRelationEmployeeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    GeneratedRelationEmployeeJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(GeneratedRelationEmployee.t);
@@ -477,6 +575,8 @@ class GeneratedRelationEmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -507,7 +607,7 @@ class GeneratedRelationEmployeeRepository {
     _is.OrderByBuilder<GeneratedRelationEmployeeTable>? orderBy,
     _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
     _is.Transaction? transaction,
-    GeneratedRelationEmployeeInclude? include,
+    GeneratedRelationEmployeeJsonInclude? include,
     _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -530,6 +630,8 @@ class GeneratedRelationEmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -554,7 +656,7 @@ class GeneratedRelationEmployeeRepository {
     _is.OrderByBuilder<GeneratedRelationEmployeeTable>? orderBy,
     _is.OrderByListBuilder<GeneratedRelationEmployeeTable>? orderByList,
     _is.Transaction? transaction,
-    GeneratedRelationEmployeeInclude? include,
+    GeneratedRelationEmployeeJsonInclude? include,
     _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -576,12 +678,14 @@ class GeneratedRelationEmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    GeneratedRelationEmployeeInclude? include,
+    GeneratedRelationEmployeeJsonInclude? include,
     _is.SelectColumnsBuilder<GeneratedRelationEmployeeTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

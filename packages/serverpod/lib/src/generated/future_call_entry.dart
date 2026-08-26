@@ -122,13 +122,15 @@ abstract class FutureCallEntry
     };
   }
 
-  static FutureCallEntryInclude include({
-    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
-  }) {
-    return FutureCallEntryInclude._(
-      selectedColumns: select?.call(FutureCallEntry.t),
-    );
+  /// Builds a complete [FutureCallEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static FutureCallEntryInclude include() {
+    return FutureCallEntryInclude._();
   }
+
+  /// Builds a complete [FutureCallEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static FutureCallEntryIncludeList includeList({
     _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
@@ -137,9 +139,47 @@ abstract class FutureCallEntry
     _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
     _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
     FutureCallEntryInclude? include,
-    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
   }) {
     return FutureCallEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(FutureCallEntry.t),
+      orderByList: orderByList?.call(FutureCallEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [FutureCallEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static FutureCallEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+  }) {
+    return _FutureCallEntryJsonInclude._(
+      selectedColumns: select?.call(FutureCallEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [FutureCallEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static FutureCallEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FutureCallEntryTable>? orderBy,
+    _is.OrderByListBuilder<FutureCallEntryTable>? orderByList,
+    FutureCallEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<FutureCallEntryTable>? select,
+  }) {
+    return _FutureCallEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -308,8 +348,46 @@ class FutureCallEntryTable extends _is.Table<int?> {
   ];
 }
 
-class FutureCallEntryInclude extends _is.IncludeObject {
-  FutureCallEntryInclude._({this.selectedColumns});
+abstract interface class FutureCallEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class FutureCallEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class FutureCallEntryInclude extends _is.IncludeObject
+    implements FutureCallEntryJsonInclude, _is.FullModelInclude {
+  FutureCallEntryInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => FutureCallEntry.t;
+}
+
+final class FutureCallEntryIncludeList extends _is.IncludeList
+    implements FutureCallEntryJsonIncludeList, _is.FullModelInclude {
+  FutureCallEntryIncludeList._({
+    _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    FutureCallEntryInclude? super.include,
+  }) {
+    super.where = where?.call(FutureCallEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => FutureCallEntry.t;
+}
+
+final class _FutureCallEntryJsonInclude extends _is.IncludeObject
+    implements FutureCallEntryJsonInclude {
+  _FutureCallEntryJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -321,14 +399,15 @@ class FutureCallEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => FutureCallEntry.t;
 }
 
-class FutureCallEntryIncludeList extends _is.IncludeList {
-  FutureCallEntryIncludeList._({
+final class _FutureCallEntryJsonIncludeList extends _is.IncludeList
+    implements FutureCallEntryJsonIncludeList {
+  _FutureCallEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<FutureCallEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    FutureCallEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(FutureCallEntry.t);
@@ -450,6 +529,8 @@ class FutureCallEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -501,6 +582,8 @@ class FutureCallEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -545,6 +628,8 @@ class FutureCallEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

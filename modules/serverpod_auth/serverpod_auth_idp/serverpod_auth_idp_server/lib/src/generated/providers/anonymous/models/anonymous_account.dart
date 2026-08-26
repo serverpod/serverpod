@@ -98,15 +98,15 @@ abstract class AnonymousAccount
     return {};
   }
 
-  static AnonymousAccountInclude include({
-    _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
-  }) {
-    return AnonymousAccountInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(AnonymousAccount.t),
-    );
+  /// Builds a complete [AnonymousAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AnonymousAccountInclude include({_iacs.AuthUserInclude? authUser}) {
+    return AnonymousAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [AnonymousAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AnonymousAccountIncludeList includeList({
     _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
@@ -115,9 +115,49 @@ abstract class AnonymousAccount
     _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     AnonymousAccountInclude? include,
-    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
   }) {
     return AnonymousAccountIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AnonymousAccount.t),
+      orderByList: orderByList?.call(AnonymousAccount.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AnonymousAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AnonymousAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+  }) {
+    return _AnonymousAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(AnonymousAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [AnonymousAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AnonymousAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
+    _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
+    AnonymousAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
+  }) {
+    return _AnonymousAccountJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -241,15 +281,57 @@ class AnonymousAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class AnonymousAccountInclude extends _is.IncludeObject {
-  AnonymousAccountInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class AnonymousAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class AnonymousAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class AnonymousAccountInclude extends _is.IncludeObject
+    implements AnonymousAccountJsonInclude, _is.FullModelInclude {
+  AnonymousAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AnonymousAccount.t;
+}
+
+final class AnonymousAccountIncludeList extends _is.IncludeList
+    implements AnonymousAccountJsonIncludeList, _is.FullModelInclude {
+  AnonymousAccountIncludeList._({
+    _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AnonymousAccountInclude? super.include,
+  }) {
+    super.where = where?.call(AnonymousAccount.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AnonymousAccount.t;
+}
+
+final class _AnonymousAccountJsonInclude extends _is.IncludeObject
+    implements AnonymousAccountJsonInclude {
+  _AnonymousAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -261,14 +343,15 @@ class AnonymousAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => AnonymousAccount.t;
 }
 
-class AnonymousAccountIncludeList extends _is.IncludeList {
-  AnonymousAccountIncludeList._({
+final class _AnonymousAccountJsonIncludeList extends _is.IncludeList
+    implements AnonymousAccountJsonIncludeList {
+  _AnonymousAccountJsonIncludeList._({
     _is.WhereExpressionBuilder<AnonymousAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AnonymousAccountJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(AnonymousAccount.t);
@@ -398,6 +481,8 @@ class AnonymousAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -428,7 +513,7 @@ class AnonymousAccountRepository {
     _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _is.Transaction? transaction,
-    AnonymousAccountInclude? include,
+    AnonymousAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -451,6 +536,8 @@ class AnonymousAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -475,7 +562,7 @@ class AnonymousAccountRepository {
     _is.OrderByBuilder<AnonymousAccountTable>? orderBy,
     _is.OrderByListBuilder<AnonymousAccountTable>? orderByList,
     _is.Transaction? transaction,
-    AnonymousAccountInclude? include,
+    AnonymousAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -497,12 +584,14 @@ class AnonymousAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    AnonymousAccountInclude? include,
+    AnonymousAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AnonymousAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

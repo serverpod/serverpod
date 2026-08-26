@@ -56,13 +56,15 @@ abstract class ServerOnlyChangedIdFieldClass
     return {};
   }
 
-  static ServerOnlyChangedIdFieldClassInclude include({
-    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
-  }) {
-    return ServerOnlyChangedIdFieldClassInclude._(
-      selectedColumns: select?.call(ServerOnlyChangedIdFieldClass.t),
-    );
+  /// Builds a complete [ServerOnlyChangedIdFieldClassInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ServerOnlyChangedIdFieldClassInclude include() {
+    return ServerOnlyChangedIdFieldClassInclude._();
   }
+
+  /// Builds a complete [ServerOnlyChangedIdFieldClassIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ServerOnlyChangedIdFieldClassIncludeList includeList({
     _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
@@ -71,9 +73,47 @@ abstract class ServerOnlyChangedIdFieldClass
     _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
     _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
     ServerOnlyChangedIdFieldClassInclude? include,
-    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
   }) {
     return ServerOnlyChangedIdFieldClassIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerOnlyChangedIdFieldClass.t),
+      orderByList: orderByList?.call(ServerOnlyChangedIdFieldClass.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerOnlyChangedIdFieldClassJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ServerOnlyChangedIdFieldClassJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+  }) {
+    return _ServerOnlyChangedIdFieldClassJsonInclude._(
+      selectedColumns: select?.call(ServerOnlyChangedIdFieldClass.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerOnlyChangedIdFieldClassJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ServerOnlyChangedIdFieldClassJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerOnlyChangedIdFieldClassTable>? orderBy,
+    _is.OrderByListBuilder<ServerOnlyChangedIdFieldClassTable>? orderByList,
+    ServerOnlyChangedIdFieldClassJsonInclude? include,
+    _is.SelectColumnsBuilder<ServerOnlyChangedIdFieldClassTable>? select,
+  }) {
+    return _ServerOnlyChangedIdFieldClassJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -123,8 +163,48 @@ class ServerOnlyChangedIdFieldClassTable extends _is.Table<_is.UuidValue?> {
   List<_is.Column> get columns => [id];
 }
 
-class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
-  ServerOnlyChangedIdFieldClassInclude._({this.selectedColumns});
+abstract interface class ServerOnlyChangedIdFieldClassJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ServerOnlyChangedIdFieldClassJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject
+    implements ServerOnlyChangedIdFieldClassJsonInclude, _is.FullModelInclude {
+  ServerOnlyChangedIdFieldClassInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
+}
+
+final class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList
+    implements
+        ServerOnlyChangedIdFieldClassJsonIncludeList,
+        _is.FullModelInclude {
+  ServerOnlyChangedIdFieldClassIncludeList._({
+    _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ServerOnlyChangedIdFieldClassInclude? super.include,
+  }) {
+    super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
+}
+
+final class _ServerOnlyChangedIdFieldClassJsonInclude extends _is.IncludeObject
+    implements ServerOnlyChangedIdFieldClassJsonInclude {
+  _ServerOnlyChangedIdFieldClassJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -136,14 +216,16 @@ class ServerOnlyChangedIdFieldClassInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ServerOnlyChangedIdFieldClass.t;
 }
 
-class ServerOnlyChangedIdFieldClassIncludeList extends _is.IncludeList {
-  ServerOnlyChangedIdFieldClassIncludeList._({
+final class _ServerOnlyChangedIdFieldClassJsonIncludeList
+    extends _is.IncludeList
+    implements ServerOnlyChangedIdFieldClassJsonIncludeList {
+  _ServerOnlyChangedIdFieldClassJsonIncludeList._({
     _is.WhereExpressionBuilder<ServerOnlyChangedIdFieldClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ServerOnlyChangedIdFieldClassJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ServerOnlyChangedIdFieldClass.t);
@@ -265,6 +347,8 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -316,6 +400,8 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -360,6 +446,8 @@ class ServerOnlyChangedIdFieldClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

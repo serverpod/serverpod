@@ -70,13 +70,15 @@ abstract class DeferrableRelationInitiallyDeferred
     };
   }
 
-  static DeferrableRelationInitiallyDeferredInclude include({
-    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
-  }) {
-    return DeferrableRelationInitiallyDeferredInclude._(
-      selectedColumns: select?.call(DeferrableRelationInitiallyDeferred.t),
-    );
+  /// Builds a complete [DeferrableRelationInitiallyDeferredInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DeferrableRelationInitiallyDeferredInclude include() {
+    return DeferrableRelationInitiallyDeferredInclude._();
   }
+
+  /// Builds a complete [DeferrableRelationInitiallyDeferredIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DeferrableRelationInitiallyDeferredIncludeList includeList({
     _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
@@ -86,9 +88,48 @@ abstract class DeferrableRelationInitiallyDeferred
     _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
     orderByList,
     DeferrableRelationInitiallyDeferredInclude? include,
-    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
   }) {
     return DeferrableRelationInitiallyDeferredIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DeferrableRelationInitiallyDeferred.t),
+      orderByList: orderByList?.call(DeferrableRelationInitiallyDeferred.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DeferrableRelationInitiallyDeferredJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DeferrableRelationInitiallyDeferredJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
+  }) {
+    return _DeferrableRelationInitiallyDeferredJsonInclude._(
+      selectedColumns: select?.call(DeferrableRelationInitiallyDeferred.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DeferrableRelationInitiallyDeferredJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DeferrableRelationInitiallyDeferredJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DeferrableRelationInitiallyDeferredTable>? orderBy,
+    _is.OrderByListBuilder<DeferrableRelationInitiallyDeferredTable>?
+    orderByList,
+    DeferrableRelationInitiallyDeferredJsonInclude? include,
+    _is.SelectColumnsBuilder<DeferrableRelationInitiallyDeferredTable>? select,
+  }) {
+    return _DeferrableRelationInitiallyDeferredJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,8 +204,52 @@ class DeferrableRelationInitiallyDeferredTable extends _is.Table<int?> {
   ];
 }
 
-class DeferrableRelationInitiallyDeferredInclude extends _is.IncludeObject {
-  DeferrableRelationInitiallyDeferredInclude._({this.selectedColumns});
+abstract interface class DeferrableRelationInitiallyDeferredJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DeferrableRelationInitiallyDeferredJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DeferrableRelationInitiallyDeferredInclude extends _is.IncludeObject
+    implements
+        DeferrableRelationInitiallyDeferredJsonInclude,
+        _is.FullModelInclude {
+  DeferrableRelationInitiallyDeferredInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
+}
+
+final class DeferrableRelationInitiallyDeferredIncludeList
+    extends _is.IncludeList
+    implements
+        DeferrableRelationInitiallyDeferredJsonIncludeList,
+        _is.FullModelInclude {
+  DeferrableRelationInitiallyDeferredIncludeList._({
+    _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DeferrableRelationInitiallyDeferredInclude? super.include,
+  }) {
+    super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
+}
+
+final class _DeferrableRelationInitiallyDeferredJsonInclude
+    extends _is.IncludeObject
+    implements DeferrableRelationInitiallyDeferredJsonInclude {
+  _DeferrableRelationInitiallyDeferredJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -176,14 +261,16 @@ class DeferrableRelationInitiallyDeferredInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DeferrableRelationInitiallyDeferred.t;
 }
 
-class DeferrableRelationInitiallyDeferredIncludeList extends _is.IncludeList {
-  DeferrableRelationInitiallyDeferredIncludeList._({
+final class _DeferrableRelationInitiallyDeferredJsonIncludeList
+    extends _is.IncludeList
+    implements DeferrableRelationInitiallyDeferredJsonIncludeList {
+  _DeferrableRelationInitiallyDeferredJsonIncludeList._({
     _is.WhereExpressionBuilder<DeferrableRelationInitiallyDeferredTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DeferrableRelationInitiallyDeferredJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DeferrableRelationInitiallyDeferred.t);
@@ -307,6 +394,8 @@ class DeferrableRelationInitiallyDeferredRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -359,6 +448,8 @@ class DeferrableRelationInitiallyDeferredRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -404,6 +495,8 @@ class DeferrableRelationInitiallyDeferredRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

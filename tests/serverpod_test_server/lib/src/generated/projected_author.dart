@@ -92,13 +92,15 @@ abstract class ProjectedAuthor
     };
   }
 
-  static ProjectedAuthorInclude include({
-    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
-  }) {
-    return ProjectedAuthorInclude._(
-      selectedColumns: select?.call(ProjectedAuthor.t),
-    );
+  /// Builds a complete [ProjectedAuthorInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ProjectedAuthorInclude include() {
+    return ProjectedAuthorInclude._();
   }
+
+  /// Builds a complete [ProjectedAuthorIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ProjectedAuthorIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
@@ -107,9 +109,47 @@ abstract class ProjectedAuthor
     _is.OrderByBuilder<ProjectedAuthorTable>? orderBy,
     _is.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
     ProjectedAuthorInclude? include,
-    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
   }) {
     return ProjectedAuthorIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedAuthor.t),
+      orderByList: orderByList?.call(ProjectedAuthor.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedAuthorJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ProjectedAuthorJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+  }) {
+    return _ProjectedAuthorJsonInclude._(
+      selectedColumns: select?.call(ProjectedAuthor.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedAuthorJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ProjectedAuthorJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedAuthorTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedAuthorTable>? orderByList,
+    ProjectedAuthorJsonInclude? include,
+    _is.SelectColumnsBuilder<ProjectedAuthorTable>? select,
+  }) {
+    return _ProjectedAuthorJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,8 +270,46 @@ class ProjectedAuthorTable extends _is.Table<int?> {
   ];
 }
 
-class ProjectedAuthorInclude extends _is.IncludeObject {
-  ProjectedAuthorInclude._({this.selectedColumns});
+abstract interface class ProjectedAuthorJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ProjectedAuthorJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ProjectedAuthorInclude extends _is.IncludeObject
+    implements ProjectedAuthorJsonInclude, _is.FullModelInclude {
+  ProjectedAuthorInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ProjectedAuthor.t;
+}
+
+final class ProjectedAuthorIncludeList extends _is.IncludeList
+    implements ProjectedAuthorJsonIncludeList, _is.FullModelInclude {
+  ProjectedAuthorIncludeList._({
+    _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ProjectedAuthorInclude? super.include,
+  }) {
+    super.where = where?.call(ProjectedAuthor.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ProjectedAuthor.t;
+}
+
+final class _ProjectedAuthorJsonInclude extends _is.IncludeObject
+    implements ProjectedAuthorJsonInclude {
+  _ProjectedAuthorJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -243,14 +321,15 @@ class ProjectedAuthorInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ProjectedAuthor.t;
 }
 
-class ProjectedAuthorIncludeList extends _is.IncludeList {
-  ProjectedAuthorIncludeList._({
+final class _ProjectedAuthorJsonIncludeList extends _is.IncludeList
+    implements ProjectedAuthorJsonIncludeList {
+  _ProjectedAuthorJsonIncludeList._({
     _is.WhereExpressionBuilder<ProjectedAuthorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ProjectedAuthorJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedAuthor.t);
@@ -372,6 +451,8 @@ class ProjectedAuthorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -423,6 +504,8 @@ class ProjectedAuthorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -467,6 +550,8 @@ class ProjectedAuthorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -68,8 +68,8 @@ abstract class ProjectedAddressCountry
     };
   }
 
-  static ProjectedAddressInclude include() {
-    return ProjectedAddress.include(
+  static ProjectedAddressJsonInclude include() {
+    return ProjectedAddress.includeJson(
       select: (t) => [
         ProjectedAddress.t.id,
         ProjectedAddress.t.country,
@@ -77,14 +77,14 @@ abstract class ProjectedAddressCountry
     );
   }
 
-  static ProjectedAddressIncludeList includeList({
+  static ProjectedAddressJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedAddressTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedAddressTable>? orderBy,
     _is.OrderByListBuilder<ProjectedAddressTable>? orderByList,
   }) {
-    return ProjectedAddress.includeList(
+    return ProjectedAddress.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

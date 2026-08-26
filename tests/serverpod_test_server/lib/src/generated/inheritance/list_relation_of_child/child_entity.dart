@@ -83,11 +83,15 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     };
   }
 
-  static ChildEntityInclude include({
-    _is.SelectColumnsBuilder<ChildEntityTable>? select,
-  }) {
-    return ChildEntityInclude._(selectedColumns: select?.call(ChildEntity.t));
+  /// Builds a complete [ChildEntityInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ChildEntityInclude include() {
+    return ChildEntityInclude._();
   }
+
+  /// Builds a complete [ChildEntityIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChildEntityIncludeList includeList({
     _is.WhereExpressionBuilder<ChildEntityTable>? where,
@@ -96,9 +100,47 @@ abstract class ChildEntity extends _iototaiw.BaseEntity
     _is.OrderByBuilder<ChildEntityTable>? orderBy,
     _is.OrderByListBuilder<ChildEntityTable>? orderByList,
     ChildEntityInclude? include,
-    _is.SelectColumnsBuilder<ChildEntityTable>? select,
   }) {
     return ChildEntityIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChildEntity.t),
+      orderByList: orderByList?.call(ChildEntity.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildEntityJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChildEntityJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+  }) {
+    return _ChildEntityJsonInclude._(
+      selectedColumns: select?.call(ChildEntity.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildEntityJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChildEntityJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildEntityTable>? orderBy,
+    _is.OrderByListBuilder<ChildEntityTable>? orderByList,
+    ChildEntityJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildEntityTable>? select,
+  }) {
+    return _ChildEntityJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -239,8 +281,46 @@ class ChildEntityTable extends _is.Table<int?> {
   ];
 }
 
-class ChildEntityInclude extends _is.IncludeObject {
-  ChildEntityInclude._({this.selectedColumns});
+abstract interface class ChildEntityJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChildEntityJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChildEntityInclude extends _is.IncludeObject
+    implements ChildEntityJsonInclude, _is.FullModelInclude {
+  ChildEntityInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ChildEntity.t;
+}
+
+final class ChildEntityIncludeList extends _is.IncludeList
+    implements ChildEntityJsonIncludeList, _is.FullModelInclude {
+  ChildEntityIncludeList._({
+    _is.WhereExpressionBuilder<ChildEntityTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChildEntityInclude? super.include,
+  }) {
+    super.where = where?.call(ChildEntity.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ChildEntity.t;
+}
+
+final class _ChildEntityJsonInclude extends _is.IncludeObject
+    implements ChildEntityJsonInclude {
+  _ChildEntityJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -252,14 +332,15 @@ class ChildEntityInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ChildEntity.t;
 }
 
-class ChildEntityIncludeList extends _is.IncludeList {
-  ChildEntityIncludeList._({
+final class _ChildEntityJsonIncludeList extends _is.IncludeList
+    implements ChildEntityJsonIncludeList {
+  _ChildEntityJsonIncludeList._({
     _is.WhereExpressionBuilder<ChildEntityTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChildEntityJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ChildEntity.t);
@@ -381,6 +462,8 @@ class ChildEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -432,6 +515,8 @@ class ChildEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -476,6 +561,8 @@ class ChildEntityRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

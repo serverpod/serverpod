@@ -107,15 +107,17 @@ abstract class ProjectedArticle
     };
   }
 
+  /// Builds a complete [ProjectedArticleInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ProjectedArticleInclude include({
     _iq5hz6n4.ProjectedAuthorInclude? author,
-    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
-    return ProjectedArticleInclude._(
-      author: author,
-      selectedColumns: select?.call(ProjectedArticle.t),
-    );
+    return ProjectedArticleInclude._(author: author);
   }
+
+  /// Builds a complete [ProjectedArticleIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ProjectedArticleIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
@@ -124,9 +126,49 @@ abstract class ProjectedArticle
     _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     ProjectedArticleInclude? include,
-    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
   }) {
     return ProjectedArticleIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedArticle.t),
+      orderByList: orderByList?.call(ProjectedArticle.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedArticleJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ProjectedArticleJsonInclude includeJson({
+    _iq5hz6n4.ProjectedAuthorJsonInclude? author,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
+  }) {
+    return _ProjectedArticleJsonInclude._(
+      author: author,
+      selectedColumns: select?.call(ProjectedArticle.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedArticleJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ProjectedArticleJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
+    ProjectedArticleJsonInclude? include,
+    _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
+  }) {
+    return _ProjectedArticleJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -277,15 +319,57 @@ class ProjectedArticleTable extends _is.Table<int?> {
   }
 }
 
-class ProjectedArticleInclude extends _is.IncludeObject {
-  ProjectedArticleInclude._({
-    _iq5hz6n4.ProjectedAuthorInclude? author,
+abstract interface class ProjectedArticleJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ProjectedArticleJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ProjectedArticleInclude extends _is.IncludeObject
+    implements ProjectedArticleJsonInclude, _is.FullModelInclude {
+  ProjectedArticleInclude._({_iq5hz6n4.ProjectedAuthorInclude? author}) {
+    _author = author;
+  }
+
+  _iq5hz6n4.ProjectedAuthorInclude? _author;
+
+  @override
+  Map<String, _is.Include?> get includes => {'author': _author};
+
+  @override
+  _is.Table<int?> get table => ProjectedArticle.t;
+}
+
+final class ProjectedArticleIncludeList extends _is.IncludeList
+    implements ProjectedArticleJsonIncludeList, _is.FullModelInclude {
+  ProjectedArticleIncludeList._({
+    _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ProjectedArticleInclude? super.include,
+  }) {
+    super.where = where?.call(ProjectedArticle.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ProjectedArticle.t;
+}
+
+final class _ProjectedArticleJsonInclude extends _is.IncludeObject
+    implements ProjectedArticleJsonInclude {
+  _ProjectedArticleJsonInclude._({
+    _iq5hz6n4.ProjectedAuthorJsonInclude? author,
     this.selectedColumns,
   }) {
     _author = author;
   }
 
-  _iq5hz6n4.ProjectedAuthorInclude? _author;
+  _iq5hz6n4.ProjectedAuthorJsonInclude? _author;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -297,14 +381,15 @@ class ProjectedArticleInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ProjectedArticle.t;
 }
 
-class ProjectedArticleIncludeList extends _is.IncludeList {
-  ProjectedArticleIncludeList._({
+final class _ProjectedArticleJsonIncludeList extends _is.IncludeList
+    implements ProjectedArticleJsonIncludeList {
+  _ProjectedArticleJsonIncludeList._({
     _is.WhereExpressionBuilder<ProjectedArticleTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ProjectedArticleJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedArticle.t);
@@ -434,6 +519,8 @@ class ProjectedArticleRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -464,7 +551,7 @@ class ProjectedArticleRepository {
     _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedArticleInclude? include,
+    ProjectedArticleJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -487,6 +574,8 @@ class ProjectedArticleRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -511,7 +600,7 @@ class ProjectedArticleRepository {
     _is.OrderByBuilder<ProjectedArticleTable>? orderBy,
     _is.OrderByListBuilder<ProjectedArticleTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedArticleInclude? include,
+    ProjectedArticleJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -533,12 +622,14 @@ class ProjectedArticleRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ProjectedArticleInclude? include,
+    ProjectedArticleJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedArticleTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

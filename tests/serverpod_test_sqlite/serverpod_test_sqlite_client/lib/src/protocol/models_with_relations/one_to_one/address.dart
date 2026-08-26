@@ -93,15 +93,15 @@ abstract class Address
     };
   }
 
-  static AddressInclude include({
-    _igho3lba.CitizenInclude? inhabitant,
-    _isd.SelectColumnsBuilder<AddressTable>? select,
-  }) {
-    return AddressInclude._(
-      inhabitant: inhabitant,
-      selectedColumns: select?.call(Address.t),
-    );
+  /// Builds a complete [AddressInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AddressInclude include({_igho3lba.CitizenInclude? inhabitant}) {
+    return AddressInclude._(inhabitant: inhabitant);
   }
+
+  /// Builds a complete [AddressIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AddressIncludeList includeList({
     _isd.WhereExpressionBuilder<AddressTable>? where,
@@ -110,9 +110,49 @@ abstract class Address
     _isd.OrderByBuilder<AddressTable>? orderBy,
     _isd.OrderByListBuilder<AddressTable>? orderByList,
     AddressInclude? include,
-    _isd.SelectColumnsBuilder<AddressTable>? select,
   }) {
     return AddressIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Address.t),
+      orderByList: orderByList?.call(Address.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AddressJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AddressJsonInclude includeJson({
+    _igho3lba.CitizenJsonInclude? inhabitant,
+    _isd.SelectColumnsBuilder<AddressTable>? select,
+  }) {
+    return _AddressJsonInclude._(
+      inhabitant: inhabitant,
+      selectedColumns: select?.call(Address.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [AddressJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AddressJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<AddressTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<AddressTable>? orderBy,
+    _isd.OrderByListBuilder<AddressTable>? orderByList,
+    AddressJsonInclude? include,
+    _isd.SelectColumnsBuilder<AddressTable>? select,
+  }) {
+    return _AddressJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,15 +269,57 @@ class AddressTable extends _isd.Table<int?> {
   }
 }
 
-class AddressInclude extends _isd.IncludeObject {
-  AddressInclude._({
-    _igho3lba.CitizenInclude? inhabitant,
+abstract interface class AddressJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class AddressJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class AddressInclude extends _isd.IncludeObject
+    implements AddressJsonInclude, _isd.FullModelInclude {
+  AddressInclude._({_igho3lba.CitizenInclude? inhabitant}) {
+    _inhabitant = inhabitant;
+  }
+
+  _igho3lba.CitizenInclude? _inhabitant;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'inhabitant': _inhabitant};
+
+  @override
+  _isd.Table<int?> get table => Address.t;
+}
+
+final class AddressIncludeList extends _isd.IncludeList
+    implements AddressJsonIncludeList, _isd.FullModelInclude {
+  AddressIncludeList._({
+    _isd.WhereExpressionBuilder<AddressTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AddressInclude? super.include,
+  }) {
+    super.where = where?.call(Address.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Address.t;
+}
+
+final class _AddressJsonInclude extends _isd.IncludeObject
+    implements AddressJsonInclude {
+  _AddressJsonInclude._({
+    _igho3lba.CitizenJsonInclude? inhabitant,
     this.selectedColumns,
   }) {
     _inhabitant = inhabitant;
   }
 
-  _igho3lba.CitizenInclude? _inhabitant;
+  _igho3lba.CitizenJsonInclude? _inhabitant;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -249,14 +331,15 @@ class AddressInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Address.t;
 }
 
-class AddressIncludeList extends _isd.IncludeList {
-  AddressIncludeList._({
+final class _AddressJsonIncludeList extends _isd.IncludeList
+    implements AddressJsonIncludeList {
+  _AddressJsonIncludeList._({
     _isd.WhereExpressionBuilder<AddressTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AddressJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Address.t);
@@ -388,6 +471,8 @@ class AddressRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -418,7 +503,7 @@ class AddressRepository {
     _isd.OrderByBuilder<AddressTable>? orderBy,
     _isd.OrderByListBuilder<AddressTable>? orderByList,
     _isd.Transaction? transaction,
-    AddressInclude? include,
+    AddressJsonInclude? include,
     _isd.SelectColumnsBuilder<AddressTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -441,6 +526,8 @@ class AddressRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -465,7 +552,7 @@ class AddressRepository {
     _isd.OrderByBuilder<AddressTable>? orderBy,
     _isd.OrderByListBuilder<AddressTable>? orderByList,
     _isd.Transaction? transaction,
-    AddressInclude? include,
+    AddressJsonInclude? include,
     _isd.SelectColumnsBuilder<AddressTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -487,12 +574,14 @@ class AddressRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    AddressInclude? include,
+    AddressJsonInclude? include,
     _isd.SelectColumnsBuilder<AddressTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

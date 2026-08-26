@@ -77,13 +77,15 @@ abstract class DurationDefaultPersist
     };
   }
 
-  static DurationDefaultPersistInclude include({
-    _is.SelectColumnsBuilder<DurationDefaultPersistTable>? select,
-  }) {
-    return DurationDefaultPersistInclude._(
-      selectedColumns: select?.call(DurationDefaultPersist.t),
-    );
+  /// Builds a complete [DurationDefaultPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DurationDefaultPersistInclude include() {
+    return DurationDefaultPersistInclude._();
   }
+
+  /// Builds a complete [DurationDefaultPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DurationDefaultPersistIncludeList includeList({
     _is.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
@@ -92,9 +94,47 @@ abstract class DurationDefaultPersist
     _is.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
     DurationDefaultPersistInclude? include,
-    _is.SelectColumnsBuilder<DurationDefaultPersistTable>? select,
   }) {
     return DurationDefaultPersistIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultPersist.t),
+      orderByList: orderByList?.call(DurationDefaultPersist.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DurationDefaultPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DurationDefaultPersistTable>? select,
+  }) {
+    return _DurationDefaultPersistJsonInclude._(
+      selectedColumns: select?.call(DurationDefaultPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DurationDefaultPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultPersistTable>? orderByList,
+    DurationDefaultPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<DurationDefaultPersistTable>? select,
+  }) {
+    return _DurationDefaultPersistJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -172,8 +212,46 @@ class DurationDefaultPersistTable extends _is.Table<int?> {
   ];
 }
 
-class DurationDefaultPersistInclude extends _is.IncludeObject {
-  DurationDefaultPersistInclude._({this.selectedColumns});
+abstract interface class DurationDefaultPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DurationDefaultPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DurationDefaultPersistInclude extends _is.IncludeObject
+    implements DurationDefaultPersistJsonInclude, _is.FullModelInclude {
+  DurationDefaultPersistInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultPersist.t;
+}
+
+final class DurationDefaultPersistIncludeList extends _is.IncludeList
+    implements DurationDefaultPersistJsonIncludeList, _is.FullModelInclude {
+  DurationDefaultPersistIncludeList._({
+    _is.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DurationDefaultPersistInclude? super.include,
+  }) {
+    super.where = where?.call(DurationDefaultPersist.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultPersist.t;
+}
+
+final class _DurationDefaultPersistJsonInclude extends _is.IncludeObject
+    implements DurationDefaultPersistJsonInclude {
+  _DurationDefaultPersistJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -185,14 +263,15 @@ class DurationDefaultPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DurationDefaultPersist.t;
 }
 
-class DurationDefaultPersistIncludeList extends _is.IncludeList {
-  DurationDefaultPersistIncludeList._({
+final class _DurationDefaultPersistJsonIncludeList extends _is.IncludeList
+    implements DurationDefaultPersistJsonIncludeList {
+  _DurationDefaultPersistJsonIncludeList._({
     _is.WhereExpressionBuilder<DurationDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DurationDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultPersist.t);
@@ -314,6 +393,8 @@ class DurationDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -365,6 +446,8 @@ class DurationDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -409,6 +492,8 @@ class DurationDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

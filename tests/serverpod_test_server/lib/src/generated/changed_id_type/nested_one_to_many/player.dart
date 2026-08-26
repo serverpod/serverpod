@@ -93,15 +93,15 @@ abstract class PlayerUuid
     };
   }
 
-  static PlayerUuidInclude include({
-    _i9bz1am4.TeamIntInclude? team,
-    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
-  }) {
-    return PlayerUuidInclude._(
-      team: team,
-      selectedColumns: select?.call(PlayerUuid.t),
-    );
+  /// Builds a complete [PlayerUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static PlayerUuidInclude include({_i9bz1am4.TeamIntInclude? team}) {
+    return PlayerUuidInclude._(team: team);
   }
+
+  /// Builds a complete [PlayerUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PlayerUuidIncludeList includeList({
     _is.WhereExpressionBuilder<PlayerUuidTable>? where,
@@ -110,9 +110,49 @@ abstract class PlayerUuid
     _is.OrderByBuilder<PlayerUuidTable>? orderBy,
     _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     PlayerUuidInclude? include,
-    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
   }) {
     return PlayerUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PlayerUuid.t),
+      orderByList: orderByList?.call(PlayerUuid.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PlayerUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PlayerUuidJsonInclude includeJson({
+    _i9bz1am4.TeamIntJsonInclude? team,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+  }) {
+    return _PlayerUuidJsonInclude._(
+      team: team,
+      selectedColumns: select?.call(PlayerUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PlayerUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PlayerUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PlayerUuidTable>? orderBy,
+    _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
+    PlayerUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<PlayerUuidTable>? select,
+  }) {
+    return _PlayerUuidJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,15 +267,57 @@ class PlayerUuidTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class PlayerUuidInclude extends _is.IncludeObject {
-  PlayerUuidInclude._({
-    _i9bz1am4.TeamIntInclude? team,
+abstract interface class PlayerUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class PlayerUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class PlayerUuidInclude extends _is.IncludeObject
+    implements PlayerUuidJsonInclude, _is.FullModelInclude {
+  PlayerUuidInclude._({_i9bz1am4.TeamIntInclude? team}) {
+    _team = team;
+  }
+
+  _i9bz1am4.TeamIntInclude? _team;
+
+  @override
+  Map<String, _is.Include?> get includes => {'team': _team};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PlayerUuid.t;
+}
+
+final class PlayerUuidIncludeList extends _is.IncludeList
+    implements PlayerUuidJsonIncludeList, _is.FullModelInclude {
+  PlayerUuidIncludeList._({
+    _is.WhereExpressionBuilder<PlayerUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PlayerUuidInclude? super.include,
+  }) {
+    super.where = where?.call(PlayerUuid.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PlayerUuid.t;
+}
+
+final class _PlayerUuidJsonInclude extends _is.IncludeObject
+    implements PlayerUuidJsonInclude {
+  _PlayerUuidJsonInclude._({
+    _i9bz1am4.TeamIntJsonInclude? team,
     this.selectedColumns,
   }) {
     _team = team;
   }
 
-  _i9bz1am4.TeamIntInclude? _team;
+  _i9bz1am4.TeamIntJsonInclude? _team;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -247,14 +329,15 @@ class PlayerUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => PlayerUuid.t;
 }
 
-class PlayerUuidIncludeList extends _is.IncludeList {
-  PlayerUuidIncludeList._({
+final class _PlayerUuidJsonIncludeList extends _is.IncludeList
+    implements PlayerUuidJsonIncludeList {
+  _PlayerUuidJsonIncludeList._({
     _is.WhereExpressionBuilder<PlayerUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    PlayerUuidJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(PlayerUuid.t);
@@ -386,6 +469,8 @@ class PlayerUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -416,7 +501,7 @@ class PlayerUuidRepository {
     _is.OrderByBuilder<PlayerUuidTable>? orderBy,
     _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _is.Transaction? transaction,
-    PlayerUuidInclude? include,
+    PlayerUuidJsonInclude? include,
     _is.SelectColumnsBuilder<PlayerUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -439,6 +524,8 @@ class PlayerUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -463,7 +550,7 @@ class PlayerUuidRepository {
     _is.OrderByBuilder<PlayerUuidTable>? orderBy,
     _is.OrderByListBuilder<PlayerUuidTable>? orderByList,
     _is.Transaction? transaction,
-    PlayerUuidInclude? include,
+    PlayerUuidJsonInclude? include,
     _is.SelectColumnsBuilder<PlayerUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -485,12 +572,14 @@ class PlayerUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    PlayerUuidInclude? include,
+    PlayerUuidJsonInclude? include,
     _is.SelectColumnsBuilder<PlayerUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

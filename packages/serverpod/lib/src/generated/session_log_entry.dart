@@ -244,19 +244,23 @@ abstract class SessionLogEntry
     };
   }
 
+  /// Builds a complete [SessionLogEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static SessionLogEntryInclude include({
     _iv7ld46g.LogEntryIncludeList? logs,
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
-    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
     return SessionLogEntryInclude._(
       logs: logs,
       queries: queries,
       messages: messages,
-      selectedColumns: select?.call(SessionLogEntry.t),
     );
   }
+
+  /// Builds a complete [SessionLogEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SessionLogEntryIncludeList includeList({
     _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
@@ -265,9 +269,53 @@ abstract class SessionLogEntry
     _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
     _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     SessionLogEntryInclude? include,
-    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
   }) {
     return SessionLogEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SessionLogEntry.t),
+      orderByList: orderByList?.call(SessionLogEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SessionLogEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SessionLogEntryJsonInclude includeJson({
+    _iv7ld46g.LogEntryJsonIncludeList? logs,
+    _inqjskye.QueryLogEntryJsonIncludeList? queries,
+    _iky1nb92.MessageLogEntryJsonIncludeList? messages,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
+  }) {
+    return _SessionLogEntryJsonInclude._(
+      logs: logs,
+      queries: queries,
+      messages: messages,
+      selectedColumns: select?.call(SessionLogEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SessionLogEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SessionLogEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
+    SessionLogEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
+  }) {
+    return _SessionLogEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -715,12 +763,18 @@ class SessionLogEntryTable extends _is.Table<int?> {
   }
 }
 
-class SessionLogEntryInclude extends _is.IncludeObject {
+abstract interface class SessionLogEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SessionLogEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SessionLogEntryInclude extends _is.IncludeObject
+    implements SessionLogEntryJsonInclude, _is.FullModelInclude {
   SessionLogEntryInclude._({
     _iv7ld46g.LogEntryIncludeList? logs,
     _inqjskye.QueryLogEntryIncludeList? queries,
     _iky1nb92.MessageLogEntryIncludeList? messages,
-    this.selectedColumns,
   }) {
     _logs = logs;
     _queries = queries;
@@ -732,6 +786,56 @@ class SessionLogEntryInclude extends _is.IncludeObject {
   _inqjskye.QueryLogEntryIncludeList? _queries;
 
   _iky1nb92.MessageLogEntryIncludeList? _messages;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'logs': _logs,
+    'queries': _queries,
+    'messages': _messages,
+  };
+
+  @override
+  _is.Table<int?> get table => SessionLogEntry.t;
+}
+
+final class SessionLogEntryIncludeList extends _is.IncludeList
+    implements SessionLogEntryJsonIncludeList, _is.FullModelInclude {
+  SessionLogEntryIncludeList._({
+    _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SessionLogEntryInclude? super.include,
+  }) {
+    super.where = where?.call(SessionLogEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SessionLogEntry.t;
+}
+
+final class _SessionLogEntryJsonInclude extends _is.IncludeObject
+    implements SessionLogEntryJsonInclude {
+  _SessionLogEntryJsonInclude._({
+    _iv7ld46g.LogEntryJsonIncludeList? logs,
+    _inqjskye.QueryLogEntryJsonIncludeList? queries,
+    _iky1nb92.MessageLogEntryJsonIncludeList? messages,
+    this.selectedColumns,
+  }) {
+    _logs = logs;
+    _queries = queries;
+    _messages = messages;
+  }
+
+  _iv7ld46g.LogEntryJsonIncludeList? _logs;
+
+  _inqjskye.QueryLogEntryJsonIncludeList? _queries;
+
+  _iky1nb92.MessageLogEntryJsonIncludeList? _messages;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -747,14 +851,15 @@ class SessionLogEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SessionLogEntry.t;
 }
 
-class SessionLogEntryIncludeList extends _is.IncludeList {
-  SessionLogEntryIncludeList._({
+final class _SessionLogEntryJsonIncludeList extends _is.IncludeList
+    implements SessionLogEntryJsonIncludeList {
+  _SessionLogEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<SessionLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SessionLogEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SessionLogEntry.t);
@@ -886,6 +991,8 @@ class SessionLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -916,7 +1023,7 @@ class SessionLogEntryRepository {
     _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
     _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _is.Transaction? transaction,
-    SessionLogEntryInclude? include,
+    SessionLogEntryJsonInclude? include,
     _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -939,6 +1046,8 @@ class SessionLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -963,7 +1072,7 @@ class SessionLogEntryRepository {
     _is.OrderByBuilder<SessionLogEntryTable>? orderBy,
     _is.OrderByListBuilder<SessionLogEntryTable>? orderByList,
     _is.Transaction? transaction,
-    SessionLogEntryInclude? include,
+    SessionLogEntryJsonInclude? include,
     _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -985,12 +1094,14 @@ class SessionLogEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    SessionLogEntryInclude? include,
+    SessionLogEntryJsonInclude? include,
     _is.SelectColumnsBuilder<SessionLogEntryTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

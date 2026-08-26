@@ -90,13 +90,15 @@ abstract class BoolDefaultPersist
     };
   }
 
-  static BoolDefaultPersistInclude include({
-    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
-  }) {
-    return BoolDefaultPersistInclude._(
-      selectedColumns: select?.call(BoolDefaultPersist.t),
-    );
+  /// Builds a complete [BoolDefaultPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BoolDefaultPersistInclude include() {
+    return BoolDefaultPersistInclude._();
   }
+
+  /// Builds a complete [BoolDefaultPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BoolDefaultPersistIncludeList includeList({
     _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
@@ -105,9 +107,47 @@ abstract class BoolDefaultPersist
     _is.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
     BoolDefaultPersistInclude? include,
-    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
   }) {
     return BoolDefaultPersistIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultPersist.t),
+      orderByList: orderByList?.call(BoolDefaultPersist.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BoolDefaultPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
+  }) {
+    return _BoolDefaultPersistJsonInclude._(
+      selectedColumns: select?.call(BoolDefaultPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BoolDefaultPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultPersistTable>? orderByList,
+    BoolDefaultPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<BoolDefaultPersistTable>? select,
+  }) {
+    return _BoolDefaultPersistJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -205,8 +245,46 @@ class BoolDefaultPersistTable extends _is.Table<int?> {
   ];
 }
 
-class BoolDefaultPersistInclude extends _is.IncludeObject {
-  BoolDefaultPersistInclude._({this.selectedColumns});
+abstract interface class BoolDefaultPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BoolDefaultPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BoolDefaultPersistInclude extends _is.IncludeObject
+    implements BoolDefaultPersistJsonInclude, _is.FullModelInclude {
+  BoolDefaultPersistInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultPersist.t;
+}
+
+final class BoolDefaultPersistIncludeList extends _is.IncludeList
+    implements BoolDefaultPersistJsonIncludeList, _is.FullModelInclude {
+  BoolDefaultPersistIncludeList._({
+    _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BoolDefaultPersistInclude? super.include,
+  }) {
+    super.where = where?.call(BoolDefaultPersist.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultPersist.t;
+}
+
+final class _BoolDefaultPersistJsonInclude extends _is.IncludeObject
+    implements BoolDefaultPersistJsonInclude {
+  _BoolDefaultPersistJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -218,14 +296,15 @@ class BoolDefaultPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BoolDefaultPersist.t;
 }
 
-class BoolDefaultPersistIncludeList extends _is.IncludeList {
-  BoolDefaultPersistIncludeList._({
+final class _BoolDefaultPersistJsonIncludeList extends _is.IncludeList
+    implements BoolDefaultPersistJsonIncludeList {
+  _BoolDefaultPersistJsonIncludeList._({
     _is.WhereExpressionBuilder<BoolDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BoolDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefaultPersist.t);
@@ -347,6 +426,8 @@ class BoolDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -398,6 +479,8 @@ class BoolDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -442,6 +525,8 @@ class BoolDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

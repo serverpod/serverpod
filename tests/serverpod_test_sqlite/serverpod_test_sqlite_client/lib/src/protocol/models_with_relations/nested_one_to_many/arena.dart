@@ -85,15 +85,15 @@ abstract class Arena
     };
   }
 
-  static ArenaInclude include({
-    _iaks25tn.TeamInclude? team,
-    _isd.SelectColumnsBuilder<ArenaTable>? select,
-  }) {
-    return ArenaInclude._(
-      team: team,
-      selectedColumns: select?.call(Arena.t),
-    );
+  /// Builds a complete [ArenaInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ArenaInclude include({_iaks25tn.TeamInclude? team}) {
+    return ArenaInclude._(team: team);
   }
+
+  /// Builds a complete [ArenaIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ArenaIncludeList includeList({
     _isd.WhereExpressionBuilder<ArenaTable>? where,
@@ -102,9 +102,49 @@ abstract class Arena
     _isd.OrderByBuilder<ArenaTable>? orderBy,
     _isd.OrderByListBuilder<ArenaTable>? orderByList,
     ArenaInclude? include,
-    _isd.SelectColumnsBuilder<ArenaTable>? select,
   }) {
     return ArenaIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Arena.t),
+      orderByList: orderByList?.call(Arena.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ArenaJsonInclude includeJson({
+    _iaks25tn.TeamJsonInclude? team,
+    _isd.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return _ArenaJsonInclude._(
+      team: team,
+      selectedColumns: select?.call(Arena.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ArenaJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ArenaTable>? orderBy,
+    _isd.OrderByListBuilder<ArenaTable>? orderByList,
+    ArenaJsonInclude? include,
+    _isd.SelectColumnsBuilder<ArenaTable>? select,
+  }) {
+    return _ArenaJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -203,15 +243,57 @@ class ArenaTable extends _isd.Table<int?> {
   }
 }
 
-class ArenaInclude extends _isd.IncludeObject {
-  ArenaInclude._({
-    _iaks25tn.TeamInclude? team,
+abstract interface class ArenaJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class ArenaJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class ArenaInclude extends _isd.IncludeObject
+    implements ArenaJsonInclude, _isd.FullModelInclude {
+  ArenaInclude._({_iaks25tn.TeamInclude? team}) {
+    _team = team;
+  }
+
+  _iaks25tn.TeamInclude? _team;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'team': _team};
+
+  @override
+  _isd.Table<int?> get table => Arena.t;
+}
+
+final class ArenaIncludeList extends _isd.IncludeList
+    implements ArenaJsonIncludeList, _isd.FullModelInclude {
+  ArenaIncludeList._({
+    _isd.WhereExpressionBuilder<ArenaTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ArenaInclude? super.include,
+  }) {
+    super.where = where?.call(Arena.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Arena.t;
+}
+
+final class _ArenaJsonInclude extends _isd.IncludeObject
+    implements ArenaJsonInclude {
+  _ArenaJsonInclude._({
+    _iaks25tn.TeamJsonInclude? team,
     this.selectedColumns,
   }) {
     _team = team;
   }
 
-  _iaks25tn.TeamInclude? _team;
+  _iaks25tn.TeamJsonInclude? _team;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -223,14 +305,15 @@ class ArenaInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Arena.t;
 }
 
-class ArenaIncludeList extends _isd.IncludeList {
-  ArenaIncludeList._({
+final class _ArenaJsonIncludeList extends _isd.IncludeList
+    implements ArenaJsonIncludeList {
+  _ArenaJsonIncludeList._({
     _isd.WhereExpressionBuilder<ArenaTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ArenaJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Arena.t);
@@ -362,6 +445,8 @@ class ArenaRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -392,7 +477,7 @@ class ArenaRepository {
     _isd.OrderByBuilder<ArenaTable>? orderBy,
     _isd.OrderByListBuilder<ArenaTable>? orderByList,
     _isd.Transaction? transaction,
-    ArenaInclude? include,
+    ArenaJsonInclude? include,
     _isd.SelectColumnsBuilder<ArenaTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -415,6 +500,8 @@ class ArenaRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -439,7 +526,7 @@ class ArenaRepository {
     _isd.OrderByBuilder<ArenaTable>? orderBy,
     _isd.OrderByListBuilder<ArenaTable>? orderByList,
     _isd.Transaction? transaction,
-    ArenaInclude? include,
+    ArenaJsonInclude? include,
     _isd.SelectColumnsBuilder<ArenaTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -461,12 +548,14 @@ class ArenaRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    ArenaInclude? include,
+    ArenaJsonInclude? include,
     _isd.SelectColumnsBuilder<ArenaTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

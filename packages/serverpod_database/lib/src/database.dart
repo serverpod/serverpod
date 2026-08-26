@@ -76,7 +76,7 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -88,6 +88,7 @@ class Database {
         'Wrap your query in session.db.transaction().',
       );
     }
+    _assertNoSelectedColumns(include);
 
     return _databaseConnection.find<T>(
       _session,
@@ -124,7 +125,7 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -136,6 +137,7 @@ class Database {
         'Wrap your query in session.db.transaction().',
       );
     }
+    _assertNoSelectedColumns(include);
 
     return await _databaseConnection.findFirstRow<T>(
       _session,
@@ -154,6 +156,8 @@ class Database {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -179,7 +183,7 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -212,6 +216,8 @@ class Database {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -232,7 +238,7 @@ class Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -246,7 +252,7 @@ class Database {
       );
     }
 
-    return await _databaseConnection.findFirstRowAsJson<T>(
+    return _databaseConnection.findFirstRowAsJson<T>(
       _session,
       where: where,
       offset: offset,
@@ -275,7 +281,7 @@ class Database {
   Future<T?> findById<T extends TableRow>(
     Object id, {
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) async {
@@ -287,6 +293,7 @@ class Database {
         'Wrap your query in session.db.transaction().',
       );
     }
+    _assertNoSelectedColumns(include);
 
     return _databaseConnection.findById<T>(
       _session,
@@ -302,6 +309,8 @@ class Database {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// [lockMode] acquires a row-level lock on the returned row. Requires
   /// a [transaction]. See [LockMode] for available lock types.
@@ -311,7 +320,7 @@ class Database {
   Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
     Object id, {
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -334,6 +343,22 @@ class Database {
       lockMode: lockMode,
       lockBehavior: lockBehavior,
     );
+  }
+
+  void _assertNoSelectedColumns(Include? include) {
+    if (include == null) return;
+    if (include.selectedColumns != null) {
+      throw ArgumentError(
+        'Cannot use partial column selection with typed "find" queries. '
+        'Use "findAsJson" or a Model Projection for partial fetching.',
+      );
+    }
+    for (var nested in include.includes.values) {
+      _assertNoSelectedColumns(nested);
+    }
+    if (include is IncludeList) {
+      _assertNoSelectedColumns(include.include);
+    }
   }
 
   /// Acquires row-level locks on rows matching the [where] expression without

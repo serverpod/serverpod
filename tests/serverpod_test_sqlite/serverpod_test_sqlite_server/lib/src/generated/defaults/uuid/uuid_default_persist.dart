@@ -104,13 +104,15 @@ abstract class UuidDefaultPersist
     };
   }
 
-  static UuidDefaultPersistInclude include({
-    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
-  }) {
-    return UuidDefaultPersistInclude._(
-      selectedColumns: select?.call(UuidDefaultPersist.t),
-    );
+  /// Builds a complete [UuidDefaultPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UuidDefaultPersistInclude include() {
+    return UuidDefaultPersistInclude._();
   }
+
+  /// Builds a complete [UuidDefaultPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UuidDefaultPersistIncludeList includeList({
     _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
@@ -119,9 +121,47 @@ abstract class UuidDefaultPersist
     _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
     _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
     UuidDefaultPersistInclude? include,
-    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
   }) {
     return UuidDefaultPersistIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UuidDefaultPersist.t),
+      orderByList: orderByList?.call(UuidDefaultPersist.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UuidDefaultPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UuidDefaultPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+  }) {
+    return _UuidDefaultPersistJsonInclude._(
+      selectedColumns: select?.call(UuidDefaultPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UuidDefaultPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UuidDefaultPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UuidDefaultPersistTable>? orderBy,
+    _is.OrderByListBuilder<UuidDefaultPersistTable>? orderByList,
+    UuidDefaultPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<UuidDefaultPersistTable>? select,
+  }) {
+    return _UuidDefaultPersistJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -242,8 +282,46 @@ class UuidDefaultPersistTable extends _is.Table<int?> {
   ];
 }
 
-class UuidDefaultPersistInclude extends _is.IncludeObject {
-  UuidDefaultPersistInclude._({this.selectedColumns});
+abstract interface class UuidDefaultPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UuidDefaultPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UuidDefaultPersistInclude extends _is.IncludeObject
+    implements UuidDefaultPersistJsonInclude, _is.FullModelInclude {
+  UuidDefaultPersistInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UuidDefaultPersist.t;
+}
+
+final class UuidDefaultPersistIncludeList extends _is.IncludeList
+    implements UuidDefaultPersistJsonIncludeList, _is.FullModelInclude {
+  UuidDefaultPersistIncludeList._({
+    _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UuidDefaultPersistInclude? super.include,
+  }) {
+    super.where = where?.call(UuidDefaultPersist.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UuidDefaultPersist.t;
+}
+
+final class _UuidDefaultPersistJsonInclude extends _is.IncludeObject
+    implements UuidDefaultPersistJsonInclude {
+  _UuidDefaultPersistJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -255,14 +333,15 @@ class UuidDefaultPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UuidDefaultPersist.t;
 }
 
-class UuidDefaultPersistIncludeList extends _is.IncludeList {
-  UuidDefaultPersistIncludeList._({
+final class _UuidDefaultPersistJsonIncludeList extends _is.IncludeList
+    implements UuidDefaultPersistJsonIncludeList {
+  _UuidDefaultPersistJsonIncludeList._({
     _is.WhereExpressionBuilder<UuidDefaultPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UuidDefaultPersistJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UuidDefaultPersist.t);
@@ -384,6 +463,8 @@ class UuidDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -435,6 +516,8 @@ class UuidDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -479,6 +562,8 @@ class UuidDefaultPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

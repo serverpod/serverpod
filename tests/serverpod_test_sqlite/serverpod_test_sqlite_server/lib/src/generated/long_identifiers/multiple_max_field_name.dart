@@ -97,13 +97,15 @@ abstract class MultipleMaxFieldName
     };
   }
 
-  static MultipleMaxFieldNameInclude include({
-    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
-  }) {
-    return MultipleMaxFieldNameInclude._(
-      selectedColumns: select?.call(MultipleMaxFieldName.t),
-    );
+  /// Builds a complete [MultipleMaxFieldNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static MultipleMaxFieldNameInclude include() {
+    return MultipleMaxFieldNameInclude._();
   }
+
+  /// Builds a complete [MultipleMaxFieldNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static MultipleMaxFieldNameIncludeList includeList({
     _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
@@ -112,9 +114,47 @@ abstract class MultipleMaxFieldName
     _is.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
     MultipleMaxFieldNameInclude? include,
-    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
   }) {
     return MultipleMaxFieldNameIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MultipleMaxFieldName.t),
+      orderByList: orderByList?.call(MultipleMaxFieldName.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [MultipleMaxFieldNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static MultipleMaxFieldNameJsonInclude includeJson({
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+  }) {
+    return _MultipleMaxFieldNameJsonInclude._(
+      selectedColumns: select?.call(MultipleMaxFieldName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [MultipleMaxFieldNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static MultipleMaxFieldNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<MultipleMaxFieldNameTable>? orderByList,
+    MultipleMaxFieldNameJsonInclude? include,
+    _is.SelectColumnsBuilder<MultipleMaxFieldNameTable>? select,
+  }) {
+    return _MultipleMaxFieldNameJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -285,8 +325,46 @@ class MultipleMaxFieldNameTable extends _is.Table<int?> {
   ];
 }
 
-class MultipleMaxFieldNameInclude extends _is.IncludeObject {
-  MultipleMaxFieldNameInclude._({this.selectedColumns});
+abstract interface class MultipleMaxFieldNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class MultipleMaxFieldNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class MultipleMaxFieldNameInclude extends _is.IncludeObject
+    implements MultipleMaxFieldNameJsonInclude, _is.FullModelInclude {
+  MultipleMaxFieldNameInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => MultipleMaxFieldName.t;
+}
+
+final class MultipleMaxFieldNameIncludeList extends _is.IncludeList
+    implements MultipleMaxFieldNameJsonIncludeList, _is.FullModelInclude {
+  MultipleMaxFieldNameIncludeList._({
+    _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    MultipleMaxFieldNameInclude? super.include,
+  }) {
+    super.where = where?.call(MultipleMaxFieldName.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => MultipleMaxFieldName.t;
+}
+
+final class _MultipleMaxFieldNameJsonInclude extends _is.IncludeObject
+    implements MultipleMaxFieldNameJsonInclude {
+  _MultipleMaxFieldNameJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -298,14 +376,15 @@ class MultipleMaxFieldNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => MultipleMaxFieldName.t;
 }
 
-class MultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  MultipleMaxFieldNameIncludeList._({
+final class _MultipleMaxFieldNameJsonIncludeList extends _is.IncludeList
+    implements MultipleMaxFieldNameJsonIncludeList {
+  _MultipleMaxFieldNameJsonIncludeList._({
     _is.WhereExpressionBuilder<MultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    MultipleMaxFieldNameJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(MultipleMaxFieldName.t);
@@ -427,6 +506,8 @@ class MultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -478,6 +559,8 @@ class MultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -522,6 +605,8 @@ class MultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

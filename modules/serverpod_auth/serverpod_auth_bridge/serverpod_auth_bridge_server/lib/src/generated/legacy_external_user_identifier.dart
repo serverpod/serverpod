@@ -98,15 +98,17 @@ abstract class LegacyExternalUserIdentifier
     return {};
   }
 
+  /// Builds a complete [LegacyExternalUserIdentifierInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static LegacyExternalUserIdentifierInclude include({
     _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
-    return LegacyExternalUserIdentifierInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(LegacyExternalUserIdentifier.t),
-    );
+    return LegacyExternalUserIdentifierInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [LegacyExternalUserIdentifierIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static LegacyExternalUserIdentifierIncludeList includeList({
     _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
@@ -115,9 +117,49 @@ abstract class LegacyExternalUserIdentifier
     _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
     _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     LegacyExternalUserIdentifierInclude? include,
-    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
   }) {
     return LegacyExternalUserIdentifierIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacyExternalUserIdentifier.t),
+      orderByList: orderByList?.call(LegacyExternalUserIdentifier.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [LegacyExternalUserIdentifierJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static LegacyExternalUserIdentifierJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
+  }) {
+    return _LegacyExternalUserIdentifierJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(LegacyExternalUserIdentifier.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [LegacyExternalUserIdentifierJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static LegacyExternalUserIdentifierJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
+    _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
+    LegacyExternalUserIdentifierJsonInclude? include,
+    _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
+  }) {
+    return _LegacyExternalUserIdentifierJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -244,15 +286,59 @@ class LegacyExternalUserIdentifierTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class LegacyExternalUserIdentifierInclude extends _is.IncludeObject {
-  LegacyExternalUserIdentifierInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class LegacyExternalUserIdentifierJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class LegacyExternalUserIdentifierJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class LegacyExternalUserIdentifierInclude extends _is.IncludeObject
+    implements LegacyExternalUserIdentifierJsonInclude, _is.FullModelInclude {
+  LegacyExternalUserIdentifierInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => LegacyExternalUserIdentifier.t;
+}
+
+final class LegacyExternalUserIdentifierIncludeList extends _is.IncludeList
+    implements
+        LegacyExternalUserIdentifierJsonIncludeList,
+        _is.FullModelInclude {
+  LegacyExternalUserIdentifierIncludeList._({
+    _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    LegacyExternalUserIdentifierInclude? super.include,
+  }) {
+    super.where = where?.call(LegacyExternalUserIdentifier.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => LegacyExternalUserIdentifier.t;
+}
+
+final class _LegacyExternalUserIdentifierJsonInclude extends _is.IncludeObject
+    implements LegacyExternalUserIdentifierJsonInclude {
+  _LegacyExternalUserIdentifierJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -264,14 +350,15 @@ class LegacyExternalUserIdentifierInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => LegacyExternalUserIdentifier.t;
 }
 
-class LegacyExternalUserIdentifierIncludeList extends _is.IncludeList {
-  LegacyExternalUserIdentifierIncludeList._({
+final class _LegacyExternalUserIdentifierJsonIncludeList extends _is.IncludeList
+    implements LegacyExternalUserIdentifierJsonIncludeList {
+  _LegacyExternalUserIdentifierJsonIncludeList._({
     _is.WhereExpressionBuilder<LegacyExternalUserIdentifierTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    LegacyExternalUserIdentifierJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(LegacyExternalUserIdentifier.t);
@@ -401,6 +488,8 @@ class LegacyExternalUserIdentifierRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -431,7 +520,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
     _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _is.Transaction? transaction,
-    LegacyExternalUserIdentifierInclude? include,
+    LegacyExternalUserIdentifierJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -454,6 +543,8 @@ class LegacyExternalUserIdentifierRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -478,7 +569,7 @@ class LegacyExternalUserIdentifierRepository {
     _is.OrderByBuilder<LegacyExternalUserIdentifierTable>? orderBy,
     _is.OrderByListBuilder<LegacyExternalUserIdentifierTable>? orderByList,
     _is.Transaction? transaction,
-    LegacyExternalUserIdentifierInclude? include,
+    LegacyExternalUserIdentifierJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -500,12 +591,14 @@ class LegacyExternalUserIdentifierRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    LegacyExternalUserIdentifierInclude? include,
+    LegacyExternalUserIdentifierJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyExternalUserIdentifierTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

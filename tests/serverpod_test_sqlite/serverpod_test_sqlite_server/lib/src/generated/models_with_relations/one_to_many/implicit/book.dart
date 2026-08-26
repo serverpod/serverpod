@@ -86,15 +86,15 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
-  static BookInclude include({
-    _ithd8abs.ChapterIncludeList? chapters,
-    _is.SelectColumnsBuilder<BookTable>? select,
-  }) {
-    return BookInclude._(
-      chapters: chapters,
-      selectedColumns: select?.call(Book.t),
-    );
+  /// Builds a complete [BookInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BookInclude include({_ithd8abs.ChapterIncludeList? chapters}) {
+    return BookInclude._(chapters: chapters);
   }
+
+  /// Builds a complete [BookIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BookIncludeList includeList({
     _is.WhereExpressionBuilder<BookTable>? where,
@@ -103,9 +103,49 @@ abstract class Book implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<BookTable>? orderBy,
     _is.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
-    _is.SelectColumnsBuilder<BookTable>? select,
   }) {
     return BookIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Book.t),
+      orderByList: orderByList?.call(Book.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BookJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BookJsonInclude includeJson({
+    _ithd8abs.ChapterJsonIncludeList? chapters,
+    _is.SelectColumnsBuilder<BookTable>? select,
+  }) {
+    return _BookJsonInclude._(
+      chapters: chapters,
+      selectedColumns: select?.call(Book.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BookJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BookJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BookTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BookTable>? orderBy,
+    _is.OrderByListBuilder<BookTable>? orderByList,
+    BookJsonInclude? include,
+    _is.SelectColumnsBuilder<BookTable>? select,
+  }) {
+    return _BookJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,15 +267,56 @@ class BookTable extends _is.Table<int?> {
   }
 }
 
-class BookInclude extends _is.IncludeObject {
-  BookInclude._({
-    _ithd8abs.ChapterIncludeList? chapters,
+abstract interface class BookJsonInclude implements _is.JsonCompatibleInclude {}
+
+abstract interface class BookJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BookInclude extends _is.IncludeObject
+    implements BookJsonInclude, _is.FullModelInclude {
+  BookInclude._({_ithd8abs.ChapterIncludeList? chapters}) {
+    _chapters = chapters;
+  }
+
+  _ithd8abs.ChapterIncludeList? _chapters;
+
+  @override
+  Map<String, _is.Include?> get includes => {'chapters': _chapters};
+
+  @override
+  _is.Table<int?> get table => Book.t;
+}
+
+final class BookIncludeList extends _is.IncludeList
+    implements BookJsonIncludeList, _is.FullModelInclude {
+  BookIncludeList._({
+    _is.WhereExpressionBuilder<BookTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BookInclude? super.include,
+  }) {
+    super.where = where?.call(Book.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Book.t;
+}
+
+final class _BookJsonInclude extends _is.IncludeObject
+    implements BookJsonInclude {
+  _BookJsonInclude._({
+    _ithd8abs.ChapterJsonIncludeList? chapters,
     this.selectedColumns,
   }) {
     _chapters = chapters;
   }
 
-  _ithd8abs.ChapterIncludeList? _chapters;
+  _ithd8abs.ChapterJsonIncludeList? _chapters;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -247,14 +328,15 @@ class BookInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Book.t;
 }
 
-class BookIncludeList extends _is.IncludeList {
-  BookIncludeList._({
+final class _BookJsonIncludeList extends _is.IncludeList
+    implements BookJsonIncludeList {
+  _BookJsonIncludeList._({
     _is.WhereExpressionBuilder<BookTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BookJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Book.t);
@@ -390,6 +472,8 @@ class BookRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -420,7 +504,7 @@ class BookRepository {
     _is.OrderByBuilder<BookTable>? orderBy,
     _is.OrderByListBuilder<BookTable>? orderByList,
     _is.Transaction? transaction,
-    BookInclude? include,
+    BookJsonInclude? include,
     _is.SelectColumnsBuilder<BookTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -443,6 +527,8 @@ class BookRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -467,7 +553,7 @@ class BookRepository {
     _is.OrderByBuilder<BookTable>? orderBy,
     _is.OrderByListBuilder<BookTable>? orderByList,
     _is.Transaction? transaction,
-    BookInclude? include,
+    BookJsonInclude? include,
     _is.SelectColumnsBuilder<BookTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -489,12 +575,14 @@ class BookRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    BookInclude? include,
+    BookJsonInclude? include,
     _is.SelectColumnsBuilder<BookTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

@@ -85,15 +85,15 @@ abstract class ArenaUuid
     };
   }
 
-  static ArenaUuidInclude include({
-    _i9bz1am4.TeamIntInclude? team,
-    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
-  }) {
-    return ArenaUuidInclude._(
-      team: team,
-      selectedColumns: select?.call(ArenaUuid.t),
-    );
+  /// Builds a complete [ArenaUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ArenaUuidInclude include({_i9bz1am4.TeamIntInclude? team}) {
+    return ArenaUuidInclude._(team: team);
   }
+
+  /// Builds a complete [ArenaUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ArenaUuidIncludeList includeList({
     _is.WhereExpressionBuilder<ArenaUuidTable>? where,
@@ -102,9 +102,49 @@ abstract class ArenaUuid
     _is.OrderByBuilder<ArenaUuidTable>? orderBy,
     _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
     ArenaUuidInclude? include,
-    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
   }) {
     return ArenaUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ArenaUuid.t),
+      orderByList: orderByList?.call(ArenaUuid.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ArenaUuidJsonInclude includeJson({
+    _i9bz1am4.TeamIntJsonInclude? team,
+    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
+  }) {
+    return _ArenaUuidJsonInclude._(
+      team: team,
+      selectedColumns: select?.call(ArenaUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ArenaUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ArenaUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ArenaUuidTable>? orderBy,
+    _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
+    ArenaUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<ArenaUuidTable>? select,
+  }) {
+    return _ArenaUuidJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -203,15 +243,57 @@ class ArenaUuidTable extends _is.Table<_is.UuidValue> {
   }
 }
 
-class ArenaUuidInclude extends _is.IncludeObject {
-  ArenaUuidInclude._({
-    _i9bz1am4.TeamIntInclude? team,
+abstract interface class ArenaUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ArenaUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ArenaUuidInclude extends _is.IncludeObject
+    implements ArenaUuidJsonInclude, _is.FullModelInclude {
+  ArenaUuidInclude._({_i9bz1am4.TeamIntInclude? team}) {
+    _team = team;
+  }
+
+  _i9bz1am4.TeamIntInclude? _team;
+
+  @override
+  Map<String, _is.Include?> get includes => {'team': _team};
+
+  @override
+  _is.Table<_is.UuidValue> get table => ArenaUuid.t;
+}
+
+final class ArenaUuidIncludeList extends _is.IncludeList
+    implements ArenaUuidJsonIncludeList, _is.FullModelInclude {
+  ArenaUuidIncludeList._({
+    _is.WhereExpressionBuilder<ArenaUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ArenaUuidInclude? super.include,
+  }) {
+    super.where = where?.call(ArenaUuid.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue> get table => ArenaUuid.t;
+}
+
+final class _ArenaUuidJsonInclude extends _is.IncludeObject
+    implements ArenaUuidJsonInclude {
+  _ArenaUuidJsonInclude._({
+    _i9bz1am4.TeamIntJsonInclude? team,
     this.selectedColumns,
   }) {
     _team = team;
   }
 
-  _i9bz1am4.TeamIntInclude? _team;
+  _i9bz1am4.TeamIntJsonInclude? _team;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -223,14 +305,15 @@ class ArenaUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue> get table => ArenaUuid.t;
 }
 
-class ArenaUuidIncludeList extends _is.IncludeList {
-  ArenaUuidIncludeList._({
+final class _ArenaUuidJsonIncludeList extends _is.IncludeList
+    implements ArenaUuidJsonIncludeList {
+  _ArenaUuidJsonIncludeList._({
     _is.WhereExpressionBuilder<ArenaUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ArenaUuidJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ArenaUuid.t);
@@ -362,6 +445,8 @@ class ArenaUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -392,7 +477,7 @@ class ArenaUuidRepository {
     _is.OrderByBuilder<ArenaUuidTable>? orderBy,
     _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
     _is.Transaction? transaction,
-    ArenaUuidInclude? include,
+    ArenaUuidJsonInclude? include,
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -415,6 +500,8 @@ class ArenaUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -439,7 +526,7 @@ class ArenaUuidRepository {
     _is.OrderByBuilder<ArenaUuidTable>? orderBy,
     _is.OrderByListBuilder<ArenaUuidTable>? orderByList,
     _is.Transaction? transaction,
-    ArenaUuidInclude? include,
+    ArenaUuidJsonInclude? include,
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -461,12 +548,14 @@ class ArenaUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ArenaUuidInclude? include,
+    ArenaUuidJsonInclude? include,
     _is.SelectColumnsBuilder<ArenaUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

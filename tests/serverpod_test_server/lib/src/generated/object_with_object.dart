@@ -215,13 +215,15 @@ abstract class ObjectWithObject
     };
   }
 
-  static ObjectWithObjectInclude include({
-    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
-  }) {
-    return ObjectWithObjectInclude._(
-      selectedColumns: select?.call(ObjectWithObject.t),
-    );
+  /// Builds a complete [ObjectWithObjectInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithObjectInclude include() {
+    return ObjectWithObjectInclude._();
   }
+
+  /// Builds a complete [ObjectWithObjectIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithObjectIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
@@ -230,9 +232,47 @@ abstract class ObjectWithObject
     _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
     ObjectWithObjectInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
   }) {
     return ObjectWithObjectIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithObject.t),
+      orderByList: orderByList?.call(ObjectWithObject.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithObjectJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithObjectJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
+  }) {
+    return _ObjectWithObjectJsonInclude._(
+      selectedColumns: select?.call(ObjectWithObject.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithObjectJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithObjectJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithObjectTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithObjectTable>? orderByList,
+    ObjectWithObjectJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithObjectTable>? select,
+  }) {
+    return _ObjectWithObjectJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -534,8 +574,46 @@ class ObjectWithObjectTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithObjectInclude extends _is.IncludeObject {
-  ObjectWithObjectInclude._({this.selectedColumns});
+abstract interface class ObjectWithObjectJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithObjectJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithObjectInclude extends _is.IncludeObject
+    implements ObjectWithObjectJsonInclude, _is.FullModelInclude {
+  ObjectWithObjectInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithObject.t;
+}
+
+final class ObjectWithObjectIncludeList extends _is.IncludeList
+    implements ObjectWithObjectJsonIncludeList, _is.FullModelInclude {
+  ObjectWithObjectIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithObjectInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithObject.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithObject.t;
+}
+
+final class _ObjectWithObjectJsonInclude extends _is.IncludeObject
+    implements ObjectWithObjectJsonInclude {
+  _ObjectWithObjectJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -547,14 +625,15 @@ class ObjectWithObjectInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithObject.t;
 }
 
-class ObjectWithObjectIncludeList extends _is.IncludeList {
-  ObjectWithObjectIncludeList._({
+final class _ObjectWithObjectJsonIncludeList extends _is.IncludeList
+    implements ObjectWithObjectJsonIncludeList {
+  _ObjectWithObjectJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithObjectTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithObjectJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithObject.t);
@@ -676,6 +755,8 @@ class ObjectWithObjectRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -727,6 +808,8 @@ class ObjectWithObjectRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -771,6 +854,8 @@ class ObjectWithObjectRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

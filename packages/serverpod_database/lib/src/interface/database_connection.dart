@@ -35,7 +35,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     int? offset,
     Column? orderBy,
     List<Column>? orderByList,
-    Include? include,
+    FullModelInclude? include,
     Transaction? transaction,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -49,7 +49,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });
@@ -63,7 +63,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -77,7 +77,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -88,7 +88,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     Object id, {
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   });
@@ -98,7 +98,7 @@ abstract class DatabaseConnection<D extends DatabasePoolManager> {
     DatabaseSession session,
     Object id, {
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,

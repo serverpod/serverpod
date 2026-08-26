@@ -115,15 +115,17 @@ abstract class TokenMetadata
     return {};
   }
 
+  /// Builds a complete [TokenMetadataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static TokenMetadataInclude include({
     _iacs.RefreshTokenInclude? refreshToken,
-    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
-    return TokenMetadataInclude._(
-      refreshToken: refreshToken,
-      selectedColumns: select?.call(TokenMetadata.t),
-    );
+    return TokenMetadataInclude._(refreshToken: refreshToken);
   }
+
+  /// Builds a complete [TokenMetadataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static TokenMetadataIncludeList includeList({
     _is.WhereExpressionBuilder<TokenMetadataTable>? where,
@@ -132,9 +134,49 @@ abstract class TokenMetadata
     _is.OrderByBuilder<TokenMetadataTable>? orderBy,
     _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     TokenMetadataInclude? include,
-    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
   }) {
     return TokenMetadataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(TokenMetadata.t),
+      orderByList: orderByList?.call(TokenMetadata.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [TokenMetadataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static TokenMetadataJsonInclude includeJson({
+    _iacs.RefreshTokenJsonInclude? refreshToken,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
+  }) {
+    return _TokenMetadataJsonInclude._(
+      refreshToken: refreshToken,
+      selectedColumns: select?.call(TokenMetadata.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [TokenMetadataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static TokenMetadataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    TokenMetadataJsonInclude? include,
+    _is.SelectColumnsBuilder<TokenMetadataTable>? select,
+  }) {
+    return _TokenMetadataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -307,15 +349,57 @@ class TokenMetadataTable extends _is.Table<int?> {
   }
 }
 
-class TokenMetadataInclude extends _is.IncludeObject {
-  TokenMetadataInclude._({
-    _iacs.RefreshTokenInclude? refreshToken,
+abstract interface class TokenMetadataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class TokenMetadataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class TokenMetadataInclude extends _is.IncludeObject
+    implements TokenMetadataJsonInclude, _is.FullModelInclude {
+  TokenMetadataInclude._({_iacs.RefreshTokenInclude? refreshToken}) {
+    _refreshToken = refreshToken;
+  }
+
+  _iacs.RefreshTokenInclude? _refreshToken;
+
+  @override
+  Map<String, _is.Include?> get includes => {'refreshToken': _refreshToken};
+
+  @override
+  _is.Table<int?> get table => TokenMetadata.t;
+}
+
+final class TokenMetadataIncludeList extends _is.IncludeList
+    implements TokenMetadataJsonIncludeList, _is.FullModelInclude {
+  TokenMetadataIncludeList._({
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    TokenMetadataInclude? super.include,
+  }) {
+    super.where = where?.call(TokenMetadata.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => TokenMetadata.t;
+}
+
+final class _TokenMetadataJsonInclude extends _is.IncludeObject
+    implements TokenMetadataJsonInclude {
+  _TokenMetadataJsonInclude._({
+    _iacs.RefreshTokenJsonInclude? refreshToken,
     this.selectedColumns,
   }) {
     _refreshToken = refreshToken;
   }
 
-  _iacs.RefreshTokenInclude? _refreshToken;
+  _iacs.RefreshTokenJsonInclude? _refreshToken;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -327,14 +411,15 @@ class TokenMetadataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => TokenMetadata.t;
 }
 
-class TokenMetadataIncludeList extends _is.IncludeList {
-  TokenMetadataIncludeList._({
+final class _TokenMetadataJsonIncludeList extends _is.IncludeList
+    implements TokenMetadataJsonIncludeList {
+  _TokenMetadataJsonIncludeList._({
     _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    TokenMetadataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(TokenMetadata.t);
@@ -464,6 +549,8 @@ class TokenMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -494,7 +581,7 @@ class TokenMetadataRepository {
     _is.OrderByBuilder<TokenMetadataTable>? orderBy,
     _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     _is.Transaction? transaction,
-    TokenMetadataInclude? include,
+    TokenMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -517,6 +604,8 @@ class TokenMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -541,7 +630,7 @@ class TokenMetadataRepository {
     _is.OrderByBuilder<TokenMetadataTable>? orderBy,
     _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     _is.Transaction? transaction,
-    TokenMetadataInclude? include,
+    TokenMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -563,12 +652,14 @@ class TokenMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    TokenMetadataInclude? include,
+    TokenMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<TokenMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

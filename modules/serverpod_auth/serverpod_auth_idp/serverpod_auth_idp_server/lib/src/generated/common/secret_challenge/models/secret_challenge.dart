@@ -71,13 +71,15 @@ abstract class SecretChallenge
     return {};
   }
 
-  static SecretChallengeInclude include({
-    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
-  }) {
-    return SecretChallengeInclude._(
-      selectedColumns: select?.call(SecretChallenge.t),
-    );
+  /// Builds a complete [SecretChallengeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SecretChallengeInclude include() {
+    return SecretChallengeInclude._();
   }
+
+  /// Builds a complete [SecretChallengeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SecretChallengeIncludeList includeList({
     _is.WhereExpressionBuilder<SecretChallengeTable>? where,
@@ -86,9 +88,47 @@ abstract class SecretChallenge
     _is.OrderByBuilder<SecretChallengeTable>? orderBy,
     _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
     SecretChallengeInclude? include,
-    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
   }) {
     return SecretChallengeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SecretChallenge.t),
+      orderByList: orderByList?.call(SecretChallenge.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SecretChallengeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SecretChallengeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+  }) {
+    return _SecretChallengeJsonInclude._(
+      selectedColumns: select?.call(SecretChallenge.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SecretChallengeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SecretChallengeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SecretChallengeTable>? orderBy,
+    _is.OrderByListBuilder<SecretChallengeTable>? orderByList,
+    SecretChallengeJsonInclude? include,
+    _is.SelectColumnsBuilder<SecretChallengeTable>? select,
+  }) {
+    return _SecretChallengeJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -165,8 +205,46 @@ class SecretChallengeTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class SecretChallengeInclude extends _is.IncludeObject {
-  SecretChallengeInclude._({this.selectedColumns});
+abstract interface class SecretChallengeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SecretChallengeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SecretChallengeInclude extends _is.IncludeObject
+    implements SecretChallengeJsonInclude, _is.FullModelInclude {
+  SecretChallengeInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => SecretChallenge.t;
+}
+
+final class SecretChallengeIncludeList extends _is.IncludeList
+    implements SecretChallengeJsonIncludeList, _is.FullModelInclude {
+  SecretChallengeIncludeList._({
+    _is.WhereExpressionBuilder<SecretChallengeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SecretChallengeInclude? super.include,
+  }) {
+    super.where = where?.call(SecretChallenge.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => SecretChallenge.t;
+}
+
+final class _SecretChallengeJsonInclude extends _is.IncludeObject
+    implements SecretChallengeJsonInclude {
+  _SecretChallengeJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -178,14 +256,15 @@ class SecretChallengeInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => SecretChallenge.t;
 }
 
-class SecretChallengeIncludeList extends _is.IncludeList {
-  SecretChallengeIncludeList._({
+final class _SecretChallengeJsonIncludeList extends _is.IncludeList
+    implements SecretChallengeJsonIncludeList {
+  _SecretChallengeJsonIncludeList._({
     _is.WhereExpressionBuilder<SecretChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SecretChallengeJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SecretChallenge.t);
@@ -307,6 +386,8 @@ class SecretChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -358,6 +439,8 @@ class SecretChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -402,6 +485,8 @@ class SecretChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

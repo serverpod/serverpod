@@ -104,17 +104,21 @@ abstract class ProjectedEnrollment
     };
   }
 
+  /// Builds a complete [ProjectedEnrollmentInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ProjectedEnrollmentInclude include({
     _iprfievr.ProjectedStudentInclude? student,
     _iotqocf1.ProjectedCourseInclude? course,
-    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
     return ProjectedEnrollmentInclude._(
       student: student,
       course: course,
-      selectedColumns: select?.call(ProjectedEnrollment.t),
     );
   }
+
+  /// Builds a complete [ProjectedEnrollmentIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ProjectedEnrollmentIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
@@ -123,9 +127,51 @@ abstract class ProjectedEnrollment
     _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     ProjectedEnrollmentInclude? include,
-    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
   }) {
     return ProjectedEnrollmentIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedEnrollment.t),
+      orderByList: orderByList?.call(ProjectedEnrollment.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedEnrollmentJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ProjectedEnrollmentJsonInclude includeJson({
+    _iprfievr.ProjectedStudentJsonInclude? student,
+    _iotqocf1.ProjectedCourseJsonInclude? course,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
+  }) {
+    return _ProjectedEnrollmentJsonInclude._(
+      student: student,
+      course: course,
+      selectedColumns: select?.call(ProjectedEnrollment.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedEnrollmentJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ProjectedEnrollmentJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
+    ProjectedEnrollmentJsonInclude? include,
+    _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
+  }) {
+    return _ProjectedEnrollmentJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -268,11 +314,17 @@ class ProjectedEnrollmentTable extends _is.Table<int?> {
   }
 }
 
-class ProjectedEnrollmentInclude extends _is.IncludeObject {
+abstract interface class ProjectedEnrollmentJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ProjectedEnrollmentJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ProjectedEnrollmentInclude extends _is.IncludeObject
+    implements ProjectedEnrollmentJsonInclude, _is.FullModelInclude {
   ProjectedEnrollmentInclude._({
     _iprfievr.ProjectedStudentInclude? student,
     _iotqocf1.ProjectedCourseInclude? course,
-    this.selectedColumns,
   }) {
     _student = student;
     _course = course;
@@ -281,6 +333,51 @@ class ProjectedEnrollmentInclude extends _is.IncludeObject {
   _iprfievr.ProjectedStudentInclude? _student;
 
   _iotqocf1.ProjectedCourseInclude? _course;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'student': _student,
+    'course': _course,
+  };
+
+  @override
+  _is.Table<int?> get table => ProjectedEnrollment.t;
+}
+
+final class ProjectedEnrollmentIncludeList extends _is.IncludeList
+    implements ProjectedEnrollmentJsonIncludeList, _is.FullModelInclude {
+  ProjectedEnrollmentIncludeList._({
+    _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ProjectedEnrollmentInclude? super.include,
+  }) {
+    super.where = where?.call(ProjectedEnrollment.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ProjectedEnrollment.t;
+}
+
+final class _ProjectedEnrollmentJsonInclude extends _is.IncludeObject
+    implements ProjectedEnrollmentJsonInclude {
+  _ProjectedEnrollmentJsonInclude._({
+    _iprfievr.ProjectedStudentJsonInclude? student,
+    _iotqocf1.ProjectedCourseJsonInclude? course,
+    this.selectedColumns,
+  }) {
+    _student = student;
+    _course = course;
+  }
+
+  _iprfievr.ProjectedStudentJsonInclude? _student;
+
+  _iotqocf1.ProjectedCourseJsonInclude? _course;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -295,14 +392,15 @@ class ProjectedEnrollmentInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ProjectedEnrollment.t;
 }
 
-class ProjectedEnrollmentIncludeList extends _is.IncludeList {
-  ProjectedEnrollmentIncludeList._({
+final class _ProjectedEnrollmentJsonIncludeList extends _is.IncludeList
+    implements ProjectedEnrollmentJsonIncludeList {
+  _ProjectedEnrollmentJsonIncludeList._({
     _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ProjectedEnrollmentJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedEnrollment.t);
@@ -432,6 +530,8 @@ class ProjectedEnrollmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -462,7 +562,7 @@ class ProjectedEnrollmentRepository {
     _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedEnrollmentInclude? include,
+    ProjectedEnrollmentJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -485,6 +585,8 @@ class ProjectedEnrollmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -509,7 +611,7 @@ class ProjectedEnrollmentRepository {
     _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedEnrollmentInclude? include,
+    ProjectedEnrollmentJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -531,12 +633,14 @@ class ProjectedEnrollmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ProjectedEnrollmentInclude? include,
+    ProjectedEnrollmentJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedEnrollmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

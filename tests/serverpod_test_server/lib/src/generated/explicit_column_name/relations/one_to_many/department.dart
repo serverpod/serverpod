@@ -88,15 +88,15 @@ abstract class Department
     };
   }
 
-  static DepartmentInclude include({
-    _ilvmgye0.EmployeeIncludeList? employees,
-    _is.SelectColumnsBuilder<DepartmentTable>? select,
-  }) {
-    return DepartmentInclude._(
-      employees: employees,
-      selectedColumns: select?.call(Department.t),
-    );
+  /// Builds a complete [DepartmentInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DepartmentInclude include({_ilvmgye0.EmployeeIncludeList? employees}) {
+    return DepartmentInclude._(employees: employees);
   }
+
+  /// Builds a complete [DepartmentIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DepartmentIncludeList includeList({
     _is.WhereExpressionBuilder<DepartmentTable>? where,
@@ -105,9 +105,49 @@ abstract class Department
     _is.OrderByBuilder<DepartmentTable>? orderBy,
     _is.OrderByListBuilder<DepartmentTable>? orderByList,
     DepartmentInclude? include,
-    _is.SelectColumnsBuilder<DepartmentTable>? select,
   }) {
     return DepartmentIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Department.t),
+      orderByList: orderByList?.call(Department.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DepartmentJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DepartmentJsonInclude includeJson({
+    _ilvmgye0.EmployeeJsonIncludeList? employees,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+  }) {
+    return _DepartmentJsonInclude._(
+      employees: employees,
+      selectedColumns: select?.call(Department.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DepartmentJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DepartmentJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DepartmentTable>? orderBy,
+    _is.OrderByListBuilder<DepartmentTable>? orderByList,
+    DepartmentJsonInclude? include,
+    _is.SelectColumnsBuilder<DepartmentTable>? select,
+  }) {
+    return _DepartmentJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,15 +269,57 @@ class DepartmentTable extends _is.Table<int?> {
   }
 }
 
-class DepartmentInclude extends _is.IncludeObject {
-  DepartmentInclude._({
-    _ilvmgye0.EmployeeIncludeList? employees,
+abstract interface class DepartmentJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DepartmentJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DepartmentInclude extends _is.IncludeObject
+    implements DepartmentJsonInclude, _is.FullModelInclude {
+  DepartmentInclude._({_ilvmgye0.EmployeeIncludeList? employees}) {
+    _employees = employees;
+  }
+
+  _ilvmgye0.EmployeeIncludeList? _employees;
+
+  @override
+  Map<String, _is.Include?> get includes => {'employees': _employees};
+
+  @override
+  _is.Table<int?> get table => Department.t;
+}
+
+final class DepartmentIncludeList extends _is.IncludeList
+    implements DepartmentJsonIncludeList, _is.FullModelInclude {
+  DepartmentIncludeList._({
+    _is.WhereExpressionBuilder<DepartmentTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DepartmentInclude? super.include,
+  }) {
+    super.where = where?.call(Department.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Department.t;
+}
+
+final class _DepartmentJsonInclude extends _is.IncludeObject
+    implements DepartmentJsonInclude {
+  _DepartmentJsonInclude._({
+    _ilvmgye0.EmployeeJsonIncludeList? employees,
     this.selectedColumns,
   }) {
     _employees = employees;
   }
 
-  _ilvmgye0.EmployeeIncludeList? _employees;
+  _ilvmgye0.EmployeeJsonIncludeList? _employees;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -249,14 +331,15 @@ class DepartmentInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Department.t;
 }
 
-class DepartmentIncludeList extends _is.IncludeList {
-  DepartmentIncludeList._({
+final class _DepartmentJsonIncludeList extends _is.IncludeList
+    implements DepartmentJsonIncludeList {
+  _DepartmentJsonIncludeList._({
     _is.WhereExpressionBuilder<DepartmentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DepartmentJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Department.t);
@@ -388,6 +471,8 @@ class DepartmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -418,7 +503,7 @@ class DepartmentRepository {
     _is.OrderByBuilder<DepartmentTable>? orderBy,
     _is.OrderByListBuilder<DepartmentTable>? orderByList,
     _is.Transaction? transaction,
-    DepartmentInclude? include,
+    DepartmentJsonInclude? include,
     _is.SelectColumnsBuilder<DepartmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -441,6 +526,8 @@ class DepartmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -465,7 +552,7 @@ class DepartmentRepository {
     _is.OrderByBuilder<DepartmentTable>? orderBy,
     _is.OrderByListBuilder<DepartmentTable>? orderByList,
     _is.Transaction? transaction,
-    DepartmentInclude? include,
+    DepartmentJsonInclude? include,
     _is.SelectColumnsBuilder<DepartmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -487,12 +574,14 @@ class DepartmentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    DepartmentInclude? include,
+    DepartmentJsonInclude? include,
     _is.SelectColumnsBuilder<DepartmentTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

@@ -118,13 +118,15 @@ abstract class ObjectWithBit
     };
   }
 
-  static ObjectWithBitInclude include({
-    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
-  }) {
-    return ObjectWithBitInclude._(
-      selectedColumns: select?.call(ObjectWithBit.t),
-    );
+  /// Builds a complete [ObjectWithBitInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithBitInclude include() {
+    return ObjectWithBitInclude._();
   }
+
+  /// Builds a complete [ObjectWithBitIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithBitIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
@@ -133,9 +135,47 @@ abstract class ObjectWithBit
     _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
     ObjectWithBitInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
   }) {
     return ObjectWithBitIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithBit.t),
+      orderByList: orderByList?.call(ObjectWithBit.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithBitJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithBitJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+  }) {
+    return _ObjectWithBitJsonInclude._(
+      selectedColumns: select?.call(ObjectWithBit.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithBitJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithBitJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithBitTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithBitTable>? orderByList,
+    ObjectWithBitJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithBitTable>? select,
+  }) {
+    return _ObjectWithBitJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -305,8 +345,46 @@ class ObjectWithBitTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithBitInclude extends _is.IncludeObject {
-  ObjectWithBitInclude._({this.selectedColumns});
+abstract interface class ObjectWithBitJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithBitJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithBitInclude extends _is.IncludeObject
+    implements ObjectWithBitJsonInclude, _is.FullModelInclude {
+  ObjectWithBitInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithBit.t;
+}
+
+final class ObjectWithBitIncludeList extends _is.IncludeList
+    implements ObjectWithBitJsonIncludeList, _is.FullModelInclude {
+  ObjectWithBitIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithBitInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithBit.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithBit.t;
+}
+
+final class _ObjectWithBitJsonInclude extends _is.IncludeObject
+    implements ObjectWithBitJsonInclude {
+  _ObjectWithBitJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -318,14 +396,15 @@ class ObjectWithBitInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithBit.t;
 }
 
-class ObjectWithBitIncludeList extends _is.IncludeList {
-  ObjectWithBitIncludeList._({
+final class _ObjectWithBitJsonIncludeList extends _is.IncludeList
+    implements ObjectWithBitJsonIncludeList {
+  _ObjectWithBitJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithBitTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithBitJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithBit.t);
@@ -447,6 +526,8 @@ class ObjectWithBitRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -498,6 +579,8 @@ class ObjectWithBitRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -542,6 +625,8 @@ class ObjectWithBitRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -131,19 +131,23 @@ abstract class CitizenInt
     };
   }
 
+  /// Builds a complete [CitizenIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CitizenIntInclude include({
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
     _i441ok8u.CompanyUuidInclude? oldCompany,
-    _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
     return CitizenIntInclude._(
       address: address,
       company: company,
       oldCompany: oldCompany,
-      selectedColumns: select?.call(CitizenInt.t),
     );
   }
+
+  /// Builds a complete [CitizenIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CitizenIntIncludeList includeList({
     _is.WhereExpressionBuilder<CitizenIntTable>? where,
@@ -152,9 +156,53 @@ abstract class CitizenInt
     _is.OrderByBuilder<CitizenIntTable>? orderBy,
     _is.OrderByListBuilder<CitizenIntTable>? orderByList,
     CitizenIntInclude? include,
-    _is.SelectColumnsBuilder<CitizenIntTable>? select,
   }) {
     return CitizenIntIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CitizenInt.t),
+      orderByList: orderByList?.call(CitizenInt.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CitizenIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CitizenIntJsonInclude includeJson({
+    _ih0efjtk.AddressUuidJsonInclude? address,
+    _i441ok8u.CompanyUuidJsonInclude? company,
+    _i441ok8u.CompanyUuidJsonInclude? oldCompany,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+  }) {
+    return _CitizenIntJsonInclude._(
+      address: address,
+      company: company,
+      oldCompany: oldCompany,
+      selectedColumns: select?.call(CitizenInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CitizenIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CitizenIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CitizenIntTable>? orderBy,
+    _is.OrderByListBuilder<CitizenIntTable>? orderByList,
+    CitizenIntJsonInclude? include,
+    _is.SelectColumnsBuilder<CitizenIntTable>? select,
+  }) {
+    return _CitizenIntJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -341,12 +389,18 @@ class CitizenIntTable extends _is.Table<int?> {
   }
 }
 
-class CitizenIntInclude extends _is.IncludeObject {
+abstract interface class CitizenIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CitizenIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CitizenIntInclude extends _is.IncludeObject
+    implements CitizenIntJsonInclude, _is.FullModelInclude {
   CitizenIntInclude._({
     _ih0efjtk.AddressUuidInclude? address,
     _i441ok8u.CompanyUuidInclude? company,
     _i441ok8u.CompanyUuidInclude? oldCompany,
-    this.selectedColumns,
   }) {
     _address = address;
     _company = company;
@@ -358,6 +412,56 @@ class CitizenIntInclude extends _is.IncludeObject {
   _i441ok8u.CompanyUuidInclude? _company;
 
   _i441ok8u.CompanyUuidInclude? _oldCompany;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'address': _address,
+    'company': _company,
+    'oldCompany': _oldCompany,
+  };
+
+  @override
+  _is.Table<int?> get table => CitizenInt.t;
+}
+
+final class CitizenIntIncludeList extends _is.IncludeList
+    implements CitizenIntJsonIncludeList, _is.FullModelInclude {
+  CitizenIntIncludeList._({
+    _is.WhereExpressionBuilder<CitizenIntTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CitizenIntInclude? super.include,
+  }) {
+    super.where = where?.call(CitizenInt.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => CitizenInt.t;
+}
+
+final class _CitizenIntJsonInclude extends _is.IncludeObject
+    implements CitizenIntJsonInclude {
+  _CitizenIntJsonInclude._({
+    _ih0efjtk.AddressUuidJsonInclude? address,
+    _i441ok8u.CompanyUuidJsonInclude? company,
+    _i441ok8u.CompanyUuidJsonInclude? oldCompany,
+    this.selectedColumns,
+  }) {
+    _address = address;
+    _company = company;
+    _oldCompany = oldCompany;
+  }
+
+  _ih0efjtk.AddressUuidJsonInclude? _address;
+
+  _i441ok8u.CompanyUuidJsonInclude? _company;
+
+  _i441ok8u.CompanyUuidJsonInclude? _oldCompany;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -373,14 +477,15 @@ class CitizenIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => CitizenInt.t;
 }
 
-class CitizenIntIncludeList extends _is.IncludeList {
-  CitizenIntIncludeList._({
+final class _CitizenIntJsonIncludeList extends _is.IncludeList
+    implements CitizenIntJsonIncludeList {
+  _CitizenIntJsonIncludeList._({
     _is.WhereExpressionBuilder<CitizenIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CitizenIntJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(CitizenInt.t);
@@ -512,6 +617,8 @@ class CitizenIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -542,7 +649,7 @@ class CitizenIntRepository {
     _is.OrderByBuilder<CitizenIntTable>? orderBy,
     _is.OrderByListBuilder<CitizenIntTable>? orderByList,
     _is.Transaction? transaction,
-    CitizenIntInclude? include,
+    CitizenIntJsonInclude? include,
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -565,6 +672,8 @@ class CitizenIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -589,7 +698,7 @@ class CitizenIntRepository {
     _is.OrderByBuilder<CitizenIntTable>? orderBy,
     _is.OrderByListBuilder<CitizenIntTable>? orderByList,
     _is.Transaction? transaction,
-    CitizenIntInclude? include,
+    CitizenIntJsonInclude? include,
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -611,12 +720,14 @@ class CitizenIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    CitizenIntInclude? include,
+    CitizenIntJsonInclude? include,
     _is.SelectColumnsBuilder<CitizenIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

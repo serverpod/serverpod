@@ -77,11 +77,15 @@ abstract class UserNote
     };
   }
 
-  static UserNoteInclude include({
-    _is.SelectColumnsBuilder<UserNoteTable>? select,
-  }) {
-    return UserNoteInclude._(selectedColumns: select?.call(UserNote.t));
+  /// Builds a complete [UserNoteInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UserNoteInclude include() {
+    return UserNoteInclude._();
   }
+
+  /// Builds a complete [UserNoteIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserNoteIncludeList includeList({
     _is.WhereExpressionBuilder<UserNoteTable>? where,
@@ -90,9 +94,45 @@ abstract class UserNote
     _is.OrderByBuilder<UserNoteTable>? orderBy,
     _is.OrderByListBuilder<UserNoteTable>? orderByList,
     UserNoteInclude? include,
-    _is.SelectColumnsBuilder<UserNoteTable>? select,
   }) {
     return UserNoteIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNote.t),
+      orderByList: orderByList?.call(UserNote.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserNoteJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+  }) {
+    return _UserNoteJsonInclude._(selectedColumns: select?.call(UserNote.t));
+  }
+
+  /// Builds a JSON-compatible [UserNoteJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserNoteJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteTable>? orderByList,
+    UserNoteJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteTable>? select,
+  }) {
+    return _UserNoteJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -216,8 +256,46 @@ class UserNoteTable extends _is.Table<int?> {
   ];
 }
 
-class UserNoteInclude extends _is.IncludeObject {
-  UserNoteInclude._({this.selectedColumns});
+abstract interface class UserNoteJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserNoteJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserNoteInclude extends _is.IncludeObject
+    implements UserNoteJsonInclude, _is.FullModelInclude {
+  UserNoteInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserNote.t;
+}
+
+final class UserNoteIncludeList extends _is.IncludeList
+    implements UserNoteJsonIncludeList, _is.FullModelInclude {
+  UserNoteIncludeList._({
+    _is.WhereExpressionBuilder<UserNoteTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserNoteInclude? super.include,
+  }) {
+    super.where = where?.call(UserNote.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserNote.t;
+}
+
+final class _UserNoteJsonInclude extends _is.IncludeObject
+    implements UserNoteJsonInclude {
+  _UserNoteJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -229,14 +307,15 @@ class UserNoteInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserNote.t;
 }
 
-class UserNoteIncludeList extends _is.IncludeList {
-  UserNoteIncludeList._({
+final class _UserNoteJsonIncludeList extends _is.IncludeList
+    implements UserNoteJsonIncludeList {
+  _UserNoteJsonIncludeList._({
     _is.WhereExpressionBuilder<UserNoteTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserNoteJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserNote.t);
@@ -358,6 +437,8 @@ class UserNoteRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -409,6 +490,8 @@ class UserNoteRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -453,6 +536,8 @@ class UserNoteRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

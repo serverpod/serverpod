@@ -93,15 +93,15 @@ abstract class AddressUuid
     };
   }
 
-  static AddressUuidInclude include({
-    _i7hzilwf.CitizenIntInclude? inhabitant,
-    _is.SelectColumnsBuilder<AddressUuidTable>? select,
-  }) {
-    return AddressUuidInclude._(
-      inhabitant: inhabitant,
-      selectedColumns: select?.call(AddressUuid.t),
-    );
+  /// Builds a complete [AddressUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AddressUuidInclude include({_i7hzilwf.CitizenIntInclude? inhabitant}) {
+    return AddressUuidInclude._(inhabitant: inhabitant);
   }
+
+  /// Builds a complete [AddressUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AddressUuidIncludeList includeList({
     _is.WhereExpressionBuilder<AddressUuidTable>? where,
@@ -110,9 +110,49 @@ abstract class AddressUuid
     _is.OrderByBuilder<AddressUuidTable>? orderBy,
     _is.OrderByListBuilder<AddressUuidTable>? orderByList,
     AddressUuidInclude? include,
-    _is.SelectColumnsBuilder<AddressUuidTable>? select,
   }) {
     return AddressUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AddressUuid.t),
+      orderByList: orderByList?.call(AddressUuid.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AddressUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AddressUuidJsonInclude includeJson({
+    _i7hzilwf.CitizenIntJsonInclude? inhabitant,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+  }) {
+    return _AddressUuidJsonInclude._(
+      inhabitant: inhabitant,
+      selectedColumns: select?.call(AddressUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [AddressUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AddressUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AddressUuidTable>? orderBy,
+    _is.OrderByListBuilder<AddressUuidTable>? orderByList,
+    AddressUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<AddressUuidTable>? select,
+  }) {
+    return _AddressUuidJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -229,15 +269,57 @@ class AddressUuidTable extends _is.Table<_is.UuidValue> {
   }
 }
 
-class AddressUuidInclude extends _is.IncludeObject {
-  AddressUuidInclude._({
-    _i7hzilwf.CitizenIntInclude? inhabitant,
+abstract interface class AddressUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class AddressUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class AddressUuidInclude extends _is.IncludeObject
+    implements AddressUuidJsonInclude, _is.FullModelInclude {
+  AddressUuidInclude._({_i7hzilwf.CitizenIntInclude? inhabitant}) {
+    _inhabitant = inhabitant;
+  }
+
+  _i7hzilwf.CitizenIntInclude? _inhabitant;
+
+  @override
+  Map<String, _is.Include?> get includes => {'inhabitant': _inhabitant};
+
+  @override
+  _is.Table<_is.UuidValue> get table => AddressUuid.t;
+}
+
+final class AddressUuidIncludeList extends _is.IncludeList
+    implements AddressUuidJsonIncludeList, _is.FullModelInclude {
+  AddressUuidIncludeList._({
+    _is.WhereExpressionBuilder<AddressUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AddressUuidInclude? super.include,
+  }) {
+    super.where = where?.call(AddressUuid.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue> get table => AddressUuid.t;
+}
+
+final class _AddressUuidJsonInclude extends _is.IncludeObject
+    implements AddressUuidJsonInclude {
+  _AddressUuidJsonInclude._({
+    _i7hzilwf.CitizenIntJsonInclude? inhabitant,
     this.selectedColumns,
   }) {
     _inhabitant = inhabitant;
   }
 
-  _i7hzilwf.CitizenIntInclude? _inhabitant;
+  _i7hzilwf.CitizenIntJsonInclude? _inhabitant;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -249,14 +331,15 @@ class AddressUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue> get table => AddressUuid.t;
 }
 
-class AddressUuidIncludeList extends _is.IncludeList {
-  AddressUuidIncludeList._({
+final class _AddressUuidJsonIncludeList extends _is.IncludeList
+    implements AddressUuidJsonIncludeList {
+  _AddressUuidJsonIncludeList._({
     _is.WhereExpressionBuilder<AddressUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AddressUuidJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(AddressUuid.t);
@@ -388,6 +471,8 @@ class AddressUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -418,7 +503,7 @@ class AddressUuidRepository {
     _is.OrderByBuilder<AddressUuidTable>? orderBy,
     _is.OrderByListBuilder<AddressUuidTable>? orderByList,
     _is.Transaction? transaction,
-    AddressUuidInclude? include,
+    AddressUuidJsonInclude? include,
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -441,6 +526,8 @@ class AddressUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -465,7 +552,7 @@ class AddressUuidRepository {
     _is.OrderByBuilder<AddressUuidTable>? orderBy,
     _is.OrderByListBuilder<AddressUuidTable>? orderByList,
     _is.Transaction? transaction,
-    AddressUuidInclude? include,
+    AddressUuidJsonInclude? include,
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -487,12 +574,14 @@ class AddressUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    AddressUuidInclude? include,
+    AddressUuidJsonInclude? include,
     _is.SelectColumnsBuilder<AddressUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

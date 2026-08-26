@@ -90,31 +90,54 @@ void main() {
         'then the class named ${testClassName}Include',
         () {
           var exampleIncludeClass = maybeClassNamedExampleInclude!;
-          test('inherits from Include.', () {
+          test('inherits from IncludeObject.', () {
             expect(
               CompilationUnitHelpers.hasExtendsClause(
                 exampleIncludeClass,
                 name: 'IncludeObject',
               ),
               isTrue,
-              reason: 'Missing extends clause for Include.',
+              reason: 'Missing extends clause for IncludeObject.',
             );
           });
-          test('has named parameter for field in internal constructor.', () {
-            expect(
-              CompilationUnitHelpers.hasConstructorDeclaration(
-                exampleIncludeClass,
-                name: '_',
-                parameters: [
-                  'CompanyInclude? company',
-                  'this.selectedColumns',
-                ],
-              ),
-              isTrue,
-              reason:
-                  'Missing constructor with named parameter for field in ${testClassName}Include.',
-            );
-          });
+
+          test(
+            'implements ${testClassName}JsonInclude and FullModelInclude.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleIncludeClass,
+                  name: '${testClassName}JsonInclude',
+                ),
+                isTrue,
+              );
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleIncludeClass,
+                  name: 'FullModelInclude',
+                ),
+                isTrue,
+              );
+            },
+          );
+
+          test(
+            'has named parameter for field in internal constructor without selectedColumns.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasConstructorDeclaration(
+                  exampleIncludeClass,
+                  name: '_',
+                  parameters: [
+                    'CompanyInclude? company',
+                  ],
+                ),
+                isTrue,
+                reason:
+                    'Missing constructor with named parameter for field in ${testClassName}Include.',
+              );
+            },
+          );
 
           test('has private field as nullable class variable.', () {
             expect(
@@ -128,6 +151,7 @@ void main() {
                   'Missing declaration for company field in ${testClassName}Include.',
             );
           });
+
           test('has an includes method.', () {
             expect(
               CompilationUnitHelpers.hasMethodDeclaration(
@@ -175,6 +199,68 @@ void main() {
             : false,
       );
 
+      var maybeClassNamedExampleJsonInclude =
+          CompilationUnitHelpers.tryFindClassDeclaration(
+            compilationUnit,
+            name: '_${testClassName}JsonInclude',
+          );
+
+      group(
+        'then the class named _${testClassName}JsonInclude',
+        () {
+          var exampleJsonIncludeClass = maybeClassNamedExampleJsonInclude!;
+          test(
+            'inherits from IncludeObject and implements ${testClassName}JsonInclude.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasExtendsClause(
+                  exampleJsonIncludeClass,
+                  name: 'IncludeObject',
+                ),
+                isTrue,
+              );
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleJsonIncludeClass,
+                  name: '${testClassName}JsonInclude',
+                ),
+                isTrue,
+              );
+            },
+          );
+
+          test(
+            'has named parameter for field and selectedColumns in internal constructor.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasConstructorDeclaration(
+                  exampleJsonIncludeClass,
+                  name: '_',
+                  parameters: [
+                    'CompanyJsonInclude? company',
+                    'this.selectedColumns',
+                  ],
+                ),
+                isTrue,
+              );
+            },
+          );
+
+          test('has selectedColumns field.', () {
+            expect(
+              CompilationUnitHelpers.hasFieldDeclaration(
+                exampleJsonIncludeClass,
+                name: 'selectedColumns',
+              ),
+              isTrue,
+            );
+          });
+        },
+        skip: maybeClassNamedExampleJsonInclude == null
+            ? 'Could not run test because _${testClassName}JsonInclude class was not found.'
+            : false,
+      );
+
       var includeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
         compilationUnit,
         name: '${testClassName}IncludeList',
@@ -185,42 +271,62 @@ void main() {
         () {
           var exampleIncludeListClass = includeListClass!;
 
-          test('inherits from IncludeList.', () {
-            expect(
-              CompilationUnitHelpers.hasExtendsClause(
-                exampleIncludeListClass,
-                name: 'IncludeList',
-              ),
-              isTrue,
-              reason: 'Missing extends clause for IncludeList.',
-            );
-          });
-
-          test('has named parameter for field in internal constructor.', () {
-            var constructor =
-                CompilationUnitHelpers.tryFindConstructorDeclaration(
+          test(
+            'inherits from IncludeList and implements ${testClassName}JsonIncludeList, FullModelInclude.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasExtendsClause(
                   exampleIncludeListClass,
-                  name: '_',
-                );
-            expect(
-              constructor,
-              isNotNull,
-              reason:
-                  'Missing constructor with named parameter for field in ${testClassName}IncludeList.',
-            );
+                  name: 'IncludeList',
+                ),
+                isTrue,
+                reason: 'Missing extends clause for IncludeList.',
+              );
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleIncludeListClass,
+                  name: '${testClassName}JsonIncludeList',
+                ),
+                isTrue,
+              );
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleIncludeListClass,
+                  name: 'FullModelInclude',
+                ),
+                isTrue,
+              );
+            },
+          );
 
-            var params = constructor?.parameters.toSource();
-            expect(
-              params,
-              contains('WhereExpressionBuilder<ExampleTable>? where'),
-            );
-            expect(params, contains('super.limit'));
-            expect(params, contains('super.offset'));
-            expect(params, contains('super.orderBy'));
-            expect(params, contains('super.orderByList'));
-            expect(params, contains('super.include'));
-            expect(params, contains('this.selectedColumns'));
-          });
+          test(
+            'has named parameter for field in internal constructor without selectedColumns.',
+            () {
+              var constructor =
+                  CompilationUnitHelpers.tryFindConstructorDeclaration(
+                    exampleIncludeListClass,
+                    name: '_',
+                  );
+              expect(
+                constructor,
+                isNotNull,
+                reason:
+                    'Missing constructor with named parameter for field in ${testClassName}IncludeList.',
+              );
+
+              var params = constructor?.parameters.toSource();
+              expect(
+                params,
+                contains('WhereExpressionBuilder<ExampleTable>? where'),
+              );
+              expect(params, contains('super.limit'));
+              expect(params, contains('super.offset'));
+              expect(params, contains('super.orderBy'));
+              expect(params, contains('super.orderByList'));
+              expect(params, contains('super.include'));
+              expect(params, isNot(contains('this.selectedColumns')));
+            },
+          );
 
           test('has an includes method.', () {
             expect(
@@ -268,6 +374,52 @@ void main() {
             ? 'Could not run test because ${testClassName}Include class was not found.'
             : false,
       );
+
+      var jsonIncludeListClass = CompilationUnitHelpers.tryFindClassDeclaration(
+        compilationUnit,
+        name: '_${testClassName}JsonIncludeList',
+      );
+
+      group(
+        'then the class named _${testClassName}JsonIncludeList',
+        () {
+          var exampleJsonIncludeListClass = jsonIncludeListClass!;
+
+          test(
+            'inherits from IncludeList and implements ${testClassName}JsonIncludeList.',
+            () {
+              expect(
+                CompilationUnitHelpers.hasExtendsClause(
+                  exampleJsonIncludeListClass,
+                  name: 'IncludeList',
+                ),
+                isTrue,
+              );
+              expect(
+                CompilationUnitHelpers.hasImplementsClause(
+                  exampleJsonIncludeListClass,
+                  name: '${testClassName}JsonIncludeList',
+                ),
+                isTrue,
+              );
+            },
+          );
+
+          test('has selectedColumns parameter in constructor.', () {
+            var constructor =
+                CompilationUnitHelpers.tryFindConstructorDeclaration(
+                  exampleJsonIncludeListClass,
+                  name: '_',
+                );
+            expect(constructor, isNotNull);
+            var params = constructor?.parameters.toSource();
+            expect(params, contains('this.selectedColumns'));
+          });
+        },
+        skip: jsonIncludeListClass == null
+            ? 'Could not run test because _${testClassName}JsonIncludeList class was not found.'
+            : false,
+      );
     },
   );
 
@@ -311,7 +463,6 @@ void main() {
               name: '_',
               parameters: [
                 'UserIncludeList? users',
-                'this.selectedColumns',
               ],
             ),
             isTrue,

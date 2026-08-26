@@ -108,13 +108,15 @@ abstract class ObjectWithSparseVector
     };
   }
 
-  static ObjectWithSparseVectorInclude include({
-    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
-  }) {
-    return ObjectWithSparseVectorInclude._(
-      selectedColumns: select?.call(ObjectWithSparseVector.t),
-    );
+  /// Builds a complete [ObjectWithSparseVectorInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithSparseVectorInclude include() {
+    return ObjectWithSparseVectorInclude._();
   }
+
+  /// Builds a complete [ObjectWithSparseVectorIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithSparseVectorIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
@@ -123,9 +125,47 @@ abstract class ObjectWithSparseVector
     _is.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
     ObjectWithSparseVectorInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
   }) {
     return ObjectWithSparseVectorIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithSparseVector.t),
+      orderByList: orderByList?.call(ObjectWithSparseVector.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithSparseVectorJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithSparseVectorJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
+  }) {
+    return _ObjectWithSparseVectorJsonInclude._(
+      selectedColumns: select?.call(ObjectWithSparseVector.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithSparseVectorJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithSparseVectorJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithSparseVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithSparseVectorTable>? orderByList,
+    ObjectWithSparseVectorJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithSparseVectorTable>? select,
+  }) {
+    return _ObjectWithSparseVectorJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -263,8 +303,46 @@ class ObjectWithSparseVectorTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithSparseVectorInclude extends _is.IncludeObject {
-  ObjectWithSparseVectorInclude._({this.selectedColumns});
+abstract interface class ObjectWithSparseVectorJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithSparseVectorJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithSparseVectorInclude extends _is.IncludeObject
+    implements ObjectWithSparseVectorJsonInclude, _is.FullModelInclude {
+  ObjectWithSparseVectorInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithSparseVector.t;
+}
+
+final class ObjectWithSparseVectorIncludeList extends _is.IncludeList
+    implements ObjectWithSparseVectorJsonIncludeList, _is.FullModelInclude {
+  ObjectWithSparseVectorIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithSparseVectorInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithSparseVector.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithSparseVector.t;
+}
+
+final class _ObjectWithSparseVectorJsonInclude extends _is.IncludeObject
+    implements ObjectWithSparseVectorJsonInclude {
+  _ObjectWithSparseVectorJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -276,14 +354,15 @@ class ObjectWithSparseVectorInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithSparseVector.t;
 }
 
-class ObjectWithSparseVectorIncludeList extends _is.IncludeList {
-  ObjectWithSparseVectorIncludeList._({
+final class _ObjectWithSparseVectorJsonIncludeList extends _is.IncludeList
+    implements ObjectWithSparseVectorJsonIncludeList {
+  _ObjectWithSparseVectorJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithSparseVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithSparseVectorJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithSparseVector.t);
@@ -405,6 +484,8 @@ class ObjectWithSparseVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -456,6 +537,8 @@ class ObjectWithSparseVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -500,6 +583,8 @@ class ObjectWithSparseVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

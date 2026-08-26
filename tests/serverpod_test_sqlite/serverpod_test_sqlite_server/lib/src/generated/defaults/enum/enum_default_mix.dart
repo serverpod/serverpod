@@ -114,13 +114,15 @@ abstract class EnumDefaultMix
     };
   }
 
-  static EnumDefaultMixInclude include({
-    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
-  }) {
-    return EnumDefaultMixInclude._(
-      selectedColumns: select?.call(EnumDefaultMix.t),
-    );
+  /// Builds a complete [EnumDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EnumDefaultMixInclude include() {
+    return EnumDefaultMixInclude._();
   }
+
+  /// Builds a complete [EnumDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EnumDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
@@ -129,9 +131,47 @@ abstract class EnumDefaultMix
     _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
     EnumDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
   }) {
     return EnumDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultMix.t),
+      orderByList: orderByList?.call(EnumDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EnumDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EnumDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+  }) {
+    return _EnumDefaultMixJsonInclude._(
+      selectedColumns: select?.call(EnumDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EnumDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EnumDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultMixTable>? orderByList,
+    EnumDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<EnumDefaultMixTable>? select,
+  }) {
+    return _EnumDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -258,8 +298,46 @@ class EnumDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class EnumDefaultMixInclude extends _is.IncludeObject {
-  EnumDefaultMixInclude._({this.selectedColumns});
+abstract interface class EnumDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EnumDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EnumDefaultMixInclude extends _is.IncludeObject
+    implements EnumDefaultMixJsonInclude, _is.FullModelInclude {
+  EnumDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EnumDefaultMix.t;
+}
+
+final class EnumDefaultMixIncludeList extends _is.IncludeList
+    implements EnumDefaultMixJsonIncludeList, _is.FullModelInclude {
+  EnumDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EnumDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(EnumDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EnumDefaultMix.t;
+}
+
+final class _EnumDefaultMixJsonInclude extends _is.IncludeObject
+    implements EnumDefaultMixJsonInclude {
+  _EnumDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -271,14 +349,15 @@ class EnumDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EnumDefaultMix.t;
 }
 
-class EnumDefaultMixIncludeList extends _is.IncludeList {
-  EnumDefaultMixIncludeList._({
+final class _EnumDefaultMixJsonIncludeList extends _is.IncludeList
+    implements EnumDefaultMixJsonIncludeList {
+  _EnumDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EnumDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultMix.t);
@@ -400,6 +479,8 @@ class EnumDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -451,6 +532,8 @@ class EnumDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -495,6 +578,8 @@ class EnumDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

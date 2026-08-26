@@ -92,13 +92,15 @@ abstract class ObjectWithGeographyLineString
     };
   }
 
-  static ObjectWithGeographyLineStringInclude include({
-    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
-  }) {
-    return ObjectWithGeographyLineStringInclude._(
-      selectedColumns: select?.call(ObjectWithGeographyLineString.t),
-    );
+  /// Builds a complete [ObjectWithGeographyLineStringInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithGeographyLineStringInclude include() {
+    return ObjectWithGeographyLineStringInclude._();
   }
+
+  /// Builds a complete [ObjectWithGeographyLineStringIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithGeographyLineStringIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
@@ -107,9 +109,47 @@ abstract class ObjectWithGeographyLineString
     _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
     ObjectWithGeographyLineStringInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
   }) {
     return ObjectWithGeographyLineStringIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithGeographyLineString.t),
+      orderByList: orderByList?.call(ObjectWithGeographyLineString.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithGeographyLineStringJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithGeographyLineStringJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+  }) {
+    return _ObjectWithGeographyLineStringJsonInclude._(
+      selectedColumns: select?.call(ObjectWithGeographyLineString.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithGeographyLineStringJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithGeographyLineStringJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithGeographyLineStringTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithGeographyLineStringTable>? orderByList,
+    ObjectWithGeographyLineStringJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithGeographyLineStringTable>? select,
+  }) {
+    return _ObjectWithGeographyLineStringJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -221,8 +261,48 @@ class ObjectWithGeographyLineStringTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
-  ObjectWithGeographyLineStringInclude._({this.selectedColumns});
+abstract interface class ObjectWithGeographyLineStringJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithGeographyLineStringJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithGeographyLineStringInclude extends _is.IncludeObject
+    implements ObjectWithGeographyLineStringJsonInclude, _is.FullModelInclude {
+  ObjectWithGeographyLineStringInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithGeographyLineString.t;
+}
+
+final class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList
+    implements
+        ObjectWithGeographyLineStringJsonIncludeList,
+        _is.FullModelInclude {
+  ObjectWithGeographyLineStringIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithGeographyLineStringInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithGeographyLineString.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithGeographyLineString.t;
+}
+
+final class _ObjectWithGeographyLineStringJsonInclude extends _is.IncludeObject
+    implements ObjectWithGeographyLineStringJsonInclude {
+  _ObjectWithGeographyLineStringJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -234,14 +314,16 @@ class ObjectWithGeographyLineStringInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithGeographyLineString.t;
 }
 
-class ObjectWithGeographyLineStringIncludeList extends _is.IncludeList {
-  ObjectWithGeographyLineStringIncludeList._({
+final class _ObjectWithGeographyLineStringJsonIncludeList
+    extends _is.IncludeList
+    implements ObjectWithGeographyLineStringJsonIncludeList {
+  _ObjectWithGeographyLineStringJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithGeographyLineStringTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithGeographyLineStringJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithGeographyLineString.t);
@@ -363,6 +445,8 @@ class ObjectWithGeographyLineStringRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -414,6 +498,8 @@ class ObjectWithGeographyLineStringRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -458,6 +544,8 @@ class ObjectWithGeographyLineStringRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

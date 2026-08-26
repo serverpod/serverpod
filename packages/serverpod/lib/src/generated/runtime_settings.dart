@@ -113,13 +113,15 @@ abstract class RuntimeSettings
     };
   }
 
-  static RuntimeSettingsInclude include({
-    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
-  }) {
-    return RuntimeSettingsInclude._(
-      selectedColumns: select?.call(RuntimeSettings.t),
-    );
+  /// Builds a complete [RuntimeSettingsInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static RuntimeSettingsInclude include() {
+    return RuntimeSettingsInclude._();
   }
+
+  /// Builds a complete [RuntimeSettingsIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RuntimeSettingsIncludeList includeList({
     _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
@@ -128,9 +130,47 @@ abstract class RuntimeSettings
     _is.OrderByBuilder<RuntimeSettingsTable>? orderBy,
     _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
     RuntimeSettingsInclude? include,
-    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
   }) {
     return RuntimeSettingsIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RuntimeSettings.t),
+      orderByList: orderByList?.call(RuntimeSettings.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RuntimeSettingsJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RuntimeSettingsJsonInclude includeJson({
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+  }) {
+    return _RuntimeSettingsJsonInclude._(
+      selectedColumns: select?.call(RuntimeSettings.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RuntimeSettingsJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RuntimeSettingsJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RuntimeSettingsTable>? orderBy,
+    _is.OrderByListBuilder<RuntimeSettingsTable>? orderByList,
+    RuntimeSettingsJsonInclude? include,
+    _is.SelectColumnsBuilder<RuntimeSettingsTable>? select,
+  }) {
+    return _RuntimeSettingsJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -266,8 +306,46 @@ class RuntimeSettingsTable extends _is.Table<int?> {
   ];
 }
 
-class RuntimeSettingsInclude extends _is.IncludeObject {
-  RuntimeSettingsInclude._({this.selectedColumns});
+abstract interface class RuntimeSettingsJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class RuntimeSettingsJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class RuntimeSettingsInclude extends _is.IncludeObject
+    implements RuntimeSettingsJsonInclude, _is.FullModelInclude {
+  RuntimeSettingsInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => RuntimeSettings.t;
+}
+
+final class RuntimeSettingsIncludeList extends _is.IncludeList
+    implements RuntimeSettingsJsonIncludeList, _is.FullModelInclude {
+  RuntimeSettingsIncludeList._({
+    _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RuntimeSettingsInclude? super.include,
+  }) {
+    super.where = where?.call(RuntimeSettings.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => RuntimeSettings.t;
+}
+
+final class _RuntimeSettingsJsonInclude extends _is.IncludeObject
+    implements RuntimeSettingsJsonInclude {
+  _RuntimeSettingsJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -279,14 +357,15 @@ class RuntimeSettingsInclude extends _is.IncludeObject {
   _is.Table<int?> get table => RuntimeSettings.t;
 }
 
-class RuntimeSettingsIncludeList extends _is.IncludeList {
-  RuntimeSettingsIncludeList._({
+final class _RuntimeSettingsJsonIncludeList extends _is.IncludeList
+    implements RuntimeSettingsJsonIncludeList {
+  _RuntimeSettingsJsonIncludeList._({
     _is.WhereExpressionBuilder<RuntimeSettingsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RuntimeSettingsJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RuntimeSettings.t);
@@ -408,6 +487,8 @@ class RuntimeSettingsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -459,6 +540,8 @@ class RuntimeSettingsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -503,6 +586,8 @@ class RuntimeSettingsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

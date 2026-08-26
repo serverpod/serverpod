@@ -79,13 +79,15 @@ abstract class UserNoteWithALongName
     };
   }
 
-  static UserNoteWithALongNameInclude include({
-    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
-  }) {
-    return UserNoteWithALongNameInclude._(
-      selectedColumns: select?.call(UserNoteWithALongName.t),
-    );
+  /// Builds a complete [UserNoteWithALongNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UserNoteWithALongNameInclude include() {
+    return UserNoteWithALongNameInclude._();
   }
+
+  /// Builds a complete [UserNoteWithALongNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserNoteWithALongNameIncludeList includeList({
     _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
@@ -94,9 +96,47 @@ abstract class UserNoteWithALongName
     _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
     _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
     UserNoteWithALongNameInclude? include,
-    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
   }) {
     return UserNoteWithALongNameIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserNoteWithALongName.t),
+      orderByList: orderByList?.call(UserNoteWithALongName.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteWithALongNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserNoteWithALongNameJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+  }) {
+    return _UserNoteWithALongNameJsonInclude._(
+      selectedColumns: select?.call(UserNoteWithALongName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UserNoteWithALongNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserNoteWithALongNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserNoteWithALongNameTable>? orderBy,
+    _is.OrderByListBuilder<UserNoteWithALongNameTable>? orderByList,
+    UserNoteWithALongNameJsonInclude? include,
+    _is.SelectColumnsBuilder<UserNoteWithALongNameTable>? select,
+  }) {
+    return _UserNoteWithALongNameJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -223,8 +263,46 @@ class UserNoteWithALongNameTable extends _is.Table<int?> {
   ];
 }
 
-class UserNoteWithALongNameInclude extends _is.IncludeObject {
-  UserNoteWithALongNameInclude._({this.selectedColumns});
+abstract interface class UserNoteWithALongNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserNoteWithALongNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserNoteWithALongNameInclude extends _is.IncludeObject
+    implements UserNoteWithALongNameJsonInclude, _is.FullModelInclude {
+  UserNoteWithALongNameInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserNoteWithALongName.t;
+}
+
+final class UserNoteWithALongNameIncludeList extends _is.IncludeList
+    implements UserNoteWithALongNameJsonIncludeList, _is.FullModelInclude {
+  UserNoteWithALongNameIncludeList._({
+    _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserNoteWithALongNameInclude? super.include,
+  }) {
+    super.where = where?.call(UserNoteWithALongName.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserNoteWithALongName.t;
+}
+
+final class _UserNoteWithALongNameJsonInclude extends _is.IncludeObject
+    implements UserNoteWithALongNameJsonInclude {
+  _UserNoteWithALongNameJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -236,14 +314,15 @@ class UserNoteWithALongNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserNoteWithALongName.t;
 }
 
-class UserNoteWithALongNameIncludeList extends _is.IncludeList {
-  UserNoteWithALongNameIncludeList._({
+final class _UserNoteWithALongNameJsonIncludeList extends _is.IncludeList
+    implements UserNoteWithALongNameJsonIncludeList {
+  _UserNoteWithALongNameJsonIncludeList._({
     _is.WhereExpressionBuilder<UserNoteWithALongNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserNoteWithALongNameJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserNoteWithALongName.t);
@@ -365,6 +444,8 @@ class UserNoteWithALongNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -416,6 +497,8 @@ class UserNoteWithALongNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -460,6 +543,8 @@ class UserNoteWithALongNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

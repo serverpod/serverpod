@@ -77,13 +77,15 @@ abstract class StringDefault
     };
   }
 
-  static StringDefaultInclude include({
-    _is.SelectColumnsBuilder<StringDefaultTable>? select,
-  }) {
-    return StringDefaultInclude._(
-      selectedColumns: select?.call(StringDefault.t),
-    );
+  /// Builds a complete [StringDefaultInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static StringDefaultInclude include() {
+    return StringDefaultInclude._();
   }
+
+  /// Builds a complete [StringDefaultIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static StringDefaultIncludeList includeList({
     _is.WhereExpressionBuilder<StringDefaultTable>? where,
@@ -92,9 +94,47 @@ abstract class StringDefault
     _is.OrderByBuilder<StringDefaultTable>? orderBy,
     _is.OrderByListBuilder<StringDefaultTable>? orderByList,
     StringDefaultInclude? include,
-    _is.SelectColumnsBuilder<StringDefaultTable>? select,
   }) {
     return StringDefaultIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefault.t),
+      orderByList: orderByList?.call(StringDefault.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static StringDefaultJsonInclude includeJson({
+    _is.SelectColumnsBuilder<StringDefaultTable>? select,
+  }) {
+    return _StringDefaultJsonInclude._(
+      selectedColumns: select?.call(StringDefault.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static StringDefaultJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<StringDefaultTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultTable>? orderByList,
+    StringDefaultJsonInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultTable>? select,
+  }) {
+    return _StringDefaultJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -189,8 +229,46 @@ class StringDefaultTable extends _is.Table<int?> {
   ];
 }
 
-class StringDefaultInclude extends _is.IncludeObject {
-  StringDefaultInclude._({this.selectedColumns});
+abstract interface class StringDefaultJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class StringDefaultJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class StringDefaultInclude extends _is.IncludeObject
+    implements StringDefaultJsonInclude, _is.FullModelInclude {
+  StringDefaultInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => StringDefault.t;
+}
+
+final class StringDefaultIncludeList extends _is.IncludeList
+    implements StringDefaultJsonIncludeList, _is.FullModelInclude {
+  StringDefaultIncludeList._({
+    _is.WhereExpressionBuilder<StringDefaultTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    StringDefaultInclude? super.include,
+  }) {
+    super.where = where?.call(StringDefault.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => StringDefault.t;
+}
+
+final class _StringDefaultJsonInclude extends _is.IncludeObject
+    implements StringDefaultJsonInclude {
+  _StringDefaultJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -202,14 +280,15 @@ class StringDefaultInclude extends _is.IncludeObject {
   _is.Table<int?> get table => StringDefault.t;
 }
 
-class StringDefaultIncludeList extends _is.IncludeList {
-  StringDefaultIncludeList._({
+final class _StringDefaultJsonIncludeList extends _is.IncludeList
+    implements StringDefaultJsonIncludeList {
+  _StringDefaultJsonIncludeList._({
     _is.WhereExpressionBuilder<StringDefaultTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    StringDefaultJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(StringDefault.t);
@@ -331,6 +410,8 @@ class StringDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -382,6 +463,8 @@ class StringDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -426,6 +509,8 @@ class StringDefaultRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

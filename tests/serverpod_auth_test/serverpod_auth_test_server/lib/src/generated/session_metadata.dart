@@ -116,15 +116,17 @@ abstract class SessionMetadata
     return {};
   }
 
+  /// Builds a complete [SessionMetadataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static SessionMetadataInclude include({
     _iacs.ServerSideSessionInclude? serverSideSession,
-    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
-    return SessionMetadataInclude._(
-      serverSideSession: serverSideSession,
-      selectedColumns: select?.call(SessionMetadata.t),
-    );
+    return SessionMetadataInclude._(serverSideSession: serverSideSession);
   }
+
+  /// Builds a complete [SessionMetadataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SessionMetadataIncludeList includeList({
     _is.WhereExpressionBuilder<SessionMetadataTable>? where,
@@ -133,9 +135,49 @@ abstract class SessionMetadata
     _is.OrderByBuilder<SessionMetadataTable>? orderBy,
     _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     SessionMetadataInclude? include,
-    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
   }) {
     return SessionMetadataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SessionMetadata.t),
+      orderByList: orderByList?.call(SessionMetadata.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SessionMetadataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SessionMetadataJsonInclude includeJson({
+    _iacs.ServerSideSessionJsonInclude? serverSideSession,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
+  }) {
+    return _SessionMetadataJsonInclude._(
+      serverSideSession: serverSideSession,
+      selectedColumns: select?.call(SessionMetadata.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SessionMetadataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SessionMetadataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    SessionMetadataJsonInclude? include,
+    _is.SelectColumnsBuilder<SessionMetadataTable>? select,
+  }) {
+    return _SessionMetadataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -308,15 +350,61 @@ class SessionMetadataTable extends _is.Table<int?> {
   }
 }
 
-class SessionMetadataInclude extends _is.IncludeObject {
+abstract interface class SessionMetadataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class SessionMetadataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class SessionMetadataInclude extends _is.IncludeObject
+    implements SessionMetadataJsonInclude, _is.FullModelInclude {
   SessionMetadataInclude._({
     _iacs.ServerSideSessionInclude? serverSideSession,
-    this.selectedColumns,
   }) {
     _serverSideSession = serverSideSession;
   }
 
   _iacs.ServerSideSessionInclude? _serverSideSession;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'serverSideSession': _serverSideSession,
+  };
+
+  @override
+  _is.Table<int?> get table => SessionMetadata.t;
+}
+
+final class SessionMetadataIncludeList extends _is.IncludeList
+    implements SessionMetadataJsonIncludeList, _is.FullModelInclude {
+  SessionMetadataIncludeList._({
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SessionMetadataInclude? super.include,
+  }) {
+    super.where = where?.call(SessionMetadata.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => SessionMetadata.t;
+}
+
+final class _SessionMetadataJsonInclude extends _is.IncludeObject
+    implements SessionMetadataJsonInclude {
+  _SessionMetadataJsonInclude._({
+    _iacs.ServerSideSessionJsonInclude? serverSideSession,
+    this.selectedColumns,
+  }) {
+    _serverSideSession = serverSideSession;
+  }
+
+  _iacs.ServerSideSessionJsonInclude? _serverSideSession;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -330,14 +418,15 @@ class SessionMetadataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => SessionMetadata.t;
 }
 
-class SessionMetadataIncludeList extends _is.IncludeList {
-  SessionMetadataIncludeList._({
+final class _SessionMetadataJsonIncludeList extends _is.IncludeList
+    implements SessionMetadataJsonIncludeList {
+  _SessionMetadataJsonIncludeList._({
     _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SessionMetadataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SessionMetadata.t);
@@ -467,6 +556,8 @@ class SessionMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -497,7 +588,7 @@ class SessionMetadataRepository {
     _is.OrderByBuilder<SessionMetadataTable>? orderBy,
     _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     _is.Transaction? transaction,
-    SessionMetadataInclude? include,
+    SessionMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<SessionMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -520,6 +611,8 @@ class SessionMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -544,7 +637,7 @@ class SessionMetadataRepository {
     _is.OrderByBuilder<SessionMetadataTable>? orderBy,
     _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     _is.Transaction? transaction,
-    SessionMetadataInclude? include,
+    SessionMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<SessionMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -566,12 +659,14 @@ class SessionMetadataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    SessionMetadataInclude? include,
+    SessionMetadataJsonInclude? include,
     _is.SelectColumnsBuilder<SessionMetadataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

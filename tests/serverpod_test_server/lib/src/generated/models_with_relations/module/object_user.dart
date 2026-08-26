@@ -91,15 +91,15 @@ abstract class ObjectUser
     };
   }
 
-  static ObjectUserInclude include({
-    _i1n3uhu0.UserInfoInclude? userInfo,
-    _is.SelectColumnsBuilder<ObjectUserTable>? select,
-  }) {
-    return ObjectUserInclude._(
-      userInfo: userInfo,
-      selectedColumns: select?.call(ObjectUser.t),
-    );
+  /// Builds a complete [ObjectUserInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectUserInclude include({_i1n3uhu0.UserInfoInclude? userInfo}) {
+    return ObjectUserInclude._(userInfo: userInfo);
   }
+
+  /// Builds a complete [ObjectUserIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectUserIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectUserTable>? where,
@@ -108,9 +108,49 @@ abstract class ObjectUser
     _is.OrderByBuilder<ObjectUserTable>? orderBy,
     _is.OrderByListBuilder<ObjectUserTable>? orderByList,
     ObjectUserInclude? include,
-    _is.SelectColumnsBuilder<ObjectUserTable>? select,
   }) {
     return ObjectUserIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectUser.t),
+      orderByList: orderByList?.call(ObjectUser.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectUserJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectUserJsonInclude includeJson({
+    _i1n3uhu0.UserInfoJsonInclude? userInfo,
+    _is.SelectColumnsBuilder<ObjectUserTable>? select,
+  }) {
+    return _ObjectUserJsonInclude._(
+      userInfo: userInfo,
+      selectedColumns: select?.call(ObjectUser.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectUserJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectUserJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectUserTable>? orderBy,
+    _is.OrderByListBuilder<ObjectUserTable>? orderByList,
+    ObjectUserJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectUserTable>? select,
+  }) {
+    return _ObjectUserJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,15 +267,57 @@ class ObjectUserTable extends _is.Table<int?> {
   }
 }
 
-class ObjectUserInclude extends _is.IncludeObject {
-  ObjectUserInclude._({
-    _i1n3uhu0.UserInfoInclude? userInfo,
+abstract interface class ObjectUserJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectUserJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectUserInclude extends _is.IncludeObject
+    implements ObjectUserJsonInclude, _is.FullModelInclude {
+  ObjectUserInclude._({_i1n3uhu0.UserInfoInclude? userInfo}) {
+    _userInfo = userInfo;
+  }
+
+  _i1n3uhu0.UserInfoInclude? _userInfo;
+
+  @override
+  Map<String, _is.Include?> get includes => {'userInfo': _userInfo};
+
+  @override
+  _is.Table<int?> get table => ObjectUser.t;
+}
+
+final class ObjectUserIncludeList extends _is.IncludeList
+    implements ObjectUserJsonIncludeList, _is.FullModelInclude {
+  ObjectUserIncludeList._({
+    _is.WhereExpressionBuilder<ObjectUserTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectUserInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectUser.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectUser.t;
+}
+
+final class _ObjectUserJsonInclude extends _is.IncludeObject
+    implements ObjectUserJsonInclude {
+  _ObjectUserJsonInclude._({
+    _i1n3uhu0.UserInfoJsonInclude? userInfo,
     this.selectedColumns,
   }) {
     _userInfo = userInfo;
   }
 
-  _i1n3uhu0.UserInfoInclude? _userInfo;
+  _i1n3uhu0.UserInfoJsonInclude? _userInfo;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -247,14 +329,15 @@ class ObjectUserInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectUser.t;
 }
 
-class ObjectUserIncludeList extends _is.IncludeList {
-  ObjectUserIncludeList._({
+final class _ObjectUserJsonIncludeList extends _is.IncludeList
+    implements ObjectUserJsonIncludeList {
+  _ObjectUserJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectUserJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectUser.t);
@@ -384,6 +467,8 @@ class ObjectUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -414,7 +499,7 @@ class ObjectUserRepository {
     _is.OrderByBuilder<ObjectUserTable>? orderBy,
     _is.OrderByListBuilder<ObjectUserTable>? orderByList,
     _is.Transaction? transaction,
-    ObjectUserInclude? include,
+    ObjectUserJsonInclude? include,
     _is.SelectColumnsBuilder<ObjectUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -437,6 +522,8 @@ class ObjectUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -461,7 +548,7 @@ class ObjectUserRepository {
     _is.OrderByBuilder<ObjectUserTable>? orderBy,
     _is.OrderByListBuilder<ObjectUserTable>? orderByList,
     _is.Transaction? transaction,
-    ObjectUserInclude? include,
+    ObjectUserJsonInclude? include,
     _is.SelectColumnsBuilder<ObjectUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -483,12 +570,14 @@ class ObjectUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ObjectUserInclude? include,
+    ObjectUserJsonInclude? include,
     _is.SelectColumnsBuilder<ObjectUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

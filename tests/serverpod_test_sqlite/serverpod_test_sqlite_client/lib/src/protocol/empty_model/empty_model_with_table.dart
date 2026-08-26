@@ -53,13 +53,15 @@ abstract class EmptyModelWithTable
     };
   }
 
-  static EmptyModelWithTableInclude include({
-    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
-  }) {
-    return EmptyModelWithTableInclude._(
-      selectedColumns: select?.call(EmptyModelWithTable.t),
-    );
+  /// Builds a complete [EmptyModelWithTableInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EmptyModelWithTableInclude include() {
+    return EmptyModelWithTableInclude._();
   }
+
+  /// Builds a complete [EmptyModelWithTableIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmptyModelWithTableIncludeList includeList({
     _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
@@ -68,9 +70,47 @@ abstract class EmptyModelWithTable
     _isd.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
     _isd.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     EmptyModelWithTableInclude? include,
-    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
   }) {
     return EmptyModelWithTableIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmptyModelWithTable.t),
+      orderByList: orderByList?.call(EmptyModelWithTable.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmptyModelWithTableJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmptyModelWithTableJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+  }) {
+    return _EmptyModelWithTableJsonInclude._(
+      selectedColumns: select?.call(EmptyModelWithTable.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmptyModelWithTableJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmptyModelWithTableJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _isd.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    EmptyModelWithTableJsonInclude? include,
+    _isd.SelectColumnsBuilder<EmptyModelWithTableTable>? select,
+  }) {
+    return _EmptyModelWithTableJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -118,8 +158,46 @@ class EmptyModelWithTableTable extends _isd.Table<int?> {
   List<_isd.Column> get columns => [id];
 }
 
-class EmptyModelWithTableInclude extends _isd.IncludeObject {
-  EmptyModelWithTableInclude._({this.selectedColumns});
+abstract interface class EmptyModelWithTableJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class EmptyModelWithTableJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class EmptyModelWithTableInclude extends _isd.IncludeObject
+    implements EmptyModelWithTableJsonInclude, _isd.FullModelInclude {
+  EmptyModelWithTableInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => EmptyModelWithTable.t;
+}
+
+final class EmptyModelWithTableIncludeList extends _isd.IncludeList
+    implements EmptyModelWithTableJsonIncludeList, _isd.FullModelInclude {
+  EmptyModelWithTableIncludeList._({
+    _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmptyModelWithTableInclude? super.include,
+  }) {
+    super.where = where?.call(EmptyModelWithTable.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => EmptyModelWithTable.t;
+}
+
+final class _EmptyModelWithTableJsonInclude extends _isd.IncludeObject
+    implements EmptyModelWithTableJsonInclude {
+  _EmptyModelWithTableJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -131,14 +209,15 @@ class EmptyModelWithTableInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => EmptyModelWithTable.t;
 }
 
-class EmptyModelWithTableIncludeList extends _isd.IncludeList {
-  EmptyModelWithTableIncludeList._({
+final class _EmptyModelWithTableJsonIncludeList extends _isd.IncludeList
+    implements EmptyModelWithTableJsonIncludeList {
+  _EmptyModelWithTableJsonIncludeList._({
     _isd.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmptyModelWithTableJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EmptyModelWithTable.t);
@@ -260,6 +339,8 @@ class EmptyModelWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -311,6 +392,8 @@ class EmptyModelWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -355,6 +438,8 @@ class EmptyModelWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

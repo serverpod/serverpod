@@ -84,13 +84,15 @@ abstract class SharedModuleTable
     };
   }
 
-  static SharedModuleTableInclude include({
-    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
-  }) {
-    return SharedModuleTableInclude._(
-      selectedColumns: select?.call(SharedModuleTable.t),
-    );
+  /// Builds a complete [SharedModuleTableInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SharedModuleTableInclude include() {
+    return SharedModuleTableInclude._();
   }
+
+  /// Builds a complete [SharedModuleTableIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SharedModuleTableIncludeList includeList({
     _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
@@ -99,9 +101,47 @@ abstract class SharedModuleTable
     _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
     _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
     SharedModuleTableInclude? include,
-    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
   }) {
     return SharedModuleTableIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SharedModuleTable.t),
+      orderByList: orderByList?.call(SharedModuleTable.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModuleTableJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SharedModuleTableJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+  }) {
+    return _SharedModuleTableJsonInclude._(
+      selectedColumns: select?.call(SharedModuleTable.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SharedModuleTableJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SharedModuleTableJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SharedModuleTableTable>? orderBy,
+    _isd.OrderByListBuilder<SharedModuleTableTable>? orderByList,
+    SharedModuleTableJsonInclude? include,
+    _isd.SelectColumnsBuilder<SharedModuleTableTable>? select,
+  }) {
+    return _SharedModuleTableJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -191,8 +231,46 @@ class SharedModuleTableTable extends _isd.Table<int?> {
   ];
 }
 
-class SharedModuleTableInclude extends _isd.IncludeObject {
-  SharedModuleTableInclude._({this.selectedColumns});
+abstract interface class SharedModuleTableJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class SharedModuleTableJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class SharedModuleTableInclude extends _isd.IncludeObject
+    implements SharedModuleTableJsonInclude, _isd.FullModelInclude {
+  SharedModuleTableInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => SharedModuleTable.t;
+}
+
+final class SharedModuleTableIncludeList extends _isd.IncludeList
+    implements SharedModuleTableJsonIncludeList, _isd.FullModelInclude {
+  SharedModuleTableIncludeList._({
+    _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SharedModuleTableInclude? super.include,
+  }) {
+    super.where = where?.call(SharedModuleTable.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => SharedModuleTable.t;
+}
+
+final class _SharedModuleTableJsonInclude extends _isd.IncludeObject
+    implements SharedModuleTableJsonInclude {
+  _SharedModuleTableJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -204,14 +282,15 @@ class SharedModuleTableInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => SharedModuleTable.t;
 }
 
-class SharedModuleTableIncludeList extends _isd.IncludeList {
-  SharedModuleTableIncludeList._({
+final class _SharedModuleTableJsonIncludeList extends _isd.IncludeList
+    implements SharedModuleTableJsonIncludeList {
+  _SharedModuleTableJsonIncludeList._({
     _isd.WhereExpressionBuilder<SharedModuleTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SharedModuleTableJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SharedModuleTable.t);
@@ -333,6 +412,8 @@ class SharedModuleTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -384,6 +465,8 @@ class SharedModuleTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -428,6 +511,8 @@ class SharedModuleTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

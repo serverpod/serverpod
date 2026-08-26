@@ -77,13 +77,15 @@ abstract class IntDefaultModel
     };
   }
 
-  static IntDefaultModelInclude include({
-    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
-  }) {
-    return IntDefaultModelInclude._(
-      selectedColumns: select?.call(IntDefaultModel.t),
-    );
+  /// Builds a complete [IntDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static IntDefaultModelInclude include() {
+    return IntDefaultModelInclude._();
   }
+
+  /// Builds a complete [IntDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static IntDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
@@ -92,9 +94,47 @@ abstract class IntDefaultModel
     _is.OrderByBuilder<IntDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<IntDefaultModelTable>? orderByList,
     IntDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
   }) {
     return IntDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(IntDefaultModel.t),
+      orderByList: orderByList?.call(IntDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [IntDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static IntDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
+  }) {
+    return _IntDefaultModelJsonInclude._(
+      selectedColumns: select?.call(IntDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [IntDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static IntDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<IntDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<IntDefaultModelTable>? orderByList,
+    IntDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<IntDefaultModelTable>? select,
+  }) {
+    return _IntDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -183,8 +223,46 @@ class IntDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class IntDefaultModelInclude extends _is.IncludeObject {
-  IntDefaultModelInclude._({this.selectedColumns});
+abstract interface class IntDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class IntDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class IntDefaultModelInclude extends _is.IncludeObject
+    implements IntDefaultModelJsonInclude, _is.FullModelInclude {
+  IntDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => IntDefaultModel.t;
+}
+
+final class IntDefaultModelIncludeList extends _is.IncludeList
+    implements IntDefaultModelJsonIncludeList, _is.FullModelInclude {
+  IntDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    IntDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(IntDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => IntDefaultModel.t;
+}
+
+final class _IntDefaultModelJsonInclude extends _is.IncludeObject
+    implements IntDefaultModelJsonInclude {
+  _IntDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -196,14 +274,15 @@ class IntDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => IntDefaultModel.t;
 }
 
-class IntDefaultModelIncludeList extends _is.IncludeList {
-  IntDefaultModelIncludeList._({
+final class _IntDefaultModelJsonIncludeList extends _is.IncludeList
+    implements IntDefaultModelJsonIncludeList {
+  _IntDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<IntDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    IntDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(IntDefaultModel.t);
@@ -325,6 +404,8 @@ class IntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -376,6 +457,8 @@ class IntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -420,6 +503,8 @@ class IntDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

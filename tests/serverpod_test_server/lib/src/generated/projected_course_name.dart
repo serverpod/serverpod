@@ -66,8 +66,8 @@ abstract class ProjectedCourseName
     };
   }
 
-  static ProjectedCourseInclude include() {
-    return ProjectedCourse.include(
+  static ProjectedCourseJsonInclude include() {
+    return ProjectedCourse.includeJson(
       select: (t) => [
         ProjectedCourse.t.id,
         ProjectedCourse.t.name,
@@ -75,14 +75,14 @@ abstract class ProjectedCourseName
     );
   }
 
-  static ProjectedCourseIncludeList includeList({
+  static ProjectedCourseJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedCourseTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedCourseTable>? orderBy,
     _is.OrderByListBuilder<ProjectedCourseTable>? orderByList,
   }) {
-    return ProjectedCourse.includeList(
+    return ProjectedCourse.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

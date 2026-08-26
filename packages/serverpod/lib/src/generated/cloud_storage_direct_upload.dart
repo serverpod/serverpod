@@ -101,13 +101,15 @@ abstract class CloudStorageDirectUploadEntry
     };
   }
 
-  static CloudStorageDirectUploadEntryInclude include({
-    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
-  }) {
-    return CloudStorageDirectUploadEntryInclude._(
-      selectedColumns: select?.call(CloudStorageDirectUploadEntry.t),
-    );
+  /// Builds a complete [CloudStorageDirectUploadEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static CloudStorageDirectUploadEntryInclude include() {
+    return CloudStorageDirectUploadEntryInclude._();
   }
+
+  /// Builds a complete [CloudStorageDirectUploadEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CloudStorageDirectUploadEntryIncludeList includeList({
     _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
@@ -116,9 +118,47 @@ abstract class CloudStorageDirectUploadEntry
     _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
     _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
     CloudStorageDirectUploadEntryInclude? include,
-    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
   }) {
     return CloudStorageDirectUploadEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CloudStorageDirectUploadEntry.t),
+      orderByList: orderByList?.call(CloudStorageDirectUploadEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CloudStorageDirectUploadEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CloudStorageDirectUploadEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+  }) {
+    return _CloudStorageDirectUploadEntryJsonInclude._(
+      selectedColumns: select?.call(CloudStorageDirectUploadEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CloudStorageDirectUploadEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CloudStorageDirectUploadEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageDirectUploadEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageDirectUploadEntryTable>? orderByList,
+    CloudStorageDirectUploadEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<CloudStorageDirectUploadEntryTable>? select,
+  }) {
+    return _CloudStorageDirectUploadEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -245,8 +285,48 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
   ];
 }
 
-class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
-  CloudStorageDirectUploadEntryInclude._({this.selectedColumns});
+abstract interface class CloudStorageDirectUploadEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CloudStorageDirectUploadEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject
+    implements CloudStorageDirectUploadEntryJsonInclude, _is.FullModelInclude {
+  CloudStorageDirectUploadEntryInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => CloudStorageDirectUploadEntry.t;
+}
+
+final class CloudStorageDirectUploadEntryIncludeList extends _is.IncludeList
+    implements
+        CloudStorageDirectUploadEntryJsonIncludeList,
+        _is.FullModelInclude {
+  CloudStorageDirectUploadEntryIncludeList._({
+    _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CloudStorageDirectUploadEntryInclude? super.include,
+  }) {
+    super.where = where?.call(CloudStorageDirectUploadEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => CloudStorageDirectUploadEntry.t;
+}
+
+final class _CloudStorageDirectUploadEntryJsonInclude extends _is.IncludeObject
+    implements CloudStorageDirectUploadEntryJsonInclude {
+  _CloudStorageDirectUploadEntryJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -258,14 +338,16 @@ class CloudStorageDirectUploadEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => CloudStorageDirectUploadEntry.t;
 }
 
-class CloudStorageDirectUploadEntryIncludeList extends _is.IncludeList {
-  CloudStorageDirectUploadEntryIncludeList._({
+final class _CloudStorageDirectUploadEntryJsonIncludeList
+    extends _is.IncludeList
+    implements CloudStorageDirectUploadEntryJsonIncludeList {
+  _CloudStorageDirectUploadEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<CloudStorageDirectUploadEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CloudStorageDirectUploadEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(CloudStorageDirectUploadEntry.t);
@@ -387,6 +469,8 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -438,6 +522,8 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -482,6 +568,8 @@ class CloudStorageDirectUploadEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

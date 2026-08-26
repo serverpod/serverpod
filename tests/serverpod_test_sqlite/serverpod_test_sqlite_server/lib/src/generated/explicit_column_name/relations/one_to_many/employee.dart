@@ -76,11 +76,15 @@ abstract class Employee
     };
   }
 
-  static EmployeeInclude include({
-    _is.SelectColumnsBuilder<EmployeeTable>? select,
-  }) {
-    return EmployeeInclude._(selectedColumns: select?.call(Employee.t));
+  /// Builds a complete [EmployeeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EmployeeInclude include() {
+    return EmployeeInclude._();
   }
+
+  /// Builds a complete [EmployeeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmployeeIncludeList includeList({
     _is.WhereExpressionBuilder<EmployeeTable>? where,
@@ -89,9 +93,45 @@ abstract class Employee
     _is.OrderByBuilder<EmployeeTable>? orderBy,
     _is.OrderByListBuilder<EmployeeTable>? orderByList,
     EmployeeInclude? include,
-    _is.SelectColumnsBuilder<EmployeeTable>? select,
   }) {
     return EmployeeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Employee.t),
+      orderByList: orderByList?.call(Employee.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmployeeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmployeeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+  }) {
+    return _EmployeeJsonInclude._(selectedColumns: select?.call(Employee.t));
+  }
+
+  /// Builds a JSON-compatible [EmployeeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmployeeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmployeeTable>? orderBy,
+    _is.OrderByListBuilder<EmployeeTable>? orderByList,
+    EmployeeJsonInclude? include,
+    _is.SelectColumnsBuilder<EmployeeTable>? select,
+  }) {
+    return _EmployeeJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -180,8 +220,46 @@ class EmployeeTable extends _is.Table<int?> {
   ];
 }
 
-class EmployeeInclude extends _is.IncludeObject {
-  EmployeeInclude._({this.selectedColumns});
+abstract interface class EmployeeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmployeeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmployeeInclude extends _is.IncludeObject
+    implements EmployeeJsonInclude, _is.FullModelInclude {
+  EmployeeInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => Employee.t;
+}
+
+final class EmployeeIncludeList extends _is.IncludeList
+    implements EmployeeJsonIncludeList, _is.FullModelInclude {
+  EmployeeIncludeList._({
+    _is.WhereExpressionBuilder<EmployeeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmployeeInclude? super.include,
+  }) {
+    super.where = where?.call(Employee.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Employee.t;
+}
+
+final class _EmployeeJsonInclude extends _is.IncludeObject
+    implements EmployeeJsonInclude {
+  _EmployeeJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -193,14 +271,15 @@ class EmployeeInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Employee.t;
 }
 
-class EmployeeIncludeList extends _is.IncludeList {
-  EmployeeIncludeList._({
+final class _EmployeeJsonIncludeList extends _is.IncludeList
+    implements EmployeeJsonIncludeList {
+  _EmployeeJsonIncludeList._({
     _is.WhereExpressionBuilder<EmployeeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmployeeJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Employee.t);
@@ -322,6 +401,8 @@ class EmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -373,6 +454,8 @@ class EmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -417,6 +500,8 @@ class EmployeeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

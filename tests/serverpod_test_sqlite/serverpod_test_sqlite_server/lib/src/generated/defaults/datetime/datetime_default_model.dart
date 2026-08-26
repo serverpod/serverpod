@@ -109,13 +109,15 @@ abstract class DateTimeDefaultModel
     };
   }
 
-  static DateTimeDefaultModelInclude include({
-    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
-  }) {
-    return DateTimeDefaultModelInclude._(
-      selectedColumns: select?.call(DateTimeDefaultModel.t),
-    );
+  /// Builds a complete [DateTimeDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DateTimeDefaultModelInclude include() {
+    return DateTimeDefaultModelInclude._();
   }
+
+  /// Builds a complete [DateTimeDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DateTimeDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
@@ -124,9 +126,47 @@ abstract class DateTimeDefaultModel
     _is.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
     DateTimeDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
   }) {
     return DateTimeDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultModel.t),
+      orderByList: orderByList?.call(DateTimeDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DateTimeDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
+  }) {
+    return _DateTimeDefaultModelJsonInclude._(
+      selectedColumns: select?.call(DateTimeDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DateTimeDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultModelTable>? orderByList,
+    DateTimeDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<DateTimeDefaultModelTable>? select,
+  }) {
+    return _DateTimeDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -240,8 +280,46 @@ class DateTimeDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class DateTimeDefaultModelInclude extends _is.IncludeObject {
-  DateTimeDefaultModelInclude._({this.selectedColumns});
+abstract interface class DateTimeDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DateTimeDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DateTimeDefaultModelInclude extends _is.IncludeObject
+    implements DateTimeDefaultModelJsonInclude, _is.FullModelInclude {
+  DateTimeDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefaultModel.t;
+}
+
+final class DateTimeDefaultModelIncludeList extends _is.IncludeList
+    implements DateTimeDefaultModelJsonIncludeList, _is.FullModelInclude {
+  DateTimeDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DateTimeDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(DateTimeDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefaultModel.t;
+}
+
+final class _DateTimeDefaultModelJsonInclude extends _is.IncludeObject
+    implements DateTimeDefaultModelJsonInclude {
+  _DateTimeDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -253,14 +331,15 @@ class DateTimeDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DateTimeDefaultModel.t;
 }
 
-class DateTimeDefaultModelIncludeList extends _is.IncludeList {
-  DateTimeDefaultModelIncludeList._({
+final class _DateTimeDefaultModelJsonIncludeList extends _is.IncludeList
+    implements DateTimeDefaultModelJsonIncludeList {
+  _DateTimeDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<DateTimeDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DateTimeDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultModel.t);
@@ -382,6 +461,8 @@ class DateTimeDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -433,6 +514,8 @@ class DateTimeDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -477,6 +560,8 @@ class DateTimeDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -107,17 +107,21 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [CatInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CatInclude include({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
-    _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
     return CatInclude._(
       mother: mother,
       kittens: kittens,
-      selectedColumns: select?.call(Cat.t),
     );
   }
+
+  /// Builds a complete [CatIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CatIncludeList includeList({
     _isd.WhereExpressionBuilder<CatTable>? where,
@@ -126,9 +130,51 @@ abstract class Cat implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
     _isd.OrderByBuilder<CatTable>? orderBy,
     _isd.OrderByListBuilder<CatTable>? orderByList,
     CatInclude? include,
-    _isd.SelectColumnsBuilder<CatTable>? select,
   }) {
     return CatIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Cat.t),
+      orderByList: orderByList?.call(Cat.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CatJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CatJsonInclude includeJson({
+    _iayhscrz.CatJsonInclude? mother,
+    _iayhscrz.CatJsonIncludeList? kittens,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+  }) {
+    return _CatJsonInclude._(
+      mother: mother,
+      kittens: kittens,
+      selectedColumns: select?.call(Cat.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CatJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CatJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CatTable>? orderBy,
+    _isd.OrderByListBuilder<CatTable>? orderByList,
+    CatJsonInclude? include,
+    _isd.SelectColumnsBuilder<CatTable>? select,
+  }) {
+    return _CatJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -288,11 +334,16 @@ class CatTable extends _isd.Table<int?> {
   }
 }
 
-class CatInclude extends _isd.IncludeObject {
+abstract interface class CatJsonInclude implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CatJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CatInclude extends _isd.IncludeObject
+    implements CatJsonInclude, _isd.FullModelInclude {
   CatInclude._({
     _iayhscrz.CatInclude? mother,
     _iayhscrz.CatIncludeList? kittens,
-    this.selectedColumns,
   }) {
     _mother = mother;
     _kittens = kittens;
@@ -301,6 +352,51 @@ class CatInclude extends _isd.IncludeObject {
   _iayhscrz.CatInclude? _mother;
 
   _iayhscrz.CatIncludeList? _kittens;
+
+  @override
+  Map<String, _isd.Include?> get includes => {
+    'mother': _mother,
+    'kittens': _kittens,
+  };
+
+  @override
+  _isd.Table<int?> get table => Cat.t;
+}
+
+final class CatIncludeList extends _isd.IncludeList
+    implements CatJsonIncludeList, _isd.FullModelInclude {
+  CatIncludeList._({
+    _isd.WhereExpressionBuilder<CatTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CatInclude? super.include,
+  }) {
+    super.where = where?.call(Cat.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Cat.t;
+}
+
+final class _CatJsonInclude extends _isd.IncludeObject
+    implements CatJsonInclude {
+  _CatJsonInclude._({
+    _iayhscrz.CatJsonInclude? mother,
+    _iayhscrz.CatJsonIncludeList? kittens,
+    this.selectedColumns,
+  }) {
+    _mother = mother;
+    _kittens = kittens;
+  }
+
+  _iayhscrz.CatJsonInclude? _mother;
+
+  _iayhscrz.CatJsonIncludeList? _kittens;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -315,14 +411,15 @@ class CatInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Cat.t;
 }
 
-class CatIncludeList extends _isd.IncludeList {
-  CatIncludeList._({
+final class _CatJsonIncludeList extends _isd.IncludeList
+    implements CatJsonIncludeList {
+  _CatJsonIncludeList._({
     _isd.WhereExpressionBuilder<CatTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CatJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Cat.t);
@@ -458,6 +555,8 @@ class CatRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -488,7 +587,7 @@ class CatRepository {
     _isd.OrderByBuilder<CatTable>? orderBy,
     _isd.OrderByListBuilder<CatTable>? orderByList,
     _isd.Transaction? transaction,
-    CatInclude? include,
+    CatJsonInclude? include,
     _isd.SelectColumnsBuilder<CatTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -511,6 +610,8 @@ class CatRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -535,7 +636,7 @@ class CatRepository {
     _isd.OrderByBuilder<CatTable>? orderBy,
     _isd.OrderByListBuilder<CatTable>? orderByList,
     _isd.Transaction? transaction,
-    CatInclude? include,
+    CatJsonInclude? include,
     _isd.SelectColumnsBuilder<CatTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -557,12 +658,14 @@ class CatRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    CatInclude? include,
+    CatJsonInclude? include,
     _isd.SelectColumnsBuilder<CatTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

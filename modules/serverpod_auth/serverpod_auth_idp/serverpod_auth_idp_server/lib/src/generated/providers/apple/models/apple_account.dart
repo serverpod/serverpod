@@ -199,15 +199,15 @@ abstract class AppleAccount
     return {};
   }
 
-  static AppleAccountInclude include({
-    _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<AppleAccountTable>? select,
-  }) {
-    return AppleAccountInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(AppleAccount.t),
-    );
+  /// Builds a complete [AppleAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AppleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
+    return AppleAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [AppleAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AppleAccountIncludeList includeList({
     _is.WhereExpressionBuilder<AppleAccountTable>? where,
@@ -216,9 +216,49 @@ abstract class AppleAccount
     _is.OrderByBuilder<AppleAccountTable>? orderBy,
     _is.OrderByListBuilder<AppleAccountTable>? orderByList,
     AppleAccountInclude? include,
-    _is.SelectColumnsBuilder<AppleAccountTable>? select,
   }) {
     return AppleAccountIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AppleAccount.t),
+      orderByList: orderByList?.call(AppleAccount.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AppleAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AppleAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+  }) {
+    return _AppleAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(AppleAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [AppleAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AppleAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AppleAccountTable>? orderBy,
+    _is.OrderByListBuilder<AppleAccountTable>? orderByList,
+    AppleAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<AppleAccountTable>? select,
+  }) {
+    return _AppleAccountJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -523,15 +563,57 @@ class AppleAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class AppleAccountInclude extends _is.IncludeObject {
-  AppleAccountInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class AppleAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class AppleAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class AppleAccountInclude extends _is.IncludeObject
+    implements AppleAccountJsonInclude, _is.FullModelInclude {
+  AppleAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AppleAccount.t;
+}
+
+final class AppleAccountIncludeList extends _is.IncludeList
+    implements AppleAccountJsonIncludeList, _is.FullModelInclude {
+  AppleAccountIncludeList._({
+    _is.WhereExpressionBuilder<AppleAccountTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AppleAccountInclude? super.include,
+  }) {
+    super.where = where?.call(AppleAccount.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => AppleAccount.t;
+}
+
+final class _AppleAccountJsonInclude extends _is.IncludeObject
+    implements AppleAccountJsonInclude {
+  _AppleAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -543,14 +625,15 @@ class AppleAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => AppleAccount.t;
 }
 
-class AppleAccountIncludeList extends _is.IncludeList {
-  AppleAccountIncludeList._({
+final class _AppleAccountJsonIncludeList extends _is.IncludeList
+    implements AppleAccountJsonIncludeList {
+  _AppleAccountJsonIncludeList._({
     _is.WhereExpressionBuilder<AppleAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AppleAccountJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(AppleAccount.t);
@@ -680,6 +763,8 @@ class AppleAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -710,7 +795,7 @@ class AppleAccountRepository {
     _is.OrderByBuilder<AppleAccountTable>? orderBy,
     _is.OrderByListBuilder<AppleAccountTable>? orderByList,
     _is.Transaction? transaction,
-    AppleAccountInclude? include,
+    AppleAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -733,6 +818,8 @@ class AppleAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -757,7 +844,7 @@ class AppleAccountRepository {
     _is.OrderByBuilder<AppleAccountTable>? orderBy,
     _is.OrderByListBuilder<AppleAccountTable>? orderByList,
     _is.Transaction? transaction,
-    AppleAccountInclude? include,
+    AppleAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -779,12 +866,14 @@ class AppleAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    AppleAccountInclude? include,
+    AppleAccountJsonInclude? include,
     _is.SelectColumnsBuilder<AppleAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

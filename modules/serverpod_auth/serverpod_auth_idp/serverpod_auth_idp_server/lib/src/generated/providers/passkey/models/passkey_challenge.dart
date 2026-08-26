@@ -81,13 +81,15 @@ abstract class PasskeyChallenge
     return {};
   }
 
-  static PasskeyChallengeInclude include({
-    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
-  }) {
-    return PasskeyChallengeInclude._(
-      selectedColumns: select?.call(PasskeyChallenge.t),
-    );
+  /// Builds a complete [PasskeyChallengeInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static PasskeyChallengeInclude include() {
+    return PasskeyChallengeInclude._();
   }
+
+  /// Builds a complete [PasskeyChallengeIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PasskeyChallengeIncludeList includeList({
     _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
@@ -96,9 +98,47 @@ abstract class PasskeyChallenge
     _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
     _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
     PasskeyChallengeInclude? include,
-    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
   }) {
     return PasskeyChallengeIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(PasskeyChallenge.t),
+      orderByList: orderByList?.call(PasskeyChallenge.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PasskeyChallengeJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PasskeyChallengeJsonInclude includeJson({
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+  }) {
+    return _PasskeyChallengeJsonInclude._(
+      selectedColumns: select?.call(PasskeyChallenge.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PasskeyChallengeJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PasskeyChallengeJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<PasskeyChallengeTable>? orderBy,
+    _is.OrderByListBuilder<PasskeyChallengeTable>? orderByList,
+    PasskeyChallengeJsonInclude? include,
+    _is.SelectColumnsBuilder<PasskeyChallengeTable>? select,
+  }) {
+    return _PasskeyChallengeJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -193,8 +233,46 @@ class PasskeyChallengeTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class PasskeyChallengeInclude extends _is.IncludeObject {
-  PasskeyChallengeInclude._({this.selectedColumns});
+abstract interface class PasskeyChallengeJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class PasskeyChallengeJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class PasskeyChallengeInclude extends _is.IncludeObject
+    implements PasskeyChallengeJsonInclude, _is.FullModelInclude {
+  PasskeyChallengeInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
+}
+
+final class PasskeyChallengeIncludeList extends _is.IncludeList
+    implements PasskeyChallengeJsonIncludeList, _is.FullModelInclude {
+  PasskeyChallengeIncludeList._({
+    _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PasskeyChallengeInclude? super.include,
+  }) {
+    super.where = where?.call(PasskeyChallenge.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
+}
+
+final class _PasskeyChallengeJsonInclude extends _is.IncludeObject
+    implements PasskeyChallengeJsonInclude {
+  _PasskeyChallengeJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -206,14 +284,15 @@ class PasskeyChallengeInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => PasskeyChallenge.t;
 }
 
-class PasskeyChallengeIncludeList extends _is.IncludeList {
-  PasskeyChallengeIncludeList._({
+final class _PasskeyChallengeJsonIncludeList extends _is.IncludeList
+    implements PasskeyChallengeJsonIncludeList {
+  _PasskeyChallengeJsonIncludeList._({
     _is.WhereExpressionBuilder<PasskeyChallengeTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    PasskeyChallengeJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(PasskeyChallenge.t);
@@ -335,6 +414,8 @@ class PasskeyChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -386,6 +467,8 @@ class PasskeyChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -430,6 +513,8 @@ class PasskeyChallengeRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

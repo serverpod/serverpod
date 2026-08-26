@@ -84,13 +84,15 @@ abstract class UpsertTestModel
     };
   }
 
-  static UpsertTestModelInclude include({
-    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
-  }) {
-    return UpsertTestModelInclude._(
-      selectedColumns: select?.call(UpsertTestModel.t),
-    );
+  /// Builds a complete [UpsertTestModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UpsertTestModelInclude include() {
+    return UpsertTestModelInclude._();
   }
+
+  /// Builds a complete [UpsertTestModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UpsertTestModelIncludeList includeList({
     _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
@@ -99,9 +101,47 @@ abstract class UpsertTestModel
     _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
     _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
     UpsertTestModelInclude? include,
-    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
   }) {
     return UpsertTestModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UpsertTestModel.t),
+      orderByList: orderByList?.call(UpsertTestModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UpsertTestModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UpsertTestModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+  }) {
+    return _UpsertTestModelJsonInclude._(
+      selectedColumns: select?.call(UpsertTestModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UpsertTestModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UpsertTestModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UpsertTestModelTable>? orderBy,
+    _is.OrderByListBuilder<UpsertTestModelTable>? orderByList,
+    UpsertTestModelJsonInclude? include,
+    _is.SelectColumnsBuilder<UpsertTestModelTable>? select,
+  }) {
+    return _UpsertTestModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -206,8 +246,46 @@ class UpsertTestModelTable extends _is.Table<int?> {
   ];
 }
 
-class UpsertTestModelInclude extends _is.IncludeObject {
-  UpsertTestModelInclude._({this.selectedColumns});
+abstract interface class UpsertTestModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UpsertTestModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UpsertTestModelInclude extends _is.IncludeObject
+    implements UpsertTestModelJsonInclude, _is.FullModelInclude {
+  UpsertTestModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UpsertTestModel.t;
+}
+
+final class UpsertTestModelIncludeList extends _is.IncludeList
+    implements UpsertTestModelJsonIncludeList, _is.FullModelInclude {
+  UpsertTestModelIncludeList._({
+    _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UpsertTestModelInclude? super.include,
+  }) {
+    super.where = where?.call(UpsertTestModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UpsertTestModel.t;
+}
+
+final class _UpsertTestModelJsonInclude extends _is.IncludeObject
+    implements UpsertTestModelJsonInclude {
+  _UpsertTestModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -219,14 +297,15 @@ class UpsertTestModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UpsertTestModel.t;
 }
 
-class UpsertTestModelIncludeList extends _is.IncludeList {
-  UpsertTestModelIncludeList._({
+final class _UpsertTestModelJsonIncludeList extends _is.IncludeList
+    implements UpsertTestModelJsonIncludeList {
+  _UpsertTestModelJsonIncludeList._({
     _is.WhereExpressionBuilder<UpsertTestModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UpsertTestModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UpsertTestModel.t);
@@ -348,6 +427,8 @@ class UpsertTestModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -399,6 +480,8 @@ class UpsertTestModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -443,6 +526,8 @@ class UpsertTestModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

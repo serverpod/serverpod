@@ -108,17 +108,21 @@ abstract class EnrollmentInt
     };
   }
 
+  /// Builds a complete [EnrollmentIntInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static EnrollmentIntInclude include({
     _iu6t4rw4.StudentUuidInclude? student,
     _irfj8gqh.CourseUuidInclude? course,
-    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
   }) {
     return EnrollmentIntInclude._(
       student: student,
       course: course,
-      selectedColumns: select?.call(EnrollmentInt.t),
     );
   }
+
+  /// Builds a complete [EnrollmentIntIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EnrollmentIntIncludeList includeList({
     _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
@@ -127,9 +131,51 @@ abstract class EnrollmentInt
     _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
     _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     EnrollmentIntInclude? include,
-    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
   }) {
     return EnrollmentIntIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnrollmentInt.t),
+      orderByList: orderByList?.call(EnrollmentInt.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EnrollmentIntJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EnrollmentIntJsonInclude includeJson({
+    _iu6t4rw4.StudentUuidJsonInclude? student,
+    _irfj8gqh.CourseUuidJsonInclude? course,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+  }) {
+    return _EnrollmentIntJsonInclude._(
+      student: student,
+      course: course,
+      selectedColumns: select?.call(EnrollmentInt.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EnrollmentIntJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EnrollmentIntJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
+    _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
+    EnrollmentIntJsonInclude? include,
+    _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
+  }) {
+    return _EnrollmentIntJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -274,11 +320,17 @@ class EnrollmentIntTable extends _is.Table<int?> {
   }
 }
 
-class EnrollmentIntInclude extends _is.IncludeObject {
+abstract interface class EnrollmentIntJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EnrollmentIntJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EnrollmentIntInclude extends _is.IncludeObject
+    implements EnrollmentIntJsonInclude, _is.FullModelInclude {
   EnrollmentIntInclude._({
     _iu6t4rw4.StudentUuidInclude? student,
     _irfj8gqh.CourseUuidInclude? course,
-    this.selectedColumns,
   }) {
     _student = student;
     _course = course;
@@ -287,6 +339,51 @@ class EnrollmentIntInclude extends _is.IncludeObject {
   _iu6t4rw4.StudentUuidInclude? _student;
 
   _irfj8gqh.CourseUuidInclude? _course;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'student': _student,
+    'course': _course,
+  };
+
+  @override
+  _is.Table<int?> get table => EnrollmentInt.t;
+}
+
+final class EnrollmentIntIncludeList extends _is.IncludeList
+    implements EnrollmentIntJsonIncludeList, _is.FullModelInclude {
+  EnrollmentIntIncludeList._({
+    _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EnrollmentIntInclude? super.include,
+  }) {
+    super.where = where?.call(EnrollmentInt.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EnrollmentInt.t;
+}
+
+final class _EnrollmentIntJsonInclude extends _is.IncludeObject
+    implements EnrollmentIntJsonInclude {
+  _EnrollmentIntJsonInclude._({
+    _iu6t4rw4.StudentUuidJsonInclude? student,
+    _irfj8gqh.CourseUuidJsonInclude? course,
+    this.selectedColumns,
+  }) {
+    _student = student;
+    _course = course;
+  }
+
+  _iu6t4rw4.StudentUuidJsonInclude? _student;
+
+  _irfj8gqh.CourseUuidJsonInclude? _course;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -301,14 +398,15 @@ class EnrollmentIntInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EnrollmentInt.t;
 }
 
-class EnrollmentIntIncludeList extends _is.IncludeList {
-  EnrollmentIntIncludeList._({
+final class _EnrollmentIntJsonIncludeList extends _is.IncludeList
+    implements EnrollmentIntJsonIncludeList {
+  _EnrollmentIntJsonIncludeList._({
     _is.WhereExpressionBuilder<EnrollmentIntTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EnrollmentIntJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EnrollmentInt.t);
@@ -438,6 +536,8 @@ class EnrollmentIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -468,7 +568,7 @@ class EnrollmentIntRepository {
     _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
     _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _is.Transaction? transaction,
-    EnrollmentIntInclude? include,
+    EnrollmentIntJsonInclude? include,
     _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -491,6 +591,8 @@ class EnrollmentIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -515,7 +617,7 @@ class EnrollmentIntRepository {
     _is.OrderByBuilder<EnrollmentIntTable>? orderBy,
     _is.OrderByListBuilder<EnrollmentIntTable>? orderByList,
     _is.Transaction? transaction,
-    EnrollmentIntInclude? include,
+    EnrollmentIntJsonInclude? include,
     _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -537,12 +639,14 @@ class EnrollmentIntRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    EnrollmentIntInclude? include,
+    EnrollmentIntJsonInclude? include,
     _is.SelectColumnsBuilder<EnrollmentIntTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

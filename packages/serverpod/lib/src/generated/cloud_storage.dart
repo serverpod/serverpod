@@ -122,13 +122,15 @@ abstract class CloudStorageEntry
     };
   }
 
-  static CloudStorageEntryInclude include({
-    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
-  }) {
-    return CloudStorageEntryInclude._(
-      selectedColumns: select?.call(CloudStorageEntry.t),
-    );
+  /// Builds a complete [CloudStorageEntryInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static CloudStorageEntryInclude include() {
+    return CloudStorageEntryInclude._();
   }
+
+  /// Builds a complete [CloudStorageEntryIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CloudStorageEntryIncludeList includeList({
     _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
@@ -137,9 +139,47 @@ abstract class CloudStorageEntry
     _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
     _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
     CloudStorageEntryInclude? include,
-    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
   }) {
     return CloudStorageEntryIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CloudStorageEntry.t),
+      orderByList: orderByList?.call(CloudStorageEntry.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CloudStorageEntryJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CloudStorageEntryJsonInclude includeJson({
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+  }) {
+    return _CloudStorageEntryJsonInclude._(
+      selectedColumns: select?.call(CloudStorageEntry.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CloudStorageEntryJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CloudStorageEntryJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CloudStorageEntryTable>? orderBy,
+    _is.OrderByListBuilder<CloudStorageEntryTable>? orderByList,
+    CloudStorageEntryJsonInclude? include,
+    _is.SelectColumnsBuilder<CloudStorageEntryTable>? select,
+  }) {
+    return _CloudStorageEntryJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -302,8 +342,46 @@ class CloudStorageEntryTable extends _is.Table<int?> {
   ];
 }
 
-class CloudStorageEntryInclude extends _is.IncludeObject {
-  CloudStorageEntryInclude._({this.selectedColumns});
+abstract interface class CloudStorageEntryJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CloudStorageEntryJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CloudStorageEntryInclude extends _is.IncludeObject
+    implements CloudStorageEntryJsonInclude, _is.FullModelInclude {
+  CloudStorageEntryInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => CloudStorageEntry.t;
+}
+
+final class CloudStorageEntryIncludeList extends _is.IncludeList
+    implements CloudStorageEntryJsonIncludeList, _is.FullModelInclude {
+  CloudStorageEntryIncludeList._({
+    _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CloudStorageEntryInclude? super.include,
+  }) {
+    super.where = where?.call(CloudStorageEntry.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => CloudStorageEntry.t;
+}
+
+final class _CloudStorageEntryJsonInclude extends _is.IncludeObject
+    implements CloudStorageEntryJsonInclude {
+  _CloudStorageEntryJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -315,14 +393,15 @@ class CloudStorageEntryInclude extends _is.IncludeObject {
   _is.Table<int?> get table => CloudStorageEntry.t;
 }
 
-class CloudStorageEntryIncludeList extends _is.IncludeList {
-  CloudStorageEntryIncludeList._({
+final class _CloudStorageEntryJsonIncludeList extends _is.IncludeList
+    implements CloudStorageEntryJsonIncludeList {
+  _CloudStorageEntryJsonIncludeList._({
     _is.WhereExpressionBuilder<CloudStorageEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CloudStorageEntryJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(CloudStorageEntry.t);
@@ -444,6 +523,8 @@ class CloudStorageEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -495,6 +576,8 @@ class CloudStorageEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -539,6 +622,8 @@ class CloudStorageEntryRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

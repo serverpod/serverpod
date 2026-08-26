@@ -108,17 +108,21 @@ abstract class Organization
     };
   }
 
+  /// Builds a complete [OrganizationInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrganizationInclude include({
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
-    _isd.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
     return OrganizationInclude._(
       people: people,
       city: city,
-      selectedColumns: select?.call(Organization.t),
     );
   }
+
+  /// Builds a complete [OrganizationIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static OrganizationIncludeList includeList({
     _isd.WhereExpressionBuilder<OrganizationTable>? where,
@@ -127,9 +131,51 @@ abstract class Organization
     _isd.OrderByBuilder<OrganizationTable>? orderBy,
     _isd.OrderByListBuilder<OrganizationTable>? orderByList,
     OrganizationInclude? include,
-    _isd.SelectColumnsBuilder<OrganizationTable>? select,
   }) {
     return OrganizationIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Organization.t),
+      orderByList: orderByList?.call(Organization.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [OrganizationJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static OrganizationJsonInclude includeJson({
+    _ijqkgw0m.PersonJsonIncludeList? people,
+    _i64066zp.CityJsonInclude? city,
+    _isd.SelectColumnsBuilder<OrganizationTable>? select,
+  }) {
+    return _OrganizationJsonInclude._(
+      people: people,
+      city: city,
+      selectedColumns: select?.call(Organization.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [OrganizationJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static OrganizationJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<OrganizationTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<OrganizationTable>? orderBy,
+    _isd.OrderByListBuilder<OrganizationTable>? orderByList,
+    OrganizationJsonInclude? include,
+    _isd.SelectColumnsBuilder<OrganizationTable>? select,
+  }) {
+    return _OrganizationJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -289,11 +335,17 @@ class OrganizationTable extends _isd.Table<int?> {
   }
 }
 
-class OrganizationInclude extends _isd.IncludeObject {
+abstract interface class OrganizationJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class OrganizationJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class OrganizationInclude extends _isd.IncludeObject
+    implements OrganizationJsonInclude, _isd.FullModelInclude {
   OrganizationInclude._({
     _ijqkgw0m.PersonIncludeList? people,
     _i64066zp.CityInclude? city,
-    this.selectedColumns,
   }) {
     _people = people;
     _city = city;
@@ -302,6 +354,51 @@ class OrganizationInclude extends _isd.IncludeObject {
   _ijqkgw0m.PersonIncludeList? _people;
 
   _i64066zp.CityInclude? _city;
+
+  @override
+  Map<String, _isd.Include?> get includes => {
+    'people': _people,
+    'city': _city,
+  };
+
+  @override
+  _isd.Table<int?> get table => Organization.t;
+}
+
+final class OrganizationIncludeList extends _isd.IncludeList
+    implements OrganizationJsonIncludeList, _isd.FullModelInclude {
+  OrganizationIncludeList._({
+    _isd.WhereExpressionBuilder<OrganizationTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    OrganizationInclude? super.include,
+  }) {
+    super.where = where?.call(Organization.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Organization.t;
+}
+
+final class _OrganizationJsonInclude extends _isd.IncludeObject
+    implements OrganizationJsonInclude {
+  _OrganizationJsonInclude._({
+    _ijqkgw0m.PersonJsonIncludeList? people,
+    _i64066zp.CityJsonInclude? city,
+    this.selectedColumns,
+  }) {
+    _people = people;
+    _city = city;
+  }
+
+  _ijqkgw0m.PersonJsonIncludeList? _people;
+
+  _i64066zp.CityJsonInclude? _city;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -316,14 +413,15 @@ class OrganizationInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Organization.t;
 }
 
-class OrganizationIncludeList extends _isd.IncludeList {
-  OrganizationIncludeList._({
+final class _OrganizationJsonIncludeList extends _isd.IncludeList
+    implements OrganizationJsonIncludeList {
+  _OrganizationJsonIncludeList._({
     _isd.WhereExpressionBuilder<OrganizationTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    OrganizationJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Organization.t);
@@ -459,6 +557,8 @@ class OrganizationRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -489,7 +589,7 @@ class OrganizationRepository {
     _isd.OrderByBuilder<OrganizationTable>? orderBy,
     _isd.OrderByListBuilder<OrganizationTable>? orderByList,
     _isd.Transaction? transaction,
-    OrganizationInclude? include,
+    OrganizationJsonInclude? include,
     _isd.SelectColumnsBuilder<OrganizationTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -512,6 +612,8 @@ class OrganizationRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -536,7 +638,7 @@ class OrganizationRepository {
     _isd.OrderByBuilder<OrganizationTable>? orderBy,
     _isd.OrderByListBuilder<OrganizationTable>? orderByList,
     _isd.Transaction? transaction,
-    OrganizationInclude? include,
+    OrganizationJsonInclude? include,
     _isd.SelectColumnsBuilder<OrganizationTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -558,12 +660,14 @@ class OrganizationRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    OrganizationInclude? include,
+    OrganizationJsonInclude? include,
     _isd.SelectColumnsBuilder<OrganizationTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

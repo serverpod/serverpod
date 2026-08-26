@@ -86,13 +86,15 @@ abstract class DatabaseMigrationVersion
     };
   }
 
-  static DatabaseMigrationVersionInclude include({
-    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
-  }) {
-    return DatabaseMigrationVersionInclude._(
-      selectedColumns: select?.call(DatabaseMigrationVersion.t),
-    );
+  /// Builds a complete [DatabaseMigrationVersionInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DatabaseMigrationVersionInclude include() {
+    return DatabaseMigrationVersionInclude._();
   }
+
+  /// Builds a complete [DatabaseMigrationVersionIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DatabaseMigrationVersionIncludeList includeList({
     _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
@@ -101,9 +103,47 @@ abstract class DatabaseMigrationVersion
     _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
     _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
     DatabaseMigrationVersionInclude? include,
-    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
   }) {
     return DatabaseMigrationVersionIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DatabaseMigrationVersion.t),
+      orderByList: orderByList?.call(DatabaseMigrationVersion.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DatabaseMigrationVersionJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DatabaseMigrationVersionJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+  }) {
+    return _DatabaseMigrationVersionJsonInclude._(
+      selectedColumns: select?.call(DatabaseMigrationVersion.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DatabaseMigrationVersionJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DatabaseMigrationVersionJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DatabaseMigrationVersionTable>? orderBy,
+    _is.OrderByListBuilder<DatabaseMigrationVersionTable>? orderByList,
+    DatabaseMigrationVersionJsonInclude? include,
+    _is.SelectColumnsBuilder<DatabaseMigrationVersionTable>? select,
+  }) {
+    return _DatabaseMigrationVersionJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -213,8 +253,46 @@ class DatabaseMigrationVersionTable extends _is.Table<int?> {
   ];
 }
 
-class DatabaseMigrationVersionInclude extends _is.IncludeObject {
-  DatabaseMigrationVersionInclude._({this.selectedColumns});
+abstract interface class DatabaseMigrationVersionJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DatabaseMigrationVersionJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DatabaseMigrationVersionInclude extends _is.IncludeObject
+    implements DatabaseMigrationVersionJsonInclude, _is.FullModelInclude {
+  DatabaseMigrationVersionInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DatabaseMigrationVersion.t;
+}
+
+final class DatabaseMigrationVersionIncludeList extends _is.IncludeList
+    implements DatabaseMigrationVersionJsonIncludeList, _is.FullModelInclude {
+  DatabaseMigrationVersionIncludeList._({
+    _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DatabaseMigrationVersionInclude? super.include,
+  }) {
+    super.where = where?.call(DatabaseMigrationVersion.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DatabaseMigrationVersion.t;
+}
+
+final class _DatabaseMigrationVersionJsonInclude extends _is.IncludeObject
+    implements DatabaseMigrationVersionJsonInclude {
+  _DatabaseMigrationVersionJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -226,14 +304,15 @@ class DatabaseMigrationVersionInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DatabaseMigrationVersion.t;
 }
 
-class DatabaseMigrationVersionIncludeList extends _is.IncludeList {
-  DatabaseMigrationVersionIncludeList._({
+final class _DatabaseMigrationVersionJsonIncludeList extends _is.IncludeList
+    implements DatabaseMigrationVersionJsonIncludeList {
+  _DatabaseMigrationVersionJsonIncludeList._({
     _is.WhereExpressionBuilder<DatabaseMigrationVersionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DatabaseMigrationVersionJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DatabaseMigrationVersion.t);
@@ -355,6 +434,8 @@ class DatabaseMigrationVersionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -406,6 +487,8 @@ class DatabaseMigrationVersionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -450,6 +533,8 @@ class DatabaseMigrationVersionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

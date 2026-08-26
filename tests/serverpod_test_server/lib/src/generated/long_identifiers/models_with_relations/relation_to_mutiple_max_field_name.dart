@@ -92,15 +92,19 @@ abstract class RelationToMultipleMaxFieldName
     };
   }
 
+  /// Builds a complete [RelationToMultipleMaxFieldNameInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static RelationToMultipleMaxFieldNameInclude include({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
-    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
     return RelationToMultipleMaxFieldNameInclude._(
       multipleMaxFieldNames: multipleMaxFieldNames,
-      selectedColumns: select?.call(RelationToMultipleMaxFieldName.t),
     );
   }
+
+  /// Builds a complete [RelationToMultipleMaxFieldNameIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static RelationToMultipleMaxFieldNameIncludeList includeList({
     _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
@@ -109,9 +113,49 @@ abstract class RelationToMultipleMaxFieldName
     _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     RelationToMultipleMaxFieldNameInclude? include,
-    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
   }) {
     return RelationToMultipleMaxFieldNameIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(RelationToMultipleMaxFieldName.t),
+      orderByList: orderByList?.call(RelationToMultipleMaxFieldName.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [RelationToMultipleMaxFieldNameJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static RelationToMultipleMaxFieldNameJsonInclude includeJson({
+    _ipoh7twa.MultipleMaxFieldNameJsonIncludeList? multipleMaxFieldNames,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
+  }) {
+    return _RelationToMultipleMaxFieldNameJsonInclude._(
+      multipleMaxFieldNames: multipleMaxFieldNames,
+      selectedColumns: select?.call(RelationToMultipleMaxFieldName.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [RelationToMultipleMaxFieldNameJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static RelationToMultipleMaxFieldNameJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
+    _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
+    RelationToMultipleMaxFieldNameJsonInclude? include,
+    _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
+  }) {
+    return _RelationToMultipleMaxFieldNameJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -249,15 +293,63 @@ class RelationToMultipleMaxFieldNameTable extends _is.Table<int?> {
   }
 }
 
-class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
+abstract interface class RelationToMultipleMaxFieldNameJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class RelationToMultipleMaxFieldNameJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject
+    implements RelationToMultipleMaxFieldNameJsonInclude, _is.FullModelInclude {
   RelationToMultipleMaxFieldNameInclude._({
     _ipoh7twa.MultipleMaxFieldNameIncludeList? multipleMaxFieldNames,
-    this.selectedColumns,
   }) {
     _multipleMaxFieldNames = multipleMaxFieldNames;
   }
 
   _ipoh7twa.MultipleMaxFieldNameIncludeList? _multipleMaxFieldNames;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'multipleMaxFieldNames': _multipleMaxFieldNames,
+  };
+
+  @override
+  _is.Table<int?> get table => RelationToMultipleMaxFieldName.t;
+}
+
+final class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList
+    implements
+        RelationToMultipleMaxFieldNameJsonIncludeList,
+        _is.FullModelInclude {
+  RelationToMultipleMaxFieldNameIncludeList._({
+    _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    RelationToMultipleMaxFieldNameInclude? super.include,
+  }) {
+    super.where = where?.call(RelationToMultipleMaxFieldName.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => RelationToMultipleMaxFieldName.t;
+}
+
+final class _RelationToMultipleMaxFieldNameJsonInclude extends _is.IncludeObject
+    implements RelationToMultipleMaxFieldNameJsonInclude {
+  _RelationToMultipleMaxFieldNameJsonInclude._({
+    _ipoh7twa.MultipleMaxFieldNameJsonIncludeList? multipleMaxFieldNames,
+    this.selectedColumns,
+  }) {
+    _multipleMaxFieldNames = multipleMaxFieldNames;
+  }
+
+  _ipoh7twa.MultipleMaxFieldNameJsonIncludeList? _multipleMaxFieldNames;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -271,14 +363,16 @@ class RelationToMultipleMaxFieldNameInclude extends _is.IncludeObject {
   _is.Table<int?> get table => RelationToMultipleMaxFieldName.t;
 }
 
-class RelationToMultipleMaxFieldNameIncludeList extends _is.IncludeList {
-  RelationToMultipleMaxFieldNameIncludeList._({
+final class _RelationToMultipleMaxFieldNameJsonIncludeList
+    extends _is.IncludeList
+    implements RelationToMultipleMaxFieldNameJsonIncludeList {
+  _RelationToMultipleMaxFieldNameJsonIncludeList._({
     _is.WhereExpressionBuilder<RelationToMultipleMaxFieldNameTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    RelationToMultipleMaxFieldNameJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(RelationToMultipleMaxFieldName.t);
@@ -414,6 +508,8 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -444,7 +540,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _is.Transaction? transaction,
-    RelationToMultipleMaxFieldNameInclude? include,
+    RelationToMultipleMaxFieldNameJsonInclude? include,
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -467,6 +563,8 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -491,7 +589,7 @@ class RelationToMultipleMaxFieldNameRepository {
     _is.OrderByBuilder<RelationToMultipleMaxFieldNameTable>? orderBy,
     _is.OrderByListBuilder<RelationToMultipleMaxFieldNameTable>? orderByList,
     _is.Transaction? transaction,
-    RelationToMultipleMaxFieldNameInclude? include,
+    RelationToMultipleMaxFieldNameJsonInclude? include,
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -513,12 +611,14 @@ class RelationToMultipleMaxFieldNameRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    RelationToMultipleMaxFieldNameInclude? include,
+    RelationToMultipleMaxFieldNameJsonInclude? include,
     _is.SelectColumnsBuilder<RelationToMultipleMaxFieldNameTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

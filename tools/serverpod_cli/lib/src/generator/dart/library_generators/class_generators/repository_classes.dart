@@ -896,6 +896,8 @@ class BuildRepositoryClass {
 ///
 /// Use [select] to specify which columns to include from the root table.
 /// If none is specified, all columns will be returned.
+/// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+/// is also provided at the root level, the include's `select` will take precedence.
 ///
 /// Use [where] to specify which items to include in the return value.
 /// If none is specified, all items will be returned.
@@ -1005,7 +1007,7 @@ class BuildRepositoryClass {
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${className}JsonInclude',
                 )
                 ..name = 'include'
                 ..named = true,
@@ -1088,6 +1090,8 @@ class BuildRepositoryClass {
 ///
 /// Use [select] to specify which columns to include from the root table.
 /// If none is specified, all columns will be returned.
+/// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+/// is also provided at the root level, the include's `select` will take precedence.
 ///
 /// Use [where] to specify which items to include in the return value.
 /// If none is specified, all items will be returned.
@@ -1177,7 +1181,7 @@ class BuildRepositoryClass {
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${className}JsonInclude',
                 )
                 ..name = 'include'
                 ..named = true,
@@ -1259,6 +1263,8 @@ class BuildRepositoryClass {
 ///
 /// Use [select] to specify which columns to include from the root table.
 /// If none is specified, all columns will be returned.
+/// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+/// is also provided at the root level, the include's `select` will take precedence.
 ''')
         ..name = 'findByIdAsJson'
         ..returns = TypeReference(
@@ -1306,7 +1312,7 @@ class BuildRepositoryClass {
                 ..type = TypeReference(
                   (b) => b
                     ..isNullable = true
-                    ..symbol = '${className}Include',
+                    ..symbol = '${className}JsonInclude',
                 )
                 ..name = 'include'
                 ..named = true,

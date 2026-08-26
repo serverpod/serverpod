@@ -106,15 +106,15 @@ abstract class UserData
     };
   }
 
-  static UserDataInclude include({
-    _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<UserDataTable>? select,
-  }) {
-    return UserDataInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(UserData.t),
-    );
+  /// Builds a complete [UserDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UserDataInclude include({_iacs.AuthUserInclude? authUser}) {
+    return UserDataInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [UserDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserDataIncludeList includeList({
     _is.WhereExpressionBuilder<UserDataTable>? where,
@@ -123,9 +123,49 @@ abstract class UserData
     _is.OrderByBuilder<UserDataTable>? orderBy,
     _is.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
-    _is.SelectColumnsBuilder<UserDataTable>? select,
   }) {
     return UserDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserData.t),
+      orderByList: orderByList?.call(UserData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserDataJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<UserDataTable>? select,
+  }) {
+    return _UserDataJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(UserData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UserDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserDataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    UserDataJsonInclude? include,
+    _is.SelectColumnsBuilder<UserDataTable>? select,
+  }) {
+    return _UserDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -263,15 +303,57 @@ class UserDataTable extends _is.Table<int?> {
   }
 }
 
-class UserDataInclude extends _is.IncludeObject {
-  UserDataInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class UserDataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserDataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserDataInclude extends _is.IncludeObject
+    implements UserDataJsonInclude, _is.FullModelInclude {
+  UserDataInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<int?> get table => UserData.t;
+}
+
+final class UserDataIncludeList extends _is.IncludeList
+    implements UserDataJsonIncludeList, _is.FullModelInclude {
+  UserDataIncludeList._({
+    _is.WhereExpressionBuilder<UserDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserDataInclude? super.include,
+  }) {
+    super.where = where?.call(UserData.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserData.t;
+}
+
+final class _UserDataJsonInclude extends _is.IncludeObject
+    implements UserDataJsonInclude {
+  _UserDataJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -283,14 +365,15 @@ class UserDataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserData.t;
 }
 
-class UserDataIncludeList extends _is.IncludeList {
-  UserDataIncludeList._({
+final class _UserDataJsonIncludeList extends _is.IncludeList
+    implements UserDataJsonIncludeList {
+  _UserDataJsonIncludeList._({
     _is.WhereExpressionBuilder<UserDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserData.t);
@@ -420,6 +503,8 @@ class UserDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -450,7 +535,7 @@ class UserDataRepository {
     _is.OrderByBuilder<UserDataTable>? orderBy,
     _is.OrderByListBuilder<UserDataTable>? orderByList,
     _is.Transaction? transaction,
-    UserDataInclude? include,
+    UserDataJsonInclude? include,
     _is.SelectColumnsBuilder<UserDataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -473,6 +558,8 @@ class UserDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -497,7 +584,7 @@ class UserDataRepository {
     _is.OrderByBuilder<UserDataTable>? orderBy,
     _is.OrderByListBuilder<UserDataTable>? orderByList,
     _is.Transaction? transaction,
-    UserDataInclude? include,
+    UserDataJsonInclude? include,
     _is.SelectColumnsBuilder<UserDataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -519,12 +606,14 @@ class UserDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    UserDataInclude? include,
+    UserDataJsonInclude? include,
     _is.SelectColumnsBuilder<UserDataTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

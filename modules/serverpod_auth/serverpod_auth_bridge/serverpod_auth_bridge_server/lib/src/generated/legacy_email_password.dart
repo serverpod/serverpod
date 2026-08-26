@@ -95,15 +95,17 @@ abstract class LegacyEmailPassword
     return {};
   }
 
+  /// Builds a complete [LegacyEmailPasswordInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static LegacyEmailPasswordInclude include({
     _iais.EmailAccountInclude? emailAccount,
-    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
-    return LegacyEmailPasswordInclude._(
-      emailAccount: emailAccount,
-      selectedColumns: select?.call(LegacyEmailPassword.t),
-    );
+    return LegacyEmailPasswordInclude._(emailAccount: emailAccount);
   }
+
+  /// Builds a complete [LegacyEmailPasswordIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static LegacyEmailPasswordIncludeList includeList({
     _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
@@ -112,9 +114,49 @@ abstract class LegacyEmailPassword
     _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     LegacyEmailPasswordInclude? include,
-    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
   }) {
     return LegacyEmailPasswordIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(LegacyEmailPassword.t),
+      orderByList: orderByList?.call(LegacyEmailPassword.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [LegacyEmailPasswordJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static LegacyEmailPasswordJsonInclude includeJson({
+    _iais.EmailAccountJsonInclude? emailAccount,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
+  }) {
+    return _LegacyEmailPasswordJsonInclude._(
+      emailAccount: emailAccount,
+      selectedColumns: select?.call(LegacyEmailPassword.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [LegacyEmailPasswordJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static LegacyEmailPasswordJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
+    _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
+    LegacyEmailPasswordJsonInclude? include,
+    _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
+  }) {
+    return _LegacyEmailPasswordJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -239,15 +281,57 @@ class LegacyEmailPasswordTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class LegacyEmailPasswordInclude extends _is.IncludeObject {
-  LegacyEmailPasswordInclude._({
-    _iais.EmailAccountInclude? emailAccount,
+abstract interface class LegacyEmailPasswordJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class LegacyEmailPasswordJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class LegacyEmailPasswordInclude extends _is.IncludeObject
+    implements LegacyEmailPasswordJsonInclude, _is.FullModelInclude {
+  LegacyEmailPasswordInclude._({_iais.EmailAccountInclude? emailAccount}) {
+    _emailAccount = emailAccount;
+  }
+
+  _iais.EmailAccountInclude? _emailAccount;
+
+  @override
+  Map<String, _is.Include?> get includes => {'emailAccount': _emailAccount};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => LegacyEmailPassword.t;
+}
+
+final class LegacyEmailPasswordIncludeList extends _is.IncludeList
+    implements LegacyEmailPasswordJsonIncludeList, _is.FullModelInclude {
+  LegacyEmailPasswordIncludeList._({
+    _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    LegacyEmailPasswordInclude? super.include,
+  }) {
+    super.where = where?.call(LegacyEmailPassword.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => LegacyEmailPassword.t;
+}
+
+final class _LegacyEmailPasswordJsonInclude extends _is.IncludeObject
+    implements LegacyEmailPasswordJsonInclude {
+  _LegacyEmailPasswordJsonInclude._({
+    _iais.EmailAccountJsonInclude? emailAccount,
     this.selectedColumns,
   }) {
     _emailAccount = emailAccount;
   }
 
-  _iais.EmailAccountInclude? _emailAccount;
+  _iais.EmailAccountJsonInclude? _emailAccount;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -259,14 +343,15 @@ class LegacyEmailPasswordInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => LegacyEmailPassword.t;
 }
 
-class LegacyEmailPasswordIncludeList extends _is.IncludeList {
-  LegacyEmailPasswordIncludeList._({
+final class _LegacyEmailPasswordJsonIncludeList extends _is.IncludeList
+    implements LegacyEmailPasswordJsonIncludeList {
+  _LegacyEmailPasswordJsonIncludeList._({
     _is.WhereExpressionBuilder<LegacyEmailPasswordTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    LegacyEmailPasswordJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(LegacyEmailPassword.t);
@@ -396,6 +481,8 @@ class LegacyEmailPasswordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -426,7 +513,7 @@ class LegacyEmailPasswordRepository {
     _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _is.Transaction? transaction,
-    LegacyEmailPasswordInclude? include,
+    LegacyEmailPasswordJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -449,6 +536,8 @@ class LegacyEmailPasswordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -473,7 +562,7 @@ class LegacyEmailPasswordRepository {
     _is.OrderByBuilder<LegacyEmailPasswordTable>? orderBy,
     _is.OrderByListBuilder<LegacyEmailPasswordTable>? orderByList,
     _is.Transaction? transaction,
-    LegacyEmailPasswordInclude? include,
+    LegacyEmailPasswordJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -495,12 +584,14 @@ class LegacyEmailPasswordRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    LegacyEmailPasswordInclude? include,
+    LegacyEmailPasswordJsonInclude? include,
     _is.SelectColumnsBuilder<LegacyEmailPasswordTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

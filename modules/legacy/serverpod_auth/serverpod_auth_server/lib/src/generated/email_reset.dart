@@ -90,11 +90,15 @@ abstract class EmailReset
     };
   }
 
-  static EmailResetInclude include({
-    _is.SelectColumnsBuilder<EmailResetTable>? select,
-  }) {
-    return EmailResetInclude._(selectedColumns: select?.call(EmailReset.t));
+  /// Builds a complete [EmailResetInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EmailResetInclude include() {
+    return EmailResetInclude._();
   }
+
+  /// Builds a complete [EmailResetIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmailResetIncludeList includeList({
     _is.WhereExpressionBuilder<EmailResetTable>? where,
@@ -103,9 +107,47 @@ abstract class EmailReset
     _is.OrderByBuilder<EmailResetTable>? orderBy,
     _is.OrderByListBuilder<EmailResetTable>? orderByList,
     EmailResetInclude? include,
-    _is.SelectColumnsBuilder<EmailResetTable>? select,
   }) {
     return EmailResetIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailReset.t),
+      orderByList: orderByList?.call(EmailReset.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailResetJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmailResetJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+  }) {
+    return _EmailResetJsonInclude._(
+      selectedColumns: select?.call(EmailReset.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailResetJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmailResetJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailResetTable>? orderBy,
+    _is.OrderByListBuilder<EmailResetTable>? orderByList,
+    EmailResetJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailResetTable>? select,
+  }) {
+    return _EmailResetJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -215,8 +257,46 @@ class EmailResetTable extends _is.Table<int?> {
   ];
 }
 
-class EmailResetInclude extends _is.IncludeObject {
-  EmailResetInclude._({this.selectedColumns});
+abstract interface class EmailResetJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmailResetJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmailResetInclude extends _is.IncludeObject
+    implements EmailResetJsonInclude, _is.FullModelInclude {
+  EmailResetInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EmailReset.t;
+}
+
+final class EmailResetIncludeList extends _is.IncludeList
+    implements EmailResetJsonIncludeList, _is.FullModelInclude {
+  EmailResetIncludeList._({
+    _is.WhereExpressionBuilder<EmailResetTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmailResetInclude? super.include,
+  }) {
+    super.where = where?.call(EmailReset.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EmailReset.t;
+}
+
+final class _EmailResetJsonInclude extends _is.IncludeObject
+    implements EmailResetJsonInclude {
+  _EmailResetJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -228,14 +308,15 @@ class EmailResetInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EmailReset.t;
 }
 
-class EmailResetIncludeList extends _is.IncludeList {
-  EmailResetIncludeList._({
+final class _EmailResetJsonIncludeList extends _is.IncludeList
+    implements EmailResetJsonIncludeList {
+  _EmailResetJsonIncludeList._({
     _is.WhereExpressionBuilder<EmailResetTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmailResetJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EmailReset.t);
@@ -357,6 +438,8 @@ class EmailResetRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -408,6 +491,8 @@ class EmailResetRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -452,6 +537,8 @@ class EmailResetRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -77,11 +77,15 @@ abstract class UniqueData
     };
   }
 
-  static UniqueDataInclude include({
-    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
-  }) {
-    return UniqueDataInclude._(selectedColumns: select?.call(UniqueData.t));
+  /// Builds a complete [UniqueDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UniqueDataInclude include() {
+    return UniqueDataInclude._();
   }
+
+  /// Builds a complete [UniqueDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UniqueDataIncludeList includeList({
     _isd.WhereExpressionBuilder<UniqueDataTable>? where,
@@ -90,9 +94,47 @@ abstract class UniqueData
     _isd.OrderByBuilder<UniqueDataTable>? orderBy,
     _isd.OrderByListBuilder<UniqueDataTable>? orderByList,
     UniqueDataInclude? include,
-    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
   }) {
     return UniqueDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UniqueData.t),
+      orderByList: orderByList?.call(UniqueData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UniqueDataJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
+  }) {
+    return _UniqueDataJsonInclude._(
+      selectedColumns: select?.call(UniqueData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UniqueDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UniqueDataJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<UniqueDataTable>? orderBy,
+    _isd.OrderByListBuilder<UniqueDataTable>? orderByList,
+    UniqueDataJsonInclude? include,
+    _isd.SelectColumnsBuilder<UniqueDataTable>? select,
+  }) {
+    return _UniqueDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -180,8 +222,46 @@ class UniqueDataTable extends _isd.Table<int?> {
   ];
 }
 
-class UniqueDataInclude extends _isd.IncludeObject {
-  UniqueDataInclude._({this.selectedColumns});
+abstract interface class UniqueDataJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class UniqueDataJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class UniqueDataInclude extends _isd.IncludeObject
+    implements UniqueDataJsonInclude, _isd.FullModelInclude {
+  UniqueDataInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => UniqueData.t;
+}
+
+final class UniqueDataIncludeList extends _isd.IncludeList
+    implements UniqueDataJsonIncludeList, _isd.FullModelInclude {
+  UniqueDataIncludeList._({
+    _isd.WhereExpressionBuilder<UniqueDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UniqueDataInclude? super.include,
+  }) {
+    super.where = where?.call(UniqueData.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => UniqueData.t;
+}
+
+final class _UniqueDataJsonInclude extends _isd.IncludeObject
+    implements UniqueDataJsonInclude {
+  _UniqueDataJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -193,14 +273,15 @@ class UniqueDataInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => UniqueData.t;
 }
 
-class UniqueDataIncludeList extends _isd.IncludeList {
-  UniqueDataIncludeList._({
+final class _UniqueDataJsonIncludeList extends _isd.IncludeList
+    implements UniqueDataJsonIncludeList {
+  _UniqueDataJsonIncludeList._({
     _isd.WhereExpressionBuilder<UniqueDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UniqueDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UniqueData.t);
@@ -322,6 +403,8 @@ class UniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -373,6 +456,8 @@ class UniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -417,6 +502,8 @@ class UniqueDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

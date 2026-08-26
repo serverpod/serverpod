@@ -141,11 +141,15 @@ abstract class UserInfo
     };
   }
 
-  static UserInfoInclude include({
-    _is.SelectColumnsBuilder<UserInfoTable>? select,
-  }) {
-    return UserInfoInclude._(selectedColumns: select?.call(UserInfo.t));
+  /// Builds a complete [UserInfoInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static UserInfoInclude include() {
+    return UserInfoInclude._();
   }
+
+  /// Builds a complete [UserInfoIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserInfoIncludeList includeList({
     _is.WhereExpressionBuilder<UserInfoTable>? where,
@@ -154,9 +158,45 @@ abstract class UserInfo
     _is.OrderByBuilder<UserInfoTable>? orderBy,
     _is.OrderByListBuilder<UserInfoTable>? orderByList,
     UserInfoInclude? include,
-    _is.SelectColumnsBuilder<UserInfoTable>? select,
   }) {
     return UserInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserInfo.t),
+      orderByList: orderByList?.call(UserInfo.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserInfoJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserInfoJsonInclude includeJson({
+    _is.SelectColumnsBuilder<UserInfoTable>? select,
+  }) {
+    return _UserInfoJsonInclude._(selectedColumns: select?.call(UserInfo.t));
+  }
+
+  /// Builds a JSON-compatible [UserInfoJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserInfoJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserInfoTable>? orderBy,
+    _is.OrderByListBuilder<UserInfoTable>? orderByList,
+    UserInfoJsonInclude? include,
+    _is.SelectColumnsBuilder<UserInfoTable>? select,
+  }) {
+    return _UserInfoJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -353,8 +393,46 @@ class UserInfoTable extends _is.Table<int?> {
   ];
 }
 
-class UserInfoInclude extends _is.IncludeObject {
-  UserInfoInclude._({this.selectedColumns});
+abstract interface class UserInfoJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserInfoJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserInfoInclude extends _is.IncludeObject
+    implements UserInfoJsonInclude, _is.FullModelInclude {
+  UserInfoInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => UserInfo.t;
+}
+
+final class UserInfoIncludeList extends _is.IncludeList
+    implements UserInfoJsonIncludeList, _is.FullModelInclude {
+  UserInfoIncludeList._({
+    _is.WhereExpressionBuilder<UserInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserInfoInclude? super.include,
+  }) {
+    super.where = where?.call(UserInfo.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => UserInfo.t;
+}
+
+final class _UserInfoJsonInclude extends _is.IncludeObject
+    implements UserInfoJsonInclude {
+  _UserInfoJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -366,14 +444,15 @@ class UserInfoInclude extends _is.IncludeObject {
   _is.Table<int?> get table => UserInfo.t;
 }
 
-class UserInfoIncludeList extends _is.IncludeList {
-  UserInfoIncludeList._({
+final class _UserInfoJsonIncludeList extends _is.IncludeList
+    implements UserInfoJsonIncludeList {
+  _UserInfoJsonIncludeList._({
     _is.WhereExpressionBuilder<UserInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserInfoJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserInfo.t);
@@ -495,6 +574,8 @@ class UserInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -546,6 +627,8 @@ class UserInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -590,6 +673,8 @@ class UserInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

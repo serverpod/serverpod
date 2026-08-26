@@ -74,11 +74,15 @@ abstract class Chapter
     };
   }
 
-  static ChapterInclude include({
-    _isd.SelectColumnsBuilder<ChapterTable>? select,
-  }) {
-    return ChapterInclude._(selectedColumns: select?.call(Chapter.t));
+  /// Builds a complete [ChapterInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ChapterInclude include() {
+    return ChapterInclude._();
   }
+
+  /// Builds a complete [ChapterIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChapterIncludeList includeList({
     _isd.WhereExpressionBuilder<ChapterTable>? where,
@@ -87,9 +91,45 @@ abstract class Chapter
     _isd.OrderByBuilder<ChapterTable>? orderBy,
     _isd.OrderByListBuilder<ChapterTable>? orderByList,
     ChapterInclude? include,
-    _isd.SelectColumnsBuilder<ChapterTable>? select,
   }) {
     return ChapterIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Chapter.t),
+      orderByList: orderByList?.call(Chapter.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChapterJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChapterJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<ChapterTable>? select,
+  }) {
+    return _ChapterJsonInclude._(selectedColumns: select?.call(Chapter.t));
+  }
+
+  /// Builds a JSON-compatible [ChapterJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChapterJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<ChapterTable>? orderBy,
+    _isd.OrderByListBuilder<ChapterTable>? orderByList,
+    ChapterJsonInclude? include,
+    _isd.SelectColumnsBuilder<ChapterTable>? select,
+  }) {
+    return _ChapterJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -207,8 +247,46 @@ class ChapterTable extends _isd.Table<int?> {
   ];
 }
 
-class ChapterInclude extends _isd.IncludeObject {
-  ChapterInclude._({this.selectedColumns});
+abstract interface class ChapterJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class ChapterJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class ChapterInclude extends _isd.IncludeObject
+    implements ChapterJsonInclude, _isd.FullModelInclude {
+  ChapterInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => Chapter.t;
+}
+
+final class ChapterIncludeList extends _isd.IncludeList
+    implements ChapterJsonIncludeList, _isd.FullModelInclude {
+  ChapterIncludeList._({
+    _isd.WhereExpressionBuilder<ChapterTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChapterInclude? super.include,
+  }) {
+    super.where = where?.call(Chapter.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Chapter.t;
+}
+
+final class _ChapterJsonInclude extends _isd.IncludeObject
+    implements ChapterJsonInclude {
+  _ChapterJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -220,14 +298,15 @@ class ChapterInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Chapter.t;
 }
 
-class ChapterIncludeList extends _isd.IncludeList {
-  ChapterIncludeList._({
+final class _ChapterJsonIncludeList extends _isd.IncludeList
+    implements ChapterJsonIncludeList {
+  _ChapterJsonIncludeList._({
     _isd.WhereExpressionBuilder<ChapterTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChapterJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Chapter.t);
@@ -349,6 +428,8 @@ class ChapterRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +481,8 @@ class ChapterRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -444,6 +527,8 @@ class ChapterRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

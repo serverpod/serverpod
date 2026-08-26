@@ -84,13 +84,15 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     };
   }
 
-  static ChildClassWithoutIdInclude include({
-    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
-  }) {
-    return ChildClassWithoutIdInclude._(
-      selectedColumns: select?.call(ChildClassWithoutId.t),
-    );
+  /// Builds a complete [ChildClassWithoutIdInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ChildClassWithoutIdInclude include() {
+    return ChildClassWithoutIdInclude._();
   }
+
+  /// Builds a complete [ChildClassWithoutIdIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChildClassWithoutIdIncludeList includeList({
     _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
@@ -99,9 +101,47 @@ abstract class ChildClassWithoutId extends _iv35mfmj.ParentClassWithoutId
     _is.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
     _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
     ChildClassWithoutIdInclude? include,
-    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
   }) {
     return ChildClassWithoutIdIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChildClassWithoutId.t),
+      orderByList: orderByList?.call(ChildClassWithoutId.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildClassWithoutIdJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChildClassWithoutIdJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+  }) {
+    return _ChildClassWithoutIdJsonInclude._(
+      selectedColumns: select?.call(ChildClassWithoutId.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildClassWithoutIdJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChildClassWithoutIdJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildClassWithoutIdTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassWithoutIdTable>? orderByList,
+    ChildClassWithoutIdJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildClassWithoutIdTable>? select,
+  }) {
+    return _ChildClassWithoutIdJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -208,8 +248,46 @@ class ChildClassWithoutIdTable extends _is.Table<_is.UuidValue?> {
   ];
 }
 
-class ChildClassWithoutIdInclude extends _is.IncludeObject {
-  ChildClassWithoutIdInclude._({this.selectedColumns});
+abstract interface class ChildClassWithoutIdJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChildClassWithoutIdJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChildClassWithoutIdInclude extends _is.IncludeObject
+    implements ChildClassWithoutIdJsonInclude, _is.FullModelInclude {
+  ChildClassWithoutIdInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChildClassWithoutId.t;
+}
+
+final class ChildClassWithoutIdIncludeList extends _is.IncludeList
+    implements ChildClassWithoutIdJsonIncludeList, _is.FullModelInclude {
+  ChildClassWithoutIdIncludeList._({
+    _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChildClassWithoutIdInclude? super.include,
+  }) {
+    super.where = where?.call(ChildClassWithoutId.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChildClassWithoutId.t;
+}
+
+final class _ChildClassWithoutIdJsonInclude extends _is.IncludeObject
+    implements ChildClassWithoutIdJsonInclude {
+  _ChildClassWithoutIdJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -221,14 +299,15 @@ class ChildClassWithoutIdInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ChildClassWithoutId.t;
 }
 
-class ChildClassWithoutIdIncludeList extends _is.IncludeList {
-  ChildClassWithoutIdIncludeList._({
+final class _ChildClassWithoutIdJsonIncludeList extends _is.IncludeList
+    implements ChildClassWithoutIdJsonIncludeList {
+  _ChildClassWithoutIdJsonIncludeList._({
     _is.WhereExpressionBuilder<ChildClassWithoutIdTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChildClassWithoutIdJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassWithoutId.t);
@@ -350,6 +429,8 @@ class ChildClassWithoutIdRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -401,6 +482,8 @@ class ChildClassWithoutIdRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -445,6 +528,8 @@ class ChildClassWithoutIdRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

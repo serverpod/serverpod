@@ -78,13 +78,15 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     };
   }
 
-  static ChildClassExplicitColumnInclude include({
-    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
-  }) {
-    return ChildClassExplicitColumnInclude._(
-      selectedColumns: select?.call(ChildClassExplicitColumn.t),
-    );
+  /// Builds a complete [ChildClassExplicitColumnInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ChildClassExplicitColumnInclude include() {
+    return ChildClassExplicitColumnInclude._();
   }
+
+  /// Builds a complete [ChildClassExplicitColumnIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChildClassExplicitColumnIncludeList includeList({
     _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
@@ -93,9 +95,47 @@ abstract class ChildClassExplicitColumn extends _iototaiw.NonTableParentClass
     _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
     _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
     ChildClassExplicitColumnInclude? include,
-    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
   }) {
     return ChildClassExplicitColumnIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChildClassExplicitColumn.t),
+      orderByList: orderByList?.call(ChildClassExplicitColumn.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildClassExplicitColumnJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChildClassExplicitColumnJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
+  }) {
+    return _ChildClassExplicitColumnJsonInclude._(
+      selectedColumns: select?.call(ChildClassExplicitColumn.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChildClassExplicitColumnJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChildClassExplicitColumnJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChildClassExplicitColumnTable>? orderBy,
+    _is.OrderByListBuilder<ChildClassExplicitColumnTable>? orderByList,
+    ChildClassExplicitColumnJsonInclude? include,
+    _is.SelectColumnsBuilder<ChildClassExplicitColumnTable>? select,
+  }) {
+    return _ChildClassExplicitColumnJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -188,8 +228,46 @@ class ChildClassExplicitColumnTable extends _is.Table<int?> {
   ];
 }
 
-class ChildClassExplicitColumnInclude extends _is.IncludeObject {
-  ChildClassExplicitColumnInclude._({this.selectedColumns});
+abstract interface class ChildClassExplicitColumnJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChildClassExplicitColumnJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChildClassExplicitColumnInclude extends _is.IncludeObject
+    implements ChildClassExplicitColumnJsonInclude, _is.FullModelInclude {
+  ChildClassExplicitColumnInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ChildClassExplicitColumn.t;
+}
+
+final class ChildClassExplicitColumnIncludeList extends _is.IncludeList
+    implements ChildClassExplicitColumnJsonIncludeList, _is.FullModelInclude {
+  ChildClassExplicitColumnIncludeList._({
+    _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChildClassExplicitColumnInclude? super.include,
+  }) {
+    super.where = where?.call(ChildClassExplicitColumn.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ChildClassExplicitColumn.t;
+}
+
+final class _ChildClassExplicitColumnJsonInclude extends _is.IncludeObject
+    implements ChildClassExplicitColumnJsonInclude {
+  _ChildClassExplicitColumnJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -201,14 +279,15 @@ class ChildClassExplicitColumnInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ChildClassExplicitColumn.t;
 }
 
-class ChildClassExplicitColumnIncludeList extends _is.IncludeList {
-  ChildClassExplicitColumnIncludeList._({
+final class _ChildClassExplicitColumnJsonIncludeList extends _is.IncludeList
+    implements ChildClassExplicitColumnJsonIncludeList {
+  _ChildClassExplicitColumnJsonIncludeList._({
     _is.WhereExpressionBuilder<ChildClassExplicitColumnTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChildClassExplicitColumnJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ChildClassExplicitColumn.t);
@@ -330,6 +409,8 @@ class ChildClassExplicitColumnRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -381,6 +462,8 @@ class ChildClassExplicitColumnRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -425,6 +508,8 @@ class ChildClassExplicitColumnRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

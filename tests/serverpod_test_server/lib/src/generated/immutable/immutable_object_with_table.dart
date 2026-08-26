@@ -100,13 +100,15 @@ abstract class ImmutableObjectWithTable
     };
   }
 
-  static ImmutableObjectWithTableInclude include({
-    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
-  }) {
-    return ImmutableObjectWithTableInclude._(
-      selectedColumns: select?.call(ImmutableObjectWithTable.t),
-    );
+  /// Builds a complete [ImmutableObjectWithTableInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ImmutableObjectWithTableInclude include() {
+    return ImmutableObjectWithTableInclude._();
   }
+
+  /// Builds a complete [ImmutableObjectWithTableIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ImmutableObjectWithTableIncludeList includeList({
     _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
@@ -115,9 +117,47 @@ abstract class ImmutableObjectWithTable
     _is.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
     _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
     ImmutableObjectWithTableInclude? include,
-    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
   }) {
     return ImmutableObjectWithTableIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ImmutableObjectWithTable.t),
+      orderByList: orderByList?.call(ImmutableObjectWithTable.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ImmutableObjectWithTableJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ImmutableObjectWithTableJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+  }) {
+    return _ImmutableObjectWithTableJsonInclude._(
+      selectedColumns: select?.call(ImmutableObjectWithTable.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ImmutableObjectWithTableJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ImmutableObjectWithTableJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ImmutableObjectWithTableTable>? orderBy,
+    _is.OrderByListBuilder<ImmutableObjectWithTableTable>? orderByList,
+    ImmutableObjectWithTableJsonInclude? include,
+    _is.SelectColumnsBuilder<ImmutableObjectWithTableTable>? select,
+  }) {
+    return _ImmutableObjectWithTableJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -191,8 +231,46 @@ class ImmutableObjectWithTableTable extends _is.Table<int?> {
   ];
 }
 
-class ImmutableObjectWithTableInclude extends _is.IncludeObject {
-  ImmutableObjectWithTableInclude._({this.selectedColumns});
+abstract interface class ImmutableObjectWithTableJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ImmutableObjectWithTableJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ImmutableObjectWithTableInclude extends _is.IncludeObject
+    implements ImmutableObjectWithTableJsonInclude, _is.FullModelInclude {
+  ImmutableObjectWithTableInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ImmutableObjectWithTable.t;
+}
+
+final class ImmutableObjectWithTableIncludeList extends _is.IncludeList
+    implements ImmutableObjectWithTableJsonIncludeList, _is.FullModelInclude {
+  ImmutableObjectWithTableIncludeList._({
+    _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ImmutableObjectWithTableInclude? super.include,
+  }) {
+    super.where = where?.call(ImmutableObjectWithTable.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ImmutableObjectWithTable.t;
+}
+
+final class _ImmutableObjectWithTableJsonInclude extends _is.IncludeObject
+    implements ImmutableObjectWithTableJsonInclude {
+  _ImmutableObjectWithTableJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -204,14 +282,15 @@ class ImmutableObjectWithTableInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ImmutableObjectWithTable.t;
 }
 
-class ImmutableObjectWithTableIncludeList extends _is.IncludeList {
-  ImmutableObjectWithTableIncludeList._({
+final class _ImmutableObjectWithTableJsonIncludeList extends _is.IncludeList
+    implements ImmutableObjectWithTableJsonIncludeList {
+  _ImmutableObjectWithTableJsonIncludeList._({
     _is.WhereExpressionBuilder<ImmutableObjectWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ImmutableObjectWithTableJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ImmutableObjectWithTable.t);
@@ -333,6 +412,8 @@ class ImmutableObjectWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -384,6 +465,8 @@ class ImmutableObjectWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -428,6 +511,8 @@ class ImmutableObjectWithTableRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

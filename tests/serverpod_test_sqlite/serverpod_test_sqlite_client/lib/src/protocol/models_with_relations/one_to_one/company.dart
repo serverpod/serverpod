@@ -93,15 +93,15 @@ abstract class Company
     };
   }
 
-  static CompanyInclude include({
-    _i59ly1gg.TownInclude? town,
-    _isd.SelectColumnsBuilder<CompanyTable>? select,
-  }) {
-    return CompanyInclude._(
-      town: town,
-      selectedColumns: select?.call(Company.t),
-    );
+  /// Builds a complete [CompanyInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static CompanyInclude include({_i59ly1gg.TownInclude? town}) {
+    return CompanyInclude._(town: town);
   }
+
+  /// Builds a complete [CompanyIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CompanyIncludeList includeList({
     _isd.WhereExpressionBuilder<CompanyTable>? where,
@@ -110,9 +110,49 @@ abstract class Company
     _isd.OrderByBuilder<CompanyTable>? orderBy,
     _isd.OrderByListBuilder<CompanyTable>? orderByList,
     CompanyInclude? include,
-    _isd.SelectColumnsBuilder<CompanyTable>? select,
   }) {
     return CompanyIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Company.t),
+      orderByList: orderByList?.call(Company.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CompanyJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CompanyJsonInclude includeJson({
+    _i59ly1gg.TownJsonInclude? town,
+    _isd.SelectColumnsBuilder<CompanyTable>? select,
+  }) {
+    return _CompanyJsonInclude._(
+      town: town,
+      selectedColumns: select?.call(Company.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CompanyJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CompanyJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CompanyTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CompanyTable>? orderBy,
+    _isd.OrderByListBuilder<CompanyTable>? orderByList,
+    CompanyJsonInclude? include,
+    _isd.SelectColumnsBuilder<CompanyTable>? select,
+  }) {
+    return _CompanyJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -227,15 +267,57 @@ class CompanyTable extends _isd.Table<int?> {
   }
 }
 
-class CompanyInclude extends _isd.IncludeObject {
-  CompanyInclude._({
-    _i59ly1gg.TownInclude? town,
+abstract interface class CompanyJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CompanyJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CompanyInclude extends _isd.IncludeObject
+    implements CompanyJsonInclude, _isd.FullModelInclude {
+  CompanyInclude._({_i59ly1gg.TownInclude? town}) {
+    _town = town;
+  }
+
+  _i59ly1gg.TownInclude? _town;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'town': _town};
+
+  @override
+  _isd.Table<int?> get table => Company.t;
+}
+
+final class CompanyIncludeList extends _isd.IncludeList
+    implements CompanyJsonIncludeList, _isd.FullModelInclude {
+  CompanyIncludeList._({
+    _isd.WhereExpressionBuilder<CompanyTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CompanyInclude? super.include,
+  }) {
+    super.where = where?.call(Company.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Company.t;
+}
+
+final class _CompanyJsonInclude extends _isd.IncludeObject
+    implements CompanyJsonInclude {
+  _CompanyJsonInclude._({
+    _i59ly1gg.TownJsonInclude? town,
     this.selectedColumns,
   }) {
     _town = town;
   }
 
-  _i59ly1gg.TownInclude? _town;
+  _i59ly1gg.TownJsonInclude? _town;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -247,14 +329,15 @@ class CompanyInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Company.t;
 }
 
-class CompanyIncludeList extends _isd.IncludeList {
-  CompanyIncludeList._({
+final class _CompanyJsonIncludeList extends _isd.IncludeList
+    implements CompanyJsonIncludeList {
+  _CompanyJsonIncludeList._({
     _isd.WhereExpressionBuilder<CompanyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CompanyJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Company.t);
@@ -384,6 +467,8 @@ class CompanyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -414,7 +499,7 @@ class CompanyRepository {
     _isd.OrderByBuilder<CompanyTable>? orderBy,
     _isd.OrderByListBuilder<CompanyTable>? orderByList,
     _isd.Transaction? transaction,
-    CompanyInclude? include,
+    CompanyJsonInclude? include,
     _isd.SelectColumnsBuilder<CompanyTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -437,6 +522,8 @@ class CompanyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -461,7 +548,7 @@ class CompanyRepository {
     _isd.OrderByBuilder<CompanyTable>? orderBy,
     _isd.OrderByListBuilder<CompanyTable>? orderByList,
     _isd.Transaction? transaction,
-    CompanyInclude? include,
+    CompanyJsonInclude? include,
     _isd.SelectColumnsBuilder<CompanyTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -483,12 +570,14 @@ class CompanyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    CompanyInclude? include,
+    CompanyJsonInclude? include,
     _isd.SelectColumnsBuilder<CompanyTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

@@ -78,21 +78,21 @@ abstract class ProjectedEnrollmentCourse
     };
   }
 
-  static ProjectedEnrollmentInclude include() {
-    return ProjectedEnrollment.include(
+  static ProjectedEnrollmentJsonInclude include() {
+    return ProjectedEnrollment.includeJson(
       select: (t) => [ProjectedEnrollment.t.id],
       course: _icve44wq.ProjectedCourseName.include(),
     );
   }
 
-  static ProjectedEnrollmentIncludeList includeList({
+  static ProjectedEnrollmentJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedEnrollmentTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedEnrollmentTable>? orderBy,
     _is.OrderByListBuilder<ProjectedEnrollmentTable>? orderByList,
   }) {
-    return ProjectedEnrollment.includeList(
+    return ProjectedEnrollment.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

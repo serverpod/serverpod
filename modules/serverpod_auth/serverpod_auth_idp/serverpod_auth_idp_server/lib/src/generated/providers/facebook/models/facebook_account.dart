@@ -145,15 +145,15 @@ abstract class FacebookAccount
     return {};
   }
 
-  static FacebookAccountInclude include({
-    _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
-  }) {
-    return FacebookAccountInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(FacebookAccount.t),
-    );
+  /// Builds a complete [FacebookAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static FacebookAccountInclude include({_iacs.AuthUserInclude? authUser}) {
+    return FacebookAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [FacebookAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static FacebookAccountIncludeList includeList({
     _is.WhereExpressionBuilder<FacebookAccountTable>? where,
@@ -162,9 +162,49 @@ abstract class FacebookAccount
     _is.OrderByBuilder<FacebookAccountTable>? orderBy,
     _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     FacebookAccountInclude? include,
-    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
   }) {
     return FacebookAccountIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(FacebookAccount.t),
+      orderByList: orderByList?.call(FacebookAccount.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [FacebookAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static FacebookAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+  }) {
+    return _FacebookAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(FacebookAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [FacebookAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static FacebookAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<FacebookAccountTable>? orderBy,
+    _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
+    FacebookAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<FacebookAccountTable>? select,
+  }) {
+    return _FacebookAccountJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -382,15 +422,57 @@ class FacebookAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class FacebookAccountInclude extends _is.IncludeObject {
-  FacebookAccountInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class FacebookAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class FacebookAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class FacebookAccountInclude extends _is.IncludeObject
+    implements FacebookAccountJsonInclude, _is.FullModelInclude {
+  FacebookAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => FacebookAccount.t;
+}
+
+final class FacebookAccountIncludeList extends _is.IncludeList
+    implements FacebookAccountJsonIncludeList, _is.FullModelInclude {
+  FacebookAccountIncludeList._({
+    _is.WhereExpressionBuilder<FacebookAccountTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    FacebookAccountInclude? super.include,
+  }) {
+    super.where = where?.call(FacebookAccount.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => FacebookAccount.t;
+}
+
+final class _FacebookAccountJsonInclude extends _is.IncludeObject
+    implements FacebookAccountJsonInclude {
+  _FacebookAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -402,14 +484,15 @@ class FacebookAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => FacebookAccount.t;
 }
 
-class FacebookAccountIncludeList extends _is.IncludeList {
-  FacebookAccountIncludeList._({
+final class _FacebookAccountJsonIncludeList extends _is.IncludeList
+    implements FacebookAccountJsonIncludeList {
+  _FacebookAccountJsonIncludeList._({
     _is.WhereExpressionBuilder<FacebookAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    FacebookAccountJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(FacebookAccount.t);
@@ -539,6 +622,8 @@ class FacebookAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -569,7 +654,7 @@ class FacebookAccountRepository {
     _is.OrderByBuilder<FacebookAccountTable>? orderBy,
     _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _is.Transaction? transaction,
-    FacebookAccountInclude? include,
+    FacebookAccountJsonInclude? include,
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -592,6 +677,8 @@ class FacebookAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -616,7 +703,7 @@ class FacebookAccountRepository {
     _is.OrderByBuilder<FacebookAccountTable>? orderBy,
     _is.OrderByListBuilder<FacebookAccountTable>? orderByList,
     _is.Transaction? transaction,
-    FacebookAccountInclude? include,
+    FacebookAccountJsonInclude? include,
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -638,12 +725,14 @@ class FacebookAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    FacebookAccountInclude? include,
+    FacebookAccountJsonInclude? include,
     _is.SelectColumnsBuilder<FacebookAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

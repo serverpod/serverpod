@@ -99,15 +99,15 @@ abstract class Person
     };
   }
 
-  static PersonInclude include({
-    _i0ptycc3.OrganizationInclude? organization,
-    _isd.SelectColumnsBuilder<PersonTable>? select,
-  }) {
-    return PersonInclude._(
-      organization: organization,
-      selectedColumns: select?.call(Person.t),
-    );
+  /// Builds a complete [PersonInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static PersonInclude include({_i0ptycc3.OrganizationInclude? organization}) {
+    return PersonInclude._(organization: organization);
   }
+
+  /// Builds a complete [PersonIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static PersonIncludeList includeList({
     _isd.WhereExpressionBuilder<PersonTable>? where,
@@ -116,9 +116,49 @@ abstract class Person
     _isd.OrderByBuilder<PersonTable>? orderBy,
     _isd.OrderByListBuilder<PersonTable>? orderByList,
     PersonInclude? include,
-    _isd.SelectColumnsBuilder<PersonTable>? select,
   }) {
     return PersonIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Person.t),
+      orderByList: orderByList?.call(Person.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [PersonJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static PersonJsonInclude includeJson({
+    _i0ptycc3.OrganizationJsonInclude? organization,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+  }) {
+    return _PersonJsonInclude._(
+      organization: organization,
+      selectedColumns: select?.call(Person.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [PersonJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static PersonJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<PersonTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<PersonTable>? orderBy,
+    _isd.OrderByListBuilder<PersonTable>? orderByList,
+    PersonJsonInclude? include,
+    _isd.SelectColumnsBuilder<PersonTable>? select,
+  }) {
+    return _PersonJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -290,15 +330,57 @@ class PersonTable extends _isd.Table<int?> {
   }
 }
 
-class PersonInclude extends _isd.IncludeObject {
-  PersonInclude._({
-    _i0ptycc3.OrganizationInclude? organization,
+abstract interface class PersonJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class PersonJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class PersonInclude extends _isd.IncludeObject
+    implements PersonJsonInclude, _isd.FullModelInclude {
+  PersonInclude._({_i0ptycc3.OrganizationInclude? organization}) {
+    _organization = organization;
+  }
+
+  _i0ptycc3.OrganizationInclude? _organization;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'organization': _organization};
+
+  @override
+  _isd.Table<int?> get table => Person.t;
+}
+
+final class PersonIncludeList extends _isd.IncludeList
+    implements PersonJsonIncludeList, _isd.FullModelInclude {
+  PersonIncludeList._({
+    _isd.WhereExpressionBuilder<PersonTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    PersonInclude? super.include,
+  }) {
+    super.where = where?.call(Person.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Person.t;
+}
+
+final class _PersonJsonInclude extends _isd.IncludeObject
+    implements PersonJsonInclude {
+  _PersonJsonInclude._({
+    _i0ptycc3.OrganizationJsonInclude? organization,
     this.selectedColumns,
   }) {
     _organization = organization;
   }
 
-  _i0ptycc3.OrganizationInclude? _organization;
+  _i0ptycc3.OrganizationJsonInclude? _organization;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -310,14 +392,15 @@ class PersonInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Person.t;
 }
 
-class PersonIncludeList extends _isd.IncludeList {
-  PersonIncludeList._({
+final class _PersonJsonIncludeList extends _isd.IncludeList
+    implements PersonJsonIncludeList {
+  _PersonJsonIncludeList._({
     _isd.WhereExpressionBuilder<PersonTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    PersonJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Person.t);
@@ -449,6 +532,8 @@ class PersonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -479,7 +564,7 @@ class PersonRepository {
     _isd.OrderByBuilder<PersonTable>? orderBy,
     _isd.OrderByListBuilder<PersonTable>? orderByList,
     _isd.Transaction? transaction,
-    PersonInclude? include,
+    PersonJsonInclude? include,
     _isd.SelectColumnsBuilder<PersonTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -502,6 +587,8 @@ class PersonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -526,7 +613,7 @@ class PersonRepository {
     _isd.OrderByBuilder<PersonTable>? orderBy,
     _isd.OrderByListBuilder<PersonTable>? orderByList,
     _isd.Transaction? transaction,
-    PersonInclude? include,
+    PersonJsonInclude? include,
     _isd.SelectColumnsBuilder<PersonTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -548,12 +635,14 @@ class PersonRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    PersonInclude? include,
+    PersonJsonInclude? include,
     _isd.SelectColumnsBuilder<PersonTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

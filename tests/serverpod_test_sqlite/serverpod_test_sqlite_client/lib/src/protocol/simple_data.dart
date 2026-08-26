@@ -73,11 +73,15 @@ abstract class SimpleData
     };
   }
 
-  static SimpleDataInclude include({
-    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
-  }) {
-    return SimpleDataInclude._(selectedColumns: select?.call(SimpleData.t));
+  /// Builds a complete [SimpleDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static SimpleDataInclude include() {
+    return SimpleDataInclude._();
   }
+
+  /// Builds a complete [SimpleDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static SimpleDataIncludeList includeList({
     _isd.WhereExpressionBuilder<SimpleDataTable>? where,
@@ -86,9 +90,47 @@ abstract class SimpleData
     _isd.OrderByBuilder<SimpleDataTable>? orderBy,
     _isd.OrderByListBuilder<SimpleDataTable>? orderByList,
     SimpleDataInclude? include,
-    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
   }) {
     return SimpleDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(SimpleData.t),
+      orderByList: orderByList?.call(SimpleData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static SimpleDataJsonInclude includeJson({
+    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
+  }) {
+    return _SimpleDataJsonInclude._(
+      selectedColumns: select?.call(SimpleData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [SimpleDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static SimpleDataJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<SimpleDataTable>? orderBy,
+    _isd.OrderByListBuilder<SimpleDataTable>? orderByList,
+    SimpleDataJsonInclude? include,
+    _isd.SelectColumnsBuilder<SimpleDataTable>? select,
+  }) {
+    return _SimpleDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,8 +205,46 @@ class SimpleDataTable extends _isd.Table<int?> {
   ];
 }
 
-class SimpleDataInclude extends _isd.IncludeObject {
-  SimpleDataInclude._({this.selectedColumns});
+abstract interface class SimpleDataJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class SimpleDataJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class SimpleDataInclude extends _isd.IncludeObject
+    implements SimpleDataJsonInclude, _isd.FullModelInclude {
+  SimpleDataInclude._();
+
+  @override
+  Map<String, _isd.Include?> get includes => {};
+
+  @override
+  _isd.Table<int?> get table => SimpleData.t;
+}
+
+final class SimpleDataIncludeList extends _isd.IncludeList
+    implements SimpleDataJsonIncludeList, _isd.FullModelInclude {
+  SimpleDataIncludeList._({
+    _isd.WhereExpressionBuilder<SimpleDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    SimpleDataInclude? super.include,
+  }) {
+    super.where = where?.call(SimpleData.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => SimpleData.t;
+}
+
+final class _SimpleDataJsonInclude extends _isd.IncludeObject
+    implements SimpleDataJsonInclude {
+  _SimpleDataJsonInclude._({this.selectedColumns});
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -176,14 +256,15 @@ class SimpleDataInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => SimpleData.t;
 }
 
-class SimpleDataIncludeList extends _isd.IncludeList {
-  SimpleDataIncludeList._({
+final class _SimpleDataJsonIncludeList extends _isd.IncludeList
+    implements SimpleDataJsonIncludeList {
+  _SimpleDataJsonIncludeList._({
     _isd.WhereExpressionBuilder<SimpleDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    SimpleDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(SimpleData.t);
@@ -305,6 +386,8 @@ class SimpleDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -356,6 +439,8 @@ class SimpleDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +485,8 @@ class SimpleDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,

@@ -80,13 +80,15 @@ abstract class ObjectWithUuid
     };
   }
 
-  static ObjectWithUuidInclude include({
-    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
-  }) {
-    return ObjectWithUuidInclude._(
-      selectedColumns: select?.call(ObjectWithUuid.t),
-    );
+  /// Builds a complete [ObjectWithUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithUuidInclude include() {
+    return ObjectWithUuidInclude._();
   }
+
+  /// Builds a complete [ObjectWithUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithUuidIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
@@ -95,9 +97,47 @@ abstract class ObjectWithUuid
     _is.OrderByBuilder<ObjectWithUuidTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
     ObjectWithUuidInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
   }) {
     return ObjectWithUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithUuid.t),
+      orderByList: orderByList?.call(ObjectWithUuid.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithUuidJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+  }) {
+    return _ObjectWithUuidJsonInclude._(
+      selectedColumns: select?.call(ObjectWithUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithUuidTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithUuidTable>? orderByList,
+    ObjectWithUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithUuidTable>? select,
+  }) {
+    return _ObjectWithUuidJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -191,8 +231,46 @@ class ObjectWithUuidTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithUuidInclude extends _is.IncludeObject {
-  ObjectWithUuidInclude._({this.selectedColumns});
+abstract interface class ObjectWithUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithUuidInclude extends _is.IncludeObject
+    implements ObjectWithUuidJsonInclude, _is.FullModelInclude {
+  ObjectWithUuidInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithUuid.t;
+}
+
+final class ObjectWithUuidIncludeList extends _is.IncludeList
+    implements ObjectWithUuidJsonIncludeList, _is.FullModelInclude {
+  ObjectWithUuidIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithUuidInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithUuid.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithUuid.t;
+}
+
+final class _ObjectWithUuidJsonInclude extends _is.IncludeObject
+    implements ObjectWithUuidJsonInclude {
+  _ObjectWithUuidJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -204,14 +282,15 @@ class ObjectWithUuidInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithUuid.t;
 }
 
-class ObjectWithUuidIncludeList extends _is.IncludeList {
-  ObjectWithUuidIncludeList._({
+final class _ObjectWithUuidJsonIncludeList extends _is.IncludeList
+    implements ObjectWithUuidJsonIncludeList {
+  _ObjectWithUuidJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithUuidJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithUuid.t);
@@ -333,6 +412,8 @@ class ObjectWithUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -384,6 +465,8 @@ class ObjectWithUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -428,6 +511,8 @@ class ObjectWithUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

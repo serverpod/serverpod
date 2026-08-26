@@ -79,11 +79,15 @@ abstract class MethodInfo
     };
   }
 
-  static MethodInfoInclude include({
-    _is.SelectColumnsBuilder<MethodInfoTable>? select,
-  }) {
-    return MethodInfoInclude._(selectedColumns: select?.call(MethodInfo.t));
+  /// Builds a complete [MethodInfoInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static MethodInfoInclude include() {
+    return MethodInfoInclude._();
   }
+
+  /// Builds a complete [MethodInfoIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static MethodInfoIncludeList includeList({
     _is.WhereExpressionBuilder<MethodInfoTable>? where,
@@ -92,9 +96,47 @@ abstract class MethodInfo
     _is.OrderByBuilder<MethodInfoTable>? orderBy,
     _is.OrderByListBuilder<MethodInfoTable>? orderByList,
     MethodInfoInclude? include,
-    _is.SelectColumnsBuilder<MethodInfoTable>? select,
   }) {
     return MethodInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(MethodInfo.t),
+      orderByList: orderByList?.call(MethodInfo.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [MethodInfoJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static MethodInfoJsonInclude includeJson({
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+  }) {
+    return _MethodInfoJsonInclude._(
+      selectedColumns: select?.call(MethodInfo.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [MethodInfoJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static MethodInfoJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<MethodInfoTable>? orderBy,
+    _is.OrderByListBuilder<MethodInfoTable>? orderByList,
+    MethodInfoJsonInclude? include,
+    _is.SelectColumnsBuilder<MethodInfoTable>? select,
+  }) {
+    return _MethodInfoJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -185,8 +227,46 @@ class MethodInfoTable extends _is.Table<int?> {
   ];
 }
 
-class MethodInfoInclude extends _is.IncludeObject {
-  MethodInfoInclude._({this.selectedColumns});
+abstract interface class MethodInfoJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class MethodInfoJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class MethodInfoInclude extends _is.IncludeObject
+    implements MethodInfoJsonInclude, _is.FullModelInclude {
+  MethodInfoInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => MethodInfo.t;
+}
+
+final class MethodInfoIncludeList extends _is.IncludeList
+    implements MethodInfoJsonIncludeList, _is.FullModelInclude {
+  MethodInfoIncludeList._({
+    _is.WhereExpressionBuilder<MethodInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    MethodInfoInclude? super.include,
+  }) {
+    super.where = where?.call(MethodInfo.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => MethodInfo.t;
+}
+
+final class _MethodInfoJsonInclude extends _is.IncludeObject
+    implements MethodInfoJsonInclude {
+  _MethodInfoJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -198,14 +278,15 @@ class MethodInfoInclude extends _is.IncludeObject {
   _is.Table<int?> get table => MethodInfo.t;
 }
 
-class MethodInfoIncludeList extends _is.IncludeList {
-  MethodInfoIncludeList._({
+final class _MethodInfoJsonIncludeList extends _is.IncludeList
+    implements MethodInfoJsonIncludeList {
+  _MethodInfoJsonIncludeList._({
     _is.WhereExpressionBuilder<MethodInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    MethodInfoJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(MethodInfo.t);
@@ -327,6 +408,8 @@ class MethodInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -378,6 +461,8 @@ class MethodInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -422,6 +507,8 @@ class MethodInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -106,13 +106,15 @@ abstract class DurationDefaultModel
     };
   }
 
-  static DurationDefaultModelInclude include({
-    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
-  }) {
-    return DurationDefaultModelInclude._(
-      selectedColumns: select?.call(DurationDefaultModel.t),
-    );
+  /// Builds a complete [DurationDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DurationDefaultModelInclude include() {
+    return DurationDefaultModelInclude._();
   }
+
+  /// Builds a complete [DurationDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DurationDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
@@ -121,9 +123,47 @@ abstract class DurationDefaultModel
     _is.OrderByBuilder<DurationDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
     DurationDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
   }) {
     return DurationDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DurationDefaultModel.t),
+      orderByList: orderByList?.call(DurationDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DurationDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+  }) {
+    return _DurationDefaultModelJsonInclude._(
+      selectedColumns: select?.call(DurationDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DurationDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DurationDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DurationDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<DurationDefaultModelTable>? orderByList,
+    DurationDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<DurationDefaultModelTable>? select,
+  }) {
+    return _DurationDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -218,8 +258,46 @@ class DurationDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class DurationDefaultModelInclude extends _is.IncludeObject {
-  DurationDefaultModelInclude._({this.selectedColumns});
+abstract interface class DurationDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DurationDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DurationDefaultModelInclude extends _is.IncludeObject
+    implements DurationDefaultModelJsonInclude, _is.FullModelInclude {
+  DurationDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultModel.t;
+}
+
+final class DurationDefaultModelIncludeList extends _is.IncludeList
+    implements DurationDefaultModelJsonIncludeList, _is.FullModelInclude {
+  DurationDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DurationDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(DurationDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DurationDefaultModel.t;
+}
+
+final class _DurationDefaultModelJsonInclude extends _is.IncludeObject
+    implements DurationDefaultModelJsonInclude {
+  _DurationDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -231,14 +309,15 @@ class DurationDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DurationDefaultModel.t;
 }
 
-class DurationDefaultModelIncludeList extends _is.IncludeList {
-  DurationDefaultModelIncludeList._({
+final class _DurationDefaultModelJsonIncludeList extends _is.IncludeList
+    implements DurationDefaultModelJsonIncludeList {
+  _DurationDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<DurationDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DurationDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DurationDefaultModel.t);
@@ -360,6 +439,8 @@ class DurationDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -411,6 +492,8 @@ class DurationDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -455,6 +538,8 @@ class DurationDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

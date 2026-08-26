@@ -102,13 +102,15 @@ abstract class BoolDefaultMix
     };
   }
 
-  static BoolDefaultMixInclude include({
-    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
-  }) {
-    return BoolDefaultMixInclude._(
-      selectedColumns: select?.call(BoolDefaultMix.t),
-    );
+  /// Builds a complete [BoolDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static BoolDefaultMixInclude include() {
+    return BoolDefaultMixInclude._();
   }
+
+  /// Builds a complete [BoolDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static BoolDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
@@ -117,9 +119,47 @@ abstract class BoolDefaultMix
     _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
     BoolDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
   }) {
     return BoolDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(BoolDefaultMix.t),
+      orderByList: orderByList?.call(BoolDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static BoolDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+  }) {
+    return _BoolDefaultMixJsonInclude._(
+      selectedColumns: select?.call(BoolDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [BoolDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static BoolDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<BoolDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultMixTable>? orderByList,
+    BoolDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<BoolDefaultMixTable>? select,
+  }) {
+    return _BoolDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -234,8 +274,46 @@ class BoolDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class BoolDefaultMixInclude extends _is.IncludeObject {
-  BoolDefaultMixInclude._({this.selectedColumns});
+abstract interface class BoolDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class BoolDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class BoolDefaultMixInclude extends _is.IncludeObject
+    implements BoolDefaultMixJsonInclude, _is.FullModelInclude {
+  BoolDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultMix.t;
+}
+
+final class BoolDefaultMixIncludeList extends _is.IncludeList
+    implements BoolDefaultMixJsonIncludeList, _is.FullModelInclude {
+  BoolDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    BoolDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(BoolDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => BoolDefaultMix.t;
+}
+
+final class _BoolDefaultMixJsonInclude extends _is.IncludeObject
+    implements BoolDefaultMixJsonInclude {
+  _BoolDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -247,14 +325,15 @@ class BoolDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => BoolDefaultMix.t;
 }
 
-class BoolDefaultMixIncludeList extends _is.IncludeList {
-  BoolDefaultMixIncludeList._({
+final class _BoolDefaultMixJsonIncludeList extends _is.IncludeList
+    implements BoolDefaultMixJsonIncludeList {
+  _BoolDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<BoolDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    BoolDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(BoolDefaultMix.t);
@@ -376,6 +455,8 @@ class BoolDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -427,6 +508,8 @@ class BoolDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -471,6 +554,8 @@ class BoolDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

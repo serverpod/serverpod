@@ -116,15 +116,15 @@ abstract class EmailAccount
     return {};
   }
 
-  static EmailAccountInclude include({
-    _iacs.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<EmailAccountTable>? select,
-  }) {
-    return EmailAccountInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(EmailAccount.t),
-    );
+  /// Builds a complete [EmailAccountInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EmailAccountInclude include({_iacs.AuthUserInclude? authUser}) {
+    return EmailAccountInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [EmailAccountIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EmailAccountIncludeList includeList({
     _is.WhereExpressionBuilder<EmailAccountTable>? where,
@@ -133,9 +133,49 @@ abstract class EmailAccount
     _is.OrderByBuilder<EmailAccountTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     EmailAccountInclude? include,
-    _is.SelectColumnsBuilder<EmailAccountTable>? select,
   }) {
     return EmailAccountIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EmailAccount.t),
+      orderByList: orderByList?.call(EmailAccount.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailAccountJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EmailAccountJsonInclude includeJson({
+    _iacs.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+  }) {
+    return _EmailAccountJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(EmailAccount.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EmailAccountJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EmailAccountJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EmailAccountTable>? orderBy,
+    _is.OrderByListBuilder<EmailAccountTable>? orderByList,
+    EmailAccountJsonInclude? include,
+    _is.SelectColumnsBuilder<EmailAccountTable>? select,
+  }) {
+    return _EmailAccountJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -296,15 +336,57 @@ class EmailAccountTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class EmailAccountInclude extends _is.IncludeObject {
-  EmailAccountInclude._({
-    _iacs.AuthUserInclude? authUser,
+abstract interface class EmailAccountJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EmailAccountJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EmailAccountInclude extends _is.IncludeObject
+    implements EmailAccountJsonInclude, _is.FullModelInclude {
+  EmailAccountInclude._({_iacs.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _iacs.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => EmailAccount.t;
+}
+
+final class EmailAccountIncludeList extends _is.IncludeList
+    implements EmailAccountJsonIncludeList, _is.FullModelInclude {
+  EmailAccountIncludeList._({
+    _is.WhereExpressionBuilder<EmailAccountTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EmailAccountInclude? super.include,
+  }) {
+    super.where = where?.call(EmailAccount.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => EmailAccount.t;
+}
+
+final class _EmailAccountJsonInclude extends _is.IncludeObject
+    implements EmailAccountJsonInclude {
+  _EmailAccountJsonInclude._({
+    _iacs.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _iacs.AuthUserInclude? _authUser;
+  _iacs.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -316,14 +398,15 @@ class EmailAccountInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => EmailAccount.t;
 }
 
-class EmailAccountIncludeList extends _is.IncludeList {
-  EmailAccountIncludeList._({
+final class _EmailAccountJsonIncludeList extends _is.IncludeList
+    implements EmailAccountJsonIncludeList {
+  _EmailAccountJsonIncludeList._({
     _is.WhereExpressionBuilder<EmailAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EmailAccountJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EmailAccount.t);
@@ -453,6 +536,8 @@ class EmailAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -483,7 +568,7 @@ class EmailAccountRepository {
     _is.OrderByBuilder<EmailAccountTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     _is.Transaction? transaction,
-    EmailAccountInclude? include,
+    EmailAccountJsonInclude? include,
     _is.SelectColumnsBuilder<EmailAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -506,6 +591,8 @@ class EmailAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -530,7 +617,7 @@ class EmailAccountRepository {
     _is.OrderByBuilder<EmailAccountTable>? orderBy,
     _is.OrderByListBuilder<EmailAccountTable>? orderByList,
     _is.Transaction? transaction,
-    EmailAccountInclude? include,
+    EmailAccountJsonInclude? include,
     _is.SelectColumnsBuilder<EmailAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -552,12 +639,14 @@ class EmailAccountRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    EmailAccountInclude? include,
+    EmailAccountJsonInclude? include,
     _is.SelectColumnsBuilder<EmailAccountTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

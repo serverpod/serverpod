@@ -93,15 +93,15 @@ abstract class Comment
     };
   }
 
-  static CommentInclude include({
-    _ig920ya2.OrderInclude? order,
-    _isd.SelectColumnsBuilder<CommentTable>? select,
-  }) {
-    return CommentInclude._(
-      order: order,
-      selectedColumns: select?.call(Comment.t),
-    );
+  /// Builds a complete [CommentInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static CommentInclude include({_ig920ya2.OrderInclude? order}) {
+    return CommentInclude._(order: order);
   }
+
+  /// Builds a complete [CommentIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CommentIncludeList includeList({
     _isd.WhereExpressionBuilder<CommentTable>? where,
@@ -110,9 +110,49 @@ abstract class Comment
     _isd.OrderByBuilder<CommentTable>? orderBy,
     _isd.OrderByListBuilder<CommentTable>? orderByList,
     CommentInclude? include,
-    _isd.SelectColumnsBuilder<CommentTable>? select,
   }) {
     return CommentIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Comment.t),
+      orderByList: orderByList?.call(Comment.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CommentJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CommentJsonInclude includeJson({
+    _ig920ya2.OrderJsonInclude? order,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+  }) {
+    return _CommentJsonInclude._(
+      order: order,
+      selectedColumns: select?.call(Comment.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CommentJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CommentJsonIncludeList includeJsonList({
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    int? limit,
+    int? offset,
+    _isd.OrderByBuilder<CommentTable>? orderBy,
+    _isd.OrderByListBuilder<CommentTable>? orderByList,
+    CommentJsonInclude? include,
+    _isd.SelectColumnsBuilder<CommentTable>? select,
+  }) {
+    return _CommentJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -228,15 +268,57 @@ class CommentTable extends _isd.Table<int?> {
   }
 }
 
-class CommentInclude extends _isd.IncludeObject {
-  CommentInclude._({
-    _ig920ya2.OrderInclude? order,
+abstract interface class CommentJsonInclude
+    implements _isd.JsonCompatibleInclude {}
+
+abstract interface class CommentJsonIncludeList
+    implements _isd.JsonCompatibleInclude {}
+
+final class CommentInclude extends _isd.IncludeObject
+    implements CommentJsonInclude, _isd.FullModelInclude {
+  CommentInclude._({_ig920ya2.OrderInclude? order}) {
+    _order = order;
+  }
+
+  _ig920ya2.OrderInclude? _order;
+
+  @override
+  Map<String, _isd.Include?> get includes => {'order': _order};
+
+  @override
+  _isd.Table<int?> get table => Comment.t;
+}
+
+final class CommentIncludeList extends _isd.IncludeList
+    implements CommentJsonIncludeList, _isd.FullModelInclude {
+  CommentIncludeList._({
+    _isd.WhereExpressionBuilder<CommentTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CommentInclude? super.include,
+  }) {
+    super.where = where?.call(Comment.t);
+  }
+
+  @override
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _isd.Table<int?> get table => Comment.t;
+}
+
+final class _CommentJsonInclude extends _isd.IncludeObject
+    implements CommentJsonInclude {
+  _CommentJsonInclude._({
+    _ig920ya2.OrderJsonInclude? order,
     this.selectedColumns,
   }) {
     _order = order;
   }
 
-  _ig920ya2.OrderInclude? _order;
+  _ig920ya2.OrderJsonInclude? _order;
 
   @override
   final List<_isd.Column>? selectedColumns;
@@ -248,14 +330,15 @@ class CommentInclude extends _isd.IncludeObject {
   _isd.Table<int?> get table => Comment.t;
 }
 
-class CommentIncludeList extends _isd.IncludeList {
-  CommentIncludeList._({
+final class _CommentJsonIncludeList extends _isd.IncludeList
+    implements CommentJsonIncludeList {
+  _CommentJsonIncludeList._({
     _isd.WhereExpressionBuilder<CommentTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CommentJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Comment.t);
@@ -385,6 +468,8 @@ class CommentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -415,7 +500,7 @@ class CommentRepository {
     _isd.OrderByBuilder<CommentTable>? orderBy,
     _isd.OrderByListBuilder<CommentTable>? orderByList,
     _isd.Transaction? transaction,
-    CommentInclude? include,
+    CommentJsonInclude? include,
     _isd.SelectColumnsBuilder<CommentTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -438,6 +523,8 @@ class CommentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -462,7 +549,7 @@ class CommentRepository {
     _isd.OrderByBuilder<CommentTable>? orderBy,
     _isd.OrderByListBuilder<CommentTable>? orderByList,
     _isd.Transaction? transaction,
-    CommentInclude? include,
+    CommentJsonInclude? include,
     _isd.SelectColumnsBuilder<CommentTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,
@@ -484,12 +571,14 @@ class CommentRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _isd.DatabaseSession session,
     Object id, {
     _isd.Transaction? transaction,
-    CommentInclude? include,
+    CommentJsonInclude? include,
     _isd.SelectColumnsBuilder<CommentTable>? select,
     _isd.LockMode? lockMode,
     _isd.LockBehavior? lockBehavior,

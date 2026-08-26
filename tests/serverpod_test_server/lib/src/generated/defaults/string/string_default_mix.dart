@@ -94,13 +94,15 @@ abstract class StringDefaultMix
     };
   }
 
-  static StringDefaultMixInclude include({
-    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
-  }) {
-    return StringDefaultMixInclude._(
-      selectedColumns: select?.call(StringDefaultMix.t),
-    );
+  /// Builds a complete [StringDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static StringDefaultMixInclude include() {
+    return StringDefaultMixInclude._();
   }
+
+  /// Builds a complete [StringDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static StringDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
@@ -109,9 +111,47 @@ abstract class StringDefaultMix
     _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
     StringDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
   }) {
     return StringDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(StringDefaultMix.t),
+      orderByList: orderByList?.call(StringDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static StringDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
+  }) {
+    return _StringDefaultMixJsonInclude._(
+      selectedColumns: select?.call(StringDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [StringDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static StringDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<StringDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultMixTable>? orderByList,
+    StringDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<StringDefaultMixTable>? select,
+  }) {
+    return _StringDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -230,8 +270,46 @@ class StringDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class StringDefaultMixInclude extends _is.IncludeObject {
-  StringDefaultMixInclude._({this.selectedColumns});
+abstract interface class StringDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class StringDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class StringDefaultMixInclude extends _is.IncludeObject
+    implements StringDefaultMixJsonInclude, _is.FullModelInclude {
+  StringDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultMix.t;
+}
+
+final class StringDefaultMixIncludeList extends _is.IncludeList
+    implements StringDefaultMixJsonIncludeList, _is.FullModelInclude {
+  StringDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    StringDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(StringDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => StringDefaultMix.t;
+}
+
+final class _StringDefaultMixJsonInclude extends _is.IncludeObject
+    implements StringDefaultMixJsonInclude {
+  _StringDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -243,14 +321,15 @@ class StringDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => StringDefaultMix.t;
 }
 
-class StringDefaultMixIncludeList extends _is.IncludeList {
-  StringDefaultMixIncludeList._({
+final class _StringDefaultMixJsonIncludeList extends _is.IncludeList
+    implements StringDefaultMixJsonIncludeList {
+  _StringDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<StringDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    StringDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(StringDefaultMix.t);
@@ -372,6 +451,8 @@ class StringDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -423,6 +504,8 @@ class StringDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -467,6 +550,8 @@ class StringDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

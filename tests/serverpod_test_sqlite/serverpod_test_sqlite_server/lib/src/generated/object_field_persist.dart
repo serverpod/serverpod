@@ -91,13 +91,15 @@ abstract class ObjectFieldPersist
     };
   }
 
-  static ObjectFieldPersistInclude include({
-    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
-  }) {
-    return ObjectFieldPersistInclude._(
-      selectedColumns: select?.call(ObjectFieldPersist.t),
-    );
+  /// Builds a complete [ObjectFieldPersistInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectFieldPersistInclude include() {
+    return ObjectFieldPersistInclude._();
   }
+
+  /// Builds a complete [ObjectFieldPersistIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectFieldPersistIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
@@ -106,9 +108,47 @@ abstract class ObjectFieldPersist
     _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
     _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
-    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
   }) {
     return ObjectFieldPersistIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectFieldPersist.t),
+      orderByList: orderByList?.call(ObjectFieldPersist.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectFieldPersistJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectFieldPersistJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+  }) {
+    return _ObjectFieldPersistJsonInclude._(
+      selectedColumns: select?.call(ObjectFieldPersist.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectFieldPersistJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectFieldPersistJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    ObjectFieldPersistJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectFieldPersistTable>? select,
+  }) {
+    return _ObjectFieldPersistJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -190,8 +230,46 @@ class ObjectFieldPersistTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectFieldPersistInclude extends _is.IncludeObject {
-  ObjectFieldPersistInclude._({this.selectedColumns});
+abstract interface class ObjectFieldPersistJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectFieldPersistJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectFieldPersistInclude extends _is.IncludeObject
+    implements ObjectFieldPersistJsonInclude, _is.FullModelInclude {
+  ObjectFieldPersistInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectFieldPersist.t;
+}
+
+final class ObjectFieldPersistIncludeList extends _is.IncludeList
+    implements ObjectFieldPersistJsonIncludeList, _is.FullModelInclude {
+  ObjectFieldPersistIncludeList._({
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectFieldPersistInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectFieldPersist.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectFieldPersist.t;
+}
+
+final class _ObjectFieldPersistJsonInclude extends _is.IncludeObject
+    implements ObjectFieldPersistJsonInclude {
+  _ObjectFieldPersistJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -203,14 +281,15 @@ class ObjectFieldPersistInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectFieldPersist.t;
 }
 
-class ObjectFieldPersistIncludeList extends _is.IncludeList {
-  ObjectFieldPersistIncludeList._({
+final class _ObjectFieldPersistJsonIncludeList extends _is.IncludeList
+    implements ObjectFieldPersistJsonIncludeList {
+  _ObjectFieldPersistJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectFieldPersistJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectFieldPersist.t);
@@ -332,6 +411,8 @@ class ObjectFieldPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -383,6 +464,8 @@ class ObjectFieldPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -427,6 +510,8 @@ class ObjectFieldPersistRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -122,13 +122,15 @@ abstract class ServerHealthConnectionInfo
     };
   }
 
-  static ServerHealthConnectionInfoInclude include({
-    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
-  }) {
-    return ServerHealthConnectionInfoInclude._(
-      selectedColumns: select?.call(ServerHealthConnectionInfo.t),
-    );
+  /// Builds a complete [ServerHealthConnectionInfoInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ServerHealthConnectionInfoInclude include() {
+    return ServerHealthConnectionInfoInclude._();
   }
+
+  /// Builds a complete [ServerHealthConnectionInfoIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ServerHealthConnectionInfoIncludeList includeList({
     _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
@@ -137,9 +139,47 @@ abstract class ServerHealthConnectionInfo
     _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
     _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
     ServerHealthConnectionInfoInclude? include,
-    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
   }) {
     return ServerHealthConnectionInfoIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerHealthConnectionInfo.t),
+      orderByList: orderByList?.call(ServerHealthConnectionInfo.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerHealthConnectionInfoJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ServerHealthConnectionInfoJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+  }) {
+    return _ServerHealthConnectionInfoJsonInclude._(
+      selectedColumns: select?.call(ServerHealthConnectionInfo.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerHealthConnectionInfoJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ServerHealthConnectionInfoJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerHealthConnectionInfoTable>? orderBy,
+    _is.OrderByListBuilder<ServerHealthConnectionInfoTable>? orderByList,
+    ServerHealthConnectionInfoJsonInclude? include,
+    _is.SelectColumnsBuilder<ServerHealthConnectionInfoTable>? select,
+  }) {
+    return _ServerHealthConnectionInfoJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -301,8 +341,46 @@ class ServerHealthConnectionInfoTable extends _is.Table<int?> {
   ];
 }
 
-class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
-  ServerHealthConnectionInfoInclude._({this.selectedColumns});
+abstract interface class ServerHealthConnectionInfoJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ServerHealthConnectionInfoJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ServerHealthConnectionInfoInclude extends _is.IncludeObject
+    implements ServerHealthConnectionInfoJsonInclude, _is.FullModelInclude {
+  ServerHealthConnectionInfoInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ServerHealthConnectionInfo.t;
+}
+
+final class ServerHealthConnectionInfoIncludeList extends _is.IncludeList
+    implements ServerHealthConnectionInfoJsonIncludeList, _is.FullModelInclude {
+  ServerHealthConnectionInfoIncludeList._({
+    _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ServerHealthConnectionInfoInclude? super.include,
+  }) {
+    super.where = where?.call(ServerHealthConnectionInfo.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ServerHealthConnectionInfo.t;
+}
+
+final class _ServerHealthConnectionInfoJsonInclude extends _is.IncludeObject
+    implements ServerHealthConnectionInfoJsonInclude {
+  _ServerHealthConnectionInfoJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -314,14 +392,15 @@ class ServerHealthConnectionInfoInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ServerHealthConnectionInfo.t;
 }
 
-class ServerHealthConnectionInfoIncludeList extends _is.IncludeList {
-  ServerHealthConnectionInfoIncludeList._({
+final class _ServerHealthConnectionInfoJsonIncludeList extends _is.IncludeList
+    implements ServerHealthConnectionInfoJsonIncludeList {
+  _ServerHealthConnectionInfoJsonIncludeList._({
     _is.WhereExpressionBuilder<ServerHealthConnectionInfoTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ServerHealthConnectionInfoJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ServerHealthConnectionInfo.t);
@@ -443,6 +522,8 @@ class ServerHealthConnectionInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -494,6 +575,8 @@ class ServerHealthConnectionInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -538,6 +621,8 @@ class ServerHealthConnectionInfoRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `selectedColumns` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

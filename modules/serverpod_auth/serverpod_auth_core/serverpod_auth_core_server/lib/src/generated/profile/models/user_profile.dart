@@ -160,17 +160,21 @@ abstract class UserProfile
     };
   }
 
+  /// Builds a complete [UserProfileInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static UserProfileInclude include({
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
-    _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
     return UserProfileInclude._(
       authUser: authUser,
       image: image,
-      selectedColumns: select?.call(UserProfile.t),
     );
   }
+
+  /// Builds a complete [UserProfileIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static UserProfileIncludeList includeList({
     _is.WhereExpressionBuilder<UserProfileTable>? where,
@@ -179,9 +183,51 @@ abstract class UserProfile
     _is.OrderByBuilder<UserProfileTable>? orderBy,
     _is.OrderByListBuilder<UserProfileTable>? orderByList,
     UserProfileInclude? include,
-    _is.SelectColumnsBuilder<UserProfileTable>? select,
   }) {
     return UserProfileIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(UserProfile.t),
+      orderByList: orderByList?.call(UserProfile.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [UserProfileJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static UserProfileJsonInclude includeJson({
+    _ivyervu7.AuthUserJsonInclude? authUser,
+    _i7y29ltp.UserProfileImageJsonInclude? image,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
+  }) {
+    return _UserProfileJsonInclude._(
+      authUser: authUser,
+      image: image,
+      selectedColumns: select?.call(UserProfile.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [UserProfileJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static UserProfileJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<UserProfileTable>? orderBy,
+    _is.OrderByListBuilder<UserProfileTable>? orderByList,
+    UserProfileJsonInclude? include,
+    _is.SelectColumnsBuilder<UserProfileTable>? select,
+  }) {
+    return _UserProfileJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -403,11 +449,17 @@ class UserProfileTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class UserProfileInclude extends _is.IncludeObject {
+abstract interface class UserProfileJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class UserProfileJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class UserProfileInclude extends _is.IncludeObject
+    implements UserProfileJsonInclude, _is.FullModelInclude {
   UserProfileInclude._({
     _ivyervu7.AuthUserInclude? authUser,
     _i7y29ltp.UserProfileImageInclude? image,
-    this.selectedColumns,
   }) {
     _authUser = authUser;
     _image = image;
@@ -416,6 +468,51 @@ class UserProfileInclude extends _is.IncludeObject {
   _ivyervu7.AuthUserInclude? _authUser;
 
   _i7y29ltp.UserProfileImageInclude? _image;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'authUser': _authUser,
+    'image': _image,
+  };
+
+  @override
+  _is.Table<_is.UuidValue?> get table => UserProfile.t;
+}
+
+final class UserProfileIncludeList extends _is.IncludeList
+    implements UserProfileJsonIncludeList, _is.FullModelInclude {
+  UserProfileIncludeList._({
+    _is.WhereExpressionBuilder<UserProfileTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    UserProfileInclude? super.include,
+  }) {
+    super.where = where?.call(UserProfile.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => UserProfile.t;
+}
+
+final class _UserProfileJsonInclude extends _is.IncludeObject
+    implements UserProfileJsonInclude {
+  _UserProfileJsonInclude._({
+    _ivyervu7.AuthUserJsonInclude? authUser,
+    _i7y29ltp.UserProfileImageJsonInclude? image,
+    this.selectedColumns,
+  }) {
+    _authUser = authUser;
+    _image = image;
+  }
+
+  _ivyervu7.AuthUserJsonInclude? _authUser;
+
+  _i7y29ltp.UserProfileImageJsonInclude? _image;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -430,14 +527,15 @@ class UserProfileInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => UserProfile.t;
 }
 
-class UserProfileIncludeList extends _is.IncludeList {
-  UserProfileIncludeList._({
+final class _UserProfileJsonIncludeList extends _is.IncludeList
+    implements UserProfileJsonIncludeList {
+  _UserProfileJsonIncludeList._({
     _is.WhereExpressionBuilder<UserProfileTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    UserProfileJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(UserProfile.t);
@@ -569,6 +667,8 @@ class UserProfileRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -599,7 +699,7 @@ class UserProfileRepository {
     _is.OrderByBuilder<UserProfileTable>? orderBy,
     _is.OrderByListBuilder<UserProfileTable>? orderByList,
     _is.Transaction? transaction,
-    UserProfileInclude? include,
+    UserProfileJsonInclude? include,
     _is.SelectColumnsBuilder<UserProfileTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -622,6 +722,8 @@ class UserProfileRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -646,7 +748,7 @@ class UserProfileRepository {
     _is.OrderByBuilder<UserProfileTable>? orderBy,
     _is.OrderByListBuilder<UserProfileTable>? orderByList,
     _is.Transaction? transaction,
-    UserProfileInclude? include,
+    UserProfileJsonInclude? include,
     _is.SelectColumnsBuilder<UserProfileTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -668,12 +770,14 @@ class UserProfileRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    UserProfileInclude? include,
+    UserProfileJsonInclude? include,
     _is.SelectColumnsBuilder<UserProfileTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

@@ -111,13 +111,15 @@ abstract class DateTimeDefaultMix
     };
   }
 
-  static DateTimeDefaultMixInclude include({
-    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
-  }) {
-    return DateTimeDefaultMixInclude._(
-      selectedColumns: select?.call(DateTimeDefaultMix.t),
-    );
+  /// Builds a complete [DateTimeDefaultMixInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static DateTimeDefaultMixInclude include() {
+    return DateTimeDefaultMixInclude._();
   }
+
+  /// Builds a complete [DateTimeDefaultMixIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static DateTimeDefaultMixIncludeList includeList({
     _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
@@ -126,9 +128,47 @@ abstract class DateTimeDefaultMix
     _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
     _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
     DateTimeDefaultMixInclude? include,
-    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
   }) {
     return DateTimeDefaultMixIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(DateTimeDefaultMix.t),
+      orderByList: orderByList?.call(DateTimeDefaultMix.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultMixJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static DateTimeDefaultMixJsonInclude includeJson({
+    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
+  }) {
+    return _DateTimeDefaultMixJsonInclude._(
+      selectedColumns: select?.call(DateTimeDefaultMix.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [DateTimeDefaultMixJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static DateTimeDefaultMixJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<DateTimeDefaultMixTable>? orderBy,
+    _is.OrderByListBuilder<DateTimeDefaultMixTable>? orderByList,
+    DateTimeDefaultMixJsonInclude? include,
+    _is.SelectColumnsBuilder<DateTimeDefaultMixTable>? select,
+  }) {
+    return _DateTimeDefaultMixJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -249,8 +289,46 @@ class DateTimeDefaultMixTable extends _is.Table<int?> {
   ];
 }
 
-class DateTimeDefaultMixInclude extends _is.IncludeObject {
-  DateTimeDefaultMixInclude._({this.selectedColumns});
+abstract interface class DateTimeDefaultMixJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class DateTimeDefaultMixJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class DateTimeDefaultMixInclude extends _is.IncludeObject
+    implements DateTimeDefaultMixJsonInclude, _is.FullModelInclude {
+  DateTimeDefaultMixInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefaultMix.t;
+}
+
+final class DateTimeDefaultMixIncludeList extends _is.IncludeList
+    implements DateTimeDefaultMixJsonIncludeList, _is.FullModelInclude {
+  DateTimeDefaultMixIncludeList._({
+    _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    DateTimeDefaultMixInclude? super.include,
+  }) {
+    super.where = where?.call(DateTimeDefaultMix.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => DateTimeDefaultMix.t;
+}
+
+final class _DateTimeDefaultMixJsonInclude extends _is.IncludeObject
+    implements DateTimeDefaultMixJsonInclude {
+  _DateTimeDefaultMixJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -262,14 +340,15 @@ class DateTimeDefaultMixInclude extends _is.IncludeObject {
   _is.Table<int?> get table => DateTimeDefaultMix.t;
 }
 
-class DateTimeDefaultMixIncludeList extends _is.IncludeList {
-  DateTimeDefaultMixIncludeList._({
+final class _DateTimeDefaultMixJsonIncludeList extends _is.IncludeList
+    implements DateTimeDefaultMixJsonIncludeList {
+  _DateTimeDefaultMixJsonIncludeList._({
     _is.WhereExpressionBuilder<DateTimeDefaultMixTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    DateTimeDefaultMixJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(DateTimeDefaultMix.t);
@@ -391,6 +470,8 @@ class DateTimeDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -442,6 +523,8 @@ class DateTimeDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -486,6 +569,8 @@ class DateTimeDefaultMixRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -84,13 +84,15 @@ abstract class NullsDistinctData
     };
   }
 
-  static NullsDistinctDataInclude include({
-    _is.SelectColumnsBuilder<NullsDistinctDataTable>? select,
-  }) {
-    return NullsDistinctDataInclude._(
-      selectedColumns: select?.call(NullsDistinctData.t),
-    );
+  /// Builds a complete [NullsDistinctDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static NullsDistinctDataInclude include() {
+    return NullsDistinctDataInclude._();
   }
+
+  /// Builds a complete [NullsDistinctDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static NullsDistinctDataIncludeList includeList({
     _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
@@ -99,9 +101,47 @@ abstract class NullsDistinctData
     _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
     _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
     NullsDistinctDataInclude? include,
-    _is.SelectColumnsBuilder<NullsDistinctDataTable>? select,
   }) {
     return NullsDistinctDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(NullsDistinctData.t),
+      orderByList: orderByList?.call(NullsDistinctData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [NullsDistinctDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static NullsDistinctDataJsonInclude includeJson({
+    _is.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+  }) {
+    return _NullsDistinctDataJsonInclude._(
+      selectedColumns: select?.call(NullsDistinctData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [NullsDistinctDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static NullsDistinctDataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<NullsDistinctDataTable>? orderBy,
+    _is.OrderByListBuilder<NullsDistinctDataTable>? orderByList,
+    NullsDistinctDataJsonInclude? include,
+    _is.SelectColumnsBuilder<NullsDistinctDataTable>? select,
+  }) {
+    return _NullsDistinctDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -207,8 +247,46 @@ class NullsDistinctDataTable extends _is.Table<int?> {
   ];
 }
 
-class NullsDistinctDataInclude extends _is.IncludeObject {
-  NullsDistinctDataInclude._({this.selectedColumns});
+abstract interface class NullsDistinctDataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class NullsDistinctDataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class NullsDistinctDataInclude extends _is.IncludeObject
+    implements NullsDistinctDataJsonInclude, _is.FullModelInclude {
+  NullsDistinctDataInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => NullsDistinctData.t;
+}
+
+final class NullsDistinctDataIncludeList extends _is.IncludeList
+    implements NullsDistinctDataJsonIncludeList, _is.FullModelInclude {
+  NullsDistinctDataIncludeList._({
+    _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    NullsDistinctDataInclude? super.include,
+  }) {
+    super.where = where?.call(NullsDistinctData.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => NullsDistinctData.t;
+}
+
+final class _NullsDistinctDataJsonInclude extends _is.IncludeObject
+    implements NullsDistinctDataJsonInclude {
+  _NullsDistinctDataJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -220,14 +298,15 @@ class NullsDistinctDataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => NullsDistinctData.t;
 }
 
-class NullsDistinctDataIncludeList extends _is.IncludeList {
-  NullsDistinctDataIncludeList._({
+final class _NullsDistinctDataJsonIncludeList extends _is.IncludeList
+    implements NullsDistinctDataJsonIncludeList {
+  _NullsDistinctDataJsonIncludeList._({
     _is.WhereExpressionBuilder<NullsDistinctDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    NullsDistinctDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(NullsDistinctData.t);
@@ -349,6 +428,8 @@ class NullsDistinctDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +481,8 @@ class NullsDistinctDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -444,6 +527,8 @@ class NullsDistinctDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -71,13 +71,15 @@ abstract class ObjectWithByteData
     };
   }
 
-  static ObjectWithByteDataInclude include({
-    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
-  }) {
-    return ObjectWithByteDataInclude._(
-      selectedColumns: select?.call(ObjectWithByteData.t),
-    );
+  /// Builds a complete [ObjectWithByteDataInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithByteDataInclude include() {
+    return ObjectWithByteDataInclude._();
   }
+
+  /// Builds a complete [ObjectWithByteDataIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithByteDataIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
@@ -86,9 +88,47 @@ abstract class ObjectWithByteData
     _is.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
     ObjectWithByteDataInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
   }) {
     return ObjectWithByteDataIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithByteData.t),
+      orderByList: orderByList?.call(ObjectWithByteData.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithByteDataJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithByteDataJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+  }) {
+    return _ObjectWithByteDataJsonInclude._(
+      selectedColumns: select?.call(ObjectWithByteData.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithByteDataJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithByteDataJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithByteDataTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithByteDataTable>? orderByList,
+    ObjectWithByteDataJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithByteDataTable>? select,
+  }) {
+    return _ObjectWithByteDataJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -163,8 +203,46 @@ class ObjectWithByteDataTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithByteDataInclude extends _is.IncludeObject {
-  ObjectWithByteDataInclude._({this.selectedColumns});
+abstract interface class ObjectWithByteDataJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithByteDataJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithByteDataInclude extends _is.IncludeObject
+    implements ObjectWithByteDataJsonInclude, _is.FullModelInclude {
+  ObjectWithByteDataInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithByteData.t;
+}
+
+final class ObjectWithByteDataIncludeList extends _is.IncludeList
+    implements ObjectWithByteDataJsonIncludeList, _is.FullModelInclude {
+  ObjectWithByteDataIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithByteDataInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithByteData.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithByteData.t;
+}
+
+final class _ObjectWithByteDataJsonInclude extends _is.IncludeObject
+    implements ObjectWithByteDataJsonInclude {
+  _ObjectWithByteDataJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -176,14 +254,15 @@ class ObjectWithByteDataInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithByteData.t;
 }
 
-class ObjectWithByteDataIncludeList extends _is.IncludeList {
-  ObjectWithByteDataIncludeList._({
+final class _ObjectWithByteDataJsonIncludeList extends _is.IncludeList
+    implements ObjectWithByteDataJsonIncludeList {
+  _ObjectWithByteDataJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithByteDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithByteDataJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithByteData.t);
@@ -305,6 +384,8 @@ class ObjectWithByteDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -356,6 +437,8 @@ class ObjectWithByteDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -400,6 +483,8 @@ class ObjectWithByteDataRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

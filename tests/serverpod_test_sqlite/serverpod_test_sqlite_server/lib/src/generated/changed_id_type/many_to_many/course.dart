@@ -90,15 +90,17 @@ abstract class CourseUuid
     };
   }
 
+  /// Builds a complete [CourseUuidInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static CourseUuidInclude include({
     _ih6xbg05.EnrollmentIntIncludeList? enrollments,
-    _is.SelectColumnsBuilder<CourseUuidTable>? select,
   }) {
-    return CourseUuidInclude._(
-      enrollments: enrollments,
-      selectedColumns: select?.call(CourseUuid.t),
-    );
+    return CourseUuidInclude._(enrollments: enrollments);
   }
+
+  /// Builds a complete [CourseUuidIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static CourseUuidIncludeList includeList({
     _is.WhereExpressionBuilder<CourseUuidTable>? where,
@@ -107,9 +109,49 @@ abstract class CourseUuid
     _is.OrderByBuilder<CourseUuidTable>? orderBy,
     _is.OrderByListBuilder<CourseUuidTable>? orderByList,
     CourseUuidInclude? include,
-    _is.SelectColumnsBuilder<CourseUuidTable>? select,
   }) {
     return CourseUuidIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(CourseUuid.t),
+      orderByList: orderByList?.call(CourseUuid.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [CourseUuidJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static CourseUuidJsonInclude includeJson({
+    _ih6xbg05.EnrollmentIntJsonIncludeList? enrollments,
+    _is.SelectColumnsBuilder<CourseUuidTable>? select,
+  }) {
+    return _CourseUuidJsonInclude._(
+      enrollments: enrollments,
+      selectedColumns: select?.call(CourseUuid.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [CourseUuidJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static CourseUuidJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    CourseUuidJsonInclude? include,
+    _is.SelectColumnsBuilder<CourseUuidTable>? select,
+  }) {
+    return _CourseUuidJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -231,15 +273,57 @@ class CourseUuidTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class CourseUuidInclude extends _is.IncludeObject {
-  CourseUuidInclude._({
-    _ih6xbg05.EnrollmentIntIncludeList? enrollments,
+abstract interface class CourseUuidJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class CourseUuidJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class CourseUuidInclude extends _is.IncludeObject
+    implements CourseUuidJsonInclude, _is.FullModelInclude {
+  CourseUuidInclude._({_ih6xbg05.EnrollmentIntIncludeList? enrollments}) {
+    _enrollments = enrollments;
+  }
+
+  _ih6xbg05.EnrollmentIntIncludeList? _enrollments;
+
+  @override
+  Map<String, _is.Include?> get includes => {'enrollments': _enrollments};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => CourseUuid.t;
+}
+
+final class CourseUuidIncludeList extends _is.IncludeList
+    implements CourseUuidJsonIncludeList, _is.FullModelInclude {
+  CourseUuidIncludeList._({
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    CourseUuidInclude? super.include,
+  }) {
+    super.where = where?.call(CourseUuid.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => CourseUuid.t;
+}
+
+final class _CourseUuidJsonInclude extends _is.IncludeObject
+    implements CourseUuidJsonInclude {
+  _CourseUuidJsonInclude._({
+    _ih6xbg05.EnrollmentIntJsonIncludeList? enrollments,
     this.selectedColumns,
   }) {
     _enrollments = enrollments;
   }
 
-  _ih6xbg05.EnrollmentIntIncludeList? _enrollments;
+  _ih6xbg05.EnrollmentIntJsonIncludeList? _enrollments;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -251,14 +335,15 @@ class CourseUuidInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => CourseUuid.t;
 }
 
-class CourseUuidIncludeList extends _is.IncludeList {
-  CourseUuidIncludeList._({
+final class _CourseUuidJsonIncludeList extends _is.IncludeList
+    implements CourseUuidJsonIncludeList {
+  _CourseUuidJsonIncludeList._({
     _is.WhereExpressionBuilder<CourseUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    CourseUuidJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(CourseUuid.t);
@@ -390,6 +475,8 @@ class CourseUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -420,7 +507,7 @@ class CourseUuidRepository {
     _is.OrderByBuilder<CourseUuidTable>? orderBy,
     _is.OrderByListBuilder<CourseUuidTable>? orderByList,
     _is.Transaction? transaction,
-    CourseUuidInclude? include,
+    CourseUuidJsonInclude? include,
     _is.SelectColumnsBuilder<CourseUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -443,6 +530,8 @@ class CourseUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -467,7 +556,7 @@ class CourseUuidRepository {
     _is.OrderByBuilder<CourseUuidTable>? orderBy,
     _is.OrderByListBuilder<CourseUuidTable>? orderByList,
     _is.Transaction? transaction,
-    CourseUuidInclude? include,
+    CourseUuidJsonInclude? include,
     _is.SelectColumnsBuilder<CourseUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -489,12 +578,14 @@ class CourseUuidRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    CourseUuidInclude? include,
+    CourseUuidJsonInclude? include,
     _is.SelectColumnsBuilder<CourseUuidTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

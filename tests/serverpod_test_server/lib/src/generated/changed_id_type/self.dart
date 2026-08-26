@@ -143,21 +143,25 @@ abstract class ChangedIdTypeSelf
     };
   }
 
+  /// Builds a complete [ChangedIdTypeSelfInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ChangedIdTypeSelfInclude include({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
-    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
     return ChangedIdTypeSelfInclude._(
       previous: previous,
       next: next,
       parent: parent,
       children: children,
-      selectedColumns: select?.call(ChangedIdTypeSelf.t),
     );
   }
+
+  /// Builds a complete [ChangedIdTypeSelfIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ChangedIdTypeSelfIncludeList includeList({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
@@ -166,9 +170,55 @@ abstract class ChangedIdTypeSelf
     _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     ChangedIdTypeSelfInclude? include,
-    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
   }) {
     return ChangedIdTypeSelfIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ChangedIdTypeSelf.t),
+      orderByList: orderByList?.call(ChangedIdTypeSelf.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ChangedIdTypeSelfJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ChangedIdTypeSelfJsonInclude includeJson({
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? previous,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? next,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? parent,
+    _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? children,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+  }) {
+    return _ChangedIdTypeSelfJsonInclude._(
+      previous: previous,
+      next: next,
+      parent: parent,
+      children: children,
+      selectedColumns: select?.call(ChangedIdTypeSelf.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ChangedIdTypeSelfJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ChangedIdTypeSelfJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
+    _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
+    ChangedIdTypeSelfJsonInclude? include,
+    _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
+  }) {
+    return _ChangedIdTypeSelfJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -397,13 +447,19 @@ class ChangedIdTypeSelfTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class ChangedIdTypeSelfInclude extends _is.IncludeObject {
+abstract interface class ChangedIdTypeSelfJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ChangedIdTypeSelfJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ChangedIdTypeSelfInclude extends _is.IncludeObject
+    implements ChangedIdTypeSelfJsonInclude, _is.FullModelInclude {
   ChangedIdTypeSelfInclude._({
     _iqjmn1nu.ChangedIdTypeSelfInclude? previous,
     _iqjmn1nu.ChangedIdTypeSelfInclude? next,
     _iqjmn1nu.ChangedIdTypeSelfInclude? parent,
     _iqjmn1nu.ChangedIdTypeSelfIncludeList? children,
-    this.selectedColumns,
   }) {
     _previous = previous;
     _next = next;
@@ -420,6 +476,61 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
   _iqjmn1nu.ChangedIdTypeSelfIncludeList? _children;
 
   @override
+  Map<String, _is.Include?> get includes => {
+    'previous': _previous,
+    'next': _next,
+    'parent': _parent,
+    'children': _children,
+  };
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
+}
+
+final class ChangedIdTypeSelfIncludeList extends _is.IncludeList
+    implements ChangedIdTypeSelfJsonIncludeList, _is.FullModelInclude {
+  ChangedIdTypeSelfIncludeList._({
+    _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ChangedIdTypeSelfInclude? super.include,
+  }) {
+    super.where = where?.call(ChangedIdTypeSelf.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
+}
+
+final class _ChangedIdTypeSelfJsonInclude extends _is.IncludeObject
+    implements ChangedIdTypeSelfJsonInclude {
+  _ChangedIdTypeSelfJsonInclude._({
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? previous,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? next,
+    _iqjmn1nu.ChangedIdTypeSelfJsonInclude? parent,
+    _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? children,
+    this.selectedColumns,
+  }) {
+    _previous = previous;
+    _next = next;
+    _parent = parent;
+    _children = children;
+  }
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _previous;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _next;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonInclude? _parent;
+
+  _iqjmn1nu.ChangedIdTypeSelfJsonIncludeList? _children;
+
+  @override
   final List<_is.Column>? selectedColumns;
 
   @override
@@ -434,14 +545,15 @@ class ChangedIdTypeSelfInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ChangedIdTypeSelf.t;
 }
 
-class ChangedIdTypeSelfIncludeList extends _is.IncludeList {
-  ChangedIdTypeSelfIncludeList._({
+final class _ChangedIdTypeSelfJsonIncludeList extends _is.IncludeList
+    implements ChangedIdTypeSelfJsonIncludeList {
+  _ChangedIdTypeSelfJsonIncludeList._({
     _is.WhereExpressionBuilder<ChangedIdTypeSelfTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ChangedIdTypeSelfJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ChangedIdTypeSelf.t);
@@ -577,6 +689,8 @@ class ChangedIdTypeSelfRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -607,7 +721,7 @@ class ChangedIdTypeSelfRepository {
     _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _is.Transaction? transaction,
-    ChangedIdTypeSelfInclude? include,
+    ChangedIdTypeSelfJsonInclude? include,
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -630,6 +744,8 @@ class ChangedIdTypeSelfRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -654,7 +770,7 @@ class ChangedIdTypeSelfRepository {
     _is.OrderByBuilder<ChangedIdTypeSelfTable>? orderBy,
     _is.OrderByListBuilder<ChangedIdTypeSelfTable>? orderByList,
     _is.Transaction? transaction,
-    ChangedIdTypeSelfInclude? include,
+    ChangedIdTypeSelfJsonInclude? include,
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -676,12 +792,14 @@ class ChangedIdTypeSelfRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ChangedIdTypeSelfInclude? include,
+    ChangedIdTypeSelfJsonInclude? include,
     _is.SelectColumnsBuilder<ChangedIdTypeSelfTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

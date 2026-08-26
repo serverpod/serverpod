@@ -125,13 +125,15 @@ abstract class EnumDefaultModel
     };
   }
 
-  static EnumDefaultModelInclude include({
-    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
-  }) {
-    return EnumDefaultModelInclude._(
-      selectedColumns: select?.call(EnumDefaultModel.t),
-    );
+  /// Builds a complete [EnumDefaultModelInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static EnumDefaultModelInclude include() {
+    return EnumDefaultModelInclude._();
   }
+
+  /// Builds a complete [EnumDefaultModelIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static EnumDefaultModelIncludeList includeList({
     _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
@@ -140,9 +142,47 @@ abstract class EnumDefaultModel
     _is.OrderByBuilder<EnumDefaultModelTable>? orderBy,
     _is.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
     EnumDefaultModelInclude? include,
-    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
   }) {
     return EnumDefaultModelIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(EnumDefaultModel.t),
+      orderByList: orderByList?.call(EnumDefaultModel.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [EnumDefaultModelJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static EnumDefaultModelJsonInclude includeJson({
+    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
+  }) {
+    return _EnumDefaultModelJsonInclude._(
+      selectedColumns: select?.call(EnumDefaultModel.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [EnumDefaultModelJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static EnumDefaultModelJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<EnumDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<EnumDefaultModelTable>? orderByList,
+    EnumDefaultModelJsonInclude? include,
+    _is.SelectColumnsBuilder<EnumDefaultModelTable>? select,
+  }) {
+    return _EnumDefaultModelJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -280,8 +320,46 @@ class EnumDefaultModelTable extends _is.Table<int?> {
   ];
 }
 
-class EnumDefaultModelInclude extends _is.IncludeObject {
-  EnumDefaultModelInclude._({this.selectedColumns});
+abstract interface class EnumDefaultModelJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class EnumDefaultModelJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class EnumDefaultModelInclude extends _is.IncludeObject
+    implements EnumDefaultModelJsonInclude, _is.FullModelInclude {
+  EnumDefaultModelInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => EnumDefaultModel.t;
+}
+
+final class EnumDefaultModelIncludeList extends _is.IncludeList
+    implements EnumDefaultModelJsonIncludeList, _is.FullModelInclude {
+  EnumDefaultModelIncludeList._({
+    _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    EnumDefaultModelInclude? super.include,
+  }) {
+    super.where = where?.call(EnumDefaultModel.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => EnumDefaultModel.t;
+}
+
+final class _EnumDefaultModelJsonInclude extends _is.IncludeObject
+    implements EnumDefaultModelJsonInclude {
+  _EnumDefaultModelJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -293,14 +371,15 @@ class EnumDefaultModelInclude extends _is.IncludeObject {
   _is.Table<int?> get table => EnumDefaultModel.t;
 }
 
-class EnumDefaultModelIncludeList extends _is.IncludeList {
-  EnumDefaultModelIncludeList._({
+final class _EnumDefaultModelJsonIncludeList extends _is.IncludeList
+    implements EnumDefaultModelJsonIncludeList {
+  _EnumDefaultModelJsonIncludeList._({
     _is.WhereExpressionBuilder<EnumDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    EnumDefaultModelJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(EnumDefaultModel.t);
@@ -422,6 +501,8 @@ class EnumDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -473,6 +554,8 @@ class EnumDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -517,6 +600,8 @@ class EnumDefaultModelRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

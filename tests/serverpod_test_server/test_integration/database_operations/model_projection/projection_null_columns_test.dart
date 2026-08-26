@@ -165,8 +165,8 @@ void main() async {
 
         var result = await ProjectedUser.db.findFirstRowAsJson(
           session,
-          include: ProjectedUser.include(
-            address: ProjectedAddress.include(
+          include: ProjectedUser.includeJson(
+            address: ProjectedAddress.includeJson(
               select: (table) => [table.street],
             ),
           ),
@@ -280,8 +280,8 @@ void main() async {
         var result = await Citizen.db.findFirstRowAsJson(
           session,
           select: (t) => [t.name],
-          include: Citizen.include(
-            company: Company.include(
+          include: Citizen.includeJson(
+            company: Company.includeJson(
               select: (c) => [c.name],
             ),
           ),
@@ -332,7 +332,7 @@ void main() async {
     );
 
     test(
-      'Given customer with orders, when using findAsJson with includeList and select omitting primary and foreign keys, '
+      'Given customer with orders, when using findAsJson with includeJsonList and select omitting primary and foreign keys, '
       'then list relation is resolved properly and only selected columns are in returned maps.',
       () async {
         var customer = await CustomerInt.db.insertRow(
@@ -359,8 +359,8 @@ void main() async {
           session,
           select: (customer) => [customer.name],
           orderBy: (t) => t.id,
-          include: CustomerInt.include(
-            orders: OrderUuid.includeList(
+          include: CustomerInt.includeJson(
+            orders: OrderUuid.includeJsonList(
               select: (order) => [order.description],
             ),
           ),
@@ -369,8 +369,8 @@ void main() async {
         var sessionResults = await session.db.findAsJson<CustomerInt>(
           select: [CustomerInt.t.name],
           orderBy: CustomerInt.t.id,
-          include: CustomerInt.include(
-            orders: OrderUuid.includeList(
+          include: CustomerInt.includeJson(
+            orders: OrderUuid.includeJsonList(
               select: (order) => [order.description],
             ),
           ),
@@ -380,8 +380,8 @@ void main() async {
         var firstRow = await session.db.findFirstRowAsJson<CustomerInt>(
           select: [CustomerInt.t.name],
           orderBy: CustomerInt.t.id,
-          include: CustomerInt.include(
-            orders: OrderUuid.includeList(
+          include: CustomerInt.includeJson(
+            orders: OrderUuid.includeJsonList(
               select: (order) => [order.description],
             ),
           ),
@@ -432,11 +432,11 @@ void main() async {
           session,
           where: (t) => t.name.equals('Serverpod AB'),
           select: (org) => [org.name],
-          include: Organization.include(
-            city: City.include(
+          include: Organization.includeJson(
+            city: City.includeJson(
               select: (city) => [city.name],
             ),
-            people: Person.includeList(
+            people: Person.includeJsonList(
               select: (person) => [person.name],
             ),
           ),
@@ -458,6 +458,84 @@ void main() async {
           expect(person.containsKey('id'), isFalse);
           expect(person.containsKey('organizationId'), isFalse);
         }
+      },
+    );
+
+    test(
+      'Given organization with FullModelInclude (Person.includeList and City.include), '
+      'when querying with findAsJson or nested in includeJson, '
+      'then full includes are accepted and processed correctly (one-way compatibility).',
+      () async {
+        var city = await City.db.insertRow(
+          session,
+          City(name: 'Uppsala'),
+        );
+        var org = await Organization.db.insertRow(
+          session,
+          Organization(name: 'Serverpod Labs', cityId: city.id),
+        );
+        await Person.db.insertRow(
+          session,
+          Person(name: 'Eve', organizationId: org.id!),
+        );
+
+        // Person.includeList() and City.include() produce FullModelInclude,
+        // which can be passed directly to includeJson and findAsJson.
+        var results = await Organization.db.findAsJson(
+          session,
+          where: (t) => t.name.equals('Serverpod Labs'),
+          select: (org) => [org.name],
+          include: Organization.includeJson(
+            city: City.include(),
+            people: Person.includeList(),
+          ),
+        );
+
+        expect(results.length, 1);
+        var row = results.first;
+        expect(row['name'], 'Serverpod Labs');
+        expect(row['city'], isA<Map<String, dynamic>>());
+        expect(row['city']['name'], 'Uppsala');
+        expect(row['city']['id'], city.id);
+
+        var people = row['people'] as List;
+        expect(people.length, 1);
+        expect(people.first['name'], 'Eve');
+      },
+    );
+
+    test(
+      'Given typed find query, when passing a FullModelInclude from Model.include, '
+      'then typed models with relations are properly returned.',
+      () async {
+        var city = await City.db.insertRow(
+          session,
+          City(name: 'Malmö'),
+        );
+        var org = await Organization.db.insertRow(
+          session,
+          Organization(name: 'Serverpod South', cityId: city.id),
+        );
+        await Person.db.insertRow(
+          session,
+          Person(name: 'Grace', organizationId: org.id!),
+        );
+
+        var results = await Organization.db.find(
+          session,
+          where: (t) => t.name.equals('Serverpod South'),
+          include: Organization.include(
+            city: City.include(),
+            people: Person.includeList(),
+          ),
+        );
+
+        expect(results.length, 1);
+        var item = results.first;
+        expect(item.name, 'Serverpod South');
+        expect(item.city?.name, 'Malmö');
+        expect(item.people?.length, 1);
+        expect(item.people?.first.name, 'Grace');
       },
     );
   });

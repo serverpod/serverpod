@@ -121,17 +121,21 @@ abstract class ProjectedUser
     };
   }
 
+  /// Builds a complete [ProjectedUserInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ProjectedUserInclude include({
     _iegbxll6.ProjectedAddressInclude? address,
     _i8r3x6pe.ProjectedOrderIncludeList? orders,
-    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
     return ProjectedUserInclude._(
       address: address,
       orders: orders,
-      selectedColumns: select?.call(ProjectedUser.t),
     );
   }
+
+  /// Builds a complete [ProjectedUserIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ProjectedUserIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedUserTable>? where,
@@ -140,9 +144,51 @@ abstract class ProjectedUser
     _is.OrderByBuilder<ProjectedUserTable>? orderBy,
     _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
     ProjectedUserInclude? include,
-    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
   }) {
     return ProjectedUserIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ProjectedUser.t),
+      orderByList: orderByList?.call(ProjectedUser.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedUserJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ProjectedUserJsonInclude includeJson({
+    _iegbxll6.ProjectedAddressJsonInclude? address,
+    _i8r3x6pe.ProjectedOrderJsonIncludeList? orders,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
+  }) {
+    return _ProjectedUserJsonInclude._(
+      address: address,
+      orders: orders,
+      selectedColumns: select?.call(ProjectedUser.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ProjectedUserJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ProjectedUserJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ProjectedUserTable>? orderBy,
+    _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
+    ProjectedUserJsonInclude? include,
+    _is.SelectColumnsBuilder<ProjectedUserTable>? select,
+  }) {
+    return _ProjectedUserJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -326,11 +372,17 @@ class ProjectedUserTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class ProjectedUserInclude extends _is.IncludeObject {
+abstract interface class ProjectedUserJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ProjectedUserJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ProjectedUserInclude extends _is.IncludeObject
+    implements ProjectedUserJsonInclude, _is.FullModelInclude {
   ProjectedUserInclude._({
     _iegbxll6.ProjectedAddressInclude? address,
     _i8r3x6pe.ProjectedOrderIncludeList? orders,
-    this.selectedColumns,
   }) {
     _address = address;
     _orders = orders;
@@ -339,6 +391,51 @@ class ProjectedUserInclude extends _is.IncludeObject {
   _iegbxll6.ProjectedAddressInclude? _address;
 
   _i8r3x6pe.ProjectedOrderIncludeList? _orders;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'address': _address,
+    'orders': _orders,
+  };
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ProjectedUser.t;
+}
+
+final class ProjectedUserIncludeList extends _is.IncludeList
+    implements ProjectedUserJsonIncludeList, _is.FullModelInclude {
+  ProjectedUserIncludeList._({
+    _is.WhereExpressionBuilder<ProjectedUserTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ProjectedUserInclude? super.include,
+  }) {
+    super.where = where?.call(ProjectedUser.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ProjectedUser.t;
+}
+
+final class _ProjectedUserJsonInclude extends _is.IncludeObject
+    implements ProjectedUserJsonInclude {
+  _ProjectedUserJsonInclude._({
+    _iegbxll6.ProjectedAddressJsonInclude? address,
+    _i8r3x6pe.ProjectedOrderJsonIncludeList? orders,
+    this.selectedColumns,
+  }) {
+    _address = address;
+    _orders = orders;
+  }
+
+  _iegbxll6.ProjectedAddressJsonInclude? _address;
+
+  _i8r3x6pe.ProjectedOrderJsonIncludeList? _orders;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -353,14 +450,15 @@ class ProjectedUserInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ProjectedUser.t;
 }
 
-class ProjectedUserIncludeList extends _is.IncludeList {
-  ProjectedUserIncludeList._({
+final class _ProjectedUserJsonIncludeList extends _is.IncludeList
+    implements ProjectedUserJsonIncludeList {
+  _ProjectedUserJsonIncludeList._({
     _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ProjectedUserJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ProjectedUser.t);
@@ -496,6 +594,8 @@ class ProjectedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -526,7 +626,7 @@ class ProjectedUserRepository {
     _is.OrderByBuilder<ProjectedUserTable>? orderBy,
     _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedUserInclude? include,
+    ProjectedUserJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -549,6 +649,8 @@ class ProjectedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -573,7 +675,7 @@ class ProjectedUserRepository {
     _is.OrderByBuilder<ProjectedUserTable>? orderBy,
     _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
     _is.Transaction? transaction,
-    ProjectedUserInclude? include,
+    ProjectedUserJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -595,12 +697,14 @@ class ProjectedUserRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ProjectedUserInclude? include,
+    ProjectedUserJsonInclude? include,
     _is.SelectColumnsBuilder<ProjectedUserTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

@@ -130,13 +130,15 @@ abstract class ObjectWithHalfVector
     };
   }
 
-  static ObjectWithHalfVectorInclude include({
-    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
-  }) {
-    return ObjectWithHalfVectorInclude._(
-      selectedColumns: select?.call(ObjectWithHalfVector.t),
-    );
+  /// Builds a complete [ObjectWithHalfVectorInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ObjectWithHalfVectorInclude include() {
+    return ObjectWithHalfVectorInclude._();
   }
+
+  /// Builds a complete [ObjectWithHalfVectorIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ObjectWithHalfVectorIncludeList includeList({
     _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
@@ -145,9 +147,47 @@ abstract class ObjectWithHalfVector
     _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
     _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
     ObjectWithHalfVectorInclude? include,
-    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
   }) {
     return ObjectWithHalfVectorIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ObjectWithHalfVector.t),
+      orderByList: orderByList?.call(ObjectWithHalfVector.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithHalfVectorJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ObjectWithHalfVectorJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+  }) {
+    return _ObjectWithHalfVectorJsonInclude._(
+      selectedColumns: select?.call(ObjectWithHalfVector.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ObjectWithHalfVectorJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ObjectWithHalfVectorJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ObjectWithHalfVectorTable>? orderBy,
+    _is.OrderByListBuilder<ObjectWithHalfVectorTable>? orderByList,
+    ObjectWithHalfVectorJsonInclude? include,
+    _is.SelectColumnsBuilder<ObjectWithHalfVectorTable>? select,
+  }) {
+    return _ObjectWithHalfVectorJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -325,8 +365,46 @@ class ObjectWithHalfVectorTable extends _is.Table<int?> {
   ];
 }
 
-class ObjectWithHalfVectorInclude extends _is.IncludeObject {
-  ObjectWithHalfVectorInclude._({this.selectedColumns});
+abstract interface class ObjectWithHalfVectorJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ObjectWithHalfVectorJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ObjectWithHalfVectorInclude extends _is.IncludeObject
+    implements ObjectWithHalfVectorJsonInclude, _is.FullModelInclude {
+  ObjectWithHalfVectorInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithHalfVector.t;
+}
+
+final class ObjectWithHalfVectorIncludeList extends _is.IncludeList
+    implements ObjectWithHalfVectorJsonIncludeList, _is.FullModelInclude {
+  ObjectWithHalfVectorIncludeList._({
+    _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ObjectWithHalfVectorInclude? super.include,
+  }) {
+    super.where = where?.call(ObjectWithHalfVector.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ObjectWithHalfVector.t;
+}
+
+final class _ObjectWithHalfVectorJsonInclude extends _is.IncludeObject
+    implements ObjectWithHalfVectorJsonInclude {
+  _ObjectWithHalfVectorJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -338,14 +416,15 @@ class ObjectWithHalfVectorInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ObjectWithHalfVector.t;
 }
 
-class ObjectWithHalfVectorIncludeList extends _is.IncludeList {
-  ObjectWithHalfVectorIncludeList._({
+final class _ObjectWithHalfVectorJsonIncludeList extends _is.IncludeList
+    implements ObjectWithHalfVectorJsonIncludeList {
+  _ObjectWithHalfVectorJsonIncludeList._({
     _is.WhereExpressionBuilder<ObjectWithHalfVectorTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ObjectWithHalfVectorJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ObjectWithHalfVector.t);
@@ -467,6 +546,8 @@ class ObjectWithHalfVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -518,6 +599,8 @@ class ObjectWithHalfVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -562,6 +645,8 @@ class ObjectWithHalfVectorRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

@@ -79,13 +79,15 @@ abstract class GoogleRefreshToken
     };
   }
 
-  static GoogleRefreshTokenInclude include({
-    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
-  }) {
-    return GoogleRefreshTokenInclude._(
-      selectedColumns: select?.call(GoogleRefreshToken.t),
-    );
+  /// Builds a complete [GoogleRefreshTokenInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static GoogleRefreshTokenInclude include() {
+    return GoogleRefreshTokenInclude._();
   }
+
+  /// Builds a complete [GoogleRefreshTokenIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static GoogleRefreshTokenIncludeList includeList({
     _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
@@ -94,9 +96,47 @@ abstract class GoogleRefreshToken
     _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
     _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
     GoogleRefreshTokenInclude? include,
-    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
   }) {
     return GoogleRefreshTokenIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(GoogleRefreshToken.t),
+      orderByList: orderByList?.call(GoogleRefreshToken.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [GoogleRefreshTokenJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static GoogleRefreshTokenJsonInclude includeJson({
+    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
+  }) {
+    return _GoogleRefreshTokenJsonInclude._(
+      selectedColumns: select?.call(GoogleRefreshToken.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [GoogleRefreshTokenJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static GoogleRefreshTokenJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<GoogleRefreshTokenTable>? orderBy,
+    _is.OrderByListBuilder<GoogleRefreshTokenTable>? orderByList,
+    GoogleRefreshTokenJsonInclude? include,
+    _is.SelectColumnsBuilder<GoogleRefreshTokenTable>? select,
+  }) {
+    return _GoogleRefreshTokenJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -188,8 +228,46 @@ class GoogleRefreshTokenTable extends _is.Table<int?> {
   ];
 }
 
-class GoogleRefreshTokenInclude extends _is.IncludeObject {
-  GoogleRefreshTokenInclude._({this.selectedColumns});
+abstract interface class GoogleRefreshTokenJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class GoogleRefreshTokenJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class GoogleRefreshTokenInclude extends _is.IncludeObject
+    implements GoogleRefreshTokenJsonInclude, _is.FullModelInclude {
+  GoogleRefreshTokenInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => GoogleRefreshToken.t;
+}
+
+final class GoogleRefreshTokenIncludeList extends _is.IncludeList
+    implements GoogleRefreshTokenJsonIncludeList, _is.FullModelInclude {
+  GoogleRefreshTokenIncludeList._({
+    _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    GoogleRefreshTokenInclude? super.include,
+  }) {
+    super.where = where?.call(GoogleRefreshToken.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => GoogleRefreshToken.t;
+}
+
+final class _GoogleRefreshTokenJsonInclude extends _is.IncludeObject
+    implements GoogleRefreshTokenJsonInclude {
+  _GoogleRefreshTokenJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -201,14 +279,15 @@ class GoogleRefreshTokenInclude extends _is.IncludeObject {
   _is.Table<int?> get table => GoogleRefreshToken.t;
 }
 
-class GoogleRefreshTokenIncludeList extends _is.IncludeList {
-  GoogleRefreshTokenIncludeList._({
+final class _GoogleRefreshTokenJsonIncludeList extends _is.IncludeList
+    implements GoogleRefreshTokenJsonIncludeList {
+  _GoogleRefreshTokenJsonIncludeList._({
     _is.WhereExpressionBuilder<GoogleRefreshTokenTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    GoogleRefreshTokenJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(GoogleRefreshToken.t);
@@ -330,6 +409,8 @@ class GoogleRefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -381,6 +462,8 @@ class GoogleRefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -425,6 +508,8 @@ class GoogleRefreshTokenRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

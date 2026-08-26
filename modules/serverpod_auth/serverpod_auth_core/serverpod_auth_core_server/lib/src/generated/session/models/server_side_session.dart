@@ -182,15 +182,17 @@ abstract class ServerSideSession
     return {};
   }
 
+  /// Builds a complete [ServerSideSessionInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static ServerSideSessionInclude include({
     _ivyervu7.AuthUserInclude? authUser,
-    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
   }) {
-    return ServerSideSessionInclude._(
-      authUser: authUser,
-      selectedColumns: select?.call(ServerSideSession.t),
-    );
+    return ServerSideSessionInclude._(authUser: authUser);
   }
+
+  /// Builds a complete [ServerSideSessionIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ServerSideSessionIncludeList includeList({
     _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
@@ -199,9 +201,49 @@ abstract class ServerSideSession
     _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
     _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     ServerSideSessionInclude? include,
-    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
   }) {
     return ServerSideSessionIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ServerSideSession.t),
+      orderByList: orderByList?.call(ServerSideSession.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerSideSessionJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ServerSideSessionJsonInclude includeJson({
+    _ivyervu7.AuthUserJsonInclude? authUser,
+    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
+  }) {
+    return _ServerSideSessionJsonInclude._(
+      authUser: authUser,
+      selectedColumns: select?.call(ServerSideSession.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ServerSideSessionJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ServerSideSessionJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
+    _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
+    ServerSideSessionJsonInclude? include,
+    _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
+  }) {
+    return _ServerSideSessionJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -470,15 +512,57 @@ class ServerSideSessionTable extends _is.Table<_is.UuidValue?> {
   }
 }
 
-class ServerSideSessionInclude extends _is.IncludeObject {
-  ServerSideSessionInclude._({
-    _ivyervu7.AuthUserInclude? authUser,
+abstract interface class ServerSideSessionJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ServerSideSessionJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ServerSideSessionInclude extends _is.IncludeObject
+    implements ServerSideSessionJsonInclude, _is.FullModelInclude {
+  ServerSideSessionInclude._({_ivyervu7.AuthUserInclude? authUser}) {
+    _authUser = authUser;
+  }
+
+  _ivyervu7.AuthUserInclude? _authUser;
+
+  @override
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ServerSideSession.t;
+}
+
+final class ServerSideSessionIncludeList extends _is.IncludeList
+    implements ServerSideSessionJsonIncludeList, _is.FullModelInclude {
+  ServerSideSessionIncludeList._({
+    _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ServerSideSessionInclude? super.include,
+  }) {
+    super.where = where?.call(ServerSideSession.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<_is.UuidValue?> get table => ServerSideSession.t;
+}
+
+final class _ServerSideSessionJsonInclude extends _is.IncludeObject
+    implements ServerSideSessionJsonInclude {
+  _ServerSideSessionJsonInclude._({
+    _ivyervu7.AuthUserJsonInclude? authUser,
     this.selectedColumns,
   }) {
     _authUser = authUser;
   }
 
-  _ivyervu7.AuthUserInclude? _authUser;
+  _ivyervu7.AuthUserJsonInclude? _authUser;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -490,14 +574,15 @@ class ServerSideSessionInclude extends _is.IncludeObject {
   _is.Table<_is.UuidValue?> get table => ServerSideSession.t;
 }
 
-class ServerSideSessionIncludeList extends _is.IncludeList {
-  ServerSideSessionIncludeList._({
+final class _ServerSideSessionJsonIncludeList extends _is.IncludeList
+    implements ServerSideSessionJsonIncludeList {
+  _ServerSideSessionJsonIncludeList._({
     _is.WhereExpressionBuilder<ServerSideSessionTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ServerSideSessionJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ServerSideSession.t);
@@ -627,6 +712,8 @@ class ServerSideSessionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -657,7 +744,7 @@ class ServerSideSessionRepository {
     _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
     _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _is.Transaction? transaction,
-    ServerSideSessionInclude? include,
+    ServerSideSessionJsonInclude? include,
     _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -680,6 +767,8 @@ class ServerSideSessionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -704,7 +793,7 @@ class ServerSideSessionRepository {
     _is.OrderByBuilder<ServerSideSessionTable>? orderBy,
     _is.OrderByListBuilder<ServerSideSessionTable>? orderByList,
     _is.Transaction? transaction,
-    ServerSideSessionInclude? include,
+    ServerSideSessionJsonInclude? include,
     _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -726,12 +815,14 @@ class ServerSideSessionRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    ServerSideSessionInclude? include,
+    ServerSideSessionJsonInclude? include,
     _is.SelectColumnsBuilder<ServerSideSessionTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

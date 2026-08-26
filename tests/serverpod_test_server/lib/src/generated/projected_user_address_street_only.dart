@@ -82,26 +82,26 @@ abstract class ProjectedUserAddressStreetOnly
     };
   }
 
-  static ProjectedUserInclude include() {
-    return ProjectedUser.include(
+  static ProjectedUserJsonInclude include() {
+    return ProjectedUser.includeJson(
       select: (t) => [
         ProjectedUser.t.id,
         ProjectedUser.t.name,
       ],
-      address: _iegbxll6.ProjectedAddress.include(
+      address: _iegbxll6.ProjectedAddress.includeJson(
         select: (t) => [_iegbxll6.ProjectedAddress.t.street],
       ),
     );
   }
 
-  static ProjectedUserIncludeList includeList({
+  static ProjectedUserJsonIncludeList includeList({
     _is.WhereExpressionBuilder<ProjectedUserTable>? where,
     int? limit,
     int? offset,
     _is.OrderByBuilder<ProjectedUserTable>? orderBy,
     _is.OrderByListBuilder<ProjectedUserTable>? orderByList,
   }) {
-    return ProjectedUser.includeList(
+    return ProjectedUser.includeJsonList(
       where: where,
       limit: limit,
       offset: offset,

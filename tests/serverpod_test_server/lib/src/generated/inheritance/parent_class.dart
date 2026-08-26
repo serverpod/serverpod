@@ -76,11 +76,15 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     };
   }
 
-  static ParentClassInclude include({
-    _is.SelectColumnsBuilder<ParentClassTable>? select,
-  }) {
-    return ParentClassInclude._(selectedColumns: select?.call(ParentClass.t));
+  /// Builds a complete [ParentClassInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ParentClassInclude include() {
+    return ParentClassInclude._();
   }
+
+  /// Builds a complete [ParentClassIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ParentClassIncludeList includeList({
     _is.WhereExpressionBuilder<ParentClassTable>? where,
@@ -89,9 +93,47 @@ class ParentClass extends _iv35mfmj.GrandparentClass
     _is.OrderByBuilder<ParentClassTable>? orderBy,
     _is.OrderByListBuilder<ParentClassTable>? orderByList,
     ParentClassInclude? include,
-    _is.SelectColumnsBuilder<ParentClassTable>? select,
   }) {
     return ParentClassIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ParentClass.t),
+      orderByList: orderByList?.call(ParentClass.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ParentClassJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ParentClassJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+  }) {
+    return _ParentClassJsonInclude._(
+      selectedColumns: select?.call(ParentClass.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ParentClassJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ParentClassJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ParentClassTable>? orderBy,
+    _is.OrderByListBuilder<ParentClassTable>? orderByList,
+    ParentClassJsonInclude? include,
+    _is.SelectColumnsBuilder<ParentClassTable>? select,
+  }) {
+    return _ParentClassJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -153,8 +195,46 @@ class ParentClassTable extends _is.Table<int?> {
   ];
 }
 
-class ParentClassInclude extends _is.IncludeObject {
-  ParentClassInclude._({this.selectedColumns});
+abstract interface class ParentClassJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ParentClassJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ParentClassInclude extends _is.IncludeObject
+    implements ParentClassJsonInclude, _is.FullModelInclude {
+  ParentClassInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ParentClass.t;
+}
+
+final class ParentClassIncludeList extends _is.IncludeList
+    implements ParentClassJsonIncludeList, _is.FullModelInclude {
+  ParentClassIncludeList._({
+    _is.WhereExpressionBuilder<ParentClassTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ParentClassInclude? super.include,
+  }) {
+    super.where = where?.call(ParentClass.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ParentClass.t;
+}
+
+final class _ParentClassJsonInclude extends _is.IncludeObject
+    implements ParentClassJsonInclude {
+  _ParentClassJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -166,14 +246,15 @@ class ParentClassInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ParentClass.t;
 }
 
-class ParentClassIncludeList extends _is.IncludeList {
-  ParentClassIncludeList._({
+final class _ParentClassJsonIncludeList extends _is.IncludeList
+    implements ParentClassJsonIncludeList {
+  _ParentClassJsonIncludeList._({
     _is.WhereExpressionBuilder<ParentClassTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ParentClassJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ParentClass.t);
@@ -295,6 +376,8 @@ class ParentClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -346,6 +429,8 @@ class ParentClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -390,6 +475,8 @@ class ParentClassRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

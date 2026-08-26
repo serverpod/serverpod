@@ -105,17 +105,21 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     };
   }
 
+  /// Builds a complete [OrderInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
   static OrderInclude include({
     _i3fqgdb1.CustomerInclude? customer,
     _ij3ynzrj.CommentIncludeList? comments,
-    _is.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderInclude._(
       customer: customer,
       comments: comments,
-      selectedColumns: select?.call(Order.t),
     );
   }
+
+  /// Builds a complete [OrderIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static OrderIncludeList includeList({
     _is.WhereExpressionBuilder<OrderTable>? where,
@@ -124,9 +128,51 @@ abstract class Order implements _is.TableRow<int?>, _is.ProtocolSerialization {
     _is.OrderByBuilder<OrderTable>? orderBy,
     _is.OrderByListBuilder<OrderTable>? orderByList,
     OrderInclude? include,
-    _is.SelectColumnsBuilder<OrderTable>? select,
   }) {
     return OrderIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(Order.t),
+      orderByList: orderByList?.call(Order.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [OrderJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static OrderJsonInclude includeJson({
+    _i3fqgdb1.CustomerJsonInclude? customer,
+    _ij3ynzrj.CommentJsonIncludeList? comments,
+    _is.SelectColumnsBuilder<OrderTable>? select,
+  }) {
+    return _OrderJsonInclude._(
+      customer: customer,
+      comments: comments,
+      selectedColumns: select?.call(Order.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [OrderJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static OrderJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<OrderTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<OrderTable>? orderBy,
+    _is.OrderByListBuilder<OrderTable>? orderByList,
+    OrderJsonInclude? include,
+    _is.SelectColumnsBuilder<OrderTable>? select,
+  }) {
+    return _OrderJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -288,11 +334,17 @@ class OrderTable extends _is.Table<int?> {
   }
 }
 
-class OrderInclude extends _is.IncludeObject {
+abstract interface class OrderJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class OrderJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class OrderInclude extends _is.IncludeObject
+    implements OrderJsonInclude, _is.FullModelInclude {
   OrderInclude._({
     _i3fqgdb1.CustomerInclude? customer,
     _ij3ynzrj.CommentIncludeList? comments,
-    this.selectedColumns,
   }) {
     _customer = customer;
     _comments = comments;
@@ -301,6 +353,51 @@ class OrderInclude extends _is.IncludeObject {
   _i3fqgdb1.CustomerInclude? _customer;
 
   _ij3ynzrj.CommentIncludeList? _comments;
+
+  @override
+  Map<String, _is.Include?> get includes => {
+    'customer': _customer,
+    'comments': _comments,
+  };
+
+  @override
+  _is.Table<int?> get table => Order.t;
+}
+
+final class OrderIncludeList extends _is.IncludeList
+    implements OrderJsonIncludeList, _is.FullModelInclude {
+  OrderIncludeList._({
+    _is.WhereExpressionBuilder<OrderTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    OrderInclude? super.include,
+  }) {
+    super.where = where?.call(Order.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => Order.t;
+}
+
+final class _OrderJsonInclude extends _is.IncludeObject
+    implements OrderJsonInclude {
+  _OrderJsonInclude._({
+    _i3fqgdb1.CustomerJsonInclude? customer,
+    _ij3ynzrj.CommentJsonIncludeList? comments,
+    this.selectedColumns,
+  }) {
+    _customer = customer;
+    _comments = comments;
+  }
+
+  _i3fqgdb1.CustomerJsonInclude? _customer;
+
+  _ij3ynzrj.CommentJsonIncludeList? _comments;
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -315,14 +412,15 @@ class OrderInclude extends _is.IncludeObject {
   _is.Table<int?> get table => Order.t;
 }
 
-class OrderIncludeList extends _is.IncludeList {
-  OrderIncludeList._({
+final class _OrderJsonIncludeList extends _is.IncludeList
+    implements OrderJsonIncludeList {
+  _OrderJsonIncludeList._({
     _is.WhereExpressionBuilder<OrderTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    OrderJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(Order.t);
@@ -454,6 +552,8 @@ class OrderRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -484,7 +584,7 @@ class OrderRepository {
     _is.OrderByBuilder<OrderTable>? orderBy,
     _is.OrderByListBuilder<OrderTable>? orderByList,
     _is.Transaction? transaction,
-    OrderInclude? include,
+    OrderJsonInclude? include,
     _is.SelectColumnsBuilder<OrderTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -507,6 +607,8 @@ class OrderRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -531,7 +633,7 @@ class OrderRepository {
     _is.OrderByBuilder<OrderTable>? orderBy,
     _is.OrderByListBuilder<OrderTable>? orderByList,
     _is.Transaction? transaction,
-    OrderInclude? include,
+    OrderJsonInclude? include,
     _is.SelectColumnsBuilder<OrderTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,
@@ -553,12 +655,14 @@ class OrderRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,
     Object id, {
     _is.Transaction? transaction,
-    OrderInclude? include,
+    OrderJsonInclude? include,
     _is.SelectColumnsBuilder<OrderTable>? select,
     _is.LockMode? lockMode,
     _is.LockBehavior? lockBehavior,

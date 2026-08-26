@@ -68,13 +68,15 @@ abstract class ScopeNoneFields
     };
   }
 
-  static ScopeNoneFieldsInclude include({
-    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
-  }) {
-    return ScopeNoneFieldsInclude._(
-      selectedColumns: select?.call(ScopeNoneFields.t),
-    );
+  /// Builds a complete [ScopeNoneFieldsInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static ScopeNoneFieldsInclude include() {
+    return ScopeNoneFieldsInclude._();
   }
+
+  /// Builds a complete [ScopeNoneFieldsIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static ScopeNoneFieldsIncludeList includeList({
     _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
@@ -83,9 +85,47 @@ abstract class ScopeNoneFields
     _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
     _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
     ScopeNoneFieldsInclude? include,
-    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
   }) {
     return ScopeNoneFieldsIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(ScopeNoneFields.t),
+      orderByList: orderByList?.call(ScopeNoneFields.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [ScopeNoneFieldsJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static ScopeNoneFieldsJsonInclude includeJson({
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+  }) {
+    return _ScopeNoneFieldsJsonInclude._(
+      selectedColumns: select?.call(ScopeNoneFields.t),
+    );
+  }
+
+  /// Builds a JSON-compatible [ScopeNoneFieldsJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static ScopeNoneFieldsJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<ScopeNoneFieldsTable>? orderBy,
+    _is.OrderByListBuilder<ScopeNoneFieldsTable>? orderByList,
+    ScopeNoneFieldsJsonInclude? include,
+    _is.SelectColumnsBuilder<ScopeNoneFieldsTable>? select,
+  }) {
+    return _ScopeNoneFieldsJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -195,8 +235,46 @@ class ScopeNoneFieldsTable extends _is.Table<int?> {
   List<_is.Column> get managedColumns => [id];
 }
 
-class ScopeNoneFieldsInclude extends _is.IncludeObject {
-  ScopeNoneFieldsInclude._({this.selectedColumns});
+abstract interface class ScopeNoneFieldsJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class ScopeNoneFieldsJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class ScopeNoneFieldsInclude extends _is.IncludeObject
+    implements ScopeNoneFieldsJsonInclude, _is.FullModelInclude {
+  ScopeNoneFieldsInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => ScopeNoneFields.t;
+}
+
+final class ScopeNoneFieldsIncludeList extends _is.IncludeList
+    implements ScopeNoneFieldsJsonIncludeList, _is.FullModelInclude {
+  ScopeNoneFieldsIncludeList._({
+    _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    ScopeNoneFieldsInclude? super.include,
+  }) {
+    super.where = where?.call(ScopeNoneFields.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => ScopeNoneFields.t;
+}
+
+final class _ScopeNoneFieldsJsonInclude extends _is.IncludeObject
+    implements ScopeNoneFieldsJsonInclude {
+  _ScopeNoneFieldsJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -208,14 +286,15 @@ class ScopeNoneFieldsInclude extends _is.IncludeObject {
   _is.Table<int?> get table => ScopeNoneFields.t;
 }
 
-class ScopeNoneFieldsIncludeList extends _is.IncludeList {
-  ScopeNoneFieldsIncludeList._({
+final class _ScopeNoneFieldsJsonIncludeList extends _is.IncludeList
+    implements ScopeNoneFieldsJsonIncludeList {
+  _ScopeNoneFieldsJsonIncludeList._({
     _is.WhereExpressionBuilder<ScopeNoneFieldsTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    ScopeNoneFieldsJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(ScopeNoneFields.t);
@@ -337,6 +416,8 @@ class ScopeNoneFieldsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -388,6 +469,8 @@ class ScopeNoneFieldsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -432,6 +515,8 @@ class ScopeNoneFieldsRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

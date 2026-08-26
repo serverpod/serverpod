@@ -110,11 +110,15 @@ abstract class AuthKey
     };
   }
 
-  static AuthKeyInclude include({
-    _is.SelectColumnsBuilder<AuthKeyTable>? select,
-  }) {
-    return AuthKeyInclude._(selectedColumns: select?.call(AuthKey.t));
+  /// Builds a complete [AuthKeyInclude] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
+
+  static AuthKeyInclude include() {
+    return AuthKeyInclude._();
   }
+
+  /// Builds a complete [AuthKeyIncludeList] object for this table, fetching all columns.
+  /// Used for typed queries (e.g. `find`, `findFirstRow`, `findById`).
 
   static AuthKeyIncludeList includeList({
     _is.WhereExpressionBuilder<AuthKeyTable>? where,
@@ -123,9 +127,45 @@ abstract class AuthKey
     _is.OrderByBuilder<AuthKeyTable>? orderBy,
     _is.OrderByListBuilder<AuthKeyTable>? orderByList,
     AuthKeyInclude? include,
-    _is.SelectColumnsBuilder<AuthKeyTable>? select,
   }) {
     return AuthKeyIncludeList._(
+      where: where,
+      limit: limit,
+      offset: offset,
+      orderBy: orderBy?.call(AuthKey.t),
+      orderByList: orderByList?.call(AuthKey.t),
+      include: include,
+    );
+  }
+
+  /// Builds a JSON-compatible [AuthKeyJsonInclude] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// Note: If [select] is specified here on a root include, it will take precedence
+  /// over any `select` parameter passed to `findAsJson`.
+
+  static AuthKeyJsonInclude includeJson({
+    _is.SelectColumnsBuilder<AuthKeyTable>? select,
+  }) {
+    return _AuthKeyJsonInclude._(selectedColumns: select?.call(AuthKey.t));
+  }
+
+  /// Builds a JSON-compatible [AuthKeyJsonIncludeList] object for this table.
+  ///
+  /// Use [select] to specify which columns to include in the query.
+  /// When nested in other includes or used with `findAsJson`, only the selected
+  /// columns will be fetched.
+
+  static AuthKeyJsonIncludeList includeJsonList({
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
+    int? limit,
+    int? offset,
+    _is.OrderByBuilder<AuthKeyTable>? orderBy,
+    _is.OrderByListBuilder<AuthKeyTable>? orderByList,
+    AuthKeyJsonInclude? include,
+    _is.SelectColumnsBuilder<AuthKeyTable>? select,
+  }) {
+    return _AuthKeyJsonIncludeList._(
       where: where,
       limit: limit,
       offset: offset,
@@ -255,8 +295,46 @@ class AuthKeyTable extends _is.Table<int?> {
   ];
 }
 
-class AuthKeyInclude extends _is.IncludeObject {
-  AuthKeyInclude._({this.selectedColumns});
+abstract interface class AuthKeyJsonInclude
+    implements _is.JsonCompatibleInclude {}
+
+abstract interface class AuthKeyJsonIncludeList
+    implements _is.JsonCompatibleInclude {}
+
+final class AuthKeyInclude extends _is.IncludeObject
+    implements AuthKeyJsonInclude, _is.FullModelInclude {
+  AuthKeyInclude._();
+
+  @override
+  Map<String, _is.Include?> get includes => {};
+
+  @override
+  _is.Table<int?> get table => AuthKey.t;
+}
+
+final class AuthKeyIncludeList extends _is.IncludeList
+    implements AuthKeyJsonIncludeList, _is.FullModelInclude {
+  AuthKeyIncludeList._({
+    _is.WhereExpressionBuilder<AuthKeyTable>? where,
+    super.limit,
+    super.offset,
+    super.orderBy,
+    super.orderByList,
+    AuthKeyInclude? super.include,
+  }) {
+    super.where = where?.call(AuthKey.t);
+  }
+
+  @override
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
+
+  @override
+  _is.Table<int?> get table => AuthKey.t;
+}
+
+final class _AuthKeyJsonInclude extends _is.IncludeObject
+    implements AuthKeyJsonInclude {
+  _AuthKeyJsonInclude._({this.selectedColumns});
 
   @override
   final List<_is.Column>? selectedColumns;
@@ -268,14 +346,15 @@ class AuthKeyInclude extends _is.IncludeObject {
   _is.Table<int?> get table => AuthKey.t;
 }
 
-class AuthKeyIncludeList extends _is.IncludeList {
-  AuthKeyIncludeList._({
+final class _AuthKeyJsonIncludeList extends _is.IncludeList
+    implements AuthKeyJsonIncludeList {
+  _AuthKeyJsonIncludeList._({
     _is.WhereExpressionBuilder<AuthKeyTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
     super.orderByList,
-    super.include,
+    AuthKeyJsonInclude? super.include,
     this.selectedColumns,
   }) {
     super.where = where?.call(AuthKey.t);
@@ -397,6 +476,8 @@ class AuthKeyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -448,6 +529,8 @@ class AuthKeyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
   ///
   /// Use [where] to specify which items to include in the return value.
   /// If none is specified, all items will be returned.
@@ -492,6 +575,8 @@ class AuthKeyRepository {
   ///
   /// Use [select] to specify which columns to include from the root table.
   /// If none is specified, all columns will be returned.
+  /// Note: If an [include] with its own selected columns (e.g. via `includeJson(select: ...)`)
+  /// is also provided at the root level, the include's `select` will take precedence.
 
   Future<Map<String, dynamic>?> findByIdAsJson(
     _is.DatabaseSession session,

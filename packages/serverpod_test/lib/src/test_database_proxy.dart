@@ -112,7 +112,7 @@ class TestDatabaseProxy implements Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
@@ -136,7 +136,7 @@ class TestDatabaseProxy implements Database {
   Future<T?> findById<T extends TableRow>(
     Object id, {
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
@@ -160,7 +160,7 @@ class TestDatabaseProxy implements Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -189,7 +189,7 @@ class TestDatabaseProxy implements Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -214,7 +214,7 @@ class TestDatabaseProxy implements Database {
   Future<Map<String, dynamic>?> findByIdAsJson<T extends TableRow>(
     Object id, {
     Transaction? transaction,
-    Include? include,
+    JsonCompatibleInclude? include,
     List<Column>? select,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
@@ -239,7 +239,7 @@ class TestDatabaseProxy implements Database {
     Column? orderBy,
     List<Column>? orderByList,
     Transaction? transaction,
-    Include? include,
+    FullModelInclude? include,
     LockMode? lockMode,
     LockBehavior? lockBehavior,
   }) {
