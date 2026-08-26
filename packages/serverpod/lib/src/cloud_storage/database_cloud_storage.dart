@@ -121,7 +121,13 @@ class DatabaseCloudStorage extends CloudStorage {
       );
     }
 
-    await statFile(session: session, path: path);
+    final exists = await fileExists(session: session, path: path);
+    if (!exists) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
     return _endpointUri(session, {'method': 'file', 'path': path});
   }
 
