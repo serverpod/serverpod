@@ -1,5 +1,7 @@
 # Many side of a named one-to-many relation. `companyId` is generated from `fk`.
-# `previousCompanyId` is generated as nullable because of `optional`.
+# `previousCompanyId` is generated as nullable because of `optional`. On that
+# unnamed relation `fk` is redundant, since the side declaring the object always
+# owns the foreign key, and is kept here to pin that it stays accepted.
 class: FkRelationEmployee
 table: fk_relation_employee
 fields:
