@@ -6,6 +6,10 @@
 # Run by the `melos bootstrap` post hook, and by util/analyze_non_workspace and
 # util/run_tests_non_workspace so those also work in CI jobs that only do a
 # plain `dart pub get` at the workspace root.
+#
+# Only the package name is printed per package. `dart pub get` output is
+# captured and replayed just for the packages that fail, so a successful run
+# stays short.
 
 if [ ! -f util/.serverpod_util_root ]; then
     echo "Run this script from the root of the Serverpod repository"
@@ -17,10 +21,20 @@ fi
 
 exit_code=0
 
+echo "Resolving non-workspace packages..."
 for pkg in "${NON_WORKSPACE_PACKAGE_PATHS[@]}"
 do
-    echo "### Resolving $pkg"
-    (cd "$pkg" && dart pub get) || exit_code=1
+    echo "  └> $pkg"
+
+    if ! output=$(cd "$pkg" && dart pub get 2>&1); then
+        echo "$output"
+        exit_code=1
+    fi
 done
 
+if [ $exit_code != 0 ]; then
+    echo "[!] Failed to resolve one or more non-workspace packages."
+fi
+
+echo ""
 exit $exit_code
