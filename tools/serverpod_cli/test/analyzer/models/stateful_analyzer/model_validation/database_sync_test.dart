@@ -1,7 +1,9 @@
+import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:test/test.dart';
 
 import '../../../../test_util/builders/generator_config_builder.dart';
@@ -77,6 +79,17 @@ $indexes
     ];
   }
 
+  ModelClassDefinition analyzePerson(List<ModelSource> models) {
+    var definitions = StatefulAnalyzer(
+      config,
+      models,
+      onErrorsCollector(CodeGenerationCollector()),
+    ).validateAll();
+    return definitions.whereType<ModelClassDefinition>().singleWhere(
+      (model) => model.className == 'Person',
+    );
+  }
+
   group('Given a model with "database: sync"', () {
     test(
       'that satisfies all sync restrictions when validating then no error is '
@@ -145,26 +158,6 @@ $indexes
     );
 
     test(
-      'without a scopeId field when validating then an error is generated on '
-      'the fields key.',
-      () {
-        var errors = validate([
-          crdtScopeModel,
-          personModel(fields: '  id: UuidValue?, defaultPersist=random_v7'),
-        ]);
-
-        expect(errors, [
-          (
-            message:
-                'Tables with "database: sync" must declare the field '
-                '"scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)".',
-            span: 'fields',
-          ),
-        ]);
-      },
-    );
-
-    test(
       'without any fields when validating then the errors are generated on '
       'the table key.',
       () {
@@ -178,15 +171,114 @@ $indexes
                 '"id: UuidValue?, defaultPersist=random_v7".',
             span: 'table',
           ),
+        ]);
+      },
+    );
+
+    test(
+      'without the crdt_scopes table when validating then an error is '
+      'generated on the database key.',
+      () {
+        var errors = validate([personModel()]);
+
+        expect(errors, [
           (
             message:
-                'Tables with "database: sync" must declare the field '
-                '"scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)".',
-            span: 'table',
+                'The "database: sync" option requires the '
+                '"serverpod_offline_sync" module. Add it to the "modules" '
+                'section of the generator.yaml file.',
+            span: 'sync',
+          ),
+          (
+            message:
+                'The parent table "crdt_scopes" was not found in any model.',
+            span: 'crdt_scopes',
           ),
         ]);
       },
     );
+  });
+
+  group('Given a model with "database: sync" without a scopeId field', () {
+    var models = [
+      crdtScopeModel,
+      personModel(
+        fields:
+            '  id: UuidValue?, defaultPersist=random_v7\n'
+            '  name: String, unique(per=scopeId)',
+      ),
+    ];
+    var scopeId = analyzePerson(models).findField('scopeId');
+
+    test('when validating then no error is generated.', () {
+      expect(validate(models), isEmpty);
+    });
+
+    test('when analyzing then the scopeId field is injected.', () {
+      expect(scopeId, isNotNull);
+    });
+
+    test('when analyzing then the injected field is a nullable int.', () {
+      expect(scopeId?.type.className, 'int');
+      expect(scopeId?.type.nullable, isTrue);
+    });
+
+    test('when analyzing then the injected field has scope all.', () {
+      expect(scopeId?.scope, ModelFieldScopeDefinition.all);
+    });
+
+    test('when analyzing then the injected field is persisted.', () {
+      expect(scopeId?.shouldPersist, isTrue);
+    });
+
+    test(
+      'when analyzing then the injected field cascades from crdt_scopes.',
+      () {
+        var relation = scopeId?.relation;
+        expect(relation, isA<ForeignRelationDefinition>());
+        relation as ForeignRelationDefinition;
+        expect(relation.parentTable, 'crdt_scopes');
+        expect(relation.foreignFieldName, 'id');
+        expect(relation.onDelete, ForeignKeyAction.cascade);
+        expect(relation.deferrable, isNull);
+      },
+    );
+
+    test('when analyzing then the injected field is documented.', () {
+      expect(scopeId?.documentation, isNotEmpty);
+    });
+
+    test(
+      'when analyzing then the indexes referencing scopeId are resolved on '
+      'the injected field.',
+      () {
+        expect(scopeId?.indexes.map((i) => i.name), [
+          'person__scopeId__name__unique_idx',
+        ]);
+      },
+    );
+  });
+
+  group('Given a model with "database: sync" with a CrdtScope relation', () {
+    var models = [
+      crdtScopeModel,
+      personModel(
+        fields:
+            '  id: UuidValue?, defaultPersist=random_v7\n'
+            '  scope: CrdtScope?, relation(onDelete=Cascade)',
+      ),
+    ];
+
+    test('when validating then no error is generated.', () {
+      expect(validate(models), isEmpty);
+    });
+
+    test('when analyzing then the implicit scopeId field is used.', () {
+      var person = analyzePerson(models);
+      var scopeId = person.findField('scopeId');
+      expect(scopeId?.relation, isA<ForeignRelationDefinition>());
+      expect(person.fields.where((f) => f.name == 'scopeId'), hasLength(1));
+    });
   });
 
   group('Given a model with "database: sync" with a scopeId field', () {

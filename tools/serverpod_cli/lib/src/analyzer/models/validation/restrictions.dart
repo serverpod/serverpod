@@ -264,7 +264,7 @@ class Restrictions {
       ];
     }
 
-    // Without a "fields" key, the missing sync fields have no other key to
+    // Without a "fields" key, the implicit primary key has no other key to
     // be reported on.
     if (definition is ModelClassDefinition &&
         definition.isSyncTable &&
@@ -338,6 +338,11 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
+    if (database == ModelDatabaseDefinition.sync &&
+        !parsedModels.tableNames.containsKey(syncScopesTableName)) {
+      errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
+    }
+
     var invalidScopedFields = definition.fieldsIncludingInherited.where(
       (field) =>
           field.shouldPersist &&
@@ -359,7 +364,7 @@ class Restrictions {
   }
 
   /// Validates the "fields" key of a model with `database: sync`, reporting
-  /// the fields it must declare but does not.
+  /// the implicit primary key that does not satisfy the sync restrictions.
   List<SourceSpanSeverityException> validateFieldsKey(
     String parentNodeName,
     String _,
@@ -381,8 +386,6 @@ class Restrictions {
           !definition.isIdInherited &&
           validateSyncIdField(definition.idField) != null)
         SourceSpanSeverityException(syncIdFieldError, span),
-      if (definition.syncScopeIdField == null)
-        SourceSpanSeverityException(syncScopeIdMissingError, span),
     ];
   }
 

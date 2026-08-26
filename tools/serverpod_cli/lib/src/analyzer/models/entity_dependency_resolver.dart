@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/sync_restrictions.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ModelDependencyResolver {
@@ -45,6 +47,58 @@ class ModelDependencyResolver {
         );
       }
     });
+
+    // Finally inject the system fields that synced tables did not declare,
+    // neither directly nor through a relation resolved above.
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
+      _resolveSyncScopeIdField(classDefinition, modelDefinitions);
+    });
+  }
+
+  /// Injects the `scopeId` field on tables with `database: sync` that do not
+  /// declare it, following the same convention as implicit foreign keys: a
+  /// declared field is validated as is, an omitted one is generated.
+  ///
+  /// The field is a system field maintained by the sync engine, which stamps
+  /// it on writes and strips it on reads, so applications never need to
+  /// declare it. It is skipped when the scopes table is unknown, which the
+  /// validation layer reports as a missing module.
+  static void _resolveSyncScopeIdField(
+    ModelClassDefinition classDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    if (!classDefinition.isSyncTable) return;
+    if (classDefinition.syncScopeIdField != null) return;
+
+    var scopesTableExists = modelDefinitions.any(
+      (model) =>
+          model is ModelClassDefinition &&
+          model.tableName == syncScopesTableName,
+    );
+    if (!scopesTableExists) return;
+
+    var scopeIdField = SerializableModelFieldDefinition(
+      name: syncScopeIdFieldName,
+      type: TypeDefinition.int.asNullable,
+      scope: ModelFieldScopeDefinition.all,
+      shouldPersist: true,
+      isRequired: false,
+      documentation: [
+        '/// The scope owning this row. Maintained by the sync engine, which',
+        '/// sets it on writes and clears it on reads, so it is null unless',
+        '/// explicitly assigned.',
+      ],
+      relation: ForeignRelationDefinition(
+        parentTable: syncScopesTableName,
+        foreignFieldName: defaultPrimaryKeyName,
+        onDelete: ForeignKeyAction.cascade,
+      ),
+    );
+
+    classDefinition.fields.add(scopeIdField);
+    _resolveFieldIndexes(scopeIdField, classDefinition);
   }
 
   static void _resolveInheritance(

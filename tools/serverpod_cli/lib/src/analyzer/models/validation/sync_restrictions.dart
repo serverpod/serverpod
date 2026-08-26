@@ -16,11 +16,6 @@ const String syncScopeIdFieldName = 'scopeId';
 /// module.
 const String syncScopesTableName = 'crdt_scopes';
 
-/// The declaration users are expected to add to every synced model.
-const String syncScopeIdFieldDeclaration =
-    '$syncScopeIdFieldName: int?, '
-    'relation(parent=$syncScopesTableName, onDelete=Cascade)';
-
 extension ModelClassDefinitionSync on ModelClassDefinition {
   /// Whether this model is a table synchronized between client and server.
   bool get isSyncTable =>
@@ -70,10 +65,11 @@ const String syncIdFieldError =
     'Tables with "database: sync" must have a UUID primary key. Declare the '
     'id field as "id: UuidValue?, defaultPersist=random_v7".';
 
-/// The error reported when a sync table does not declare the `scopeId` field.
-const String syncScopeIdMissingError =
-    'Tables with "database: sync" must declare the field '
-    '"$syncScopeIdFieldDeclaration".';
+/// The error reported when the scopes table is unknown, which happens when
+/// the `serverpod_offline_sync` module is not part of the project.
+const String syncModuleMissingError =
+    'The "database: sync" option requires the "serverpod_offline_sync" '
+    'module. Add it to the "modules" section of the generator.yaml file.';
 
 /// Validates that the primary key [idField] of a sync table is a UUID.
 String? validateSyncIdField(SerializableModelFieldDefinition idField) {
