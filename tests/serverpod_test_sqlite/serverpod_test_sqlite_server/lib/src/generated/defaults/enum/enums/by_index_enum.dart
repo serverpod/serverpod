@@ -14,8 +14,7 @@ import 'package:serverpod/serverpod.dart' as _is;
 
 enum ByIndexEnum implements _is.SerializableModel {
   byIndex1,
-  byIndex2,
-  ;
+  byIndex2;
 
   static ByIndexEnum fromJson(int index) {
     switch (index) {

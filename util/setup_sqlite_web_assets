@@ -41,12 +41,11 @@ CACHE_DIR="$(pwd)/.serverpod/web_assets"
 
 mkdir -p "$CACHE_DIR"
 
-# The version a package resolved a dependency to, read from its lockfile.
+# The version a dependency resolved to, read from the workspace lockfile.
 resolved_version() {
-    local package="$1"
-    local dependency="$2"
-    if [ ! -f "$package/pubspec.lock" ]; then
-        echo "### $package is not resolved - run 'melos bootstrap' first" >&2
+    local dependency="$1"
+    if [ ! -f "pubspec.lock" ]; then
+        echo "### Workspace is not resolved - run 'dart pub get' first" >&2
         exit 1
     fi
     awk -v dependency="  $dependency:" '
@@ -56,7 +55,7 @@ resolved_version() {
             print $2
             exit
         }
-    ' "$package/pubspec.lock"
+    ' "pubspec.lock"
 }
 
 # Downloads <url> to the cache as <name>, unless it is already there.
@@ -87,10 +86,10 @@ link_or_copy() {
 for package in "${PACKAGES[@]}"; do
     echo "### Provisioning SQLite web assets for $package"
 
-    sqlite3_version="$(resolved_version "$package" sqlite3)"
-    sqlite_async_version="$(resolved_version "$package" sqlite_async)"
+    sqlite3_version="$(resolved_version sqlite3)"
+    sqlite_async_version="$(resolved_version sqlite_async)"
     if [ -z "$sqlite3_version" ] || [ -z "$sqlite_async_version" ]; then
-        echo "### No resolved sqlite3/sqlite_async version in $package/pubspec.lock" >&2
+        echo "### No resolved sqlite3/sqlite_async version in workspace pubspec.lock" >&2
         exit 1
     fi
 

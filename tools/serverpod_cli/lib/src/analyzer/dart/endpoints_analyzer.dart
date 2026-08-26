@@ -15,6 +15,7 @@ import 'package:serverpod_cli/src/analyzer/dart/endpoint_analyzers/endpoint_para
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_cli/src/util/unrendered_template_path.dart';
 
 import 'definitions.dart';
 
@@ -161,6 +162,7 @@ class EndpointsAnalyzer {
 
     for (var path in filesToAnalyze) {
       if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (isUnrenderedTemplatePath(path)) continue;
       if (!File(path).existsSync()) continue;
 
       var library = await _resolveLibrary(path);
@@ -302,7 +304,8 @@ class EndpointsAnalyzer {
       analyzedFiles.sort();
       yield* analyzedFiles
           .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
+          .where((path) => !path.endsWith('_test.dart'))
+          .where((path) => !isUnrenderedTemplatePath(path));
     }
   }
 
@@ -417,6 +420,7 @@ class EndpointsAnalyzer {
   bool _isEndpointFile(File file) {
     if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
     if (!file.path.endsWith('.dart')) return false;
+    if (isUnrenderedTemplatePath(file.path)) return false;
     if (!file.existsSync()) return false;
     return file.readAsStringSync().contains('extends Endpoint');
   }

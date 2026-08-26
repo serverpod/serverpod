@@ -9,8 +9,10 @@ description: Part of tests for Serverpod.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
-  flutter: '^3.38.4'
+  sdk: '^3.12.2'
+  flutter: '^3.44.4'
+
+resolution: workspace
 
 dependencies:
   cupertino_icons: ^1.0.5
@@ -20,29 +22,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_auth_shared_flutter:
-    path: ../../modules/legacy/serverpod_auth/serverpod_auth_shared_flutter
+  serverpod_auth_shared_flutter: 4.0.0-beta.4
   serverpod_test_client:
     path: ../serverpod_test_client
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod_auth_client:
-    path: ../../modules/legacy/serverpod_auth/serverpod_auth_client
-  serverpod_client:
-    path: ../../packages/serverpod_client
-  serverpod_database:
-    path: ../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../packages/serverpod_embedded_postgres
-  serverpod_serialization:
-    path: ../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../packages/serverpod_shared
-  serverpod_test_module_client:
-    path: ../serverpod_test_module/serverpod_test_module_client
-  serverpod_test_shared:
-    path: ../serverpod_test_shared
 
 flutter:
   uses-material-design: true

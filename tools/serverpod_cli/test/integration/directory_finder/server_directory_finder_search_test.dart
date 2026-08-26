@@ -402,8 +402,8 @@ dependencies:
     );
 
     test(
-      'Given melos.yaml blocks upward search, '
-      'when searching from below melos.yaml boundary, '
+      'Given workspace pubspec.yaml blocks upward search, '
+      'when searching from below workspace boundary, '
       'then it does not find server above the boundary',
       () async {
         await d.dir('server', [
@@ -413,18 +413,22 @@ dependencies:
   serverpod: ^2.0.0
 '''),
           d.dir('subdir', [
-            d.file('melos.yaml', 'name: my_workspace\npackages:\n  - **\n'),
+            d.file('pubspec.yaml', '''
+name: my_workspace
+workspace:
+  - server
+'''),
             d.dir('secondSubdir', []),
           ]),
         ]).create();
 
-        // Search from below the melos.yaml boundary
+        // Search from below the workspace pubspec.yaml boundary
         var searchDir = Directory(
           path.join(d.sandbox, 'server', 'subdir', 'secondSubdir'),
         );
         var result = ServerDirectoryFinder.search(searchDir);
 
-        // Should NOT find the server directory above melos.yaml
+        // Should NOT find the server directory above workspace pubspec.yaml
         expect(result, isNull);
       },
     );

@@ -10,6 +10,8 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   collection: ^1.18.0
   meta: ^1.15.0
@@ -19,7 +21,3 @@ dependencies:
 dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod_lints:
-    path: ../serverpod_lints

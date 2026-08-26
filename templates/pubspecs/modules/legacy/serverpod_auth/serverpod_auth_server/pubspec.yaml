@@ -8,6 +8,8 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   crypto: ^3.0.2
   email_validator: '>=2.1.17 <4.0.0'
@@ -27,22 +29,6 @@ dev_dependencies:
   serverpod_lints: SERVERPOD_VERSION
   serverpod_test: SERVERPOD_VERSION
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared
-  serverpod_test:
-    path: ../../../../packages/serverpod_test
 
 false_secrets:
   - test/firebase/firebase_auth_mock.dart

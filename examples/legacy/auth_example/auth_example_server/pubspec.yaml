@@ -7,7 +7,9 @@ description: Starting point for a Serverpod server.
 # homepage: https://www.example.com
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   mailer: ^6.0.1
@@ -16,17 +18,3 @@ dependencies:
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_auth_server:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_server
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared

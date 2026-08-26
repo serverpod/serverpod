@@ -27,8 +27,7 @@ enum LegacyAuthenticationFailReason implements _isc.SerializableModel {
   tooManyFailedAttempts,
 
   /// The account exists but is blocked.
-  blocked,
-  ;
+  blocked;
 
   static LegacyAuthenticationFailReason fromJson(int index) {
     switch (index) {

@@ -1,4 +1,5 @@
 include: package:serverpod_lints/cli.yaml
+
 analyzer:
   exclude:
     - test/integration/util/test_assets/pubspec_helpers/conditionally_ignored/pubspec.yaml
@@ -9,7 +10,7 @@ linter:
     avoid_escaping_inner_quotes: false
     prefer_final_in_for_each: false
     prefer_final_locals: false
-    prefer_final_parameters: false
+    prefer_initializing_formals: false
     sort_pub_dependencies: false
 
 formatter:

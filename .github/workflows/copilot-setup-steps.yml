@@ -31,19 +31,14 @@ jobs:
       - name: Set up Flutter
         uses: ./.github/actions/use-flutter
         with:
-          flutter-version: '3.44.4'
+          flutter-version: '3.47.0'
           channel: "stable"
           cache: true
 
       - name: Verify Dart version
         run: |
           dart --version
-          echo "Dart SDK version should be >= 3.11.3"
-
-      - name: Install Melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
+          echo "Dart SDK version should be >= 3.12.2"
 
       - name: Set SERVERPOD_HOME environment variable
         run: echo "SERVERPOD_HOME=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -51,7 +46,7 @@ jobs:
       - name: Install all dependencies
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
 
       - name: Activate Serverpod CLI from source
         uses: ./.github/actions/retry

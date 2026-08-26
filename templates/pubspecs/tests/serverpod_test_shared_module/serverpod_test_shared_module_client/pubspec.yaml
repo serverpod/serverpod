@@ -10,6 +10,8 @@ repository: https://github.com/serverpod/serverpod
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   serverpod_client: SERVERPOD_VERSION
   serverpod_database: SERVERPOD_VERSION
@@ -18,11 +20,3 @@ dependencies:
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
-
-dependency_overrides:
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_database:
-    path: ../../../packages/serverpod_database
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization

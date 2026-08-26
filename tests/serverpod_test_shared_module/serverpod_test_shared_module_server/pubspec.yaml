@@ -9,7 +9,9 @@ description: Serverpod module fixture that owns a shared table package.
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   serverpod: 4.0.0-beta.4
@@ -20,19 +22,3 @@ dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
   serverpod_test: 4.0.0-beta.4
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod:
-    path: ../../../packages/serverpod
-  serverpod_database:
-    path: ../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../packages/serverpod_shared
-  serverpod_test:
-    path: ../../../packages/serverpod_test

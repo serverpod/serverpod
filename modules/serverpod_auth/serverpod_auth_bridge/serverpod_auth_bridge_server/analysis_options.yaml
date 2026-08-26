@@ -5,5 +5,9 @@ analyzer:
     - lib/src/generated/**
     - test/integration/test_tools/serverpod_test_tools.dart
 
+linter:
+  rules:
+    prefer_initializing_formals: false
+
 formatter:
   trailing_commas: preserve

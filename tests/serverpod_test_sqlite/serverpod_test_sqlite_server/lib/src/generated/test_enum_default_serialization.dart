@@ -16,8 +16,7 @@ import 'package:serverpod/serverpod.dart' as _is;
 enum TestEnumDefaultSerialization implements _is.SerializableModel {
   alpha,
   beta,
-  gamma,
-  ;
+  gamma;
 
   static TestEnumDefaultSerialization fromJson(String name) {
     switch (name) {

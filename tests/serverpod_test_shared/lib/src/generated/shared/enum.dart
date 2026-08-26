@@ -15,8 +15,7 @@ import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 enum SharedEnum implements _iss.SerializableModel {
   one('1', 'The first value', 10),
   two('2', 'The second value', 0),
-  three('3', 'The third value', 0),
-  ;
+  three('3', 'The third value', 0);
 
   const SharedEnum(
     this.shortName,

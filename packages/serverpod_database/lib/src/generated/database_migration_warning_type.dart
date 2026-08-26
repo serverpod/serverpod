@@ -16,8 +16,7 @@ enum DatabaseMigrationWarningType implements _iss.SerializableModel {
   tableDropped,
   columnDropped,
   notNullAdded,
-  uniqueIndexCreated,
-  ;
+  uniqueIndexCreated;
 
   static DatabaseMigrationWarningType fromJson(String name) {
     switch (name) {

@@ -16,8 +16,7 @@ import 'package:serverpod/serverpod.dart' as _is;
 enum MyTriggerType implements _is.SerializableModel {
   manual,
   schedule,
-  event,
-  ;
+  event;
 
   static MyTriggerType fromJson(String name) {
     switch (name) {

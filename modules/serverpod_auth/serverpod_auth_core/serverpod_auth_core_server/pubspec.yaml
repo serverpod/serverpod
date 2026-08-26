@@ -7,7 +7,9 @@ version: 4.0.0-beta.4
 repository: https://github.com/serverpod/serverpod
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   clock: ^1.1.1
@@ -26,22 +28,6 @@ dev_dependencies:
   serverpod_test: 4.0.0-beta.4
   test: ^1.25.5
   test_descriptor: ^2.0.2
-
-dependency_overrides:
-  serverpod:
-    path: ../../../../packages/serverpod
-  serverpod_database:
-    path: ../../../../packages/serverpod_database
-  serverpod_embedded_postgres:
-    path: ../../../../packages/serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
-  serverpod_shared:
-    path: ../../../../packages/serverpod_shared
-  serverpod_test:
-    path: ../../../../packages/serverpod_test
 
 false_secrets:
   - test/jwt/jwt_util_test.dart

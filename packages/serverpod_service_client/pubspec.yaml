@@ -9,7 +9,9 @@ homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   http: '>=1.1.0 <2.0.0'
@@ -20,17 +22,3 @@ dependencies:
 
 dev_dependencies:
   serverpod_lints: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
-  serverpod_database:
-    path: ../serverpod_database
-  serverpod_embedded_postgres:
-    path: ../serverpod_embedded_postgres
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization
-  serverpod_shared:
-    path: ../serverpod_shared
