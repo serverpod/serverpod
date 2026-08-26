@@ -264,14 +264,6 @@ class Restrictions {
       ];
     }
 
-    // Without a "fields" key, the implicit primary key has no other key to
-    // be reported on.
-    if (definition is ModelClassDefinition &&
-        definition.isSyncTable &&
-        !documentContents.containsKey(Keyword.fields)) {
-      return validateFieldsKey(parentNodeName, Keyword.fields, span);
-    }
-
     return [];
   }
 
@@ -338,9 +330,14 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (database == ModelDatabaseDefinition.sync &&
-        !parsedModels.tableNames.containsKey(syncScopesTableName)) {
-      errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
+    if (database == ModelDatabaseDefinition.sync) {
+      if (!parsedModels.tableNames.containsKey(syncScopesTableName)) {
+        errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
+      }
+
+      if (!_documentDeclaresIdField && !definition.isIdInherited) {
+        errors.add(SourceSpanSeverityException(syncIdFieldError, span));
+      }
     }
 
     var invalidScopedFields = definition.fieldsIncludingInherited.where(
@@ -361,6 +358,14 @@ class Restrictions {
     }
 
     return errors;
+  }
+
+  /// Whether the document declares the primary key under its "fields" key.
+  ///
+  /// The id field is implicit when it is neither declared here nor inherited.
+  bool get _documentDeclaresIdField {
+    var fields = documentContents.nodes[Keyword.fields];
+    return fields is YamlMap && fields.containsKey(defaultPrimaryKeyName);
   }
 
   /// Validates the "fields" key of a model with `database: sync`, reporting
