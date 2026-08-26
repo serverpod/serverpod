@@ -368,32 +368,6 @@ class Restrictions {
     return fields is YamlMap && fields.containsKey(defaultPrimaryKeyName);
   }
 
-  /// Validates the "fields" key of a model with `database: sync`, reporting
-  /// the implicit primary key that does not satisfy the sync restrictions.
-  List<SourceSpanSeverityException> validateFieldsKey(
-    String parentNodeName,
-    String _,
-    SourceSpan? span,
-  ) {
-    var definition = documentDefinition;
-    if (definition is! ModelClassDefinition || !definition.isSyncTable) {
-      return [];
-    }
-
-    // The id field is implicit unless declared in this document or inherited.
-    // Declared and inherited id fields are validated where they are declared.
-    var fields = documentContents.nodes[Keyword.fields];
-    var declaresId =
-        fields is YamlMap && fields.containsKey(defaultPrimaryKeyName);
-
-    return [
-      if (!declaresId &&
-          !definition.isIdInherited &&
-          validateSyncIdField(definition.idField) != null)
-        SourceSpanSeverityException(syncIdFieldError, span),
-    ];
-  }
-
   List<SourceSpanSeverityException> validateTable(
     String parentNodeName,
     dynamic tableName,
@@ -1657,11 +1631,10 @@ class Restrictions {
           span,
         ),
       );
-    } else if (classDefinition.isSyncTable) {
-      var syncError = validateSyncIdField(field);
-      if (syncError != null) {
-        errors.add(SourceSpanSeverityException(syncError, span));
-      }
+    }
+
+    if (classDefinition.isSyncTable && !isSyncIdFieldValid(field)) {
+      errors.add(SourceSpanSeverityException(syncIdFieldError, span));
     }
 
     return errors;

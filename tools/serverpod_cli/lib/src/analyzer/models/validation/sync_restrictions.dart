@@ -72,9 +72,9 @@ const String syncModuleMissingError =
     'module. Add it to the "modules" section of the generator.yaml file.';
 
 /// Validates that the primary key [idField] of a sync table is a UUID.
-String? validateSyncIdField(SerializableModelFieldDefinition idField) {
-  if (idField.type.className == 'UuidValue') return null;
-  return syncIdFieldError;
+bool isSyncIdFieldValid(SerializableModelFieldDefinition idField) {
+  if (idField.type.className == 'UuidValue') return true;
+  return false;
 }
 
 /// Validates the type of the `scopeId` [field] of a sync table.
