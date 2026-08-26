@@ -449,7 +449,7 @@ final class StorageAccess {
   /// the storage. If any given file isn't public or if no such file exists,
   /// null is stored at the corresponding position in the output list. Saves
   /// on server roundtrips if a large number of public URLs must be fetched,
-  /// relative to calling [getPublicUrl] via an endpoint for each one.
+  /// relative to calling [publicDownloadUrl] via an endpoint for each one.
   Future<List<Uri?>> publicDownloadUrls({
     required String storageId,
     required List<String> paths,
