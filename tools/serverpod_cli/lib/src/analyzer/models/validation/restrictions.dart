@@ -377,7 +377,7 @@ class Restrictions {
       ..._validateTableName(tableName, span),
       ..._validateTableInheritedIdField(span),
       if (tableName is String)
-        ..._validateTableInheritedIndexNames(tableName, span),
+        ..._validateTableInheritedIndexes(tableName, span),
     ];
   }
 
@@ -539,16 +539,6 @@ class Restrictions {
       }
     }
 
-    var definition = documentDefinition;
-    if (definition is ModelClassDefinition && definition.isSyncTable) {
-      return [
-        for (var index in definition.inheritedIndexes)
-          if (validateSyncUniqueIndex(definition, index, parsedModels)
-              case var syncError?)
-            SourceSpanSeverityException(syncError, span),
-      ];
-    }
-
     return [];
   }
 
@@ -583,11 +573,12 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
+    if (field == null) return [];
 
-    if (field?.relation?.isForeignKeyOrigin == false) {
+    if (field.relation?.isForeignKeyOrigin == false) {
       return [
         SourceSpanSeverityException(
           'The "$key" property can only be set on the side holding the foreign key.',
@@ -596,9 +587,7 @@ class Restrictions {
       ];
     }
 
-    if (definition is ModelClassDefinition &&
-        definition.isSyncTable &&
-        field != null) {
+    if (definition.isSyncTable) {
       return _validateSyncDatabaseActionKey(definition, field, key, span);
     }
 
@@ -1575,7 +1564,7 @@ class Restrictions {
     return errors;
   }
 
-  List<SourceSpanSeverityException> _validateTableInheritedIndexNames(
+  List<SourceSpanSeverityException> _validateTableInheritedIndexes(
     String tableName,
     SourceSpan? span,
   ) {
@@ -1583,10 +1572,21 @@ class Restrictions {
     if (definition is! ModelClassDefinition) return [];
 
     var indexNames = definition.inheritedIndexes.map((i) => i.name);
-    return [
+    final errors = [
       for (var indexName in indexNames)
         ...validateTableIndexName(tableName, indexName, span),
     ];
+
+    if (definition.isSyncTable) {
+      errors.addAll([
+        for (var index in definition.inheritedIndexes)
+          if (validateSyncUniqueIndex(definition, index, parsedModels)
+              case var syncError?)
+            SourceSpanSeverityException(syncError, span),
+      ]);
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> _validateIdFieldDataType(
