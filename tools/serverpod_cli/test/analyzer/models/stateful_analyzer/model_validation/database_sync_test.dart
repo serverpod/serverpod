@@ -19,15 +19,7 @@ void main() {
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -63,15 +55,7 @@ indexes:
     'then an error is generated on the id type.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -110,15 +94,7 @@ fields:
     'then an error is generated on the database key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -156,15 +132,7 @@ fields:
     'then an error is generated on the database key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -246,15 +214,7 @@ fields:
     'then an error is generated on the scopeId type.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -292,15 +252,7 @@ fields:
     'then an error is generated on the scopeId key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -339,15 +291,7 @@ fields:
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -385,15 +329,7 @@ fields:
     'then an error is generated on the column name.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -431,15 +367,7 @@ fields:
     'then an error is generated on the onDelete value.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -476,15 +404,7 @@ fields:
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -521,15 +441,7 @@ fields:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -559,15 +471,7 @@ fields:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -599,15 +503,7 @@ fields:
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -647,15 +543,7 @@ fields:
     'then an error is generated on the deferred value.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -695,15 +583,7 @@ fields:
     'then an error is generated on the deferrable key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -743,15 +623,7 @@ fields:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -783,15 +655,7 @@ fields:
     'then an error is generated on the relation.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -831,15 +695,7 @@ fields:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -871,15 +727,7 @@ fields:
     'then an error is generated on the field type.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('company').withYaml(
           '''
 class: Company
@@ -929,15 +777,7 @@ fields:
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('company').withYaml(
           '''
 class: Company
@@ -987,15 +827,7 @@ fields:
     'then an error is generated on the field type.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1045,15 +877,7 @@ fields:
     'then an error is generated on the parent name.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1103,15 +927,7 @@ fields:
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1156,15 +972,7 @@ indexes:
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1209,15 +1017,7 @@ indexes:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1253,15 +1053,7 @@ indexes:
     'then an error is generated on the unique key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1306,15 +1098,7 @@ indexes:
     'then an error is generated on the unique modifier.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1356,15 +1140,7 @@ fields:
     'then no error is generated.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1396,15 +1172,7 @@ fields:
     'then an error is generated on the table key.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('base').withYaml(
           '''
 class: Base
@@ -1456,15 +1224,7 @@ fields:
     'then no error is generated and the scopeId field is injected below the id field.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1498,15 +1258,7 @@ fields:
     'then the injected scopeId field is a persisted nullable int with scope all.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1544,15 +1296,7 @@ fields:
     'then the injected scopeId field cascades from crdt_scopes.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1590,15 +1334,7 @@ fields:
     'then the indexes referencing scopeId are resolved on the injected field.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person
@@ -1634,15 +1370,7 @@ fields:
     'then no error is generated and the implicit scopeId field is used.',
     () {
       var models = [
-        ModelSourceBuilder().withFileName('crdt_scope').withYaml(
-          '''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''',
-        ).build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder().withFileName('person').withYaml(
           '''
 class: Person

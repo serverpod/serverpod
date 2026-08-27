@@ -88,7 +88,7 @@ fields:
 
   test(
     'Given a shared package model with a table property and "database: sync" '
-    'when analyzing model with the databaseSync experimental feature enabled '
+    'when analyzing model '
     'then no error is collected.',
     () {
       var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
@@ -96,18 +96,7 @@ fields:
       ]).build();
 
       var models = <ModelSource>[
-        ModelSourceBuilder()
-            .withIsSharedModel(true)
-            .withModuleAlias('shared')
-            .withFileName('crdt_scope')
-            .withYaml('''
-class: CrdtScope
-table: crdt_scopes
-database: all
-fields:
-  name: String
-''')
-            .build(),
+        ModelSourceBuilder().withCrdtScopeModel().build(),
         ModelSourceBuilder()
             .withIsSharedModel(true)
             .withModuleAlias('shared')
