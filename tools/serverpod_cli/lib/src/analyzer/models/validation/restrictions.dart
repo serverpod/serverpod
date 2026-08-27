@@ -814,26 +814,24 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ModelClassDefinition &&
-        def.tableName != null &&
-        _databaseModelReservedFieldNames.contains(fieldName)) {
-      return [
-        SourceSpanSeverityException(
-          'The field name "$fieldName" is reserved and cannot be used.',
-          span,
-        ),
-      ];
-    }
+    if (def is ModelClassDefinition && def.tableName != null) {
+      if (_databaseModelReservedFieldNames.contains(fieldName)) {
+        return [
+          SourceSpanSeverityException(
+            'The field name "$fieldName" is reserved and cannot be used.',
+            span,
+          ),
+        ];
+      }
 
-    if (def is ModelClassDefinition &&
-        def.isSyncTable &&
-        fieldName == syncScopeIdFieldName) {
-      var field = def.findField(fieldName);
-      var syncError = field == null
-          ? null
-          : validateSyncScopeIdFieldRelation(field);
-      if (syncError != null) {
-        return [SourceSpanSeverityException(syncError, span)];
+      if (def.isSyncTable && fieldName == syncScopeIdFieldName) {
+        var field = def.findField(fieldName);
+        var syncError = field == null
+            ? null
+            : validateSyncScopeIdFieldRelation(field);
+        if (syncError != null) {
+          return [SourceSpanSeverityException(syncError, span)];
+        }
       }
     }
 
@@ -1318,9 +1316,9 @@ class Restrictions {
       ];
     }
 
-    if (definition is ModelClassDefinition &&
-        definition.isSyncTable &&
-        parentNodeName == syncScopeIdFieldName) {
+    if (definition is! ModelClassDefinition) return [];
+
+    if (parentNodeName == syncScopeIdFieldName) {
       var syncError = validateSyncScopeIdParentTable(content);
       if (syncError != null) {
         return [SourceSpanSeverityException(syncError, span)];
@@ -1328,8 +1326,7 @@ class Restrictions {
     }
 
     var parentDefinition = parsedModels.findByTableName(content);
-    if (definition is ModelClassDefinition &&
-        parentDefinition is ModelClassDefinition) {
+    if (parentDefinition is ModelClassDefinition) {
       var syncBoundaryError = validateSyncRelationBoundary(
         model: definition,
         relatedModel: parentDefinition,
