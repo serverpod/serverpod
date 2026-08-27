@@ -7,6 +7,7 @@
 library;
 
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
 
 /// The field every synced model must declare to hold the owner scope of a row.
@@ -94,15 +95,26 @@ const String syncScopeIdColumnNameError =
 const String syncScopeRelationOnDeleteError =
     'The "$syncScopeIdFieldName" relation must use "onDelete=Cascade".';
 
-/// The error reported when the `scopeId` relation of a sync table is
-/// deferrable or deferred.
-const String syncScopeRelationDeferrableError =
-    'The "$syncScopeIdFieldName" relation must not be deferrable or deferred.';
-
-/// The error reported when a foreign key of a sync table is not deferred.
+/// The error reported when a required foreign key of a sync table is not
+/// deferred.
 const String syncRelationDeferredError =
-    'Relations on tables with "database: sync" must be deferred. Add the '
-    '"deferred" keyword to the relation.';
+    'Non-optional relations on tables with "database: sync" must be deferred. '
+    'Add the "deferred" keyword to the relation.';
+
+/// Whether the foreign key originated by [field] on the sync table [model]
+/// must be deferred.
+///
+/// Nullable foreign keys can be repaired by the sync engine, so only
+/// non-nullable ones other than the `scopeId` link must be deferred.
+bool requiresSyncDeferredRelation(
+  ModelClassDefinition model,
+  SerializableModelFieldDefinition field,
+) {
+  var foreignKeyField = model.foreignKeyField(field);
+  if (foreignKeyField == null) return false;
+  if (isSyncScopeRelation(foreignKeyField)) return false;
+  return !foreignKeyField.type.nullable;
+}
 
 /// Validates that a relation between [model] and [relatedModel] does not
 /// cross the boundary between synced and non-synced tables.

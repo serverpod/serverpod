@@ -588,51 +588,60 @@ class Restrictions {
       ];
     }
 
-    if (definition.isSyncTable) {
-      return _validateSyncDatabaseActionKey(definition, field, key, span);
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDeferrableValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    // A deferrable constraint is still checked immediately by default, which
+    // does not satisfy the deferred requirement of synced tables.
+    if (_requiresSyncDeferredRelation(parentNodeName)) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
     }
 
     return [];
   }
 
-  /// Validates the foreign key action keys declared on [field] of the sync
-  /// table [definition].
-  ///
-  /// The `scopeId` relation must cascade on delete and must not be deferrable
-  /// or deferred. Every other relation must be `deferred`, so `deferrable` is
-  /// not enough.
-  List<SourceSpanSeverityException> _validateSyncDatabaseActionKey(
-    ModelClassDefinition definition,
-    SerializableModelFieldDefinition field,
-    String key,
+  List<SourceSpanSeverityException> validateDeferredValue(
+    String parentNodeName,
+    dynamic content,
     SourceSpan? span,
   ) {
-    var foreignKeyField = definition.foreignKeyField(field);
-    if (foreignKeyField == null) return [];
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
 
-    var relation = foreignKeyField.relation as ForeignRelationDefinition;
-
-    if (isSyncScopeRelation(foreignKeyField)) {
-      if (key == Keyword.onDelete &&
-          relation.onDelete != ForeignKeyAction.cascade) {
-        return [
-          SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
-        ];
-      }
-      if (key == Keyword.deferred || key == Keyword.deferrable) {
-        return [
-          SourceSpanSeverityException(syncScopeRelationDeferrableError, span),
-        ];
-      }
-      return [];
-    }
-
-    if (key == Keyword.deferrable &&
-        relation.deferrable != DeferrableConstraint.initiallyDeferred) {
+    if (!_isYamlTrue(content) &&
+        _requiresSyncDeferredRelation(parentNodeName)) {
       return [SourceSpanSeverityException(syncRelationDeferredError, span)];
     }
 
     return [];
+  }
+
+  bool _requiresSyncDeferredRelation(String fieldName) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition || !definition.isSyncTable) {
+      return false;
+    }
+
+    var field = definition.findField(fieldName);
+    if (field == null) return false;
+
+    return requiresSyncDeferredRelation(definition, field);
   }
 
   List<SourceSpanSeverityException> validateOptionalKey(
@@ -2326,11 +2335,9 @@ class Restrictions {
     return [];
   }
 
-  /// Validates the relation declared on [field] of the sync table
-  /// [definition] for requirements whose key is absent from the relation
-  /// [content]: the `scopeId` relation must cascade on delete, and every
-  /// other foreign key must be deferred. When the offending key is present,
-  /// the error is reported on that key instead.
+  /// Validates that the relation declared on [field] of the sync table
+  /// [definition] declares the keys it requires. The values of the declared
+  /// keys are validated by their own restrictions.
   List<SourceSpanSeverityException> _validateSyncRelation(
     ModelClassDefinition definition,
     SerializableModelFieldDefinition field,
@@ -2340,12 +2347,10 @@ class Restrictions {
     var foreignKeyField = definition.foreignKeyField(field);
     if (foreignKeyField == null) return [];
 
-    var relation = foreignKeyField.relation as ForeignRelationDefinition;
     var declaredKeys = content is YamlMap ? content.keys.toSet() : <dynamic>{};
 
     if (isSyncScopeRelation(foreignKeyField)) {
-      if (relation.onDelete != ForeignKeyAction.cascade &&
-          !declaredKeys.contains(Keyword.onDelete)) {
+      if (!declaredKeys.contains(Keyword.onDelete)) {
         return [
           SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
         ];
@@ -2353,7 +2358,8 @@ class Restrictions {
       return [];
     }
 
-    if (relation.deferrable != DeferrableConstraint.initiallyDeferred &&
+    if (requiresSyncDeferredRelation(definition, field) &&
+        !declaredKeys.contains(Keyword.deferred) &&
         !declaredKeys.contains(Keyword.deferrable)) {
       return [SourceSpanSeverityException(syncRelationDeferredError, span)];
     }

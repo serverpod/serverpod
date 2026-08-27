@@ -381,7 +381,7 @@ $indexes
 
     test(
       'with a relation that does not cascade on delete when validating then '
-      'an error is generated on the onDelete key.',
+      'an error is generated on the onDelete value.',
       () {
         var errors = validate([
           crdtScopeModel,
@@ -395,7 +395,7 @@ $indexes
         expect(errors, [
           (
             message: 'The "scopeId" relation must use "onDelete=Cascade".',
-            span: 'onDelete',
+            span: 'NoAction',
           ),
         ]);
       },
@@ -424,8 +424,7 @@ $indexes
     );
 
     test(
-      'with a deferred relation when validating then an error is generated '
-      'on the deferred key.',
+      'with a deferred relation when validating then no error is generated.',
       () {
         var errors = validate([
           crdtScopeModel,
@@ -436,54 +435,83 @@ $indexes
           ),
         ]);
 
-        expect(errors, [
-          (
-            message:
-                'The "scopeId" relation must not be deferrable or deferred.',
-            span: 'deferred',
-          ),
-        ]);
+        expect(errors, isEmpty);
       },
     );
   });
 
   group('Given a model with "database: sync" with a relation', () {
     test(
-      'to another sync table that is not deferred when validating then an '
-      'error is generated on the relation.',
+      'that is optional and not deferred when validating then no error is '
+      'generated.',
       () {
         var errors = validate([
           crdtScopeModel,
           personModel(extraFields: '  parent: Person?, relation(optional)'),
         ]);
 
+        expect(errors, isEmpty);
+      },
+    );
+
+    test(
+      'that is required and not deferred when validating then an error is '
+      'generated on the relation.',
+      () {
+        var errors = validate([
+          crdtScopeModel,
+          personModel(
+            extraFields: '  parent: Person?, relation(onDelete=Cascade)',
+          ),
+        ]);
+
         expect(errors, [
           (
             message:
-                'Relations on tables with "database: sync" must be deferred. '
-                'Add the "deferred" keyword to the relation.',
-            span: 'optional',
+                'Non-optional relations on tables with "database: sync" must '
+                'be deferred. Add the "deferred" keyword to the relation.',
+            span: 'onDelete=Cascade',
           ),
         ]);
       },
     );
 
     test(
-      'to another sync table that is only deferrable when validating then an '
-      'error is generated on the deferrable key.',
+      'that is required and deferred with a false value when validating then '
+      'an error is generated on the deferred value.',
       () {
         var errors = validate([
           crdtScopeModel,
           personModel(
-            extraFields: '  parent: Person?, relation(optional, deferrable)',
+            extraFields: '  parent: Person?, relation(deferred=false)',
           ),
         ]);
 
         expect(errors, [
           (
             message:
-                'Relations on tables with "database: sync" must be deferred. '
-                'Add the "deferred" keyword to the relation.',
+                'Non-optional relations on tables with "database: sync" must '
+                'be deferred. Add the "deferred" keyword to the relation.',
+            span: 'false',
+          ),
+        ]);
+      },
+    );
+
+    test(
+      'that is required and only deferrable when validating then an error is '
+      'generated on the deferrable key.',
+      () {
+        var errors = validate([
+          crdtScopeModel,
+          personModel(extraFields: '  parent: Person?, relation(deferrable)'),
+        ]);
+
+        expect(errors, [
+          (
+            message:
+                'Non-optional relations on tables with "database: sync" must '
+                'be deferred. Add the "deferred" keyword to the relation.',
             span: 'deferrable',
           ),
         ]);
@@ -491,8 +519,8 @@ $indexes
     );
 
     test(
-      'declared on an id field to another sync table that is not deferred '
-      'when validating then an error is generated on the relation.',
+      'declared on a nullable id field to another sync table that is not '
+      'deferred when validating then no error is generated.',
       () {
         var errors = validate([
           crdtScopeModel,
@@ -501,11 +529,26 @@ $indexes
           ),
         ]);
 
+        expect(errors, isEmpty);
+      },
+    );
+
+    test(
+      'declared on a required id field to another sync table that is not '
+      'deferred when validating then an error is generated on the relation.',
+      () {
+        var errors = validate([
+          crdtScopeModel,
+          personModel(
+            extraFields: '  parentId: UuidValue, relation(parent=person)',
+          ),
+        ]);
+
         expect(errors, [
           (
             message:
-                'Relations on tables with "database: sync" must be deferred. '
-                'Add the "deferred" keyword to the relation.',
+                'Non-optional relations on tables with "database: sync" must '
+                'be deferred. Add the "deferred" keyword to the relation.',
             span: 'parent=person',
           ),
         ]);
