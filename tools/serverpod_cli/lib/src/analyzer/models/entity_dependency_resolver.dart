@@ -48,8 +48,7 @@ class ModelDependencyResolver {
       }
     });
 
-    // Finally inject the system fields that synced tables did not declare,
-    // neither directly nor through a relation resolved above.
+    // Finally inject the system fields that synced tables did not declare.
     modelDefinitions.whereType<ModelClassDefinition>().forEach((
       classDefinition,
     ) {
@@ -58,13 +57,7 @@ class ModelDependencyResolver {
   }
 
   /// Injects the `scopeId` field on tables with `database: sync` that do not
-  /// declare it, following the same convention as implicit foreign keys: a
-  /// declared field is validated as is, an omitted one is generated.
-  ///
-  /// The field is a system field maintained by the sync engine, which stamps
-  /// it on writes and strips it on reads, so applications never need to
-  /// declare it. It is skipped when the scopes table is unknown, which the
-  /// validation layer reports as a missing module.
+  /// declare it, directly or through a relation to the scopes table.
   static void _resolveSyncScopeIdField(
     ModelClassDefinition classDefinition,
     List<SerializableModelDefinition> modelDefinitions,
@@ -86,9 +79,7 @@ class ModelDependencyResolver {
       shouldPersist: true,
       isRequired: false,
       documentation: [
-        '/// The scope owning this row. Maintained by the sync engine, which',
-        '/// sets it on writes and clears it on reads, so it is null unless',
-        '/// explicitly assigned.',
+        '/// The scope owning this row. Maintained by the sync engine.',
       ],
       relation: ForeignRelationDefinition(
         parentTable: syncScopesTableName,
@@ -97,7 +88,8 @@ class ModelDependencyResolver {
       ),
     );
 
-    classDefinition.fields.add(scopeIdField);
+    // Right below the id field, since it is part of the row identity.
+    classDefinition.fields.insert(1, scopeIdField);
     _resolveFieldIndexes(scopeIdField, classDefinition);
   }
 

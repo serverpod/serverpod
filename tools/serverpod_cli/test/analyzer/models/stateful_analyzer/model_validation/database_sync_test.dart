@@ -218,6 +218,11 @@ $indexes
       expect(scopeId, isNotNull);
     });
 
+    test('when analyzing then the scopeId field follows the id field.', () {
+      var fieldNames = analyzePerson(models).fields.map((f) => f.name);
+      expect(fieldNames, ['id', 'scopeId', 'name']);
+    });
+
     test('when analyzing then the injected field is a nullable int.', () {
       expect(scopeId?.type.className, 'int');
       expect(scopeId?.type.nullable, isTrue);
