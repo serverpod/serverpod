@@ -3,7 +3,7 @@ import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/sync_restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_database/serverpod_database.dart';
 import 'package:source_span/source_span.dart';
 

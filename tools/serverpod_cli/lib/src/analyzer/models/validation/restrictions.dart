@@ -8,7 +8,7 @@ import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/sync_restrictions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
