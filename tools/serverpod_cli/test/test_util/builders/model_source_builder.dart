@@ -12,7 +12,7 @@ class ModelSourceBuilder {
   String fileExtension;
 
   ModelSourceBuilder()
-    : fileExtension = '.yaml',
+    : fileExtension = '.spy.yaml',
       subDirPathParts = [],
       fileName = 'example',
       yamlSourcePathParts = ['lib', 'src', 'model'],

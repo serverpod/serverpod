@@ -48,7 +48,7 @@ suite('VS Code Extension', () => {
     suite('activate', () => {
         test('Given serverpod CLI is not installed when activate is called then it should show error message and not start language client.', () => {
             execSyncStub.throws(new Error('Command not found'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
 
             activate(mockContext);
 
@@ -61,7 +61,7 @@ suite('VS Code Extension', () => {
 
         test('Given serverpod CLI version is outdated when activate is called then it should show error message and not start language client.', () => {
             execSyncStub.returns(Buffer.from('Version: 1.1.0'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
 
             activate(mockContext);
 
@@ -74,7 +74,7 @@ suite('VS Code Extension', () => {
 
         test('Given serverpod version output contains extra whitespace when activate is called then it should trim and parse correctly.', () => {
             execSyncStub.returns(Buffer.from('  Version: 1.2.0  \n'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
             const languageClientStartStub = sinon.stub(LanguageClient.prototype, 'start');
 
             activate(mockContext);
@@ -85,7 +85,7 @@ suite('VS Code Extension', () => {
 
         test('Given all prerequisites are met when activate is called then it should create and start the LanguageClient with correct configuration.', () => {
             execSyncStub.returns(Buffer.from('Version: 1.2.0'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
             const languageClientStartStub = sinon.stub(LanguageClient.prototype, 'start');
 
             activate(mockContext);
@@ -96,7 +96,7 @@ suite('VS Code Extension', () => {
 
         test('Given all prerequisites are met when activate is called then the client should register all expected document selectors.', () => {
             execSyncStub.returns(Buffer.from('Version: 1.2.0'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
 
             let capturedClientOptions: any = null;
             const mockClient = {
@@ -115,11 +115,11 @@ suite('VS Code Extension', () => {
             assert.ok(capturedClientOptions, 'Client options should be captured');
             
             assert.ok(capturedClientOptions.documentSelector, 'Document selector should exist');
-            assert.strictEqual(capturedClientOptions.documentSelector.length, 5, 'Should have 5 document selectors');
+            assert.strictEqual(capturedClientOptions.documentSelector.length, 3, 'Should have 3 document selectors');
 
             const patterns = capturedClientOptions.documentSelector.map((s: any) => s.pattern);
-            assert.ok(patterns.includes('**/protocol/**/*.yaml'), 'Should include protocol YAML pattern');
-            assert.ok(patterns.includes('**/models/**/*.yaml'), 'Should include models YAML pattern');
+            assert.ok(!patterns.includes('**/protocol/**/*.yaml'), 'Should not include bare protocol YAML pattern');
+            assert.ok(!patterns.includes('**/models/**/*.yaml'), 'Should not include bare models YAML pattern');
             assert.ok(patterns.includes('**/*.spy.yaml'), 'Should include .spy.yaml pattern');
             assert.ok(patterns.includes('**/*.spy.yml'), 'Should include .spy.yml pattern');
             assert.ok(patterns.includes('**/*.spy'), 'Should include .spy pattern');
@@ -129,7 +129,7 @@ suite('VS Code Extension', () => {
     suite('deactivate', () => {
         test('Given client is initialized when deactivate is called then it should call client.stop() and return the Thenable.', () => {
             execSyncStub.returns(Buffer.from('Version: 1.2.0'));
-            const mockContext = {} as vscode.ExtensionContext;
+            const mockContext = { subscriptions: [] } as unknown as vscode.ExtensionContext;
             
             sinon.stub(LanguageClient.prototype, 'start');
             const stopStub = sinon.stub(LanguageClient.prototype, 'stop').returns(Promise.resolve());
