@@ -1,313 +1,190 @@
 ## 4.0.0-rc.1
 
-- feat: Introduces the experimental `database: sync` option for models to use `serverpod_offline_sync`.
-- feat: Requires the `.spy.yaml` extension for model files.
-- feat: Allow `fk` flag for declaring the owner of the foreign key on a `relation`
-- fix: Removes active server scopes on the running `start` TUI when their `ServerProcess` exits.
-- fix: Fixes `serverpod_database` not compiling to WASM clients.
-- fix: Fixes SQLite not mapping exceptions at transaction COMMIT.
-- fix: Gates unused Insights endpoint methods behind the `enableDatabaseAccess` config.
-- refactor: BREAKING. Merges normal and `*withOptions` methods on the `CloudStorage` interface.
-- chore: Bumps minimum Dart version to 3.12.2 and Flutter version to 3.44.4.
+Release candidate for Serverpod 4.
 
-## 4.0.0-beta.4
+Serverpod 4 is a major overhaul of the development experience. It introduces a new development experience with an interactive command that boots your entire stack, makes Serverpod projects agent-ready out of the box, and lays the foundation for client-side databases with the new SQLite dialect.
 
-- feat: Allows overriding the default cache header for `StaticRoute` and `SpaRoute` from env vars.
-- feat: Adds opt-in `httpOnly` cookie authentication for web clients.
-- feat: Generates the column specified as `field=` on relations that require the explicit foreign key.
-- feat: Introduces the `deferred` and `deferrable` flags on relations to postpone constraints evaluation inside transactions.
-- feat: Makes `start` TUI app URLs clickable.
-- fix: Restores inbound foreign keys on migrations when a table is recreated.
-- fix: Resolves generated Dart formatters with captured stderr.
-- fix: Fixes the `start` TUI app status on spontaneous exit.
-- refactor: BREAKING. Refactors the `ServerpodClientException` hierarchy to introduce a proper exception for network errors. Previous HTTP-related exceptions now extend the sealed `ServerpodClientHttpException` class.
-- refactor: BREAKING. Refactors the database exception hierarchy to throw specific exceptions for common operation errors (unique/foreign key constraint violations, SQLite database locked, etc.).
-- chore: Generates stable import prefixes on generated code to reduce conflicts and diff noise.
-- chore: Generates a simplified `Serverpod` class for cleaner initialization.
-- chore: Reviews all skills for correctness and better guidance.
+### Built for agentic development
 
-## 4.0.0-beta.3
+Serverpod projects are now set up for AI-assisted development from the moment they are created. The CLI ships with an MCP server, skills and agent instructions installed for the IDEs/Agents you select. The MCP server exposes all tools from `serverpod start` to agents for an immersive agentic development experience. Try out the reworked `serverpod create` and the new `serverpod quickstart` commands.
 
-- fix: Improves the `serverpod start` TUI borders and dividers with T-junction characters.
-- fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account. Backported to 3.4.12.
-- fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Backported to 3.4.12.
-- fix: Includes session key salt in the session key hash. Backported to 3.4.12.
-- fix: Makes the login rate limit bound guesses per user. Backported to 3.4.12.
-- fix: Prevents rotating a refresh token for a blocked auth user. Backported to 3.4.12.
-- chore: Ensures project build runs on a clean folder to avoid compilation issues.
-- chore: Polishes and adds dark theme to the default Flutter app.
+### The new `serverpod start` command
 
-## 4.0.0-beta.2
+Serverpod 4 introduces `serverpod start`, a single command that runs everything your project needs and keeps it in sync while you work. No more juggling `docker compose`, `serverpod generate --watch`, the server and the Flutter app in separate terminals.
+
+Key features include:
+
+- A full terminal UI for the server, the database and your apps, with live logs and interactive actions.
+- Hot reload and hot restart of the server on every change, including generated code and dependencies.
+- Launching one or more Flutter apps, with integrated hot reload/restart and their logs in the same UI.
+- Creating and applying migrations without restarting the server.
+
+#### Zero-configuration local development database
+
+Running a database locally no longer requires any setup. Serverpod now ships custom PostgreSQL multi-platform binaries built with `pgvector` and `postgis` support that can be run in embedded mode when running the server or started standalone with `serverpod database start`. Projects that do not configure the `dataPath` parameter on the `database` config get the `docker compose` started automatically by `serverpod start` instead.
+
+### Client-side databases
+
+The same models, ORM and migrations you already know can now generate a client-side SQLite database when using the new `database` keyword. Migrations for the client are separate and generated as Dart code for easy integration in Flutter apps without having to deal with assets.
+
+#### Supporting offline-first applications
+
+To allow easily building offline-first Flutter apps, the experimental `database: sync` option will configure the models for synchronization with the server using the `serverpod_offline_sync` module. No other configuration is needed beyond annotating the models and adding the dependencies to the client and server. Check the [`serverpod_offline_sync` README](https://pub.dev/packages/serverpod_offline_sync) for more details on how to use it.
+
+### Additional changes
+
+#### Breaking changes
 
 - feat: BREAKING. Changes default message central delivery to global with fallback to local.
-- feat: Honors the selected device on VS Code IDEs when launching the Flutter app from `serverpod start`.
-- feat: Replaces the docker image for PostgreSQL by the official `ghcr.io/serverpod/postgres:16`.
-- feat: Allows using `serial` on regular `int` columns on PostgreSQL.
-- feat: Adds support for the `nulls_distinct` key on unique indexes on PostgreSQL.
-- feat: Adds account merging mechanics to the auth module. ([@craiglabenz](https://github.com/craiglabenz))
-- feat: Allows overriding the default cache header for `FlutterRoute` from env vars.
-- feat: Forwards shared package models through the owning module's server/client packages.
+- refactor: BREAKING. Refactors the `ServerpodClientException` hierarchy to introduce a proper exception for network errors. Previous HTTP-related exceptions now extend the sealed `ServerpodClientHttpException` class.
+- refactor: BREAKING. Refactors the database exception hierarchy to throw specific exceptions for common operation errors (unique/foreign key constraint violations, SQLite database locked, etc.).
+- refactor: BREAKING. Merges normal and `*withOptions` methods on the `CloudStorage` interface.
+- fix: BREAKING. Requires the `.spy.yaml` extension for model files.
+- fix: BREAKING. Removes the native Google Sign-In web implementation in favor of OAuth2.
 - fix: BREAKING. Removes dead email-related exceptions. ([@realmeylisdev](https://github.com/realmeylisdev))
 - fix: BREAKING. Removes the deprecated `authenticationKeyManager` client parameter.
 - fix: BREAKING. Removes the legacy streaming session and deprecated streaming APIs.
 - fix: BREAKING. Removes deprecated future call methods.
-- fix: Fixes MCP server not being able to fetch logs when using `--no-tui`.
-- fix: Makes shared-package logs visible in the CLI.
-- fix: Exports WebSocket event types. ([@loopassembly](https://github.com/loopassembly))
-- fix: Prunes trailing empty migration dirs. ([@Moe1211](https://github.com/Moe1211))
-- fix: Makes generated Dart code `dart format` clean respecting the project options.
-- fix: Makes `TermsAndPrivacyText` sign-in widget respond to app theming.
-- fix: Keeps target schema fresh after hot reload. ([@Aabdulawalarif](https://github.com/Aabdulawalarif))
-- fix: Serves Flutter app config file on the correct path when project uses only webapp.
-- fix: Generates `detach` and `detachRow` for named list relations without order dependence.
-- fix: Updates language server state when model files change on disk.
-- fix: Ensures client-side databases can be used on Flutter web apps.
-- fix: Skips docker auto-start if using a remote Postgres host.
-- chore: Avoid exposing unnecessary secrets on the template.
-- chore: Improves the analytics reporting on used Serverpod features.
-
-## 4.0.0-beta.1
-
-- feat: Exposes flags on the `serverpod create` command to customize the created project.
-- feat: Unifies and customizes social sign-in button styling.
-- feat: Adds support for cache busting with dedicated syntax in templating system.
-- feat: Allows running tests with complete isolation and plain `dart test` using `withServerpod`.
-- feat: Uses custom embedded PostgreSQL binaries built with `pgvector` and `postgis` support.
-- feat: Defaults to autostart docker on `serverpod start` if using PostgreSQL without `dataPath`.
-- feat: Makes stack trace logs clickable to expand individually on `serverpod start` TUI.
-- feat: Adds structured Flutter logs to `serverpod start` TUI.
-- feat: Allows booting the embedded PostgreSQL from the CLI with `serverpod database start`.
-- feat: Allows using the `table` keyword with `database: all` on shared package models.
-- feat: Changes the `WidgetRoute.build` method to return `WebWidget?` and easily throw a 404.
-- feat: Makes "X Stop App" / "X Close Tab" hints clickable in `serverpod start` TUI.
-- feat: Removes the experimental flag from `serverpod start` command.
-- fix: BREAKING. Removes the native Google Sign-In web implementation in favor of OAuth2.
-- fix: BREAKING. Removes deprecated orderDescending parameter on ORM methods.
+- fix: BREAKING. Removes deprecated `orderDescending` parameter on ORM methods.
 - fix: BREAKING. Removes deprecated `ignoreEndpoint` annotation from the CLI.
 - fix: BREAKING. Removes deprecated `SerializationManagerServer` class.
 - fix: BREAKING. Removes deprecated web-server widgets and legacy static directory classes.
-- fix: Fixes VS Code debugger not working with the new `serverpod start` TUI.
-- fix: Releases sessions from `MessageCentral` when streams are cancelled before session close.
-- fix: Fixes generator failing when the client or shared package are imported on the server.
-- fix: Invalidates corrupt cached server.dill after an interrupted compile.
-- fix: Shows the device platform in the `serverpod start` TUI Flutter app status line.
-- fix: Fixes `generate --watch` mode feedback loops when no changes existed.
-- fix: Fixes high disk I/O when starting the Flutter app from `serverpod start`.
-- fix: Allows unverified emails in Firebase IDP for default account validation.
-- fix: Ensures any error is flushed to the terminal when exiting the TUI with a non-zero exit code.
-- fix: Fixes Flutter app tabs not being marked as ready on non-web devices on the TUI.
-- fix: Fixes the background of the `SignInWidget` and `EmailSignInWidget` not being transparent
-- fix: Fixes a racing condition when closing a streaming method right after opening it.
-- fix: Adds the missing `databaseInterceptor` parameter to `withServerpod`.
-- refactor: Unify create and apply migration buttons on `serverpod start` TUI as `Migrate` action.
-- refactor: Improve the `serverpod create` TUI look and feel.
-- chore: Removes the `--mini` option from `serverpod create` command.
+- chore: BREAKING. Removes the `--mini` option from the `serverpod create` command.
+- chore: BREAKING. Bumps minimum Dart version to 3.12.2 and Flutter version to 3.44.4.
 
-## 4.0.0-beta.0
+#### New features
 
-- feat: Shows inline "Copied" confirmation in `serverpod start` TUI alerts.
-- feat: Makes alert copy/dismiss clickable in `serverpod start` TUI.
-- feat: Adds the `displayName` for Flutter app configs for a pretty tab title.
+##### Command line and developer tooling:
+
+- feat: Exposes flags on the `serverpod create` command to customize the created project.
 - feat: Adds support for creating server only projects.
-- fix: Fixes `upsert` with `updateWhere` throwing on SQLite when conflicts are filtered out.
-- fix: Adds missing export of `DeepCollectionEquality` for shared models. Backported to 3.4.11.
-- fix: Prevents the creation of orphaned images on subsequent IDP logins. Backported to 3.4.11.
-- refactor: Refines the serverpod start TUI app status, stop/close, and launcher.
-- chore: Changes the template to serve the Flutter web app under root if website is not enabled.
+- feat: Exposes unified access to `scloud` through the new `serverpod cloud` command.
+- feat: Replaces the docker image for PostgreSQL by the official `ghcr.io/serverpod/postgres:16`.
+- feat: Allows running tests with complete isolation and plain `dart test` using `withServerpod`.
 
-## 3.5.0-beta.12
+##### Models, ORM and database:
 
-- feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
-- fix: Improves the "Flutter web app not built" page on the template.
-- fix: Fixes missing `web` directory for projects created with only the Flutter app.
-
-## 3.5.0-beta.11
-
-- feat: Adds PostGIS geography types support with GiST and SP-GiST indexes. ([@charlesarchibong](https://github.com/charlesarchibong))
-- feat: Relaunches Flutter apps from `serverpod start` when assets and fonts change.
-- feat: Allows running multiple Flutter apps from `serverpod start`.
-- feat: Moves Flutter app configs from the command line to the server pubspec. The `serverpod start` no longer accepts `--flutter-*` flags.
-- feat: Adds a `spawn_flutter_app` MCP tool for agents to spawn configured Flutter apps.
-- feat: Exposes the Redis connection to allow users to build custom extensions.
-- feat: Adds the `tail` keyword on models to configure the order of inherited fields.
-- feat: Automatically reloads the server when dependencies change.
-- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown. ([@nicowalter256](https://github.com/nicowalter256))
-- feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
-- feat: Allows using the `unique(per=...)` shorthand for composite unique indexes.
-- feat: Adds a `databaseInterceptor` parameter to `Serverpod` for intercepting database operations.
-- feat: Implements `Iterable` and `operator[]` on vector types.
-- feat: Disables the sign-in UI while authentication is in progres. ([@abdulawalarif](https://github.com/abdulawalarif))
-- feat: Shows alert logs as a special pinned alert message on the `serverpod start` TUI.
-- feat: Allows `extends` and `sealed` properties on `Exception` models.
-- fix: Prevents `serverpod start` from closing when the project fails to build.
-- fix: Makes Flutter app heartbeat more resilient to failures before tearing down.
-- fix: Fixes IDPs silently skipping `UserProfile` creation during first login if an exception occur.
-- fix: Adds an error when unregistered custom classes are used in endpoints.
-- fix: Throws `StateError` instead of `Exception` for not configured features. ([@realmeylisdev](https://github.com/realmeylisdev))
-- fix: Fixes client-side protocol with client database and modules.
-- fix: Fixes wrong column values encoding in `upsert` queries for SQLite.
-- fix: Fixes analysis errors on projects due to `clock` transitive import on generated code.
-- fix: Allows using the `id` as conflict target on `upsert` and `upsertRow`.
-- fix: Excludes static methods from endpoint code generation. ([@realmeylisdev](https://github.com/realmeylisdev))
-- fix: Changes `testObjectToJson` return type from `dynamic` to `Map<String, dynamic>`. ([@realmeylisdev](https://github.com/realmeylisdev))
-- fix: Preserves `ORDER BY` in nested `includeList` queries with `LIMIT`.
-- fix: Recovers orphaned embedded Postgres on Windows after unclean exit.
-- fix: Fixes malformed query when negating many-relation filters. Backported to 3.4.10. ([@realmeylisdev](https://github.com/realmeylisdev))
-- fix: Fixes trying to complete the web socket listener twice on concurrent connections. Backported to 3.4.10.
-- refactor: Improves the `serverpod start` TUI experience.
-- refactor: Improves the `serverpod create` TUI experience with a paginated experience.
-- chore: Adds a checkmark to browser refresh log. ([@mackings](https://github.com/mackings))
-- chore: Fixes Antigravity MCP configuration not being loaded.
-- chore: Fixes auth dependencies being included in projects created without auth.
-
-## 3.5.0-beta.10
-
-- feat: Hides the "Hot restart" action in the `start` TUI when on watch mode (default).
-- feat: Restarts the Flutter app automatically when its dependencies change.
-- feat: Adds IDE selection screen to the `quickstart` command for a complete experience.
-- feat: Adds a `Ctrl+R` shortcut to restart the Flutter app from the `start` TUI.
-- feat: Adds `kid` to JWT header for ES512 tokens.
-- feat: Exposes unified access to `scloud` through the new `cloud` Serverpod CLI command.
-- feat: Replaces the default Flutter device by a special `web-server` that launches the browser.
-- feat: Exposes `L` key to clear logs on `serverpod start`.
-- feat: Makes `Ctrl+C` copy when selection is active or exit when pressed twice on any TUI command.
-- fix: Exposes a new `serverDirectory` parameter on `Serverpod` to avoid depending on `Directory.current`.
-- fix: Fixes joins with long column names and deeply nested relations not mapping the correct columns. Backported to 3.4.9.
-- fix: Fixes MCP file placement for OpenCode.
-- fix: Fixes a race condition where the splash screen would return when remounting the `start` TUI hidden.
-- fix: Adds validation that throws early if invalid chars are used on migration tag names.
-- fix: Changes SQLite behavior to ignore `runtimeParametersBuilder` instead of throwing `UnsupportedError`.
-- fix: Adds a `Material` wrapper to the `SignInWidget` for correct rendering when not using a Material app.
-- fix: Fixes error when closing method stream command with error after already closed. Backported to 3.4.9.
-- fix: Shows collapsed stack traces on the "Server logs" tab of the `start` TUI.
-- fix: Hides the "Raw server logs" tab from the `start` TUI by default. Accessed with `` ` `` or `.`.
-- fix: Fixes the `Dockerfile` after workspaces and Dart 3.10 upgrade. Backported to 3.4.9.
-- fix: Adds back the missing `--empty` flag to the `create-migration` command.
-- fix: Makes `serverpod start` crashes persisted to the terminal on exit.
-- fix: Adds a timeout to the Flutter VM service connection to avoid hanging on startup.
-- fix: Forwards global options to the subcommands of the `serverpod` command.
-- fix: Fixes the interactive project selector on Windows.
-- fix: Fix the serialization of `dynamic` classes when importing both client and server.
-- fix: Adds the missing `Shift+Tab` action to navigate backwards on `start` TUI tabs.
-- fix: Fixes migrations not being generated when changing columns of an index. Backported to 3.4.9.
-- perf: Activates the staleness check on the `generate` command to avoid redundant work. Use `--force` to bypass.
-- refactor: Changes the way endpoints are called to pass the method on the route instead of the body.
-- chore: Adds an `AGENTS.md` file to the project template to improve agents performance with Serverpod.
-- chore: Removes automatic run of `flutter_build` during `create` command.
-- chore: Adds a basic experimental skill to improve front-end generated by agents out-of-the-box.
-- chore: Fixes GitHub workflows on project templates after workspaces upgrade. Backported to 3.4.9.
-- chore: Disables WASM by default on new projects.
-- chore: Renames the `mcp` command to `mcp-server` for parity with the Dart MCP.
-
-## 3.5.0-beta.9
-
-- feat: Allows attaching a Flutter app on demand with a running `serverpod start`.
-- feat: Adds split-screen layout to the `serverpod start` TUI on wide terminals.
-- feat: Adds `tail_flutter_logs` MCP command for agents to read the Flutter app logs.
-- feat: Exposes the Flutter process DTD on a `get_flutter_app_dtd` MCP tool.
-- fix: Fixes MCP command not initializing properly when running `serverpod start`.
-- fix: Executes repair migrations when calling `apply_migrations` from the TUI and MCP.
-- fix: Fixes serialization/deserialization of project models on `dynamic` fields of module models.
-- fix: Improves the TUI to have more screen for logs and use clearer checkboxes.
-- fix: Fixes pressing `Q` on Windows not canceling the new TUI.
-- fix: Generates skills for Cursor under `.cursor` instead of `.agents` directory.
-- refactor: Renames `tail_logs` MCP command to `tail_server_logs` for clarity.
-- perf: Speeds up applying resource options when creating projects.
-- chore: Adjusts the agent skills for the new version.
-
-## 3.5.0-beta.8
-
-- feat: Launches the Flutter app from `serverpod start` with integrated hot reload/restart.
-- feat: Introduces the `dataPath` parameter on `database` config to run PostgreSQL in embedded mode.
-- feat: Exposes `hot_restart` and `create_repair_migration` commands on both TUI and MCP.
-- feat: Makes the `global` cache fallback to local in development/testing.
-- feat: Allows selecting the IDEs to configure skills and MCPs when running `serverpod create`.
-- feat: Adds `FlutterWebAuth2RedirectRoute` for OAuth2 PKCE web sign-in flow.
-- feat: Exposes the parameter `httpClientOverride` on the generated `Client` for HTTP client override.
-- feat: Exposes health endpoints on the webserver.
-- fix: Makes the `serverpod start` MCP tied to the current project server.
-- fix: Fixes `copyWith` method on `dynamic` fields overriding unchanged fields.
-- fix: Fixes `dynamic` fields being serialized as an encoded `String` instead of the `Map` (breaking change since last beta version).
-- fix: Allows OWASP special characters in password field. ([@realmeylisdev](https://github.com/realmeylisdev))
-- chore: Replaces `SQLite` by `PostgreSQL` as the default database on `quickstart` command.
-- chore: Improves the skills to better guide agents on the new `serverpod start` experience.
-
-## 3.5.0-beta.7
-
-- feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+- feat: Allows using the `table` keyword on shared package models configured with `database: all`.
 - feat: Introduces new `upsert` and `upsertRow` methods on the ORM. ([@sedobrengocce](https://github.com/sedobrengocce))
-- fix: Exposes the `runMigrations` parameter on the client-side `createSession`.
-- fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
-- chore: Improves the UX of create and start TUIs.
-
-## 3.5.0-beta.6
-
-- feat: Makes the `serverpod create` command interactive for resources selection.
-- feat: Adds Serverpod SKILLs upon `serverpod create` and `serverpod quickstart` commands.
-- feat: Improves the reliability of the `serverpod start` command when launched by the IDE.
-- feat: Removes the need to restart the server to apply migrations when running from `serverpod start`.
-- feat: Makes an additional request to get emails on GitHub IDP if missing in the first attempt.
-- fix: Fixes missing `_Undefined` sentinel on generated code for `dynamic` fields
-- fix: Prevents concurrent hot-reload requests while on `serverpod start` from breaking the FES.
-- fix: Restores terminal settings when force quitting the TUI on `serverpod` commands.
-- refactor: Drops the `--no-fes` flag from the `serverpod start` command.
-- chore: Improves the look and feel of the TUI on `serverpod` commands.
-- chore: Improves Serverpod skills for a better agentic-development experience.
-
-## 3.5.0-beta.5
-
-- feat(EXPERIMENTAL): Introduces a new `database` keyword on models that generates a client-side database.
+- feat: Adds a `noReturn` parameter to all ORM methods to allow skipping the returning the data.
+- feat: Adds support for `orderBy` and `orderByList` in `delete` and `deleteWhere` methods. ([@henycave](https://github.com/henycave))
+- feat: Introduces `asc()` / `desc()` convenience methods on orderable columns.
+- feat: Adds a `databaseInterceptor` parameter to `Serverpod` for intercepting database operations.
 - feat: Adds support for `dynamic` fields on models, database and endpoints.
 - feat: Adds support for `jsonb` columns and `GIN` indexes, with lossless `json` <-> `jsonb` column type migration. ([@developerjamiu](https://github.com/developerjamiu))
-- feat: Makes the Serverpod MCP server always running regardless of a running project server with `serverpod start` command.
-- feat: Adds a new `serverpod quickstart` command to the `serverpod_cli`.
-- fix: Ensures `serverpod start` works with build hook dependencies.
-- fix: Fixes Postgres throwing when using row-lock on `find` methods with `includes`.
-- fix: Adds configurable clock skew tolerance to ID token validation on Google and Firebase IDPs.
-- refactor: Moves the column rename from `TableMigration` to `ColumnMigration` (breaking change since last beta version).
-- perf: Reduces the size of SQLlite migration SQL by only storing metadata for non-basic types.
-- chore: Removes the requirement for Flutter to run the `serverpod_cli` on CI.
-- chore: Bumps minimum Dart version to 3.10.3 and Flutter version to 3.38.4.
-
-## 3.5.0-beta.4
-
-- feat(EXPERIMENTAL): Adds `nocterm` based TUI to `serverpod start` command.
-- feat(EXPERIMENTAL): Implements SQLite database support.
-- feat: Adds dedicated support for recurring future calls.
+- feat: Adds PostGIS geography types support with GiST and SP-GiST indexes. ([@charlesarchibong](https://github.com/charlesarchibong))
+- feat: Implements `Iterable` and `operator[]` on vector types.
+- feat: Allows using `serial` on regular `int` columns on PostgreSQL.
+- feat: Adds support for the `nulls_distinct` key on unique indexes on PostgreSQL.
+- feat: Exposes a `unique` keyword and `unique(per=...)` variant on models for simplified creation of unique indexes.
 - feat: Allows overriding a `column` name on models, with proper migration support.
-- feat: Exposes a `unique` keyword on models for simplified creation of unique indexes.
-- feat: Exposes datetime filter parameters on Insights endpoints.
-- feat: Adds supports for `serverpod create .` call in the current directory.
-- feat: Adds support for `orderBy` and `orderByList` in `delete` and `deleteWhere` methods ([@henycave](https://github.com/henycave)).
-- feat: Adds `HmacSha256` JWT algorithm on the auth core package.
-- feat: Introduces `asc()` / `desc()` convenience methods on orderable columns.
-- fix: Deprecates the manual creation of `Order` objects in favor of the new `asc()` / `desc()` methods.
-- fix: Adds missing `onRefreshTokenCreated` to `JwtConfigFromPasswords` constructor.
-- perf: Optimizes Insights queries 60x by using object relations and improved indexes.
-- chore: Adds `.gitignore` to the top-level directory on new projects to ignore `.dart_tool`.
+- feat: Allows the `fk` flag for declaring the owner of the foreign key on a `relation`.
+- feat: Generates the column specified as `field=` on relations that require the explicit foreign key.
+- feat: Introduces the `deferred` and `deferrable` flags on relations to postpone constraints evaluation inside transactions.
+- feat: Adds the `tail` keyword on models to configure the order of inherited fields.
+- feat: Allows `extends` and `sealed` properties on `Exception` models.
+- feat: Forwards shared package models through the owning module's server/client packages.
+- feat: Exposes datetime filter parameters on Insights logs endpoint.
 
-## 3.5.0-beta.3
+##### Server core:
 
-- feat(EXPERIMENTAL): Adds MCP server to the serverpod CLI with `apply_migrations` tool.
 - feat: Ensures at-least-once semantics for future calls execution.
-- feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
-- feat: Adds `onAfterAccountCreated` callbacks to all IDPs for custom post-account creation logic. ([@kamil-matula](https://github.com/kamil-matula))
-- fix: Fixes future calls generation if models were not previously available on the project (like when running with a clean `generated` folder).
-
-## 3.5.0-beta.2
-
-- fix: Fixes time spinners not updating correctly when running the `generate` or `start` commands.
-- fix: Ensures docker compose down is run on early Ctrl-C to abort the `start --watch` command.
-- fix: Fixes incremental compiler missing changes to the generated `.dart` files when running commands in watch mode.
-
-## 3.5.0-beta.1
-
-- feat: Adds legacy client support for Email auth migrations.
+- feat: Adds dedicated support for recurring future calls.
 - feat: Exposes configuration options for finding and deleting broken future calls on server startup.
-- feat(EXPERIMENTAL): Introduces a new `serverpod start` command for running the server, docker and app with `--watch` flag for hot reload/restart support.
-- refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package to allow supporting client-side databases in the future.
-- refactor: Removes database-specific default values from the definition files to allow supporting extra database dialects.
-- refactor: Reduces the time taken to run incremental generation steps with the `--watch` flag by x15 and regular `generate` command by 20%.
+- feat: Adds a `withSession` method on `Serverpod` for manual session usage with automatic teardown. ([@nicowalter256](https://github.com/nicowalter256))
+- feat: Makes the `global` cache fallback to local in development/testing.
+- feat: Exposes the Redis connection to allow users to build custom extensions.
+
+##### Authentication:
+
+- feat: Adds account merging mechanics to the auth module. ([@craiglabenz](https://github.com/craiglabenz))
+- feat: Adds `ServerpodCloudEmailIdpConfig` as default email IDP using Serverpod Cloud.
+- feat: Allows replacing the Google Sign-In for web with OAuth2 PKCE flow for a better UX.
+- feat: Adds `FlutterWebAuth2RedirectRoute` for OAuth2 PKCE web sign-in flow.
+- feat: Adds `onAfterAccountCreated` callbacks to all IDPs for custom post-account creation logic. ([@kamil-matula](https://github.com/kamil-matula))
+- feat: Makes an additional request to get emails on GitHub IDP if missing in the first attempt.
+- feat: Adds `HmacSha256` JWT algorithm on the auth core package.
+- feat: Adds `kid` to JWT header for ES512 tokens.
+- feat: Adds legacy client support for Email auth migrations.
+- feat: Allows configuring localization for the sign in widgets. ([@justlunix](https://github.com/justlunix))
+- feat: Unifies and customizes social sign-in button styling.
+- feat: Disables the sign-in UI while authentication is in progress. ([@abdulawalarif](https://github.com/abdulawalarif))
+
+##### Web server and client:
+
+- feat: Adds opt-in `httpOnly` cookie authentication for web clients.
+- feat: Exposes health endpoints on the webserver.
+- feat: Adds support for cache busting with dedicated syntax in templating system.
+- feat: Changes the `WidgetRoute.build` method to return `WebWidget?` and easily throw a 404.
+- feat: Exposes the parameter `httpClientOverride` on the generated `Client` for HTTP client override.
+
+#### Fixes
+
+##### Command line and developer tooling:
+
+- fix: Updates language server state when model files change on disk.
+- fix: Forwards global options to the subcommands of the `serverpod` command.
+- fix: Adds back the missing `--empty` flag to the `create-migration` command.
+- fix: Adds validation that throws early if invalid chars are used on migration tag names.
+- fix: Prunes trailing empty migration dirs. ([@Moe1211](https://github.com/Moe1211))
+- fix: Improves the "Flutter web app not built" page on the template.
+- fix: Serves Flutter app config file on the correct path when project uses only webapp.
+
+##### Code generation:
+
+- fix: Makes generated Dart code `dart format` clean respecting the project options.
+- fix: Fixes generator failing when the client or shared package are imported on the server.
+- fix: Fixes future calls generation if running `generate` for the first time from a clean state.
+- fix: Adds an error when unregistered custom classes are used in endpoints.
+- fix: Excludes static methods from endpoint code generation. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Changes `testObjectToJson` return type from `dynamic` to `Map<String, dynamic>`. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Generates `detach` and `detachRow` for named list relations without order dependence.
+
+##### Database and ORM:
+
+- fix: Preserves `ORDER BY` in nested `includeList` queries with `LIMIT`.
+- fix: Restores inbound foreign keys on migrations when a table is recreated.
+- fix: Deprecates the manual creation of `Order` objects in favor of the new `asc()` / `desc()` methods.
+- fix: Gates unused Insights endpoint methods behind the `enableDatabaseAccess` config.
+
+##### Authentication:
+
+- fix: Fixes IDPs silently skipping `UserProfile` creation during first login if an exception occurs.
+- fix: Allows unverified emails in Firebase IDP for default account validation.
+- fix: Allows OWASP special characters in password field. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Adds missing `onRefreshTokenCreated` to `JwtConfigFromPasswords` constructor.
+- fix: Fixes the background of the `SignInWidget` and `EmailSignInWidget` not being transparent.
+- fix: Adds a `Material` wrapper to the `SignInWidget` for correct rendering when not using a Material app.
+- fix: Makes `TermsAndPrivacyText` sign-in widget respond to app theming.
+
+##### Server, web server and client:
+
+- fix: Exposes a new `serverDirectory` parameter on `Serverpod` to avoid depending on `Directory.current`.
+- fix: Releases sessions from `MessageCentral` when streams are cancelled before session close.
+- fix: Fixes a racing condition when closing a streaming method right after opening it.
+- fix: Exports WebSocket event types. ([@loopassembly](https://github.com/loopassembly))
+- fix: Throws `StateError` instead of `Exception` for not configured features. ([@realmeylisdev](https://github.com/realmeylisdev))
+- fix: Changes the default cache policy for Flutter web assets to `private, no-cache` for all files.
+
+#### Performance
+
+- perf: Reduces the time taken to run incremental generation steps with the `--watch` flag by 15x and the regular `generate` command by 20%.
+- perf: Activates the staleness check on the `generate` command to avoid redundant work. Use `--force` to bypass.
+- perf: Optimizes Insights queries 60x by using object relations and improved indexes.
+
+#### Misc
+
+- refactor: Decouples all database-related code from `serverpod` into the new `serverpod_database` package.
+- refactor: Removes database-specific default values from the definition files.
+- refactor: Changes the way endpoints are called to pass the method on the route instead of the body.
+- chore: Generates stable import prefixes on generated code to reduce conflicts and diff noise.
+- chore: Generates a simplified `Serverpod` class for cleaner initialization.
+- chore: Changes the template to serve the Flutter web app under root if website is not enabled.
+- chore: Removes automatic run of `flutter_build` during `create` command.
+- chore: Disables WASM by default on new projects.
+- chore: Avoid exposing unnecessary secrets on the template.
+- chore: Removes the requirement for Flutter to run the `serverpod_cli` on CI.
+- chore: Improves the analytics reporting on used Serverpod features.
 
 ## 3.4.12
 
@@ -414,7 +291,7 @@ Serverpod 3.4 comes with two long-awaited features: shared models between server
 - fix: Allows handling Android and Web redirection for Apple Sign In. ([@jakubgiminski](https://github.com/jakubgiminski))
 - fix: Correctly binds `AuthUsersConfig` to `AnonymousIdp`. ([@craiglabenz](https://github.com/craiglabenz))
 
-## Cloud Storage
+### Cloud Storage
 
 - feat: Introduces a shared `serverpod_cloud_storage_s3_compat` base package for S3-compatible storage integrations.
 - feat: Adds a native Google Cloud Storage implementation on the `serverpod_cloud_storage_gcp` package with Application Default Credentials support.
