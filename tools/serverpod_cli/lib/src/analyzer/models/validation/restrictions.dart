@@ -1543,14 +1543,7 @@ class Restrictions {
       return errors;
     }
 
-    if (!TypeValidators.isValidType(
-      fieldType,
-      TypeValidationOptions(
-        extraClasses: config.extraClasses,
-        modelTypeValidator: _isModelType,
-        allowSerializableDartType: true,
-      ),
-    )) {
+    if (!_isValidFieldType(fieldType)) {
       var typeName = fieldType.className;
       errors.add(
         SourceSpanSeverityException(
@@ -2734,7 +2727,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "default" key is not supported for "${field.type.className}" types',
@@ -2774,7 +2768,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultModel" key is not supported for "${field.type.className}" types',
@@ -2799,7 +2794,8 @@ class Restrictions {
 
     var errors = <SourceSpanSeverityException>[];
 
-    if (field.type.defaultValueType == null) {
+    if (field.type.defaultValueType == null &&
+        _supportsDefaultValueValidation(field.type)) {
       errors.add(
         SourceSpanSeverityException(
           'The "defaultPersist" key is not supported for "${field.type.className}" types',
@@ -2843,6 +2839,36 @@ class Restrictions {
 
   bool _isNoValidationType(String type) {
     return type.startsWith('package:') || type.startsWith('project:');
+  }
+
+  /// Whether default value keys should be validated against this type.
+  ///
+  /// False for unknown/invalid types: those already get their own
+  /// "invalid datatype" (or "module not found") error, and reporting that a
+  /// default key is "not supported" for a type that does not exist is
+  /// misleading. Inline custom types ("package:"/"project:", including the
+  /// degenerate bare forms) skip type validation entirely, so default keys on
+  /// them must still be validated.
+  bool _supportsDefaultValueValidation(TypeDefinition type) {
+    var url = type.url;
+    return _isValidFieldType(type) ||
+        url == 'package' ||
+        url == 'project' ||
+        (url != null && _isNoValidationType(url));
+  }
+
+  /// Whether [type] is accepted as a field datatype. Shared with
+  /// [_validateFieldDataType] so that the default key validation cannot start
+  /// disagreeing with the datatype validation about which types are valid.
+  bool _isValidFieldType(TypeDefinition type) {
+    return TypeValidators.isValidType(
+      type,
+      TypeValidationOptions(
+        extraClasses: config.extraClasses,
+        modelTypeValidator: _isModelType,
+        allowSerializableDartType: true,
+      ),
+    );
   }
 
   bool _isUnresolvedModuleType(TypeDefinition type) {
