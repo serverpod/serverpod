@@ -1117,6 +1117,8 @@ return deserializeByClassName(value);
       ]);
     }
 
+    var syncModule = config.type != PackageType.module ? _syncModule : null;
+
     var hasModules =
         config.modules.isNotEmpty && config.type != PackageType.module;
 
@@ -1612,12 +1614,99 @@ return deserializeByClassName(value);
                             .returned
                             .statement,
                 ),
+              if (hasClientDatabaseTables && syncModule != null)
+                _buildCreateSyncSessionMethod(syncModule),
             ],
           ),
       ),
     );
 
     return library.build();
+  }
+
+  Method _buildCreateSyncSessionMethod(ModuleConfig syncModule) {
+    var syncUrl = syncModule.dartImportUrl(false);
+    return Method(
+      (m) => m
+        ..docs.add('''
+  /// Creates a new client-side database session for the given path, wrapped
+  /// with the `serverpod_offline_sync` engine for the tables declared with
+  /// `database: sync`. See [createSession] for the [path], [runMigrations] and
+  /// [isDebugMode] parameters.
+  ///
+  /// The [persistentUserId] is the user all local operations belong to. When
+  /// omitted, the user must be passed through the transaction.''')
+        ..name = 'createSyncSession'
+        ..modifier = MethodModifier.async
+        ..returns = TypeReference(
+          (t) => t
+            ..symbol = 'Future'
+            ..url = 'dart:async'
+            ..types.add(refer('CrdtDatabaseSession', syncUrl)),
+        )
+        ..requiredParameters.add(
+          Parameter(
+            (p) => p
+              ..name = 'path'
+              ..type = refer('String'),
+          ),
+        )
+        ..optionalParameters.addAll([
+          Parameter(
+            (p) => p
+              ..name = 'runMigrations'
+              ..named = true
+              ..type = refer('bool')
+              ..defaultTo = literalTrue.code,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'isDebugMode'
+              ..named = true
+              ..type = refer('bool')
+              ..defaultTo = literalFalse.code,
+          ),
+          Parameter(
+            (p) => p
+              ..name = 'persistentUserId'
+              ..named = true
+              ..type = refer('UuidValue?', serverpodUrl(false)),
+          ),
+        ])
+        ..body = Block.of([
+          declareFinal('session')
+              .assign(
+                refer('CrdtDatabaseSession', syncUrl).property('wraps').call(
+                  [
+                    refer('createSession')
+                        .call(
+                          [refer('path')],
+                          {
+                            'runMigrations': refer('runMigrations'),
+                            'isDebugMode': refer('isDebugMode'),
+                          },
+                        )
+                        .awaited,
+                  ],
+                  {
+                    'syncTables': refer(
+                      'Protocol',
+                      'protocol.dart',
+                    ).property('syncTables'),
+                    'persistentUserId': refer('persistentUserId'),
+                  },
+                ),
+              )
+              .statement,
+          refer('session')
+              .property('db')
+              .property('initialize')
+              .call([])
+              .awaited
+              .statement,
+          refer('session').returned.statement,
+        ]),
+    );
   }
 
   String _getClientPathFromServer(String packageName) {
