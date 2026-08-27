@@ -1,3 +1,8 @@
+## 2.9.5
+- fix: BREAKING. Fixes Apple on legacy auth accepting unverified identities. Deployments using Sign in with Apple must set `appleClientIds`
+on `AuthConfig` to their bundle and services ids.
+- fix: BREAKING. Fixes Firebase on legacy auth accepting unverified identities. Firebase sign-in with no email verification are still accepted, but won't register the e-mail on `UserInfo` and, therefore, won't merge with other sign-in options.
+
 ## 2.9.4
 - fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input.
 
