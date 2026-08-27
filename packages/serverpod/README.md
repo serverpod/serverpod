@@ -27,7 +27,7 @@ Save time. Talking with your database can be a hassle. With Serverpod's ORM, you
 Easily keep your database in sync as the requirements of your project evolve. Serverpod comes with a complete database migration system that helps you apply and version changes to the database. 
 
 ### File uploads
-Upload files straight to Google Cloud Storage, S3, or store them in your database.
+Store uploaded files in Google Cloud Storage, S3, on the server's local filesystem, or in your database.
 
 ### Authentication
 Sign in through social logins or wing your own. Currently supported are Google, Apple, Firebase, and email.
