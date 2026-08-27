@@ -123,7 +123,11 @@ class ModelDependencyResolver {
   static void _resolveIdField(ModelClassDefinition classDefinition) {
     if (classDefinition.tableName == null) return;
 
-    final defaultIdType = SupportedIdType.int;
+    // Sync tables mint ids on both client and server, so the implicit primary
+    // key matches `id: UuidValue?, defaultPersist=random_v7`.
+    final defaultIdType = classDefinition.isSyncTable
+        ? SupportedIdType.uuidV7
+        : SupportedIdType.int;
 
     var maybeIdField =
         classDefinition.parentClass?.fieldsIncludingInherited
@@ -145,9 +149,6 @@ class ModelDependencyResolver {
     }
 
     var defaultModelValue = maybeIdField?.defaultModelValue;
-    if (maybeIdField == null && defaultIdType.type.className != 'int') {
-      defaultModelValue ??= defaultIdType.defaultValue;
-    }
 
     late List<String> defaultIdFieldDoc;
     if (idFieldType.nullable && defaultModelValue == null) {

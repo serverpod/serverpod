@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_database/serverpod_database.dart';
@@ -91,7 +92,7 @@ fields:
   test(
     'Given a model with "database: sync" with an implicit primary key '
     'when validating '
-    'then an error is generated on the database key.',
+    'then it is of type UuidValue? with defaultPersist=random_v7.',
     () {
       var models = [
         ModelSourceBuilder().withCrdtScopeModel().build(),
@@ -107,58 +108,73 @@ fields:
       ];
 
       var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
+      var definitions = StatefulAnalyzer(
         config,
         models,
         onErrorsCollector(collector),
       ).validateAll();
 
-      expect(collector.errors, hasLength(1));
+      expect(collector.errors, isEmpty);
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'Tables with "database: sync" must have a UUID primary key. '
-        'Declare the id field as '
-        '"id: UuidValue?, defaultPersist=random_v7".',
-      );
-      expect(error.span?.text, 'sync');
+      var definition = definitions.last as ModelClassDefinition;
+      expect(definition.idField.type.className, 'UuidValue');
+      expect(definition.idField.type.nullable, isTrue);
+      expect(definition.idField.defaultPersistValue, defaultUuidValueRandomV7);
     },
   );
 
-  test(
-    'Given a model with "database: sync" without any fields '
-    'when validating '
-    'then an error is generated on the database key.',
+  group(
+    'Given a model with "database: sync" without any fields, '
+    'when validating,',
     () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
+      late CodeGenerationCollector collector;
+      late List<SerializableModelDefinition> definitions;
+
+      setUp(() {
+        var models = [
+          ModelSourceBuilder().withCrdtScopeModel().build(),
+          ModelSourceBuilder().withFileName('person').withYaml(
+            '''
 class: Person
 table: person
 database: sync
 ''',
-        ).build(),
-      ];
+          ).build(),
+        ];
 
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
+        collector = CodeGenerationCollector();
+        definitions = StatefulAnalyzer(
+          config,
+          models,
+          onErrorsCollector(collector),
+        ).validateAll();
+      });
 
-      expect(collector.errors, hasLength(1));
+      test('then no error is generated.', () {
+        expect(collector.errors, isEmpty);
+      });
 
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'Tables with "database: sync" must have a UUID primary key. '
-        'Declare the id field as '
-        '"id: UuidValue?, defaultPersist=random_v7".',
+      test(
+        'then the id field is of type UuidValue? with defaultPersist=random_v7.',
+        () {
+          var definition = definitions.last as ModelClassDefinition;
+          expect(definition.idField.type.className, 'UuidValue');
+          expect(definition.idField.type.nullable, isTrue);
+          expect(
+            definition.idField.defaultPersistValue,
+            defaultUuidValueRandomV7,
+          );
+        },
       );
-      expect(error.span?.text, 'sync');
+
+      test('then the scopeId field is present with the correct relation.', () {
+        var definition = definitions.last as ModelClassDefinition;
+        var relation =
+            definition.findField(syncScopeIdFieldName)!.relation
+                as ForeignRelationDefinition;
+        expect(relation.parentTable, syncScopesTableName);
+        expect(relation.onDelete, ForeignKeyAction.cascade);
+      });
     },
   );
 

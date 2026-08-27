@@ -335,10 +335,6 @@ class Restrictions {
       if (!parsedModels.tableNames.containsKey(syncScopesTableName)) {
         errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
       }
-
-      if (!_documentDeclaresIdField && !definition.isIdInherited) {
-        errors.add(SourceSpanSeverityException(syncIdFieldError, span));
-      }
     }
 
     var invalidScopedFields = definition.fieldsIncludingInherited.where(
@@ -359,14 +355,6 @@ class Restrictions {
     }
 
     return errors;
-  }
-
-  /// Whether the document declares the primary key under its "fields" key.
-  ///
-  /// The id field is implicit when it is neither declared here nor inherited.
-  bool get _documentDeclaresIdField {
-    var fields = documentContents.nodes[Keyword.fields];
-    return fields is YamlMap && fields.containsKey(defaultPrimaryKeyName);
   }
 
   List<SourceSpanSeverityException> validateTable(
