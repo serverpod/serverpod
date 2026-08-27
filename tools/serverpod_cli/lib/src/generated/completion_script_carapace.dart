@@ -149,6 +149,13 @@ commands:
       - [flutter, no-flutter]
 
   - name: upgrade
+    flags:
+      --channel=: "Which published versions to consider. Defaults to following prereleases when a prerelease is installed, and stable releases otherwise."
+      --version=: "Install a specific version or version constraint instead of the newest one in the channel. This is the only way to move the installation backwards."
+      -f, --force: "Install even when the installed version is already the target, or when the CLI being run is not the one that would be replaced."
+    completion:
+      flag:
+        channel: ["stable", "any"]
 
   - name: version
 

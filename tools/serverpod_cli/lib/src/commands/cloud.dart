@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/args.dart';
 import 'package:async/async.dart';
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
-import 'package:dart_data_home/dart_data_home.dart';
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
+import 'package:serverpod_cli/src/util/dart_install.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
-import 'package:serverpod_shared/process_io.dart';
 
 /// Forwards to the Serverpod Cloud CLI (`scloud`).
 class CloudCommand extends ServerpodCommand {
@@ -106,26 +104,18 @@ Future<Process> _startScloudProcess(
 }
 
 Future<void> _installScloud() async {
-  final dartExecutable = p.join(getSdkPath(), 'bin', 'dart');
-  final success = await log.progress(
-    'Installing Serverpod Cloud CLI...',
-    () async {
-      final installProcess = await Process.start(dartExecutable, [
-        'install',
-        'serverpod_cloud_cli',
-      ]);
-
-      installProcess.stdout.transform(const Utf8Decoder()).listen(log.debug);
-      installProcess.stderr.transform(const Utf8Decoder()).listen(log.error);
-
-      return (await installProcess.exitCode) == 0;
-    },
+  final result = await runDartInstall(
+    'serverpod_cloud_cli',
+    message: 'Installing Serverpod Cloud CLI',
   );
+  if (result.success) return;
 
-  if (!success) {
-    log.error('Failed to install Serverpod Cloud CLI.');
-    throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
-  }
+  final details = result.errorOutput;
+  log.error(
+    'Failed to install Serverpod Cloud CLI.'
+    '${details.isEmpty ? '' : '\n$details'}',
+  );
+  throw ExitException(ServerpodCommand.commandInvokedCannotExecute);
 }
 
 /// Resolves the full path to the Serverpod Cloud CLI (`scloud`) executable.
@@ -139,7 +129,7 @@ Future<void> _installScloud() async {
 String getScloudExecutablePath() {
   final name = Platform.isWindows ? 'scloud.bat' : 'scloud';
 
-  final dartInstallPath = p.join(getDartDataHome('install'), 'bin', name);
+  final dartInstallPath = dartInstalledExecutable('scloud');
   if (File(dartInstallPath).existsSync()) {
     return dartInstallPath;
   }
