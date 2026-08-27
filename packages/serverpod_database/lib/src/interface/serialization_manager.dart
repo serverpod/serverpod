@@ -18,4 +18,11 @@ abstract class DatabaseSerializationManager extends SerializationManager {
   /// with the live database, use dialect-adapted definition from the extension
   /// [DatabaseAnalyzerExtensions.getTargetTableDefinitions].
   List<TableDefinition> getTargetTableDefinitions();
+
+  /// The tables synchronized between client and server by the
+  /// `serverpod_offline_sync` package.
+  ///
+  /// Overridden by generated code when the `databaseSync` experimental
+  /// feature is enabled. Empty otherwise.
+  List<Table> getSyncTables() => const [];
 }
