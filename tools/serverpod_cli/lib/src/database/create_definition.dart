@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/quote_utils.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/config.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
 import 'package:serverpod_database/serverpod_database.dart';
@@ -123,7 +124,7 @@ List<ForeignKeyDefinition> _createForeignKeys(
         referenceTable: relation.parentTable,
         referenceTableSchema: 'public',
         referenceColumns: ['id'],
-        onDelete: relation.onDelete,
+        onDelete: _onDeleteAction(classDefinition, relation.onDelete),
         onUpdate: relation.onUpdate,
         deferrable: relation.deferrable,
       ),
@@ -131,6 +132,24 @@ List<ForeignKeyDefinition> _createForeignKeys(
   }
 
   return foreignKeys;
+}
+
+/// Resolves the `onDelete` action to use on the database for a relation.
+///
+/// On tables with `database: sync`, `Restrict` is replaced by `NoAction`.
+/// Both give the same guarantee at commit time, but `Restrict` is a
+/// referential action checked the moment the parent row is touched, even on
+/// deferred constraints, which breaks the out-of-order merges performed by
+/// the sync engine. `NoAction` is checked when the deferred constraint is,
+/// at the end of the transaction.
+ForeignKeyAction _onDeleteAction(
+  ModelClassDefinition classDefinition,
+  ForeignKeyAction onDelete,
+) {
+  if (classDefinition.isSyncTable && onDelete == ForeignKeyAction.restrict) {
+    return ForeignKeyAction.noAction;
+  }
+  return onDelete;
 }
 
 /// Parses the default value for a column.

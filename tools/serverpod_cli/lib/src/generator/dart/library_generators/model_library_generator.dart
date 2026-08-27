@@ -3674,6 +3674,7 @@ extension on BuildRepositoryClass {
 extension on ModelClassDefinition {
   bool isTableOwner(bool serverCode) => switch (database) {
     ModelDatabaseDefinition.all => true,
+    ModelDatabaseDefinition.sync => true,
     ModelDatabaseDefinition.server => serverCode,
     ModelDatabaseDefinition.client => !serverCode,
   };

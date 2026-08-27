@@ -64,6 +64,19 @@ class ModelSourceBuilder {
     return this;
   }
 
+  ModelSourceBuilder withCrdtScopeModel() {
+    return withIsSharedModel(true)
+        .withModuleAlias('serverpod_offline_sync')
+        .withFileName('crdt_scope')
+        .withYaml('''
+class: CrdtScope
+table: crdt_scopes
+database: all
+fields:
+  name: String
+''');
+  }
+
   ModelSource build() {
     var yamlSourceUri = Uri(
       path: joinAll(
