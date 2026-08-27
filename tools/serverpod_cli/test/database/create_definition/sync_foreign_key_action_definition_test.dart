@@ -30,8 +30,8 @@ void main() {
   }
 
   group(
-    'Given a class definition with "database: sync" and a foreign relation '
-    'with onDelete set to "Restrict" when generating a database definition',
+    'Given a class definition with "database: sync" and a foreign relation with onDelete set to "Restrict", '
+    'when generating a database definition,',
     () {
       var databaseDefinition = createDatabaseDefinitionFromModels(
         [buildModel(ModelDatabaseDefinition.sync)],
@@ -52,8 +52,8 @@ void main() {
   );
 
   group(
-    'Given a class definition with "database: all" and a foreign relation '
-    'with onDelete set to "Restrict" when generating a database definition',
+    'Given a class definition with "database: all" and a foreign relation with onDelete set to "Restrict", '
+    'when generating a database definition,',
     () {
       var databaseDefinition = createDatabaseDefinitionFromModels(
         [buildModel(ModelDatabaseDefinition.all)],
