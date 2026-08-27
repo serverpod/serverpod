@@ -70,7 +70,7 @@ void main() {
     },
   );
 
-  var syncModels = [
+  late var syncModels = [
     ModelSourceBuilder().withFileName('crdt_scope').withYaml(
       '''
       class: CrdtScope
@@ -94,8 +94,47 @@ void main() {
   ];
 
   test(
-    'Given a class with "database: sync" and the databaseSync experimental '
-    'feature disabled '
+    'Given a class with "database: sync" and the databaseSync experimental feature enabled '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.databaseSync,
+      ]).build();
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        syncModels,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class with "database: sync" and all experimental features enabled '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.all,
+      ]).build();
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        syncModels,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class with "database: sync" and the databaseSync experimental feature disabled '
     'when validating '
     'then an error is generated.',
     () {
@@ -118,48 +157,6 @@ void main() {
         'setting "databaseSync: true" under "experimental_features" in the '
         'generator.yaml file.',
       );
-    },
-  );
-
-  test(
-    'Given a class with "database: sync" and the databaseSync experimental '
-    'feature enabled '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
-        ExperimentalFeature.databaseSync,
-      ]).build();
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        syncModels,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
-    },
-  );
-
-  test(
-    'Given a class with "database: sync" and all experimental features '
-    'enabled '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
-        ExperimentalFeature.all,
-      ]).build();
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        syncModels,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
     },
   );
 }
