@@ -122,7 +122,7 @@ Future<void> _installScloud() async {
 ///
 /// Tries in order:
 /// 1. The `dart install` bin directory (where `_installScloud` places it)
-/// 2. The legacy pub-cache bin directory
+/// 2. The legacy pub-cache bin directory, when it can be located
 ///
 /// Returns the preferred `dart install` path even when the executable is
 /// missing so callers can trigger installation.
@@ -134,15 +134,18 @@ String getScloudExecutablePath() {
     return dartInstallPath;
   }
 
-  final pubCachePath = p.join(_resolvePubCacheBinDirectory(), name);
-  if (File(pubCachePath).existsSync()) {
-    return pubCachePath;
+  final pubCacheBin = _resolvePubCacheBinDirectory();
+  if (pubCacheBin != null) {
+    final pubCachePath = p.join(pubCacheBin, name);
+    if (File(pubCachePath).existsSync()) {
+      return pubCachePath;
+    }
   }
 
   return dartInstallPath;
 }
 
-String _resolvePubCacheBinDirectory() {
+String? _resolvePubCacheBinDirectory() {
   final pubCache = Platform.environment['PUB_CACHE'];
   if (pubCache != null && pubCache.isNotEmpty) {
     return p.join(pubCache, 'bin');
@@ -155,5 +158,9 @@ String _resolvePubCacheBinDirectory() {
     }
   }
 
-  return p.join(Platform.environment['HOME'] ?? '', '.pub-cache', 'bin');
+  final home =
+      Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+  if (home == null || home.isEmpty) return null;
+
+  return p.join(home, '.pub-cache', 'bin');
 }
