@@ -1,3 +1,15 @@
+## 4.0.0-rc.1
+
+- feat: Introduces the experimental `database: sync` option for models to use `serverpod_offline_sync`.
+- feat: Requires the `.spy.yaml` extension for model files.
+- feat: Allow `fk` flag for declaring the owner of the foreign key on a `relation`
+- fix: Removes active server scopes on the running `start` TUI when their `ServerProcess` exits.
+- fix: Fixes `serverpod_database` not compiling to WASM clients.
+- fix: Fixes SQLite not mapping exceptions at transaction COMMIT.
+- fix: Gates unused Insights endpoint methods behind the `enableDatabaseAccess` config.
+- refactor: BREAKING. Merges normal and `*withOptions` methods on the `CloudStorage` interface.
+- chore: Bumps minimum Dart version to 3.12.2 and Flutter version to 3.44.4.
+
 ## 4.0.0-beta.4
 
 - feat: Allows overriding the default cache header for `StaticRoute` and `SpaRoute` from env vars.
