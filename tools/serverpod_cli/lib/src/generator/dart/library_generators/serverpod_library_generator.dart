@@ -9,6 +9,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
   /// [PackageType.server] (modules are never booted on their own).
   Library generateServerpodClass() {
     var library = LibraryBuilder();
+    var syncModule = _syncModule;
 
     // Re-export the framework, hiding its Serverpod class in favor of the
     // generated one, so `server.dart` only needs to import this file.
@@ -40,6 +41,12 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
             '/// ```dart',
             '/// final pod = Serverpod(args);',
             '/// ```',
+            if (syncModule != null) ...[
+              '///',
+              '/// The `serverpod_offline_sync` engine is initialized with the tables',
+              '/// declared with `database: sync`, using `crdtDatabaseInterceptor`',
+              '/// unless a [databaseInterceptor] is provided.',
+            ],
           ])
           ..name = 'Serverpod'
           ..extend = refer('Serverpod', serverpodUrl(true))
@@ -187,11 +194,28 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                           'runtimeParametersBuilder': refer(
                             'runtimeParametersBuilder',
                           ),
-                          'databaseInterceptor': refer('databaseInterceptor'),
+                          'databaseInterceptor': syncModule == null
+                              ? refer('databaseInterceptor')
+                              : refer('databaseInterceptor').ifNullThen(
+                                  refer(
+                                    'crdtDatabaseInterceptor',
+                                    syncModule.dartImportUrl(true),
+                                  ),
+                                ),
                         },
                       )
                       .code,
                 );
+              if (syncModule != null) {
+                c.body = refer('initializeCrdtSync')
+                    .call([], {
+                      'syncTables': refer(
+                        'Protocol',
+                        'protocol.dart',
+                      ).property('syncTables'),
+                    })
+                    .statement;
+              }
             }),
           ),
       ),

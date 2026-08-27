@@ -51,6 +51,18 @@ class LibraryGenerator {
       (config.modules.isNotEmpty ||
           config.sharedModelsSourcePathsParts.isNotEmpty);
 
+  /// The `serverpod_offline_sync` module, when the `databaseSync` experimental
+  /// feature is enabled and the module is a dependency of the project.
+  ModuleConfig? get _syncModule {
+    if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.databaseSync)) {
+      return null;
+    }
+    for (var module in config.modules) {
+      if (module.name == syncModuleName) return module;
+    }
+    return null;
+  }
+
   /// The synced table models in [models], sorted by table name.
   static List<ModelClassDefinition> _syncTableModels(
     Iterable<SerializableModelDefinition> models,

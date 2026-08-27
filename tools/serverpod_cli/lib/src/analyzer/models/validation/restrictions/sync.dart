@@ -17,6 +17,9 @@ const String syncScopeIdFieldName = 'scopeId';
 /// module.
 const String syncScopesTableName = 'crdt_scopes';
 
+/// The name of the `serverpod_offline_sync` module.
+const String syncModuleName = 'serverpod_offline_sync';
+
 extension ModelClassDefinitionSync on ModelClassDefinition {
   /// Whether this model is a table synchronized between client and server.
   bool get isSyncTable =>
