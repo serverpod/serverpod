@@ -14,115 +14,6 @@ void main() {
     ExperimentalFeature.databaseSync,
   ]).build();
 
-  test(
-    'Given a model with "database: sync" that satisfies all sync restrictions '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-  name: String
-  parent: Person?, relation(optional, onDelete=Cascade, deferred)
-indexes:
-  person_name_idx:
-    fields: scopeId, name
-    unique: true
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" with an int primary key '
-    'when validating '
-    'then an error is generated on the id type.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: int?, defaultPersist=serial
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, hasLength(1));
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'Tables with "database: sync" must have a UUID primary key. '
-        'Declare the id field as '
-        '"id: UuidValue?, defaultPersist=random_v7".',
-      );
-      expect(error.span?.text, 'int?');
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" with an implicit primary key '
-    'when validating '
-    'then it is of type UuidValue? with defaultPersist=random_v7.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
-
-      var definition = definitions.last as ModelClassDefinition;
-      expect(definition.idField.type.className, 'UuidValue');
-      expect(definition.idField.type.nullable, isTrue);
-      expect(definition.idField.defaultPersistValue, defaultUuidValueRandomV7);
-    },
-  );
-
   group(
     'Given a model with "database: sync" without any fields, '
     'when validating,',
@@ -179,6 +70,261 @@ database: sync
   );
 
   test(
+    'Given a model with "database: sync" with an implicit primary key '
+    'when validating '
+    'then it is of type UuidValue? with defaultPersist=random_v7.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+
+      var definition = definitions.last as ModelClassDefinition;
+      expect(definition.idField.type.className, 'UuidValue');
+      expect(definition.idField.type.nullable, isTrue);
+      expect(definition.idField.defaultPersistValue, defaultUuidValueRandomV7);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" without a scopeId field '
+    'when analyzing '
+    'then no error is generated and the scopeId field is injected below the id field.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  name: String, unique(per=scopeId)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
+        (model) => model.className == 'Person',
+      );
+
+      expect(collector.errors, isEmpty);
+      expect(person.fields.map((f) => f.name), ['id', 'scopeId', 'name']);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" without a scopeId field '
+    'when analyzing '
+    'then the injected scopeId field is a persisted nullable int with scope all.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  name: String, unique(per=scopeId)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
+        (model) => model.className == 'Person',
+      );
+
+      var scopeId = person.findField('scopeId')!;
+      expect(scopeId.type.className, 'int');
+      expect(scopeId.type.nullable, isTrue);
+      expect(scopeId.scope, ModelFieldScopeDefinition.all);
+      expect(scopeId.shouldPersist, isTrue);
+      expect(scopeId.documentation, isNotEmpty);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" without a scopeId field '
+    'when analyzing '
+    'then the injected scopeId field cascades from crdt_scopes.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  name: String, unique(per=scopeId)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
+        (model) => model.className == 'Person',
+      );
+
+      var relation =
+          person.findField('scopeId')!.relation as ForeignRelationDefinition;
+      expect(relation.parentTable, 'crdt_scopes');
+      expect(relation.foreignFieldName, 'id');
+      expect(relation.onDelete, ForeignKeyAction.cascade);
+      expect(relation.deferrable, isNull);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" without a scopeId field '
+    'when analyzing '
+    'then the indexes referencing scopeId are resolved on the injected field.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  name: String, unique(per=scopeId)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
+        (model) => model.className == 'Person',
+      );
+
+      var scopeId = person.findField('scopeId')!;
+      expect(scopeId.indexes.map((i) => i.name), [
+        'person__scopeId__name__unique_idx',
+      ]);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" with a CrdtScope relation '
+    'when analyzing '
+    'then no error is generated and the implicit scopeId field is used.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scope: CrdtScope?, relation(onDelete=Cascade)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      var definitions = StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
+        (model) => model.className == 'Person',
+      );
+
+      expect(collector.errors, isEmpty);
+      var scopeId = person.findField('scopeId');
+      expect(scopeId?.relation, isA<ForeignRelationDefinition>());
+      expect(person.fields.where((f) => f.name == 'scopeId'), hasLength(1));
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" with an int primary key '
+    'when validating '
+    'then an error is generated on the id type.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: int?, defaultPersist=serial
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'Tables with "database: sync" must have a UUID primary key. '
+        'Declare the id field as '
+        '"id: UuidValue?, defaultPersist=random_v7".',
+      );
+      expect(error.span?.text, 'int?');
+    },
+  );
+
+  test(
     'Given a model with "database: sync" and no crdt_scopes table '
     'when validating '
     'then an error is generated on the database key.',
@@ -225,9 +371,9 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field that is not nullable '
+    'Given a model with "database: sync" with a scopeId field with a deferred relation '
     'when validating '
-    'then an error is generated on the scopeId type.',
+    'then no error is generated.',
     () {
       var models = [
         ModelSourceBuilder().withCrdtScopeModel().build(),
@@ -238,7 +384,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int, relation(parent=crdt_scopes, onDelete=Cascade)
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade, deferred)
 ''',
         ).build(),
       ];
@@ -250,15 +396,7 @@ fields:
         onErrorsCollector(collector),
       ).validateAll();
 
-      expect(collector.errors, hasLength(1));
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "scopeId" field must be of type "int?" on tables with '
-        '"database: sync".',
-      );
-      expect(error.span?.text, 'int');
+      expect(collector.errors, isEmpty);
     },
   );
 
@@ -298,6 +436,44 @@ fields:
         '"database: sync".',
       );
       expect(error.span?.text, 'scopeId');
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" with a scopeId field that is not nullable '
+    'when validating '
+    'then an error is generated on the scopeId type.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int, relation(parent=crdt_scopes, onDelete=Cascade)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "scopeId" field must be of type "int?" on tables with '
+        '"database: sync".',
+      );
+      expect(error.span?.text, 'int');
     },
   );
 
@@ -378,43 +554,6 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field with a relation that does not cascade on delete '
-    'when validating '
-    'then an error is generated on the onDelete value.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=NoAction)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, hasLength(1));
-
-      var error = collector.errors.first;
-      expect(
-        error.message,
-        'The "scopeId" relation must use "onDelete=Cascade".',
-      );
-      expect(error.span?.text, 'NoAction');
-    },
-  );
-
-  test(
     'Given a model with "database: sync" with a scopeId field with a relation without an onDelete action '
     'when validating '
     'then an error is generated on the relation.',
@@ -452,9 +591,9 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a scopeId field with a deferred relation '
+    'Given a model with "database: sync" with a scopeId field with a relation that does not cascade on delete '
     'when validating '
-    'then no error is generated.',
+    'then an error is generated on the onDelete value.',
     () {
       var models = [
         ModelSourceBuilder().withCrdtScopeModel().build(),
@@ -465,7 +604,7 @@ table: person
 database: sync
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade, deferred)
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=NoAction)
 ''',
         ).build(),
       ];
@@ -477,7 +616,14 @@ fields:
         onErrorsCollector(collector),
       ).validateAll();
 
-      expect(collector.errors, isEmpty);
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first;
+      expect(
+        error.message,
+        'The "scopeId" relation must use "onDelete=Cascade".',
+      );
+      expect(error.span?.text, 'NoAction');
     },
   );
 
@@ -666,6 +812,38 @@ fields:
   );
 
   test(
+    'Given a model with "database: sync" with a relation declared on an id field that is deferred '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+  parentId: UuidValue?, relation(parent=person, deferred)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
     'Given a model with "database: sync" with a relation declared on a required id field that is not deferred '
     'when validating '
     'then an error is generated on the relation.',
@@ -702,38 +880,6 @@ fields:
         'deferred. Add the "deferred" keyword to the relation.',
       );
       expect(error.span?.text, 'parent=person');
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" with a relation declared on an id field that is deferred '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-  name: String
-  parentId: UuidValue?, relation(parent=person, deferred)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
     },
   );
 
@@ -938,6 +1084,110 @@ fields:
   );
 
   test(
+    'Given a model with "database: sync" with a unique index declared inline on a field per scopeId '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+  email: String, unique(per=scopeId)
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" with a unique index composed only of an optional relation to a sync table '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+  spouse: Person?, relation(optional, onDelete=SetNull, deferred)
+indexes:
+  person_spouse_idx:
+    fields: spouseId
+    unique: true
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a model with "database: sync" that satisfies all sync restrictions '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var models = [
+        ModelSourceBuilder().withCrdtScopeModel().build(),
+        ModelSourceBuilder().withFileName('person').withYaml(
+          '''
+class: Person
+table: person
+database: sync
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+  name: String
+  parent: Person?, relation(optional, onDelete=Cascade, deferred)
+indexes:
+  person_name_idx:
+    fields: scopeId, name
+    unique: true
+''',
+        ).build(),
+      ];
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        models,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
     'Given a model with "database: sync" with a unique index that does not include scopeId '
     'when validating '
     'then an error is generated on the unique key.',
@@ -1024,42 +1274,6 @@ indexes:
         'without a relation, so the sync engine can resolve conflicts.',
       );
       expect(error.span?.text, 'unique');
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" with a unique index composed only of an optional relation to a sync table '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-  name: String
-  spouse: Person?, relation(optional, onDelete=SetNull, deferred)
-indexes:
-  person_spouse_idx:
-    fields: spouseId
-    unique: true
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
     },
   );
 
@@ -1151,38 +1365,6 @@ fields:
   );
 
   test(
-    'Given a model with "database: sync" with a unique index declared inline on a field per scopeId '
-    'when validating '
-    'then no error is generated.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
-  name: String
-  email: String, unique(per=scopeId)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-
-      expect(collector.errors, isEmpty);
-    },
-  );
-
-  test(
     'Given a child model with "database: sync" inheriting a unique index without scopeId '
     'when validating '
     'then an error is generated on the table key.',
@@ -1231,188 +1413,6 @@ fields:
         '"database: sync" can be global.',
       );
       expect(error.span?.text, 'child');
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then no error is generated and the scopeId field is injected below the id field.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
-        (model) => model.className == 'Person',
-      );
-
-      expect(collector.errors, isEmpty);
-      expect(person.fields.map((f) => f.name), ['id', 'scopeId', 'name']);
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the injected scopeId field is a persisted nullable int with scope all.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
-        (model) => model.className == 'Person',
-      );
-
-      var scopeId = person.findField('scopeId')!;
-      expect(scopeId.type.className, 'int');
-      expect(scopeId.type.nullable, isTrue);
-      expect(scopeId.scope, ModelFieldScopeDefinition.all);
-      expect(scopeId.shouldPersist, isTrue);
-      expect(scopeId.documentation, isNotEmpty);
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the injected scopeId field cascades from crdt_scopes.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
-        (model) => model.className == 'Person',
-      );
-
-      var relation =
-          person.findField('scopeId')!.relation as ForeignRelationDefinition;
-      expect(relation.parentTable, 'crdt_scopes');
-      expect(relation.foreignFieldName, 'id');
-      expect(relation.onDelete, ForeignKeyAction.cascade);
-      expect(relation.deferrable, isNull);
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" without a scopeId field '
-    'when analyzing '
-    'then the indexes referencing scopeId are resolved on the injected field.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  name: String, unique(per=scopeId)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
-        (model) => model.className == 'Person',
-      );
-
-      var scopeId = person.findField('scopeId')!;
-      expect(scopeId.indexes.map((i) => i.name), [
-        'person__scopeId__name__unique_idx',
-      ]);
-    },
-  );
-
-  test(
-    'Given a model with "database: sync" with a CrdtScope relation '
-    'when analyzing '
-    'then no error is generated and the implicit scopeId field is used.',
-    () {
-      var models = [
-        ModelSourceBuilder().withCrdtScopeModel().build(),
-        ModelSourceBuilder().withFileName('person').withYaml(
-          '''
-class: Person
-table: person
-database: sync
-fields:
-  id: UuidValue?, defaultPersist=random_v7
-  scope: CrdtScope?, relation(onDelete=Cascade)
-''',
-        ).build(),
-      ];
-
-      var collector = CodeGenerationCollector();
-      var definitions = StatefulAnalyzer(
-        config,
-        models,
-        onErrorsCollector(collector),
-      ).validateAll();
-      var person = definitions.whereType<ModelClassDefinition>().singleWhere(
-        (model) => model.className == 'Person',
-      );
-
-      expect(collector.errors, isEmpty);
-      var scopeId = person.findField('scopeId');
-      expect(scopeId?.relation, isA<ForeignRelationDefinition>());
-      expect(person.fields.where((f) => f.name == 'scopeId'), hasLength(1));
     },
   );
 }
