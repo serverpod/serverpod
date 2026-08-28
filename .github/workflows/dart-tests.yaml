@@ -240,9 +240,7 @@ jobs:
         uses: ./.github/actions/retry
         with:
           shell: bash
-          command: |
-            cd templates/serverpod_templates/modulename_server && dart pub get
-            cd ../projectname_server && dart pub get
+          command: util/pub_get_templates
       - uses: ./.github/actions/use-cli-bundle
       - name: Generate template servers and verify no changes
         shell: bash
