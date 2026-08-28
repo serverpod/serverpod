@@ -37,7 +37,21 @@ class FirebaseEndpoint extends Endpoint {
       session.log('Verified idToken', level: LogLevel.debug);
       var claims = token.claims;
 
-      var email = claims.email?.toLowerCase();
+      // An unverified address identifies nobody, so treat it as no address.
+      // Read the claims raw, since openid_client's getters cast them
+      // unchecked, and accept the string form the Apple path also accepts.
+      var claimedEmail = claims['email'];
+      var claimedVerified = claims['email_verified'];
+      var verified = claimedVerified == true || claimedVerified == 'true';
+      var email = verified && claimedEmail is String
+          ? claimedEmail.toLowerCase()
+          : null;
+      if (email == null && claimedEmail != null) {
+        session.log(
+          'Ignoring unverified Firebase email claim',
+          level: LogLevel.debug,
+        );
+      }
       var userIdentifier = token.claims.subject;
       var fullName = token.claims.name;
       var userName = token.claims.nickname ?? email?.split('@').firstOrNull;

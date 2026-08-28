@@ -42,3 +42,4 @@ dependency_overrides:
 
 false_secrets:
   - test/firebase/firebase_auth_mock.dart
+  - test/apple/apple_test_utils.dart
