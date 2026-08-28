@@ -1,92 +1,69 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-import 'package:jose/jose.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_server/src/business/apple_auth.dart';
 import 'package:serverpod_auth_server/src/business/user_authentication.dart';
 
 import '../business/users.dart';
 import '../generated/protocol.dart';
 
-List<Map<String, dynamic>>? _applePublicKeys;
 const _authMethod = 'apple';
 
 /// Endpoint for handling Sign in with Apple.
 class AppleEndpoint extends Endpoint {
   /// Authenticates a user with Apple.
   Future<AuthenticationResponse> authenticate(
-      Session session, AppleAuthInfo authInfo) async {
-    // Load public keys
-    if (_applePublicKeys == null) {
-      var result =
-          await http.get(Uri.parse('https://appleid.apple.com/auth/keys'));
-      if (result.statusCode != 200) {
-        return AuthenticationResponse(
-          success: false,
-          failReason: AuthenticationFailReason.internalError,
-        );
-      }
-
-      Map data = jsonDecode(result.body);
-      List keysData = data['keys'];
-      var keys = <Map<String, dynamic>>[];
-      for (Map keyData in keysData) {
-        keys.add(keyData.cast<String, dynamic>());
-      }
-      _applePublicKeys = keys;
+    Session session,
+    AppleAuthInfo authInfo,
+  ) async {
+    AppleIdentityToken identityToken;
+    try {
+      identityToken = await AppleAuth.verifyIdentityToken(
+        authInfo.identityToken,
+      );
+    } on AppleAuthUnavailableException catch (e) {
+      // Our failure, not the caller's, so it must not log at debug.
+      session.log(e.message, level: LogLevel.error);
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.internalError,
+      );
+    } on AppleIdentityTokenException catch (e) {
+      session.log(
+        'Sign in with Apple rejected: ${e.message}',
+        level: LogLevel.debug,
+      );
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
     }
 
     var userIdentifier = authInfo.userIdentifier;
+    if (userIdentifier != identityToken.subject) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
+
+    var email = authInfo.email?.toLowerCase();
+    if (email != null && email != identityToken.email) {
+      return AuthenticationResponse(
+        success: false,
+        failReason: AuthenticationFailReason.invalidCredentials,
+      );
+    }
+
+    // An unverified address identifies nobody, so treat it as no address.
+    if (email != null && !identityToken.isEmailVerified) {
+      session.log(
+        'Ignoring unverified Apple email claim',
+        level: LogLevel.debug,
+      );
+      email = null;
+    }
+
     var fullName = authInfo.fullName;
     var name = authInfo.nickname;
-    var email = authInfo.email;
-
-    // create a JsonWebSignature from the encoded string
-    var jws = JsonWebSignature.fromCompactSerialization(authInfo.identityToken);
-
-    // extract the payload
-    var payload = jws.unverifiedPayload;
-
-    var verified = false;
-    for (var applePublicKey in _applePublicKeys!) {
-      var jwk = JsonWebKey.fromJson(applePublicKey);
-
-      var keyStore = JsonWebKeyStore()..addKey(jwk);
-
-      // verify the signature
-      if (await jws.verify(keyStore)) verified = true;
-    }
-
-    if (!verified) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-    var jsonContent = payload.jsonContent;
-    if (jsonContent is! Map<String, dynamic>) {
-      session.log('JWS payload not a JSON map object', level: LogLevel.error);
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-    if (userIdentifier != jsonContent['sub']) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-
-    session.log('checking email', level: LogLevel.debug);
-    if (email != null && email != jsonContent['email']) {
-      return AuthenticationResponse(
-        success: false,
-        failReason: AuthenticationFailReason.invalidCredentials,
-      );
-    }
-
-    email = email?.toLowerCase();
 
     UserInfo? userInfo;
     if (email != null) userInfo = await Users.findUserByEmail(session, email);

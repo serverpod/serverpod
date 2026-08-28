@@ -147,6 +147,19 @@ class AuthConfig {
   /// Firebase console.
   final String firebaseServiceAccountKeyJson;
 
+  /// The client identifiers Sign in with Apple identity tokens must be issued
+  /// for: the app's bundle identifiers and, for the web flow, its services
+  /// identifiers.
+  ///
+  /// Apple signs every developer team's tokens with the same keys, so the
+  /// signature alone does not say which application a token was minted for.
+  /// Sign in with Apple is disabled unless this is set.
+  final Set<String> appleClientIds;
+
+  /// How much clock drift to tolerate when checking the `exp` and `iat` claims
+  /// of a Sign in with Apple identity token. Defaults to 1 minute.
+  final Duration appleIdentityTokenClockSkewTolerance;
+
   /// The maximum length of passwords when signing up with email.
   /// Default is 128 characters.
   final int maxPasswordLength;
@@ -199,6 +212,8 @@ class AuthConfig {
     this.extraSaltyHash = true,
     this.firebaseServiceAccountKeyJson =
         'config/firebase_service_account_key.json',
+    this.appleClientIds = const {},
+    this.appleIdentityTokenClockSkewTolerance = const Duration(minutes: 1),
     this.maxPasswordLength = 128,
     this.minPasswordLength = 8,
     this.allowUnsecureRandom = false,
