@@ -12,7 +12,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  serverpod_auth_client: 4.0.0-beta.4
-  serverpod_auth_idp_client: 4.0.0-beta.4
-  serverpod_auth_migration_client: 4.0.0-beta.4
-  serverpod_client: 4.0.0-beta.4
+  serverpod_auth_client: 4.0.0-rc.1
+  serverpod_auth_idp_client: 4.0.0-rc.1
+  serverpod_auth_migration_client: 4.0.0-rc.1
+  serverpod_client: 4.0.0-rc.1

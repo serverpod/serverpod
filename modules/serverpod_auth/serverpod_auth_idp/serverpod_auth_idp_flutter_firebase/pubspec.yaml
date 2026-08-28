@@ -3,7 +3,7 @@
 
 name: serverpod_auth_idp_flutter_firebase
 description: Firebase-specific Flutter package for the Serverpod authentication module.
-version: 4.0.0-beta.4
+version: 4.0.0-rc.1
 repository: https://github.com/serverpod/serverpod
 
 environment:
@@ -16,10 +16,10 @@ dependencies:
   firebase_auth: ^6.1.3
   flutter:
     sdk: flutter
-  serverpod_auth_idp_client: 4.0.0-beta.4
-  serverpod_auth_idp_flutter: 4.0.0-beta.4
+  serverpod_auth_idp_client: 4.0.0-rc.1
+  serverpod_auth_idp_flutter: 4.0.0-rc.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 4.0.0-beta.4
+  serverpod_lints: 4.0.0-rc.1

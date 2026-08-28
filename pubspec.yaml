@@ -34,9 +34,10 @@ melos:
   command:
     bootstrap:
       hooks:
-        # Resolve the packages that cannot join the workspace. The list, and why
-        # each package is excluded, lives in util/non_workspace_packages.
-        post: cd "$MELOS_ROOT_PATH" && util/pub_get_non_workspace
+        # Resolve the packages that cannot join the workspace. The lists, and
+        # why each package is excluded, live in util/non_workspace_packages and
+        # util/template_packages.
+        post: cd "$MELOS_ROOT_PATH" && util/pub_get_non_workspace && util/pub_get_templates
   scripts:
     # The lint scripts analyze the workspace and, via
     # util/analyze_non_workspace, the packages that are not workspace members.
