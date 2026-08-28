@@ -186,6 +186,14 @@ To allow easily building offline-first Flutter apps, the experimental `database:
 - chore: Removes the requirement for Flutter to run the `serverpod_cli` on CI.
 - chore: Improves the analytics reporting on used Serverpod features.
 
+## 3.4.13
+
+- fix: BREAKING. Fixes Apple on legacy auth accepting unverified identities. Deployments using Sign in with Apple must set `appleClientIds`
+on `AuthConfig` to their bundle and services ids. Backported to 2.9.5.
+- fix: BREAKING. Fixes Firebase on legacy auth accepting unverified identities. Firebase sign-in with no email verification are still accepted, but won't register the e-mail on `UserInfo` and, therefore, won't merge with other sign-in options. Backported to 2.9.5.
+- fix: Restores inbound foreign keys on migrations when a table is recreated.
+- chore: Allows overriding the default cache headers for `StaticRoute` and `SpaRoute` from env vars.
+
 ## 3.4.12
 
 - fix: Fixes Google Sign-In accepting an access token minted for a different OAuth client that could be used to takeover an account.
@@ -558,6 +566,11 @@ Serverpod now supports polymorphism on models and endpoints. This allows you to 
 - chore: Marks legacy streaming endpoints and associated code as deprecated. Streaming methods are now the preferred way to handle streaming between the server and client.
 - chore: Marks `AuthenticationKeyManager` as deprecated in favour of the new `ClientAuthKeyProvider` interface.
 - chore: Bumps minimum Dart version to 3.8.0 and Flutter version to 3.32.0.
+
+## 2.9.5
+- fix: BREAKING. Fixes Apple on legacy auth accepting unverified identities. Deployments using Sign in with Apple must set `appleClientIds`
+on `AuthConfig` to their bundle and services ids. Backported from 3.4.13.
+- fix: BREAKING. Fixes Firebase on legacy auth accepting unverified identities. Firebase sign-in with no email verification are still accepted, but won't register the e-mail on `UserInfo` and, therefore, won't merge with other sign-in options. Backported from 3.4.13.
 
 ## 2.9.4
 - fix: Fixes improper neutralization of string values in Serverpod's ORM that exposes SQL injection from user input. Backported from 3.4.12.
