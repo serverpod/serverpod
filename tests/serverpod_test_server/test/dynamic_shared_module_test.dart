@@ -17,7 +17,7 @@ void main() {
 
       test(
         'when deserializing through the module protocol, '
-        'then the original format error is propagated.',
+        'then a FormatException is thrown.',
         () {
           expect(
             () => protocol.deserializeByClassName(payload),
