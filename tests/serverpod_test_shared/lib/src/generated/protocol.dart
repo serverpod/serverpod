@@ -121,7 +121,7 @@ class Protocol extends _isd.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on FormatException catch (_) {
+      } on _iss.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -405,7 +405,7 @@ class Protocol extends _isd.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on FormatException catch (_) {}
+        } on _iss.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);

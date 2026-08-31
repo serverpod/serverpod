@@ -22,8 +22,7 @@ enum DeferrableConstraint implements _iss.SerializableModel {
 
   /// The constraint is `DEFERRABLE INITIALLY DEFERRED`. It is checked at
   /// transaction commit time by default.
-  initiallyDeferred,
-  ;
+  initiallyDeferred;
 
   static DeferrableConstraint fromJson(String name) {
     switch (name) {

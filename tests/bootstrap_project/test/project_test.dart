@@ -1170,6 +1170,26 @@ void main() async {
               ),
         );
 
+        // TODO: Remove once DeserializationClassNameNotFoundException is
+        // published. The generated protocol references the local exception,
+        // while the Docker build resolves the currently published packages.
+        final protocolFile = File(
+          path.join(
+            commandRoot,
+            'lib',
+            'src',
+            'generated',
+            'protocol.dart',
+          ),
+        );
+        final protocolSource = protocolFile.readAsStringSync();
+        protocolFile.writeAsStringSync(
+          protocolSource.replaceAll(
+            RegExp(r'_i\w+\.DeserializationClassNameNotFoundException'),
+            'FormatException',
+          ),
+        );
+
         final dockerBuildProcess = await startProcess(
           'docker',
           [

@@ -13,19 +13,17 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod/protocol.dart' as _isp;
 import 'package:serverpod/serverpod.dart' as _is;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
-import 'example.dart' as _itx02h2p;
-export 'example.dart';
+import 'greetings/greeting.dart' as _izw8z7ou;
+export 'greetings/greeting.dart';
 
 class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
-  static final Protocol _instance = Protocol._().._registerHostProtocols();
+  static final Protocol _instance = Protocol._();
 
   static List<_isp.TableDefinition> get targetTableDefinitions => [
-    ..._i1n3uhu0.Protocol.targetTableDefinitions,
     ..._isp.Protocol.targetTableDefinitions,
   ];
 
@@ -56,15 +54,12 @@ class Protocol extends _is.DatabaseSerializationManager {
       }
     }
 
-    if (t == _itx02h2p.Example) {
-      return _itx02h2p.Example.fromJson(data) as T;
+    if (t == _izw8z7ou.Greeting) {
+      return _izw8z7ou.Greeting.fromJson(data) as T;
     }
-    if (t == _is.getType<_itx02h2p.Example?>()) {
-      return (data != null ? _itx02h2p.Example.fromJson(data) : null) as T;
+    if (t == _is.getType<_izw8z7ou.Greeting?>()) {
+      return (data != null ? _izw8z7ou.Greeting.fromJson(data) : null) as T;
     }
-    try {
-      return _i1n3uhu0.Protocol().deserialize<T>(data, t);
-    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _isp.Protocol().deserialize<T>(data, t);
     } on _is.DeserializationTypeNotFoundException catch (_) {}
@@ -73,7 +68,7 @@ class Protocol extends _is.DatabaseSerializationManager {
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _itx02h2p.Example => 'Example',
+      _izw8z7ou.Greeting => 'Greeting',
       _ => null,
     };
   }
@@ -84,19 +79,12 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (className != null) return className;
 
     if (data is Map<String, dynamic> && data['__className__'] is String) {
-      return (data['__className__'] as String).replaceFirst(
-        'auth_example.',
-        '',
-      );
+      return (data['__className__'] as String).replaceFirst('projectname.', '');
     }
 
     switch (data) {
-      case _itx02h2p.Example():
-        return 'Example';
-    }
-    className = _i1n3uhu0.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return className.contains('.') ? className : 'serverpod_auth.$className';
+      case _izw8z7ou.Greeting():
+        return 'Greeting';
     }
     className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
@@ -111,12 +99,8 @@ class Protocol extends _is.DatabaseSerializationManager {
     if (dataClassName is! String) {
       return super.deserializeByClassName(data);
     }
-    if (dataClassName == 'Example') {
-      return deserialize<_itx02h2p.Example>(data['data']);
-    }
-    if (dataClassName.startsWith('serverpod_auth.')) {
-      data['className'] = dataClassName.substring(15);
-      return _i1n3uhu0.Protocol().deserializeByClassName(data);
+    if (dataClassName == 'Greeting') {
+      return deserialize<_izw8z7ou.Greeting>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
@@ -125,18 +109,8 @@ class Protocol extends _is.DatabaseSerializationManager {
     return super.deserializeByClassName(data);
   }
 
-  void _registerHostProtocols() {
-    _i1n3uhu0.Protocol().registerHostProtocol('auth_example', this);
-  }
-
   @override
   _is.Table? getTableForType(Type t) {
-    {
-      var table = _i1n3uhu0.Protocol().getTableForType(t);
-      if (table != null) {
-        return table;
-      }
-    }
     {
       var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
@@ -151,7 +125,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       targetTableDefinitions;
 
   @override
-  String getModuleName() => 'auth_example';
+  String getModuleName() => 'projectname';
 
   /// Maps any `Record`s known to this [Protocol] to their JSON representation
   ///
@@ -163,7 +137,7 @@ class Protocol extends _is.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i1n3uhu0.Protocol().mapRecordToJson(record);
+      return _isp.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

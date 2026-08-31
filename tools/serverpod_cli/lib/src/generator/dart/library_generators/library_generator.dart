@@ -284,7 +284,9 @@ class LibraryGenerator {
             ),
           )
           ..body = Block.of([
-            const Code('''
+            Code.scope(
+              (a) =>
+                  '''
             t ??= T;
 
             final dataClassName = getClassNameFromObjectJson(data);
@@ -294,13 +296,14 @@ class LibraryGenerator {
                   'className': dataClassName,
                   'data': data,
                 });
-              } on FormatException catch (_) {
+              } on ${a(refer('DeserializationClassNameNotFoundException', serverpodUrl(serverCode)))} catch (_) {
                 // If the className is not recognized (e.g., older client receiving
                 // data with a new subtype), fall back to deserializing without the
                 // className, using the expected type T.
               }
             }
-          '''),
+          ''',
+            ),
             ...(<Expression, Code>{
                   for (var classInfo in unsealedModels)
                     refer(
@@ -733,7 +736,7 @@ class LibraryGenerator {
     return Code.scope(
       (a) =>
           'try{return ${a(refer('Protocol', protocolImportPath))}().deserializeByClassName(data);}'
-          'on FormatException catch(_){}',
+          'on ${a(refer('DeserializationClassNameNotFoundException', serverpodUrl(serverCode)))} catch(_){}',
     );
   }
 
@@ -825,7 +828,9 @@ return super.dynamicFieldToJson(object, forProtocol: forProtocol);
                 ..type = refer('Object?'),
             ),
           )
-          ..body = const Code('''
+          ..body = Code.scope(
+            (a) =>
+                '''
 if (value == null) return null;
 if (value is! Map<String, dynamic> || value['className'] is! String) {
   throw FormatException(
@@ -853,11 +858,12 @@ if (className.contains('.')) {
   for (final protocol in _hostProtocols) {
     try {
       return protocol.deserializeByClassName(value);
-    } on FormatException catch (_) {}
+    } on ${a(refer('DeserializationClassNameNotFoundException', serverpodUrl(serverCode)))} catch (_) {}
   }
 }
 return deserializeByClassName(value);
-'''),
+''',
+          ),
       ),
     ];
   }
