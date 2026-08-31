@@ -60,13 +60,13 @@ void main() {
       });
 
       test(
-        'then the crdt sync is initialized with the protocol sync tables.',
+        'then the crdt sync is initialized with the generated sync tables.',
         () {
           expect(
             codeMap[expectedFileName],
             matches(
               RegExp(
-                r'initializeCrdtSync\(syncTables: _i[a-z0-9]+\.Protocol\.syncTables\);',
+                r'initializeCrdtSync\(syncTables: _i[a-z0-9]+\.syncTables\);',
               ),
             ),
           );

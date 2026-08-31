@@ -207,14 +207,9 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                       .code,
                 );
               if (syncModule != null) {
-                c.body = refer('initializeCrdtSync')
-                    .call([], {
-                      'syncTables': refer(
-                        'Protocol',
-                        'protocol.dart',
-                      ).property('syncTables'),
-                    })
-                    .statement;
+                c.body = refer('initializeCrdtSync').call([], {
+                  'syncTables': refer('syncTables', 'sync_tables.dart'),
+                }).statement;
               }
             }),
           ),

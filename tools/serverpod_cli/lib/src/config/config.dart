@@ -198,6 +198,12 @@ class GeneratorConfig implements ModelLoadConfig {
     'serverpod.dart',
   ];
 
+  /// The path parts of the generated sync tables file.
+  List<String> get generatedServerSyncTablesFilePathParts => [
+    ...generatedServeModelPathParts,
+    'sync_tables.dart',
+  ];
+
   /// The path parts of the generated protocol file.
   List<String> get generatedServerEndpointDescriptionFilePathParts => [
     ...generatedServeModelPathParts,

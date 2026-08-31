@@ -54,7 +54,9 @@ class LibraryGenerator {
   /// The `serverpod_offline_sync` module, when the `databaseSync` experimental
   /// feature is enabled and the module is a dependency of the project.
   ModuleConfig? get _syncModule {
-    if (!config.isExperimentalFeatureEnabled(ExperimentalFeature.databaseSync)) {
+    if (!config.isExperimentalFeatureEnabled(
+      ExperimentalFeature.databaseSync,
+    )) {
       return null;
     }
     for (var module in config.modules) {
@@ -63,15 +65,53 @@ class LibraryGenerator {
     return null;
   }
 
-  /// The synced table models in [models], sorted by table name.
-  static List<ModelClassDefinition> _syncTableModels(
-    Iterable<SerializableModelDefinition> models,
-  ) =>
-      models
-          .whereType<ModelClassDefinition>()
-          .where((model) => model.isSyncTable)
-          .toList()
-        ..sort((a, b) => a.tableName!.compareTo(b.tableName!));
+  /// Generates the `sync_tables.dart` library with the tables synchronized by
+  /// the `serverpod_offline_sync` package, or `null` when the module is not
+  /// part of the project.
+  Library? generateSyncTables() {
+    var syncModule = _syncModule;
+    if (syncModule == null) return null;
+
+    var syncTableModels =
+        protocolDefinition.models
+            .whereType<ModelClassDefinition>()
+            .where((model) => model.isSyncTable)
+            .toList()
+          ..sort((a, b) => a.tableName!.compareTo(b.tableName!));
+
+    var library = LibraryBuilder();
+    library.body.add(
+      Field(
+        (f) => f
+          ..docs.add('''
+/// The tables synchronized between client and server by the
+/// `serverpod_offline_sync` package, including the ones owned by modules and
+/// shared packages.''')
+          ..name = 'syncTables'
+          ..modifier = FieldModifier.final$
+          ..type = TypeReference(
+            (t) => t
+              ..symbol = 'List'
+              ..types.add(
+                refer('Table', serverpodDatabaseRuntimeUrl(serverCode)),
+              ),
+          )
+          ..assignment = literalList([
+            for (var model in syncTableModels)
+              refer(
+                model.className,
+                TypeDefinition.getRef(model),
+              ).property('t'),
+            for (var module in config.modules)
+              if (protocolDefinition.moduleAliasesWithSyncTables.contains(
+                module.nickname,
+              ))
+                refer('syncTables', module.dartImportUrl(serverCode)).spread,
+          ]).code,
+      ),
+    );
+    return library.build();
+  }
 
   /// Generate the protocol library.
   Library generateProtocol() {
@@ -123,6 +163,8 @@ class LibraryGenerator {
             hide: const ['Protocol'],
           ),
       if (!serverCode && !sharedPackage) Directive.export('client.dart'),
+      if (!sharedPackage && _syncModule != null)
+        Directive.export('sync_tables.dart'),
     ]);
 
     // Ignore warnings introduced by checking the DatabaseSerializationManager
@@ -144,12 +186,6 @@ class LibraryGenerator {
             : protocolDefinition.models.hasHostClientDatabaseTables ||
                   (config.type == PackageType.module &&
                       protocolDefinition.models.hasSharedClientDatabaseTables));
-
-    // Generated even without synced tables of its own, so that a host project
-    // can always merge the tables of its modules and shared packages.
-    final shouldGenerateSyncTables =
-        shouldExtendDatabaseSerializationManager &&
-        config.isExperimentalFeatureEnabled(ExperimentalFeature.databaseSync);
 
     protocol
       ..name = 'Protocol'
@@ -264,37 +300,6 @@ class LibraryGenerator {
                               ),
                         ],
                 ),
-        ),
-      if (shouldGenerateSyncTables)
-        Method(
-          (m) => m
-            ..docs.add('''
-  /// The tables synchronized between client and server, including the ones
-  /// owned by modules and shared packages.''')
-            ..name = 'syncTables'
-            ..static = true
-            ..type = MethodType.getter
-            ..returns = _tableListReference(serverCode)
-            ..body = literalList([
-              for (var model in _syncTableModels(allModels))
-                refer(
-                  model.className,
-                  TypeDefinition.getRef(model),
-                ).property('t'),
-              if (!sharedPackage) ...[
-                for (var module in config.modules)
-                  _protocolSyncTablesSpread(
-                    module.dartImportUrl(serverCode),
-                    serverCode,
-                  ),
-                for (var packageName
-                    in config.sharedModelsSourcePathsParts.keys)
-                  _protocolSyncTablesSpread(
-                    'package:$packageName/$packageName.dart',
-                    serverCode,
-                  ),
-              ],
-            ]).code,
         ),
       if (_supportsHostProtocols) ..._buildModuleHostProtocolMethods(),
       Method(
@@ -694,14 +699,6 @@ class LibraryGenerator {
                 ..types.add(_tableDefinitionReference(serverCode)),
             )
             ..body = refer('targetTableDefinitions').code,
-        ),
-      if (shouldGenerateSyncTables)
-        Method(
-          (m) => m
-            ..name = 'getSyncTables'
-            ..annotations.add(refer('override'))
-            ..returns = _tableListReference(serverCode)
-            ..body = refer('syncTables').code,
         ),
       Method(
         (m) => m
@@ -1676,34 +1673,30 @@ return deserializeByClassName(value);
         ..body = Block.of([
           declareFinal('session')
               .assign(
-                refer('CrdtDatabaseSession', syncUrl).property('wraps').call(
-                  [
-                    refer('createSession')
-                        .call(
-                          [refer('path')],
-                          {
-                            'runMigrations': refer('runMigrations'),
-                            'isDebugMode': refer('isDebugMode'),
-                          },
-                        )
-                        .awaited,
-                  ],
-                  {
-                    'syncTables': refer(
-                      'Protocol',
-                      'protocol.dart',
-                    ).property('syncTables'),
-                    'persistentUserId': refer('persistentUserId'),
-                  },
-                ),
+                refer('CrdtDatabaseSession', syncUrl)
+                    .property('wraps')
+                    .call(
+                      [
+                        refer('createSession')
+                            .call(
+                              [refer('path')],
+                              {
+                                'runMigrations': refer('runMigrations'),
+                                'isDebugMode': refer('isDebugMode'),
+                              },
+                            )
+                            .awaited,
+                      ],
+                      {
+                        'syncTables': refer('syncTables', 'sync_tables.dart'),
+                        'persistentUserId': refer('persistentUserId'),
+                      },
+                    ),
               )
               .statement,
-          refer('session')
-              .property('db')
-              .property('initialize')
-              .call([])
-              .awaited
-              .statement,
+          refer(
+            'session',
+          ).property('db').property('initialize').call([]).awaited.statement,
           refer('session').returned.statement,
         ]),
     );
@@ -2827,42 +2820,6 @@ Expression _protocolTargetTableDefinitionsSpread(
             .call([])
             .asA(databaseSerializationManager)
             .property('getTargetTableDefinitions')
-            .call([]),
-        literalList([]),
-      )
-      .spread;
-}
-
-Reference _tableListReference(bool serverCode) => TypeReference(
-  (t) => t
-    ..symbol = 'List'
-    ..types.add(refer('Table', serverpodDatabaseRuntimeUrl(serverCode))),
-);
-
-/// Spreads the sync tables of the protocol at [protocolImportUrl], guarded on
-/// the client like [_protocolTargetTableDefinitionsSpread].
-Expression _protocolSyncTablesSpread(
-  String protocolImportUrl,
-  bool serverCode,
-) {
-  final protocol = refer('Protocol', protocolImportUrl);
-  if (serverCode) {
-    return protocol.call([]).property('getSyncTables').call([]).spread;
-  }
-
-  final databaseSerializationManager = refer(
-    'DatabaseSerializationManager',
-    serverpodDatabaseRuntimeUrl(serverCode),
-  );
-
-  return protocol
-      .call([])
-      .isA(databaseSerializationManager)
-      .conditional(
-        protocol
-            .call([])
-            .asA(databaseSerializationManager)
-            .property('getSyncTables')
             .call([]),
         literalList([]),
       )

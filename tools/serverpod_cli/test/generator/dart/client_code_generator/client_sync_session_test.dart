@@ -72,7 +72,7 @@ void main() {
       });
 
       test(
-        'then createSyncSession wraps createSession with the protocol sync '
+        'then createSyncSession wraps createSession with the generated sync '
         'tables and the persistent user id.',
         () {
           expect(
@@ -84,7 +84,7 @@ void main() {
               r'        runMigrations: runMigrations,\n'
               r'        isDebugMode: isDebugMode,\n'
               r'      \),\n'
-              r'      syncTables: _i[a-z0-9]+\.Protocol\.syncTables,\n'
+              r'      syncTables: _i[a-z0-9]+\.syncTables,\n'
               r'      persistentUserId: persistentUserId,\n'
               r'    \);',
             ),
