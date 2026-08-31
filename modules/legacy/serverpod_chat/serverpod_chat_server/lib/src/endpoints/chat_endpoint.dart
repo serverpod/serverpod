@@ -392,17 +392,15 @@ class ChatEndpoint extends Endpoint {
             storageId: 'public',
             path: thumbPath,
           );
-          if (thumbUrl != null) {
-            thumbWidth = thumbnail.width;
-            thumbHeight = thumbnail.height;
-          }
+          thumbWidth = thumbnail.width;
+          thumbHeight = thumbnail.height;
         }
       }
     } catch (e) {
       rethrow;
     }
 
-    if (success && url != null) {
+    if (success) {
       return ChatMessageAttachment(
         fileName: fileName,
         url: url.toString(),

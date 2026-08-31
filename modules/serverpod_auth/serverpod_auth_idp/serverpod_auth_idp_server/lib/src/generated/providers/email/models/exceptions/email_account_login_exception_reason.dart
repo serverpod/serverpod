@@ -21,8 +21,7 @@ enum EmailAccountLoginExceptionReason implements _is.SerializableModel {
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown,
-  ;
+  unknown;
 
   static EmailAccountLoginExceptionReason fromJson(String name) {
     switch (name) {

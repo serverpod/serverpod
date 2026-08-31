@@ -21,7 +21,16 @@ abstract class CloudStorageDirectUploadEntry
     required this.path,
     required this.expiration,
     required this.authKey,
-  });
+    int? maxFileSize,
+    this.contentLength,
+    bool? preventOverwrite,
+    this.contentType,
+    this.cacheControl,
+    this.contentDisposition,
+    this.contentEncoding,
+    this.customMetadata,
+  }) : maxFileSize = maxFileSize ?? 10485760,
+       preventOverwrite = preventOverwrite ?? false;
 
   factory CloudStorageDirectUploadEntry({
     int? id,
@@ -29,6 +38,14 @@ abstract class CloudStorageDirectUploadEntry
     required String path,
     required DateTime expiration,
     required String authKey,
+    int? maxFileSize,
+    int? contentLength,
+    bool? preventOverwrite,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   }) = _CloudStorageDirectUploadEntryImpl;
 
   factory CloudStorageDirectUploadEntry.fromJson(
@@ -42,6 +59,18 @@ abstract class CloudStorageDirectUploadEntry
         jsonSerialization['expiration'],
       ),
       authKey: jsonSerialization['authKey'] as String,
+      maxFileSize: jsonSerialization['maxFileSize'] as int?,
+      contentLength: jsonSerialization['contentLength'] as int?,
+      preventOverwrite: jsonSerialization['preventOverwrite'] == null
+          ? null
+          : _is.BoolJsonExtension.fromJson(
+              jsonSerialization['preventOverwrite'],
+            ),
+      contentType: jsonSerialization['contentType'] as String?,
+      cacheControl: jsonSerialization['cacheControl'] as String?,
+      contentDisposition: jsonSerialization['contentDisposition'] as String?,
+      contentEncoding: jsonSerialization['contentEncoding'] as String?,
+      customMetadata: jsonSerialization['customMetadata'] as String?,
     );
   }
 
@@ -64,6 +93,30 @@ abstract class CloudStorageDirectUploadEntry
   /// Access key for retrieving a private file.
   String authKey;
 
+  /// Maximum accepted upload size in bytes.
+  int maxFileSize;
+
+  /// Exact expected upload size in bytes, if known.
+  int? contentLength;
+
+  /// Whether an existing file must not be overwritten.
+  bool preventOverwrite;
+
+  /// MIME type to store with the uploaded file.
+  String? contentType;
+
+  /// HTTP cache control value to store with the uploaded file.
+  String? cacheControl;
+
+  /// HTTP content disposition value to store with the uploaded file.
+  String? contentDisposition;
+
+  /// HTTP content encoding value to store with the uploaded file.
+  String? contentEncoding;
+
+  /// JSON-encoded custom metadata to store with the uploaded file.
+  String? customMetadata;
+
   @override
   _is.Table<int?> get table => t;
 
@@ -76,6 +129,14 @@ abstract class CloudStorageDirectUploadEntry
     String? path,
     DateTime? expiration,
     String? authKey,
+    int? maxFileSize,
+    int? contentLength,
+    bool? preventOverwrite,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,6 +147,14 @@ abstract class CloudStorageDirectUploadEntry
       'path': path,
       'expiration': expiration.toJson(),
       'authKey': authKey,
+      'maxFileSize': maxFileSize,
+      if (contentLength != null) 'contentLength': contentLength,
+      'preventOverwrite': preventOverwrite,
+      if (contentType != null) 'contentType': contentType,
+      if (cacheControl != null) 'cacheControl': cacheControl,
+      if (contentDisposition != null) 'contentDisposition': contentDisposition,
+      if (contentEncoding != null) 'contentEncoding': contentEncoding,
+      if (customMetadata != null) 'customMetadata': customMetadata,
     };
   }
 
@@ -98,6 +167,14 @@ abstract class CloudStorageDirectUploadEntry
       'path': path,
       'expiration': expiration.toJson(),
       'authKey': authKey,
+      'maxFileSize': maxFileSize,
+      if (contentLength != null) 'contentLength': contentLength,
+      'preventOverwrite': preventOverwrite,
+      if (contentType != null) 'contentType': contentType,
+      if (cacheControl != null) 'cacheControl': cacheControl,
+      if (contentDisposition != null) 'contentDisposition': contentDisposition,
+      if (contentEncoding != null) 'contentEncoding': contentEncoding,
+      if (customMetadata != null) 'customMetadata': customMetadata,
     };
   }
 
@@ -184,12 +261,28 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     required String path,
     required DateTime expiration,
     required String authKey,
+    int? maxFileSize,
+    int? contentLength,
+    bool? preventOverwrite,
+    String? contentType,
+    String? cacheControl,
+    String? contentDisposition,
+    String? contentEncoding,
+    String? customMetadata,
   }) : super._(
          id: id,
          storageId: storageId,
          path: path,
          expiration: expiration,
          authKey: authKey,
+         maxFileSize: maxFileSize,
+         contentLength: contentLength,
+         preventOverwrite: preventOverwrite,
+         contentType: contentType,
+         cacheControl: cacheControl,
+         contentDisposition: contentDisposition,
+         contentEncoding: contentEncoding,
+         customMetadata: customMetadata,
        );
 
   /// Returns a shallow copy of this [CloudStorageDirectUploadEntry]
@@ -202,6 +295,14 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
     String? path,
     DateTime? expiration,
     String? authKey,
+    int? maxFileSize,
+    Object? contentLength = _Undefined,
+    bool? preventOverwrite,
+    Object? contentType = _Undefined,
+    Object? cacheControl = _Undefined,
+    Object? contentDisposition = _Undefined,
+    Object? contentEncoding = _Undefined,
+    Object? customMetadata = _Undefined,
   }) {
     return CloudStorageDirectUploadEntry(
       id: id is int? ? id : this.id,
@@ -209,6 +310,20 @@ class _CloudStorageDirectUploadEntryImpl extends CloudStorageDirectUploadEntry {
       path: path ?? this.path,
       expiration: expiration ?? this.expiration,
       authKey: authKey ?? this.authKey,
+      maxFileSize: maxFileSize ?? this.maxFileSize,
+      contentLength: contentLength is int? ? contentLength : this.contentLength,
+      preventOverwrite: preventOverwrite ?? this.preventOverwrite,
+      contentType: contentType is String? ? contentType : this.contentType,
+      cacheControl: cacheControl is String? ? cacheControl : this.cacheControl,
+      contentDisposition: contentDisposition is String?
+          ? contentDisposition
+          : this.contentDisposition,
+      contentEncoding: contentEncoding is String?
+          ? contentEncoding
+          : this.contentEncoding,
+      customMetadata: customMetadata is String?
+          ? customMetadata
+          : this.customMetadata,
     );
   }
 }
@@ -237,6 +352,50 @@ class CloudStorageDirectUploadEntryUpdateTable
     table.authKey,
     value,
   );
+
+  _is.ColumnValue<int, int> maxFileSize(int value) => _is.ColumnValue(
+    table.maxFileSize,
+    value,
+  );
+
+  _is.ColumnValue<int, int> contentLength(int? value) => _is.ColumnValue(
+    table.contentLength,
+    value,
+  );
+
+  _is.ColumnValue<bool, bool> preventOverwrite(bool value) => _is.ColumnValue(
+    table.preventOverwrite,
+    value,
+  );
+
+  _is.ColumnValue<String, String> contentType(String? value) => _is.ColumnValue(
+    table.contentType,
+    value,
+  );
+
+  _is.ColumnValue<String, String> cacheControl(String? value) =>
+      _is.ColumnValue(
+        table.cacheControl,
+        value,
+      );
+
+  _is.ColumnValue<String, String> contentDisposition(String? value) =>
+      _is.ColumnValue(
+        table.contentDisposition,
+        value,
+      );
+
+  _is.ColumnValue<String, String> contentEncoding(String? value) =>
+      _is.ColumnValue(
+        table.contentEncoding,
+        value,
+      );
+
+  _is.ColumnValue<String, String> customMetadata(String? value) =>
+      _is.ColumnValue(
+        table.customMetadata,
+        value,
+      );
 }
 
 class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
@@ -259,6 +418,40 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
       'authKey',
       this,
     );
+    maxFileSize = _is.ColumnInt(
+      'maxFileSize',
+      this,
+      hasDefault: true,
+    );
+    contentLength = _is.ColumnInt(
+      'contentLength',
+      this,
+    );
+    preventOverwrite = _is.ColumnBool(
+      'preventOverwrite',
+      this,
+      hasDefault: true,
+    );
+    contentType = _is.ColumnString(
+      'contentType',
+      this,
+    );
+    cacheControl = _is.ColumnString(
+      'cacheControl',
+      this,
+    );
+    contentDisposition = _is.ColumnString(
+      'contentDisposition',
+      this,
+    );
+    contentEncoding = _is.ColumnString(
+      'contentEncoding',
+      this,
+    );
+    customMetadata = _is.ColumnString(
+      'customMetadata',
+      this,
+    );
   }
 
   late final CloudStorageDirectUploadEntryUpdateTable updateTable;
@@ -275,6 +468,30 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
   /// Access key for retrieving a private file.
   late final _is.ColumnString authKey;
 
+  /// Maximum accepted upload size in bytes.
+  late final _is.ColumnInt maxFileSize;
+
+  /// Exact expected upload size in bytes, if known.
+  late final _is.ColumnInt contentLength;
+
+  /// Whether an existing file must not be overwritten.
+  late final _is.ColumnBool preventOverwrite;
+
+  /// MIME type to store with the uploaded file.
+  late final _is.ColumnString contentType;
+
+  /// HTTP cache control value to store with the uploaded file.
+  late final _is.ColumnString cacheControl;
+
+  /// HTTP content disposition value to store with the uploaded file.
+  late final _is.ColumnString contentDisposition;
+
+  /// HTTP content encoding value to store with the uploaded file.
+  late final _is.ColumnString contentEncoding;
+
+  /// JSON-encoded custom metadata to store with the uploaded file.
+  late final _is.ColumnString customMetadata;
+
   @override
   List<_is.Column> get columns => [
     id,
@@ -282,6 +499,14 @@ class CloudStorageDirectUploadEntryTable extends _is.Table<int?> {
     path,
     expiration,
     authKey,
+    maxFileSize,
+    contentLength,
+    preventOverwrite,
+    contentType,
+    cacheControl,
+    contentDisposition,
+    contentEncoding,
+    customMetadata,
   ];
 }
 

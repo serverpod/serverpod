@@ -96,4 +96,22 @@ void main() async {
       expect(children, hasLength(1));
     },
   );
+
+  test(
+    'Given an initially deferred relation, '
+    'when a child references a missing parent at commit, '
+    'then the transaction throws a foreign key violation exception.',
+    () async {
+      await expectLater(
+        session.db.transaction((transaction) async {
+          await DeferrableRelationInitiallyDeferred.db.insertRow(
+            session,
+            DeferrableRelationInitiallyDeferred(parentId: 42004),
+            transaction: transaction,
+          );
+        }),
+        throwsA(isA<DatabaseForeignKeyViolationException>()),
+      );
+    },
+  );
 }

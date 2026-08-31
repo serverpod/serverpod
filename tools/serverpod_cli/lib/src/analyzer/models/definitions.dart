@@ -252,6 +252,7 @@ final class ModelClassDefinition extends ClassDefinition {
       ModelDatabaseDefinition.server => serverCode,
       ModelDatabaseDefinition.client => !serverCode,
       ModelDatabaseDefinition.all => true,
+      ModelDatabaseDefinition.sync => true,
     };
   }
 
@@ -582,6 +583,12 @@ enum ModelDatabaseDefinition {
   server,
   client,
   all,
+
+  /// The table exists on both sides, like [all], and is additionally
+  /// synchronized between the client and the server through the
+  /// `serverpod_offline_sync` package. Requires the `databaseSync`
+  /// experimental feature.
+  sync,
 }
 
 /// The definition of an index for a file, that is also stored in the database.

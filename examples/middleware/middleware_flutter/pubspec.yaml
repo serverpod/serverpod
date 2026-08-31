@@ -21,8 +21,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '^3.10.3'
-  flutter: '^3.38.4'
+  sdk: '^3.12.2'
+  flutter: '^3.44.4'
+
+resolution: workspace
 
 dependencies:
   # The following adds the Cupertino Icons font to your application.
@@ -32,25 +34,13 @@ dependencies:
     sdk: flutter
   middleware_client:
     path: ../middleware_client
-  serverpod_flutter: 4.0.0-beta.4
+  serverpod_flutter: 4.0.0-rc.1
 
 dev_dependencies:
   flutter_lints: '>=3.0.0 <7.0.0'
   flutter_test:
     sdk: flutter
 
-dependency_overrides:
-  serverpod_client:
-    path: ../../../packages/serverpod_client
-  serverpod_flutter:
-    path: ../../../packages/serverpod_flutter
-  serverpod_serialization:
-    path: ../../../packages/serverpod_serialization
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
 
   # The following line ensures that the Material Icons font is

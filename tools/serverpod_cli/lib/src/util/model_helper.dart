@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 import 'package:serverpod_cli/src/config/config.dart';
-import 'package:serverpod_shared/serverpod_shared.dart';
+import 'package:serverpod_cli/src/util/unrendered_template_path.dart';
 
 const String defaultModuleAlias = 'protocol';
 
@@ -24,20 +24,12 @@ class ModelSource {
   String? get sharedPackageName => isSharedModel ? moduleAlias : null;
 }
 
-const spyModelFileExtensions = [
-  '.spy',
+/// File extensions recognized as Serverpod model files. Model files can be
+/// placed anywhere below a package's `lib` directory.
+const modelFileExtensions = [
   '.spy.yaml',
   '.spy.yml',
-];
-
-const yamlModelFileExtensions = [
-  '.yaml',
-  '.yml',
-];
-
-const modelFileExtensions = [
-  ...spyModelFileExtensions,
-  ...yamlModelFileExtensions,
+  '.spy',
 ];
 
 /// Relative path parts from package root to model roots (most specific first).
@@ -120,10 +112,7 @@ class ModelHelper {
     required String moduleAlias,
     required bool isSharedModel,
   }) async {
-    var files = await _loadAllModelFiles(
-      loadConfig: loadConfig,
-      absoluteSourcePathParts,
-    );
+    var files = await _loadAllModelFiles(absoluteSourcePathParts);
 
     List<ModelSource> sources = [];
     for (var model in files) {
@@ -166,32 +155,25 @@ class ModelHelper {
     return [];
   }
 
-  static bool isModelFile(
-    String path, {
-    required ModelLoadConfig loadConfig,
-  }) {
-    if (spyModelFileExtensions.any((ext) => path.endsWith(ext))) {
-      return true;
+  /// Whether [path] has one of the [modelFileExtensions].
+  static bool isModelFile(String path) {
+    return modelFileExtensions.any((ext) => path.endsWith(ext));
+  }
+
+  /// Returns the file name of [uri] without its model file extension.
+  static String modelFileNameWithoutExtension(Uri uri) {
+    var fileName = uri.pathSegments.last;
+    for (var ext in modelFileExtensions) {
+      if (fileName.endsWith(ext)) {
+        return fileName.substring(0, fileName.length - ext.length);
+      }
     }
-
-    var allowedYamlExtensionModelPaths = [
-      joinAll(loadConfig.relativeModelSourcePathParts),
-      joinAll(loadConfig.relativeProtocolSourcePathParts),
-    ];
-
-    var allowedYamlPath = path.containsAny(allowedYamlExtensionModelPaths);
-
-    var yamlExtension = yamlModelFileExtensions.any(
-      (ext) => path.endsWith(ext),
-    );
-
-    return allowedYamlPath && yamlExtension;
+    return fileName;
   }
 
   static Future<Iterable<File>> _loadAllModelFiles(
-    List<String> absolutePathParts, {
-    required ModelLoadConfig loadConfig,
-  }) async {
+    List<String> absolutePathParts,
+  ) async {
     List<FileSystemEntity> modelSourceFileList = [];
 
     var path = joinAll(absolutePathParts);
@@ -211,10 +193,7 @@ class ModelHelper {
     }
 
     return modelSourceFileList.whereType<File>().where(
-      (file) => isModelFile(
-        file.path,
-        loadConfig: loadConfig,
-      ),
+      (file) => !isUnrenderedTemplatePath(file.path) && isModelFile(file.path),
     );
   }
 

@@ -72,19 +72,6 @@ class EndpointInsights extends _isc.EndpointRef {
     },
   );
 
-  /// Get the latest [numEntries] from the session log.
-  _ida.Future<_iizgo6ax.SessionLogResult> getOpenSessionLog(
-    int? numEntries,
-    _i215g5d9.SessionLogFilter? filter,
-  ) => caller.callServerEndpoint<_iizgo6ax.SessionLogResult>(
-    'insights',
-    'getOpenSessionLog',
-    {
-      'numEntries': numEntries,
-      'filter': filter,
-    },
-  );
-
   /// Retrieve information about the state of the caches on this server.
   _ida.Future<_i6gd0gov.CachesInfo> getCachesInfo(bool fetchKeys) =>
       caller.callServerEndpoint<_i6gd0gov.CachesInfo>(
@@ -92,13 +79,6 @@ class EndpointInsights extends _isc.EndpointRef {
         'getCachesInfo',
         {'fetchKeys': fetchKeys},
       );
-
-  /// Safely shuts down this [ServerPod].
-  _ida.Future<void> shutdown() => caller.callServerEndpoint<void>(
-    'insights',
-    'shutdown',
-    {},
-  );
 
   /// Performs a health check on the running [ServerPod].
   _ida.Future<_i5svn267.ServerHealthResult> checkHealth() =>
@@ -119,13 +99,6 @@ class EndpointInsights extends _isc.EndpointRef {
       'start': start,
       'end': end,
     },
-  );
-
-  /// Performs a hot reload of the server.
-  _ida.Future<bool> hotReload() => caller.callServerEndpoint<bool>(
-    'insights',
-    'hotReload',
-    {},
   );
 
   /// Returns the target structure of the database defined in the
@@ -192,6 +165,9 @@ class EndpointInsights extends _isc.EndpointRef {
       );
 
   /// Exports raw data serialized in JSON from the database.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   _ida.Future<_isd.BulkData> fetchDatabaseBulkData({
     required String table,
     required int startingId,
@@ -210,6 +186,9 @@ class EndpointInsights extends _isc.EndpointRef {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   _ida.Future<_isd.BulkQueryResult> runQueries(List<String> queries) =>
       caller.callServerEndpoint<_isd.BulkQueryResult>(
         'insights',
@@ -218,6 +197,9 @@ class EndpointInsights extends _isc.EndpointRef {
       );
 
   /// Returns the approximate number of rows in the provided [table].
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   _ida.Future<int> getDatabaseRowCount({required String table}) =>
       caller.callServerEndpoint<int>(
         'insights',
@@ -226,6 +208,9 @@ class EndpointInsights extends _isc.EndpointRef {
       );
 
   /// Executes SQL commands. Returns the number of rows affected.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   _ida.Future<int> executeSql(String sql) => caller.callServerEndpoint<int>(
     'insights',
     'executeSql',

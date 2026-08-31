@@ -17,7 +17,7 @@ Future<(Directory, Directory)> _buildProject() async {
   final generatedDir = Directory(
     p.join(projectDir.path, 'lib', 'src', 'generated'),
   );
-  await createTestEnvironment(projectDir, sdkConstraint: '^3.10.3');
+  await createTestEnvironment(projectDir, sdkConstraint: '^3.12.2');
 
   return (projectDir, generatedDir);
 }
@@ -565,11 +565,14 @@ values:
           await analyzers.performGenerate(config: config);
         });
 
-        test('then the trailing comma is preserved.', () async {
-          final generatedEnum = await File(generatedEnumPath).readAsString();
+        test(
+          'then the enum terminator is formatted without a trailing comma.',
+          () async {
+            final generatedEnum = await File(generatedEnumPath).readAsString();
 
-          expect(generatedEnum, contains('  assistant,\n  system,\n  ;'));
-        });
+            expect(generatedEnum, contains('  assistant,\n  system;'));
+          },
+        );
 
         test('then the generated enum is format-clean.', () async {
           final formatResult = await Process.run(
@@ -790,7 +793,7 @@ Future<void> _createClientPackage(
 name: test_client
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_client:
@@ -839,7 +842,7 @@ Future<void> _createSharedPackage(Directory projectDir) async {
 name: test_shared
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
 
 dependencies:
   serverpod_serialization:

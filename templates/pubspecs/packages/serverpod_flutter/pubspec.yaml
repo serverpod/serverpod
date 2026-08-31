@@ -11,6 +11,8 @@ environment:
   sdk: DART_VERSION
   flutter: FLUTTER_VERSION
 
+resolution: workspace
+
 dependencies:
   connectivity_plus: '>=6.0.3 <8.0.0'
   flutter:
@@ -21,13 +23,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_lints: SERVERPOD_VERSION
-
-dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization
 
 flutter:

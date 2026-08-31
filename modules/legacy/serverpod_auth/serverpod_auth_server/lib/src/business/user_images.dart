@@ -93,12 +93,15 @@ class UserImages {
       path: path,
       byteData: ByteData.view(imageBytes.buffer),
     );
-    var publicUrl = await session.storage.getPublicUrl(
-      storageId: 'public',
-      path: path,
-    );
-    if (publicUrl == null) return false;
-
+    Uri publicUrl;
+    try {
+      publicUrl = await session.storage.publicDownloadUrl(
+        storageId: 'public',
+        path: path,
+      );
+    } catch (_) {
+      return false;
+    }
     // Store the path to the image.
     var imageRef = UserImage(
       userId: userId,

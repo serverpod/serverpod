@@ -57,8 +57,12 @@ void main() {
   group('Given a ServerProcess with a simple exit command', () {
     late Directory tempDir;
     late ServerProcess serverProcess;
+    late Completer<void> disposed;
+    late int disposeCalls;
 
     setUp(() async {
+      disposed = Completer<void>();
+      disposeCalls = 0;
       tempDir = await Directory.systemTemp.createTemp(
         'server_process_test_',
       );
@@ -72,6 +76,10 @@ void main() {
         serverArgs: [],
         stdoutSink: _NullIOSink(),
         stderrSink: _NullIOSink(),
+        onDispose: () {
+          disposeCalls++;
+          disposed.complete();
+        },
       );
     });
 
@@ -85,8 +93,10 @@ void main() {
       () async {
         await serverProcess.start();
         final exitCode = await serverProcess.exitCode;
+        await disposed.future;
         expect(exitCode, 0);
         expect(serverProcess.isRunning, isFalse);
+        expect(disposeCalls, 1);
       },
     );
   });
@@ -94,8 +104,10 @@ void main() {
   group('Given a ServerProcess with a long-running command', () {
     late Directory tempDir;
     late ServerProcess serverProcess;
+    late int disposeCalls;
 
     setUp(() async {
+      disposeCalls = 0;
       tempDir = await Directory.systemTemp.createTemp(
         'server_process_test_',
       );
@@ -113,6 +125,7 @@ void main() {
         serverArgs: [],
         stdoutSink: _NullIOSink(),
         stderrSink: _NullIOSink(),
+        onDispose: () => disposeCalls++,
       );
     });
 
@@ -130,6 +143,7 @@ void main() {
 
         await serverProcess.stop();
         expect(serverProcess.isRunning, isFalse);
+        expect(disposeCalls, 1);
       },
     );
 

@@ -6,14 +6,8 @@ description: Starting point for a Serverpod client.
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   serverpod_auth_client: SERVERPOD_VERSION
   serverpod_client: SERVERPOD_VERSION
-
-dependency_overrides:
-  serverpod_auth_client:
-    path: ../../../../modules/legacy/serverpod_auth/serverpod_auth_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization

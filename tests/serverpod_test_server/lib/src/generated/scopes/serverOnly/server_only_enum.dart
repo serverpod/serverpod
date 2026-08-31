@@ -14,8 +14,7 @@ import 'package:serverpod/serverpod.dart' as _is;
 
 enum ServerOnlyEnum implements _is.SerializableModel {
   foo,
-  bar,
-  ;
+  bar;
 
   static ServerOnlyEnum fromJson(int index) {
     switch (index) {

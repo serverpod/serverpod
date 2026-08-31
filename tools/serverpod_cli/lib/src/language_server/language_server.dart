@@ -182,16 +182,9 @@ Future<void> runLanguageServer({
 Future<void> _registerFileWatchers(Connection connection) {
   var options = DidChangeWatchedFilesRegistrationOptions(
     watchers: [
-      // Spy model files can live anywhere below a package's lib directory.
+      // Model files can live anywhere below a package's lib directory.
       FileSystemWatcher(
         globPattern: const Either2.t1('**/*.{spy,spy.yaml,spy.yml}'),
-      ),
-      // Bare yaml models are only recognized in the model and protocol
-      // directories, so other yaml files (pubspecs, workflows) are not watched.
-      FileSystemWatcher(
-        globPattern: const Either2.t1(
-          '**/lib/src/{models,protocol}/**/*.{yaml,yml}',
-        ),
       ),
       // Directory renames and deletions only surface as events on the
       // directory itself, which the model file globs never match.
@@ -226,7 +219,7 @@ bool _isRelevantFileEvent(FileEvent event, ServerProject project) {
     return false;
   }
 
-  if (ModelHelper.isModelFile(path, loadConfig: project.config)) return true;
+  if (ModelHelper.isModelFile(path)) return true;
 
   // Deleted or renamed-away directories no longer exist on disk; they can
   // only be recognized as a parent of a previously registered model.

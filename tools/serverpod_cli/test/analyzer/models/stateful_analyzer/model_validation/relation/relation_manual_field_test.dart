@@ -725,7 +725,7 @@ fields:
           parent_index_idx:
             fields: parentId
             unique: true
-        
+
         ''',
         ).build(),
         ModelSourceBuilder().withFileName('example_parent').withYaml(

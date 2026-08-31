@@ -3,14 +3,16 @@
 
 name: serverpod_auth_shared_flutter
 description: Shared widgets for Flutter side authentication with Serverpod.
-version: 4.0.0-beta.4
+version: 4.0.0-rc.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.10.3'
-  flutter: '^3.38.4'
+  sdk: '^3.12.2'
+  flutter: '^3.44.4'
+
+resolution: workspace
 
 dependencies:
   cached_network_image: ^3.2.3
@@ -22,24 +24,14 @@ dependencies:
   image_cropper: '>=7.0.0 <13.0.0'
   # See https://pub.dev/packages/image_picker for installation instructions.
   image_picker: ^1.0.0
-  serverpod_auth_client: 4.0.0-beta.4
-  serverpod_client: 4.0.0-beta.4
+  serverpod_auth_client: 4.0.0-rc.1
+  serverpod_client: 4.0.0-rc.1
   shared_preferences: ^2.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_auth_client:
-    path: ../serverpod_auth_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
+  serverpod_lints: 4.0.0-rc.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

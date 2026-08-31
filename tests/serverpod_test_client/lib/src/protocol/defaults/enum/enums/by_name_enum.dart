@@ -14,8 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 enum ByNameEnum implements _isc.SerializableModel {
   byName1,
-  byName2,
-  ;
+  byName2;
 
   static ByNameEnum fromJson(String name) {
     switch (name) {

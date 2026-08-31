@@ -14,8 +14,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 enum DefaultValueEnum implements _isc.SerializableModel {
   value1,
-  value2,
-  ;
+  value2;
 
   static DefaultValueEnum fromJson(int index) {
     switch (index) {

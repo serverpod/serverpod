@@ -30,8 +30,7 @@ enum VectorDistanceFunction implements _iss.SerializableModel {
   hamming,
 
   /// Jaccard distance (binary vectors)
-  jaccard,
-  ;
+  jaccard;
 
   static VectorDistanceFunction fromJson(String name) {
     switch (name) {

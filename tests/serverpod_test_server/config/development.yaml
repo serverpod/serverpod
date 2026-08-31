@@ -9,6 +9,7 @@ insightsServer:
   publicHost: localhost
   publicPort: 8081
   publicScheme: http
+  enableDatabaseAccess: true
 
 webServer:
   port: 8082

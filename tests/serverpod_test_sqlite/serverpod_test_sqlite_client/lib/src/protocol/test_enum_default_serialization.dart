@@ -16,8 +16,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _isc;
 enum TestEnumDefaultSerialization implements _isc.SerializableModel {
   alpha,
   beta,
-  gamma,
-  ;
+  gamma;
 
   static TestEnumDefaultSerialization fromJson(String name) {
     switch (name) {

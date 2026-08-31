@@ -3,32 +3,26 @@
 
 name: serverpod_flutter
 description: Flutter specific utilities for Serverpod.
-version: 4.0.0-beta.4
+version: 4.0.0-rc.1
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.10.3'
-  flutter: '^3.38.4'
+  sdk: '^3.12.2'
+  flutter: '^3.44.4'
+
+resolution: workspace
 
 dependencies:
   connectivity_plus: '>=6.0.3 <8.0.0'
   flutter:
     sdk: flutter
-  serverpod_client: 4.0.0-beta.4
+  serverpod_client: 4.0.0-rc.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  serverpod_lints: 4.0.0-beta.4
-
-dependency_overrides:
-  serverpod_client:
-    path: ../serverpod_client
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization
+  serverpod_lints: 4.0.0-rc.1
 
 flutter:

@@ -39,6 +39,7 @@ import 'package:serverpod_cli/src/migrations/create_repair_migration_action.dart
 import 'package:serverpod_cli/src/runner/serverpod_command.dart';
 import 'package:serverpod_cli/src/runner/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/util/internal_error.dart';
+import 'package:serverpod_cli/src/util/legacy_model_files.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_cli/src/vm_proxy/proxy.dart';
 import 'package:serverpod_cli/src/vm_proxy/serverpod_hooks.dart';
@@ -159,6 +160,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
 
       // Bail before the TUI takes over the terminal
       if (await _detectExistingInstance(config)) return;
+      if (await LegacyModelFiles.report(config)) throw ExitException.error();
 
       // Fire-and-forget: analytics must never delay session start.
       unawaited(
@@ -204,6 +206,7 @@ class StartCommand extends ServerpodCommand<StartOption> {
     }
 
     if (await _detectExistingInstance(config)) return;
+    if (await LegacyModelFiles.report(config)) throw ExitException.error();
 
     // Fire-and-forget: analytics must never delay session start.
     unawaited(
@@ -756,6 +759,7 @@ Future<WatchLoopSetupResult> _setupWatchLoop({
       vmServiceInfoFile: podInfoFile,
       stdoutSink: serverStdoutSink,
       stderrSink: serverStderrSink,
+      onDispose: logHistory.discardActiveServerScopes,
     );
     await serverProcess.start(dillPath: dillPath);
     await serverProcess.connectToVmService();

@@ -12,7 +12,7 @@ void main() {
         'uploads/test-file.txt',
         'my-bucket',
         'AKIAIOSFODNN7EXAMPLE',
-        15,
+        Duration(minutes: 15),
         10 * 1024 * 1024,
         region: 'us-east-1',
         public: true,
@@ -93,7 +93,7 @@ void main() {
         'test.txt',
         'bucket',
         'AKIAIOSFODNN7EXAMPLE',
-        15,
+        Duration(minutes: 15),
         1024,
         region: 'us-west-2',
         public: false,
@@ -115,9 +115,12 @@ void main() {
       'then it contains the bucket',
       () {
         final encoded = policy.encode();
-        final decoded = utf8.decode(base64.decode(encoded));
+        final decoded =
+            jsonDecode(utf8.decode(base64.decode(encoded)))
+                as Map<String, dynamic>;
+        final conditions = decoded['conditions'] as List<dynamic>;
 
-        expect(decoded, contains('"bucket": "bucket"'));
+        expect(conditions, contains(equals({'bucket': 'bucket'})));
       },
     );
 
@@ -126,9 +129,12 @@ void main() {
       'then it contains private ACL',
       () {
         final encoded = policy.encode();
-        final decoded = utf8.decode(base64.decode(encoded));
+        final decoded =
+            jsonDecode(utf8.decode(base64.decode(encoded)))
+                as Map<String, dynamic>;
+        final conditions = decoded['conditions'] as List<dynamic>;
 
-        expect(decoded, contains('"acl": "private"'));
+        expect(conditions, contains(equals({'acl': 'private'})));
       },
     );
   });
@@ -141,7 +147,7 @@ void main() {
         'path/to/file.txt',
         'test-bucket',
         'AKIAIOSFODNN7EXAMPLE',
-        10,
+        Duration(minutes: 10),
         5000,
         public: true,
       );
@@ -151,7 +157,10 @@ void main() {
       'when converting to string '
       'then it contains public-read ACL',
       () {
-        expect(policy.toString(), contains('"acl": "public-read"'));
+        final decoded = jsonDecode(policy.toString()) as Map<String, dynamic>;
+        final conditions = decoded['conditions'] as List<dynamic>;
+
+        expect(conditions, contains(equals({'acl': 'public-read'})));
       },
     );
 
@@ -159,7 +168,9 @@ void main() {
       'when converting to string '
       'then it contains the expiration',
       () {
-        expect(policy.toString(), contains('"expiration":'));
+        final decoded = jsonDecode(policy.toString()) as Map<String, dynamic>;
+
+        expect(decoded['expiration'], policy.expiration);
       },
     );
 
@@ -167,9 +178,12 @@ void main() {
       'when converting to string '
       'then it contains content-length-range condition',
       () {
+        final decoded = jsonDecode(policy.toString()) as Map<String, dynamic>;
+        final conditions = decoded['conditions'] as List<dynamic>;
+
         expect(
-          policy.toString(),
-          contains('["content-length-range", 1, 5000]'),
+          conditions,
+          contains(equals(['content-length-range', 1, 5000])),
         );
       },
     );
@@ -178,9 +192,12 @@ void main() {
       'when converting to string '
       'then it contains the key starts-with condition',
       () {
+        final decoded = jsonDecode(policy.toString()) as Map<String, dynamic>;
+        final conditions = decoded['conditions'] as List<dynamic>;
+
         expect(
-          policy.toString(),
-          contains('["starts-with", "\$key", "path/to/file.txt"]'),
+          conditions,
+          contains(equals(['starts-with', r'$key', 'path/to/file.txt'])),
         );
       },
     );
@@ -195,7 +212,7 @@ void main() {
         'test.txt',
         'bucket',
         'AKIAIOSFODNN7EXAMPLE',
-        15,
+        Duration(minutes: 15),
         1024,
         region: 'eu-west-1',
       );
@@ -220,6 +237,32 @@ void main() {
       );
 
       expect(policy.region, 'us-east-1');
+    },
+  );
+
+  test(
+    'Given a Policy with additional fields, '
+    'when converting to string, '
+    'then the conditions contain the fields',
+    () {
+      final policy = Policy(
+        key: 'uploads/file "one".txt',
+        bucket: 'bucket',
+        datetime: '20240101T000000Z',
+        expiration: '2024-01-01T00:15:00Z',
+        credential: 'cred',
+        minFileSize: 10,
+        maxFileSize: 1024,
+        fields: const {'x-amz-meta-label': 'value "one"'},
+      );
+
+      final decoded = jsonDecode(policy.toString()) as Map<String, dynamic>;
+      final conditions = decoded['conditions'] as List<dynamic>;
+
+      expect(
+        conditions,
+        contains(equals({'x-amz-meta-label': 'value "one"'})),
+      );
     },
   );
 }

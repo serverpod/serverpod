@@ -16,8 +16,7 @@ import 'package:serverpod_client/serverpod_client.dart' as _isc;
 enum TestEnumStringified implements _isc.SerializableModel {
   one,
   two,
-  three,
-  ;
+  three;
 
   static TestEnumStringified fromJson(String name) {
     switch (name) {

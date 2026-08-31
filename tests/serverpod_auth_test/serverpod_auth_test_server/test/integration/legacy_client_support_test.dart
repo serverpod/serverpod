@@ -480,48 +480,82 @@ void main() {
     },
   );
 
+  // A migrated deployment must not keep answering out of the legacy tables.
   withServerpod(
-    'Given legacy endpoints outside the forwarding allowlist,',
+    'Given legacy auth endpoints the bridge cannot forward, with blocking on,',
     rollbackDatabase: RollbackDatabase.disabled,
     (final sessionBuilder, final endpoints) {
-      _configurePublicLegacySupport(sessionBuilder);
+      _configurePublicLegacySupport(
+        sessionBuilder,
+        blockUnbridgedAuthEndpoints: true,
+      );
 
-      test(
-        'when calling Google authenticate then it is handled by non-legacy endpoint.',
-        () async {
-          final legacyClient = _createLegacyClient(sessionBuilder);
-          await expectLater(
-            legacy_auth.Caller(legacyClient).google.authenticateWithIdToken(
-              'fake-token',
-            ),
-            throwsA(isA<legacy_auth.ServerpodClientInternalServerError>()),
-          );
-        },
+      test('when calling Google authenticate, then it is refused.', () async {
+        final legacyClient = _createLegacyClient(sessionBuilder);
+        await expectLater(
+          legacy_auth.Caller(legacyClient).google.authenticateWithIdToken(
+            'fake-token',
+          ),
+          throwsA(isA<legacy_auth.ServerpodClientNotFound>()),
+        );
+      });
+
+      test('when calling Firebase authenticate, then it is refused.', () async {
+        final legacyClient = _createLegacyClient(sessionBuilder);
+        await expectLater(
+          legacyClient.modules.auth.firebase.authenticate('fake-token'),
+          throwsA(isA<legacy_auth.ServerpodClientNotFound>()),
+        );
+      });
+
+      test('when calling Admin getUserInfo, then it is refused.', () async {
+        final legacyClient = _createLegacyClient(sessionBuilder);
+        await expectLater(
+          legacy_auth.Caller(legacyClient).admin.getUserInfo(1),
+          throwsA(isA<legacy_auth.ServerpodClientNotFound>()),
+        );
+      });
+    },
+  );
+
+  withServerpod(
+    'Given legacy auth endpoints the bridge cannot forward, with blocking off,',
+    rollbackDatabase: RollbackDatabase.disabled,
+    (final sessionBuilder, final endpoints) {
+      _configurePublicLegacySupport(
+        sessionBuilder,
+        blockUnbridgedAuthEndpoints: false,
       );
 
       test(
-        'when calling Firebase authenticate then it is handled by non-legacy endpoint.',
+        'when calling Firebase authenticate, '
+        'then the legacy endpoint serves it.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
           final result = await legacyClient.modules.auth.firebase.authenticate(
             'fake-token',
           );
 
-          expect(result.success, isFalse);
           expect(
             result.failReason,
             equals(legacy_auth.AuthenticationFailReason.internalError),
+            reason: 'Reaching the endpoint is the point, not the failure.',
           );
         },
       );
 
       test(
-        'when calling Admin getUserInfo then it is handled by non-legacy endpoint.',
+        'when calling the email endpoint, then it is still forwarded.',
         () async {
           final legacyClient = _createLegacyClient(sessionBuilder);
-          await expectLater(
-            legacy_auth.Caller(legacyClient).admin.getUserInfo(1),
-            throwsA(isA<legacy_auth.ServerpodClientUnauthorized>()),
+          final result = await legacy_auth.Caller(
+            legacyClient,
+          ).email.authenticate('nobody@serverpod.dev', 'wrong-password');
+
+          expect(
+            result.success,
+            isFalse,
+            reason: 'Turning off blocking must not turn off forwarding.',
           );
         },
       );
@@ -736,11 +770,16 @@ Client _createClient(
   return Client(baseUrl)..authKeyProvider = authKeyProvider;
 }
 
-void _configurePublicLegacySupport(final TestSessionBuilder sessionBuilder) {
+void _configurePublicLegacySupport(
+  final TestSessionBuilder sessionBuilder, {
+  final bool blockUnbridgedAuthEndpoints = false,
+}) {
   final pod = sessionBuilder.build().server.serverpod;
   pod.authenticationHandler = (final session, final authKey) =>
       AuthServices.instance.authenticationHandler(session, authKey);
-  pod.enableLegacyClientSupport();
+  pod.enableLegacyClientSupport(
+    blockUnbridgedAuthEndpoints: blockUnbridgedAuthEndpoints,
+  );
 }
 
 class MutableAuthKeyProvider implements ClientAuthKeyProvider {

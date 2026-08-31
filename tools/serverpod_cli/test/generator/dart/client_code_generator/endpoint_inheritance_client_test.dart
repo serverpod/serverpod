@@ -268,4 +268,49 @@ void main() {
       });
     },
   );
+
+  test(
+    'Given an endpoint that extends a class from a package that is not a module dependency, '
+    'when generating client endpoint calls, '
+    'then a StateError explains that the package is missing.',
+    () {
+      var baseEndpoint = EndpointDefinitionBuilder()
+          .withClassName('RefreshJwtTokensEndpoint')
+          .withName('refreshJwtTokens')
+          .withFilePath(
+            'core.dart',
+            externalServerPackage: 'serverpod_auth_idp_server',
+          )
+          .build();
+
+      var subclassEndpoint = EndpointDefinitionBuilder()
+          .withClassName('JwtRefreshEndpoint')
+          .withName('jwtRefresh')
+          .withExtends(baseEndpoint)
+          .build();
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [subclassEndpoint],
+        models: [],
+        futureCalls: [],
+      );
+
+      expect(
+        () => generator.generateProtocolCode(
+          protocolDefinition: protocolDefinition,
+          config: config,
+        ),
+        throwsA(
+          isA<StateError>().having(
+            (e) => e.message,
+            'message',
+            allOf(
+              contains('serverpod_auth_idp_server'),
+              contains('not a Serverpod module dependency'),
+            ),
+          ),
+        ),
+      );
+    },
+  );
 }

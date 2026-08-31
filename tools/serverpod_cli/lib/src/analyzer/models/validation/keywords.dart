@@ -39,6 +39,7 @@ class Keyword {
   static const String api = 'api';
   static const String database = 'database';
   static const String optional = 'optional';
+  static const String fk = 'fk';
   static const String scope = 'scope';
   static const String persist = 'persist';
   static const String requiredKey = 'required';

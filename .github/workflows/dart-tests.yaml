@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4"]
+        flutter-version: ["3.44.4"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -52,13 +52,6 @@ jobs:
         uses: ./.github/actions/retry
         with:
           command: dart run melos bootstrap
-      # The frozen chat module is not part of the melos workspace; without
-      # package resolution, dart format cannot read the package includes in
-      # its analysis_options.yaml files and would apply default settings.
-      - name: Resolve frozen legacy chat packages
-        uses: ./.github/actions/retry
-        with:
-          command: for d in modules/legacy/serverpod_chat/* examples/legacy/chat/*; do if [ -d "$d" ]; then (cd "$d" && flutter pub get); fi; done
       - name: Verify formatting
         run: dart format --output=none --set-exit-if-changed .
 
@@ -70,17 +63,17 @@ jobs:
       matrix:
         check:
           - name: strict, floor
-            flutter-version: "3.38.4"
+            flutter-version: "3.44.4"
             lint: lint_strict
           - name: latest
-            flutter-version: "3.44.4"
+            flutter-version: "3.47.0"
             lint: lint
           - name: downgrade, floor
-            flutter-version: "3.38.4"
+            flutter-version: "3.44.4"
             downgrade: true
             lint: lint_loose
           - name: downgrade, latest
-            flutter-version: "3.44.4"
+            flutter-version: "3.47.0"
             downgrade: true
             lint: lint_loose
     steps:
@@ -89,21 +82,17 @@ jobs:
         with:
           flutter-version: ${{ matrix.check.flutter-version }}
           cache: false
-      - name: Install melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart pub global activate melos
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: melos bootstrap
+          command: dart pub get
       - name: Downgrade dependencies
         if: matrix.check.downgrade
         uses: ./.github/actions/retry
         with:
-          command: melos downgrade
+          command: dart pub downgrade
       - name: Run lint
-        run: melos ${{ matrix.check.lint }}
+        run: dart run melos run ${{ matrix.check.lint }}
 
   # Build serverpod_cli ONCE per OS and share it as an artifact, so the generate
   # jobs below don't each re-resolve and compile it.
@@ -116,17 +105,14 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          sdk: "3.12.2"
+          sdk: "3.13.0"
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap serverpod_cli
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_cli' --include-dependencies
       - name: Build the serverpod CLI bundle
         # bash also on Windows: pwsh expands $GITHUB_WORKSPACE to empty.
         shell: bash
@@ -157,17 +143,14 @@ jobs:
             path: tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          sdk: "3.12.2"
+          sdk: "3.13.0"
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap ${{ matrix.pod }}
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='${{ matrix.pod }}' --include-dependencies
       - name: Build the server bundle
         working-directory: ${{ matrix.path }}
         run: dart build cli -t bin/main.dart -o "$GITHUB_WORKSPACE/.pod-build"
@@ -206,19 +189,20 @@ jobs:
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          sdk: "3.12.2"
-      - name: Resolve melos
+          sdk: "3.13.0"
+      - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap the project
+      - name: Resolve project dependencies
         uses: ./.github/actions/retry
         env:
           PROJECT: ${{ matrix.project }}
         with:
-          command: dart run melos bootstrap --scope="$(basename "$PROJECT")" --include-dependencies
+          command: cd "$PROJECT" && dart pub get
           shell: bash
       - uses: ./.github/actions/use-cli-bundle
       - name: Generate and verify no changes
@@ -244,18 +228,19 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
-          sdk: "3.12.2"
-      - name: Resolve melos
+          sdk: "3.13.0"
+      - name: Resolve workspace
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap the template servers + serverpod_test_server
-        # serverpod_test_server is needed by the "verify generate from scratch" step.
+      - name: Resolve template dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart run melos bootstrap --scope='projectname_server' --scope='modulename_server' --scope='serverpod_test_server' --include-dependencies
+          shell: bash
+          command: util/pub_get_templates
       - uses: ./.github/actions/use-cli-bundle
       - name: Generate template servers and verify no changes
         shell: bash
@@ -278,7 +263,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -348,6 +333,7 @@ jobs:
             echo "no release $tag - building"
           fi
           echo "use=$use" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         if: steps.pgcache.outputs.cache-hit != 'true'
         with:
@@ -552,19 +538,16 @@ jobs:
             run: bash util/run_tests_integration_embedded tests/serverpod_test_server test_integration/migration_manager/apply_migrations_endpoint_destructive_test.dart
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart pub global activate melos
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: melos bootstrap --scope='${{ matrix.suite.scope }}' --include-dependencies
+          command: dart pub get
       # windows-latest runs as runneradmin (elevated), and Postgres refuses to
       # start under an Administrators-group token. Run the suite as the standard
       # test account prepared below.
@@ -610,6 +593,7 @@ jobs:
           - windows-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: stable
@@ -646,7 +630,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         os: [windows-latest, ubuntu-latest]
         project:
           - packages/serverpod
@@ -676,6 +660,7 @@ jobs:
           - tests/serverpod_test_sqlite/serverpod_test_sqlite_server
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -698,11 +683,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -732,7 +718,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
         os: [ubuntu-latest, windows-latest]
         include:
           - compiler: dart2js
@@ -740,7 +726,7 @@ jobs:
             platform: chrome
           - os: windows-latest
             platform: edge
-          - flutter-version: "3.44.4"
+          - flutter-version: "3.47.0"
             platform: chrome
             compiler: dart2wasm
 
@@ -764,7 +750,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
         os: [windows-latest, ubuntu-latest]
         path: ["packages/serverpod_flutter"]
     steps:
@@ -784,10 +770,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -796,14 +783,10 @@ jobs:
       - uses: ./.github/actions/use-pod-bundle
         with:
           pod: serverpod_test_server
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
@@ -818,10 +801,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -830,14 +814,10 @@ jobs:
       - uses: ./.github/actions/use-pod-bundle
         with:
           pod: serverpod_test_server
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       # The e2e client's URLs (test_util/config.dart) hardcode host `serverpod_test_server`
       - name: Alias serverpod_test_server to localhost
         run: echo "127.0.0.1 serverpod_test_server" | sudo tee -a /etc/hosts
@@ -856,7 +836,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
@@ -866,16 +846,12 @@ jobs:
       - uses: browser-actions/setup-chrome@48ad923757ca74d66703209fe939badbdf80f2f4 # v2.2.0
       - name: Retry transient Dart build-hook failures
         uses: ./.github/actions/use-dart-test-retry
-      - name: Resolve melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
           command: dart pub get
       # The run also covers serverpod_test_sqlite_client, which comes along as a
       # path dependency of the Flutter package under --include-dependencies.
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_sqlite_flutter' --include-dependencies
       - name: Run client database web tests
         run: util/run_tests_client_database_web
         timeout-minutes: 20
@@ -885,10 +861,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         path: ["packages/serverpod_shared"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -901,7 +878,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
         module:
           - server: tests/serverpod_auth_test/serverpod_auth_test_server
             client: tests/serverpod_auth_test/serverpod_auth_test_flutter
@@ -966,23 +943,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart pub global activate melos
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+          command: dart pub get
       - name: Start Redis
         uses: ./.github/actions/use-redis
         with:
@@ -998,23 +972,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/use-embedded-pg
-      - name: Install melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart pub global activate melos
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: melos bootstrap --scope='serverpod_test_server' --include-dependencies
+          command: dart pub get
       - name: Start Redis
         uses: ./.github/actions/use-redis
         with:
@@ -1028,9 +999,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dart-version: ["3.10.3", "3.12.2"]
+        dart-version: ["3.12.2", "3.13.0"]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.dart-version }}
@@ -1048,7 +1020,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
         os: [windows-latest, ubuntu-latest]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
@@ -1098,10 +1070,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -1112,10 +1085,6 @@ jobs:
       - uses: ./.github/actions/retry
         with:
           command: dart pub get
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: dart run melos bootstrap --scope='serverpod_test_server' --include-dependencies
       - uses: ./.github/actions/use-cli-bundle
       - uses: ./.github/actions/use-pod-bundle
         with:
@@ -1130,10 +1099,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sdk: ["3.10.3", "3.12.2"]
+        sdk: ["3.12.2", "3.13.0"]
         shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
         with:
           sdk: ${{ matrix.sdk }}
@@ -1152,7 +1122,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.4", "3.44.4"]
+        flutter-version: ["3.44.4", "3.47.0"]
         os: [ubuntu-latest]
         shard: [0, 1, 2]
         path: ["tests/serverpod_cli_e2e_test"]
@@ -1199,12 +1169,8 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.44.4"
           cache: false
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Run version change test
         run: util/run_tests_version_change
 
@@ -1240,6 +1206,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_s3
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
@@ -1262,6 +1229,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_r2
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
@@ -1284,6 +1252,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_gcp
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
@@ -1303,6 +1272,7 @@ jobs:
         working-directory: integrations/serverpod_cloud_storage_gcp
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: ./.github/actions/use-dart-only-workspace
       - uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260 # v1.7.2
       - uses: ./.github/actions/use-dart-test-retry
       - uses: ./.github/actions/retry
@@ -1324,17 +1294,13 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.44.4"
           cache: false
       - uses: ./.github/actions/use-dart-test-retry
-      - name: Install melos
+      - name: Resolve dependencies
         uses: ./.github/actions/retry
         with:
-          command: dart pub global activate melos
-      - name: Bootstrap
-        uses: ./.github/actions/retry
-        with:
-          command: melos bootstrap
+          command: dart pub get
       - name: Run transactional email integration tests
         run: dart test test/integration/serverpod_cloud_email_integration_test.dart --reporter=failures-only
         working-directory: modules/serverpod_auth/serverpod_auth_idp/serverpod_auth_idp_server
@@ -1346,17 +1312,13 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.38.4"
+          flutter-version: "3.44.4"
           cache: false
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
       - name: Run publish check
         continue-on-error: true
         id: run_publish
         shell: bash
-        run: melos publish --dry-run --yes 2>&1 | tee publish_output.txt
+        run: dart run melos publish --dry-run --yes 2>&1 | tee publish_output.txt
       - name: Highlight publish errors
         shell: bash
         run: |

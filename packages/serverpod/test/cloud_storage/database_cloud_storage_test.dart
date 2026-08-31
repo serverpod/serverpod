@@ -23,20 +23,25 @@ class TestableDatabaseCloudStorage extends DatabaseCloudStorage {
     required Session session,
     required String path,
     required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
+    StoreFileOptions options = const StoreFileOptions(),
   }) async {
+    if (options.preventOverwrite && _files.containsKey(path)) {
+      throw CloudStorageFileAlreadyExistsException(
+        storageId: storageId,
+        path: path,
+      );
+    }
     _files[path] = byteData;
   }
 
   @override
-  Future<String?> createDirectFileUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
+    UploadOptions options = const UploadOptions(),
   }) async {
-    return '{"url": "http://test/$path", "type": "binary"}';
+    options.validate();
+    return BinaryUploadDescription(url: Uri.parse('http://test/$path'));
   }
 }
 
@@ -60,7 +65,7 @@ void main() {
     session = _FakeSession();
   });
 
-  group('Given a DatabaseCloudStorage with storeFileWithOptions', () {
+  group('Given a DatabaseCloudStorage with storeFile', () {
     test(
       'when preventOverwrite is false '
       'then the file is stored',
@@ -69,11 +74,11 @@ void main() {
           Uint8List.fromList('content'.codeUnits).buffer,
         );
 
-        await storage.storeFileWithOptions(
+        await storage.storeFile(
           session: session,
           path: 'test/file.txt',
           byteData: data,
-          options: const CloudStorageOptions(preventOverwrite: false),
+          options: const StoreFileOptions(preventOverwrite: false),
         );
 
         final exists = await storage.fileExists(
@@ -92,11 +97,11 @@ void main() {
           Uint8List.fromList('content'.codeUnits).buffer,
         );
 
-        await storage.storeFileWithOptions(
+        await storage.storeFile(
           session: session,
           path: 'test/new-file.txt',
           byteData: data,
-          options: const CloudStorageOptions(preventOverwrite: true),
+          options: const StoreFileOptions(preventOverwrite: true),
         );
 
         final exists = await storage.fileExists(
@@ -126,17 +131,17 @@ void main() {
         );
 
         expect(
-          () => storage.storeFileWithOptions(
+          () => storage.storeFile(
             session: session,
             path: 'test/existing.txt',
             byteData: duplicateData,
-            options: const CloudStorageOptions(preventOverwrite: true),
+            options: const StoreFileOptions(preventOverwrite: true),
           ),
           throwsA(
             isA<CloudStorageException>().having(
               (e) => e.message,
               'message',
-              contains('preventOverwrite'),
+              contains('already exists'),
             ),
           ),
         );
@@ -145,19 +150,17 @@ void main() {
   });
 
   group(
-    'Given a DatabaseCloudStorage with createDirectFileUploadDescriptionWithOptions',
+    'Given a DatabaseCloudStorage with createUploadDescription',
     () {
       test(
         'when contentLength is within maxFileSize '
         'then it returns a description',
         () async {
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: 'test/file.txt',
-                maxFileSize: 10 * 1024 * 1024,
-                options: const CloudStorageOptions(contentLength: 5000),
-              );
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: 'test/file.txt',
+            options: const UploadOptions(contentLength: 5000),
+          );
 
           expect(description, isNotNull);
         },
@@ -168,11 +171,13 @@ void main() {
         'then it throws CloudStorageException',
         () {
           expect(
-            () => storage.createDirectFileUploadDescriptionWithOptions(
+            () => storage.createUploadDescription(
               session: session,
               path: 'test/file.txt',
-              maxFileSize: 1024,
-              options: const CloudStorageOptions(contentLength: 2048),
+              options: const UploadOptions(
+                maxFileSize: 1024,
+                contentLength: 2048,
+              ),
             ),
             throwsA(
               isA<CloudStorageException>().having(
@@ -189,13 +194,14 @@ void main() {
         'when contentLength equals maxFileSize '
         'then it returns a description',
         () async {
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: 'test/file.txt',
-                maxFileSize: 1024,
-                options: const CloudStorageOptions(contentLength: 1024),
-              );
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: 'test/file.txt',
+            options: const UploadOptions(
+              maxFileSize: 1024,
+              contentLength: 1024,
+            ),
+          );
 
           expect(description, isNotNull);
         },
@@ -205,16 +211,37 @@ void main() {
         'when contentLength is null '
         'then it returns a description',
         () async {
-          final description = await storage
-              .createDirectFileUploadDescriptionWithOptions(
-                session: session,
-                path: 'test/file.txt',
-                options: const CloudStorageOptions(),
-              );
+          final description = await storage.createUploadDescription(
+            session: session,
+            path: 'test/file.txt',
+            options: const UploadOptions(),
+          );
 
           expect(description, isNotNull);
         },
       );
     },
   );
+
+  group('Given a DatabaseCloudStorage with verifyUpload', () {
+    test(
+      'when the database operation fails '
+      'then it throws CloudStorageException',
+      () {
+        expect(
+          () => storage.verifyUpload(
+            session: session,
+            path: 'test/file.txt',
+          ),
+          throwsA(
+            isA<CloudStorageException>().having(
+              (exception) => exception.message,
+              'message',
+              contains('Failed to verify upload'),
+            ),
+          ),
+        );
+      },
+    );
+  });
 }

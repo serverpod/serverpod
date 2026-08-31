@@ -21,8 +21,7 @@ enum AuthStrategy implements _isc.SerializableModel {
   jwt,
 
   /// Session-based authentication
-  session,
-  ;
+  session;
 
   static AuthStrategy fromJson(String name) {
     switch (name) {

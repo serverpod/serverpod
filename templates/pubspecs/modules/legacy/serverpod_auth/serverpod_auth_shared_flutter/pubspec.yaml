@@ -11,6 +11,8 @@ environment:
   sdk: DART_VERSION
   flutter: FLUTTER_VERSION
 
+resolution: workspace
+
 dependencies:
   cached_network_image: ^3.2.3
   file_picker: '>=12.0.0-beta.4 <13.0.0'
@@ -29,16 +31,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   serverpod_lints: SERVERPOD_VERSION
-
-dependency_overrides:
-  serverpod_auth_client:
-    path: ../serverpod_auth_client
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_lints:
-    path: ../../../../packages/serverpod_lints
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

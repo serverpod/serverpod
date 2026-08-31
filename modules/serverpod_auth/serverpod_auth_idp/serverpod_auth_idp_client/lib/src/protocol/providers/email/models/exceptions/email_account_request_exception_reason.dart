@@ -31,8 +31,7 @@ enum EmailAccountRequestExceptionReason implements _isc.SerializableModel {
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown,
-  ;
+  unknown;
 
   static EmailAccountRequestExceptionReason fromJson(String name) {
     switch (name) {

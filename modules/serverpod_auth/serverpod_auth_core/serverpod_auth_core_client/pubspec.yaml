@@ -1,19 +1,15 @@
 name: serverpod_auth_core_client
 description: Serverpod core authentication client module.
-version: 4.0.0-beta.4
+version: 4.0.0-rc.1
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   clock: ^1.1.1
-  serverpod_client: 4.0.0-beta.4
+  serverpod_client: 4.0.0-rc.1
 
 dev_dependencies:
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod_client:
-    path: ../../../../packages/serverpod_client
-  serverpod_serialization:
-    path: ../../../../packages/serverpod_serialization

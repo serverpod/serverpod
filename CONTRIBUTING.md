@@ -101,7 +101,7 @@ Below is a list of tools required to contribute to Serverpod.
 - **Flutter**: Some parts of the project require Flutter to be installed on your machine. You can download Flutter from the [Flutter website](https://flutter.dev/docs/get-started/install).
 - **Docker** (optional for most work): The PostgreSQL-backed test suites provision an embedded database on demand, so they do not need Docker. Docker is still required for the generated-project Dockerfile and Compose checks in the bootstrap suite and for the Dockerized Flutter integration suite. You can download Docker from the [Docker website](https://www.docker.com/get-started).
 - **Git**: Serverpod is hosted on GitHub, so you need to have Git installed on your machine. You can download Git from the [Git website](https://git-scm.com/downloads).
-- **Melos**: Serverpod uses Melos to manage the monorepo. You can install Melos by running `dart pub global activate melos`.
+- **Melos**: Serverpod uses Melos to manage the monorepo. Melos is a dev dependency of the workspace, so `dart run melos ...` works without installing anything.
 - **bash**: Some scripts require bash to be installed on your machine. If you are on Windows, you can install Git Bash from the [Git website](https://git-scm.com/downloads).
 
 After the required tools have been installed, you will need a local clone of the repository.
@@ -110,11 +110,14 @@ We recommend [forking](https://docs.github.com/en/pull-requests/collaborating-wi
 After the repository is cloned, run the following command from the root of the repository to install all dependencies:
 
 ```bash
-$ melos bootstrap
+$ dart run melos bootstrap
 ```
 
 > [!TIP]
 > If you have recently configured a Serverpod project, you can add the `--offline` flag to the script above to use cached versions of the dependencies.
+
+> [!IMPORTANT]
+> Use `bootstrap` rather than a plain `dart pub get`. Both resolve the pub workspace, but only `bootstrap` also resolves the packages that are deliberately not workspace members, which are listed with the reason for each in `util/non_workspace_packages`. After a plain `dart pub get` those packages will not analyze, test, or resolve in your IDE.
 
 The project is now set up and ready for development.
 
@@ -156,8 +159,8 @@ The database-backed host suites provision their own embedded PostgreSQL on
 demand, so no database server needs to be running. The first run downloads the
 exact published bundle pinned by this Serverpod revision; it does not build a
 missing bundle automatically. To validate an unpublished bundle or changes to
-its build recipe, run `melos run test_integration_embedded_pg_build` with the
-native build toolchain installed.
+its build recipe, run `dart run melos run test_integration_embedded_pg_build`
+with the native build toolchain installed.
 
 Some test flows use host aliases. The e2e client expects
 `serverpod_test_server`, while redis-tagged integration tests look for a Redis
@@ -172,12 +175,12 @@ scope of a direct test run:
 
 #### Test scripts
 
-`melos run test` runs the primary host workflow—unit, bootstrap, and
+`dart run melos run test` runs the primary host workflow—unit, bootstrap, and
 integration tests—and is the quickest way to validate a change across
 packages. On non-Windows hosts, its bootstrap group includes generated-project
 Dockerfile and Compose checks, so the complete workflow requires Docker. It
-also requires Redis at `redis:6379` with password `password`. See `melos.yaml`
-for the individual `test_*` scripts.
+also requires Redis at `redis:6379` with password `password`. See the `melos:`
+section in `pubspec.yaml` for the individual `test_*` scripts.
 
 Scripts that run groups of tests are located in the `util` directory and their
 names start with `run_tests`. Common test scripts include:

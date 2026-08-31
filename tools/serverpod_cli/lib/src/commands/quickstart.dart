@@ -1,4 +1,3 @@
-import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/config.dart';
@@ -133,7 +132,7 @@ class QuickstartCommand extends ServerpodCommand<QuickstartOption> {
       ides: [TemplateIde.claude, TemplateIde.cursor, TemplateIde.vscode],
     );
 
-    final useTui = (interactive ?? true) && !ci.isCI;
+    final useTui = shouldUseCreateTui(interactive);
 
     if (useTui) {
       await performCreateWithTui(
