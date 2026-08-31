@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class UniqueDataWithNonPersist
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UniqueDataWithNonPersist._({
     this.id,
     required this.number,
@@ -53,11 +53,11 @@ abstract class UniqueDataWithNonPersist
   String? extra;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UniqueDataWithNonPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UniqueDataWithNonPersist copyWith({
     int? id,
     int? number,
@@ -91,11 +91,11 @@ abstract class UniqueDataWithNonPersist
   }
 
   static UniqueDataWithNonPersistIncludeList includeList({
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
     UniqueDataWithNonPersistInclude? include,
   }) {
     return UniqueDataWithNonPersistIncludeList._(
@@ -110,7 +110,7 @@ abstract class UniqueDataWithNonPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -131,7 +131,7 @@ class _UniqueDataWithNonPersistImpl extends UniqueDataWithNonPersist {
 
   /// Returns a shallow copy of this [UniqueDataWithNonPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UniqueDataWithNonPersist copyWith({
     Object? id = _Undefined,
@@ -149,29 +149,29 @@ class _UniqueDataWithNonPersistImpl extends UniqueDataWithNonPersist {
 }
 
 class UniqueDataWithNonPersistUpdateTable
-    extends _i1.UpdateTable<UniqueDataWithNonPersistTable> {
+    extends _is.UpdateTable<UniqueDataWithNonPersistTable> {
   UniqueDataWithNonPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> number(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> number(int value) => _is.ColumnValue(
     table.number,
     value,
   );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 }
 
-class UniqueDataWithNonPersistTable extends _i1.Table<int?> {
+class UniqueDataWithNonPersistTable extends _is.Table<int?> {
   UniqueDataWithNonPersistTable({super.tableRelation})
     : super(tableName: 'unique_data_with_non_persist') {
     updateTable = UniqueDataWithNonPersistUpdateTable(this);
-    number = _i1.ColumnInt(
+    number = _is.ColumnInt(
       'number',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
@@ -179,31 +179,31 @@ class UniqueDataWithNonPersistTable extends _i1.Table<int?> {
 
   late final UniqueDataWithNonPersistUpdateTable updateTable;
 
-  late final _i1.ColumnInt number;
+  late final _is.ColumnInt number;
 
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     number,
     email,
   ];
 }
 
-class UniqueDataWithNonPersistInclude extends _i1.IncludeObject {
+class UniqueDataWithNonPersistInclude extends _is.IncludeObject {
   UniqueDataWithNonPersistInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => UniqueDataWithNonPersist.t;
+  _is.Table<int?> get table => UniqueDataWithNonPersist.t;
 }
 
-class UniqueDataWithNonPersistIncludeList extends _i1.IncludeList {
+class UniqueDataWithNonPersistIncludeList extends _is.IncludeList {
   UniqueDataWithNonPersistIncludeList._({
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -214,10 +214,10 @@ class UniqueDataWithNonPersistIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UniqueDataWithNonPersist.t;
+  _is.Table<int?> get table => UniqueDataWithNonPersist.t;
 }
 
 class UniqueDataWithNonPersistRepository {
@@ -246,15 +246,15 @@ class UniqueDataWithNonPersistRepository {
   /// );
   /// ```
   Future<List<UniqueDataWithNonPersist>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UniqueDataWithNonPersist>(
       where: where?.call(UniqueDataWithNonPersist.t),
@@ -286,14 +286,14 @@ class UniqueDataWithNonPersistRepository {
   /// );
   /// ```
   Future<UniqueDataWithNonPersist?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UniqueDataWithNonPersist>(
       where: where?.call(UniqueDataWithNonPersist.t),
@@ -308,11 +308,11 @@ class UniqueDataWithNonPersistRepository {
 
   /// Finds a single [UniqueDataWithNonPersist] by its [id] or null if no such row exists.
   Future<UniqueDataWithNonPersist?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UniqueDataWithNonPersist>(
       id,
@@ -337,9 +337,9 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -355,9 +355,9 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// The returned [UniqueDataWithNonPersist] will have its `id` field set.
   Future<UniqueDataWithNonPersist> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UniqueDataWithNonPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UniqueDataWithNonPersist>(
       row,
@@ -386,13 +386,13 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
-    required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
+    required _is.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
-    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UniqueDataWithNonPersist>(
@@ -419,13 +419,13 @@ class UniqueDataWithNonPersistRepository {
   ///
   /// The returned [UniqueDataWithNonPersist] will have its `id` field set.
   Future<UniqueDataWithNonPersist?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UniqueDataWithNonPersist row, {
-    required _i1.ColumnSelections<UniqueDataWithNonPersistTable>
+    required _is.ColumnSelections<UniqueDataWithNonPersistTable>
     conflictColumns,
-    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UniqueDataWithNonPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UniqueDataWithNonPersist>(
       row,
@@ -446,10 +446,10 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
-    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UniqueDataWithNonPersist>(
@@ -464,10 +464,10 @@ class UniqueDataWithNonPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UniqueDataWithNonPersist> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UniqueDataWithNonPersist row, {
-    _i1.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UniqueDataWithNonPersistTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UniqueDataWithNonPersist>(
       row,
@@ -479,11 +479,11 @@ class UniqueDataWithNonPersistRepository {
   /// Updates a single [UniqueDataWithNonPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UniqueDataWithNonPersist?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
+    required _is.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UniqueDataWithNonPersist>(
       id,
@@ -499,15 +499,15 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UniqueDataWithNonPersistUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
+    required _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UniqueDataWithNonPersist>(
@@ -534,11 +534,11 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UniqueDataWithNonPersist> rows, {
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UniqueDataWithNonPersist>(
@@ -552,9 +552,9 @@ class UniqueDataWithNonPersistRepository {
 
   /// Deletes a single [UniqueDataWithNonPersist].
   Future<UniqueDataWithNonPersist> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UniqueDataWithNonPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UniqueDataWithNonPersist>(
       row,
@@ -571,11 +571,11 @@ class UniqueDataWithNonPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UniqueDataWithNonPersist>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
-    _i1.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
-    _i1.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
+    _is.OrderByBuilder<UniqueDataWithNonPersistTable>? orderBy,
+    _is.OrderByListBuilder<UniqueDataWithNonPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UniqueDataWithNonPersist>(
@@ -590,10 +590,10 @@ class UniqueDataWithNonPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UniqueDataWithNonPersist>(
       where: where?.call(UniqueDataWithNonPersist.t),
@@ -604,11 +604,11 @@ class UniqueDataWithNonPersistRepository {
 
   /// Acquires row-level locks on [UniqueDataWithNonPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UniqueDataWithNonPersistTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UniqueDataWithNonPersist>(
       where: where(UniqueDataWithNonPersist.t),

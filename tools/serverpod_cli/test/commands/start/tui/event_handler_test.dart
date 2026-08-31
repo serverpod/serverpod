@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:nocterm/nocterm.dart' show ClipboardManager;
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/commands/start/log_history.dart';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
@@ -32,109 +33,24 @@ Event _flutterErrorEvent(Map<String, Object?> data) {
 void main() {
   late ServerWatchState state;
   late StartAppStateHolder holder;
+  late StartLogHistory history;
 
   setUp(() {
     state = ServerWatchState();
+    history = state.history;
     holder = StartAppStateHolder(state);
-  });
-
-  group('Given a log event', () {
-    setUp(() {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'log',
-          'level': 'info',
-          'message': 'Server started',
-          'timestamp': '2026-04-10T12:00:00.000Z',
-        }),
-      );
-    });
-
-    test('when dispatched then adds to logHistory', () {
-      expect(state.logHistory, hasLength(1));
-      final entry = state.logHistory.first as LogEntry;
-      expect(entry.message, 'Server started');
-      expect(entry.level, LogLevel.info);
-    });
-  });
-
-  group('Given a warning log event', () {
-    setUp(() {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'log',
-          'level': 'warning',
-          'message': 'Slow query',
-        }),
-      );
-    });
-
-    test('when dispatched then parses level correctly', () {
-      final entry = state.logHistory.first as LogEntry;
-      expect(entry.level, LogLevel.warning);
-    });
-  });
-
-  group('Given an error log event with error details and stackTrace', () {
-    test('when dispatched then stores the error text and stack trace', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'log',
-          'level': 'error',
-          'message': 'Failed to apply database migrations.',
-          'error':
-              'Exception: DB has migration version 20260428173453748 '
-              'registered but it is not found in the project files.',
-          'stackTrace': '#0      fake (file:///fake.dart:1:1)',
-        }),
-      );
-
-      final entry = state.logHistory.first as LogEntry;
-      expect(entry.level, LogLevel.error);
-      expect(entry.message, 'Failed to apply database migrations.');
-      expect(
-        entry.error,
-        'Exception: DB has migration version 20260428173453748 '
-        'registered but it is not found in the project files.',
-      );
-      expect(entry.stackTrace, isNotNull);
-      expect(
-        entry.stackTrace.toString(),
-        '#0      fake (file:///fake.dart:1:1)',
-      );
-    });
-  });
-
-  group('Given an error log event with an empty stackTrace', () {
-    test('when dispatched then leaves the stack trace null', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'log',
-          'level': 'error',
-          'message': 'Something failed.',
-          'stackTrace': '',
-        }),
-      );
-
-      final entry = state.logHistory.first as LogEntry;
-      expect(entry.stackTrace, isNull);
-    });
+    history.attachHolder(holder);
   });
 
   group(
-    'Given a log event flagged as an alert with copy markup when dispatched',
+    'Given a log event flagged as an alert with copy markup when recorded,',
     () {
       String? previousClipboard;
 
       setUp(() {
         previousClipboard = ClipboardManager.paste();
         ClipboardManager.copy('previous clipboard content');
-        handleServerLogEvent(
-          holder,
+        history.recordServerLogEvent(
           _logEvent({
             'type': 'log',
             'level': 'info',
@@ -149,15 +65,15 @@ void main() {
         if (prev != null) ClipboardManager.copy(prev);
       });
 
-      test('then shows the alert with the markup stripped', () {
+      test('then shows the alert with the markup stripped.', () {
         expect(state.alert?.displayText, 'Registration code: h2k9x3mp');
       });
 
-      test('then copies the marked segment to the clipboard', () {
+      test('then copies the marked segment to the clipboard.', () {
         expect(ClipboardManager.paste(), 'h2k9x3mp');
       });
 
-      test('then the raw log line keeps the markup', () {
+      test('then the raw log line keeps the markup.', () {
         final entry = state.logHistory.first as LogEntry;
         expect(entry.message, 'Registration code: <h2k9x3mp>');
       });
@@ -165,11 +81,10 @@ void main() {
   );
 
   group(
-    'Given a log event flagged as an alert without copy markup when dispatched',
+    'Given a log event flagged as an alert without copy markup when recorded,',
     () {
       setUp(() {
-        handleServerLogEvent(
-          holder,
+        history.recordServerLogEvent(
           _logEvent({
             'type': 'log',
             'level': 'info',
@@ -179,22 +94,21 @@ void main() {
         );
       });
 
-      test('then shows the alert verbatim', () {
+      test('then shows the alert verbatim.', () {
         expect(state.alert?.displayText, 'Server requires a restart');
       });
 
-      test('then the alert has no copy text', () {
+      test('then the alert has no copy text.', () {
         expect(state.alert?.copyText, isNull);
       });
     },
   );
 
   group(
-    'Given an ordinary log event containing angle brackets when dispatched',
+    'Given an ordinary log event containing angle brackets when recorded,',
     () {
       setUp(() {
-        handleServerLogEvent(
-          holder,
+        history.recordServerLogEvent(
           _logEvent({
             'type': 'log',
             'level': 'info',
@@ -203,11 +117,11 @@ void main() {
         );
       });
 
-      test('then no alert is shown', () {
+      test('then no alert is shown.', () {
         expect(state.alert, isNull);
       });
 
-      test('then the markup is left untouched in the log', () {
+      test('then the markup is left untouched in the log.', () {
         final entry = state.logHistory.first as LogEntry;
         expect(entry.message, 'Parsed List<int> from <html>');
       });
@@ -215,11 +129,10 @@ void main() {
   );
 
   group(
-    'Given a log event whose metadata does not flag an alert when dispatched',
+    'Given a log event whose metadata does not flag an alert when recorded,',
     () {
       setUp(() {
-        handleServerLogEvent(
-          holder,
+        history.recordServerLogEvent(
           _logEvent({
             'type': 'log',
             'level': 'info',
@@ -229,108 +142,11 @@ void main() {
         );
       });
 
-      test('then no alert is shown', () {
+      test('then no alert is shown.', () {
         expect(state.alert, isNull);
       });
     },
   );
-
-  group('Given a scope_start event', () {
-    setUp(() {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'scope_start',
-          'id': 'scope_1',
-          'label': 'POST /api/user',
-          'timestamp': '2026-04-10T12:00:00.000Z',
-        }),
-      );
-    });
-
-    test('when dispatched then creates tracked operation', () {
-      expect(state.activeOperations, contains('scope_1'));
-      expect(state.activeOperations['scope_1']!.label, 'POST /api/user');
-    });
-  });
-
-  group('Given an INTERNAL scope_start event', () {
-    setUp(() {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'scope_start',
-          'id': 'scope_2',
-          'label': 'INTERNAL',
-        }),
-      );
-    });
-
-    test('when dispatched then does not create tracked operation', () {
-      expect(state.activeOperations, isEmpty);
-    });
-  });
-
-  group('Given a scope that is opened and closed', () {
-    setUp(() {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'scope_start',
-          'id': 'scope_3',
-          'label': 'GET /api/data',
-        }),
-      );
-    });
-
-    test('when scope_end arrives then completes as tracked operation', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'scope_end',
-          'id': 'scope_3',
-          'success': true,
-          'duration': 0.1,
-        }),
-      );
-
-      expect(state.activeOperations, isEmpty);
-      expect(state.logHistory, hasLength(1));
-      final op = state.logHistory.first as CompletedOperation;
-      expect(op.label, 'GET /api/data');
-      expect(op.success, isTrue);
-      expect(op.duration.inMilliseconds, 100);
-    });
-
-    test('when scope_end with failure then marks as failed', () {
-      handleServerLogEvent(
-        holder,
-        _logEvent({
-          'type': 'scope_end',
-          'id': 'scope_3',
-          'success': false,
-        }),
-      );
-
-      final op = state.logHistory.first as CompletedOperation;
-      expect(op.success, isFalse);
-    });
-  });
-
-  group('Given a non-serverpod extension event', () {
-    test('when dispatched then ignores it', () {
-      final event = Event(
-        kind: EventKind.kExtension,
-        timestamp: 0,
-        extensionKind: 'ext.other.event',
-        extensionData: ExtensionData.parse({'type': 'log'}),
-      );
-
-      handleServerLogEvent(holder, event);
-
-      expect(state.logHistory, isEmpty);
-    });
-  });
 
   group('Given a Flutter app tab and a framework error event,', () {
     late AppLogTab appTab;
@@ -351,8 +167,7 @@ void main() {
             "line 2168 pos 12: '_elements.contains(element)': is not true.\n"
             'See also: https://docs.flutter.dev/testing/errors';
 
-        handleFlutterExtensionEvent(
-          holder,
+        history.recordFlutterExtensionEvent(
           'serverpod-app',
           _flutterErrorEvent({
             'errorsSinceReload': 0,
@@ -375,39 +190,6 @@ void main() {
         expect(state.logHistory, isEmpty);
       },
     );
-
-    test(
-      'when a Flutter error event has no rendered error text, '
-      'then it is ignored.',
-      () {
-        handleFlutterExtensionEvent(
-          holder,
-          'serverpod-app',
-          _flutterErrorEvent({'errorsSinceReload': 0}),
-        );
-
-        expect(appTab.logHistory, isEmpty);
-        expect(appTab.lines, isEmpty);
-      },
-    );
-
-    test(
-      'when the error text contains ANSI styling, '
-      'then both structured and raw histories contain plain text.',
-      () {
-        handleFlutterExtensionEvent(
-          holder,
-          'serverpod-app',
-          _flutterErrorEvent({
-            'renderedErrorText': '\x1b[31mA framework error\x1b[0m',
-          }),
-        );
-
-        final entry = appTab.logHistory.single as LogEntry;
-        expect(entry.message, 'A framework error');
-        expect(appTab.lines, ['A framework error']);
-      },
-    );
   });
 
   group('Given a Flutter app tab and a structured application log event,', () {
@@ -424,8 +206,7 @@ void main() {
       'when the event is dispatched, '
       'then it is added to the app instead of the server log.',
       () {
-        handleFlutterExtensionEvent(
-          holder,
+        history.recordFlutterExtensionEvent(
           'serverpod-app',
           _logEvent({
             'type': 'log',
@@ -459,8 +240,7 @@ void main() {
       'when an stderr line is received, '
       'then it is retained without inventing a second structured entry.',
       () {
-        handleFlutterOutput(
-          holder,
+        history.addFlutterLine(
           'serverpod-app',
           'libEGL warning: failed to create dri2 screen',
         );
@@ -473,35 +253,27 @@ void main() {
     );
   });
 
-  group('Given a Flutter app tab and a framework error without a count,', () {
-    late AppLogTab appTab;
+  group(
+    'Given a Flutter app that produced output before its tab was open,',
+    () {
+      setUp(() {
+        history.addFlutterLine('serverpod-app', 'Launching lib/main.dart');
+      });
 
-    setUp(() {
-      appTab = state.getOrCreateAppLogTab(
-        appId: 'serverpod-app',
-        label: 'Serverpod app',
+      test(
+        'when the tab is opened, '
+        'then it shows the output produced so far.',
+        () {
+          final appTab = state.getOrCreateAppLogTab(
+            appId: 'serverpod-app',
+            label: 'Serverpod app',
+          );
+
+          expect(appTab.lines, ['Launching lib/main.dart']);
+        },
       );
-    });
-
-    test(
-      'when the event is dispatched, '
-      'then its metadata does not contain a null value.',
-      () {
-        handleFlutterExtensionEvent(
-          holder,
-          'serverpod-app',
-          _flutterErrorEvent({'renderedErrorText': 'A framework error'}),
-        );
-
-        final entry = appTab.logHistory.single as LogEntry;
-        expect(entry.metadata, {
-          'source': 'flutterError',
-          'levelIsInferred': false,
-          'timestampIsInferred': false,
-        });
-      },
-    );
-  });
+    },
+  );
 
   group('Given a Flutter app tab receiving a source-structured log event,', () {
     late AppLogTab appTab;
@@ -519,8 +291,7 @@ void main() {
       () {
         final time = DateTime.utc(2026, 7, 14, 3);
 
-        handleFlutterLogEvent(
-          holder,
+        history.recordFlutterLogEvent(
           'serverpod-app',
           FlutterLogEvent(
             time: time,
@@ -552,59 +323,22 @@ void main() {
     );
 
     test(
-      'when the event contains ANSI styling, '
-      'then the rendered message, error, and stack trace contain plain text.',
+      'when the event is recorded for an app without a tab, '
+      'then nothing is added to the open tab.',
       () {
-        handleFlutterLogEvent(
-          holder,
-          'serverpod-app',
+        history.recordFlutterLogEvent(
+          'other-app',
           FlutterLogEvent(
             time: DateTime.utc(2026, 7, 14, 3),
-            level: LogLevel.error,
-            message: '\x1b[31mFailed\x1b[0m',
-            source: FlutterLogSource.processStderr,
-            loggerName: '\x1b[33mflutter\x1b[0m',
-            error: '\x1b[31mBad state\x1b[0m',
-            stackTrace: '\x1b[2m#0 main (app.dart:1)\x1b[0m',
+            level: LogLevel.info,
+            message: 'Other app started',
+            source: FlutterLogSource.vmLogging,
           ),
         );
 
-        final entry = appTab.logHistory.single as LogEntry;
-        expect(entry.message, '[flutter] Failed');
-        expect(entry.error, 'Bad state');
-        expect(entry.stackTrace.toString(), '#0 main (app.dart:1)');
+        expect(appTab.logHistory, isEmpty);
       },
     );
-  });
-
-  group('Given parseLogLevel', () {
-    test('when "debug" then returns debug', () {
-      expect(parseLogLevel('debug'), LogLevel.debug);
-    });
-
-    test('when "info" then returns info', () {
-      expect(parseLogLevel('info'), LogLevel.info);
-    });
-
-    test('when "warning" then returns warning', () {
-      expect(parseLogLevel('warning'), LogLevel.warning);
-    });
-
-    test('when "warn" then returns warning', () {
-      expect(parseLogLevel('warn'), LogLevel.warning);
-    });
-
-    test('when "error" then returns error', () {
-      expect(parseLogLevel('error'), LogLevel.error);
-    });
-
-    test('when "fatal" then returns fatal', () {
-      expect(parseLogLevel('fatal'), LogLevel.fatal);
-    });
-
-    test('when unknown then defaults to info', () {
-      expect(parseLogLevel('unknown'), LogLevel.info);
-    });
   });
 
   group('Given runTrackedAction with server ready', () {
@@ -646,6 +380,32 @@ void main() {
 
       completer.complete();
     });
+
+    test(
+      'when active server scopes are discarded during an action '
+      'then only the server scopes are removed',
+      () async {
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'scope_start',
+            'id': 'stream_scope',
+            'label': 'GET /api/stream',
+          }),
+        );
+        final completer = Completer<void>();
+        runTrackedAction(holder, 'Restarting server', () => completer.future);
+
+        expect(state.activeOperations, hasLength(2));
+
+        history.discardActiveServerScopes();
+
+        expect(state.activeOperations, hasLength(1));
+        expect(state.activeOperations.values.single.label, 'Restarting server');
+        expect(state.actionBusy, isTrue);
+
+        completer.complete();
+      },
+    );
 
     test('when action succeeds then clears busy and adds completed', () async {
       runTrackedAction(holder, 'Reload', () async {});

@@ -6,5 +6,5 @@ linter:
     directives_ordering: false
     prefer_final_in_for_each: false
     prefer_final_locals: false
-    prefer_final_parameters: false
+    prefer_initializing_formals: false
     sort_pub_dependencies: false

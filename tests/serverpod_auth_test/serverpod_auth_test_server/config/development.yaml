@@ -49,6 +49,11 @@ sessionLogs:
   persistentEnabled: true
   consoleEnabled: true
 
+authCookie:
+  secure: false
+allowedOrigins:
+  - http://localhost:8083
+
 # futureCallExecutionEnabled: true # Defaults to true
 
 #futureCall:

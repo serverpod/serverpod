@@ -28,7 +28,7 @@ void main() {
 
       await expectLater(
         await errorCompleter.future,
-        isA<ServerpodClientException>().having(
+        isA<ServerpodClientHttpException>().having(
           (e) => e.statusCode,
           'statusCode',
           HttpStatus.unauthorized,
@@ -80,7 +80,7 @@ void main() {
 
         await expectLater(
           await errorCompleter.future,
-          isA<ServerpodClientException>().having(
+          isA<ServerpodClientHttpException>().having(
             (e) => e.statusCode,
             'statusCode',
             HttpStatus.forbidden,

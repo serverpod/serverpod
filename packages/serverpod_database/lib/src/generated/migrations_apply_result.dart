@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// Result of applying database migrations via the Insights endpoint.
 abstract class MigrationsApplyResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   MigrationsApplyResult._({
     this.migrationsApplied,
     this.repairMigrationApplied,
@@ -34,12 +34,12 @@ abstract class MigrationsApplyResult
     return MigrationsApplyResult(
       migrationsApplied: jsonSerialization['migrationsApplied'] == null
           ? null
-          : _i2.Protocol().deserialize<List<String>>(
+          : _isd.Protocol().deserialize<List<String>>(
               jsonSerialization['migrationsApplied'],
             ),
       repairMigrationApplied:
           jsonSerialization['repairMigrationApplied'] as String?,
-      databaseMatchesTargetState: _i1.BoolJsonExtension.fromJson(
+      databaseMatchesTargetState: _iss.BoolJsonExtension.fromJson(
         jsonSerialization['databaseMatchesTargetState'],
       ),
     );
@@ -64,7 +64,7 @@ abstract class MigrationsApplyResult
 
   /// Returns a shallow copy of this [MigrationsApplyResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   MigrationsApplyResult copyWith({
     List<String>? migrationsApplied,
     String? repairMigrationApplied,
@@ -96,7 +96,7 @@ abstract class MigrationsApplyResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -115,7 +115,7 @@ class _MigrationsApplyResultImpl extends MigrationsApplyResult {
 
   /// Returns a shallow copy of this [MigrationsApplyResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   MigrationsApplyResult copyWith({
     Object? migrationsApplied = _Undefined,

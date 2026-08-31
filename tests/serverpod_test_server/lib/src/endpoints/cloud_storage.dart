@@ -14,6 +14,10 @@ class CloudStorageEndpoint extends Endpoint {
       session,
       where: (t) => Constant.bool(true),
     );
+    await CloudStorageDirectDownloadEntry.db.deleteWhere(
+      session,
+      where: (t) => Constant.bool(true),
+    );
   }
 
   Future<void> storePublicFile(
@@ -28,14 +32,14 @@ class CloudStorageEndpoint extends Endpoint {
     );
   }
 
-  Future<ByteData?> retrievePublicFile(Session session, String path) async {
+  Future<ByteData> retrievePublicFile(Session session, String path) async {
     return await session.storage.retrieveFile(
       storageId: 'public',
       path: path,
     );
   }
 
-  Future<bool?> existsPublicFile(Session session, String path) async {
+  Future<bool> existsPublicFile(Session session, String path) async {
     return await session.storage.fileExists(
       storageId: 'public',
       path: path,
@@ -49,23 +53,40 @@ class CloudStorageEndpoint extends Endpoint {
     );
   }
 
-  Future<String?> getPublicUrlForFile(Session session, String path) async {
-    var uri = await session.storage.getPublicUrl(
+  Future<String> publicDownloadUrlForFile(Session session, String path) async {
+    var uri = await session.storage.publicDownloadUrl(
       storageId: 'public',
       path: path,
     );
-    return uri?.toString();
+    return uri.toString();
   }
 
-  Future<String?> getDirectFilePostUrl(Session session, String path) async {
-    return await session.storage.createDirectFileUploadDescription(
+  Future<String> temporaryDownloadUrlForFile(
+    Session session,
+    String path,
+  ) async {
+    final uri = await session.storage.temporaryDownloadUrl(
+      storageId: 'public',
+      path: path,
+      options: const TemporaryDownloadUrlOptions(
+        expirationDuration: Duration(minutes: 5),
+      ),
+    );
+    return uri.toString();
+  }
+
+  Future<String> createUploadDescriptionForFile(
+    Session session,
+    String path,
+  ) async {
+    return await session.storage.createUploadDescription(
       storageId: 'public',
       path: path,
     );
   }
 
-  Future<bool> verifyDirectFileUpload(Session session, String path) async {
-    return await session.storage.verifyDirectFileUpload(
+  Future<bool> verifyUpload(Session session, String path) async {
+    return await session.storage.verifyUpload(
       storageId: 'public',
       path: path,
     );

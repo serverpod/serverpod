@@ -75,7 +75,7 @@ class Protocol extends _i1.SerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _i1.DeserializationClassNameNotFoundException catch (_) {
+      } on FormatException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
@@ -332,7 +332,7 @@ class Protocol extends _i1.SerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on _i1.DeserializationClassNameNotFoundException catch (_) {}
+        } on FormatException catch (_) {}
       }
     }
     return deserializeByClassName(value);

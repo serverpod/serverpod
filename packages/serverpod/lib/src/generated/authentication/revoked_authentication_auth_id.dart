@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Message sent when an authentication key id is revoked.
 abstract class RevokedAuthenticationAuthId
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   RevokedAuthenticationAuthId._({required this.authId});
 
   factory RevokedAuthenticationAuthId({required String authId}) =
@@ -32,7 +32,7 @@ abstract class RevokedAuthenticationAuthId
 
   /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   RevokedAuthenticationAuthId copyWith({String? authId});
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +49,7 @@ abstract class RevokedAuthenticationAuthId
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -59,7 +59,7 @@ class _RevokedAuthenticationAuthIdImpl extends RevokedAuthenticationAuthId {
 
   /// Returns a shallow copy of this [RevokedAuthenticationAuthId]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   RevokedAuthenticationAuthId copyWith({String? authId}) {
     return RevokedAuthenticationAuthId(authId: authId ?? this.authId);

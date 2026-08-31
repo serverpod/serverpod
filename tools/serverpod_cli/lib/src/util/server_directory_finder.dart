@@ -297,7 +297,7 @@ class ServerDirectoryFinder {
   ///
   /// Boundaries include:
   /// - Git repository root (.git directory)
-  /// - Dart/Flutter workspace (melos.yaml, pubspec.yaml with workspace definition)
+  /// - Dart/Flutter workspace (pubspec.yaml with workspace definition)
   /// - User's home directory
   ///
   /// This prevents the search from escaping the project and accessing
@@ -306,9 +306,6 @@ class ServerDirectoryFinder {
     try {
       var gitDir = Directory(p.join(dir.path, '.git'));
       if (gitDir.existsSync()) return true;
-
-      var melosFile = File(p.join(dir.path, 'melos.yaml'));
-      if (melosFile.existsSync()) return true;
 
       var pubspecFile = File(p.join(dir.path, 'pubspec.yaml'));
       if (pubspecFile.existsSync()) {

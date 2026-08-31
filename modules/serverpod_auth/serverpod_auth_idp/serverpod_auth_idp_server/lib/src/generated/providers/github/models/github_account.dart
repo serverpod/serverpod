@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured GitHub account to be used for logins.
 abstract class GitHubAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   GitHubAccount._({
     this.id,
     required this.authUserId,
@@ -29,9 +30,9 @@ abstract class GitHubAccount
   }) : created = created ?? DateTime.now();
 
   factory GitHubAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
     String? email,
     DateTime? created,
@@ -41,20 +42,20 @@ abstract class GitHubAccount
     return GitHubAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
       email: jsonSerialization['email'] as String?,
       created: jsonSerialization['created'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
     );
   }
 
@@ -63,12 +64,12 @@ abstract class GitHubAccount
   static const db = GitHubAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The user identifier given by GitHub for this account.
   String userIdentifier;
@@ -87,15 +88,15 @@ abstract class GitHubAccount
   DateTime created;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [GitHubAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   GitHubAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     String? userIdentifier,
     String? email,
     DateTime? created,
@@ -118,16 +119,16 @@ abstract class GitHubAccount
     return {};
   }
 
-  static GitHubAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static GitHubAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return GitHubAccountInclude._(authUser: authUser);
   }
 
   static GitHubAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
     GitHubAccountInclude? include,
   }) {
     return GitHubAccountIncludeList._(
@@ -142,7 +143,7 @@ abstract class GitHubAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -150,9 +151,9 @@ class _Undefined {}
 
 class _GitHubAccountImpl extends GitHubAccount {
   _GitHubAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
     String? email,
     DateTime? created,
@@ -167,20 +168,20 @@ class _GitHubAccountImpl extends GitHubAccount {
 
   /// Returns a shallow copy of this [GitHubAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   GitHubAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     String? userIdentifier,
     Object? email = _Undefined,
     DateTime? created,
   }) {
     return GitHubAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       userIdentifier: userIdentifier ?? this.userIdentifier,
@@ -190,51 +191,51 @@ class _GitHubAccountImpl extends GitHubAccount {
   }
 }
 
-class GitHubAccountUpdateTable extends _i1.UpdateTable<GitHubAccountTable> {
+class GitHubAccountUpdateTable extends _is.UpdateTable<GitHubAccountTable> {
   GitHubAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _is.ColumnValue(
         table.created,
         value,
       );
 }
 
-class GitHubAccountTable extends _i1.Table<_i1.UuidValue?> {
+class GitHubAccountTable extends _is.Table<_is.UuidValue?> {
   GitHubAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_github_account') {
     updateTable = GitHubAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    created = _i1.ColumnDateTime(
+    created = _is.ColumnDateTime(
       'created',
       this,
     );
@@ -242,13 +243,13 @@ class GitHubAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final GitHubAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The user identifier given by GitHub for this account.
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
   /// The verified email of the user, as received from GitHub.
   ///
@@ -258,26 +259,26 @@ class GitHubAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// Stored in lower-case.
   ///
   /// This may be null if the user's email is not public or verified.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _is.ColumnDateTime created;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: GitHubAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     userIdentifier,
@@ -286,7 +287,7 @@ class GitHubAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -294,23 +295,23 @@ class GitHubAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class GitHubAccountInclude extends _i1.IncludeObject {
-  GitHubAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class GitHubAccountInclude extends _is.IncludeObject {
+  GitHubAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GitHubAccount.t;
+  _is.Table<_is.UuidValue?> get table => GitHubAccount.t;
 }
 
-class GitHubAccountIncludeList extends _i1.IncludeList {
+class GitHubAccountIncludeList extends _is.IncludeList {
   GitHubAccountIncludeList._({
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -321,10 +322,10 @@ class GitHubAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GitHubAccount.t;
+  _is.Table<_is.UuidValue?> get table => GitHubAccount.t;
 }
 
 class GitHubAccountRepository {
@@ -355,16 +356,16 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<List<GitHubAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
     GitHubAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GitHubAccount>(
       where: where?.call(GitHubAccount.t),
@@ -397,15 +398,15 @@ class GitHubAccountRepository {
   /// );
   /// ```
   Future<GitHubAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
     GitHubAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GitHubAccount>(
       where: where?.call(GitHubAccount.t),
@@ -421,12 +422,12 @@ class GitHubAccountRepository {
 
   /// Finds a single [GitHubAccount] by its [id] or null if no such row exists.
   Future<GitHubAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     GitHubAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GitHubAccount>(
       id,
@@ -452,9 +453,9 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GitHubAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -470,9 +471,9 @@ class GitHubAccountRepository {
   ///
   /// The returned [GitHubAccount] will have its `id` field set.
   Future<GitHubAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GitHubAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<GitHubAccount>(
       row,
@@ -501,12 +502,12 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GitHubAccount> rows, {
-    required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
-    _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GitHubAccountTable> conflictColumns,
+    _is.ColumnSelections<GitHubAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<GitHubAccount>(
@@ -533,12 +534,12 @@ class GitHubAccountRepository {
   ///
   /// The returned [GitHubAccount] will have its `id` field set.
   Future<GitHubAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GitHubAccount row, {
-    required _i1.ColumnSelections<GitHubAccountTable> conflictColumns,
-    _i1.ColumnSelections<GitHubAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GitHubAccountTable> conflictColumns,
+    _is.ColumnSelections<GitHubAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<GitHubAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GitHubAccount>(
       row,
@@ -559,10 +560,10 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GitHubAccount> rows, {
-    _i1.ColumnSelections<GitHubAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GitHubAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<GitHubAccount>(
@@ -577,10 +578,10 @@ class GitHubAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GitHubAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GitHubAccount row, {
-    _i1.ColumnSelections<GitHubAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GitHubAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<GitHubAccount>(
       row,
@@ -592,10 +593,10 @@ class GitHubAccountRepository {
   /// Updates a single [GitHubAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GitHubAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<GitHubAccount>(
       id,
@@ -611,14 +612,14 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<GitHubAccountUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<GitHubAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GitHubAccount>(
@@ -645,11 +646,11 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GitHubAccount> rows, {
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<GitHubAccount>(
@@ -663,9 +664,9 @@ class GitHubAccountRepository {
 
   /// Deletes a single [GitHubAccount].
   Future<GitHubAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GitHubAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<GitHubAccount>(
       row,
@@ -682,11 +683,11 @@ class GitHubAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GitHubAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
-    _i1.OrderByBuilder<GitHubAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GitHubAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GitHubAccountTable> where,
+    _is.OrderByBuilder<GitHubAccountTable>? orderBy,
+    _is.OrderByListBuilder<GitHubAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GitHubAccount>(
@@ -701,10 +702,10 @@ class GitHubAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GitHubAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GitHubAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<GitHubAccount>(
       where: where?.call(GitHubAccount.t),
@@ -715,11 +716,11 @@ class GitHubAccountRepository {
 
   /// Acquires row-level locks on [GitHubAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GitHubAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GitHubAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GitHubAccount>(
       where: where(GitHubAccount.t),
@@ -736,10 +737,10 @@ class GitHubAccountAttachRowRepository {
   /// Creates a relation between the given [GitHubAccount] and [AuthUser]
   /// by setting the [GitHubAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GitHubAccount gitHubAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (gitHubAccount.id == null) {
       throw ArgumentError.notNull('gitHubAccount.id');

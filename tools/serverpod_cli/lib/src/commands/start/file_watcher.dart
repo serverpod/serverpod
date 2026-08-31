@@ -45,10 +45,6 @@ class FileChangeEvent {
   });
 }
 
-bool _isModelFile(String filePath) {
-  return spyModelFileExtensions.any((ext) => filePath.endsWith(ext));
-}
-
 bool _isWithinDartTool(String filePath) {
   return p.split(filePath).contains('.dart_tool');
 }
@@ -320,7 +316,7 @@ class FileWatcher {
             } else if (_isWithinDartTool(filePath)) {
               // Any other .dart_tool churn (build artifacts, the output dill,
               // a sibling resolution's pub artifacts) is ignored.
-            } else if (_isModelFile(filePath)) {
+            } else if (ModelHelper.isModelFile(filePath)) {
               modelFiles.add(filePath);
             } else if (p.extension(filePath) == '.dart') {
               dartFiles.add(filePath);

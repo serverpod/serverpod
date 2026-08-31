@@ -4,13 +4,14 @@ import 'dart:typed_data';
 
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod/src/generated/cloud_storage.dart';
+import 'package:serverpod/src/generated/cloud_storage_direct_download.dart';
 import 'package:serverpod/src/generated/cloud_storage_direct_upload.dart';
 
 /// The [DatabaseCloudStorage] uses the standard Serverpod database to store
 /// binary files. It's the default [CloudStorage] interface of Serverpod, but
 /// you may want to replace it with a more robust service depending on your
 /// needs, especially in your production environment.
-class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
+class DatabaseCloudStorage extends CloudStorage {
   /// Creates a new [DatabaseCloudStorage].
   DatabaseCloudStorage(super.storageId);
 
@@ -20,10 +21,9 @@ class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required String path,
   }) async {
     try {
-      await session.db.deleteWhere<CloudStorageEntry>(
-        where:
-            CloudStorageEntry.t.storageId.equals(storageId) &
-            CloudStorageEntry.t.path.equals(path),
+      await CloudStorageEntry.db.deleteWhere(
+        session,
+        where: (t) => t.storageId.equals(storageId) & t.path.equals(path),
       );
     } catch (e) {
       throw CloudStorageException('Failed to delete file. ($e)');
@@ -31,65 +31,150 @@ class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
   }
 
   @override
+  Future<ByteData> retrieveFile({
+    required Session session,
+    required String path,
+  }) async {
+    final entry = await _findAvailableEntry(session, path);
+    if (entry == null) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+    return entry.byteData;
+  }
+
+  /// Retrieves a file and its metadata.
+  ///
+  /// This method is used by Serverpod's built-in cloud storage endpoint to
+  /// avoid loading the stored file into memory once for [retrieveFile] and
+  /// again for [statFile].
+  /// Application code should normally use those methods directly.
+  Future<({ByteData file, FileStat stat})> retrieveFileWithStat({
+    required Session session,
+    required String path,
+  }) async {
+    final entry = await _findAvailableEntry(session, path);
+    if (entry == null) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+
+    return (file: entry.byteData, stat: _fileStat(entry));
+  }
+
+  @override
+  Future<FileStat> statFile({
+    required Session session,
+    required String path,
+  }) async {
+    final entry = await _findAvailableEntry(session, path);
+    if (entry == null) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+
+    return _fileStat(entry);
+  }
+
+  @override
   Future<bool> fileExists({
     required Session session,
     required String path,
   }) async {
+    final now = DateTime.now().toUtc();
     try {
-      var numRows = await session.db.count<CloudStorageEntry>(
-        where:
-            CloudStorageEntry.t.storageId.equals(storageId) &
-            CloudStorageEntry.t.path.equals(path),
+      final count = await CloudStorageEntry.db.count(
+        session,
+        where: (t) =>
+            t.storageId.equals(storageId) &
+            t.path.equals(path) &
+            t.verified.equals(true) &
+            (t.expiration.equals(null) | (t.expiration > now)),
+        limit: 1,
       );
-      return (numRows > 0);
-    } catch (e) {
-      throw CloudStorageException('Failed to check if file exists. ($e)');
+      return count > 0;
+    } catch (error) {
+      throw CloudStorageException('Failed to check if file exists. ($error)');
     }
   }
 
   @override
-  Future<Uri?> getPublicUrl({
+  Future<Uri> publicDownloadUrl({
     required Session session,
     required String path,
   }) async {
-    if (storageId != 'public') return null;
+    if (storageId != 'public') {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'public download URLs',
+      );
+    }
 
-    var exists = await fileExists(session: session, path: path);
-    if (!exists) return null;
-
-    var config = session.server.serverpod.config;
-
-    return Uri(
-      scheme: config.apiServer.publicScheme,
-      host: config.apiServer.publicHost,
-      port: config.apiServer.publicPort,
-      path: '/serverpod_cloud_storage',
-      queryParameters: {
-        'method': 'file',
-        'path': path,
-      },
-    );
+    final exists = await fileExists(session: session, path: path);
+    if (!exists) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+    return _endpointUri(session, {'method': 'file', 'path': path});
   }
 
   @override
-  Future<ByteData?> retrieveFile({
+  Future<Uri> temporaryDownloadUrl({
     required Session session,
     required String path,
+    TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   }) async {
-    var query =
-        'SELECT encode("byteData", \'base64\') AS "encoded" FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND path=${EscapedExpression(path)} AND verified=${EscapedExpression(true)}';
+    options.validate();
+
+    await CloudStorageDirectDownloadEntry.db.deleteWhere(
+      session,
+      where: (t) => t.expiration < DateTime.now().toUtc(),
+    );
+
+    final exists = await fileExists(session: session, path: path);
+    if (!exists) {
+      throw CloudStorageFileNotFoundException(
+        storageId: storageId,
+        path: path,
+      );
+    }
+
+    final entry = CloudStorageDirectDownloadEntry(
+      storageId: storageId,
+      path: path,
+      expiration: DateTime.now().toUtc().add(options.expirationDuration),
+      authKey: _generateAuthKey(),
+      downloadFileName: options.downloadFileName,
+      contentType: options.contentType,
+    );
+
+    late CloudStorageDirectDownloadEntry inserted;
 
     try {
-      var result = await session.db.unsafeQuery(query);
-      if (result.isNotEmpty) {
-        var encoded = (result.first.first as String).replaceAll('\n', '');
-        return ByteData.view(base64Decode(encoded).buffer);
-      }
-    } catch (e) {
-      throw CloudStorageException('Failed to retrieve file. ($e)');
+      inserted = await CloudStorageDirectDownloadEntry.db.insertRow(
+        session,
+        entry,
+      );
+    } catch (error) {
+      throw CloudStorageException(
+        'Failed to create a temporary download URL. ($error)',
+      );
     }
 
-    return null;
+    return _endpointUri(session, {
+      'method': 'temporaryFile',
+      'storage': storageId,
+      'path': path,
+      'key': inserted.authKey,
+    });
   }
 
   @override
@@ -97,140 +182,211 @@ class DatabaseCloudStorage extends CloudStorage with CloudStorageWithOptions {
     required Session session,
     required String path,
     required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
+    StoreFileOptions options = const StoreFileOptions(),
+  }) => _storeFile(
+    session: session,
+    path: path,
+    byteData: byteData,
+    verified: true,
+    options: options,
+  );
+
+  /// Stores a file that remains inaccessible until [verifyUpload] succeeds.
+  ///
+  /// This method is used by Serverpod's built-in upload endpoint. Application
+  /// code should normally use [storeFile].
+  Future<void> storeUnverifiedFile({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    StoreFileOptions options = const StoreFileOptions(),
+  }) => _storeFile(
+    session: session,
+    path: path,
+    byteData: byteData,
+    verified: false,
+    options: options,
+  );
+
+  Future<void> _storeFile({
+    required Session session,
+    required String path,
+    required ByteData byteData,
+    required bool verified,
+    required StoreFileOptions options,
   }) async {
-    var addedTime = DateTime.now().toUtc();
-    var encoded = byteData.base64encodedString();
-    var query =
-        'INSERT INTO serverpod_cloud_storage ("storageId", "path", "addedTime", "expiration", "verified", "byteData") VALUES (${EscapedExpression(storageId)}, ${EscapedExpression(path)}, ${EscapedExpression(addedTime)}, ${EscapedExpression(expiration?.toUtc())}, ${EscapedExpression(verified)}, $encoded) ON CONFLICT("storageId", "path") DO UPDATE SET "byteData"=$encoded, "addedTime"=${EscapedExpression(addedTime)}, "expiration"=${EscapedExpression(expiration?.toUtc())}, "verified"=${EscapedExpression(verified)}';
+    final metadata = options.metadata;
+    final entry = CloudStorageEntry(
+      storageId: storageId,
+      path: path,
+      addedTime: DateTime.now().toUtc(),
+      expiration: options.expiration?.toUtc(),
+      byteData: byteData,
+      verified: verified,
+      contentType: metadata.contentType,
+      cacheControl: metadata.cacheControl,
+      contentDisposition: metadata.contentDisposition,
+      contentEncoding: metadata.contentEncoding,
+      customMetadata: _encodeCustomMetadata(metadata.custom),
+    );
+
     try {
-      await session.db.unsafeQuery(query);
-    } catch (e) {
-      throw CloudStorageException('Failed to store file. ($e)');
+      final stored = await CloudStorageEntry.db.upsertRow(
+        session,
+        entry,
+        conflictColumns: (t) => [t.storageId, t.path],
+        updateWhere: options.preventOverwrite
+            ? (_) => Constant.bool(false)
+            : null,
+      );
+      if (stored == null) {
+        throw CloudStorageFileAlreadyExistsException(
+          storageId: storageId,
+          path: path,
+        );
+      }
+    } on CloudStorageException {
+      rethrow;
+    } catch (error) {
+      throw CloudStorageException('Failed to store file. ($error)');
     }
   }
 
   @override
-  Future<String?> createDirectFileUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
+    UploadOptions options = const UploadOptions(),
   }) async {
-    var config = session.server.serverpod.config;
-
-    var expiration = DateTime.now().add(expirationDuration);
-
-    var uploadEntry = CloudStorageDirectUploadEntry(
+    options.validate();
+    final metadata = options.metadata;
+    final uploadEntry = CloudStorageDirectUploadEntry(
       storageId: storageId,
       path: path,
-      expiration: expiration,
+      expiration: DateTime.now().toUtc().add(options.expirationDuration),
       authKey: _generateAuthKey(),
+      maxFileSize: options.maxFileSize,
+      contentLength: options.contentLength,
+      preventOverwrite: options.preventOverwrite,
+      contentType: metadata.contentType,
+      cacheControl: metadata.cacheControl,
+      contentDisposition: metadata.contentDisposition,
+      contentEncoding: metadata.contentEncoding,
+      customMetadata: _encodeCustomMetadata(metadata.custom),
     );
-    var inserted = await session.db.insertRow<CloudStorageDirectUploadEntry>(
-      uploadEntry,
-    );
+    CloudStorageDirectUploadEntry? inserted;
+    try {
+      inserted = await CloudStorageDirectUploadEntry.db.upsertRow(
+        session,
+        uploadEntry,
+        conflictColumns: (t) => [t.storageId, t.path],
+      );
+    } catch (error) {
+      throw CloudStorageException(
+        'Failed to create an upload description. ($error)',
+      );
+    }
+    if (inserted == null) {
+      throw CloudStorageException('Failed to create an upload description.');
+    }
 
-    var uri = Uri(
-      scheme: config.apiServer.publicScheme,
-      host: config.apiServer.publicHost,
-      port: config.apiServer.publicPort,
-      path: '/serverpod_cloud_storage',
-      queryParameters: {
+    return BinaryUploadDescription(
+      url: _endpointUri(session, {
         'method': 'upload',
         'storage': storageId,
         'path': path,
         'key': inserted.authKey,
-      },
-    );
-
-    var uploadDescriptionData = {
-      'url': uri.toString(),
-      'type': 'binary',
-    };
-
-    return SerializationManager.encode(uploadDescriptionData);
-  }
-
-  @override
-  Future<void> storeFileWithOptions({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-    required CloudStorageOptions options,
-  }) async {
-    if (options.preventOverwrite) {
-      final exists = await fileExists(session: session, path: path);
-      if (exists) {
-        throw CloudStorageException(
-          'File already exists at path "$path" and preventOverwrite is enabled.',
-        );
-      }
-    }
-
-    await storeFile(
-      session: session,
-      path: path,
-      byteData: byteData,
-      expiration: expiration,
-      verified: verified,
+      }),
+      fileName: path.split('/').last,
     );
   }
 
   @override
-  Future<String?> createDirectFileUploadDescriptionWithOptions({
+  Future<bool> verifyUpload({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    required CloudStorageOptions options,
   }) async {
-    if (options.contentLength != null && options.contentLength! > maxFileSize) {
-      throw CloudStorageException(
-        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
+    final now = DateTime.now().toUtc();
+    try {
+      final updated = await CloudStorageEntry.db.updateWhere(
+        session,
+        columnValues: (t) => [t.verified(true)],
+        where: (t) =>
+            t.storageId.equals(storageId) &
+            t.path.equals(path) &
+            t.verified.equals(false) &
+            (t.expiration.equals(null) | (t.expiration > now)),
       );
+      return updated.isNotEmpty;
+    } catch (e) {
+      throw CloudStorageException('Failed to verify upload. ($e)');
     }
-    return createDirectFileUploadDescription(
-      session: session,
-      path: path,
-      expirationDuration: expirationDuration,
-      maxFileSize: maxFileSize,
+  }
+
+  Future<CloudStorageEntry?> _findAvailableEntry(
+    Session session,
+    String path,
+  ) async {
+    final now = DateTime.now().toUtc();
+    try {
+      return await CloudStorageEntry.db.findFirstRow(
+        session,
+        where: (t) =>
+            t.storageId.equals(storageId) &
+            t.path.equals(path) &
+            t.verified.equals(true) &
+            (t.expiration.equals(null) | (t.expiration > now)),
+      );
+    } catch (e) {
+      throw CloudStorageException('Failed to retrieve file. ($e)');
+    }
+  }
+
+  Uri _endpointUri(Session session, Map<String, String> queryParameters) {
+    final config = session.server.serverpod.config.apiServer;
+    return Uri(
+      scheme: config.publicScheme,
+      host: config.publicHost,
+      port: config.publicPort,
+      path: '/serverpod_cloud_storage',
+      queryParameters: queryParameters,
     );
   }
 
-  /// Returns true if the specified file has been successfully uploaded to the
-  /// database cloud storage.
-  @override
-  Future<bool> verifyDirectFileUpload({
-    required Session session,
-    required String path,
-  }) async {
-    var query =
-        'SELECT verified FROM serverpod_cloud_storage WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
-    var result = await session.db.unsafeQuery(query);
-    if (result.isEmpty) return false;
+  static String? _encodeCustomMetadata(Map<String, String> metadata) =>
+      metadata.isEmpty ? null : jsonEncode(metadata);
 
-    var verified = result.first.first as bool;
-    if (verified) return false;
+  static Map<String, String> _decodeCustomMetadata(String? metadata) {
+    if (metadata == null) return const {};
+    final decoded = jsonDecode(metadata);
+    if (decoded is! Map) return const {};
+    return {
+      for (final entry in decoded.entries)
+        if (entry.key is String && entry.value is String)
+          entry.key as String: entry.value as String,
+    };
+  }
 
-    query =
-        'UPDATE serverpod_cloud_storage SET "verified"=${EscapedExpression(true)} WHERE "storageId"=${EscapedExpression(storageId)} AND "path"=${EscapedExpression(path)}';
-    await session.db.unsafeQuery(query);
-    return true;
+  FileStat _fileStat(CloudStorageEntry entry) {
+    return FileStat(
+      size: entry.byteData.lengthInBytes,
+      lastModified: entry.addedTime,
+      contentType: entry.contentType,
+      cacheControl: entry.cacheControl,
+      contentDisposition: entry.contentDisposition,
+      contentEncoding: entry.contentEncoding,
+      custom: _decodeCustomMetadata(entry.customMetadata),
+    );
   }
 
   static String _generateAuthKey() {
-    const len = 16;
     const chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    var rnd = Random();
+    final random = Random.secure();
     return String.fromCharCodes(
       Iterable.generate(
-        len,
-        (_) => chars.codeUnitAt(rnd.nextInt(chars.length)),
+        16,
+        (_) => chars.codeUnitAt(random.nextInt(chars.length)),
       ),
     );
   }

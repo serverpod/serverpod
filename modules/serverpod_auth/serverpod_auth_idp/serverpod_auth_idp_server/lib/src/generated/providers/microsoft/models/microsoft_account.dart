@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured Microsoft account to be used for logins.
 abstract class MicrosoftAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   MicrosoftAccount._({
     this.id,
     required this.authUserId,
@@ -29,9 +30,9 @@ abstract class MicrosoftAccount
   }) : created = created ?? DateTime.now();
 
   factory MicrosoftAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
     String? email,
     DateTime? created,
@@ -41,20 +42,20 @@ abstract class MicrosoftAccount
     return MicrosoftAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       userIdentifier: jsonSerialization['userIdentifier'] as String,
       email: jsonSerialization['email'] as String?,
       created: jsonSerialization['created'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
     );
   }
 
@@ -63,12 +64,12 @@ abstract class MicrosoftAccount
   static const db = MicrosoftAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The user identifier given by Microsoft for this account.
   String userIdentifier;
@@ -87,15 +88,15 @@ abstract class MicrosoftAccount
   DateTime created;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [MicrosoftAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MicrosoftAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     String? userIdentifier,
     String? email,
     DateTime? created,
@@ -118,16 +119,16 @@ abstract class MicrosoftAccount
     return {};
   }
 
-  static MicrosoftAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static MicrosoftAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return MicrosoftAccountInclude._(authUser: authUser);
   }
 
   static MicrosoftAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
     MicrosoftAccountInclude? include,
   }) {
     return MicrosoftAccountIncludeList._(
@@ -142,7 +143,7 @@ abstract class MicrosoftAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -150,9 +151,9 @@ class _Undefined {}
 
 class _MicrosoftAccountImpl extends MicrosoftAccount {
   _MicrosoftAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String userIdentifier,
     String? email,
     DateTime? created,
@@ -167,20 +168,20 @@ class _MicrosoftAccountImpl extends MicrosoftAccount {
 
   /// Returns a shallow copy of this [MicrosoftAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MicrosoftAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     String? userIdentifier,
     Object? email = _Undefined,
     DateTime? created,
   }) {
     return MicrosoftAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       userIdentifier: userIdentifier ?? this.userIdentifier,
@@ -191,51 +192,51 @@ class _MicrosoftAccountImpl extends MicrosoftAccount {
 }
 
 class MicrosoftAccountUpdateTable
-    extends _i1.UpdateTable<MicrosoftAccountTable> {
+    extends _is.UpdateTable<MicrosoftAccountTable> {
   MicrosoftAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String? value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _is.ColumnValue(
         table.created,
         value,
       );
 }
 
-class MicrosoftAccountTable extends _i1.Table<_i1.UuidValue?> {
+class MicrosoftAccountTable extends _is.Table<_is.UuidValue?> {
   MicrosoftAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_microsoft_account') {
     updateTable = MicrosoftAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    created = _i1.ColumnDateTime(
+    created = _is.ColumnDateTime(
       'created',
       this,
     );
@@ -243,13 +244,13 @@ class MicrosoftAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final MicrosoftAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The user identifier given by Microsoft for this account.
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
   /// The verified email of the user, as received from Microsoft.
   ///
@@ -259,26 +260,26 @@ class MicrosoftAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// Stored in lower-case.
   ///
   /// This may be null if the user's email is not public or verified.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _is.ColumnDateTime created;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: MicrosoftAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     userIdentifier,
@@ -287,7 +288,7 @@ class MicrosoftAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -295,23 +296,23 @@ class MicrosoftAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class MicrosoftAccountInclude extends _i1.IncludeObject {
-  MicrosoftAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class MicrosoftAccountInclude extends _is.IncludeObject {
+  MicrosoftAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => MicrosoftAccount.t;
+  _is.Table<_is.UuidValue?> get table => MicrosoftAccount.t;
 }
 
-class MicrosoftAccountIncludeList extends _i1.IncludeList {
+class MicrosoftAccountIncludeList extends _is.IncludeList {
   MicrosoftAccountIncludeList._({
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -322,10 +323,10 @@ class MicrosoftAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => MicrosoftAccount.t;
+  _is.Table<_is.UuidValue?> get table => MicrosoftAccount.t;
 }
 
 class MicrosoftAccountRepository {
@@ -356,16 +357,16 @@ class MicrosoftAccountRepository {
   /// );
   /// ```
   Future<List<MicrosoftAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
     MicrosoftAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
@@ -398,15 +399,15 @@ class MicrosoftAccountRepository {
   /// );
   /// ```
   Future<MicrosoftAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
     MicrosoftAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
@@ -422,12 +423,12 @@ class MicrosoftAccountRepository {
 
   /// Finds a single [MicrosoftAccount] by its [id] or null if no such row exists.
   Future<MicrosoftAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     MicrosoftAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MicrosoftAccount>(
       id,
@@ -453,9 +454,9 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MicrosoftAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -471,9 +472,9 @@ class MicrosoftAccountRepository {
   ///
   /// The returned [MicrosoftAccount] will have its `id` field set.
   Future<MicrosoftAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MicrosoftAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<MicrosoftAccount>(
       row,
@@ -502,12 +503,12 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MicrosoftAccount> rows, {
-    required _i1.ColumnSelections<MicrosoftAccountTable> conflictColumns,
-    _i1.ColumnSelections<MicrosoftAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MicrosoftAccountTable> conflictColumns,
+    _is.ColumnSelections<MicrosoftAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<MicrosoftAccount>(
@@ -534,12 +535,12 @@ class MicrosoftAccountRepository {
   ///
   /// The returned [MicrosoftAccount] will have its `id` field set.
   Future<MicrosoftAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MicrosoftAccount row, {
-    required _i1.ColumnSelections<MicrosoftAccountTable> conflictColumns,
-    _i1.ColumnSelections<MicrosoftAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MicrosoftAccountTable> conflictColumns,
+    _is.ColumnSelections<MicrosoftAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MicrosoftAccount>(
       row,
@@ -560,10 +561,10 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MicrosoftAccount> rows, {
-    _i1.ColumnSelections<MicrosoftAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MicrosoftAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<MicrosoftAccount>(
@@ -578,10 +579,10 @@ class MicrosoftAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MicrosoftAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MicrosoftAccount row, {
-    _i1.ColumnSelections<MicrosoftAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MicrosoftAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<MicrosoftAccount>(
       row,
@@ -593,11 +594,11 @@ class MicrosoftAccountRepository {
   /// Updates a single [MicrosoftAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MicrosoftAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<MicrosoftAccount>(
       id,
@@ -613,15 +614,15 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<MicrosoftAccountUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
+    required _is.WhereExpressionBuilder<MicrosoftAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MicrosoftAccount>(
@@ -648,11 +649,11 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MicrosoftAccount> rows, {
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<MicrosoftAccount>(
@@ -666,9 +667,9 @@ class MicrosoftAccountRepository {
 
   /// Deletes a single [MicrosoftAccount].
   Future<MicrosoftAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MicrosoftAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<MicrosoftAccount>(
       row,
@@ -685,11 +686,11 @@ class MicrosoftAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MicrosoftAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
-    _i1.OrderByBuilder<MicrosoftAccountTable>? orderBy,
-    _i1.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MicrosoftAccountTable> where,
+    _is.OrderByBuilder<MicrosoftAccountTable>? orderBy,
+    _is.OrderByListBuilder<MicrosoftAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MicrosoftAccount>(
@@ -704,10 +705,10 @@ class MicrosoftAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MicrosoftAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MicrosoftAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<MicrosoftAccount>(
       where: where?.call(MicrosoftAccount.t),
@@ -718,11 +719,11 @@ class MicrosoftAccountRepository {
 
   /// Acquires row-level locks on [MicrosoftAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MicrosoftAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MicrosoftAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MicrosoftAccount>(
       where: where(MicrosoftAccount.t),
@@ -739,10 +740,10 @@ class MicrosoftAccountAttachRowRepository {
   /// Creates a relation between the given [MicrosoftAccount] and [AuthUser]
   /// by setting the [MicrosoftAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MicrosoftAccount microsoftAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (microsoftAccount.id == null) {
       throw ArgumentError.notNull('microsoftAccount.id');

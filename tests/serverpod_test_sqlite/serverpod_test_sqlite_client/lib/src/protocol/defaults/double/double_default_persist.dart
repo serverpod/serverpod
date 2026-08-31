@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class DoubleDefaultPersist
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DoubleDefaultPersist._({
     this.id,
     this.doubleDefaultPersist,
@@ -43,7 +43,7 @@ abstract class DoubleDefaultPersist
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DoubleDefaultPersist copyWith({
     int? id,
     double? doubleDefaultPersist,
@@ -70,7 +70,7 @@ abstract class DoubleDefaultPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -87,7 +87,7 @@ class _DoubleDefaultPersistImpl extends DoubleDefaultPersist {
 
   /// Returns a shallow copy of this [DoubleDefaultPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DoubleDefaultPersist copyWith({
     Object? id = _Undefined,

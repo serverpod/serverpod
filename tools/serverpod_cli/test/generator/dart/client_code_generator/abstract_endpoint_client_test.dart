@@ -467,7 +467,7 @@ void main() {
           expect(
             codeMap[expectedFileName],
             matches(
-              RegExp('$concreteEndpoint extends _i[0-9]+[.]$baseEndpoint'),
+              RegExp('$concreteEndpoint extends _i[a-z0-9]+[.]$baseEndpoint'),
             ),
           );
         });
@@ -623,6 +623,65 @@ void main() {
           },
         );
       });
+    },
+  );
+
+  group(
+    'Given protocol definition with an endpoint extending an abstract endpoint '
+    'from the serverpod package when generating client file',
+    () {
+      var parentEndpoint = EndpointDefinitionBuilder()
+          .withClassName('InsightsDatabaseEndpoint')
+          .withName('insightsDatabase')
+          .withFilePath(
+            'src/endpoints/insights_database.dart',
+            externalServerPackage: 'serverpod',
+          )
+          .withIsAbstract()
+          .build();
+
+      var concreteEndpoint = EndpointDefinitionBuilder()
+          .withClassName('MyInsightsDatabaseEndpoint')
+          .withName('myInsightsDatabase')
+          .withExtends(parentEndpoint)
+          .build();
+
+      var protocolDefinition = ProtocolDefinition(
+        endpoints: [concreteEndpoint],
+        models: [],
+        futureCalls: [],
+      );
+
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: protocolDefinition,
+        config: config,
+      );
+
+      late var clientCompilationUnit = parseString(
+        content: codeMap[expectedFileName]!,
+      ).unit;
+
+      test(
+        'then the endpoint class extends the parent class from the service '
+        'client package.',
+        () {
+          var endpointClass = CompilationUnitHelpers.tryFindClassDeclaration(
+            clientCompilationUnit,
+            name: 'EndpointMyInsightsDatabase',
+          );
+          expect(endpointClass, isNotNull);
+          expect(
+            endpointClass!.extendsClause?.superclass.toSource(),
+            endsWith('EndpointInsightsDatabase'),
+          );
+          expect(
+            codeMap[expectedFileName],
+            contains(
+              "import 'package:serverpod_service_client/serverpod_service_client.dart'",
+            ),
+          );
+        },
+      );
     },
   );
 }

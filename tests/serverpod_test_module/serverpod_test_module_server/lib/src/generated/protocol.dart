@@ -11,18 +11,18 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
-import 'dynamic_on_module.dart' as _i3;
-import 'generated/polymorphism/grandchild.dart' as _i4;
-import 'generated/polymorphism/child.dart' as _i5;
-import 'generated/polymorphism/parent.dart' as _i6;
-import 'module_class.dart' as _i7;
-import 'module_feature/models/my_feature_model.dart' as _i8;
-import 'module_streaming_class.dart' as _i9;
-import 'project_streaming_class.dart' as _i10;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_test_module_server/src/generated/module_streaming_class.dart'
-    as _i11;
+    as _irv1xa50;
+import 'dynamic_on_module.dart' as _ircaal6o;
+import 'generated/polymorphism/child.dart' as _in13ph1t;
+import 'generated/polymorphism/grandchild.dart' as _i3gtzugh;
+import 'generated/polymorphism/parent.dart' as _is5pt2rl;
+import 'module_class.dart' as _izah8b1s;
+import 'module_feature/models/my_feature_model.dart' as _iya6t7ee;
+import 'module_streaming_class.dart' as _idp5674x;
+import 'project_streaming_class.dart' as _iqrw583n;
 export 'dynamic_on_module.dart';
 export 'generated/polymorphism/grandchild.dart';
 export 'generated/polymorphism/child.dart';
@@ -32,20 +32,20 @@ export 'module_feature/models/my_feature_model.dart';
 export 'module_streaming_class.dart';
 export 'project_streaming_class.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [];
+  static List<_isp.TableDefinition> get targetTableDefinitions => [];
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _is.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -72,120 +72,131 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _i1.DeserializationClassNameNotFoundException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i3.DynamicOnModule) {
-      return _i3.DynamicOnModule.fromJson(data) as T;
+    if (t == _ircaal6o.DynamicOnModule) {
+      return _ircaal6o.DynamicOnModule.fromJson(data) as T;
     }
-    if (t == _i4.ModulePolymorphicGrandChild) {
-      return _i4.ModulePolymorphicGrandChild.fromJson(data) as T;
+    if (t == _i3gtzugh.ModulePolymorphicGrandChild) {
+      return _i3gtzugh.ModulePolymorphicGrandChild.fromJson(data) as T;
     }
-    if (t == _i5.ModulePolymorphicChild) {
-      return _i5.ModulePolymorphicChild.fromJson(data) as T;
+    if (t == _in13ph1t.ModulePolymorphicChild) {
+      return _in13ph1t.ModulePolymorphicChild.fromJson(data) as T;
     }
-    if (t == _i6.ModulePolymorphicParent) {
-      return _i6.ModulePolymorphicParent.fromJson(data) as T;
+    if (t == _is5pt2rl.ModulePolymorphicParent) {
+      return _is5pt2rl.ModulePolymorphicParent.fromJson(data) as T;
     }
-    if (t == _i7.ModuleClass) {
-      return _i7.ModuleClass.fromJson(data) as T;
+    if (t == _izah8b1s.ModuleClass) {
+      return _izah8b1s.ModuleClass.fromJson(data) as T;
     }
-    if (t == _i8.MyModuleFeatureModel) {
-      return _i8.MyModuleFeatureModel.fromJson(data) as T;
+    if (t == _iya6t7ee.MyModuleFeatureModel) {
+      return _iya6t7ee.MyModuleFeatureModel.fromJson(data) as T;
     }
-    if (t == _i9.ModuleStreamingClass) {
-      return _i9.ModuleStreamingClass.fromJson(data) as T;
+    if (t == _idp5674x.ModuleStreamingClass) {
+      return _idp5674x.ModuleStreamingClass.fromJson(data) as T;
     }
-    if (t == _i10.ProjectStreamingClass) {
-      return _i10.ProjectStreamingClass.fromJson(data) as T;
+    if (t == _iqrw583n.ProjectStreamingClass) {
+      return _iqrw583n.ProjectStreamingClass.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.DynamicOnModule?>()) {
-      return (data != null ? _i3.DynamicOnModule.fromJson(data) : null) as T;
+    if (t == _is.getType<_ircaal6o.DynamicOnModule?>()) {
+      return (data != null ? _ircaal6o.DynamicOnModule.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i4.ModulePolymorphicGrandChild?>()) {
+    if (t == _is.getType<_i3gtzugh.ModulePolymorphicGrandChild?>()) {
       return (data != null
-              ? _i4.ModulePolymorphicGrandChild.fromJson(data)
+              ? _i3gtzugh.ModulePolymorphicGrandChild.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i5.ModulePolymorphicChild?>()) {
-      return (data != null ? _i5.ModulePolymorphicChild.fromJson(data) : null)
+    if (t == _is.getType<_in13ph1t.ModulePolymorphicChild?>()) {
+      return (data != null
+              ? _in13ph1t.ModulePolymorphicChild.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i6.ModulePolymorphicParent?>()) {
-      return (data != null ? _i6.ModulePolymorphicParent.fromJson(data) : null)
+    if (t == _is.getType<_is5pt2rl.ModulePolymorphicParent?>()) {
+      return (data != null
+              ? _is5pt2rl.ModulePolymorphicParent.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i7.ModuleClass?>()) {
-      return (data != null ? _i7.ModuleClass.fromJson(data) : null) as T;
+    if (t == _is.getType<_izah8b1s.ModuleClass?>()) {
+      return (data != null ? _izah8b1s.ModuleClass.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i8.MyModuleFeatureModel?>()) {
-      return (data != null ? _i8.MyModuleFeatureModel.fromJson(data) : null)
+    if (t == _is.getType<_iya6t7ee.MyModuleFeatureModel?>()) {
+      return (data != null
+              ? _iya6t7ee.MyModuleFeatureModel.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i9.ModuleStreamingClass?>()) {
-      return (data != null ? _i9.ModuleStreamingClass.fromJson(data) : null)
+    if (t == _is.getType<_idp5674x.ModuleStreamingClass?>()) {
+      return (data != null
+              ? _idp5674x.ModuleStreamingClass.fromJson(data)
+              : null)
           as T;
     }
-    if (t == _i1.getType<_i10.ProjectStreamingClass?>()) {
-      return (data != null ? _i10.ProjectStreamingClass.fromJson(data) : null)
+    if (t == _is.getType<_iqrw583n.ProjectStreamingClass?>()) {
+      return (data != null
+              ? _iqrw583n.ProjectStreamingClass.fromJson(data)
+              : null)
           as T;
     }
     if (t == dynamic) {
       return deserializeDynamicFieldValue(data) as T;
     }
-    if (t == _i1.getType<(bool,)?>()) {
+    if (t == _is.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(int?, _i11.ModuleStreamingClass?)>()) {
+    if (t == _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>()) {
       return (
             ((data as Map)['p'] as List)[0] == null
                 ? null
                 : deserialize<int>(data['p'][0]),
             ((data)['p'] as List)[1] == null
                 ? null
-                : deserialize<_i11.ModuleStreamingClass>(data['p'][1]),
+                : deserialize<_irv1xa50.ModuleStreamingClass>(data['p'][1]),
           )
           as T;
     }
-    if (t == _i1.getType<(bool,)?>()) {
+    if (t == _is.getType<(bool,)?>()) {
       return (data == null)
           ? null as T
           : (deserialize<bool>(((data as Map)['p'] as List)[0]),) as T;
     }
-    if (t == _i1.getType<(int?, _i11.ModuleStreamingClass?)>()) {
+    if (t == _is.getType<(int?, _irv1xa50.ModuleStreamingClass?)>()) {
       return (
             ((data as Map)['p'] as List)[0] == null
                 ? null
                 : deserialize<int>(data['p'][0]),
             ((data)['p'] as List)[1] == null
                 ? null
-                : deserialize<_i11.ModuleStreamingClass>(data['p'][1]),
+                : deserialize<_irv1xa50.ModuleStreamingClass>(data['p'][1]),
           )
           as T;
     }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i3.DynamicOnModule => 'DynamicOnModule',
-      _i4.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
-      _i5.ModulePolymorphicChild => 'ModulePolymorphicChild',
-      _i6.ModulePolymorphicParent => 'ModulePolymorphicParent',
-      _i7.ModuleClass => 'ModuleClass',
-      _i8.MyModuleFeatureModel => 'MyModuleFeatureModel',
-      _i9.ModuleStreamingClass => 'ModuleStreamingClass',
-      _i10.ProjectStreamingClass => 'ProjectStreamingClass',
+      _ircaal6o.DynamicOnModule => 'DynamicOnModule',
+      _i3gtzugh.ModulePolymorphicGrandChild => 'ModulePolymorphicGrandChild',
+      _in13ph1t.ModulePolymorphicChild => 'ModulePolymorphicChild',
+      _is5pt2rl.ModulePolymorphicParent => 'ModulePolymorphicParent',
+      _izah8b1s.ModuleClass => 'ModuleClass',
+      _iya6t7ee.MyModuleFeatureModel => 'MyModuleFeatureModel',
+      _idp5674x.ModuleStreamingClass => 'ModuleStreamingClass',
+      _iqrw583n.ProjectStreamingClass => 'ProjectStreamingClass',
       _ => null,
     };
   }
@@ -203,27 +214,27 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i3.DynamicOnModule():
+      case _ircaal6o.DynamicOnModule():
         return 'DynamicOnModule';
-      case _i4.ModulePolymorphicGrandChild():
+      case _i3gtzugh.ModulePolymorphicGrandChild():
         return 'ModulePolymorphicGrandChild';
-      case _i5.ModulePolymorphicChild():
+      case _in13ph1t.ModulePolymorphicChild():
         return 'ModulePolymorphicChild';
-      case _i6.ModulePolymorphicParent():
+      case _is5pt2rl.ModulePolymorphicParent():
         return 'ModulePolymorphicParent';
-      case _i7.ModuleClass():
+      case _izah8b1s.ModuleClass():
         return 'ModuleClass';
-      case _i8.MyModuleFeatureModel():
+      case _iya6t7ee.MyModuleFeatureModel():
         return 'MyModuleFeatureModel';
-      case _i9.ModuleStreamingClass():
+      case _idp5674x.ModuleStreamingClass():
         return 'ModuleStreamingClass';
-      case _i10.ProjectStreamingClass():
+      case _iqrw583n.ProjectStreamingClass():
         return 'ProjectStreamingClass';
     }
-    if (data is (int?, _i11.ModuleStreamingClass?)) {
+    if (data is (int?, _irv1xa50.ModuleStreamingClass?)) {
       return '(int?,ModuleStreamingClass?)';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -237,35 +248,35 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'DynamicOnModule') {
-      return deserialize<_i3.DynamicOnModule>(data['data']);
+      return deserialize<_ircaal6o.DynamicOnModule>(data['data']);
     }
     if (dataClassName == 'ModulePolymorphicGrandChild') {
-      return deserialize<_i4.ModulePolymorphicGrandChild>(data['data']);
+      return deserialize<_i3gtzugh.ModulePolymorphicGrandChild>(data['data']);
     }
     if (dataClassName == 'ModulePolymorphicChild') {
-      return deserialize<_i5.ModulePolymorphicChild>(data['data']);
+      return deserialize<_in13ph1t.ModulePolymorphicChild>(data['data']);
     }
     if (dataClassName == 'ModulePolymorphicParent') {
-      return deserialize<_i6.ModulePolymorphicParent>(data['data']);
+      return deserialize<_is5pt2rl.ModulePolymorphicParent>(data['data']);
     }
     if (dataClassName == 'ModuleClass') {
-      return deserialize<_i7.ModuleClass>(data['data']);
+      return deserialize<_izah8b1s.ModuleClass>(data['data']);
     }
     if (dataClassName == 'MyModuleFeatureModel') {
-      return deserialize<_i8.MyModuleFeatureModel>(data['data']);
+      return deserialize<_iya6t7ee.MyModuleFeatureModel>(data['data']);
     }
     if (dataClassName == 'ModuleStreamingClass') {
-      return deserialize<_i9.ModuleStreamingClass>(data['data']);
+      return deserialize<_idp5674x.ModuleStreamingClass>(data['data']);
     }
     if (dataClassName == 'ProjectStreamingClass') {
-      return deserialize<_i10.ProjectStreamingClass>(data['data']);
+      return deserialize<_iqrw583n.ProjectStreamingClass>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     if (dataClassName == '(int?,ModuleStreamingClass?)') {
-      return deserialize<(int?, _i11.ModuleStreamingClass?)>(data['data']);
+      return deserialize<(int?, _irv1xa50.ModuleStreamingClass?)>(data['data']);
     }
     return super.deserializeByClassName(data);
   }
@@ -288,8 +299,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _is.SerializationManager.toEncodableForProtocol(wrapped)
+          : _is.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -323,16 +334,16 @@ class Protocol extends _i1.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on _i1.DeserializationClassNameNotFoundException catch (_) {}
+        } on _is.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
@@ -341,7 +352,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -378,7 +389,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (record == null) {
       return null;
     }
-    if (record is (int?, _i11.ModuleStreamingClass?)) {
+    if (record is (int?, _irv1xa50.ModuleStreamingClass?)) {
       return {
         "p": [
           record.$1,
@@ -394,7 +405,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       };
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _isp.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

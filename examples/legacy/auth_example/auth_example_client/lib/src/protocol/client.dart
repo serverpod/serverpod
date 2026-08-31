@@ -10,20 +10,20 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'dart:async' as _i2;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i3;
-import 'package:http/http.dart' as _i4;
-import 'protocol.dart' as _i5;
+import 'dart:async' as _ida;
+import 'package:http/http.dart' as _i85jenna;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i312scxx;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'protocol.dart' as _il2as5qe;
 
 /// {@category Endpoint}
-class EndpointExample extends _i1.EndpointRef {
-  EndpointExample(_i1.EndpointCaller caller) : super(caller);
+class EndpointExample extends _isc.EndpointRef {
+  EndpointExample(_isc.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'example';
 
-  _i2.Future<String> hello(String name) => caller.callServerEndpoint<String>(
+  _ida.Future<String> hello(String name) => caller.callServerEndpoint<String>(
     'example',
     'hello',
     {'name': name},
@@ -32,30 +32,30 @@ class EndpointExample extends _i1.EndpointRef {
 
 class Modules {
   Modules(Client client) {
-    auth = _i3.Caller(client);
+    auth = _i312scxx.Caller(client);
   }
 
-  late final _i3.Caller auth;
+  late final _i312scxx.Caller auth;
 }
 
-class Client extends _i1.ServerpodClientShared {
+class Client extends _isc.ServerpodClientShared {
   Client(
     String host, {
     dynamic securityContext,
     Duration? streamingConnectionTimeout,
     Duration? connectionTimeout,
     Function(
-      _i1.MethodCallContext,
+      _isc.MethodCallContext,
       Object,
       StackTrace,
     )?
     onFailedCall,
-    Function(_i1.MethodCallContext)? onSucceededCall,
+    Function(_isc.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i4.Client? httpClientOverride,
+    _i85jenna.Client? httpClientOverride,
   }) : super(
          host,
-         _i5.Protocol(),
+         _il2as5qe.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -74,10 +74,10 @@ class Client extends _i1.ServerpodClientShared {
   late final Modules modules;
 
   @override
-  Map<String, _i1.EndpointRef> get endpointRefLookup => {'example': example};
+  Map<String, _isc.EndpointRef> get endpointRefLookup => {'example': example};
 
   @override
-  Map<String, _i1.ModuleEndpointCaller> get moduleLookup => {
+  Map<String, _isc.ModuleEndpointCaller> get moduleLookup => {
     'auth': modules.auth,
   };
 }

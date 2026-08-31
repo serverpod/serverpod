@@ -120,10 +120,37 @@ class JwtAdmin {
       throw RefreshTokenMalformedServerException();
     }
 
+    if (transaction != null) {
+      return _rotateLockedRefreshToken(session, refreshTokenData, transaction);
+    }
+
+    // The reuse-revocation delete must survive the rotation failure, so
+    // failures are returned from the transaction (committing the delete) and
+    // thrown afterwards.
+    final Object outcome = await session.db.transaction((final tx) async {
+      try {
+        return await _rotateLockedRefreshToken(session, refreshTokenData, tx);
+      } on RefreshTokenServerException catch (e) {
+        return e;
+      }
+    });
+    if (outcome is TokenPair) return outcome;
+    throw outcome as RefreshTokenServerException;
+  }
+
+  /// Rotates the refresh token under a `FOR UPDATE` row lock, so concurrent
+  /// rotations of the same token serialize and only the first one can match
+  /// the current rotating secret.
+  Future<TokenPair> _rotateLockedRefreshToken(
+    final Session session,
+    final RefreshTokenStringData refreshTokenData,
+    final Transaction transaction,
+  ) async {
     var refreshTokenRow = await RefreshToken.db.findById(
       session,
       refreshTokenData.id,
       transaction: transaction,
+      lockMode: LockMode.forUpdate,
     );
 
     if (refreshTokenRow == null ||
@@ -161,6 +188,33 @@ class JwtAdmin {
         refreshTokenId: refreshTokenRow.id!,
         authUserId: refreshTokenRow.authUserId,
       );
+    }
+
+    // Checked only once the caller has proven possession of the refresh token,
+    // so this does not become an oracle for the state of an account whose
+    // token the caller does not hold.
+    //
+    // A rotation re-establishes access for another full refresh token
+    // lifetime, so `blocked` has to be consulted here and not only in
+    // `createTokens` - otherwise blocking a user leaves any session they
+    // already hold running indefinitely. The token is deliberately left in
+    // place rather than deleted, so that lifting the block restores it.
+    //
+    // Read directly rather than through `AuthUsers.get`, which opens a
+    // transaction of its own. Rotations are not serialised, so nesting one
+    // here corrupts the savepoint stack when several run on the same session.
+    final authUser = await AuthUser.db.findById(
+      session,
+      refreshTokenRow.authUserId,
+      transaction: transaction,
+    );
+
+    if (authUser == null) {
+      throw AuthUserNotFoundException();
+    }
+
+    if (authUser.blocked) {
+      throw AuthUserBlockedException();
     }
 
     final newSecret = _generateRefreshTokenRotatingSecret();

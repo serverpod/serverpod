@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// The log filter is used when searching for specific log entries.
 abstract class SessionLogFilter
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SessionLogFilter._({
     this.endpoint,
     this.method,
@@ -44,16 +44,16 @@ abstract class SessionLogFilter
       endpoint: jsonSerialization['endpoint'] as String?,
       method: jsonSerialization['method'] as String?,
       futureCall: jsonSerialization['futureCall'] as String?,
-      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
-      error: _i1.BoolJsonExtension.fromJson(jsonSerialization['error']),
-      open: _i1.BoolJsonExtension.fromJson(jsonSerialization['open']),
+      slow: _isc.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+      error: _isc.BoolJsonExtension.fromJson(jsonSerialization['error']),
+      open: _isc.BoolJsonExtension.fromJson(jsonSerialization['open']),
       lastSessionLogId: jsonSerialization['lastSessionLogId'] as int?,
       startTime: jsonSerialization['startTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['startTime']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['startTime']),
       endTime: jsonSerialization['endTime'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['endTime']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['endTime']),
     );
   }
 
@@ -86,7 +86,7 @@ abstract class SessionLogFilter
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   SessionLogFilter copyWith({
     String? endpoint,
     String? method,
@@ -132,7 +132,7 @@ abstract class SessionLogFilter
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -163,7 +163,7 @@ class _SessionLogFilterImpl extends SessionLogFilter {
 
   /// Returns a shallow copy of this [SessionLogFilter]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   SessionLogFilter copyWith({
     Object? endpoint = _Undefined,

@@ -11,8 +11,9 @@
 
 part of 'future_call_scheduling.dart';
 
-abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class IntervalFutureCallScheduling
+    extends _il2as5qe.FutureCallScheduling
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   IntervalFutureCallScheduling._({
     required this.interval,
     this.start,
@@ -27,12 +28,12 @@ abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
     Map<String, dynamic> jsonSerialization,
   ) {
     return IntervalFutureCallScheduling(
-      interval: _i2.DurationJsonExtension.fromJson(
+      interval: _is.DurationJsonExtension.fromJson(
         jsonSerialization['interval'],
       ),
       start: jsonSerialization['start'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['start']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['start']),
     );
   }
 
@@ -45,7 +46,7 @@ abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
   /// Returns a shallow copy of this [IntervalFutureCallScheduling]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_is.useResult
   IntervalFutureCallScheduling copyWith({
     Duration? interval,
     DateTime? start,
@@ -70,7 +71,7 @@ abstract class IntervalFutureCallScheduling extends _i1.FutureCallScheduling
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -85,7 +86,7 @@ class _IntervalFutureCallSchedulingImpl extends IntervalFutureCallScheduling {
 
   /// Returns a shallow copy of this [IntervalFutureCallScheduling]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_is.useResult
   @override
   IntervalFutureCallScheduling copyWith({
     Duration? interval,

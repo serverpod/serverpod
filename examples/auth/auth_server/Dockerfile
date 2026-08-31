@@ -1,5 +1,5 @@
 # Build stage
-FROM dart:3.10.3 AS build
+FROM dart:3.12.2 AS build
 WORKDIR /app
 COPY . .
 

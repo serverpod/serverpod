@@ -37,8 +37,8 @@ void main() {
 
   group('Given the Serverpod Cloud email service', () {
     test(
-      'when sending with an invalid token then it throws a '
-      'ServerpodCloudEmailException with status 401',
+      'when sending with an invalid token '
+      'then it throws a ServerpodCloudEmailException with status 401',
       () async {
         await expectLater(
           () => client.sendEmail(
@@ -60,8 +60,8 @@ void main() {
     );
 
     test(
-      'when sending with an invalid auth code then it throws a '
-      'ServerpodCloudEmailException with status 400',
+      'when sending with an invalid auth code '
+      'then it throws a ServerpodCloudEmailException with status 400',
       () async {
         await expectLater(
           () => client.sendEmail(

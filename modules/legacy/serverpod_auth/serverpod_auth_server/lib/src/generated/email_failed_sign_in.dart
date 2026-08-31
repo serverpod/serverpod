@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Database table for tracking failed email sign-ins. Saves IP-address, time,
 /// and email to be prevent brute force attacks.
 abstract class EmailFailedSignIn
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EmailFailedSignIn._({
     this.id,
     required this.email,
@@ -34,7 +34,7 @@ abstract class EmailFailedSignIn
     return EmailFailedSignIn(
       id: jsonSerialization['id'] as int?,
       email: jsonSerialization['email'] as String,
-      time: _i1.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
+      time: _is.DateTimeJsonExtension.fromJson(jsonSerialization['time']),
       ipAddress: jsonSerialization['ipAddress'] as String,
     );
   }
@@ -56,11 +56,11 @@ abstract class EmailFailedSignIn
   String ipAddress;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmailFailedSignIn copyWith({
     int? id,
     String? email,
@@ -94,11 +94,11 @@ abstract class EmailFailedSignIn
   }
 
   static EmailFailedSignInIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
     EmailFailedSignInInclude? include,
   }) {
     return EmailFailedSignInIncludeList._(
@@ -113,7 +113,7 @@ abstract class EmailFailedSignIn
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -134,7 +134,7 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
 
   /// Returns a shallow copy of this [EmailFailedSignIn]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmailFailedSignIn copyWith({
     Object? id = _Undefined,
@@ -152,38 +152,38 @@ class _EmailFailedSignInImpl extends EmailFailedSignIn {
 }
 
 class EmailFailedSignInUpdateTable
-    extends _i1.UpdateTable<EmailFailedSignInTable> {
+    extends _is.UpdateTable<EmailFailedSignInTable> {
   EmailFailedSignInUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> time(DateTime value) => _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> time(DateTime value) => _is.ColumnValue(
     table.time,
     value,
   );
 
-  _i1.ColumnValue<String, String> ipAddress(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> ipAddress(String value) => _is.ColumnValue(
     table.ipAddress,
     value,
   );
 }
 
-class EmailFailedSignInTable extends _i1.Table<int?> {
+class EmailFailedSignInTable extends _is.Table<int?> {
   EmailFailedSignInTable({super.tableRelation})
     : super(tableName: 'serverpod_email_failed_sign_in') {
     updateTable = EmailFailedSignInUpdateTable(this);
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    time = _i1.ColumnDateTime(
+    time = _is.ColumnDateTime(
       'time',
       this,
     );
-    ipAddress = _i1.ColumnString(
+    ipAddress = _is.ColumnString(
       'ipAddress',
       this,
     );
@@ -192,16 +192,16 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
   late final EmailFailedSignInUpdateTable updateTable;
 
   /// Email attempting to sign in with.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The time of the sign in attempt.
-  late final _i1.ColumnDateTime time;
+  late final _is.ColumnDateTime time;
 
   /// The IP address of the sign in attempt.
-  late final _i1.ColumnString ipAddress;
+  late final _is.ColumnString ipAddress;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     email,
     time,
@@ -209,19 +209,19 @@ class EmailFailedSignInTable extends _i1.Table<int?> {
   ];
 }
 
-class EmailFailedSignInInclude extends _i1.IncludeObject {
+class EmailFailedSignInInclude extends _is.IncludeObject {
   EmailFailedSignInInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmailFailedSignIn.t;
+  _is.Table<int?> get table => EmailFailedSignIn.t;
 }
 
-class EmailFailedSignInIncludeList extends _i1.IncludeList {
+class EmailFailedSignInIncludeList extends _is.IncludeList {
   EmailFailedSignInIncludeList._({
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -232,10 +232,10 @@ class EmailFailedSignInIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmailFailedSignIn.t;
+  _is.Table<int?> get table => EmailFailedSignIn.t;
 }
 
 class EmailFailedSignInRepository {
@@ -264,15 +264,15 @@ class EmailFailedSignInRepository {
   /// );
   /// ```
   Future<List<EmailFailedSignIn>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
@@ -304,14 +304,14 @@ class EmailFailedSignInRepository {
   /// );
   /// ```
   Future<EmailFailedSignIn?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
@@ -326,11 +326,11 @@ class EmailFailedSignInRepository {
 
   /// Finds a single [EmailFailedSignIn] by its [id] or null if no such row exists.
   Future<EmailFailedSignIn?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmailFailedSignIn>(
       id,
@@ -355,9 +355,9 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -373,9 +373,9 @@ class EmailFailedSignInRepository {
   ///
   /// The returned [EmailFailedSignIn] will have its `id` field set.
   Future<EmailFailedSignIn> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailFailedSignIn row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmailFailedSignIn>(
       row,
@@ -404,12 +404,12 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
-    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
-    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _is.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmailFailedSignIn>(
@@ -436,12 +436,12 @@ class EmailFailedSignInRepository {
   ///
   /// The returned [EmailFailedSignIn] will have its `id` field set.
   Future<EmailFailedSignIn?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailFailedSignIn row, {
-    required _i1.ColumnSelections<EmailFailedSignInTable> conflictColumns,
-    _i1.ColumnSelections<EmailFailedSignInTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmailFailedSignInTable> conflictColumns,
+    _is.ColumnSelections<EmailFailedSignInTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmailFailedSignIn>(
       row,
@@ -462,10 +462,10 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
-    _i1.ColumnSelections<EmailFailedSignInTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailFailedSignInTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmailFailedSignIn>(
@@ -480,10 +480,10 @@ class EmailFailedSignInRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmailFailedSignIn> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailFailedSignIn row, {
-    _i1.ColumnSelections<EmailFailedSignInTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmailFailedSignInTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmailFailedSignIn>(
       row,
@@ -495,11 +495,11 @@ class EmailFailedSignInRepository {
   /// Updates a single [EmailFailedSignIn] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmailFailedSignIn?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+    required _is.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmailFailedSignIn>(
       id,
@@ -515,15 +515,15 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmailFailedSignInUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
+    required _is.WhereExpressionBuilder<EmailFailedSignInTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmailFailedSignIn>(
@@ -550,11 +550,11 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmailFailedSignIn> rows, {
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmailFailedSignIn>(
@@ -568,9 +568,9 @@ class EmailFailedSignInRepository {
 
   /// Deletes a single [EmailFailedSignIn].
   Future<EmailFailedSignIn> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmailFailedSignIn row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmailFailedSignIn>(
       row,
@@ -587,11 +587,11 @@ class EmailFailedSignInRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmailFailedSignIn>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
-    _i1.OrderByBuilder<EmailFailedSignInTable>? orderBy,
-    _i1.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailFailedSignInTable> where,
+    _is.OrderByBuilder<EmailFailedSignInTable>? orderBy,
+    _is.OrderByListBuilder<EmailFailedSignInTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmailFailedSignIn>(
@@ -606,10 +606,10 @@ class EmailFailedSignInRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmailFailedSignInTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmailFailedSignInTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmailFailedSignIn>(
       where: where?.call(EmailFailedSignIn.t),
@@ -620,11 +620,11 @@ class EmailFailedSignInRepository {
 
   /// Acquires row-level locks on [EmailFailedSignIn] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmailFailedSignInTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmailFailedSignInTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmailFailedSignIn>(
       where: where(EmailFailedSignIn.t),

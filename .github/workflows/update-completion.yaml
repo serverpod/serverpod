@@ -29,18 +29,13 @@ jobs:
 
       - uses: ./.github/actions/use-flutter
         with:
-          flutter-version: "3.44.4"
+          flutter-version: "3.47.0"
           cache: true
-
-      - name: Install melos
-        uses: ./.github/actions/retry
-        with:
-          command: dart pub global activate melos
 
       - name: Bootstrap
         uses: ./.github/actions/retry
         with:
-          command: melos bootstrap
+          command: dart pub get
 
       - name: Generate completion specs
         run: util/generate_completion

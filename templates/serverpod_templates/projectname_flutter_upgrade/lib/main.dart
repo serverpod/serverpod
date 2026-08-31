@@ -46,6 +46,16 @@ void main() async {
   runApp(const MyApp());
 }
 
+/// Builds a theme for the given [brightness].
+ThemeData _buildTheme(Brightness brightness) {
+  return ThemeData(
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: Colors.blue,
+      brightness: brightness,
+    ),
+  );
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -53,7 +63,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Serverpod Demo',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: _buildTheme(Brightness.light),
+      darkTheme: _buildTheme(Brightness.dark),
+      themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Serverpod Example'),
     );
   }

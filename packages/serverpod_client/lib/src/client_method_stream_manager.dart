@@ -154,6 +154,7 @@ final class ClientMethodStreamManager {
       args: connectionDetails.args,
       inputStreams: parameterStreams,
       authentication: await connectionDetails.authKeyProvider?.authHeaderValue,
+      authMode: connectionDetails.webAuthMode,
     );
 
     _addMessageToWebSocket(openCommand);
@@ -627,7 +628,7 @@ final class ClientMethodStreamManager {
       unawaited(_listenToWebSocketStream(webSocket));
 
       await _handshakeComplete.future.catchError(
-        (e, s) => throw ConnectionAttemptTimedOutException(),
+        (e, s) => throw const ConnectionAttemptTimedOutException(),
       );
       _webSocket = webSocket;
       _startKeepAlive();

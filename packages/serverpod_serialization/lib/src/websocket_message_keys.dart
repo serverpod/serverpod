@@ -26,6 +26,7 @@ abstract class WebSocketMessageTypeKey {
 /// Keys used inside the "data" part of messages.
 abstract class WebSocketMessageDataKey {
   static const String args = 'args';
+  static const String authMode = 'am';
   static const String authentication = 'auth';
   static const String closeReason = 'cr';
   static const String connectionId = 'cid';

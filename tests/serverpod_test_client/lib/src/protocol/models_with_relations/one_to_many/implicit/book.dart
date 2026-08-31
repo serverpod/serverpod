@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_client/src/protocol/protocol.dart' as _iza9lbb5;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
-    as _i2;
-import 'package:serverpod_test_client/src/protocol/protocol.dart' as _i3;
+    as _ithd8abs;
 
 abstract class Book
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   Book._({
     this.id,
     required this.title,
@@ -26,7 +26,7 @@ abstract class Book
   factory Book({
     int? id,
     required String title,
-    List<_i2.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   }) = _BookImpl;
 
   factory Book.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -35,7 +35,7 @@ abstract class Book
       title: jsonSerialization['title'] as String,
       chapters: jsonSerialization['chapters'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.Chapter>>(
+          : _iza9lbb5.Protocol().deserialize<List<_ithd8abs.Chapter>>(
               jsonSerialization['chapters'],
             ),
     );
@@ -48,15 +48,15 @@ abstract class Book
 
   String title;
 
-  List<_i2.Chapter>? chapters;
+  List<_ithd8abs.Chapter>? chapters;
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   Book copyWith({
     int? id,
     String? title,
-    List<_i2.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -82,7 +82,7 @@ abstract class Book
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -92,7 +92,7 @@ class _BookImpl extends Book {
   _BookImpl({
     int? id,
     required String title,
-    List<_i2.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   }) : super._(
          id: id,
          title: title,
@@ -101,7 +101,7 @@ class _BookImpl extends Book {
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   Book copyWith({
     Object? id = _Undefined,
@@ -111,7 +111,7 @@ class _BookImpl extends Book {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_i2.Chapter>?
+      chapters: chapters is List<_ithd8abs.Chapter>?
           ? chapters
           : this.chapters?.map((e0) => e0.copyWith()).toList(),
     );

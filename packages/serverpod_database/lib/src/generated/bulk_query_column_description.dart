@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class BulkQueryColumnDescription
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   BulkQueryColumnDescription._({required this.name});
 
   factory BulkQueryColumnDescription({required String name}) =
@@ -31,7 +31,7 @@ abstract class BulkQueryColumnDescription
 
   /// Returns a shallow copy of this [BulkQueryColumnDescription]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   BulkQueryColumnDescription copyWith({String? name});
   @override
   Map<String, dynamic> toJson() {
@@ -51,7 +51,7 @@ abstract class BulkQueryColumnDescription
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -60,7 +60,7 @@ class _BulkQueryColumnDescriptionImpl extends BulkQueryColumnDescription {
 
   /// Returns a shallow copy of this [BulkQueryColumnDescription]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   BulkQueryColumnDescription copyWith({String? name}) {
     return BulkQueryColumnDescription(name: name ?? this.name);

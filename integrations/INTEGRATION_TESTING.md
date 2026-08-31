@@ -202,7 +202,7 @@ If the provider uses its own API (e.g., GCP Native, local filesystem), you need 
 
 - **Basic operations**: `storeFile`, `retrieveFile`, `fileExists`, `deleteFile`
 - **Binary data**: exact byte preservation, large files (1MB)
-- **Direct uploads**: `createDirectFileUploadDescription` + upload via `FileUploader` + `verifyDirectFileUpload` (if supported)
+- **Direct uploads**: `createUploadDescription` + upload via `FileUploader` + `verifyUpload` (if supported)
 - **Special characters**: paths with spaces and unicode
 
 See `serverpod_cloud_storage_gcp/test/integration/native_gcp_integration_test.dart` for an example. Key patterns:

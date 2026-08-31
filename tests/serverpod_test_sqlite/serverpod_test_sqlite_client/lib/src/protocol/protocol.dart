@@ -11,170 +11,178 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
+import 'dart:typed_data' as _idt;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i2;
+    as _iacc;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i3;
-import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
-    as _i4;
-import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart'
-    as _i5;
-import 'package:serverpod_client/serverpod_client.dart' as _i6;
-import 'changed_id_type/many_to_many/course.dart' as _i7;
-import 'changed_id_type/many_to_many/enrollment.dart' as _i8;
-import 'changed_id_type/many_to_many/student.dart' as _i9;
-import 'changed_id_type/nested_one_to_many/arena.dart' as _i10;
-import 'changed_id_type/nested_one_to_many/player.dart' as _i11;
-import 'changed_id_type/nested_one_to_many/team.dart' as _i12;
-import 'changed_id_type/one_to_many/comment.dart' as _i13;
-import 'changed_id_type/one_to_many/customer.dart' as _i14;
-import 'changed_id_type/one_to_many/order.dart' as _i15;
-import 'changed_id_type/one_to_one/address.dart' as _i16;
-import 'changed_id_type/one_to_one/citizen.dart' as _i17;
-import 'changed_id_type/one_to_one/company.dart' as _i18;
-import 'changed_id_type/one_to_one/town.dart' as _i19;
-import 'changed_id_type/self.dart' as _i20;
-import 'defaults/bigint/bigint_default.dart' as _i21;
-import 'defaults/bigint/bigint_default_mix.dart' as _i22;
-import 'defaults/bigint/bigint_default_model.dart' as _i23;
-import 'defaults/bigint/bigint_default_persist.dart' as _i24;
-import 'defaults/boolean/bool_default.dart' as _i25;
-import 'defaults/boolean/bool_default_mix.dart' as _i26;
-import 'defaults/boolean/bool_default_model.dart' as _i27;
-import 'defaults/boolean/bool_default_persist.dart' as _i28;
-import 'defaults/datetime/datetime_default.dart' as _i29;
-import 'defaults/datetime/datetime_default_mix.dart' as _i30;
-import 'defaults/datetime/datetime_default_model.dart' as _i31;
-import 'defaults/datetime/datetime_default_persist.dart' as _i32;
-import 'defaults/double/double_default.dart' as _i33;
-import 'defaults/double/double_default_mix.dart' as _i34;
-import 'defaults/double/double_default_model.dart' as _i35;
-import 'defaults/double/double_default_persist.dart' as _i36;
-import 'defaults/duration/duration_default.dart' as _i37;
-import 'defaults/duration/duration_default_mix.dart' as _i38;
-import 'defaults/duration/duration_default_model.dart' as _i39;
-import 'defaults/duration/duration_default_persist.dart' as _i40;
-import 'defaults/enum/enum_default.dart' as _i41;
-import 'defaults/enum/enum_default_mix.dart' as _i42;
-import 'defaults/enum/enum_default_model.dart' as _i43;
-import 'defaults/enum/enum_default_persist.dart' as _i44;
-import 'defaults/enum/enums/by_index_enum.dart' as _i45;
-import 'defaults/enum/enums/by_name_enum.dart' as _i46;
-import 'defaults/enum/enums/default_value_enum.dart' as _i47;
-import 'defaults/exception/default_exception.dart' as _i48;
-import 'defaults/integer/int_default.dart' as _i49;
-import 'defaults/integer/int_default_mix.dart' as _i50;
-import 'defaults/integer/int_default_model.dart' as _i51;
-import 'defaults/integer/int_default_persist.dart' as _i52;
-import 'defaults/string/string_default.dart' as _i53;
-import 'defaults/string/string_default_mix.dart' as _i54;
-import 'defaults/string/string_default_model.dart' as _i55;
-import 'defaults/string/string_default_persist.dart' as _i56;
-import 'defaults/uri/uri_default.dart' as _i57;
-import 'defaults/uri/uri_default_mix.dart' as _i58;
-import 'defaults/uri/uri_default_model.dart' as _i59;
-import 'defaults/uri/uri_default_persist.dart' as _i60;
-import 'defaults/uuid/uuid_default.dart' as _i61;
-import 'defaults/uuid/uuid_default_mix.dart' as _i62;
-import 'defaults/uuid/uuid_default_model.dart' as _i63;
-import 'defaults/uuid/uuid_default_persist.dart' as _i64;
-import 'empty_model/empty_model.dart' as _i65;
-import 'empty_model/empty_model_relation_item.dart' as _i66;
-import 'empty_model/empty_model_with_table.dart' as _i67;
-import 'empty_model/relation_empy_model.dart' as _i68;
-import 'explicit_column_name/inheritance/child_class_explicit_column.dart'
-    as _i69;
-import 'explicit_column_name/inheritance/non_table_parent_class.dart' as _i70;
-import 'explicit_column_name/modified_column_name.dart' as _i71;
-import 'explicit_column_name/relations/one_to_many/department.dart' as _i72;
-import 'explicit_column_name/relations/one_to_many/employee.dart' as _i73;
-import 'explicit_column_name/relations/one_to_one/contractor.dart' as _i74;
-import 'explicit_column_name/relations/one_to_one/service.dart' as _i75;
-import 'explicit_column_name/table_with_explicit_column_names.dart' as _i76;
-import 'inheritance/sealed_parent.dart' as _i77;
-import 'long_identifiers/deep_includes/city_with_long_table_name.dart' as _i78;
-import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
-    as _i79;
-import 'long_identifiers/deep_includes/person_with_long_table_name.dart'
-    as _i80;
-import 'long_identifiers/max_field_name.dart' as _i81;
-import 'long_identifiers/models_with_relations/long_implicit_id_field.dart'
-    as _i82;
-import 'long_identifiers/models_with_relations/long_implicit_id_field_collection.dart'
-    as _i83;
-import 'long_identifiers/models_with_relations/relation_to_mutiple_max_field_name.dart'
-    as _i84;
-import 'long_identifiers/models_with_relations/user_note.dart' as _i85;
-import 'long_identifiers/models_with_relations/user_note_collection.dart'
-    as _i86;
-import 'long_identifiers/models_with_relations/user_note_collection_with_a_long_name.dart'
-    as _i87;
-import 'long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
-    as _i88;
-import 'long_identifiers/multiple_max_field_name.dart' as _i89;
-import 'models_with_list_relations/city.dart' as _i90;
-import 'models_with_list_relations/organization.dart' as _i91;
-import 'models_with_list_relations/person.dart' as _i92;
-import 'models_with_relations/many_to_many/course.dart' as _i93;
-import 'models_with_relations/many_to_many/enrollment.dart' as _i94;
-import 'models_with_relations/many_to_many/student.dart' as _i95;
-import 'models_with_relations/nested_one_to_many/arena.dart' as _i96;
-import 'models_with_relations/nested_one_to_many/player.dart' as _i97;
-import 'models_with_relations/nested_one_to_many/team.dart' as _i98;
-import 'models_with_relations/one_to_many/comment.dart' as _i99;
-import 'models_with_relations/one_to_many/customer.dart' as _i100;
-import 'models_with_relations/one_to_many/implicit/book.dart' as _i101;
-import 'models_with_relations/one_to_many/implicit/chapter.dart' as _i102;
-import 'models_with_relations/one_to_many/order.dart' as _i103;
-import 'models_with_relations/one_to_one/address.dart' as _i104;
-import 'models_with_relations/one_to_one/citizen.dart' as _i105;
-import 'models_with_relations/one_to_one/company.dart' as _i106;
-import 'models_with_relations/one_to_one/town.dart' as _i107;
-import 'models_with_relations/self_relation/many_to_many/blocking.dart'
-    as _i108;
-import 'models_with_relations/self_relation/many_to_many/member.dart' as _i109;
-import 'models_with_relations/self_relation/one_to_many/cat.dart' as _i110;
-import 'models_with_relations/self_relation/one_to_one/post.dart' as _i111;
-import 'nulls_distinct_data.dart' as _i112;
-import 'object_field_persist.dart' as _i113;
-import 'object_field_scopes.dart' as _i114;
-import 'object_with_bit.dart' as _i115;
-import 'object_with_bytedata.dart' as _i116;
-import 'object_with_duration.dart' as _i117;
-import 'object_with_dynamic.dart' as _i118;
-import 'object_with_enum.dart' as _i119;
-import 'object_with_enum_enhanced.dart' as _i120;
-import 'object_with_half_vector.dart' as _i121;
-import 'object_with_index.dart' as _i122;
-import 'object_with_jsonb.dart' as _i123;
-import 'object_with_jsonb_class_level.dart' as _i124;
-import 'object_with_maps.dart' as _i125;
-import 'object_with_object.dart' as _i126;
-import 'object_with_parent.dart' as _i127;
-import 'object_with_sealed_class.dart' as _i128;
-import 'object_with_self_parent.dart' as _i129;
-import 'object_with_sparse_vector.dart' as _i130;
-import 'object_with_uuid.dart' as _i131;
-import 'object_with_vector.dart' as _i132;
-import 'related_unique_data.dart' as _i133;
-import 'required/model_with_required_field.dart' as _i134;
-import 'simple_data.dart' as _i135;
-import 'simple_date_time.dart' as _i136;
-import 'test_enum.dart' as _i137;
-import 'test_enum_default_serialization.dart' as _i138;
-import 'test_enum_enhanced.dart' as _i139;
-import 'test_enum_enhanced_by_name.dart' as _i140;
-import 'test_enum_stringified.dart' as _i141;
-import 'types.dart' as _i142;
-import 'unique_data.dart' as _i143;
-import 'unique_data_with_non_persist.dart' as _i144;
-import 'upsert_test_model.dart' as _i145;
-import 'dart:typed_data' as _i146;
-import 'package:serverpod_test_sqlite_client/src/protocol/simple_data.dart'
-    as _i147;
+    as _iaic;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
 import 'package:serverpod_service_client/serverpod_service_client.dart'
-    as _i148;
+    as _issc;
+import 'package:serverpod_test_shared_module_client/serverpod_test_shared_module_client.dart'
+    as _iyerxm0e;
+import 'package:serverpod_test_sqlite_client/src/protocol/simple_data.dart'
+    as _ilnisupq;
+import 'package:serverpod_test_sqlite_shared/serverpod_test_sqlite_shared.dart'
+    as _iqfgygbv;
+import 'changed_id_type/many_to_many/course.dart' as _ik6ri27s;
+import 'changed_id_type/many_to_many/enrollment.dart' as _icdgc05t;
+import 'changed_id_type/many_to_many/student.dart' as _ibrjea6w;
+import 'changed_id_type/nested_one_to_many/arena.dart' as _isj7c5mo;
+import 'changed_id_type/nested_one_to_many/player.dart' as _ivdpnfmj;
+import 'changed_id_type/nested_one_to_many/team.dart' as _ivehlt2f;
+import 'changed_id_type/one_to_many/comment.dart' as _i3jtpxta;
+import 'changed_id_type/one_to_many/customer.dart' as _iimgofmw;
+import 'changed_id_type/one_to_many/order.dart' as _iywnby31;
+import 'changed_id_type/one_to_one/address.dart' as _ifwqt4rb;
+import 'changed_id_type/one_to_one/citizen.dart' as _idhvg1zk;
+import 'changed_id_type/one_to_one/company.dart' as _i5vwm04a;
+import 'changed_id_type/one_to_one/town.dart' as _iu7osokh;
+import 'changed_id_type/self.dart' as _ixc9sah8;
+import 'defaults/bigint/bigint_default.dart' as _icrmubzc;
+import 'defaults/bigint/bigint_default_mix.dart' as _i1xsun18;
+import 'defaults/bigint/bigint_default_model.dart' as _i332rqur;
+import 'defaults/bigint/bigint_default_persist.dart' as _ia4nw21o;
+import 'defaults/boolean/bool_default.dart' as _ilirabmz;
+import 'defaults/boolean/bool_default_mix.dart' as _iwhzartq;
+import 'defaults/boolean/bool_default_model.dart' as _izvr7tnf;
+import 'defaults/boolean/bool_default_persist.dart' as _i135uugo;
+import 'defaults/datetime/datetime_default.dart' as _iro0mlkq;
+import 'defaults/datetime/datetime_default_mix.dart' as _igjm2894;
+import 'defaults/datetime/datetime_default_model.dart' as _ivkcoq83;
+import 'defaults/datetime/datetime_default_persist.dart' as _iaqar0o9;
+import 'defaults/double/double_default.dart' as _izu05ym4;
+import 'defaults/double/double_default_mix.dart' as _iou6kksr;
+import 'defaults/double/double_default_model.dart' as _i9xv7g6i;
+import 'defaults/double/double_default_persist.dart' as _iynhhcdw;
+import 'defaults/duration/duration_default.dart' as _ixvw8l6s;
+import 'defaults/duration/duration_default_mix.dart' as _ialx1ytx;
+import 'defaults/duration/duration_default_model.dart' as _i5aouk9m;
+import 'defaults/duration/duration_default_persist.dart' as _ij5e1q2b;
+import 'defaults/enum/enum_default.dart' as _ihqxpva2;
+import 'defaults/enum/enum_default_mix.dart' as _iyezrrxn;
+import 'defaults/enum/enum_default_model.dart' as _iw4wb1ju;
+import 'defaults/enum/enum_default_persist.dart' as _i0p9yn0v;
+import 'defaults/enum/enums/by_index_enum.dart' as _i4ekvn16;
+import 'defaults/enum/enums/by_name_enum.dart' as _ihrgmscf;
+import 'defaults/enum/enums/default_value_enum.dart' as _iirkfcfb;
+import 'defaults/exception/default_exception.dart' as _iv40kyzq;
+import 'defaults/integer/int_default.dart' as _i8t3u1nx;
+import 'defaults/integer/int_default_mix.dart' as _iummzlp0;
+import 'defaults/integer/int_default_model.dart' as _i4rypx08;
+import 'defaults/integer/int_default_persist.dart' as _imhmhhwa;
+import 'defaults/string/string_default.dart' as _i4d8z6ds;
+import 'defaults/string/string_default_mix.dart' as _iu6k5fkj;
+import 'defaults/string/string_default_model.dart' as _ihmqo6od;
+import 'defaults/string/string_default_persist.dart' as _ih6giyf6;
+import 'defaults/uri/uri_default.dart' as _i2y701qf;
+import 'defaults/uri/uri_default_mix.dart' as _iib8h1yl;
+import 'defaults/uri/uri_default_model.dart' as _i1to0y5o;
+import 'defaults/uri/uri_default_persist.dart' as _isi15w9f;
+import 'defaults/uuid/uuid_default.dart' as _ihsadwhl;
+import 'defaults/uuid/uuid_default_mix.dart' as _ignwr848;
+import 'defaults/uuid/uuid_default_model.dart' as _i15gwzho;
+import 'defaults/uuid/uuid_default_persist.dart' as _i2v866bf;
+import 'deferrable/deferrable_relation_initially_deferred.dart' as _io8dlrxh;
+import 'deferrable/deferrable_relation_initially_immediate.dart' as _inmfeda2;
+import 'deferrable/deferrable_relation_parent.dart' as _izxfibiy;
+import 'empty_model/empty_model.dart' as _i9l9xrkt;
+import 'empty_model/empty_model_relation_item.dart' as _ikufh0vd;
+import 'empty_model/empty_model_with_table.dart' as _iw4y4x6s;
+import 'empty_model/relation_empy_model.dart' as _iy7bezig;
+import 'explicit_column_name/inheritance/child_class_explicit_column.dart'
+    as _ikh95zxc;
+import 'explicit_column_name/inheritance/non_table_parent_class.dart'
+    as _i1y2idkw;
+import 'explicit_column_name/modified_column_name.dart' as _i7hqkfn7;
+import 'explicit_column_name/relations/one_to_many/department.dart'
+    as _ix2lcsu0;
+import 'explicit_column_name/relations/one_to_many/employee.dart' as _ixlcmx78;
+import 'explicit_column_name/relations/one_to_one/contractor.dart' as _iw4adtsk;
+import 'explicit_column_name/relations/one_to_one/service.dart' as _i83a3u3u;
+import 'explicit_column_name/table_with_explicit_column_names.dart'
+    as _iox92era;
+import 'inheritance/sealed_parent.dart' as _ij7m744x;
+import 'long_identifiers/deep_includes/city_with_long_table_name.dart'
+    as _iycanyn2;
+import 'long_identifiers/deep_includes/organization_with_long_table_name.dart'
+    as _ifbzwpkm;
+import 'long_identifiers/deep_includes/person_with_long_table_name.dart'
+    as _iy2gklrg;
+import 'long_identifiers/max_field_name.dart' as _i37b4f1x;
+import 'long_identifiers/models_with_relations/long_implicit_id_field.dart'
+    as _ilm8ux21;
+import 'long_identifiers/models_with_relations/long_implicit_id_field_collection.dart'
+    as _i5zyye9l;
+import 'long_identifiers/models_with_relations/relation_to_mutiple_max_field_name.dart'
+    as _irdava0x;
+import 'long_identifiers/models_with_relations/user_note.dart' as _i14q426c;
+import 'long_identifiers/models_with_relations/user_note_collection.dart'
+    as _i0cmztzz;
+import 'long_identifiers/models_with_relations/user_note_collection_with_a_long_name.dart'
+    as _ivgcl1bh;
+import 'long_identifiers/models_with_relations/user_note_with_a_long_name.dart'
+    as _i7zqea9a;
+import 'long_identifiers/multiple_max_field_name.dart' as _ify1vf7h;
+import 'models_with_list_relations/city.dart' as _i0i33txy;
+import 'models_with_list_relations/organization.dart' as _iffzpgud;
+import 'models_with_list_relations/person.dart' as _i9x7ls0c;
+import 'models_with_relations/many_to_many/course.dart' as _iy2buo88;
+import 'models_with_relations/many_to_many/enrollment.dart' as _i8v11x6h;
+import 'models_with_relations/many_to_many/student.dart' as _ig5mtn0e;
+import 'models_with_relations/nested_one_to_many/arena.dart' as _ikwieien;
+import 'models_with_relations/nested_one_to_many/player.dart' as _ip8wmh4s;
+import 'models_with_relations/nested_one_to_many/team.dart' as _ifa5hwxy;
+import 'models_with_relations/one_to_many/comment.dart' as _ii7cxuye;
+import 'models_with_relations/one_to_many/customer.dart' as _i1nwi4iv;
+import 'models_with_relations/one_to_many/implicit/book.dart' as _if51mnnb;
+import 'models_with_relations/one_to_many/implicit/chapter.dart' as _itdsc4u0;
+import 'models_with_relations/one_to_many/order.dart' as _is5jy3ez;
+import 'models_with_relations/one_to_one/address.dart' as _i6uupgbr;
+import 'models_with_relations/one_to_one/citizen.dart' as _igeuyxnu;
+import 'models_with_relations/one_to_one/company.dart' as _if6srpch;
+import 'models_with_relations/one_to_one/town.dart' as _igjnmbwc;
+import 'models_with_relations/self_relation/many_to_many/blocking.dart'
+    as _ic5jbe8i;
+import 'models_with_relations/self_relation/many_to_many/member.dart'
+    as _ijj92mp1;
+import 'models_with_relations/self_relation/one_to_many/cat.dart' as _ib9keugy;
+import 'models_with_relations/self_relation/one_to_one/post.dart' as _iyh1zt5l;
+import 'nulls_distinct_data.dart' as _iz2gvrid;
+import 'object_field_persist.dart' as _i9ffbppf;
+import 'object_field_scopes.dart' as _iahgl0he;
+import 'object_with_bit.dart' as _ioxr67zo;
+import 'object_with_bytedata.dart' as _iz58zhle;
+import 'object_with_duration.dart' as _ijtijns8;
+import 'object_with_dynamic.dart' as _i9hzn3wb;
+import 'object_with_enum.dart' as _ip2vqluy;
+import 'object_with_enum_enhanced.dart' as _iwdrmoge;
+import 'object_with_half_vector.dart' as _iy6ksgxz;
+import 'object_with_index.dart' as _inemzov5;
+import 'object_with_jsonb.dart' as _ihyvenpw;
+import 'object_with_jsonb_class_level.dart' as _i4p0t2g0;
+import 'object_with_maps.dart' as _i26q9u41;
+import 'object_with_object.dart' as _i4hr2e9p;
+import 'object_with_parent.dart' as _io0t3u2c;
+import 'object_with_sealed_class.dart' as _im4j7lpz;
+import 'object_with_self_parent.dart' as _ihluvkmz;
+import 'object_with_sparse_vector.dart' as _i8t20dyr;
+import 'object_with_uuid.dart' as _iusk9w05;
+import 'object_with_vector.dart' as _itmc4j9i;
+import 'related_unique_data.dart' as _i2aw39a6;
+import 'required/model_with_required_field.dart' as _iv7egjxb;
+import 'simple_data.dart' as _i0zisc0t;
+import 'simple_date_time.dart' as _i1duz4kf;
+import 'test_enum.dart' as _ionapfu9;
+import 'test_enum_default_serialization.dart' as _icplrpi3;
+import 'test_enum_enhanced.dart' as _it39smib;
+import 'test_enum_enhanced_by_name.dart' as _izw460bh;
+import 'test_enum_stringified.dart' as _i7liykk2;
+import 'types.dart' as _iwxwszsz;
+import 'unique_data.dart' as _iufhyrjh;
+import 'unique_data_with_non_persist.dart' as _ip8yzqii;
+import 'upsert_test_model.dart' as _iwbeyn4p;
 export 'changed_id_type/many_to_many/course.dart';
 export 'changed_id_type/many_to_many/enrollment.dart';
 export 'changed_id_type/many_to_many/student.dart';
@@ -233,6 +241,9 @@ export 'defaults/uuid/uuid_default.dart';
 export 'defaults/uuid/uuid_default_mix.dart';
 export 'defaults/uuid/uuid_default_model.dart';
 export 'defaults/uuid/uuid_default_persist.dart';
+export 'deferrable/deferrable_relation_initially_deferred.dart';
+export 'deferrable/deferrable_relation_initially_immediate.dart';
+export 'deferrable/deferrable_relation_parent.dart';
 export 'empty_model/empty_model.dart';
 export 'empty_model/empty_model_relation_item.dart';
 export 'empty_model/empty_model_with_table.dart';
@@ -316,59 +327,59 @@ export 'unique_data_with_non_persist.dart';
 export 'upsert_test_model.dart';
 export 'client.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _isd.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._().._registerHostProtocols();
 
-  static List<_i1.TableDefinition> get targetTableDefinitions => [
-    _i1.TableDefinition(
+  static List<_isd.TableDefinition> get targetTableDefinitions => [
+    _isd.TableDefinition(
       name: 'address',
       dartName: 'Address',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'street',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'inhabitantId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'address_fk_0',
           columns: ['inhabitantId'],
           referenceTable: 'citizen',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'inhabitant_index_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'inhabitantId',
             ),
           ],
@@ -379,22 +390,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'arena',
       dartName: 'Arena',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -403,65 +414,65 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'blocking',
       dartName: 'Blocking',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'blockedId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'blockedById',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'blocking_fk_0',
           columns: ['blockedId'],
           referenceTable: 'member',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'blocking_fk_1',
           columns: ['blockedById'],
           referenceTable: 'member',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'blocking_blocked_unique_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'blockedId',
             ),
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'blockedById',
             ),
           ],
@@ -472,22 +483,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'book',
       dartName: 'Book',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'title',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -496,161 +507,161 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'cat',
       dartName: 'Cat',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'motherId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'cat_fk_0',
           columns: ['motherId'],
           referenceTable: 'cat',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.setNull,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'chapter',
       dartName: 'Chapter',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'title',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: '_bookChaptersBookId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'chapter_fk_0',
           columns: ['_bookChaptersBookId'],
           referenceTable: 'book',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'citizen',
       dartName: 'Citizen',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'companyId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'oldCompanyId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'citizen_fk_0',
           columns: ['companyId'],
           referenceTable: 'company',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'citizen_fk_1',
           columns: ['oldCompanyId'],
           referenceTable: 'company',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'city',
       dartName: 'City',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -659,104 +670,104 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'comment',
       dartName: 'Comment',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'description',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'orderId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'comment_fk_0',
           columns: ['orderId'],
           referenceTable: 'order',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'company',
       dartName: 'Company',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'townId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'company_fk_0',
           columns: ['townId'],
           referenceTable: 'town',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'course',
       dartName: 'Course',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -765,22 +776,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'customer',
       dartName: 'Customer',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -789,56 +800,56 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'empty_model_relation_item',
       dartName: 'EmptyModelRelationItem',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: '_relationEmptyModelItemsRelationEmptyModelId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'empty_model_relation_item_fk_0',
           columns: ['_relationEmptyModelItemsRelationEmptyModelId'],
           referenceTable: 'relation_empty_model',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'empty_model_with_table',
       dartName: 'EmptyModelWithTable',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
@@ -848,65 +859,65 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'enrollment',
       dartName: 'Enrollment',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'studentId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'courseId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'enrollment_fk_0',
           columns: ['studentId'],
           referenceTable: 'student',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'enrollment_fk_1',
           columns: ['courseId'],
           referenceTable: 'course',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'enrollment_index_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'studentId',
             ),
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'courseId',
             ),
           ],
@@ -917,22 +928,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'member',
       dartName: 'Member',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -941,34 +952,34 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'model_with_required_field',
       dartName: 'ModelWithRequiredField',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'email',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'phone',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
@@ -977,54 +988,54 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'nulls_distinct_data',
       dartName: 'NullsDistinctData',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'tenantId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'category',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'archivedAt',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
       ],
       foreignKeys: [],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'nulls_distinct_data_unique_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'tenantId',
             ),
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'category',
             ),
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'archivedAt',
             ),
           ],
@@ -1036,22 +1047,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'object_field_persist',
       dartName: 'ObjectFieldPersist',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'normal',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -1060,231 +1071,231 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'order',
       dartName: 'Order',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'description',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'customerId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'order_fk_0',
           columns: ['customerId'],
           referenceTable: 'customer',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.cascade,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'organization',
       dartName: 'Organization',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'cityId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'organization_fk_0',
           columns: ['cityId'],
           referenceTable: 'city',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'person',
       dartName: 'Person',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'organizationId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: '_cityCitizensCityId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'person_fk_0',
           columns: ['organizationId'],
           referenceTable: 'organization',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'person_fk_1',
           columns: ['_cityCitizensCityId'],
           referenceTable: 'city',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'player',
       dartName: 'Player',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'teamId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'player_fk_0',
           columns: ['teamId'],
           referenceTable: 'team',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.setNull,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'post',
       dartName: 'Post',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'content',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'nextId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'post_fk_0',
           columns: ['nextId'],
           referenceTable: 'post',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.setNull,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'next_unique_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'nextId',
             ),
           ],
@@ -1295,56 +1306,56 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'related_unique_data',
       dartName: 'RelatedUniqueData',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'uniqueDataId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'number',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'related_unique_data_fk_0',
           columns: ['uniqueDataId'],
           referenceTable: 'unique_data',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.restrict,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.restrict,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'relation_empty_model',
       dartName: 'RelationEmptyModel',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
@@ -1354,22 +1365,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'simple_data',
       dartName: 'SimpleData',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'num',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
@@ -1378,22 +1389,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'simple_date_time',
       dartName: 'SimpleDateTime',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'dateTime',
-          columnType: _i1.ColumnType.timestampWithoutTimeZone,
+          columnType: _isd.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
@@ -1402,22 +1413,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'student',
       dartName: 'Student',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
@@ -1426,51 +1437,51 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'team',
       dartName: 'Team',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'arenaId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'team_fk_0',
           columns: ['arenaId'],
           referenceTable: 'arena',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.setNull,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.setNull,
           matchType: null,
         ),
       ],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'arena_index_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'arenaId',
             ),
           ],
@@ -1481,205 +1492,205 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'town',
       dartName: 'Town',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'name',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'mayorId',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
       ],
       foreignKeys: [
-        _i1.ForeignKeyDefinition(
+        _isd.ForeignKeyDefinition(
           constraintName: 'town_fk_0',
           columns: ['mayorId'],
           referenceTable: 'citizen',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i1.ForeignKeyAction.noAction,
-          onDelete: _i1.ForeignKeyAction.noAction,
+          onUpdate: _isd.ForeignKeyAction.noAction,
+          onDelete: _isd.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'types',
       dartName: 'Types',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'anInt',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'int?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aBool',
-          columnType: _i1.ColumnType.boolean,
+          columnType: _isd.ColumnType.boolean,
           isNullable: true,
           dartType: 'bool?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aDouble',
-          columnType: _i1.ColumnType.doublePrecision,
+          columnType: _isd.ColumnType.doublePrecision,
           isNullable: true,
           dartType: 'double?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aDateTime',
-          columnType: _i1.ColumnType.timestampWithoutTimeZone,
+          columnType: _isd.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aString',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aByteData',
-          columnType: _i1.ColumnType.bytea,
+          columnType: _isd.ColumnType.bytea,
           isNullable: true,
           dartType: 'dart:typed_data:ByteData?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aDuration',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'Duration?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aUuid',
-          columnType: _i1.ColumnType.uuid,
+          columnType: _isd.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aUri',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'Uri?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aBigInt',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'BigInt?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aVector',
-          columnType: _i1.ColumnType.vector,
+          columnType: _isd.ColumnType.vector,
           isNullable: true,
           dartType: 'Vector(3)?',
           vectorDimension: 3,
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aHalfVector',
-          columnType: _i1.ColumnType.halfvec,
+          columnType: _isd.ColumnType.halfvec,
           isNullable: true,
           dartType: 'HalfVector(3)?',
           vectorDimension: 3,
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aSparseVector',
-          columnType: _i1.ColumnType.sparsevec,
+          columnType: _isd.ColumnType.sparsevec,
           isNullable: true,
           dartType: 'SparseVector(3)?',
           vectorDimension: 3,
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aBit',
-          columnType: _i1.ColumnType.bit,
+          columnType: _isd.ColumnType.bit,
           isNullable: true,
           dartType: 'Bit(3)?',
           vectorDimension: 3,
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aGeographyPoint',
-          columnType: _i1.ColumnType.geography,
+          columnType: _isd.ColumnType.geography,
           isNullable: true,
           dartType: 'GeographyPoint?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aGeographyLineString',
-          columnType: _i1.ColumnType.geographyLineString,
+          columnType: _isd.ColumnType.geographyLineString,
           isNullable: true,
           dartType: 'GeographyLineString?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aGeographyPolygon',
-          columnType: _i1.ColumnType.geographyPolygon,
+          columnType: _isd.ColumnType.geographyPolygon,
           isNullable: true,
           dartType: 'GeographyPolygon?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aGeographyGeometryCollection',
-          columnType: _i1.ColumnType.geographyGeometryCollection,
+          columnType: _isd.ColumnType.geographyGeometryCollection,
           isNullable: true,
           dartType: 'GeographyGeometryCollection?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'anEnum',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: true,
           dartType: 'protocol:TestEnum?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aStringifiedEnum',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: true,
           dartType: 'protocol:TestEnumStringified?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aList',
-          columnType: _i1.ColumnType.json,
+          columnType: _isd.ColumnType.json,
           isNullable: true,
           dartType: 'List<int>?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aMap',
-          columnType: _i1.ColumnType.json,
+          columnType: _isd.ColumnType.json,
           isNullable: true,
           dartType: 'Map<int,int>?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aSet',
-          columnType: _i1.ColumnType.json,
+          columnType: _isd.ColumnType.json,
           isNullable: true,
           dartType: 'Set<int>?',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'aRecord',
-          columnType: _i1.ColumnType.json,
+          columnType: _isd.ColumnType.json,
           isNullable: true,
           dartType: '(String, {Uri? optionalUri})?',
         ),
@@ -1688,40 +1699,40 @@ class Protocol extends _i1.DatabaseSerializationManager {
       indexes: [],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'unique_data',
       dartName: 'UniqueData',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'number',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'email',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'email_index_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'email',
             ),
           ],
@@ -1732,40 +1743,40 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i1.TableDefinition(
+    _isd.TableDefinition(
       name: 'unique_data_with_non_persist',
       dartName: 'UniqueDataWithNonPersist',
       schema: 'public',
       module: 'serverpod_test_sqlite',
       columns: [
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'id',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'number',
-          columnType: _i1.ColumnType.bigint,
+          columnType: _isd.ColumnType.bigint,
           isNullable: false,
           dartType: 'int',
         ),
-        _i1.ColumnDefinition(
+        _isd.ColumnDefinition(
           name: 'email',
-          columnType: _i1.ColumnType.text,
+          columnType: _isd.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [],
       indexes: [
-        _i1.IndexDefinition(
+        _isd.IndexDefinition(
           indexName: 'unique_email_idx',
           tableSpace: null,
           elements: [
-            _i1.IndexElementDefinition(
-              type: _i1.IndexElementDefinitionType.column,
+            _isd.IndexElementDefinition(
+              type: _isd.IndexElementDefinitionType.column,
               definition: 'email',
             ),
           ],
@@ -1776,20 +1787,20 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    ..._i2.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i2.Protocol() as _i1.DatabaseSerializationManager)
+    ..._iacc.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iacc.Protocol() as _isd.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
-    ..._i3.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i3.Protocol() as _i1.DatabaseSerializationManager)
+    ..._iaic.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iaic.Protocol() as _isd.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
-    ..._i4.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i4.Protocol() as _i1.DatabaseSerializationManager)
+    ..._iyerxm0e.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iyerxm0e.Protocol() as _isd.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
-    ..._i5.Protocol() is _i1.DatabaseSerializationManager
-        ? (_i5.Protocol() as _i1.DatabaseSerializationManager)
+    ..._iqfgygbv.Protocol() is _isd.DatabaseSerializationManager
+        ? (_iqfgygbv.Protocol() as _isd.DatabaseSerializationManager)
               .getTargetTableDefinitions()
         : [],
   ];
@@ -1814,1197 +1825,1350 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _i6.DeserializationClassNameNotFoundException catch (_) {
+      } on _isc.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i7.CourseUuid) {
-      return _i7.CourseUuid.fromJson(data) as T;
+    if (t == _ik6ri27s.CourseUuid) {
+      return _ik6ri27s.CourseUuid.fromJson(data) as T;
     }
-    if (t == _i8.EnrollmentInt) {
-      return _i8.EnrollmentInt.fromJson(data) as T;
+    if (t == _icdgc05t.EnrollmentInt) {
+      return _icdgc05t.EnrollmentInt.fromJson(data) as T;
     }
-    if (t == _i9.StudentUuid) {
-      return _i9.StudentUuid.fromJson(data) as T;
+    if (t == _ibrjea6w.StudentUuid) {
+      return _ibrjea6w.StudentUuid.fromJson(data) as T;
     }
-    if (t == _i10.ArenaUuid) {
-      return _i10.ArenaUuid.fromJson(data) as T;
+    if (t == _isj7c5mo.ArenaUuid) {
+      return _isj7c5mo.ArenaUuid.fromJson(data) as T;
     }
-    if (t == _i11.PlayerUuid) {
-      return _i11.PlayerUuid.fromJson(data) as T;
+    if (t == _ivdpnfmj.PlayerUuid) {
+      return _ivdpnfmj.PlayerUuid.fromJson(data) as T;
     }
-    if (t == _i12.TeamInt) {
-      return _i12.TeamInt.fromJson(data) as T;
+    if (t == _ivehlt2f.TeamInt) {
+      return _ivehlt2f.TeamInt.fromJson(data) as T;
     }
-    if (t == _i13.CommentInt) {
-      return _i13.CommentInt.fromJson(data) as T;
+    if (t == _i3jtpxta.CommentInt) {
+      return _i3jtpxta.CommentInt.fromJson(data) as T;
     }
-    if (t == _i14.CustomerInt) {
-      return _i14.CustomerInt.fromJson(data) as T;
+    if (t == _iimgofmw.CustomerInt) {
+      return _iimgofmw.CustomerInt.fromJson(data) as T;
     }
-    if (t == _i15.OrderUuid) {
-      return _i15.OrderUuid.fromJson(data) as T;
+    if (t == _iywnby31.OrderUuid) {
+      return _iywnby31.OrderUuid.fromJson(data) as T;
     }
-    if (t == _i16.AddressUuid) {
-      return _i16.AddressUuid.fromJson(data) as T;
+    if (t == _ifwqt4rb.AddressUuid) {
+      return _ifwqt4rb.AddressUuid.fromJson(data) as T;
     }
-    if (t == _i17.CitizenInt) {
-      return _i17.CitizenInt.fromJson(data) as T;
+    if (t == _idhvg1zk.CitizenInt) {
+      return _idhvg1zk.CitizenInt.fromJson(data) as T;
     }
-    if (t == _i18.CompanyUuid) {
-      return _i18.CompanyUuid.fromJson(data) as T;
+    if (t == _i5vwm04a.CompanyUuid) {
+      return _i5vwm04a.CompanyUuid.fromJson(data) as T;
     }
-    if (t == _i19.TownInt) {
-      return _i19.TownInt.fromJson(data) as T;
+    if (t == _iu7osokh.TownInt) {
+      return _iu7osokh.TownInt.fromJson(data) as T;
     }
-    if (t == _i20.ChangedIdTypeSelf) {
-      return _i20.ChangedIdTypeSelf.fromJson(data) as T;
+    if (t == _ixc9sah8.ChangedIdTypeSelf) {
+      return _ixc9sah8.ChangedIdTypeSelf.fromJson(data) as T;
     }
-    if (t == _i21.BigIntDefault) {
-      return _i21.BigIntDefault.fromJson(data) as T;
+    if (t == _icrmubzc.BigIntDefault) {
+      return _icrmubzc.BigIntDefault.fromJson(data) as T;
     }
-    if (t == _i22.BigIntDefaultMix) {
-      return _i22.BigIntDefaultMix.fromJson(data) as T;
+    if (t == _i1xsun18.BigIntDefaultMix) {
+      return _i1xsun18.BigIntDefaultMix.fromJson(data) as T;
     }
-    if (t == _i23.BigIntDefaultModel) {
-      return _i23.BigIntDefaultModel.fromJson(data) as T;
+    if (t == _i332rqur.BigIntDefaultModel) {
+      return _i332rqur.BigIntDefaultModel.fromJson(data) as T;
     }
-    if (t == _i24.BigIntDefaultPersist) {
-      return _i24.BigIntDefaultPersist.fromJson(data) as T;
+    if (t == _ia4nw21o.BigIntDefaultPersist) {
+      return _ia4nw21o.BigIntDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i25.BoolDefault) {
-      return _i25.BoolDefault.fromJson(data) as T;
+    if (t == _ilirabmz.BoolDefault) {
+      return _ilirabmz.BoolDefault.fromJson(data) as T;
     }
-    if (t == _i26.BoolDefaultMix) {
-      return _i26.BoolDefaultMix.fromJson(data) as T;
+    if (t == _iwhzartq.BoolDefaultMix) {
+      return _iwhzartq.BoolDefaultMix.fromJson(data) as T;
     }
-    if (t == _i27.BoolDefaultModel) {
-      return _i27.BoolDefaultModel.fromJson(data) as T;
+    if (t == _izvr7tnf.BoolDefaultModel) {
+      return _izvr7tnf.BoolDefaultModel.fromJson(data) as T;
     }
-    if (t == _i28.BoolDefaultPersist) {
-      return _i28.BoolDefaultPersist.fromJson(data) as T;
+    if (t == _i135uugo.BoolDefaultPersist) {
+      return _i135uugo.BoolDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i29.DateTimeDefault) {
-      return _i29.DateTimeDefault.fromJson(data) as T;
+    if (t == _iro0mlkq.DateTimeDefault) {
+      return _iro0mlkq.DateTimeDefault.fromJson(data) as T;
     }
-    if (t == _i30.DateTimeDefaultMix) {
-      return _i30.DateTimeDefaultMix.fromJson(data) as T;
+    if (t == _igjm2894.DateTimeDefaultMix) {
+      return _igjm2894.DateTimeDefaultMix.fromJson(data) as T;
     }
-    if (t == _i31.DateTimeDefaultModel) {
-      return _i31.DateTimeDefaultModel.fromJson(data) as T;
+    if (t == _ivkcoq83.DateTimeDefaultModel) {
+      return _ivkcoq83.DateTimeDefaultModel.fromJson(data) as T;
     }
-    if (t == _i32.DateTimeDefaultPersist) {
-      return _i32.DateTimeDefaultPersist.fromJson(data) as T;
+    if (t == _iaqar0o9.DateTimeDefaultPersist) {
+      return _iaqar0o9.DateTimeDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i33.DoubleDefault) {
-      return _i33.DoubleDefault.fromJson(data) as T;
+    if (t == _izu05ym4.DoubleDefault) {
+      return _izu05ym4.DoubleDefault.fromJson(data) as T;
     }
-    if (t == _i34.DoubleDefaultMix) {
-      return _i34.DoubleDefaultMix.fromJson(data) as T;
+    if (t == _iou6kksr.DoubleDefaultMix) {
+      return _iou6kksr.DoubleDefaultMix.fromJson(data) as T;
     }
-    if (t == _i35.DoubleDefaultModel) {
-      return _i35.DoubleDefaultModel.fromJson(data) as T;
+    if (t == _i9xv7g6i.DoubleDefaultModel) {
+      return _i9xv7g6i.DoubleDefaultModel.fromJson(data) as T;
     }
-    if (t == _i36.DoubleDefaultPersist) {
-      return _i36.DoubleDefaultPersist.fromJson(data) as T;
+    if (t == _iynhhcdw.DoubleDefaultPersist) {
+      return _iynhhcdw.DoubleDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i37.DurationDefault) {
-      return _i37.DurationDefault.fromJson(data) as T;
+    if (t == _ixvw8l6s.DurationDefault) {
+      return _ixvw8l6s.DurationDefault.fromJson(data) as T;
     }
-    if (t == _i38.DurationDefaultMix) {
-      return _i38.DurationDefaultMix.fromJson(data) as T;
+    if (t == _ialx1ytx.DurationDefaultMix) {
+      return _ialx1ytx.DurationDefaultMix.fromJson(data) as T;
     }
-    if (t == _i39.DurationDefaultModel) {
-      return _i39.DurationDefaultModel.fromJson(data) as T;
+    if (t == _i5aouk9m.DurationDefaultModel) {
+      return _i5aouk9m.DurationDefaultModel.fromJson(data) as T;
     }
-    if (t == _i40.DurationDefaultPersist) {
-      return _i40.DurationDefaultPersist.fromJson(data) as T;
+    if (t == _ij5e1q2b.DurationDefaultPersist) {
+      return _ij5e1q2b.DurationDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i41.EnumDefault) {
-      return _i41.EnumDefault.fromJson(data) as T;
+    if (t == _ihqxpva2.EnumDefault) {
+      return _ihqxpva2.EnumDefault.fromJson(data) as T;
     }
-    if (t == _i42.EnumDefaultMix) {
-      return _i42.EnumDefaultMix.fromJson(data) as T;
+    if (t == _iyezrrxn.EnumDefaultMix) {
+      return _iyezrrxn.EnumDefaultMix.fromJson(data) as T;
     }
-    if (t == _i43.EnumDefaultModel) {
-      return _i43.EnumDefaultModel.fromJson(data) as T;
+    if (t == _iw4wb1ju.EnumDefaultModel) {
+      return _iw4wb1ju.EnumDefaultModel.fromJson(data) as T;
     }
-    if (t == _i44.EnumDefaultPersist) {
-      return _i44.EnumDefaultPersist.fromJson(data) as T;
+    if (t == _i0p9yn0v.EnumDefaultPersist) {
+      return _i0p9yn0v.EnumDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i45.ByIndexEnum) {
-      return _i45.ByIndexEnum.fromJson(data) as T;
+    if (t == _i4ekvn16.ByIndexEnum) {
+      return _i4ekvn16.ByIndexEnum.fromJson(data) as T;
     }
-    if (t == _i46.ByNameEnum) {
-      return _i46.ByNameEnum.fromJson(data) as T;
+    if (t == _ihrgmscf.ByNameEnum) {
+      return _ihrgmscf.ByNameEnum.fromJson(data) as T;
     }
-    if (t == _i47.DefaultValueEnum) {
-      return _i47.DefaultValueEnum.fromJson(data) as T;
+    if (t == _iirkfcfb.DefaultValueEnum) {
+      return _iirkfcfb.DefaultValueEnum.fromJson(data) as T;
     }
-    if (t == _i48.DefaultException) {
-      return _i48.DefaultException.fromJson(data) as T;
+    if (t == _iv40kyzq.DefaultException) {
+      return _iv40kyzq.DefaultException.fromJson(data) as T;
     }
-    if (t == _i49.IntDefault) {
-      return _i49.IntDefault.fromJson(data) as T;
+    if (t == _i8t3u1nx.IntDefault) {
+      return _i8t3u1nx.IntDefault.fromJson(data) as T;
     }
-    if (t == _i50.IntDefaultMix) {
-      return _i50.IntDefaultMix.fromJson(data) as T;
+    if (t == _iummzlp0.IntDefaultMix) {
+      return _iummzlp0.IntDefaultMix.fromJson(data) as T;
     }
-    if (t == _i51.IntDefaultModel) {
-      return _i51.IntDefaultModel.fromJson(data) as T;
+    if (t == _i4rypx08.IntDefaultModel) {
+      return _i4rypx08.IntDefaultModel.fromJson(data) as T;
     }
-    if (t == _i52.IntDefaultPersist) {
-      return _i52.IntDefaultPersist.fromJson(data) as T;
+    if (t == _imhmhhwa.IntDefaultPersist) {
+      return _imhmhhwa.IntDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i53.StringDefault) {
-      return _i53.StringDefault.fromJson(data) as T;
+    if (t == _i4d8z6ds.StringDefault) {
+      return _i4d8z6ds.StringDefault.fromJson(data) as T;
     }
-    if (t == _i54.StringDefaultMix) {
-      return _i54.StringDefaultMix.fromJson(data) as T;
+    if (t == _iu6k5fkj.StringDefaultMix) {
+      return _iu6k5fkj.StringDefaultMix.fromJson(data) as T;
     }
-    if (t == _i55.StringDefaultModel) {
-      return _i55.StringDefaultModel.fromJson(data) as T;
+    if (t == _ihmqo6od.StringDefaultModel) {
+      return _ihmqo6od.StringDefaultModel.fromJson(data) as T;
     }
-    if (t == _i56.StringDefaultPersist) {
-      return _i56.StringDefaultPersist.fromJson(data) as T;
+    if (t == _ih6giyf6.StringDefaultPersist) {
+      return _ih6giyf6.StringDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i57.UriDefault) {
-      return _i57.UriDefault.fromJson(data) as T;
+    if (t == _i2y701qf.UriDefault) {
+      return _i2y701qf.UriDefault.fromJson(data) as T;
     }
-    if (t == _i58.UriDefaultMix) {
-      return _i58.UriDefaultMix.fromJson(data) as T;
+    if (t == _iib8h1yl.UriDefaultMix) {
+      return _iib8h1yl.UriDefaultMix.fromJson(data) as T;
     }
-    if (t == _i59.UriDefaultModel) {
-      return _i59.UriDefaultModel.fromJson(data) as T;
+    if (t == _i1to0y5o.UriDefaultModel) {
+      return _i1to0y5o.UriDefaultModel.fromJson(data) as T;
     }
-    if (t == _i60.UriDefaultPersist) {
-      return _i60.UriDefaultPersist.fromJson(data) as T;
+    if (t == _isi15w9f.UriDefaultPersist) {
+      return _isi15w9f.UriDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i61.UuidDefault) {
-      return _i61.UuidDefault.fromJson(data) as T;
+    if (t == _ihsadwhl.UuidDefault) {
+      return _ihsadwhl.UuidDefault.fromJson(data) as T;
     }
-    if (t == _i62.UuidDefaultMix) {
-      return _i62.UuidDefaultMix.fromJson(data) as T;
+    if (t == _ignwr848.UuidDefaultMix) {
+      return _ignwr848.UuidDefaultMix.fromJson(data) as T;
     }
-    if (t == _i63.UuidDefaultModel) {
-      return _i63.UuidDefaultModel.fromJson(data) as T;
+    if (t == _i15gwzho.UuidDefaultModel) {
+      return _i15gwzho.UuidDefaultModel.fromJson(data) as T;
     }
-    if (t == _i64.UuidDefaultPersist) {
-      return _i64.UuidDefaultPersist.fromJson(data) as T;
+    if (t == _i2v866bf.UuidDefaultPersist) {
+      return _i2v866bf.UuidDefaultPersist.fromJson(data) as T;
     }
-    if (t == _i65.EmptyModel) {
-      return _i65.EmptyModel.fromJson(data) as T;
+    if (t == _io8dlrxh.DeferrableRelationInitiallyDeferred) {
+      return _io8dlrxh.DeferrableRelationInitiallyDeferred.fromJson(data) as T;
     }
-    if (t == _i66.EmptyModelRelationItem) {
-      return _i66.EmptyModelRelationItem.fromJson(data) as T;
+    if (t == _inmfeda2.DeferrableRelationInitiallyImmediate) {
+      return _inmfeda2.DeferrableRelationInitiallyImmediate.fromJson(data) as T;
     }
-    if (t == _i67.EmptyModelWithTable) {
-      return _i67.EmptyModelWithTable.fromJson(data) as T;
+    if (t == _izxfibiy.DeferrableRelationParent) {
+      return _izxfibiy.DeferrableRelationParent.fromJson(data) as T;
     }
-    if (t == _i68.RelationEmptyModel) {
-      return _i68.RelationEmptyModel.fromJson(data) as T;
+    if (t == _i9l9xrkt.EmptyModel) {
+      return _i9l9xrkt.EmptyModel.fromJson(data) as T;
     }
-    if (t == _i69.ChildClassExplicitColumn) {
-      return _i69.ChildClassExplicitColumn.fromJson(data) as T;
+    if (t == _ikufh0vd.EmptyModelRelationItem) {
+      return _ikufh0vd.EmptyModelRelationItem.fromJson(data) as T;
     }
-    if (t == _i70.NonTableParentClass) {
-      return _i70.NonTableParentClass.fromJson(data) as T;
+    if (t == _iw4y4x6s.EmptyModelWithTable) {
+      return _iw4y4x6s.EmptyModelWithTable.fromJson(data) as T;
     }
-    if (t == _i71.ModifiedColumnName) {
-      return _i71.ModifiedColumnName.fromJson(data) as T;
+    if (t == _iy7bezig.RelationEmptyModel) {
+      return _iy7bezig.RelationEmptyModel.fromJson(data) as T;
     }
-    if (t == _i72.Department) {
-      return _i72.Department.fromJson(data) as T;
+    if (t == _ikh95zxc.ChildClassExplicitColumn) {
+      return _ikh95zxc.ChildClassExplicitColumn.fromJson(data) as T;
     }
-    if (t == _i73.Employee) {
-      return _i73.Employee.fromJson(data) as T;
+    if (t == _i1y2idkw.NonTableParentClass) {
+      return _i1y2idkw.NonTableParentClass.fromJson(data) as T;
     }
-    if (t == _i74.Contractor) {
-      return _i74.Contractor.fromJson(data) as T;
+    if (t == _i7hqkfn7.ModifiedColumnName) {
+      return _i7hqkfn7.ModifiedColumnName.fromJson(data) as T;
     }
-    if (t == _i75.Service) {
-      return _i75.Service.fromJson(data) as T;
+    if (t == _ix2lcsu0.Department) {
+      return _ix2lcsu0.Department.fromJson(data) as T;
     }
-    if (t == _i76.TableWithExplicitColumnName) {
-      return _i76.TableWithExplicitColumnName.fromJson(data) as T;
+    if (t == _ixlcmx78.Employee) {
+      return _ixlcmx78.Employee.fromJson(data) as T;
     }
-    if (t == _i77.SealedGrandChild) {
-      return _i77.SealedGrandChild.fromJson(data) as T;
+    if (t == _iw4adtsk.Contractor) {
+      return _iw4adtsk.Contractor.fromJson(data) as T;
     }
-    if (t == _i77.SealedChild) {
-      return _i77.SealedChild.fromJson(data) as T;
+    if (t == _i83a3u3u.Service) {
+      return _i83a3u3u.Service.fromJson(data) as T;
     }
-    if (t == _i77.SealedOtherChild) {
-      return _i77.SealedOtherChild.fromJson(data) as T;
+    if (t == _iox92era.TableWithExplicitColumnName) {
+      return _iox92era.TableWithExplicitColumnName.fromJson(data) as T;
     }
-    if (t == _i78.CityWithLongTableName) {
-      return _i78.CityWithLongTableName.fromJson(data) as T;
+    if (t == _ij7m744x.SealedGrandChild) {
+      return _ij7m744x.SealedGrandChild.fromJson(data) as T;
     }
-    if (t == _i79.OrganizationWithLongTableName) {
-      return _i79.OrganizationWithLongTableName.fromJson(data) as T;
+    if (t == _ij7m744x.SealedChild) {
+      return _ij7m744x.SealedChild.fromJson(data) as T;
     }
-    if (t == _i80.PersonWithLongTableName) {
-      return _i80.PersonWithLongTableName.fromJson(data) as T;
+    if (t == _ij7m744x.SealedOtherChild) {
+      return _ij7m744x.SealedOtherChild.fromJson(data) as T;
     }
-    if (t == _i81.MaxFieldName) {
-      return _i81.MaxFieldName.fromJson(data) as T;
+    if (t == _iycanyn2.CityWithLongTableName) {
+      return _iycanyn2.CityWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i82.LongImplicitIdField) {
-      return _i82.LongImplicitIdField.fromJson(data) as T;
+    if (t == _ifbzwpkm.OrganizationWithLongTableName) {
+      return _ifbzwpkm.OrganizationWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i83.LongImplicitIdFieldCollection) {
-      return _i83.LongImplicitIdFieldCollection.fromJson(data) as T;
+    if (t == _iy2gklrg.PersonWithLongTableName) {
+      return _iy2gklrg.PersonWithLongTableName.fromJson(data) as T;
     }
-    if (t == _i84.RelationToMultipleMaxFieldName) {
-      return _i84.RelationToMultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i37b4f1x.MaxFieldName) {
+      return _i37b4f1x.MaxFieldName.fromJson(data) as T;
     }
-    if (t == _i85.UserNote) {
-      return _i85.UserNote.fromJson(data) as T;
+    if (t == _ilm8ux21.LongImplicitIdField) {
+      return _ilm8ux21.LongImplicitIdField.fromJson(data) as T;
     }
-    if (t == _i86.UserNoteCollection) {
-      return _i86.UserNoteCollection.fromJson(data) as T;
+    if (t == _i5zyye9l.LongImplicitIdFieldCollection) {
+      return _i5zyye9l.LongImplicitIdFieldCollection.fromJson(data) as T;
     }
-    if (t == _i87.UserNoteCollectionWithALongName) {
-      return _i87.UserNoteCollectionWithALongName.fromJson(data) as T;
+    if (t == _irdava0x.RelationToMultipleMaxFieldName) {
+      return _irdava0x.RelationToMultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i88.UserNoteWithALongName) {
-      return _i88.UserNoteWithALongName.fromJson(data) as T;
+    if (t == _i14q426c.UserNote) {
+      return _i14q426c.UserNote.fromJson(data) as T;
     }
-    if (t == _i89.MultipleMaxFieldName) {
-      return _i89.MultipleMaxFieldName.fromJson(data) as T;
+    if (t == _i0cmztzz.UserNoteCollection) {
+      return _i0cmztzz.UserNoteCollection.fromJson(data) as T;
     }
-    if (t == _i90.City) {
-      return _i90.City.fromJson(data) as T;
+    if (t == _ivgcl1bh.UserNoteCollectionWithALongName) {
+      return _ivgcl1bh.UserNoteCollectionWithALongName.fromJson(data) as T;
     }
-    if (t == _i91.Organization) {
-      return _i91.Organization.fromJson(data) as T;
+    if (t == _i7zqea9a.UserNoteWithALongName) {
+      return _i7zqea9a.UserNoteWithALongName.fromJson(data) as T;
     }
-    if (t == _i92.Person) {
-      return _i92.Person.fromJson(data) as T;
+    if (t == _ify1vf7h.MultipleMaxFieldName) {
+      return _ify1vf7h.MultipleMaxFieldName.fromJson(data) as T;
     }
-    if (t == _i93.Course) {
-      return _i93.Course.fromJson(data) as T;
+    if (t == _i0i33txy.City) {
+      return _i0i33txy.City.fromJson(data) as T;
     }
-    if (t == _i94.Enrollment) {
-      return _i94.Enrollment.fromJson(data) as T;
+    if (t == _iffzpgud.Organization) {
+      return _iffzpgud.Organization.fromJson(data) as T;
     }
-    if (t == _i95.Student) {
-      return _i95.Student.fromJson(data) as T;
+    if (t == _i9x7ls0c.Person) {
+      return _i9x7ls0c.Person.fromJson(data) as T;
     }
-    if (t == _i96.Arena) {
-      return _i96.Arena.fromJson(data) as T;
+    if (t == _iy2buo88.Course) {
+      return _iy2buo88.Course.fromJson(data) as T;
     }
-    if (t == _i97.Player) {
-      return _i97.Player.fromJson(data) as T;
+    if (t == _i8v11x6h.Enrollment) {
+      return _i8v11x6h.Enrollment.fromJson(data) as T;
     }
-    if (t == _i98.Team) {
-      return _i98.Team.fromJson(data) as T;
+    if (t == _ig5mtn0e.Student) {
+      return _ig5mtn0e.Student.fromJson(data) as T;
     }
-    if (t == _i99.Comment) {
-      return _i99.Comment.fromJson(data) as T;
+    if (t == _ikwieien.Arena) {
+      return _ikwieien.Arena.fromJson(data) as T;
     }
-    if (t == _i100.Customer) {
-      return _i100.Customer.fromJson(data) as T;
+    if (t == _ip8wmh4s.Player) {
+      return _ip8wmh4s.Player.fromJson(data) as T;
     }
-    if (t == _i101.Book) {
-      return _i101.Book.fromJson(data) as T;
+    if (t == _ifa5hwxy.Team) {
+      return _ifa5hwxy.Team.fromJson(data) as T;
     }
-    if (t == _i102.Chapter) {
-      return _i102.Chapter.fromJson(data) as T;
+    if (t == _ii7cxuye.Comment) {
+      return _ii7cxuye.Comment.fromJson(data) as T;
     }
-    if (t == _i103.Order) {
-      return _i103.Order.fromJson(data) as T;
+    if (t == _i1nwi4iv.Customer) {
+      return _i1nwi4iv.Customer.fromJson(data) as T;
     }
-    if (t == _i104.Address) {
-      return _i104.Address.fromJson(data) as T;
+    if (t == _if51mnnb.Book) {
+      return _if51mnnb.Book.fromJson(data) as T;
     }
-    if (t == _i105.Citizen) {
-      return _i105.Citizen.fromJson(data) as T;
+    if (t == _itdsc4u0.Chapter) {
+      return _itdsc4u0.Chapter.fromJson(data) as T;
     }
-    if (t == _i106.Company) {
-      return _i106.Company.fromJson(data) as T;
+    if (t == _is5jy3ez.Order) {
+      return _is5jy3ez.Order.fromJson(data) as T;
     }
-    if (t == _i107.Town) {
-      return _i107.Town.fromJson(data) as T;
+    if (t == _i6uupgbr.Address) {
+      return _i6uupgbr.Address.fromJson(data) as T;
     }
-    if (t == _i108.Blocking) {
-      return _i108.Blocking.fromJson(data) as T;
+    if (t == _igeuyxnu.Citizen) {
+      return _igeuyxnu.Citizen.fromJson(data) as T;
     }
-    if (t == _i109.Member) {
-      return _i109.Member.fromJson(data) as T;
+    if (t == _if6srpch.Company) {
+      return _if6srpch.Company.fromJson(data) as T;
     }
-    if (t == _i110.Cat) {
-      return _i110.Cat.fromJson(data) as T;
+    if (t == _igjnmbwc.Town) {
+      return _igjnmbwc.Town.fromJson(data) as T;
     }
-    if (t == _i111.Post) {
-      return _i111.Post.fromJson(data) as T;
+    if (t == _ic5jbe8i.Blocking) {
+      return _ic5jbe8i.Blocking.fromJson(data) as T;
     }
-    if (t == _i112.NullsDistinctData) {
-      return _i112.NullsDistinctData.fromJson(data) as T;
+    if (t == _ijj92mp1.Member) {
+      return _ijj92mp1.Member.fromJson(data) as T;
     }
-    if (t == _i113.ObjectFieldPersist) {
-      return _i113.ObjectFieldPersist.fromJson(data) as T;
+    if (t == _ib9keugy.Cat) {
+      return _ib9keugy.Cat.fromJson(data) as T;
     }
-    if (t == _i114.ObjectFieldScopes) {
-      return _i114.ObjectFieldScopes.fromJson(data) as T;
+    if (t == _iyh1zt5l.Post) {
+      return _iyh1zt5l.Post.fromJson(data) as T;
     }
-    if (t == _i115.ObjectWithBit) {
-      return _i115.ObjectWithBit.fromJson(data) as T;
+    if (t == _iz2gvrid.NullsDistinctData) {
+      return _iz2gvrid.NullsDistinctData.fromJson(data) as T;
     }
-    if (t == _i116.ObjectWithByteData) {
-      return _i116.ObjectWithByteData.fromJson(data) as T;
+    if (t == _i9ffbppf.ObjectFieldPersist) {
+      return _i9ffbppf.ObjectFieldPersist.fromJson(data) as T;
     }
-    if (t == _i117.ObjectWithDuration) {
-      return _i117.ObjectWithDuration.fromJson(data) as T;
+    if (t == _iahgl0he.ObjectFieldScopes) {
+      return _iahgl0he.ObjectFieldScopes.fromJson(data) as T;
     }
-    if (t == _i118.ObjectWithDynamic) {
-      return _i118.ObjectWithDynamic.fromJson(data) as T;
+    if (t == _ioxr67zo.ObjectWithBit) {
+      return _ioxr67zo.ObjectWithBit.fromJson(data) as T;
     }
-    if (t == _i119.ObjectWithEnum) {
-      return _i119.ObjectWithEnum.fromJson(data) as T;
+    if (t == _iz58zhle.ObjectWithByteData) {
+      return _iz58zhle.ObjectWithByteData.fromJson(data) as T;
     }
-    if (t == _i120.ObjectWithEnumEnhanced) {
-      return _i120.ObjectWithEnumEnhanced.fromJson(data) as T;
+    if (t == _ijtijns8.ObjectWithDuration) {
+      return _ijtijns8.ObjectWithDuration.fromJson(data) as T;
     }
-    if (t == _i121.ObjectWithHalfVector) {
-      return _i121.ObjectWithHalfVector.fromJson(data) as T;
+    if (t == _i9hzn3wb.ObjectWithDynamic) {
+      return _i9hzn3wb.ObjectWithDynamic.fromJson(data) as T;
     }
-    if (t == _i122.ObjectWithIndex) {
-      return _i122.ObjectWithIndex.fromJson(data) as T;
+    if (t == _ip2vqluy.ObjectWithEnum) {
+      return _ip2vqluy.ObjectWithEnum.fromJson(data) as T;
     }
-    if (t == _i123.ObjectWithJsonb) {
-      return _i123.ObjectWithJsonb.fromJson(data) as T;
+    if (t == _iwdrmoge.ObjectWithEnumEnhanced) {
+      return _iwdrmoge.ObjectWithEnumEnhanced.fromJson(data) as T;
     }
-    if (t == _i124.ObjectWithJsonbClassLevel) {
-      return _i124.ObjectWithJsonbClassLevel.fromJson(data) as T;
+    if (t == _iy6ksgxz.ObjectWithHalfVector) {
+      return _iy6ksgxz.ObjectWithHalfVector.fromJson(data) as T;
     }
-    if (t == _i125.ObjectWithMaps) {
-      return _i125.ObjectWithMaps.fromJson(data) as T;
+    if (t == _inemzov5.ObjectWithIndex) {
+      return _inemzov5.ObjectWithIndex.fromJson(data) as T;
     }
-    if (t == _i126.ObjectWithObject) {
-      return _i126.ObjectWithObject.fromJson(data) as T;
+    if (t == _ihyvenpw.ObjectWithJsonb) {
+      return _ihyvenpw.ObjectWithJsonb.fromJson(data) as T;
     }
-    if (t == _i127.ObjectWithParent) {
-      return _i127.ObjectWithParent.fromJson(data) as T;
+    if (t == _i4p0t2g0.ObjectWithJsonbClassLevel) {
+      return _i4p0t2g0.ObjectWithJsonbClassLevel.fromJson(data) as T;
     }
-    if (t == _i128.ObjectWithSealedClass) {
-      return _i128.ObjectWithSealedClass.fromJson(data) as T;
+    if (t == _i26q9u41.ObjectWithMaps) {
+      return _i26q9u41.ObjectWithMaps.fromJson(data) as T;
     }
-    if (t == _i129.ObjectWithSelfParent) {
-      return _i129.ObjectWithSelfParent.fromJson(data) as T;
+    if (t == _i4hr2e9p.ObjectWithObject) {
+      return _i4hr2e9p.ObjectWithObject.fromJson(data) as T;
     }
-    if (t == _i130.ObjectWithSparseVector) {
-      return _i130.ObjectWithSparseVector.fromJson(data) as T;
+    if (t == _io0t3u2c.ObjectWithParent) {
+      return _io0t3u2c.ObjectWithParent.fromJson(data) as T;
     }
-    if (t == _i131.ObjectWithUuid) {
-      return _i131.ObjectWithUuid.fromJson(data) as T;
+    if (t == _im4j7lpz.ObjectWithSealedClass) {
+      return _im4j7lpz.ObjectWithSealedClass.fromJson(data) as T;
     }
-    if (t == _i132.ObjectWithVector) {
-      return _i132.ObjectWithVector.fromJson(data) as T;
+    if (t == _ihluvkmz.ObjectWithSelfParent) {
+      return _ihluvkmz.ObjectWithSelfParent.fromJson(data) as T;
     }
-    if (t == _i133.RelatedUniqueData) {
-      return _i133.RelatedUniqueData.fromJson(data) as T;
+    if (t == _i8t20dyr.ObjectWithSparseVector) {
+      return _i8t20dyr.ObjectWithSparseVector.fromJson(data) as T;
     }
-    if (t == _i134.ModelWithRequiredField) {
-      return _i134.ModelWithRequiredField.fromJson(data) as T;
+    if (t == _iusk9w05.ObjectWithUuid) {
+      return _iusk9w05.ObjectWithUuid.fromJson(data) as T;
     }
-    if (t == _i135.SimpleData) {
-      return _i135.SimpleData.fromJson(data) as T;
+    if (t == _itmc4j9i.ObjectWithVector) {
+      return _itmc4j9i.ObjectWithVector.fromJson(data) as T;
     }
-    if (t == _i136.SimpleDateTime) {
-      return _i136.SimpleDateTime.fromJson(data) as T;
+    if (t == _i2aw39a6.RelatedUniqueData) {
+      return _i2aw39a6.RelatedUniqueData.fromJson(data) as T;
     }
-    if (t == _i137.TestEnum) {
-      return _i137.TestEnum.fromJson(data) as T;
+    if (t == _iv7egjxb.ModelWithRequiredField) {
+      return _iv7egjxb.ModelWithRequiredField.fromJson(data) as T;
     }
-    if (t == _i138.TestEnumDefaultSerialization) {
-      return _i138.TestEnumDefaultSerialization.fromJson(data) as T;
+    if (t == _i0zisc0t.SimpleData) {
+      return _i0zisc0t.SimpleData.fromJson(data) as T;
     }
-    if (t == _i139.TestEnumEnhanced) {
-      return _i139.TestEnumEnhanced.fromJson(data) as T;
+    if (t == _i1duz4kf.SimpleDateTime) {
+      return _i1duz4kf.SimpleDateTime.fromJson(data) as T;
     }
-    if (t == _i140.TestEnumEnhancedByName) {
-      return _i140.TestEnumEnhancedByName.fromJson(data) as T;
+    if (t == _ionapfu9.TestEnum) {
+      return _ionapfu9.TestEnum.fromJson(data) as T;
     }
-    if (t == _i141.TestEnumStringified) {
-      return _i141.TestEnumStringified.fromJson(data) as T;
+    if (t == _icplrpi3.TestEnumDefaultSerialization) {
+      return _icplrpi3.TestEnumDefaultSerialization.fromJson(data) as T;
     }
-    if (t == _i142.Types) {
-      return _i142.Types.fromJson(data) as T;
+    if (t == _it39smib.TestEnumEnhanced) {
+      return _it39smib.TestEnumEnhanced.fromJson(data) as T;
     }
-    if (t == _i143.UniqueData) {
-      return _i143.UniqueData.fromJson(data) as T;
+    if (t == _izw460bh.TestEnumEnhancedByName) {
+      return _izw460bh.TestEnumEnhancedByName.fromJson(data) as T;
     }
-    if (t == _i144.UniqueDataWithNonPersist) {
-      return _i144.UniqueDataWithNonPersist.fromJson(data) as T;
+    if (t == _i7liykk2.TestEnumStringified) {
+      return _i7liykk2.TestEnumStringified.fromJson(data) as T;
     }
-    if (t == _i145.UpsertTestModel) {
-      return _i145.UpsertTestModel.fromJson(data) as T;
+    if (t == _iwxwszsz.Types) {
+      return _iwxwszsz.Types.fromJson(data) as T;
     }
-    if (t == _i6.getType<_i7.CourseUuid?>()) {
-      return (data != null ? _i7.CourseUuid.fromJson(data) : null) as T;
+    if (t == _iufhyrjh.UniqueData) {
+      return _iufhyrjh.UniqueData.fromJson(data) as T;
     }
-    if (t == _i6.getType<_i8.EnrollmentInt?>()) {
-      return (data != null ? _i8.EnrollmentInt.fromJson(data) : null) as T;
+    if (t == _ip8yzqii.UniqueDataWithNonPersist) {
+      return _ip8yzqii.UniqueDataWithNonPersist.fromJson(data) as T;
     }
-    if (t == _i6.getType<_i9.StudentUuid?>()) {
-      return (data != null ? _i9.StudentUuid.fromJson(data) : null) as T;
+    if (t == _iwbeyn4p.UpsertTestModel) {
+      return _iwbeyn4p.UpsertTestModel.fromJson(data) as T;
     }
-    if (t == _i6.getType<_i10.ArenaUuid?>()) {
-      return (data != null ? _i10.ArenaUuid.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ik6ri27s.CourseUuid?>()) {
+      return (data != null ? _ik6ri27s.CourseUuid.fromJson(data) : null) as T;
     }
-    if (t == _i6.getType<_i11.PlayerUuid?>()) {
-      return (data != null ? _i11.PlayerUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i12.TeamInt?>()) {
-      return (data != null ? _i12.TeamInt.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i13.CommentInt?>()) {
-      return (data != null ? _i13.CommentInt.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i14.CustomerInt?>()) {
-      return (data != null ? _i14.CustomerInt.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i15.OrderUuid?>()) {
-      return (data != null ? _i15.OrderUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i16.AddressUuid?>()) {
-      return (data != null ? _i16.AddressUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i17.CitizenInt?>()) {
-      return (data != null ? _i17.CitizenInt.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i18.CompanyUuid?>()) {
-      return (data != null ? _i18.CompanyUuid.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i19.TownInt?>()) {
-      return (data != null ? _i19.TownInt.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i20.ChangedIdTypeSelf?>()) {
-      return (data != null ? _i20.ChangedIdTypeSelf.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i21.BigIntDefault?>()) {
-      return (data != null ? _i21.BigIntDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i22.BigIntDefaultMix?>()) {
-      return (data != null ? _i22.BigIntDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i23.BigIntDefaultModel?>()) {
-      return (data != null ? _i23.BigIntDefaultModel.fromJson(data) : null)
+    if (t == _isc.getType<_icdgc05t.EnrollmentInt?>()) {
+      return (data != null ? _icdgc05t.EnrollmentInt.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i24.BigIntDefaultPersist?>()) {
-      return (data != null ? _i24.BigIntDefaultPersist.fromJson(data) : null)
+    if (t == _isc.getType<_ibrjea6w.StudentUuid?>()) {
+      return (data != null ? _ibrjea6w.StudentUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_isj7c5mo.ArenaUuid?>()) {
+      return (data != null ? _isj7c5mo.ArenaUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ivdpnfmj.PlayerUuid?>()) {
+      return (data != null ? _ivdpnfmj.PlayerUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ivehlt2f.TeamInt?>()) {
+      return (data != null ? _ivehlt2f.TeamInt.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i3jtpxta.CommentInt?>()) {
+      return (data != null ? _i3jtpxta.CommentInt.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iimgofmw.CustomerInt?>()) {
+      return (data != null ? _iimgofmw.CustomerInt.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iywnby31.OrderUuid?>()) {
+      return (data != null ? _iywnby31.OrderUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ifwqt4rb.AddressUuid?>()) {
+      return (data != null ? _ifwqt4rb.AddressUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_idhvg1zk.CitizenInt?>()) {
+      return (data != null ? _idhvg1zk.CitizenInt.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i5vwm04a.CompanyUuid?>()) {
+      return (data != null ? _i5vwm04a.CompanyUuid.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iu7osokh.TownInt?>()) {
+      return (data != null ? _iu7osokh.TownInt.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ixc9sah8.ChangedIdTypeSelf?>()) {
+      return (data != null ? _ixc9sah8.ChangedIdTypeSelf.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i25.BoolDefault?>()) {
-      return (data != null ? _i25.BoolDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i26.BoolDefaultMix?>()) {
-      return (data != null ? _i26.BoolDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i27.BoolDefaultModel?>()) {
-      return (data != null ? _i27.BoolDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i28.BoolDefaultPersist?>()) {
-      return (data != null ? _i28.BoolDefaultPersist.fromJson(data) : null)
+    if (t == _isc.getType<_icrmubzc.BigIntDefault?>()) {
+      return (data != null ? _icrmubzc.BigIntDefault.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i29.DateTimeDefault?>()) {
-      return (data != null ? _i29.DateTimeDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i30.DateTimeDefaultMix?>()) {
-      return (data != null ? _i30.DateTimeDefaultMix.fromJson(data) : null)
+    if (t == _isc.getType<_i1xsun18.BigIntDefaultMix?>()) {
+      return (data != null ? _i1xsun18.BigIntDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i31.DateTimeDefaultModel?>()) {
-      return (data != null ? _i31.DateTimeDefaultModel.fromJson(data) : null)
+    if (t == _isc.getType<_i332rqur.BigIntDefaultModel?>()) {
+      return (data != null ? _i332rqur.BigIntDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i32.DateTimeDefaultPersist?>()) {
-      return (data != null ? _i32.DateTimeDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i33.DoubleDefault?>()) {
-      return (data != null ? _i33.DoubleDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i34.DoubleDefaultMix?>()) {
-      return (data != null ? _i34.DoubleDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i35.DoubleDefaultModel?>()) {
-      return (data != null ? _i35.DoubleDefaultModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i36.DoubleDefaultPersist?>()) {
-      return (data != null ? _i36.DoubleDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i37.DurationDefault?>()) {
-      return (data != null ? _i37.DurationDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i38.DurationDefaultMix?>()) {
-      return (data != null ? _i38.DurationDefaultMix.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i39.DurationDefaultModel?>()) {
-      return (data != null ? _i39.DurationDefaultModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i40.DurationDefaultPersist?>()) {
-      return (data != null ? _i40.DurationDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i41.EnumDefault?>()) {
-      return (data != null ? _i41.EnumDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i42.EnumDefaultMix?>()) {
-      return (data != null ? _i42.EnumDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i43.EnumDefaultModel?>()) {
-      return (data != null ? _i43.EnumDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i44.EnumDefaultPersist?>()) {
-      return (data != null ? _i44.EnumDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i45.ByIndexEnum?>()) {
-      return (data != null ? _i45.ByIndexEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i46.ByNameEnum?>()) {
-      return (data != null ? _i46.ByNameEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i47.DefaultValueEnum?>()) {
-      return (data != null ? _i47.DefaultValueEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i48.DefaultException?>()) {
-      return (data != null ? _i48.DefaultException.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i49.IntDefault?>()) {
-      return (data != null ? _i49.IntDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i50.IntDefaultMix?>()) {
-      return (data != null ? _i50.IntDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i51.IntDefaultModel?>()) {
-      return (data != null ? _i51.IntDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i52.IntDefaultPersist?>()) {
-      return (data != null ? _i52.IntDefaultPersist.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i53.StringDefault?>()) {
-      return (data != null ? _i53.StringDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i54.StringDefaultMix?>()) {
-      return (data != null ? _i54.StringDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i55.StringDefaultModel?>()) {
-      return (data != null ? _i55.StringDefaultModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i56.StringDefaultPersist?>()) {
-      return (data != null ? _i56.StringDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i57.UriDefault?>()) {
-      return (data != null ? _i57.UriDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i58.UriDefaultMix?>()) {
-      return (data != null ? _i58.UriDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i59.UriDefaultModel?>()) {
-      return (data != null ? _i59.UriDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i60.UriDefaultPersist?>()) {
-      return (data != null ? _i60.UriDefaultPersist.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i61.UuidDefault?>()) {
-      return (data != null ? _i61.UuidDefault.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i62.UuidDefaultMix?>()) {
-      return (data != null ? _i62.UuidDefaultMix.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i63.UuidDefaultModel?>()) {
-      return (data != null ? _i63.UuidDefaultModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i64.UuidDefaultPersist?>()) {
-      return (data != null ? _i64.UuidDefaultPersist.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i65.EmptyModel?>()) {
-      return (data != null ? _i65.EmptyModel.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i66.EmptyModelRelationItem?>()) {
-      return (data != null ? _i66.EmptyModelRelationItem.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i67.EmptyModelWithTable?>()) {
-      return (data != null ? _i67.EmptyModelWithTable.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i68.RelationEmptyModel?>()) {
-      return (data != null ? _i68.RelationEmptyModel.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i69.ChildClassExplicitColumn?>()) {
+    if (t == _isc.getType<_ia4nw21o.BigIntDefaultPersist?>()) {
       return (data != null
-              ? _i69.ChildClassExplicitColumn.fromJson(data)
+              ? _ia4nw21o.BigIntDefaultPersist.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i70.NonTableParentClass?>()) {
-      return (data != null ? _i70.NonTableParentClass.fromJson(data) : null)
+    if (t == _isc.getType<_ilirabmz.BoolDefault?>()) {
+      return (data != null ? _ilirabmz.BoolDefault.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iwhzartq.BoolDefaultMix?>()) {
+      return (data != null ? _iwhzartq.BoolDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i71.ModifiedColumnName?>()) {
-      return (data != null ? _i71.ModifiedColumnName.fromJson(data) : null)
+    if (t == _isc.getType<_izvr7tnf.BoolDefaultModel?>()) {
+      return (data != null ? _izvr7tnf.BoolDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i72.Department?>()) {
-      return (data != null ? _i72.Department.fromJson(data) : null) as T;
+    if (t == _isc.getType<_i135uugo.BoolDefaultPersist?>()) {
+      return (data != null ? _i135uugo.BoolDefaultPersist.fromJson(data) : null)
+          as T;
     }
-    if (t == _i6.getType<_i73.Employee?>()) {
-      return (data != null ? _i73.Employee.fromJson(data) : null) as T;
+    if (t == _isc.getType<_iro0mlkq.DateTimeDefault?>()) {
+      return (data != null ? _iro0mlkq.DateTimeDefault.fromJson(data) : null)
+          as T;
     }
-    if (t == _i6.getType<_i74.Contractor?>()) {
-      return (data != null ? _i74.Contractor.fromJson(data) : null) as T;
+    if (t == _isc.getType<_igjm2894.DateTimeDefaultMix?>()) {
+      return (data != null ? _igjm2894.DateTimeDefaultMix.fromJson(data) : null)
+          as T;
     }
-    if (t == _i6.getType<_i75.Service?>()) {
-      return (data != null ? _i75.Service.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i76.TableWithExplicitColumnName?>()) {
+    if (t == _isc.getType<_ivkcoq83.DateTimeDefaultModel?>()) {
       return (data != null
-              ? _i76.TableWithExplicitColumnName.fromJson(data)
+              ? _ivkcoq83.DateTimeDefaultModel.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i77.SealedGrandChild?>()) {
-      return (data != null ? _i77.SealedGrandChild.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i77.SealedChild?>()) {
-      return (data != null ? _i77.SealedChild.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i77.SealedOtherChild?>()) {
-      return (data != null ? _i77.SealedOtherChild.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i78.CityWithLongTableName?>()) {
-      return (data != null ? _i78.CityWithLongTableName.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i79.OrganizationWithLongTableName?>()) {
+    if (t == _isc.getType<_iaqar0o9.DateTimeDefaultPersist?>()) {
       return (data != null
-              ? _i79.OrganizationWithLongTableName.fromJson(data)
+              ? _iaqar0o9.DateTimeDefaultPersist.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i80.PersonWithLongTableName?>()) {
-      return (data != null ? _i80.PersonWithLongTableName.fromJson(data) : null)
+    if (t == _isc.getType<_izu05ym4.DoubleDefault?>()) {
+      return (data != null ? _izu05ym4.DoubleDefault.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i81.MaxFieldName?>()) {
-      return (data != null ? _i81.MaxFieldName.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i82.LongImplicitIdField?>()) {
-      return (data != null ? _i82.LongImplicitIdField.fromJson(data) : null)
+    if (t == _isc.getType<_iou6kksr.DoubleDefaultMix?>()) {
+      return (data != null ? _iou6kksr.DoubleDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i83.LongImplicitIdFieldCollection?>()) {
+    if (t == _isc.getType<_i9xv7g6i.DoubleDefaultModel?>()) {
+      return (data != null ? _i9xv7g6i.DoubleDefaultModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iynhhcdw.DoubleDefaultPersist?>()) {
       return (data != null
-              ? _i83.LongImplicitIdFieldCollection.fromJson(data)
+              ? _iynhhcdw.DoubleDefaultPersist.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i84.RelationToMultipleMaxFieldName?>()) {
+    if (t == _isc.getType<_ixvw8l6s.DurationDefault?>()) {
+      return (data != null ? _ixvw8l6s.DurationDefault.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ialx1ytx.DurationDefaultMix?>()) {
+      return (data != null ? _ialx1ytx.DurationDefaultMix.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i5aouk9m.DurationDefaultModel?>()) {
       return (data != null
-              ? _i84.RelationToMultipleMaxFieldName.fromJson(data)
+              ? _i5aouk9m.DurationDefaultModel.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i85.UserNote?>()) {
-      return (data != null ? _i85.UserNote.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i86.UserNoteCollection?>()) {
-      return (data != null ? _i86.UserNoteCollection.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i87.UserNoteCollectionWithALongName?>()) {
+    if (t == _isc.getType<_ij5e1q2b.DurationDefaultPersist?>()) {
       return (data != null
-              ? _i87.UserNoteCollectionWithALongName.fromJson(data)
+              ? _ij5e1q2b.DurationDefaultPersist.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i88.UserNoteWithALongName?>()) {
-      return (data != null ? _i88.UserNoteWithALongName.fromJson(data) : null)
+    if (t == _isc.getType<_ihqxpva2.EnumDefault?>()) {
+      return (data != null ? _ihqxpva2.EnumDefault.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iyezrrxn.EnumDefaultMix?>()) {
+      return (data != null ? _iyezrrxn.EnumDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i89.MultipleMaxFieldName?>()) {
-      return (data != null ? _i89.MultipleMaxFieldName.fromJson(data) : null)
+    if (t == _isc.getType<_iw4wb1ju.EnumDefaultModel?>()) {
+      return (data != null ? _iw4wb1ju.EnumDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i90.City?>()) {
-      return (data != null ? _i90.City.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i91.Organization?>()) {
-      return (data != null ? _i91.Organization.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i92.Person?>()) {
-      return (data != null ? _i92.Person.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i93.Course?>()) {
-      return (data != null ? _i93.Course.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i94.Enrollment?>()) {
-      return (data != null ? _i94.Enrollment.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i95.Student?>()) {
-      return (data != null ? _i95.Student.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i96.Arena?>()) {
-      return (data != null ? _i96.Arena.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i97.Player?>()) {
-      return (data != null ? _i97.Player.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i98.Team?>()) {
-      return (data != null ? _i98.Team.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i99.Comment?>()) {
-      return (data != null ? _i99.Comment.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i100.Customer?>()) {
-      return (data != null ? _i100.Customer.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i101.Book?>()) {
-      return (data != null ? _i101.Book.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i102.Chapter?>()) {
-      return (data != null ? _i102.Chapter.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i103.Order?>()) {
-      return (data != null ? _i103.Order.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i104.Address?>()) {
-      return (data != null ? _i104.Address.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i105.Citizen?>()) {
-      return (data != null ? _i105.Citizen.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i106.Company?>()) {
-      return (data != null ? _i106.Company.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i107.Town?>()) {
-      return (data != null ? _i107.Town.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i108.Blocking?>()) {
-      return (data != null ? _i108.Blocking.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i109.Member?>()) {
-      return (data != null ? _i109.Member.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i110.Cat?>()) {
-      return (data != null ? _i110.Cat.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i111.Post?>()) {
-      return (data != null ? _i111.Post.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i112.NullsDistinctData?>()) {
-      return (data != null ? _i112.NullsDistinctData.fromJson(data) : null)
+    if (t == _isc.getType<_i0p9yn0v.EnumDefaultPersist?>()) {
+      return (data != null ? _i0p9yn0v.EnumDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i113.ObjectFieldPersist?>()) {
-      return (data != null ? _i113.ObjectFieldPersist.fromJson(data) : null)
+    if (t == _isc.getType<_i4ekvn16.ByIndexEnum?>()) {
+      return (data != null ? _i4ekvn16.ByIndexEnum.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ihrgmscf.ByNameEnum?>()) {
+      return (data != null ? _ihrgmscf.ByNameEnum.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iirkfcfb.DefaultValueEnum?>()) {
+      return (data != null ? _iirkfcfb.DefaultValueEnum.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i114.ObjectFieldScopes?>()) {
-      return (data != null ? _i114.ObjectFieldScopes.fromJson(data) : null)
+    if (t == _isc.getType<_iv40kyzq.DefaultException?>()) {
+      return (data != null ? _iv40kyzq.DefaultException.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i115.ObjectWithBit?>()) {
-      return (data != null ? _i115.ObjectWithBit.fromJson(data) : null) as T;
+    if (t == _isc.getType<_i8t3u1nx.IntDefault?>()) {
+      return (data != null ? _i8t3u1nx.IntDefault.fromJson(data) : null) as T;
     }
-    if (t == _i6.getType<_i116.ObjectWithByteData?>()) {
-      return (data != null ? _i116.ObjectWithByteData.fromJson(data) : null)
+    if (t == _isc.getType<_iummzlp0.IntDefaultMix?>()) {
+      return (data != null ? _iummzlp0.IntDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i117.ObjectWithDuration?>()) {
-      return (data != null ? _i117.ObjectWithDuration.fromJson(data) : null)
+    if (t == _isc.getType<_i4rypx08.IntDefaultModel?>()) {
+      return (data != null ? _i4rypx08.IntDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i118.ObjectWithDynamic?>()) {
-      return (data != null ? _i118.ObjectWithDynamic.fromJson(data) : null)
+    if (t == _isc.getType<_imhmhhwa.IntDefaultPersist?>()) {
+      return (data != null ? _imhmhhwa.IntDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i119.ObjectWithEnum?>()) {
-      return (data != null ? _i119.ObjectWithEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i120.ObjectWithEnumEnhanced?>()) {
-      return (data != null ? _i120.ObjectWithEnumEnhanced.fromJson(data) : null)
+    if (t == _isc.getType<_i4d8z6ds.StringDefault?>()) {
+      return (data != null ? _i4d8z6ds.StringDefault.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i121.ObjectWithHalfVector?>()) {
-      return (data != null ? _i121.ObjectWithHalfVector.fromJson(data) : null)
+    if (t == _isc.getType<_iu6k5fkj.StringDefaultMix?>()) {
+      return (data != null ? _iu6k5fkj.StringDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i122.ObjectWithIndex?>()) {
-      return (data != null ? _i122.ObjectWithIndex.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ihmqo6od.StringDefaultModel?>()) {
+      return (data != null ? _ihmqo6od.StringDefaultModel.fromJson(data) : null)
+          as T;
     }
-    if (t == _i6.getType<_i123.ObjectWithJsonb?>()) {
-      return (data != null ? _i123.ObjectWithJsonb.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i124.ObjectWithJsonbClassLevel?>()) {
+    if (t == _isc.getType<_ih6giyf6.StringDefaultPersist?>()) {
       return (data != null
-              ? _i124.ObjectWithJsonbClassLevel.fromJson(data)
+              ? _ih6giyf6.StringDefaultPersist.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i125.ObjectWithMaps?>()) {
-      return (data != null ? _i125.ObjectWithMaps.fromJson(data) : null) as T;
+    if (t == _isc.getType<_i2y701qf.UriDefault?>()) {
+      return (data != null ? _i2y701qf.UriDefault.fromJson(data) : null) as T;
     }
-    if (t == _i6.getType<_i126.ObjectWithObject?>()) {
-      return (data != null ? _i126.ObjectWithObject.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i127.ObjectWithParent?>()) {
-      return (data != null ? _i127.ObjectWithParent.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i128.ObjectWithSealedClass?>()) {
-      return (data != null ? _i128.ObjectWithSealedClass.fromJson(data) : null)
+    if (t == _isc.getType<_iib8h1yl.UriDefaultMix?>()) {
+      return (data != null ? _iib8h1yl.UriDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i129.ObjectWithSelfParent?>()) {
-      return (data != null ? _i129.ObjectWithSelfParent.fromJson(data) : null)
+    if (t == _isc.getType<_i1to0y5o.UriDefaultModel?>()) {
+      return (data != null ? _i1to0y5o.UriDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i130.ObjectWithSparseVector?>()) {
-      return (data != null ? _i130.ObjectWithSparseVector.fromJson(data) : null)
+    if (t == _isc.getType<_isi15w9f.UriDefaultPersist?>()) {
+      return (data != null ? _isi15w9f.UriDefaultPersist.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i131.ObjectWithUuid?>()) {
-      return (data != null ? _i131.ObjectWithUuid.fromJson(data) : null) as T;
+    if (t == _isc.getType<_ihsadwhl.UuidDefault?>()) {
+      return (data != null ? _ihsadwhl.UuidDefault.fromJson(data) : null) as T;
     }
-    if (t == _i6.getType<_i132.ObjectWithVector?>()) {
-      return (data != null ? _i132.ObjectWithVector.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i133.RelatedUniqueData?>()) {
-      return (data != null ? _i133.RelatedUniqueData.fromJson(data) : null)
+    if (t == _isc.getType<_ignwr848.UuidDefaultMix?>()) {
+      return (data != null ? _ignwr848.UuidDefaultMix.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i134.ModelWithRequiredField?>()) {
-      return (data != null ? _i134.ModelWithRequiredField.fromJson(data) : null)
+    if (t == _isc.getType<_i15gwzho.UuidDefaultModel?>()) {
+      return (data != null ? _i15gwzho.UuidDefaultModel.fromJson(data) : null)
           as T;
     }
-    if (t == _i6.getType<_i135.SimpleData?>()) {
-      return (data != null ? _i135.SimpleData.fromJson(data) : null) as T;
+    if (t == _isc.getType<_i2v866bf.UuidDefaultPersist?>()) {
+      return (data != null ? _i2v866bf.UuidDefaultPersist.fromJson(data) : null)
+          as T;
     }
-    if (t == _i6.getType<_i136.SimpleDateTime?>()) {
-      return (data != null ? _i136.SimpleDateTime.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i137.TestEnum?>()) {
-      return (data != null ? _i137.TestEnum.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i138.TestEnumDefaultSerialization?>()) {
+    if (t == _isc.getType<_io8dlrxh.DeferrableRelationInitiallyDeferred?>()) {
       return (data != null
-              ? _i138.TestEnumDefaultSerialization.fromJson(data)
+              ? _io8dlrxh.DeferrableRelationInitiallyDeferred.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i139.TestEnumEnhanced?>()) {
-      return (data != null ? _i139.TestEnumEnhanced.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i140.TestEnumEnhancedByName?>()) {
-      return (data != null ? _i140.TestEnumEnhancedByName.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i141.TestEnumStringified?>()) {
-      return (data != null ? _i141.TestEnumStringified.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i6.getType<_i142.Types?>()) {
-      return (data != null ? _i142.Types.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i143.UniqueData?>()) {
-      return (data != null ? _i143.UniqueData.fromJson(data) : null) as T;
-    }
-    if (t == _i6.getType<_i144.UniqueDataWithNonPersist?>()) {
+    if (t == _isc.getType<_inmfeda2.DeferrableRelationInitiallyImmediate?>()) {
       return (data != null
-              ? _i144.UniqueDataWithNonPersist.fromJson(data)
+              ? _inmfeda2.DeferrableRelationInitiallyImmediate.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i6.getType<_i145.UpsertTestModel?>()) {
-      return (data != null ? _i145.UpsertTestModel.fromJson(data) : null) as T;
+    if (t == _isc.getType<_izxfibiy.DeferrableRelationParent?>()) {
+      return (data != null
+              ? _izxfibiy.DeferrableRelationParent.fromJson(data)
+              : null)
+          as T;
     }
-    if (t == List<_i8.EnrollmentInt>) {
+    if (t == _isc.getType<_i9l9xrkt.EmptyModel?>()) {
+      return (data != null ? _i9l9xrkt.EmptyModel.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ikufh0vd.EmptyModelRelationItem?>()) {
+      return (data != null
+              ? _ikufh0vd.EmptyModelRelationItem.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iw4y4x6s.EmptyModelWithTable?>()) {
+      return (data != null
+              ? _iw4y4x6s.EmptyModelWithTable.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iy7bezig.RelationEmptyModel?>()) {
+      return (data != null ? _iy7bezig.RelationEmptyModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ikh95zxc.ChildClassExplicitColumn?>()) {
+      return (data != null
+              ? _ikh95zxc.ChildClassExplicitColumn.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i1y2idkw.NonTableParentClass?>()) {
+      return (data != null
+              ? _i1y2idkw.NonTableParentClass.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7hqkfn7.ModifiedColumnName?>()) {
+      return (data != null ? _i7hqkfn7.ModifiedColumnName.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ix2lcsu0.Department?>()) {
+      return (data != null ? _ix2lcsu0.Department.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ixlcmx78.Employee?>()) {
+      return (data != null ? _ixlcmx78.Employee.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iw4adtsk.Contractor?>()) {
+      return (data != null ? _iw4adtsk.Contractor.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i83a3u3u.Service?>()) {
+      return (data != null ? _i83a3u3u.Service.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iox92era.TableWithExplicitColumnName?>()) {
+      return (data != null
+              ? _iox92era.TableWithExplicitColumnName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ij7m744x.SealedGrandChild?>()) {
+      return (data != null ? _ij7m744x.SealedGrandChild.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ij7m744x.SealedChild?>()) {
+      return (data != null ? _ij7m744x.SealedChild.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ij7m744x.SealedOtherChild?>()) {
+      return (data != null ? _ij7m744x.SealedOtherChild.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iycanyn2.CityWithLongTableName?>()) {
+      return (data != null
+              ? _iycanyn2.CityWithLongTableName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ifbzwpkm.OrganizationWithLongTableName?>()) {
+      return (data != null
+              ? _ifbzwpkm.OrganizationWithLongTableName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iy2gklrg.PersonWithLongTableName?>()) {
+      return (data != null
+              ? _iy2gklrg.PersonWithLongTableName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i37b4f1x.MaxFieldName?>()) {
+      return (data != null ? _i37b4f1x.MaxFieldName.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ilm8ux21.LongImplicitIdField?>()) {
+      return (data != null
+              ? _ilm8ux21.LongImplicitIdField.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i5zyye9l.LongImplicitIdFieldCollection?>()) {
+      return (data != null
+              ? _i5zyye9l.LongImplicitIdFieldCollection.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_irdava0x.RelationToMultipleMaxFieldName?>()) {
+      return (data != null
+              ? _irdava0x.RelationToMultipleMaxFieldName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i14q426c.UserNote?>()) {
+      return (data != null ? _i14q426c.UserNote.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i0cmztzz.UserNoteCollection?>()) {
+      return (data != null ? _i0cmztzz.UserNoteCollection.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ivgcl1bh.UserNoteCollectionWithALongName?>()) {
+      return (data != null
+              ? _ivgcl1bh.UserNoteCollectionWithALongName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7zqea9a.UserNoteWithALongName?>()) {
+      return (data != null
+              ? _i7zqea9a.UserNoteWithALongName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ify1vf7h.MultipleMaxFieldName?>()) {
+      return (data != null
+              ? _ify1vf7h.MultipleMaxFieldName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i0i33txy.City?>()) {
+      return (data != null ? _i0i33txy.City.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iffzpgud.Organization?>()) {
+      return (data != null ? _iffzpgud.Organization.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i9x7ls0c.Person?>()) {
+      return (data != null ? _i9x7ls0c.Person.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iy2buo88.Course?>()) {
+      return (data != null ? _iy2buo88.Course.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i8v11x6h.Enrollment?>()) {
+      return (data != null ? _i8v11x6h.Enrollment.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ig5mtn0e.Student?>()) {
+      return (data != null ? _ig5mtn0e.Student.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ikwieien.Arena?>()) {
+      return (data != null ? _ikwieien.Arena.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ip8wmh4s.Player?>()) {
+      return (data != null ? _ip8wmh4s.Player.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ifa5hwxy.Team?>()) {
+      return (data != null ? _ifa5hwxy.Team.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ii7cxuye.Comment?>()) {
+      return (data != null ? _ii7cxuye.Comment.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i1nwi4iv.Customer?>()) {
+      return (data != null ? _i1nwi4iv.Customer.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_if51mnnb.Book?>()) {
+      return (data != null ? _if51mnnb.Book.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_itdsc4u0.Chapter?>()) {
+      return (data != null ? _itdsc4u0.Chapter.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_is5jy3ez.Order?>()) {
+      return (data != null ? _is5jy3ez.Order.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i6uupgbr.Address?>()) {
+      return (data != null ? _i6uupgbr.Address.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_igeuyxnu.Citizen?>()) {
+      return (data != null ? _igeuyxnu.Citizen.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_if6srpch.Company?>()) {
+      return (data != null ? _if6srpch.Company.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_igjnmbwc.Town?>()) {
+      return (data != null ? _igjnmbwc.Town.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ic5jbe8i.Blocking?>()) {
+      return (data != null ? _ic5jbe8i.Blocking.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ijj92mp1.Member?>()) {
+      return (data != null ? _ijj92mp1.Member.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ib9keugy.Cat?>()) {
+      return (data != null ? _ib9keugy.Cat.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iyh1zt5l.Post?>()) {
+      return (data != null ? _iyh1zt5l.Post.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iz2gvrid.NullsDistinctData?>()) {
+      return (data != null ? _iz2gvrid.NullsDistinctData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9ffbppf.ObjectFieldPersist?>()) {
+      return (data != null ? _i9ffbppf.ObjectFieldPersist.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iahgl0he.ObjectFieldScopes?>()) {
+      return (data != null ? _iahgl0he.ObjectFieldScopes.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ioxr67zo.ObjectWithBit?>()) {
+      return (data != null ? _ioxr67zo.ObjectWithBit.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iz58zhle.ObjectWithByteData?>()) {
+      return (data != null ? _iz58zhle.ObjectWithByteData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ijtijns8.ObjectWithDuration?>()) {
+      return (data != null ? _ijtijns8.ObjectWithDuration.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i9hzn3wb.ObjectWithDynamic?>()) {
+      return (data != null ? _i9hzn3wb.ObjectWithDynamic.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ip2vqluy.ObjectWithEnum?>()) {
+      return (data != null ? _ip2vqluy.ObjectWithEnum.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iwdrmoge.ObjectWithEnumEnhanced?>()) {
+      return (data != null
+              ? _iwdrmoge.ObjectWithEnumEnhanced.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iy6ksgxz.ObjectWithHalfVector?>()) {
+      return (data != null
+              ? _iy6ksgxz.ObjectWithHalfVector.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_inemzov5.ObjectWithIndex?>()) {
+      return (data != null ? _inemzov5.ObjectWithIndex.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihyvenpw.ObjectWithJsonb?>()) {
+      return (data != null ? _ihyvenpw.ObjectWithJsonb.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i4p0t2g0.ObjectWithJsonbClassLevel?>()) {
+      return (data != null
+              ? _i4p0t2g0.ObjectWithJsonbClassLevel.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i26q9u41.ObjectWithMaps?>()) {
+      return (data != null ? _i26q9u41.ObjectWithMaps.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i4hr2e9p.ObjectWithObject?>()) {
+      return (data != null ? _i4hr2e9p.ObjectWithObject.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_io0t3u2c.ObjectWithParent?>()) {
+      return (data != null ? _io0t3u2c.ObjectWithParent.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_im4j7lpz.ObjectWithSealedClass?>()) {
+      return (data != null
+              ? _im4j7lpz.ObjectWithSealedClass.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_ihluvkmz.ObjectWithSelfParent?>()) {
+      return (data != null
+              ? _ihluvkmz.ObjectWithSelfParent.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i8t20dyr.ObjectWithSparseVector?>()) {
+      return (data != null
+              ? _i8t20dyr.ObjectWithSparseVector.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iusk9w05.ObjectWithUuid?>()) {
+      return (data != null ? _iusk9w05.ObjectWithUuid.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_itmc4j9i.ObjectWithVector?>()) {
+      return (data != null ? _itmc4j9i.ObjectWithVector.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_i2aw39a6.RelatedUniqueData?>()) {
+      return (data != null ? _i2aw39a6.RelatedUniqueData.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_iv7egjxb.ModelWithRequiredField?>()) {
+      return (data != null
+              ? _iv7egjxb.ModelWithRequiredField.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i0zisc0t.SimpleData?>()) {
+      return (data != null ? _i0zisc0t.SimpleData.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_i1duz4kf.SimpleDateTime?>()) {
+      return (data != null ? _i1duz4kf.SimpleDateTime.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_ionapfu9.TestEnum?>()) {
+      return (data != null ? _ionapfu9.TestEnum.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_icplrpi3.TestEnumDefaultSerialization?>()) {
+      return (data != null
+              ? _icplrpi3.TestEnumDefaultSerialization.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_it39smib.TestEnumEnhanced?>()) {
+      return (data != null ? _it39smib.TestEnumEnhanced.fromJson(data) : null)
+          as T;
+    }
+    if (t == _isc.getType<_izw460bh.TestEnumEnhancedByName?>()) {
+      return (data != null
+              ? _izw460bh.TestEnumEnhancedByName.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_i7liykk2.TestEnumStringified?>()) {
+      return (data != null
+              ? _i7liykk2.TestEnumStringified.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iwxwszsz.Types?>()) {
+      return (data != null ? _iwxwszsz.Types.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_iufhyrjh.UniqueData?>()) {
+      return (data != null ? _iufhyrjh.UniqueData.fromJson(data) : null) as T;
+    }
+    if (t == _isc.getType<_ip8yzqii.UniqueDataWithNonPersist?>()) {
+      return (data != null
+              ? _ip8yzqii.UniqueDataWithNonPersist.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _isc.getType<_iwbeyn4p.UpsertTestModel?>()) {
+      return (data != null ? _iwbeyn4p.UpsertTestModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == List<_icdgc05t.EnrollmentInt>) {
       return (data as List)
-              .map((e) => deserialize<_i8.EnrollmentInt>(e))
+              .map((e) => deserialize<_icdgc05t.EnrollmentInt>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i8.EnrollmentInt>?>()) {
+    if (t == _isc.getType<List<_icdgc05t.EnrollmentInt>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i8.EnrollmentInt>(e))
+                    .map((e) => deserialize<_icdgc05t.EnrollmentInt>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i11.PlayerUuid>) {
-      return (data as List).map((e) => deserialize<_i11.PlayerUuid>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i11.PlayerUuid>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i11.PlayerUuid>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i15.OrderUuid>) {
-      return (data as List).map((e) => deserialize<_i15.OrderUuid>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i15.OrderUuid>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i15.OrderUuid>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i13.CommentInt>) {
-      return (data as List).map((e) => deserialize<_i13.CommentInt>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i13.CommentInt>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i13.CommentInt>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i20.ChangedIdTypeSelf>) {
+    if (t == List<_ivdpnfmj.PlayerUuid>) {
       return (data as List)
-              .map((e) => deserialize<_i20.ChangedIdTypeSelf>(e))
+              .map((e) => deserialize<_ivdpnfmj.PlayerUuid>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i20.ChangedIdTypeSelf>?>()) {
+    if (t == _isc.getType<List<_ivdpnfmj.PlayerUuid>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i20.ChangedIdTypeSelf>(e))
+                    .map((e) => deserialize<_ivdpnfmj.PlayerUuid>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i66.EmptyModelRelationItem>) {
+    if (t == List<_iywnby31.OrderUuid>) {
       return (data as List)
-              .map((e) => deserialize<_i66.EmptyModelRelationItem>(e))
+              .map((e) => deserialize<_iywnby31.OrderUuid>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i66.EmptyModelRelationItem>?>()) {
+    if (t == _isc.getType<List<_iywnby31.OrderUuid>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i66.EmptyModelRelationItem>(e))
+                    .map((e) => deserialize<_iywnby31.OrderUuid>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i73.Employee>) {
-      return (data as List).map((e) => deserialize<_i73.Employee>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i73.Employee>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i73.Employee>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i80.PersonWithLongTableName>) {
+    if (t == List<_i3jtpxta.CommentInt>) {
       return (data as List)
-              .map((e) => deserialize<_i80.PersonWithLongTableName>(e))
+              .map((e) => deserialize<_i3jtpxta.CommentInt>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i80.PersonWithLongTableName>?>()) {
+    if (t == _isc.getType<List<_i3jtpxta.CommentInt>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i80.PersonWithLongTableName>(e))
+                    .map((e) => deserialize<_i3jtpxta.CommentInt>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i79.OrganizationWithLongTableName>) {
+    if (t == List<_ixc9sah8.ChangedIdTypeSelf>) {
       return (data as List)
-              .map((e) => deserialize<_i79.OrganizationWithLongTableName>(e))
+              .map((e) => deserialize<_ixc9sah8.ChangedIdTypeSelf>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i79.OrganizationWithLongTableName>?>()) {
+    if (t == _isc.getType<List<_ixc9sah8.ChangedIdTypeSelf>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ixc9sah8.ChangedIdTypeSelf>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_ikufh0vd.EmptyModelRelationItem>) {
+      return (data as List)
+              .map((e) => deserialize<_ikufh0vd.EmptyModelRelationItem>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_ikufh0vd.EmptyModelRelationItem>?>()) {
       return (data != null
               ? (data as List)
                     .map(
-                      (e) => deserialize<_i79.OrganizationWithLongTableName>(e),
+                      (e) => deserialize<_ikufh0vd.EmptyModelRelationItem>(e),
                     )
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i82.LongImplicitIdField>) {
+    if (t == List<_ixlcmx78.Employee>) {
       return (data as List)
-              .map((e) => deserialize<_i82.LongImplicitIdField>(e))
+              .map((e) => deserialize<_ixlcmx78.Employee>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i82.LongImplicitIdField>?>()) {
+    if (t == _isc.getType<List<_ixlcmx78.Employee>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i82.LongImplicitIdField>(e))
+                    .map((e) => deserialize<_ixlcmx78.Employee>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i89.MultipleMaxFieldName>) {
+    if (t == List<_iy2gklrg.PersonWithLongTableName>) {
       return (data as List)
-              .map((e) => deserialize<_i89.MultipleMaxFieldName>(e))
+              .map((e) => deserialize<_iy2gklrg.PersonWithLongTableName>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i89.MultipleMaxFieldName>?>()) {
+    if (t == _isc.getType<List<_iy2gklrg.PersonWithLongTableName>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i89.MultipleMaxFieldName>(e))
+                    .map(
+                      (e) => deserialize<_iy2gklrg.PersonWithLongTableName>(e),
+                    )
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i85.UserNote>) {
-      return (data as List).map((e) => deserialize<_i85.UserNote>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i85.UserNote>?>()) {
-      return (data != null
-              ? (data as List)
-                    .map((e) => deserialize<_i85.UserNote>(e))
-                    .toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i88.UserNoteWithALongName>) {
+    if (t == List<_ifbzwpkm.OrganizationWithLongTableName>) {
       return (data as List)
-              .map((e) => deserialize<_i88.UserNoteWithALongName>(e))
+              .map(
+                (e) => deserialize<_ifbzwpkm.OrganizationWithLongTableName>(e),
+              )
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i88.UserNoteWithALongName>?>()) {
+    if (t == _isc.getType<List<_ifbzwpkm.OrganizationWithLongTableName>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i88.UserNoteWithALongName>(e))
+                    .map(
+                      (e) =>
+                          deserialize<_ifbzwpkm.OrganizationWithLongTableName>(
+                            e,
+                          ),
+                    )
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i92.Person>) {
-      return (data as List).map((e) => deserialize<_i92.Person>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i92.Person>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<_i92.Person>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i91.Organization>) {
+    if (t == List<_ilm8ux21.LongImplicitIdField>) {
       return (data as List)
-              .map((e) => deserialize<_i91.Organization>(e))
+              .map((e) => deserialize<_ilm8ux21.LongImplicitIdField>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i91.Organization>?>()) {
+    if (t == _isc.getType<List<_ilm8ux21.LongImplicitIdField>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i91.Organization>(e))
+                    .map((e) => deserialize<_ilm8ux21.LongImplicitIdField>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i94.Enrollment>) {
-      return (data as List).map((e) => deserialize<_i94.Enrollment>(e)).toList()
+    if (t == List<_ify1vf7h.MultipleMaxFieldName>) {
+      return (data as List)
+              .map((e) => deserialize<_ify1vf7h.MultipleMaxFieldName>(e))
+              .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i94.Enrollment>?>()) {
+    if (t == _isc.getType<List<_ify1vf7h.MultipleMaxFieldName>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i94.Enrollment>(e))
+                    .map((e) => deserialize<_ify1vf7h.MultipleMaxFieldName>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i97.Player>) {
-      return (data as List).map((e) => deserialize<_i97.Player>(e)).toList()
+    if (t == List<_i14q426c.UserNote>) {
+      return (data as List)
+              .map((e) => deserialize<_i14q426c.UserNote>(e))
+              .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i97.Player>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<_i97.Player>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i103.Order>) {
-      return (data as List).map((e) => deserialize<_i103.Order>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i103.Order>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<_i103.Order>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i102.Chapter>) {
-      return (data as List).map((e) => deserialize<_i102.Chapter>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i102.Chapter>?>()) {
+    if (t == _isc.getType<List<_i14q426c.UserNote>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i102.Chapter>(e))
+                    .map((e) => deserialize<_i14q426c.UserNote>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i99.Comment>) {
-      return (data as List).map((e) => deserialize<_i99.Comment>(e)).toList()
+    if (t == List<_i7zqea9a.UserNoteWithALongName>) {
+      return (data as List)
+              .map((e) => deserialize<_i7zqea9a.UserNoteWithALongName>(e))
+              .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i99.Comment>?>()) {
-      return (data != null
-              ? (data as List).map((e) => deserialize<_i99.Comment>(e)).toList()
-              : null)
-          as T;
-    }
-    if (t == List<_i108.Blocking>) {
-      return (data as List).map((e) => deserialize<_i108.Blocking>(e)).toList()
-          as T;
-    }
-    if (t == _i6.getType<List<_i108.Blocking>?>()) {
+    if (t == _isc.getType<List<_i7zqea9a.UserNoteWithALongName>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i108.Blocking>(e))
+                    .map((e) => deserialize<_i7zqea9a.UserNoteWithALongName>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i110.Cat>) {
-      return (data as List).map((e) => deserialize<_i110.Cat>(e)).toList() as T;
+    if (t == List<_i9x7ls0c.Person>) {
+      return (data as List)
+              .map((e) => deserialize<_i9x7ls0c.Person>(e))
+              .toList()
+          as T;
     }
-    if (t == _i6.getType<List<_i110.Cat>?>()) {
+    if (t == _isc.getType<List<_i9x7ls0c.Person>?>()) {
       return (data != null
-              ? (data as List).map((e) => deserialize<_i110.Cat>(e)).toList()
+              ? (data as List)
+                    .map((e) => deserialize<_i9x7ls0c.Person>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_iffzpgud.Organization>) {
+      return (data as List)
+              .map((e) => deserialize<_iffzpgud.Organization>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_iffzpgud.Organization>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_iffzpgud.Organization>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_i8v11x6h.Enrollment>) {
+      return (data as List)
+              .map((e) => deserialize<_i8v11x6h.Enrollment>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_i8v11x6h.Enrollment>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_i8v11x6h.Enrollment>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_ip8wmh4s.Player>) {
+      return (data as List)
+              .map((e) => deserialize<_ip8wmh4s.Player>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_ip8wmh4s.Player>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ip8wmh4s.Player>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_is5jy3ez.Order>) {
+      return (data as List).map((e) => deserialize<_is5jy3ez.Order>(e)).toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_is5jy3ez.Order>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_is5jy3ez.Order>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_itdsc4u0.Chapter>) {
+      return (data as List)
+              .map((e) => deserialize<_itdsc4u0.Chapter>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_itdsc4u0.Chapter>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_itdsc4u0.Chapter>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_ii7cxuye.Comment>) {
+      return (data as List)
+              .map((e) => deserialize<_ii7cxuye.Comment>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_ii7cxuye.Comment>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ii7cxuye.Comment>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_ic5jbe8i.Blocking>) {
+      return (data as List)
+              .map((e) => deserialize<_ic5jbe8i.Blocking>(e))
+              .toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_ic5jbe8i.Blocking>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ic5jbe8i.Blocking>(e))
+                    .toList()
+              : null)
+          as T;
+    }
+    if (t == List<_ib9keugy.Cat>) {
+      return (data as List).map((e) => deserialize<_ib9keugy.Cat>(e)).toList()
+          as T;
+    }
+    if (t == _isc.getType<List<_ib9keugy.Cat>?>()) {
+      return (data != null
+              ? (data as List)
+                    .map((e) => deserialize<_ib9keugy.Cat>(e))
+                    .toList()
               : null)
           as T;
     }
@@ -3034,29 +3198,33 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == List<_i137.TestEnum>) {
-      return (data as List).map((e) => deserialize<_i137.TestEnum>(e)).toList()
-          as T;
-    }
-    if (t == List<_i137.TestEnum?>) {
-      return (data as List).map((e) => deserialize<_i137.TestEnum?>(e)).toList()
-          as T;
-    }
-    if (t == List<List<_i137.TestEnum>>) {
+    if (t == List<_ionapfu9.TestEnum>) {
       return (data as List)
-              .map((e) => deserialize<List<_i137.TestEnum>>(e))
+              .map((e) => deserialize<_ionapfu9.TestEnum>(e))
               .toList()
           as T;
     }
-    if (t == List<_i139.TestEnumEnhanced>) {
+    if (t == List<_ionapfu9.TestEnum?>) {
       return (data as List)
-              .map((e) => deserialize<_i139.TestEnumEnhanced>(e))
+              .map((e) => deserialize<_ionapfu9.TestEnum?>(e))
               .toList()
           as T;
     }
-    if (t == List<_i140.TestEnumEnhancedByName>) {
+    if (t == List<List<_ionapfu9.TestEnum>>) {
       return (data as List)
-              .map((e) => deserialize<_i140.TestEnumEnhancedByName>(e))
+              .map((e) => deserialize<List<_ionapfu9.TestEnum>>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_it39smib.TestEnumEnhanced>) {
+      return (data as List)
+              .map((e) => deserialize<_it39smib.TestEnumEnhanced>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<_izw460bh.TestEnumEnhancedByName>) {
+      return (data as List)
+              .map((e) => deserialize<_izw460bh.TestEnumEnhancedByName>(e))
               .toList()
           as T;
     }
@@ -3069,17 +3237,17 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == _i6.getType<List<String>?>()) {
+    if (t == _isc.getType<List<String>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<String>(e)).toList()
               : null)
           as T;
     }
-    if (t == Map<String, _i135.SimpleData>) {
+    if (t == Map<String, _i0zisc0t.SimpleData>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i135.SimpleData>(v),
+              deserialize<_i0zisc0t.SimpleData>(v),
             ),
           )
           as T;
@@ -3097,12 +3265,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i146.ByteData>) {
+    if (t == Map<String, _idt.ByteData>) {
       return (data as Map).map(
-            (k, v) => MapEntry(
-              deserialize<String>(k),
-              deserialize<_i146.ByteData>(v),
-            ),
+            (k, v) =>
+                MapEntry(deserialize<String>(k), deserialize<_idt.ByteData>(v)),
           )
           as T;
     }
@@ -3113,18 +3279,20 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i6.UuidValue>) {
-      return (data as Map).map(
-            (k, v) =>
-                MapEntry(deserialize<String>(k), deserialize<_i6.UuidValue>(v)),
-          )
-          as T;
-    }
-    if (t == Map<String, _i135.SimpleData?>) {
+    if (t == Map<String, _isc.UuidValue>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i135.SimpleData?>(v),
+              deserialize<_isc.UuidValue>(v),
+            ),
+          )
+          as T;
+    }
+    if (t == Map<String, _i0zisc0t.SimpleData?>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(
+              deserialize<String>(k),
+              deserialize<_i0zisc0t.SimpleData?>(v),
             ),
           )
           as T;
@@ -3148,11 +3316,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i146.ByteData?>) {
+    if (t == Map<String, _idt.ByteData?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i146.ByteData?>(v),
+              deserialize<_idt.ByteData?>(v),
             ),
           )
           as T;
@@ -3164,11 +3332,11 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == Map<String, _i6.UuidValue?>) {
+    if (t == Map<String, _isc.UuidValue?>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i6.UuidValue?>(v),
+              deserialize<_isc.UuidValue?>(v),
             ),
           )
           as T;
@@ -3182,144 +3350,147 @@ class Protocol extends _i1.DatabaseSerializationManager {
           )
           as T;
     }
-    if (t == List<_i135.SimpleData>) {
+    if (t == List<_i0zisc0t.SimpleData>) {
       return (data as List)
-              .map((e) => deserialize<_i135.SimpleData>(e))
+              .map((e) => deserialize<_i0zisc0t.SimpleData>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i135.SimpleData>?>()) {
+    if (t == _isc.getType<List<_i0zisc0t.SimpleData>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i135.SimpleData>(e))
+                    .map((e) => deserialize<_i0zisc0t.SimpleData>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<_i135.SimpleData?>) {
+    if (t == List<_i0zisc0t.SimpleData?>) {
       return (data as List)
-              .map((e) => deserialize<_i135.SimpleData?>(e))
+              .map((e) => deserialize<_i0zisc0t.SimpleData?>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<_i135.SimpleData?>?>()) {
+    if (t == _isc.getType<List<_i0zisc0t.SimpleData?>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i135.SimpleData?>(e))
+                    .map((e) => deserialize<_i0zisc0t.SimpleData?>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == List<List<_i135.SimpleData>>) {
+    if (t == List<List<_i0zisc0t.SimpleData>>) {
       return (data as List)
-              .map((e) => deserialize<List<_i135.SimpleData>>(e))
+              .map((e) => deserialize<List<_i0zisc0t.SimpleData>>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<List<List<_i135.SimpleData>>?>()) {
+    if (t == _isc.getType<List<List<_i0zisc0t.SimpleData>>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<List<_i135.SimpleData>>(e))
+                    .map((e) => deserialize<List<_i0zisc0t.SimpleData>>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == Map<String, List<List<Map<int, _i135.SimpleData>>?>>) {
+    if (t == Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<List<List<Map<int, _i135.SimpleData>>?>>(v),
+              deserialize<List<List<Map<int, _i0zisc0t.SimpleData>>?>>(v),
             ),
           )
           as T;
     }
-    if (t == List<List<Map<int, _i135.SimpleData>>?>) {
+    if (t == List<List<Map<int, _i0zisc0t.SimpleData>>?>) {
       return (data as List)
-              .map((e) => deserialize<List<Map<int, _i135.SimpleData>>?>(e))
+              .map((e) => deserialize<List<Map<int, _i0zisc0t.SimpleData>>?>(e))
               .toList()
           as T;
     }
-    if (t == List<Map<int, _i135.SimpleData>>) {
+    if (t == List<Map<int, _i0zisc0t.SimpleData>>) {
       return (data as List)
-              .map((e) => deserialize<Map<int, _i135.SimpleData>>(e))
+              .map((e) => deserialize<Map<int, _i0zisc0t.SimpleData>>(e))
               .toList()
           as T;
     }
-    if (t == Map<int, _i135.SimpleData>) {
+    if (t == Map<int, _i0zisc0t.SimpleData>) {
       return Map.fromEntries(
             (data as List).map(
               (e) => MapEntry(
                 deserialize<int>(e['k']),
-                deserialize<_i135.SimpleData>(e['v']),
+                deserialize<_i0zisc0t.SimpleData>(e['v']),
               ),
             ),
           )
           as T;
     }
-    if (t == _i6.getType<List<Map<int, _i135.SimpleData>>?>()) {
+    if (t == _isc.getType<List<Map<int, _i0zisc0t.SimpleData>>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<Map<int, _i135.SimpleData>>(e))
+                    .map((e) => deserialize<Map<int, _i0zisc0t.SimpleData>>(e))
                     .toList()
               : null)
           as T;
     }
     if (t ==
-        _i6.getType<Map<String, List<List<Map<int, _i135.SimpleData>>?>>?>()) {
+        _isc
+            .getType<
+              Map<String, List<List<Map<int, _i0zisc0t.SimpleData>>?>>?
+            >()) {
       return (data != null
               ? (data as Map).map(
                   (k, v) => MapEntry(
                     deserialize<String>(k),
-                    deserialize<List<List<Map<int, _i135.SimpleData>>?>>(v),
+                    deserialize<List<List<Map<int, _i0zisc0t.SimpleData>>?>>(v),
                   ),
                 )
               : null)
           as T;
     }
-    if (t == _i6.getType<List<Map<int, _i135.SimpleData>>?>()) {
+    if (t == _isc.getType<List<Map<int, _i0zisc0t.SimpleData>>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<Map<int, _i135.SimpleData>>(e))
+                    .map((e) => deserialize<Map<int, _i0zisc0t.SimpleData>>(e))
                     .toList()
               : null)
           as T;
     }
-    if (t == Map<String, Map<int, _i135.SimpleData>>) {
+    if (t == Map<String, Map<int, _i0zisc0t.SimpleData>>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<Map<int, _i135.SimpleData>>(v),
+              deserialize<Map<int, _i0zisc0t.SimpleData>>(v),
             ),
           )
           as T;
     }
-    if (t == _i6.getType<Map<String, Map<int, _i135.SimpleData>>?>()) {
+    if (t == _isc.getType<Map<String, Map<int, _i0zisc0t.SimpleData>>?>()) {
       return (data != null
               ? (data as Map).map(
                   (k, v) => MapEntry(
                     deserialize<String>(k),
-                    deserialize<Map<int, _i135.SimpleData>>(v),
+                    deserialize<Map<int, _i0zisc0t.SimpleData>>(v),
                   ),
                 )
               : null)
           as T;
     }
-    if (t == List<_i77.SealedParent>) {
+    if (t == List<_ij7m744x.SealedParent>) {
       return (data as List)
-              .map((e) => deserialize<_i77.SealedParent>(e))
+              .map((e) => deserialize<_ij7m744x.SealedParent>(e))
               .toList()
           as T;
     }
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == _i6.getType<List<int>?>()) {
+    if (t == _isc.getType<List<int>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<int>(e)).toList()
               : null)
           as T;
     }
-    if (t == _i6.getType<Map<int, int>?>()) {
+    if (t == _isc.getType<Map<int, int>?>()) {
       return (data != null
               ? Map.fromEntries(
                   (data as List).map(
@@ -3335,13 +3506,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
     if (t == Set<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toSet() as T;
     }
-    if (t == _i6.getType<Set<int>?>()) {
+    if (t == _isc.getType<Set<int>?>()) {
       return (data != null
               ? (data as List).map((e) => deserialize<int>(e)).toSet()
               : null)
           as T;
     }
-    if (t == _i6.getType<(String, {Uri? optionalUri})?>()) {
+    if (t == _isc.getType<(String, {Uri? optionalUri})?>()) {
       return (data == null)
           ? null as T
           : (
@@ -3352,13 +3523,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
                 )
                 as T;
     }
-    if (t == List<_i147.SimpleData>) {
+    if (t == List<_ilnisupq.SimpleData>) {
       return (data as List)
-              .map((e) => deserialize<_i147.SimpleData>(e))
+              .map((e) => deserialize<_ilnisupq.SimpleData>(e))
               .toList()
           as T;
     }
-    if (t == _i6.getType<(String, {Uri? optionalUri})?>()) {
+    if (t == _isc.getType<(String, {Uri? optionalUri})?>()) {
       return (data == null)
           ? null as T
           : (
@@ -3370,166 +3541,175 @@ class Protocol extends _i1.DatabaseSerializationManager {
                 as T;
     }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i6.DeserializationTypeNotFoundException catch (_) {}
+      return _iacc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i6.DeserializationTypeNotFoundException catch (_) {}
+      return _iaic.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i6.DeserializationTypeNotFoundException catch (_) {}
+      return _iyerxm0e.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i5.Protocol().deserialize<T>(data, t);
-    } on _i6.DeserializationTypeNotFoundException catch (_) {}
+      return _iqfgygbv.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i148.Protocol().deserialize<T>(data, t);
-    } on _i6.DeserializationTypeNotFoundException catch (_) {}
+      return _issc.Protocol().deserialize<T>(data, t);
+    } on _isc.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i7.CourseUuid => 'CourseUuid',
-      _i8.EnrollmentInt => 'EnrollmentInt',
-      _i9.StudentUuid => 'StudentUuid',
-      _i10.ArenaUuid => 'ArenaUuid',
-      _i11.PlayerUuid => 'PlayerUuid',
-      _i12.TeamInt => 'TeamInt',
-      _i13.CommentInt => 'CommentInt',
-      _i14.CustomerInt => 'CustomerInt',
-      _i15.OrderUuid => 'OrderUuid',
-      _i16.AddressUuid => 'AddressUuid',
-      _i17.CitizenInt => 'CitizenInt',
-      _i18.CompanyUuid => 'CompanyUuid',
-      _i19.TownInt => 'TownInt',
-      _i20.ChangedIdTypeSelf => 'ChangedIdTypeSelf',
-      _i21.BigIntDefault => 'BigIntDefault',
-      _i22.BigIntDefaultMix => 'BigIntDefaultMix',
-      _i23.BigIntDefaultModel => 'BigIntDefaultModel',
-      _i24.BigIntDefaultPersist => 'BigIntDefaultPersist',
-      _i25.BoolDefault => 'BoolDefault',
-      _i26.BoolDefaultMix => 'BoolDefaultMix',
-      _i27.BoolDefaultModel => 'BoolDefaultModel',
-      _i28.BoolDefaultPersist => 'BoolDefaultPersist',
-      _i29.DateTimeDefault => 'DateTimeDefault',
-      _i30.DateTimeDefaultMix => 'DateTimeDefaultMix',
-      _i31.DateTimeDefaultModel => 'DateTimeDefaultModel',
-      _i32.DateTimeDefaultPersist => 'DateTimeDefaultPersist',
-      _i33.DoubleDefault => 'DoubleDefault',
-      _i34.DoubleDefaultMix => 'DoubleDefaultMix',
-      _i35.DoubleDefaultModel => 'DoubleDefaultModel',
-      _i36.DoubleDefaultPersist => 'DoubleDefaultPersist',
-      _i37.DurationDefault => 'DurationDefault',
-      _i38.DurationDefaultMix => 'DurationDefaultMix',
-      _i39.DurationDefaultModel => 'DurationDefaultModel',
-      _i40.DurationDefaultPersist => 'DurationDefaultPersist',
-      _i41.EnumDefault => 'EnumDefault',
-      _i42.EnumDefaultMix => 'EnumDefaultMix',
-      _i43.EnumDefaultModel => 'EnumDefaultModel',
-      _i44.EnumDefaultPersist => 'EnumDefaultPersist',
-      _i45.ByIndexEnum => 'ByIndexEnum',
-      _i46.ByNameEnum => 'ByNameEnum',
-      _i47.DefaultValueEnum => 'DefaultValueEnum',
-      _i48.DefaultException => 'DefaultException',
-      _i49.IntDefault => 'IntDefault',
-      _i50.IntDefaultMix => 'IntDefaultMix',
-      _i51.IntDefaultModel => 'IntDefaultModel',
-      _i52.IntDefaultPersist => 'IntDefaultPersist',
-      _i53.StringDefault => 'StringDefault',
-      _i54.StringDefaultMix => 'StringDefaultMix',
-      _i55.StringDefaultModel => 'StringDefaultModel',
-      _i56.StringDefaultPersist => 'StringDefaultPersist',
-      _i57.UriDefault => 'UriDefault',
-      _i58.UriDefaultMix => 'UriDefaultMix',
-      _i59.UriDefaultModel => 'UriDefaultModel',
-      _i60.UriDefaultPersist => 'UriDefaultPersist',
-      _i61.UuidDefault => 'UuidDefault',
-      _i62.UuidDefaultMix => 'UuidDefaultMix',
-      _i63.UuidDefaultModel => 'UuidDefaultModel',
-      _i64.UuidDefaultPersist => 'UuidDefaultPersist',
-      _i65.EmptyModel => 'EmptyModel',
-      _i66.EmptyModelRelationItem => 'EmptyModelRelationItem',
-      _i67.EmptyModelWithTable => 'EmptyModelWithTable',
-      _i68.RelationEmptyModel => 'RelationEmptyModel',
-      _i69.ChildClassExplicitColumn => 'ChildClassExplicitColumn',
-      _i70.NonTableParentClass => 'NonTableParentClass',
-      _i71.ModifiedColumnName => 'ModifiedColumnName',
-      _i72.Department => 'Department',
-      _i73.Employee => 'Employee',
-      _i74.Contractor => 'Contractor',
-      _i75.Service => 'Service',
-      _i76.TableWithExplicitColumnName => 'TableWithExplicitColumnName',
-      _i77.SealedGrandChild => 'SealedGrandChild',
-      _i77.SealedChild => 'SealedChild',
-      _i77.SealedOtherChild => 'SealedOtherChild',
-      _i78.CityWithLongTableName => 'CityWithLongTableName',
-      _i79.OrganizationWithLongTableName => 'OrganizationWithLongTableName',
-      _i80.PersonWithLongTableName => 'PersonWithLongTableName',
-      _i81.MaxFieldName => 'MaxFieldName',
-      _i82.LongImplicitIdField => 'LongImplicitIdField',
-      _i83.LongImplicitIdFieldCollection => 'LongImplicitIdFieldCollection',
-      _i84.RelationToMultipleMaxFieldName => 'RelationToMultipleMaxFieldName',
-      _i85.UserNote => 'UserNote',
-      _i86.UserNoteCollection => 'UserNoteCollection',
-      _i87.UserNoteCollectionWithALongName => 'UserNoteCollectionWithALongName',
-      _i88.UserNoteWithALongName => 'UserNoteWithALongName',
-      _i89.MultipleMaxFieldName => 'MultipleMaxFieldName',
-      _i90.City => 'City',
-      _i91.Organization => 'Organization',
-      _i92.Person => 'Person',
-      _i93.Course => 'Course',
-      _i94.Enrollment => 'Enrollment',
-      _i95.Student => 'Student',
-      _i96.Arena => 'Arena',
-      _i97.Player => 'Player',
-      _i98.Team => 'Team',
-      _i99.Comment => 'Comment',
-      _i100.Customer => 'Customer',
-      _i101.Book => 'Book',
-      _i102.Chapter => 'Chapter',
-      _i103.Order => 'Order',
-      _i104.Address => 'Address',
-      _i105.Citizen => 'Citizen',
-      _i106.Company => 'Company',
-      _i107.Town => 'Town',
-      _i108.Blocking => 'Blocking',
-      _i109.Member => 'Member',
-      _i110.Cat => 'Cat',
-      _i111.Post => 'Post',
-      _i112.NullsDistinctData => 'NullsDistinctData',
-      _i113.ObjectFieldPersist => 'ObjectFieldPersist',
-      _i114.ObjectFieldScopes => 'ObjectFieldScopes',
-      _i115.ObjectWithBit => 'ObjectWithBit',
-      _i116.ObjectWithByteData => 'ObjectWithByteData',
-      _i117.ObjectWithDuration => 'ObjectWithDuration',
-      _i118.ObjectWithDynamic => 'ObjectWithDynamic',
-      _i119.ObjectWithEnum => 'ObjectWithEnum',
-      _i120.ObjectWithEnumEnhanced => 'ObjectWithEnumEnhanced',
-      _i121.ObjectWithHalfVector => 'ObjectWithHalfVector',
-      _i122.ObjectWithIndex => 'ObjectWithIndex',
-      _i123.ObjectWithJsonb => 'ObjectWithJsonb',
-      _i124.ObjectWithJsonbClassLevel => 'ObjectWithJsonbClassLevel',
-      _i125.ObjectWithMaps => 'ObjectWithMaps',
-      _i126.ObjectWithObject => 'ObjectWithObject',
-      _i127.ObjectWithParent => 'ObjectWithParent',
-      _i128.ObjectWithSealedClass => 'ObjectWithSealedClass',
-      _i129.ObjectWithSelfParent => 'ObjectWithSelfParent',
-      _i130.ObjectWithSparseVector => 'ObjectWithSparseVector',
-      _i131.ObjectWithUuid => 'ObjectWithUuid',
-      _i132.ObjectWithVector => 'ObjectWithVector',
-      _i133.RelatedUniqueData => 'RelatedUniqueData',
-      _i134.ModelWithRequiredField => 'ModelWithRequiredField',
-      _i135.SimpleData => 'SimpleData',
-      _i136.SimpleDateTime => 'SimpleDateTime',
-      _i137.TestEnum => 'TestEnum',
-      _i138.TestEnumDefaultSerialization => 'TestEnumDefaultSerialization',
-      _i139.TestEnumEnhanced => 'TestEnumEnhanced',
-      _i140.TestEnumEnhancedByName => 'TestEnumEnhancedByName',
-      _i141.TestEnumStringified => 'TestEnumStringified',
-      _i142.Types => 'Types',
-      _i143.UniqueData => 'UniqueData',
-      _i144.UniqueDataWithNonPersist => 'UniqueDataWithNonPersist',
-      _i145.UpsertTestModel => 'UpsertTestModel',
+      _ik6ri27s.CourseUuid => 'CourseUuid',
+      _icdgc05t.EnrollmentInt => 'EnrollmentInt',
+      _ibrjea6w.StudentUuid => 'StudentUuid',
+      _isj7c5mo.ArenaUuid => 'ArenaUuid',
+      _ivdpnfmj.PlayerUuid => 'PlayerUuid',
+      _ivehlt2f.TeamInt => 'TeamInt',
+      _i3jtpxta.CommentInt => 'CommentInt',
+      _iimgofmw.CustomerInt => 'CustomerInt',
+      _iywnby31.OrderUuid => 'OrderUuid',
+      _ifwqt4rb.AddressUuid => 'AddressUuid',
+      _idhvg1zk.CitizenInt => 'CitizenInt',
+      _i5vwm04a.CompanyUuid => 'CompanyUuid',
+      _iu7osokh.TownInt => 'TownInt',
+      _ixc9sah8.ChangedIdTypeSelf => 'ChangedIdTypeSelf',
+      _icrmubzc.BigIntDefault => 'BigIntDefault',
+      _i1xsun18.BigIntDefaultMix => 'BigIntDefaultMix',
+      _i332rqur.BigIntDefaultModel => 'BigIntDefaultModel',
+      _ia4nw21o.BigIntDefaultPersist => 'BigIntDefaultPersist',
+      _ilirabmz.BoolDefault => 'BoolDefault',
+      _iwhzartq.BoolDefaultMix => 'BoolDefaultMix',
+      _izvr7tnf.BoolDefaultModel => 'BoolDefaultModel',
+      _i135uugo.BoolDefaultPersist => 'BoolDefaultPersist',
+      _iro0mlkq.DateTimeDefault => 'DateTimeDefault',
+      _igjm2894.DateTimeDefaultMix => 'DateTimeDefaultMix',
+      _ivkcoq83.DateTimeDefaultModel => 'DateTimeDefaultModel',
+      _iaqar0o9.DateTimeDefaultPersist => 'DateTimeDefaultPersist',
+      _izu05ym4.DoubleDefault => 'DoubleDefault',
+      _iou6kksr.DoubleDefaultMix => 'DoubleDefaultMix',
+      _i9xv7g6i.DoubleDefaultModel => 'DoubleDefaultModel',
+      _iynhhcdw.DoubleDefaultPersist => 'DoubleDefaultPersist',
+      _ixvw8l6s.DurationDefault => 'DurationDefault',
+      _ialx1ytx.DurationDefaultMix => 'DurationDefaultMix',
+      _i5aouk9m.DurationDefaultModel => 'DurationDefaultModel',
+      _ij5e1q2b.DurationDefaultPersist => 'DurationDefaultPersist',
+      _ihqxpva2.EnumDefault => 'EnumDefault',
+      _iyezrrxn.EnumDefaultMix => 'EnumDefaultMix',
+      _iw4wb1ju.EnumDefaultModel => 'EnumDefaultModel',
+      _i0p9yn0v.EnumDefaultPersist => 'EnumDefaultPersist',
+      _i4ekvn16.ByIndexEnum => 'ByIndexEnum',
+      _ihrgmscf.ByNameEnum => 'ByNameEnum',
+      _iirkfcfb.DefaultValueEnum => 'DefaultValueEnum',
+      _iv40kyzq.DefaultException => 'DefaultException',
+      _i8t3u1nx.IntDefault => 'IntDefault',
+      _iummzlp0.IntDefaultMix => 'IntDefaultMix',
+      _i4rypx08.IntDefaultModel => 'IntDefaultModel',
+      _imhmhhwa.IntDefaultPersist => 'IntDefaultPersist',
+      _i4d8z6ds.StringDefault => 'StringDefault',
+      _iu6k5fkj.StringDefaultMix => 'StringDefaultMix',
+      _ihmqo6od.StringDefaultModel => 'StringDefaultModel',
+      _ih6giyf6.StringDefaultPersist => 'StringDefaultPersist',
+      _i2y701qf.UriDefault => 'UriDefault',
+      _iib8h1yl.UriDefaultMix => 'UriDefaultMix',
+      _i1to0y5o.UriDefaultModel => 'UriDefaultModel',
+      _isi15w9f.UriDefaultPersist => 'UriDefaultPersist',
+      _ihsadwhl.UuidDefault => 'UuidDefault',
+      _ignwr848.UuidDefaultMix => 'UuidDefaultMix',
+      _i15gwzho.UuidDefaultModel => 'UuidDefaultModel',
+      _i2v866bf.UuidDefaultPersist => 'UuidDefaultPersist',
+      _io8dlrxh.DeferrableRelationInitiallyDeferred =>
+        'DeferrableRelationInitiallyDeferred',
+      _inmfeda2.DeferrableRelationInitiallyImmediate =>
+        'DeferrableRelationInitiallyImmediate',
+      _izxfibiy.DeferrableRelationParent => 'DeferrableRelationParent',
+      _i9l9xrkt.EmptyModel => 'EmptyModel',
+      _ikufh0vd.EmptyModelRelationItem => 'EmptyModelRelationItem',
+      _iw4y4x6s.EmptyModelWithTable => 'EmptyModelWithTable',
+      _iy7bezig.RelationEmptyModel => 'RelationEmptyModel',
+      _ikh95zxc.ChildClassExplicitColumn => 'ChildClassExplicitColumn',
+      _i1y2idkw.NonTableParentClass => 'NonTableParentClass',
+      _i7hqkfn7.ModifiedColumnName => 'ModifiedColumnName',
+      _ix2lcsu0.Department => 'Department',
+      _ixlcmx78.Employee => 'Employee',
+      _iw4adtsk.Contractor => 'Contractor',
+      _i83a3u3u.Service => 'Service',
+      _iox92era.TableWithExplicitColumnName => 'TableWithExplicitColumnName',
+      _ij7m744x.SealedGrandChild => 'SealedGrandChild',
+      _ij7m744x.SealedChild => 'SealedChild',
+      _ij7m744x.SealedOtherChild => 'SealedOtherChild',
+      _iycanyn2.CityWithLongTableName => 'CityWithLongTableName',
+      _ifbzwpkm.OrganizationWithLongTableName =>
+        'OrganizationWithLongTableName',
+      _iy2gklrg.PersonWithLongTableName => 'PersonWithLongTableName',
+      _i37b4f1x.MaxFieldName => 'MaxFieldName',
+      _ilm8ux21.LongImplicitIdField => 'LongImplicitIdField',
+      _i5zyye9l.LongImplicitIdFieldCollection =>
+        'LongImplicitIdFieldCollection',
+      _irdava0x.RelationToMultipleMaxFieldName =>
+        'RelationToMultipleMaxFieldName',
+      _i14q426c.UserNote => 'UserNote',
+      _i0cmztzz.UserNoteCollection => 'UserNoteCollection',
+      _ivgcl1bh.UserNoteCollectionWithALongName =>
+        'UserNoteCollectionWithALongName',
+      _i7zqea9a.UserNoteWithALongName => 'UserNoteWithALongName',
+      _ify1vf7h.MultipleMaxFieldName => 'MultipleMaxFieldName',
+      _i0i33txy.City => 'City',
+      _iffzpgud.Organization => 'Organization',
+      _i9x7ls0c.Person => 'Person',
+      _iy2buo88.Course => 'Course',
+      _i8v11x6h.Enrollment => 'Enrollment',
+      _ig5mtn0e.Student => 'Student',
+      _ikwieien.Arena => 'Arena',
+      _ip8wmh4s.Player => 'Player',
+      _ifa5hwxy.Team => 'Team',
+      _ii7cxuye.Comment => 'Comment',
+      _i1nwi4iv.Customer => 'Customer',
+      _if51mnnb.Book => 'Book',
+      _itdsc4u0.Chapter => 'Chapter',
+      _is5jy3ez.Order => 'Order',
+      _i6uupgbr.Address => 'Address',
+      _igeuyxnu.Citizen => 'Citizen',
+      _if6srpch.Company => 'Company',
+      _igjnmbwc.Town => 'Town',
+      _ic5jbe8i.Blocking => 'Blocking',
+      _ijj92mp1.Member => 'Member',
+      _ib9keugy.Cat => 'Cat',
+      _iyh1zt5l.Post => 'Post',
+      _iz2gvrid.NullsDistinctData => 'NullsDistinctData',
+      _i9ffbppf.ObjectFieldPersist => 'ObjectFieldPersist',
+      _iahgl0he.ObjectFieldScopes => 'ObjectFieldScopes',
+      _ioxr67zo.ObjectWithBit => 'ObjectWithBit',
+      _iz58zhle.ObjectWithByteData => 'ObjectWithByteData',
+      _ijtijns8.ObjectWithDuration => 'ObjectWithDuration',
+      _i9hzn3wb.ObjectWithDynamic => 'ObjectWithDynamic',
+      _ip2vqluy.ObjectWithEnum => 'ObjectWithEnum',
+      _iwdrmoge.ObjectWithEnumEnhanced => 'ObjectWithEnumEnhanced',
+      _iy6ksgxz.ObjectWithHalfVector => 'ObjectWithHalfVector',
+      _inemzov5.ObjectWithIndex => 'ObjectWithIndex',
+      _ihyvenpw.ObjectWithJsonb => 'ObjectWithJsonb',
+      _i4p0t2g0.ObjectWithJsonbClassLevel => 'ObjectWithJsonbClassLevel',
+      _i26q9u41.ObjectWithMaps => 'ObjectWithMaps',
+      _i4hr2e9p.ObjectWithObject => 'ObjectWithObject',
+      _io0t3u2c.ObjectWithParent => 'ObjectWithParent',
+      _im4j7lpz.ObjectWithSealedClass => 'ObjectWithSealedClass',
+      _ihluvkmz.ObjectWithSelfParent => 'ObjectWithSelfParent',
+      _i8t20dyr.ObjectWithSparseVector => 'ObjectWithSparseVector',
+      _iusk9w05.ObjectWithUuid => 'ObjectWithUuid',
+      _itmc4j9i.ObjectWithVector => 'ObjectWithVector',
+      _i2aw39a6.RelatedUniqueData => 'RelatedUniqueData',
+      _iv7egjxb.ModelWithRequiredField => 'ModelWithRequiredField',
+      _i0zisc0t.SimpleData => 'SimpleData',
+      _i1duz4kf.SimpleDateTime => 'SimpleDateTime',
+      _ionapfu9.TestEnum => 'TestEnum',
+      _icplrpi3.TestEnumDefaultSerialization => 'TestEnumDefaultSerialization',
+      _it39smib.TestEnumEnhanced => 'TestEnumEnhanced',
+      _izw460bh.TestEnumEnhancedByName => 'TestEnumEnhancedByName',
+      _i7liykk2.TestEnumStringified => 'TestEnumStringified',
+      _iwxwszsz.Types => 'Types',
+      _iufhyrjh.UniqueData => 'UniqueData',
+      _ip8yzqii.UniqueDataWithNonPersist => 'UniqueDataWithNonPersist',
+      _iwbeyn4p.UpsertTestModel => 'UpsertTestModel',
       _ => null,
     };
   }
@@ -3547,308 +3727,314 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i7.CourseUuid():
+      case _ik6ri27s.CourseUuid():
         return 'CourseUuid';
-      case _i8.EnrollmentInt():
+      case _icdgc05t.EnrollmentInt():
         return 'EnrollmentInt';
-      case _i9.StudentUuid():
+      case _ibrjea6w.StudentUuid():
         return 'StudentUuid';
-      case _i10.ArenaUuid():
+      case _isj7c5mo.ArenaUuid():
         return 'ArenaUuid';
-      case _i11.PlayerUuid():
+      case _ivdpnfmj.PlayerUuid():
         return 'PlayerUuid';
-      case _i12.TeamInt():
+      case _ivehlt2f.TeamInt():
         return 'TeamInt';
-      case _i13.CommentInt():
+      case _i3jtpxta.CommentInt():
         return 'CommentInt';
-      case _i14.CustomerInt():
+      case _iimgofmw.CustomerInt():
         return 'CustomerInt';
-      case _i15.OrderUuid():
+      case _iywnby31.OrderUuid():
         return 'OrderUuid';
-      case _i16.AddressUuid():
+      case _ifwqt4rb.AddressUuid():
         return 'AddressUuid';
-      case _i17.CitizenInt():
+      case _idhvg1zk.CitizenInt():
         return 'CitizenInt';
-      case _i18.CompanyUuid():
+      case _i5vwm04a.CompanyUuid():
         return 'CompanyUuid';
-      case _i19.TownInt():
+      case _iu7osokh.TownInt():
         return 'TownInt';
-      case _i20.ChangedIdTypeSelf():
+      case _ixc9sah8.ChangedIdTypeSelf():
         return 'ChangedIdTypeSelf';
-      case _i21.BigIntDefault():
+      case _icrmubzc.BigIntDefault():
         return 'BigIntDefault';
-      case _i22.BigIntDefaultMix():
+      case _i1xsun18.BigIntDefaultMix():
         return 'BigIntDefaultMix';
-      case _i23.BigIntDefaultModel():
+      case _i332rqur.BigIntDefaultModel():
         return 'BigIntDefaultModel';
-      case _i24.BigIntDefaultPersist():
+      case _ia4nw21o.BigIntDefaultPersist():
         return 'BigIntDefaultPersist';
-      case _i25.BoolDefault():
+      case _ilirabmz.BoolDefault():
         return 'BoolDefault';
-      case _i26.BoolDefaultMix():
+      case _iwhzartq.BoolDefaultMix():
         return 'BoolDefaultMix';
-      case _i27.BoolDefaultModel():
+      case _izvr7tnf.BoolDefaultModel():
         return 'BoolDefaultModel';
-      case _i28.BoolDefaultPersist():
+      case _i135uugo.BoolDefaultPersist():
         return 'BoolDefaultPersist';
-      case _i29.DateTimeDefault():
+      case _iro0mlkq.DateTimeDefault():
         return 'DateTimeDefault';
-      case _i30.DateTimeDefaultMix():
+      case _igjm2894.DateTimeDefaultMix():
         return 'DateTimeDefaultMix';
-      case _i31.DateTimeDefaultModel():
+      case _ivkcoq83.DateTimeDefaultModel():
         return 'DateTimeDefaultModel';
-      case _i32.DateTimeDefaultPersist():
+      case _iaqar0o9.DateTimeDefaultPersist():
         return 'DateTimeDefaultPersist';
-      case _i33.DoubleDefault():
+      case _izu05ym4.DoubleDefault():
         return 'DoubleDefault';
-      case _i34.DoubleDefaultMix():
+      case _iou6kksr.DoubleDefaultMix():
         return 'DoubleDefaultMix';
-      case _i35.DoubleDefaultModel():
+      case _i9xv7g6i.DoubleDefaultModel():
         return 'DoubleDefaultModel';
-      case _i36.DoubleDefaultPersist():
+      case _iynhhcdw.DoubleDefaultPersist():
         return 'DoubleDefaultPersist';
-      case _i37.DurationDefault():
+      case _ixvw8l6s.DurationDefault():
         return 'DurationDefault';
-      case _i38.DurationDefaultMix():
+      case _ialx1ytx.DurationDefaultMix():
         return 'DurationDefaultMix';
-      case _i39.DurationDefaultModel():
+      case _i5aouk9m.DurationDefaultModel():
         return 'DurationDefaultModel';
-      case _i40.DurationDefaultPersist():
+      case _ij5e1q2b.DurationDefaultPersist():
         return 'DurationDefaultPersist';
-      case _i41.EnumDefault():
+      case _ihqxpva2.EnumDefault():
         return 'EnumDefault';
-      case _i42.EnumDefaultMix():
+      case _iyezrrxn.EnumDefaultMix():
         return 'EnumDefaultMix';
-      case _i43.EnumDefaultModel():
+      case _iw4wb1ju.EnumDefaultModel():
         return 'EnumDefaultModel';
-      case _i44.EnumDefaultPersist():
+      case _i0p9yn0v.EnumDefaultPersist():
         return 'EnumDefaultPersist';
-      case _i45.ByIndexEnum():
+      case _i4ekvn16.ByIndexEnum():
         return 'ByIndexEnum';
-      case _i46.ByNameEnum():
+      case _ihrgmscf.ByNameEnum():
         return 'ByNameEnum';
-      case _i47.DefaultValueEnum():
+      case _iirkfcfb.DefaultValueEnum():
         return 'DefaultValueEnum';
-      case _i48.DefaultException():
+      case _iv40kyzq.DefaultException():
         return 'DefaultException';
-      case _i49.IntDefault():
+      case _i8t3u1nx.IntDefault():
         return 'IntDefault';
-      case _i50.IntDefaultMix():
+      case _iummzlp0.IntDefaultMix():
         return 'IntDefaultMix';
-      case _i51.IntDefaultModel():
+      case _i4rypx08.IntDefaultModel():
         return 'IntDefaultModel';
-      case _i52.IntDefaultPersist():
+      case _imhmhhwa.IntDefaultPersist():
         return 'IntDefaultPersist';
-      case _i53.StringDefault():
+      case _i4d8z6ds.StringDefault():
         return 'StringDefault';
-      case _i54.StringDefaultMix():
+      case _iu6k5fkj.StringDefaultMix():
         return 'StringDefaultMix';
-      case _i55.StringDefaultModel():
+      case _ihmqo6od.StringDefaultModel():
         return 'StringDefaultModel';
-      case _i56.StringDefaultPersist():
+      case _ih6giyf6.StringDefaultPersist():
         return 'StringDefaultPersist';
-      case _i57.UriDefault():
+      case _i2y701qf.UriDefault():
         return 'UriDefault';
-      case _i58.UriDefaultMix():
+      case _iib8h1yl.UriDefaultMix():
         return 'UriDefaultMix';
-      case _i59.UriDefaultModel():
+      case _i1to0y5o.UriDefaultModel():
         return 'UriDefaultModel';
-      case _i60.UriDefaultPersist():
+      case _isi15w9f.UriDefaultPersist():
         return 'UriDefaultPersist';
-      case _i61.UuidDefault():
+      case _ihsadwhl.UuidDefault():
         return 'UuidDefault';
-      case _i62.UuidDefaultMix():
+      case _ignwr848.UuidDefaultMix():
         return 'UuidDefaultMix';
-      case _i63.UuidDefaultModel():
+      case _i15gwzho.UuidDefaultModel():
         return 'UuidDefaultModel';
-      case _i64.UuidDefaultPersist():
+      case _i2v866bf.UuidDefaultPersist():
         return 'UuidDefaultPersist';
-      case _i65.EmptyModel():
+      case _io8dlrxh.DeferrableRelationInitiallyDeferred():
+        return 'DeferrableRelationInitiallyDeferred';
+      case _inmfeda2.DeferrableRelationInitiallyImmediate():
+        return 'DeferrableRelationInitiallyImmediate';
+      case _izxfibiy.DeferrableRelationParent():
+        return 'DeferrableRelationParent';
+      case _i9l9xrkt.EmptyModel():
         return 'EmptyModel';
-      case _i66.EmptyModelRelationItem():
+      case _ikufh0vd.EmptyModelRelationItem():
         return 'EmptyModelRelationItem';
-      case _i67.EmptyModelWithTable():
+      case _iw4y4x6s.EmptyModelWithTable():
         return 'EmptyModelWithTable';
-      case _i68.RelationEmptyModel():
+      case _iy7bezig.RelationEmptyModel():
         return 'RelationEmptyModel';
-      case _i69.ChildClassExplicitColumn():
+      case _ikh95zxc.ChildClassExplicitColumn():
         return 'ChildClassExplicitColumn';
-      case _i70.NonTableParentClass():
+      case _i1y2idkw.NonTableParentClass():
         return 'NonTableParentClass';
-      case _i71.ModifiedColumnName():
+      case _i7hqkfn7.ModifiedColumnName():
         return 'ModifiedColumnName';
-      case _i72.Department():
+      case _ix2lcsu0.Department():
         return 'Department';
-      case _i73.Employee():
+      case _ixlcmx78.Employee():
         return 'Employee';
-      case _i74.Contractor():
+      case _iw4adtsk.Contractor():
         return 'Contractor';
-      case _i75.Service():
+      case _i83a3u3u.Service():
         return 'Service';
-      case _i76.TableWithExplicitColumnName():
+      case _iox92era.TableWithExplicitColumnName():
         return 'TableWithExplicitColumnName';
-      case _i77.SealedGrandChild():
+      case _ij7m744x.SealedGrandChild():
         return 'SealedGrandChild';
-      case _i77.SealedChild():
+      case _ij7m744x.SealedChild():
         return 'SealedChild';
-      case _i77.SealedOtherChild():
+      case _ij7m744x.SealedOtherChild():
         return 'SealedOtherChild';
-      case _i78.CityWithLongTableName():
+      case _iycanyn2.CityWithLongTableName():
         return 'CityWithLongTableName';
-      case _i79.OrganizationWithLongTableName():
+      case _ifbzwpkm.OrganizationWithLongTableName():
         return 'OrganizationWithLongTableName';
-      case _i80.PersonWithLongTableName():
+      case _iy2gklrg.PersonWithLongTableName():
         return 'PersonWithLongTableName';
-      case _i81.MaxFieldName():
+      case _i37b4f1x.MaxFieldName():
         return 'MaxFieldName';
-      case _i82.LongImplicitIdField():
+      case _ilm8ux21.LongImplicitIdField():
         return 'LongImplicitIdField';
-      case _i83.LongImplicitIdFieldCollection():
+      case _i5zyye9l.LongImplicitIdFieldCollection():
         return 'LongImplicitIdFieldCollection';
-      case _i84.RelationToMultipleMaxFieldName():
+      case _irdava0x.RelationToMultipleMaxFieldName():
         return 'RelationToMultipleMaxFieldName';
-      case _i85.UserNote():
+      case _i14q426c.UserNote():
         return 'UserNote';
-      case _i86.UserNoteCollection():
+      case _i0cmztzz.UserNoteCollection():
         return 'UserNoteCollection';
-      case _i87.UserNoteCollectionWithALongName():
+      case _ivgcl1bh.UserNoteCollectionWithALongName():
         return 'UserNoteCollectionWithALongName';
-      case _i88.UserNoteWithALongName():
+      case _i7zqea9a.UserNoteWithALongName():
         return 'UserNoteWithALongName';
-      case _i89.MultipleMaxFieldName():
+      case _ify1vf7h.MultipleMaxFieldName():
         return 'MultipleMaxFieldName';
-      case _i90.City():
+      case _i0i33txy.City():
         return 'City';
-      case _i91.Organization():
+      case _iffzpgud.Organization():
         return 'Organization';
-      case _i92.Person():
+      case _i9x7ls0c.Person():
         return 'Person';
-      case _i93.Course():
+      case _iy2buo88.Course():
         return 'Course';
-      case _i94.Enrollment():
+      case _i8v11x6h.Enrollment():
         return 'Enrollment';
-      case _i95.Student():
+      case _ig5mtn0e.Student():
         return 'Student';
-      case _i96.Arena():
+      case _ikwieien.Arena():
         return 'Arena';
-      case _i97.Player():
+      case _ip8wmh4s.Player():
         return 'Player';
-      case _i98.Team():
+      case _ifa5hwxy.Team():
         return 'Team';
-      case _i99.Comment():
+      case _ii7cxuye.Comment():
         return 'Comment';
-      case _i100.Customer():
+      case _i1nwi4iv.Customer():
         return 'Customer';
-      case _i101.Book():
+      case _if51mnnb.Book():
         return 'Book';
-      case _i102.Chapter():
+      case _itdsc4u0.Chapter():
         return 'Chapter';
-      case _i103.Order():
+      case _is5jy3ez.Order():
         return 'Order';
-      case _i104.Address():
+      case _i6uupgbr.Address():
         return 'Address';
-      case _i105.Citizen():
+      case _igeuyxnu.Citizen():
         return 'Citizen';
-      case _i106.Company():
+      case _if6srpch.Company():
         return 'Company';
-      case _i107.Town():
+      case _igjnmbwc.Town():
         return 'Town';
-      case _i108.Blocking():
+      case _ic5jbe8i.Blocking():
         return 'Blocking';
-      case _i109.Member():
+      case _ijj92mp1.Member():
         return 'Member';
-      case _i110.Cat():
+      case _ib9keugy.Cat():
         return 'Cat';
-      case _i111.Post():
+      case _iyh1zt5l.Post():
         return 'Post';
-      case _i112.NullsDistinctData():
+      case _iz2gvrid.NullsDistinctData():
         return 'NullsDistinctData';
-      case _i113.ObjectFieldPersist():
+      case _i9ffbppf.ObjectFieldPersist():
         return 'ObjectFieldPersist';
-      case _i114.ObjectFieldScopes():
+      case _iahgl0he.ObjectFieldScopes():
         return 'ObjectFieldScopes';
-      case _i115.ObjectWithBit():
+      case _ioxr67zo.ObjectWithBit():
         return 'ObjectWithBit';
-      case _i116.ObjectWithByteData():
+      case _iz58zhle.ObjectWithByteData():
         return 'ObjectWithByteData';
-      case _i117.ObjectWithDuration():
+      case _ijtijns8.ObjectWithDuration():
         return 'ObjectWithDuration';
-      case _i118.ObjectWithDynamic():
+      case _i9hzn3wb.ObjectWithDynamic():
         return 'ObjectWithDynamic';
-      case _i119.ObjectWithEnum():
+      case _ip2vqluy.ObjectWithEnum():
         return 'ObjectWithEnum';
-      case _i120.ObjectWithEnumEnhanced():
+      case _iwdrmoge.ObjectWithEnumEnhanced():
         return 'ObjectWithEnumEnhanced';
-      case _i121.ObjectWithHalfVector():
+      case _iy6ksgxz.ObjectWithHalfVector():
         return 'ObjectWithHalfVector';
-      case _i122.ObjectWithIndex():
+      case _inemzov5.ObjectWithIndex():
         return 'ObjectWithIndex';
-      case _i123.ObjectWithJsonb():
+      case _ihyvenpw.ObjectWithJsonb():
         return 'ObjectWithJsonb';
-      case _i124.ObjectWithJsonbClassLevel():
+      case _i4p0t2g0.ObjectWithJsonbClassLevel():
         return 'ObjectWithJsonbClassLevel';
-      case _i125.ObjectWithMaps():
+      case _i26q9u41.ObjectWithMaps():
         return 'ObjectWithMaps';
-      case _i126.ObjectWithObject():
+      case _i4hr2e9p.ObjectWithObject():
         return 'ObjectWithObject';
-      case _i127.ObjectWithParent():
+      case _io0t3u2c.ObjectWithParent():
         return 'ObjectWithParent';
-      case _i128.ObjectWithSealedClass():
+      case _im4j7lpz.ObjectWithSealedClass():
         return 'ObjectWithSealedClass';
-      case _i129.ObjectWithSelfParent():
+      case _ihluvkmz.ObjectWithSelfParent():
         return 'ObjectWithSelfParent';
-      case _i130.ObjectWithSparseVector():
+      case _i8t20dyr.ObjectWithSparseVector():
         return 'ObjectWithSparseVector';
-      case _i131.ObjectWithUuid():
+      case _iusk9w05.ObjectWithUuid():
         return 'ObjectWithUuid';
-      case _i132.ObjectWithVector():
+      case _itmc4j9i.ObjectWithVector():
         return 'ObjectWithVector';
-      case _i133.RelatedUniqueData():
+      case _i2aw39a6.RelatedUniqueData():
         return 'RelatedUniqueData';
-      case _i134.ModelWithRequiredField():
+      case _iv7egjxb.ModelWithRequiredField():
         return 'ModelWithRequiredField';
-      case _i135.SimpleData():
+      case _i0zisc0t.SimpleData():
         return 'SimpleData';
-      case _i136.SimpleDateTime():
+      case _i1duz4kf.SimpleDateTime():
         return 'SimpleDateTime';
-      case _i137.TestEnum():
+      case _ionapfu9.TestEnum():
         return 'TestEnum';
-      case _i138.TestEnumDefaultSerialization():
+      case _icplrpi3.TestEnumDefaultSerialization():
         return 'TestEnumDefaultSerialization';
-      case _i139.TestEnumEnhanced():
+      case _it39smib.TestEnumEnhanced():
         return 'TestEnumEnhanced';
-      case _i140.TestEnumEnhancedByName():
+      case _izw460bh.TestEnumEnhancedByName():
         return 'TestEnumEnhancedByName';
-      case _i141.TestEnumStringified():
+      case _i7liykk2.TestEnumStringified():
         return 'TestEnumStringified';
-      case _i142.Types():
+      case _iwxwszsz.Types():
         return 'Types';
-      case _i143.UniqueData():
+      case _iufhyrjh.UniqueData():
         return 'UniqueData';
-      case _i144.UniqueDataWithNonPersist():
+      case _ip8yzqii.UniqueDataWithNonPersist():
         return 'UniqueDataWithNonPersist';
-      case _i145.UpsertTestModel():
+      case _iwbeyn4p.UpsertTestModel():
         return 'UpsertTestModel';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _iacc.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
     }
-    className = _i3.Protocol().getClassNameForObject(data);
+    className = _iaic.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i4.Protocol().getClassNameForObject(data);
+    className = _iyerxm0e.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_test_shared_module.$className';
     }
-    className = _i5.Protocol().getClassNameForObject(data);
+    className = _iqfgygbv.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
@@ -3864,567 +4050,584 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'CourseUuid') {
-      return deserialize<_i7.CourseUuid>(data['data']);
+      return deserialize<_ik6ri27s.CourseUuid>(data['data']);
     }
     if (dataClassName == 'EnrollmentInt') {
-      return deserialize<_i8.EnrollmentInt>(data['data']);
+      return deserialize<_icdgc05t.EnrollmentInt>(data['data']);
     }
     if (dataClassName == 'StudentUuid') {
-      return deserialize<_i9.StudentUuid>(data['data']);
+      return deserialize<_ibrjea6w.StudentUuid>(data['data']);
     }
     if (dataClassName == 'ArenaUuid') {
-      return deserialize<_i10.ArenaUuid>(data['data']);
+      return deserialize<_isj7c5mo.ArenaUuid>(data['data']);
     }
     if (dataClassName == 'PlayerUuid') {
-      return deserialize<_i11.PlayerUuid>(data['data']);
+      return deserialize<_ivdpnfmj.PlayerUuid>(data['data']);
     }
     if (dataClassName == 'TeamInt') {
-      return deserialize<_i12.TeamInt>(data['data']);
+      return deserialize<_ivehlt2f.TeamInt>(data['data']);
     }
     if (dataClassName == 'CommentInt') {
-      return deserialize<_i13.CommentInt>(data['data']);
+      return deserialize<_i3jtpxta.CommentInt>(data['data']);
     }
     if (dataClassName == 'CustomerInt') {
-      return deserialize<_i14.CustomerInt>(data['data']);
+      return deserialize<_iimgofmw.CustomerInt>(data['data']);
     }
     if (dataClassName == 'OrderUuid') {
-      return deserialize<_i15.OrderUuid>(data['data']);
+      return deserialize<_iywnby31.OrderUuid>(data['data']);
     }
     if (dataClassName == 'AddressUuid') {
-      return deserialize<_i16.AddressUuid>(data['data']);
+      return deserialize<_ifwqt4rb.AddressUuid>(data['data']);
     }
     if (dataClassName == 'CitizenInt') {
-      return deserialize<_i17.CitizenInt>(data['data']);
+      return deserialize<_idhvg1zk.CitizenInt>(data['data']);
     }
     if (dataClassName == 'CompanyUuid') {
-      return deserialize<_i18.CompanyUuid>(data['data']);
+      return deserialize<_i5vwm04a.CompanyUuid>(data['data']);
     }
     if (dataClassName == 'TownInt') {
-      return deserialize<_i19.TownInt>(data['data']);
+      return deserialize<_iu7osokh.TownInt>(data['data']);
     }
     if (dataClassName == 'ChangedIdTypeSelf') {
-      return deserialize<_i20.ChangedIdTypeSelf>(data['data']);
+      return deserialize<_ixc9sah8.ChangedIdTypeSelf>(data['data']);
     }
     if (dataClassName == 'BigIntDefault') {
-      return deserialize<_i21.BigIntDefault>(data['data']);
+      return deserialize<_icrmubzc.BigIntDefault>(data['data']);
     }
     if (dataClassName == 'BigIntDefaultMix') {
-      return deserialize<_i22.BigIntDefaultMix>(data['data']);
+      return deserialize<_i1xsun18.BigIntDefaultMix>(data['data']);
     }
     if (dataClassName == 'BigIntDefaultModel') {
-      return deserialize<_i23.BigIntDefaultModel>(data['data']);
+      return deserialize<_i332rqur.BigIntDefaultModel>(data['data']);
     }
     if (dataClassName == 'BigIntDefaultPersist') {
-      return deserialize<_i24.BigIntDefaultPersist>(data['data']);
+      return deserialize<_ia4nw21o.BigIntDefaultPersist>(data['data']);
     }
     if (dataClassName == 'BoolDefault') {
-      return deserialize<_i25.BoolDefault>(data['data']);
+      return deserialize<_ilirabmz.BoolDefault>(data['data']);
     }
     if (dataClassName == 'BoolDefaultMix') {
-      return deserialize<_i26.BoolDefaultMix>(data['data']);
+      return deserialize<_iwhzartq.BoolDefaultMix>(data['data']);
     }
     if (dataClassName == 'BoolDefaultModel') {
-      return deserialize<_i27.BoolDefaultModel>(data['data']);
+      return deserialize<_izvr7tnf.BoolDefaultModel>(data['data']);
     }
     if (dataClassName == 'BoolDefaultPersist') {
-      return deserialize<_i28.BoolDefaultPersist>(data['data']);
+      return deserialize<_i135uugo.BoolDefaultPersist>(data['data']);
     }
     if (dataClassName == 'DateTimeDefault') {
-      return deserialize<_i29.DateTimeDefault>(data['data']);
+      return deserialize<_iro0mlkq.DateTimeDefault>(data['data']);
     }
     if (dataClassName == 'DateTimeDefaultMix') {
-      return deserialize<_i30.DateTimeDefaultMix>(data['data']);
+      return deserialize<_igjm2894.DateTimeDefaultMix>(data['data']);
     }
     if (dataClassName == 'DateTimeDefaultModel') {
-      return deserialize<_i31.DateTimeDefaultModel>(data['data']);
+      return deserialize<_ivkcoq83.DateTimeDefaultModel>(data['data']);
     }
     if (dataClassName == 'DateTimeDefaultPersist') {
-      return deserialize<_i32.DateTimeDefaultPersist>(data['data']);
+      return deserialize<_iaqar0o9.DateTimeDefaultPersist>(data['data']);
     }
     if (dataClassName == 'DoubleDefault') {
-      return deserialize<_i33.DoubleDefault>(data['data']);
+      return deserialize<_izu05ym4.DoubleDefault>(data['data']);
     }
     if (dataClassName == 'DoubleDefaultMix') {
-      return deserialize<_i34.DoubleDefaultMix>(data['data']);
+      return deserialize<_iou6kksr.DoubleDefaultMix>(data['data']);
     }
     if (dataClassName == 'DoubleDefaultModel') {
-      return deserialize<_i35.DoubleDefaultModel>(data['data']);
+      return deserialize<_i9xv7g6i.DoubleDefaultModel>(data['data']);
     }
     if (dataClassName == 'DoubleDefaultPersist') {
-      return deserialize<_i36.DoubleDefaultPersist>(data['data']);
+      return deserialize<_iynhhcdw.DoubleDefaultPersist>(data['data']);
     }
     if (dataClassName == 'DurationDefault') {
-      return deserialize<_i37.DurationDefault>(data['data']);
+      return deserialize<_ixvw8l6s.DurationDefault>(data['data']);
     }
     if (dataClassName == 'DurationDefaultMix') {
-      return deserialize<_i38.DurationDefaultMix>(data['data']);
+      return deserialize<_ialx1ytx.DurationDefaultMix>(data['data']);
     }
     if (dataClassName == 'DurationDefaultModel') {
-      return deserialize<_i39.DurationDefaultModel>(data['data']);
+      return deserialize<_i5aouk9m.DurationDefaultModel>(data['data']);
     }
     if (dataClassName == 'DurationDefaultPersist') {
-      return deserialize<_i40.DurationDefaultPersist>(data['data']);
+      return deserialize<_ij5e1q2b.DurationDefaultPersist>(data['data']);
     }
     if (dataClassName == 'EnumDefault') {
-      return deserialize<_i41.EnumDefault>(data['data']);
+      return deserialize<_ihqxpva2.EnumDefault>(data['data']);
     }
     if (dataClassName == 'EnumDefaultMix') {
-      return deserialize<_i42.EnumDefaultMix>(data['data']);
+      return deserialize<_iyezrrxn.EnumDefaultMix>(data['data']);
     }
     if (dataClassName == 'EnumDefaultModel') {
-      return deserialize<_i43.EnumDefaultModel>(data['data']);
+      return deserialize<_iw4wb1ju.EnumDefaultModel>(data['data']);
     }
     if (dataClassName == 'EnumDefaultPersist') {
-      return deserialize<_i44.EnumDefaultPersist>(data['data']);
+      return deserialize<_i0p9yn0v.EnumDefaultPersist>(data['data']);
     }
     if (dataClassName == 'ByIndexEnum') {
-      return deserialize<_i45.ByIndexEnum>(data['data']);
+      return deserialize<_i4ekvn16.ByIndexEnum>(data['data']);
     }
     if (dataClassName == 'ByNameEnum') {
-      return deserialize<_i46.ByNameEnum>(data['data']);
+      return deserialize<_ihrgmscf.ByNameEnum>(data['data']);
     }
     if (dataClassName == 'DefaultValueEnum') {
-      return deserialize<_i47.DefaultValueEnum>(data['data']);
+      return deserialize<_iirkfcfb.DefaultValueEnum>(data['data']);
     }
     if (dataClassName == 'DefaultException') {
-      return deserialize<_i48.DefaultException>(data['data']);
+      return deserialize<_iv40kyzq.DefaultException>(data['data']);
     }
     if (dataClassName == 'IntDefault') {
-      return deserialize<_i49.IntDefault>(data['data']);
+      return deserialize<_i8t3u1nx.IntDefault>(data['data']);
     }
     if (dataClassName == 'IntDefaultMix') {
-      return deserialize<_i50.IntDefaultMix>(data['data']);
+      return deserialize<_iummzlp0.IntDefaultMix>(data['data']);
     }
     if (dataClassName == 'IntDefaultModel') {
-      return deserialize<_i51.IntDefaultModel>(data['data']);
+      return deserialize<_i4rypx08.IntDefaultModel>(data['data']);
     }
     if (dataClassName == 'IntDefaultPersist') {
-      return deserialize<_i52.IntDefaultPersist>(data['data']);
+      return deserialize<_imhmhhwa.IntDefaultPersist>(data['data']);
     }
     if (dataClassName == 'StringDefault') {
-      return deserialize<_i53.StringDefault>(data['data']);
+      return deserialize<_i4d8z6ds.StringDefault>(data['data']);
     }
     if (dataClassName == 'StringDefaultMix') {
-      return deserialize<_i54.StringDefaultMix>(data['data']);
+      return deserialize<_iu6k5fkj.StringDefaultMix>(data['data']);
     }
     if (dataClassName == 'StringDefaultModel') {
-      return deserialize<_i55.StringDefaultModel>(data['data']);
+      return deserialize<_ihmqo6od.StringDefaultModel>(data['data']);
     }
     if (dataClassName == 'StringDefaultPersist') {
-      return deserialize<_i56.StringDefaultPersist>(data['data']);
+      return deserialize<_ih6giyf6.StringDefaultPersist>(data['data']);
     }
     if (dataClassName == 'UriDefault') {
-      return deserialize<_i57.UriDefault>(data['data']);
+      return deserialize<_i2y701qf.UriDefault>(data['data']);
     }
     if (dataClassName == 'UriDefaultMix') {
-      return deserialize<_i58.UriDefaultMix>(data['data']);
+      return deserialize<_iib8h1yl.UriDefaultMix>(data['data']);
     }
     if (dataClassName == 'UriDefaultModel') {
-      return deserialize<_i59.UriDefaultModel>(data['data']);
+      return deserialize<_i1to0y5o.UriDefaultModel>(data['data']);
     }
     if (dataClassName == 'UriDefaultPersist') {
-      return deserialize<_i60.UriDefaultPersist>(data['data']);
+      return deserialize<_isi15w9f.UriDefaultPersist>(data['data']);
     }
     if (dataClassName == 'UuidDefault') {
-      return deserialize<_i61.UuidDefault>(data['data']);
+      return deserialize<_ihsadwhl.UuidDefault>(data['data']);
     }
     if (dataClassName == 'UuidDefaultMix') {
-      return deserialize<_i62.UuidDefaultMix>(data['data']);
+      return deserialize<_ignwr848.UuidDefaultMix>(data['data']);
     }
     if (dataClassName == 'UuidDefaultModel') {
-      return deserialize<_i63.UuidDefaultModel>(data['data']);
+      return deserialize<_i15gwzho.UuidDefaultModel>(data['data']);
     }
     if (dataClassName == 'UuidDefaultPersist') {
-      return deserialize<_i64.UuidDefaultPersist>(data['data']);
+      return deserialize<_i2v866bf.UuidDefaultPersist>(data['data']);
+    }
+    if (dataClassName == 'DeferrableRelationInitiallyDeferred') {
+      return deserialize<_io8dlrxh.DeferrableRelationInitiallyDeferred>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'DeferrableRelationInitiallyImmediate') {
+      return deserialize<_inmfeda2.DeferrableRelationInitiallyImmediate>(
+        data['data'],
+      );
+    }
+    if (dataClassName == 'DeferrableRelationParent') {
+      return deserialize<_izxfibiy.DeferrableRelationParent>(data['data']);
     }
     if (dataClassName == 'EmptyModel') {
-      return deserialize<_i65.EmptyModel>(data['data']);
+      return deserialize<_i9l9xrkt.EmptyModel>(data['data']);
     }
     if (dataClassName == 'EmptyModelRelationItem') {
-      return deserialize<_i66.EmptyModelRelationItem>(data['data']);
+      return deserialize<_ikufh0vd.EmptyModelRelationItem>(data['data']);
     }
     if (dataClassName == 'EmptyModelWithTable') {
-      return deserialize<_i67.EmptyModelWithTable>(data['data']);
+      return deserialize<_iw4y4x6s.EmptyModelWithTable>(data['data']);
     }
     if (dataClassName == 'RelationEmptyModel') {
-      return deserialize<_i68.RelationEmptyModel>(data['data']);
+      return deserialize<_iy7bezig.RelationEmptyModel>(data['data']);
     }
     if (dataClassName == 'ChildClassExplicitColumn') {
-      return deserialize<_i69.ChildClassExplicitColumn>(data['data']);
+      return deserialize<_ikh95zxc.ChildClassExplicitColumn>(data['data']);
     }
     if (dataClassName == 'NonTableParentClass') {
-      return deserialize<_i70.NonTableParentClass>(data['data']);
+      return deserialize<_i1y2idkw.NonTableParentClass>(data['data']);
     }
     if (dataClassName == 'ModifiedColumnName') {
-      return deserialize<_i71.ModifiedColumnName>(data['data']);
+      return deserialize<_i7hqkfn7.ModifiedColumnName>(data['data']);
     }
     if (dataClassName == 'Department') {
-      return deserialize<_i72.Department>(data['data']);
+      return deserialize<_ix2lcsu0.Department>(data['data']);
     }
     if (dataClassName == 'Employee') {
-      return deserialize<_i73.Employee>(data['data']);
+      return deserialize<_ixlcmx78.Employee>(data['data']);
     }
     if (dataClassName == 'Contractor') {
-      return deserialize<_i74.Contractor>(data['data']);
+      return deserialize<_iw4adtsk.Contractor>(data['data']);
     }
     if (dataClassName == 'Service') {
-      return deserialize<_i75.Service>(data['data']);
+      return deserialize<_i83a3u3u.Service>(data['data']);
     }
     if (dataClassName == 'TableWithExplicitColumnName') {
-      return deserialize<_i76.TableWithExplicitColumnName>(data['data']);
+      return deserialize<_iox92era.TableWithExplicitColumnName>(data['data']);
     }
     if (dataClassName == 'SealedGrandChild') {
-      return deserialize<_i77.SealedGrandChild>(data['data']);
+      return deserialize<_ij7m744x.SealedGrandChild>(data['data']);
     }
     if (dataClassName == 'SealedChild') {
-      return deserialize<_i77.SealedChild>(data['data']);
+      return deserialize<_ij7m744x.SealedChild>(data['data']);
     }
     if (dataClassName == 'SealedOtherChild') {
-      return deserialize<_i77.SealedOtherChild>(data['data']);
+      return deserialize<_ij7m744x.SealedOtherChild>(data['data']);
     }
     if (dataClassName == 'CityWithLongTableName') {
-      return deserialize<_i78.CityWithLongTableName>(data['data']);
+      return deserialize<_iycanyn2.CityWithLongTableName>(data['data']);
     }
     if (dataClassName == 'OrganizationWithLongTableName') {
-      return deserialize<_i79.OrganizationWithLongTableName>(data['data']);
+      return deserialize<_ifbzwpkm.OrganizationWithLongTableName>(data['data']);
     }
     if (dataClassName == 'PersonWithLongTableName') {
-      return deserialize<_i80.PersonWithLongTableName>(data['data']);
+      return deserialize<_iy2gklrg.PersonWithLongTableName>(data['data']);
     }
     if (dataClassName == 'MaxFieldName') {
-      return deserialize<_i81.MaxFieldName>(data['data']);
+      return deserialize<_i37b4f1x.MaxFieldName>(data['data']);
     }
     if (dataClassName == 'LongImplicitIdField') {
-      return deserialize<_i82.LongImplicitIdField>(data['data']);
+      return deserialize<_ilm8ux21.LongImplicitIdField>(data['data']);
     }
     if (dataClassName == 'LongImplicitIdFieldCollection') {
-      return deserialize<_i83.LongImplicitIdFieldCollection>(data['data']);
+      return deserialize<_i5zyye9l.LongImplicitIdFieldCollection>(data['data']);
     }
     if (dataClassName == 'RelationToMultipleMaxFieldName') {
-      return deserialize<_i84.RelationToMultipleMaxFieldName>(data['data']);
+      return deserialize<_irdava0x.RelationToMultipleMaxFieldName>(
+        data['data'],
+      );
     }
     if (dataClassName == 'UserNote') {
-      return deserialize<_i85.UserNote>(data['data']);
+      return deserialize<_i14q426c.UserNote>(data['data']);
     }
     if (dataClassName == 'UserNoteCollection') {
-      return deserialize<_i86.UserNoteCollection>(data['data']);
+      return deserialize<_i0cmztzz.UserNoteCollection>(data['data']);
     }
     if (dataClassName == 'UserNoteCollectionWithALongName') {
-      return deserialize<_i87.UserNoteCollectionWithALongName>(data['data']);
+      return deserialize<_ivgcl1bh.UserNoteCollectionWithALongName>(
+        data['data'],
+      );
     }
     if (dataClassName == 'UserNoteWithALongName') {
-      return deserialize<_i88.UserNoteWithALongName>(data['data']);
+      return deserialize<_i7zqea9a.UserNoteWithALongName>(data['data']);
     }
     if (dataClassName == 'MultipleMaxFieldName') {
-      return deserialize<_i89.MultipleMaxFieldName>(data['data']);
+      return deserialize<_ify1vf7h.MultipleMaxFieldName>(data['data']);
     }
     if (dataClassName == 'City') {
-      return deserialize<_i90.City>(data['data']);
+      return deserialize<_i0i33txy.City>(data['data']);
     }
     if (dataClassName == 'Organization') {
-      return deserialize<_i91.Organization>(data['data']);
+      return deserialize<_iffzpgud.Organization>(data['data']);
     }
     if (dataClassName == 'Person') {
-      return deserialize<_i92.Person>(data['data']);
+      return deserialize<_i9x7ls0c.Person>(data['data']);
     }
     if (dataClassName == 'Course') {
-      return deserialize<_i93.Course>(data['data']);
+      return deserialize<_iy2buo88.Course>(data['data']);
     }
     if (dataClassName == 'Enrollment') {
-      return deserialize<_i94.Enrollment>(data['data']);
+      return deserialize<_i8v11x6h.Enrollment>(data['data']);
     }
     if (dataClassName == 'Student') {
-      return deserialize<_i95.Student>(data['data']);
+      return deserialize<_ig5mtn0e.Student>(data['data']);
     }
     if (dataClassName == 'Arena') {
-      return deserialize<_i96.Arena>(data['data']);
+      return deserialize<_ikwieien.Arena>(data['data']);
     }
     if (dataClassName == 'Player') {
-      return deserialize<_i97.Player>(data['data']);
+      return deserialize<_ip8wmh4s.Player>(data['data']);
     }
     if (dataClassName == 'Team') {
-      return deserialize<_i98.Team>(data['data']);
+      return deserialize<_ifa5hwxy.Team>(data['data']);
     }
     if (dataClassName == 'Comment') {
-      return deserialize<_i99.Comment>(data['data']);
+      return deserialize<_ii7cxuye.Comment>(data['data']);
     }
     if (dataClassName == 'Customer') {
-      return deserialize<_i100.Customer>(data['data']);
+      return deserialize<_i1nwi4iv.Customer>(data['data']);
     }
     if (dataClassName == 'Book') {
-      return deserialize<_i101.Book>(data['data']);
+      return deserialize<_if51mnnb.Book>(data['data']);
     }
     if (dataClassName == 'Chapter') {
-      return deserialize<_i102.Chapter>(data['data']);
+      return deserialize<_itdsc4u0.Chapter>(data['data']);
     }
     if (dataClassName == 'Order') {
-      return deserialize<_i103.Order>(data['data']);
+      return deserialize<_is5jy3ez.Order>(data['data']);
     }
     if (dataClassName == 'Address') {
-      return deserialize<_i104.Address>(data['data']);
+      return deserialize<_i6uupgbr.Address>(data['data']);
     }
     if (dataClassName == 'Citizen') {
-      return deserialize<_i105.Citizen>(data['data']);
+      return deserialize<_igeuyxnu.Citizen>(data['data']);
     }
     if (dataClassName == 'Company') {
-      return deserialize<_i106.Company>(data['data']);
+      return deserialize<_if6srpch.Company>(data['data']);
     }
     if (dataClassName == 'Town') {
-      return deserialize<_i107.Town>(data['data']);
+      return deserialize<_igjnmbwc.Town>(data['data']);
     }
     if (dataClassName == 'Blocking') {
-      return deserialize<_i108.Blocking>(data['data']);
+      return deserialize<_ic5jbe8i.Blocking>(data['data']);
     }
     if (dataClassName == 'Member') {
-      return deserialize<_i109.Member>(data['data']);
+      return deserialize<_ijj92mp1.Member>(data['data']);
     }
     if (dataClassName == 'Cat') {
-      return deserialize<_i110.Cat>(data['data']);
+      return deserialize<_ib9keugy.Cat>(data['data']);
     }
     if (dataClassName == 'Post') {
-      return deserialize<_i111.Post>(data['data']);
+      return deserialize<_iyh1zt5l.Post>(data['data']);
     }
     if (dataClassName == 'NullsDistinctData') {
-      return deserialize<_i112.NullsDistinctData>(data['data']);
+      return deserialize<_iz2gvrid.NullsDistinctData>(data['data']);
     }
     if (dataClassName == 'ObjectFieldPersist') {
-      return deserialize<_i113.ObjectFieldPersist>(data['data']);
+      return deserialize<_i9ffbppf.ObjectFieldPersist>(data['data']);
     }
     if (dataClassName == 'ObjectFieldScopes') {
-      return deserialize<_i114.ObjectFieldScopes>(data['data']);
+      return deserialize<_iahgl0he.ObjectFieldScopes>(data['data']);
     }
     if (dataClassName == 'ObjectWithBit') {
-      return deserialize<_i115.ObjectWithBit>(data['data']);
+      return deserialize<_ioxr67zo.ObjectWithBit>(data['data']);
     }
     if (dataClassName == 'ObjectWithByteData') {
-      return deserialize<_i116.ObjectWithByteData>(data['data']);
+      return deserialize<_iz58zhle.ObjectWithByteData>(data['data']);
     }
     if (dataClassName == 'ObjectWithDuration') {
-      return deserialize<_i117.ObjectWithDuration>(data['data']);
+      return deserialize<_ijtijns8.ObjectWithDuration>(data['data']);
     }
     if (dataClassName == 'ObjectWithDynamic') {
-      return deserialize<_i118.ObjectWithDynamic>(data['data']);
+      return deserialize<_i9hzn3wb.ObjectWithDynamic>(data['data']);
     }
     if (dataClassName == 'ObjectWithEnum') {
-      return deserialize<_i119.ObjectWithEnum>(data['data']);
+      return deserialize<_ip2vqluy.ObjectWithEnum>(data['data']);
     }
     if (dataClassName == 'ObjectWithEnumEnhanced') {
-      return deserialize<_i120.ObjectWithEnumEnhanced>(data['data']);
+      return deserialize<_iwdrmoge.ObjectWithEnumEnhanced>(data['data']);
     }
     if (dataClassName == 'ObjectWithHalfVector') {
-      return deserialize<_i121.ObjectWithHalfVector>(data['data']);
+      return deserialize<_iy6ksgxz.ObjectWithHalfVector>(data['data']);
     }
     if (dataClassName == 'ObjectWithIndex') {
-      return deserialize<_i122.ObjectWithIndex>(data['data']);
+      return deserialize<_inemzov5.ObjectWithIndex>(data['data']);
     }
     if (dataClassName == 'ObjectWithJsonb') {
-      return deserialize<_i123.ObjectWithJsonb>(data['data']);
+      return deserialize<_ihyvenpw.ObjectWithJsonb>(data['data']);
     }
     if (dataClassName == 'ObjectWithJsonbClassLevel') {
-      return deserialize<_i124.ObjectWithJsonbClassLevel>(data['data']);
+      return deserialize<_i4p0t2g0.ObjectWithJsonbClassLevel>(data['data']);
     }
     if (dataClassName == 'ObjectWithMaps') {
-      return deserialize<_i125.ObjectWithMaps>(data['data']);
+      return deserialize<_i26q9u41.ObjectWithMaps>(data['data']);
     }
     if (dataClassName == 'ObjectWithObject') {
-      return deserialize<_i126.ObjectWithObject>(data['data']);
+      return deserialize<_i4hr2e9p.ObjectWithObject>(data['data']);
     }
     if (dataClassName == 'ObjectWithParent') {
-      return deserialize<_i127.ObjectWithParent>(data['data']);
+      return deserialize<_io0t3u2c.ObjectWithParent>(data['data']);
     }
     if (dataClassName == 'ObjectWithSealedClass') {
-      return deserialize<_i128.ObjectWithSealedClass>(data['data']);
+      return deserialize<_im4j7lpz.ObjectWithSealedClass>(data['data']);
     }
     if (dataClassName == 'ObjectWithSelfParent') {
-      return deserialize<_i129.ObjectWithSelfParent>(data['data']);
+      return deserialize<_ihluvkmz.ObjectWithSelfParent>(data['data']);
     }
     if (dataClassName == 'ObjectWithSparseVector') {
-      return deserialize<_i130.ObjectWithSparseVector>(data['data']);
+      return deserialize<_i8t20dyr.ObjectWithSparseVector>(data['data']);
     }
     if (dataClassName == 'ObjectWithUuid') {
-      return deserialize<_i131.ObjectWithUuid>(data['data']);
+      return deserialize<_iusk9w05.ObjectWithUuid>(data['data']);
     }
     if (dataClassName == 'ObjectWithVector') {
-      return deserialize<_i132.ObjectWithVector>(data['data']);
+      return deserialize<_itmc4j9i.ObjectWithVector>(data['data']);
     }
     if (dataClassName == 'RelatedUniqueData') {
-      return deserialize<_i133.RelatedUniqueData>(data['data']);
+      return deserialize<_i2aw39a6.RelatedUniqueData>(data['data']);
     }
     if (dataClassName == 'ModelWithRequiredField') {
-      return deserialize<_i134.ModelWithRequiredField>(data['data']);
+      return deserialize<_iv7egjxb.ModelWithRequiredField>(data['data']);
     }
     if (dataClassName == 'SimpleData') {
-      return deserialize<_i135.SimpleData>(data['data']);
+      return deserialize<_i0zisc0t.SimpleData>(data['data']);
     }
     if (dataClassName == 'SimpleDateTime') {
-      return deserialize<_i136.SimpleDateTime>(data['data']);
+      return deserialize<_i1duz4kf.SimpleDateTime>(data['data']);
     }
     if (dataClassName == 'TestEnum') {
-      return deserialize<_i137.TestEnum>(data['data']);
+      return deserialize<_ionapfu9.TestEnum>(data['data']);
     }
     if (dataClassName == 'TestEnumDefaultSerialization') {
-      return deserialize<_i138.TestEnumDefaultSerialization>(data['data']);
+      return deserialize<_icplrpi3.TestEnumDefaultSerialization>(data['data']);
     }
     if (dataClassName == 'TestEnumEnhanced') {
-      return deserialize<_i139.TestEnumEnhanced>(data['data']);
+      return deserialize<_it39smib.TestEnumEnhanced>(data['data']);
     }
     if (dataClassName == 'TestEnumEnhancedByName') {
-      return deserialize<_i140.TestEnumEnhancedByName>(data['data']);
+      return deserialize<_izw460bh.TestEnumEnhancedByName>(data['data']);
     }
     if (dataClassName == 'TestEnumStringified') {
-      return deserialize<_i141.TestEnumStringified>(data['data']);
+      return deserialize<_i7liykk2.TestEnumStringified>(data['data']);
     }
     if (dataClassName == 'Types') {
-      return deserialize<_i142.Types>(data['data']);
+      return deserialize<_iwxwszsz.Types>(data['data']);
     }
     if (dataClassName == 'UniqueData') {
-      return deserialize<_i143.UniqueData>(data['data']);
+      return deserialize<_iufhyrjh.UniqueData>(data['data']);
     }
     if (dataClassName == 'UniqueDataWithNonPersist') {
-      return deserialize<_i144.UniqueDataWithNonPersist>(data['data']);
+      return deserialize<_ip8yzqii.UniqueDataWithNonPersist>(data['data']);
     }
     if (dataClassName == 'UpsertTestModel') {
-      return deserialize<_i145.UpsertTestModel>(data['data']);
+      return deserialize<_iwbeyn4p.UpsertTestModel>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _iacc.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i3.Protocol().deserializeByClassName(data);
+      return _iaic.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_test_shared_module.')) {
       data['className'] = dataClassName.substring(29);
-      return _i4.Protocol().deserializeByClassName(data);
+      return _iyerxm0e.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_test_sqlite_shared.')) {
       data['className'] = dataClassName.substring(29);
-      return _i5.Protocol().deserializeByClassName(data);
+      return _iqfgygbv.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i2.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
-    _i3.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
-    _i4.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
-    _i5.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
+    _iacc.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
+    _iaic.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
+    _iyerxm0e.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
+    _iqfgygbv.Protocol().registerHostProtocol('serverpod_test_sqlite', this);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _isd.Table? getTableForType(Type t) {
     {
-      var protocol = _i2.Protocol();
-      var table = protocol is _i1.DatabaseSerializationManager
-          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+      var protocol = _iacc.Protocol();
+      var table = protocol is _isd.DatabaseSerializationManager
+          ? (protocol as _isd.DatabaseSerializationManager).getTableForType(t)
           : null;
       if (table != null) {
         return table;
       }
     }
     {
-      var protocol = _i3.Protocol();
-      var table = protocol is _i1.DatabaseSerializationManager
-          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+      var protocol = _iaic.Protocol();
+      var table = protocol is _isd.DatabaseSerializationManager
+          ? (protocol as _isd.DatabaseSerializationManager).getTableForType(t)
           : null;
       if (table != null) {
         return table;
       }
     }
     {
-      var protocol = _i4.Protocol();
-      var table = protocol is _i1.DatabaseSerializationManager
-          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+      var protocol = _iyerxm0e.Protocol();
+      var table = protocol is _isd.DatabaseSerializationManager
+          ? (protocol as _isd.DatabaseSerializationManager).getTableForType(t)
           : null;
       if (table != null) {
         return table;
       }
     }
     {
-      var protocol = _i5.Protocol();
-      var table = protocol is _i1.DatabaseSerializationManager
-          ? (protocol as _i1.DatabaseSerializationManager).getTableForType(t)
+      var protocol = _iqfgygbv.Protocol();
+      var table = protocol is _isd.DatabaseSerializationManager
+          ? (protocol as _isd.DatabaseSerializationManager).getTableForType(t)
           : null;
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i66.EmptyModelRelationItem:
-        return _i66.EmptyModelRelationItem.t;
-      case _i67.EmptyModelWithTable:
-        return _i67.EmptyModelWithTable.t;
-      case _i68.RelationEmptyModel:
-        return _i68.RelationEmptyModel.t;
-      case _i90.City:
-        return _i90.City.t;
-      case _i91.Organization:
-        return _i91.Organization.t;
-      case _i92.Person:
-        return _i92.Person.t;
-      case _i93.Course:
-        return _i93.Course.t;
-      case _i94.Enrollment:
-        return _i94.Enrollment.t;
-      case _i95.Student:
-        return _i95.Student.t;
-      case _i96.Arena:
-        return _i96.Arena.t;
-      case _i97.Player:
-        return _i97.Player.t;
-      case _i98.Team:
-        return _i98.Team.t;
-      case _i99.Comment:
-        return _i99.Comment.t;
-      case _i100.Customer:
-        return _i100.Customer.t;
-      case _i101.Book:
-        return _i101.Book.t;
-      case _i102.Chapter:
-        return _i102.Chapter.t;
-      case _i103.Order:
-        return _i103.Order.t;
-      case _i104.Address:
-        return _i104.Address.t;
-      case _i105.Citizen:
-        return _i105.Citizen.t;
-      case _i106.Company:
-        return _i106.Company.t;
-      case _i107.Town:
-        return _i107.Town.t;
-      case _i108.Blocking:
-        return _i108.Blocking.t;
-      case _i109.Member:
-        return _i109.Member.t;
-      case _i110.Cat:
-        return _i110.Cat.t;
-      case _i111.Post:
-        return _i111.Post.t;
-      case _i112.NullsDistinctData:
-        return _i112.NullsDistinctData.t;
-      case _i113.ObjectFieldPersist:
-        return _i113.ObjectFieldPersist.t;
-      case _i133.RelatedUniqueData:
-        return _i133.RelatedUniqueData.t;
-      case _i134.ModelWithRequiredField:
-        return _i134.ModelWithRequiredField.t;
-      case _i135.SimpleData:
-        return _i135.SimpleData.t;
-      case _i136.SimpleDateTime:
-        return _i136.SimpleDateTime.t;
-      case _i142.Types:
-        return _i142.Types.t;
-      case _i143.UniqueData:
-        return _i143.UniqueData.t;
-      case _i144.UniqueDataWithNonPersist:
-        return _i144.UniqueDataWithNonPersist.t;
+      case _ikufh0vd.EmptyModelRelationItem:
+        return _ikufh0vd.EmptyModelRelationItem.t;
+      case _iw4y4x6s.EmptyModelWithTable:
+        return _iw4y4x6s.EmptyModelWithTable.t;
+      case _iy7bezig.RelationEmptyModel:
+        return _iy7bezig.RelationEmptyModel.t;
+      case _i0i33txy.City:
+        return _i0i33txy.City.t;
+      case _iffzpgud.Organization:
+        return _iffzpgud.Organization.t;
+      case _i9x7ls0c.Person:
+        return _i9x7ls0c.Person.t;
+      case _iy2buo88.Course:
+        return _iy2buo88.Course.t;
+      case _i8v11x6h.Enrollment:
+        return _i8v11x6h.Enrollment.t;
+      case _ig5mtn0e.Student:
+        return _ig5mtn0e.Student.t;
+      case _ikwieien.Arena:
+        return _ikwieien.Arena.t;
+      case _ip8wmh4s.Player:
+        return _ip8wmh4s.Player.t;
+      case _ifa5hwxy.Team:
+        return _ifa5hwxy.Team.t;
+      case _ii7cxuye.Comment:
+        return _ii7cxuye.Comment.t;
+      case _i1nwi4iv.Customer:
+        return _i1nwi4iv.Customer.t;
+      case _if51mnnb.Book:
+        return _if51mnnb.Book.t;
+      case _itdsc4u0.Chapter:
+        return _itdsc4u0.Chapter.t;
+      case _is5jy3ez.Order:
+        return _is5jy3ez.Order.t;
+      case _i6uupgbr.Address:
+        return _i6uupgbr.Address.t;
+      case _igeuyxnu.Citizen:
+        return _igeuyxnu.Citizen.t;
+      case _if6srpch.Company:
+        return _if6srpch.Company.t;
+      case _igjnmbwc.Town:
+        return _igjnmbwc.Town.t;
+      case _ic5jbe8i.Blocking:
+        return _ic5jbe8i.Blocking.t;
+      case _ijj92mp1.Member:
+        return _ijj92mp1.Member.t;
+      case _ib9keugy.Cat:
+        return _ib9keugy.Cat.t;
+      case _iyh1zt5l.Post:
+        return _iyh1zt5l.Post.t;
+      case _iz2gvrid.NullsDistinctData:
+        return _iz2gvrid.NullsDistinctData.t;
+      case _i9ffbppf.ObjectFieldPersist:
+        return _i9ffbppf.ObjectFieldPersist.t;
+      case _i2aw39a6.RelatedUniqueData:
+        return _i2aw39a6.RelatedUniqueData.t;
+      case _iv7egjxb.ModelWithRequiredField:
+        return _iv7egjxb.ModelWithRequiredField.t;
+      case _i0zisc0t.SimpleData:
+        return _i0zisc0t.SimpleData.t;
+      case _i1duz4kf.SimpleDateTime:
+        return _i1duz4kf.SimpleDateTime.t;
+      case _iwxwszsz.Types:
+        return _iwxwszsz.Types.t;
+      case _iufhyrjh.UniqueData:
+        return _iufhyrjh.UniqueData.t;
+      case _ip8yzqii.UniqueDataWithNonPersist:
+        return _ip8yzqii.UniqueDataWithNonPersist.t;
     }
     return null;
   }
 
   @override
-  List<_i1.TableDefinition> getTargetTableDefinitions() =>
+  List<_isd.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -4450,13 +4653,13 @@ class Protocol extends _i1.DatabaseSerializationManager {
       };
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _iacc.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iaic.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iyerxm0e.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

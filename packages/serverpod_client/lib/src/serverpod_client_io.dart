@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
@@ -50,6 +51,7 @@ class ServerpodClientRequestDelegateImpl
     Uri url, {
     required String body,
     String? authenticationValue,
+    bool authenticated = true,
   }) async {
     try {
       final response = await _httpClient
@@ -75,10 +77,12 @@ class ServerpodClientRequestDelegateImpl
 
       return data;
     } on SocketException catch (e) {
-      throw ServerpodClientException(e.toString(), -1);
+      throw ServerpodClientNetworkException(e.toString());
     } on http.ClientException catch (e) {
       var message = 'Unknown server response code. ($e)';
-      throw ServerpodClientException(message, -1);
+      throw ServerpodClientNetworkException(message);
+    } on TimeoutException catch (e) {
+      throw ServerpodClientNetworkException('Request timed out. ($e)');
     }
   }
 

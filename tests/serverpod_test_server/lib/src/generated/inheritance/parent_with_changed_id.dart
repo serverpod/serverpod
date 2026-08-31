@@ -10,31 +10,31 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 class ParentWithChangedId
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   ParentWithChangedId({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     this.createdAt,
     this.updatedAt,
-  }) : id = id ?? const _i1.Uuid().v7obj();
+  }) : id = id ?? const _is.Uuid().v7obj();
 
   factory ParentWithChangedId.fromJson(Map<String, dynamic> jsonSerialization) {
     return ParentWithChangedId(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       updatedAt: jsonSerialization['updatedAt'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['updatedAt']),
     );
   }
 
-  _i1.UuidValue id;
+  _is.UuidValue id;
 
   DateTime? createdAt;
 
@@ -42,9 +42,9 @@ class ParentWithChangedId
 
   /// Returns a shallow copy of this [ParentWithChangedId]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ParentWithChangedId copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     Object? createdAt = _Undefined,
     Object? updatedAt = _Undefined,
   }) {
@@ -72,7 +72,7 @@ class ParentWithChangedId
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 

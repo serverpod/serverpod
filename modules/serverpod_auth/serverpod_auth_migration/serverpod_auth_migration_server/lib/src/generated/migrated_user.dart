@@ -11,15 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _iacs;
 import 'package:serverpod_auth_migration_server/src/generated/protocol.dart'
-    as _i4;
+    as _i5lht1r8;
+import 'package:serverpod_auth_server/serverpod_auth_server.dart' as _i1n3uhu0;
 
 abstract class MigratedUser
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   MigratedUser._({
     this.id,
     required this.oldUserId,
@@ -31,9 +31,9 @@ abstract class MigratedUser
   factory MigratedUser({
     int? id,
     required int oldUserId,
-    _i2.UserInfo? oldUser,
-    required _i1.UuidValue newAuthUserId,
-    _i3.AuthUser? newAuthUser,
+    _i1n3uhu0.UserInfo? oldUser,
+    required _is.UuidValue newAuthUserId,
+    _iacs.AuthUser? newAuthUser,
   }) = _MigratedUserImpl;
 
   factory MigratedUser.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -42,15 +42,15 @@ abstract class MigratedUser
       oldUserId: jsonSerialization['oldUserId'] as int,
       oldUser: jsonSerialization['oldUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.UserInfo>(
+          : _i5lht1r8.Protocol().deserialize<_i1n3uhu0.UserInfo>(
               jsonSerialization['oldUser'],
             ),
-      newAuthUserId: _i1.UuidValueJsonExtension.fromJson(
+      newAuthUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['newAuthUserId'],
       ),
       newAuthUser: jsonSerialization['newAuthUser'] == null
           ? null
-          : _i4.Protocol().deserialize<_i3.AuthUser>(
+          : _i5lht1r8.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['newAuthUser'],
             ),
     );
@@ -66,25 +66,25 @@ abstract class MigratedUser
   int oldUserId;
 
   /// The [UserInfo] object which was migrated to the new user.
-  _i2.UserInfo? oldUser;
+  _i1n3uhu0.UserInfo? oldUser;
 
-  _i1.UuidValue newAuthUserId;
+  _is.UuidValue newAuthUserId;
 
   /// The [AuthUser] the old user was migrated to.
-  _i3.AuthUser? newAuthUser;
+  _iacs.AuthUser? newAuthUser;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MigratedUser copyWith({
     int? id,
     int? oldUserId,
-    _i2.UserInfo? oldUser,
-    _i1.UuidValue? newAuthUserId,
-    _i3.AuthUser? newAuthUser,
+    _i1n3uhu0.UserInfo? oldUser,
+    _is.UuidValue? newAuthUserId,
+    _iacs.AuthUser? newAuthUser,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -104,8 +104,8 @@ abstract class MigratedUser
   }
 
   static MigratedUserInclude include({
-    _i2.UserInfoInclude? oldUser,
-    _i3.AuthUserInclude? newAuthUser,
+    _i1n3uhu0.UserInfoInclude? oldUser,
+    _iacs.AuthUserInclude? newAuthUser,
   }) {
     return MigratedUserInclude._(
       oldUser: oldUser,
@@ -114,11 +114,11 @@ abstract class MigratedUser
   }
 
   static MigratedUserIncludeList includeList({
-    _i1.WhereExpressionBuilder<MigratedUserTable>? where,
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
     MigratedUserInclude? include,
   }) {
     return MigratedUserIncludeList._(
@@ -133,7 +133,7 @@ abstract class MigratedUser
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -143,9 +143,9 @@ class _MigratedUserImpl extends MigratedUser {
   _MigratedUserImpl({
     int? id,
     required int oldUserId,
-    _i2.UserInfo? oldUser,
-    required _i1.UuidValue newAuthUserId,
-    _i3.AuthUser? newAuthUser,
+    _i1n3uhu0.UserInfo? oldUser,
+    required _is.UuidValue newAuthUserId,
+    _iacs.AuthUser? newAuthUser,
   }) : super._(
          id: id,
          oldUserId: oldUserId,
@@ -156,52 +156,54 @@ class _MigratedUserImpl extends MigratedUser {
 
   /// Returns a shallow copy of this [MigratedUser]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MigratedUser copyWith({
     Object? id = _Undefined,
     int? oldUserId,
     Object? oldUser = _Undefined,
-    _i1.UuidValue? newAuthUserId,
+    _is.UuidValue? newAuthUserId,
     Object? newAuthUser = _Undefined,
   }) {
     return MigratedUser(
       id: id is int? ? id : this.id,
       oldUserId: oldUserId ?? this.oldUserId,
-      oldUser: oldUser is _i2.UserInfo? ? oldUser : this.oldUser?.copyWith(),
+      oldUser: oldUser is _i1n3uhu0.UserInfo?
+          ? oldUser
+          : this.oldUser?.copyWith(),
       newAuthUserId: newAuthUserId ?? this.newAuthUserId,
-      newAuthUser: newAuthUser is _i3.AuthUser?
+      newAuthUser: newAuthUser is _iacs.AuthUser?
           ? newAuthUser
           : this.newAuthUser?.copyWith(),
     );
   }
 }
 
-class MigratedUserUpdateTable extends _i1.UpdateTable<MigratedUserTable> {
+class MigratedUserUpdateTable extends _is.UpdateTable<MigratedUserTable> {
   MigratedUserUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> oldUserId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> oldUserId(int value) => _is.ColumnValue(
     table.oldUserId,
     value,
   );
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> newAuthUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> newAuthUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.newAuthUserId,
     value,
   );
 }
 
-class MigratedUserTable extends _i1.Table<int?> {
+class MigratedUserTable extends _is.Table<int?> {
   MigratedUserTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_migration_migrated_user') {
     updateTable = MigratedUserUpdateTable(this);
-    oldUserId = _i1.ColumnInt(
+    oldUserId = _is.ColumnInt(
       'oldUserId',
       this,
     );
-    newAuthUserId = _i1.ColumnUuid(
+    newAuthUserId = _is.ColumnUuid(
       'newAuthUserId',
       this,
     );
@@ -209,51 +211,51 @@ class MigratedUserTable extends _i1.Table<int?> {
 
   late final MigratedUserUpdateTable updateTable;
 
-  late final _i1.ColumnInt oldUserId;
+  late final _is.ColumnInt oldUserId;
 
   /// The [UserInfo] object which was migrated to the new user.
-  _i2.UserInfoTable? _oldUser;
+  _i1n3uhu0.UserInfoTable? _oldUser;
 
-  late final _i1.ColumnUuid newAuthUserId;
+  late final _is.ColumnUuid newAuthUserId;
 
   /// The [AuthUser] the old user was migrated to.
-  _i3.AuthUserTable? _newAuthUser;
+  _iacs.AuthUserTable? _newAuthUser;
 
-  _i2.UserInfoTable get oldUser {
+  _i1n3uhu0.UserInfoTable get oldUser {
     if (_oldUser != null) return _oldUser!;
-    _oldUser = _i1.createRelationTable(
+    _oldUser = _is.createRelationTable(
       relationFieldName: 'oldUser',
       field: MigratedUser.t.oldUserId,
-      foreignField: _i2.UserInfo.t.id,
+      foreignField: _i1n3uhu0.UserInfo.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.UserInfoTable(tableRelation: foreignTableRelation),
+          _i1n3uhu0.UserInfoTable(tableRelation: foreignTableRelation),
     );
     return _oldUser!;
   }
 
-  _i3.AuthUserTable get newAuthUser {
+  _iacs.AuthUserTable get newAuthUser {
     if (_newAuthUser != null) return _newAuthUser!;
-    _newAuthUser = _i1.createRelationTable(
+    _newAuthUser = _is.createRelationTable(
       relationFieldName: 'newAuthUser',
       field: MigratedUser.t.newAuthUserId,
-      foreignField: _i3.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _newAuthUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     oldUserId,
     newAuthUserId,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'oldUser') {
       return oldUser;
     }
@@ -264,32 +266,32 @@ class MigratedUserTable extends _i1.Table<int?> {
   }
 }
 
-class MigratedUserInclude extends _i1.IncludeObject {
+class MigratedUserInclude extends _is.IncludeObject {
   MigratedUserInclude._({
-    _i2.UserInfoInclude? oldUser,
-    _i3.AuthUserInclude? newAuthUser,
+    _i1n3uhu0.UserInfoInclude? oldUser,
+    _iacs.AuthUserInclude? newAuthUser,
   }) {
     _oldUser = oldUser;
     _newAuthUser = newAuthUser;
   }
 
-  _i2.UserInfoInclude? _oldUser;
+  _i1n3uhu0.UserInfoInclude? _oldUser;
 
-  _i3.AuthUserInclude? _newAuthUser;
+  _iacs.AuthUserInclude? _newAuthUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'oldUser': _oldUser,
     'newAuthUser': _newAuthUser,
   };
 
   @override
-  _i1.Table<int?> get table => MigratedUser.t;
+  _is.Table<int?> get table => MigratedUser.t;
 }
 
-class MigratedUserIncludeList extends _i1.IncludeList {
+class MigratedUserIncludeList extends _is.IncludeList {
   MigratedUserIncludeList._({
-    _i1.WhereExpressionBuilder<MigratedUserTable>? where,
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -300,10 +302,10 @@ class MigratedUserIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MigratedUser.t;
+  _is.Table<int?> get table => MigratedUser.t;
 }
 
 class MigratedUserRepository {
@@ -334,16 +336,16 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<List<MigratedUser>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MigratedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
     MigratedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MigratedUser>(
       where: where?.call(MigratedUser.t),
@@ -376,15 +378,15 @@ class MigratedUserRepository {
   /// );
   /// ```
   Future<MigratedUser?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MigratedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
     int? offset,
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
     MigratedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MigratedUser>(
       where: where?.call(MigratedUser.t),
@@ -400,12 +402,12 @@ class MigratedUserRepository {
 
   /// Finds a single [MigratedUser] by its [id] or null if no such row exists.
   Future<MigratedUser?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     MigratedUserInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MigratedUser>(
       id,
@@ -431,9 +433,9 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MigratedUser> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -449,9 +451,9 @@ class MigratedUserRepository {
   ///
   /// The returned [MigratedUser] will have its `id` field set.
   Future<MigratedUser> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<MigratedUser>(
       row,
@@ -480,12 +482,12 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MigratedUser> rows, {
-    required _i1.ColumnSelections<MigratedUserTable> conflictColumns,
-    _i1.ColumnSelections<MigratedUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MigratedUserTable> conflictColumns,
+    _is.ColumnSelections<MigratedUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<MigratedUser>(
@@ -512,12 +514,12 @@ class MigratedUserRepository {
   ///
   /// The returned [MigratedUser] will have its `id` field set.
   Future<MigratedUser?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser row, {
-    required _i1.ColumnSelections<MigratedUserTable> conflictColumns,
-    _i1.ColumnSelections<MigratedUserTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MigratedUserTable> conflictColumns,
+    _is.ColumnSelections<MigratedUserTable>? updateColumns,
+    _is.WhereExpressionBuilder<MigratedUserTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MigratedUser>(
       row,
@@ -538,10 +540,10 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MigratedUser> rows, {
-    _i1.ColumnSelections<MigratedUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MigratedUserTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<MigratedUser>(
@@ -556,10 +558,10 @@ class MigratedUserRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MigratedUser> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser row, {
-    _i1.ColumnSelections<MigratedUserTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MigratedUserTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<MigratedUser>(
       row,
@@ -571,10 +573,10 @@ class MigratedUserRepository {
   /// Updates a single [MigratedUser] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MigratedUser?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<MigratedUser>(
       id,
@@ -590,14 +592,14 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<MigratedUserUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<MigratedUserTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MigratedUser>(
@@ -624,11 +626,11 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MigratedUser> rows, {
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<MigratedUser>(
@@ -642,9 +644,9 @@ class MigratedUserRepository {
 
   /// Deletes a single [MigratedUser].
   Future<MigratedUser> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<MigratedUser>(
       row,
@@ -661,11 +663,11 @@ class MigratedUserRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MigratedUser>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
-    _i1.OrderByBuilder<MigratedUserTable>? orderBy,
-    _i1.OrderByListBuilder<MigratedUserTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MigratedUserTable> where,
+    _is.OrderByBuilder<MigratedUserTable>? orderBy,
+    _is.OrderByListBuilder<MigratedUserTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MigratedUser>(
@@ -680,10 +682,10 @@ class MigratedUserRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MigratedUserTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MigratedUserTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<MigratedUser>(
       where: where?.call(MigratedUser.t),
@@ -694,11 +696,11 @@ class MigratedUserRepository {
 
   /// Acquires row-level locks on [MigratedUser] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MigratedUserTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MigratedUserTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MigratedUser>(
       where: where(MigratedUser.t),
@@ -715,10 +717,10 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [UserInfo]
   /// by setting the [MigratedUser]'s foreign key `oldUserId` to refer to the [UserInfo].
   Future<void> oldUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser migratedUser,
-    _i2.UserInfo oldUser, {
-    _i1.Transaction? transaction,
+    _i1n3uhu0.UserInfo oldUser, {
+    _is.Transaction? transaction,
   }) async {
     if (migratedUser.id == null) {
       throw ArgumentError.notNull('migratedUser.id');
@@ -738,10 +740,10 @@ class MigratedUserAttachRowRepository {
   /// Creates a relation between the given [MigratedUser] and [AuthUser]
   /// by setting the [MigratedUser]'s foreign key `newAuthUserId` to refer to the [AuthUser].
   Future<void> newAuthUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MigratedUser migratedUser,
-    _i3.AuthUser newAuthUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser newAuthUser, {
+    _is.Transaction? transaction,
   }) async {
     if (migratedUser.id == null) {
       throw ArgumentError.notNull('migratedUser.id');

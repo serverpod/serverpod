@@ -2,5 +2,9 @@ analyzer:
   exclude:
     - templates/**
 
+linter:
+  rules:
+    prefer_initializing_formals: false
+
 formatter:
   trailing_commas: preserve

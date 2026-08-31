@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// The reason for why the account creation with email request was rejected.
-enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
+enum EmailAccountRequestExceptionReason implements _is.SerializableModel {
   /// Exception to be thrown when attempting to complete a valid email account
   /// request that has already expired.
   expired,
@@ -31,8 +31,7 @@ enum EmailAccountRequestExceptionReason implements _i1.SerializableModel {
   tooManyAttempts,
 
   /// Unknown error occurred.
-  unknown,
-  ;
+  unknown;
 
   static EmailAccountRequestExceptionReason fromJson(String name) {
     switch (name) {

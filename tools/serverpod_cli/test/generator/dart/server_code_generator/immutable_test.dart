@@ -124,7 +124,7 @@ void main() {
             final metadata = baseClass!.metadata;
             final hasImmutable = metadata.any((annotation) {
               final name = annotation.name.name;
-              // Handles both direct and aliased imports (e.g. @_i1.immutable)
+              // Handles both direct and aliased imports (e.g. `@_i<hash>.immutable`)
               return name == 'immutable' ||
                   name == 'Immutable' ||
                   name.endsWith('.immutable') ||
@@ -263,7 +263,7 @@ void main() {
             final metadata = baseClass!.metadata;
             final hasImmutable = metadata.any((annotation) {
               final name = annotation.name.name;
-              // Handles both direct and aliased imports (e.g. @_i1.immutable)
+              // Handles both direct and aliased imports (e.g. `@_i<hash>.immutable`)
               return name == 'immutable' ||
                   name == 'Immutable' ||
                   name.endsWith('.immutable') ||

@@ -17,7 +17,7 @@ import 'package:whiskers/whiskers.dart';
 class TemplateRenderer {
   static final DartFormatter _dartFormatter = DartFormatter(
     // update in concert with `code_generator.dart`
-    languageVersion: Version(3, 10, 0),
+    languageVersion: Version(3, 12, 2),
     trailingCommas: TrailingCommas.preserve,
   );
 

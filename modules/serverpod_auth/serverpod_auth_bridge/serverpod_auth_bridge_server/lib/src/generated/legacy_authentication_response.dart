@@ -10,15 +10,15 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'legacy_user_info.dart' as _i2;
-import 'legacy_authentication_fail_reason.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_bridge_server/src/generated/protocol.dart'
-    as _i4;
+    as _isg9n5v0;
+import 'legacy_authentication_fail_reason.dart' as _ijl7odiy;
+import 'legacy_user_info.dart' as _izh8x5we;
 
 /// Response payload for legacy authentication methods.
 abstract class LegacyAuthenticationResponse
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   LegacyAuthenticationResponse._({
     required this.success,
     this.key,
@@ -31,25 +31,25 @@ abstract class LegacyAuthenticationResponse
     required bool success,
     String? key,
     int? keyId,
-    _i2.LegacyUserInfo? userInfo,
-    _i3.LegacyAuthenticationFailReason? failReason,
+    _izh8x5we.LegacyUserInfo? userInfo,
+    _ijl7odiy.LegacyAuthenticationFailReason? failReason,
   }) = _LegacyAuthenticationResponseImpl;
 
   factory LegacyAuthenticationResponse.fromJson(
     Map<String, dynamic> jsonSerialization,
   ) {
     return LegacyAuthenticationResponse(
-      success: _i1.BoolJsonExtension.fromJson(jsonSerialization['success']),
+      success: _is.BoolJsonExtension.fromJson(jsonSerialization['success']),
       key: jsonSerialization['key'] as String?,
       keyId: jsonSerialization['keyId'] as int?,
       userInfo: jsonSerialization['userInfo'] == null
           ? null
-          : _i4.Protocol().deserialize<_i2.LegacyUserInfo>(
+          : _isg9n5v0.Protocol().deserialize<_izh8x5we.LegacyUserInfo>(
               jsonSerialization['userInfo'],
             ),
       failReason: jsonSerialization['failReason'] == null
           ? null
-          : _i3.LegacyAuthenticationFailReason.fromJson(
+          : _ijl7odiy.LegacyAuthenticationFailReason.fromJson(
               (jsonSerialization['failReason'] as int),
             ),
     );
@@ -65,20 +65,20 @@ abstract class LegacyAuthenticationResponse
   int? keyId;
 
   /// Authenticated user info on success.
-  _i2.LegacyUserInfo? userInfo;
+  _izh8x5we.LegacyUserInfo? userInfo;
 
   /// Failure reason when authentication fails.
-  _i3.LegacyAuthenticationFailReason? failReason;
+  _ijl7odiy.LegacyAuthenticationFailReason? failReason;
 
   /// Returns a shallow copy of this [LegacyAuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   LegacyAuthenticationResponse copyWith({
     bool? success,
     String? key,
     int? keyId,
-    _i2.LegacyUserInfo? userInfo,
-    _i3.LegacyAuthenticationFailReason? failReason,
+    _izh8x5we.LegacyUserInfo? userInfo,
+    _ijl7odiy.LegacyAuthenticationFailReason? failReason,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -106,7 +106,7 @@ abstract class LegacyAuthenticationResponse
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -117,8 +117,8 @@ class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
     required bool success,
     String? key,
     int? keyId,
-    _i2.LegacyUserInfo? userInfo,
-    _i3.LegacyAuthenticationFailReason? failReason,
+    _izh8x5we.LegacyUserInfo? userInfo,
+    _ijl7odiy.LegacyAuthenticationFailReason? failReason,
   }) : super._(
          success: success,
          key: key,
@@ -129,7 +129,7 @@ class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
 
   /// Returns a shallow copy of this [LegacyAuthenticationResponse]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   LegacyAuthenticationResponse copyWith({
     bool? success,
@@ -142,10 +142,10 @@ class _LegacyAuthenticationResponseImpl extends LegacyAuthenticationResponse {
       success: success ?? this.success,
       key: key is String? ? key : this.key,
       keyId: keyId is int? ? keyId : this.keyId,
-      userInfo: userInfo is _i2.LegacyUserInfo?
+      userInfo: userInfo is _izh8x5we.LegacyUserInfo?
           ? userInfo
           : this.userInfo?.copyWith(),
-      failReason: failReason is _i3.LegacyAuthenticationFailReason?
+      failReason: failReason is _ijl7odiy.LegacyAuthenticationFailReason?
           ? failReason
           : this.failReason,
     );

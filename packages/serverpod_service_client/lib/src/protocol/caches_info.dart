@@ -10,13 +10,14 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import 'cache_info.dart' as _i2;
-import 'package:serverpod_service_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_service_client/src/protocol/protocol.dart'
+    as _ian793c4;
+import 'cache_info.dart' as _ihncus9g;
 
 /// High level information about the caches.
 abstract class CachesInfo
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   CachesInfo._({
     required this.local,
     required this.localPrio,
@@ -24,41 +25,41 @@ abstract class CachesInfo
   });
 
   factory CachesInfo({
-    required _i2.CacheInfo local,
-    required _i2.CacheInfo localPrio,
-    required _i2.CacheInfo global,
+    required _ihncus9g.CacheInfo local,
+    required _ihncus9g.CacheInfo localPrio,
+    required _ihncus9g.CacheInfo global,
   }) = _CachesInfoImpl;
 
   factory CachesInfo.fromJson(Map<String, dynamic> jsonSerialization) {
     return CachesInfo(
-      local: _i3.Protocol().deserialize<_i2.CacheInfo>(
+      local: _ian793c4.Protocol().deserialize<_ihncus9g.CacheInfo>(
         jsonSerialization['local'],
       ),
-      localPrio: _i3.Protocol().deserialize<_i2.CacheInfo>(
+      localPrio: _ian793c4.Protocol().deserialize<_ihncus9g.CacheInfo>(
         jsonSerialization['localPrio'],
       ),
-      global: _i3.Protocol().deserialize<_i2.CacheInfo>(
+      global: _ian793c4.Protocol().deserialize<_ihncus9g.CacheInfo>(
         jsonSerialization['global'],
       ),
     );
   }
 
   /// Information about the local cache.
-  _i2.CacheInfo local;
+  _ihncus9g.CacheInfo local;
 
   /// Information about the local priority cache.
-  _i2.CacheInfo localPrio;
+  _ihncus9g.CacheInfo localPrio;
 
   /// Information about the global cache.
-  _i2.CacheInfo global;
+  _ihncus9g.CacheInfo global;
 
   /// Returns a shallow copy of this [CachesInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   CachesInfo copyWith({
-    _i2.CacheInfo? local,
-    _i2.CacheInfo? localPrio,
-    _i2.CacheInfo? global,
+    _ihncus9g.CacheInfo? local,
+    _ihncus9g.CacheInfo? localPrio,
+    _ihncus9g.CacheInfo? global,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -82,15 +83,15 @@ abstract class CachesInfo
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
 class _CachesInfoImpl extends CachesInfo {
   _CachesInfoImpl({
-    required _i2.CacheInfo local,
-    required _i2.CacheInfo localPrio,
-    required _i2.CacheInfo global,
+    required _ihncus9g.CacheInfo local,
+    required _ihncus9g.CacheInfo localPrio,
+    required _ihncus9g.CacheInfo global,
   }) : super._(
          local: local,
          localPrio: localPrio,
@@ -99,12 +100,12 @@ class _CachesInfoImpl extends CachesInfo {
 
   /// Returns a shallow copy of this [CachesInfo]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   CachesInfo copyWith({
-    _i2.CacheInfo? local,
-    _i2.CacheInfo? localPrio,
-    _i2.CacheInfo? global,
+    _ihncus9g.CacheInfo? local,
+    _ihncus9g.CacheInfo? localPrio,
+    _ihncus9g.CacheInfo? global,
   }) {
     return CachesInfo(
       local: local ?? this.local.copyWith(),

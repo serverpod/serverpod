@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class StringDefaultModel
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   StringDefaultModel._({
     this.id,
     String? stringDefaultModel,
@@ -49,7 +49,7 @@ abstract class StringDefaultModel
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   StringDefaultModel copyWith({
     int? id,
     String? stringDefaultModel,
@@ -77,7 +77,7 @@ abstract class StringDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -96,7 +96,7 @@ class _StringDefaultModelImpl extends StringDefaultModel {
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   StringDefaultModel copyWith({
     Object? id = _Undefined,

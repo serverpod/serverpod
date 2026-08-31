@@ -10,17 +10,16 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// An enhanced enum with custom properties, serialized by name (default).
-enum TestEnumEnhancedByName implements _i1.SerializableModel {
+enum TestEnumEnhancedByName implements _isc.SerializableModel {
   /// The first value of [TestEnumEnhancedByName].
   one('1', 'The first value', 10),
 
   /// Second Value
   two('2', 'The second value', 0),
-  three('3', 'The third value', 0),
-  ;
+  three('3', 'The third value', 0);
 
   const TestEnumEnhancedByName(
     this.shortName,

@@ -10,9 +10,9 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
-enum FilterConstraintType implements _i1.SerializableModel {
+enum FilterConstraintType implements _iss.SerializableModel {
   equals,
   notEquals,
   like,
@@ -26,8 +26,7 @@ enum FilterConstraintType implements _i1.SerializableModel {
   between,
   inThePast,
   isNull,
-  isNotNull,
-  ;
+  isNotNull;
 
   static FilterConstraintType fromJson(int index) {
     switch (index) {

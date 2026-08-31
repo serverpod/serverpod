@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:serverpod/serverpod.dart';
 
 import '../client/exceptions.dart';
 import '../config/s3_endpoint_config.dart';
@@ -15,12 +15,12 @@ import 's3_upload_strategy.dart';
 /// This is the standard upload mechanism for AWS S3, GCP (via S3 compatibility),
 /// and LocalStack. It uses a presigned policy document to authorize uploads.
 ///
-/// Note: This strategy does not support [preventOverwrite]. The S3 POST
-/// policy mechanism has no equivalent of `If-None-Match`. The flag is
-/// accepted but silently ignored.
 class MultipartPostUploadStrategy implements S3UploadStrategy {
   @override
   String get uploadType => 'multipart';
+
+  @override
+  bool get supportsPreventOverwrite => false;
 
   @override
   Future<void> uploadData({
@@ -32,8 +32,14 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     required String path,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     bool preventOverwrite = false,
   }) async {
+    if (preventOverwrite) {
+      throw CloudStorageException(
+        'Multipart POST uploads cannot prevent overwrites.',
+      );
+    }
     final uploadUri = endpoints.buildBucketUri(bucket, region);
     final stream = http.ByteStream.fromBytes(Uint8List.sublistView(data));
     final length = data.lengthInBytes;
@@ -47,15 +53,17 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     );
 
     final supportsAcl = endpoints.supportsObjectAcl;
+    final metadataFields = _metadataFields(metadata);
     final policy = Policy.fromS3PresignedPost(
       path,
       bucket,
       accessKey,
-      15,
+      Duration(minutes: 15),
       length,
       region: region,
       public: public,
       includeAcl: supportsAcl,
+      fields: metadataFields,
     );
     final signingKey = SigV4.calculateSigningKey(
       secretKey,
@@ -75,6 +83,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     req.fields['X-Amz-Date'] = policy.datetime;
     req.fields['Policy'] = policy.encode();
     req.fields['X-Amz-Signature'] = signature;
+    req.fields.addAll(metadataFields);
 
     final res = await req.send();
     final response = await http.Response.fromStream(res);
@@ -91,7 +100,7 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
   }
 
   @override
-  Future<String?> createDirectUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required String accessKey,
     required String secretKey,
     required String bucket,
@@ -101,21 +110,30 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
     required int maxFileSize,
     required bool public,
     required S3EndpointConfig endpoints,
+    FileMetadata metadata = const FileMetadata(),
     int? contentLength,
     bool preventOverwrite = false,
   }) async {
+    if (preventOverwrite) {
+      throw CloudStorageException(
+        'Multipart POST uploads cannot prevent overwrites.',
+      );
+    }
     final uploadUri = endpoints.buildBucketUri(bucket, region);
     final supportsAcl = endpoints.supportsObjectAcl;
+    final metadataFields = _metadataFields(metadata);
 
     final policy = Policy.fromS3PresignedPost(
       path,
       bucket,
       accessKey,
-      expiration.inMinutes,
-      maxFileSize,
+      expiration,
+      contentLength ?? maxFileSize,
       region: region,
       public: public,
       includeAcl: supportsAcl,
+      minFileSize: contentLength ?? 1,
+      fields: metadataFields,
     );
     final signingKey = SigV4.calculateSigningKey(
       secretKey,
@@ -133,16 +151,25 @@ class MultipartPostUploadStrategy implements S3UploadStrategy {
       'X-Amz-Date': policy.datetime,
       'Policy': policy.encode(),
       'X-Amz-Signature': signature,
+      ...metadataFields,
     };
 
-    final uploadDescriptionData = {
-      'url': uploadUri.toString(),
-      'type': uploadType,
-      'field': 'file',
-      'file-name': p.basename(path),
-      'request-fields': requestFields,
-    };
-
-    return jsonEncode(uploadDescriptionData);
+    return MultipartUploadDescription(
+      url: uploadUri,
+      field: 'file',
+      fileName: p.basename(path),
+      requestFields: requestFields,
+    );
   }
+
+  static Map<String, String> _metadataFields(FileMetadata metadata) => {
+    if (metadata.contentType != null) 'Content-Type': metadata.contentType!,
+    if (metadata.cacheControl != null) 'Cache-Control': metadata.cacheControl!,
+    if (metadata.contentDisposition != null)
+      'Content-Disposition': metadata.contentDisposition!,
+    if (metadata.contentEncoding != null)
+      'Content-Encoding': metadata.contentEncoding!,
+    for (final entry in metadata.custom.entries)
+      'x-amz-meta-${entry.key.toLowerCase()}': entry.value,
+  };
 }

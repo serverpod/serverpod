@@ -10,7 +10,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// Exception to be thrown if the Microsoft access token verification fails.
 ///
@@ -18,9 +18,9 @@ import 'package:serverpod/serverpod.dart' as _i1;
 /// cause of the failure to avoid leaking information to potential attackers.
 abstract class MicrosoftAccessTokenVerificationException
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   MicrosoftAccessTokenVerificationException._();
 
   factory MicrosoftAccessTokenVerificationException() =
@@ -34,7 +34,7 @@ abstract class MicrosoftAccessTokenVerificationException
 
   /// Returns a shallow copy of this [MicrosoftAccessTokenVerificationException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MicrosoftAccessTokenVerificationException copyWith();
   @override
   Map<String, dynamic> toJson() {
@@ -64,7 +64,7 @@ class _MicrosoftAccessTokenVerificationExceptionImpl
 
   /// Returns a shallow copy of this [MicrosoftAccessTokenVerificationException]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MicrosoftAccessTokenVerificationException copyWith() {
     return MicrosoftAccessTokenVerificationException();

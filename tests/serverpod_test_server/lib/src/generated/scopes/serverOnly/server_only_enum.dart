@@ -10,12 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
-enum ServerOnlyEnum implements _i1.SerializableModel {
+enum ServerOnlyEnum implements _is.SerializableModel {
   foo,
-  bar,
-  ;
+  bar;
 
   static ServerOnlyEnum fromJson(int index) {
     switch (index) {

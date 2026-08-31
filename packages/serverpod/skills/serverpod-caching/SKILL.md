@@ -51,4 +51,4 @@ If relevant set a **lifetime** to avoid unbounded growth. Use stable, unique key
 ## Pitfalls
 
 - `session.caches.global` asserts Redis is enabled; it is not a safe no-op fallback.
-- Cache groups are useful for invalidation, but Redis-backed group invalidation is not available everywhere. Verify before relying on `invalidateGroup` for global cache entries.
+- Cache groups (`put(..., group: 'name')` + `invalidateGroup('name')`) only work on the local caches. `invalidateGroup` throws `UnimplementedError` on the Redis-backed global cache, so invalidate those entries by key with `invalidateKey`.

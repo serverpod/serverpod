@@ -3,9 +3,13 @@ import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/converter/converter.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/keywords.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/base.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/default.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/scope.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/config/serverpod_feature.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
 import 'package:serverpod_cli/src/util/string_validators.dart';
@@ -240,11 +244,12 @@ class Restrictions {
     var definition = documentDefinition;
     if (definition is ModelClassDefinition &&
         definition.isSharedModel &&
-        definition.database != ModelDatabaseDefinition.all) {
+        definition.database != ModelDatabaseDefinition.all &&
+        definition.database != ModelDatabaseDefinition.sync) {
       return [
         SourceSpanSeverityException(
           'The "table" property in shared packages requires the "database" '
-          'property to be set to "all".',
+          'property to be set to "all" or "sync".',
           span,
         ),
       ];
@@ -302,6 +307,22 @@ class Restrictions {
       ];
     }
 
+    if (database == ModelDatabaseDefinition.sync &&
+        !config.isExperimentalFeatureEnabled(
+          ExperimentalFeature.databaseSync,
+        )) {
+      return [
+        SourceSpanSeverityException(
+          'The "database: sync" option is experimental. Enable it with the '
+          '"databaseSync" experimental feature, either through the '
+          '"--experimental-features databaseSync" command line flag or by '
+          'setting "databaseSync: true" under "experimental_features" in the '
+          'generator.yaml file.',
+          span,
+        ),
+      ];
+    }
+
     var definition = documentDefinition;
     if (definition is! ModelClassDefinition ||
         database == ModelDatabaseDefinition.server) {
@@ -309,6 +330,12 @@ class Restrictions {
     }
 
     var errors = <SourceSpanSeverityException>[];
+
+    if (database == ModelDatabaseDefinition.sync) {
+      if (!parsedModels.tableNames.containsKey(syncScopesTableName)) {
+        errors.add(SourceSpanSeverityException(syncModuleMissingError, span));
+      }
+    }
 
     var invalidScopedFields = definition.fieldsIncludingInherited.where(
       (field) =>
@@ -339,7 +366,7 @@ class Restrictions {
       ..._validateTableName(tableName, span),
       ..._validateTableInheritedIdField(span),
       if (tableName is String)
-        ..._validateTableInheritedIndexNames(tableName, span),
+        ..._validateTableInheritedIndexes(tableName, span),
     ];
   }
 
@@ -535,11 +562,12 @@ class Restrictions {
     SourceSpan? span,
   ) {
     var definition = documentDefinition;
-    if (definition is! ClassDefinition) return [];
+    if (definition is! ModelClassDefinition) return [];
 
     var field = definition.findField(parentNodeName);
+    if (field == null) return [];
 
-    if (field?.relation?.isForeignKeyOrigin == false) {
+    if (field.relation?.isForeignKeyOrigin == false) {
       return [
         SourceSpanSeverityException(
           'The "$key" property can only be set on the side holding the foreign key.',
@@ -549,6 +577,59 @@ class Restrictions {
     }
 
     return [];
+  }
+
+  List<SourceSpanSeverityException> validateDeferrableValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    // A deferrable constraint is still checked immediately by default, which
+    // does not satisfy the deferred requirement of synced tables.
+    if (_requiresSyncDeferredRelation(parentNodeName)) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateDeferredValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    if (!_isYamlTrue(content) &&
+        _requiresSyncDeferredRelation(parentNodeName)) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
+    }
+
+    return [];
+  }
+
+  bool _requiresSyncDeferredRelation(String fieldName) {
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition || !definition.isSyncTable) {
+      return false;
+    }
+
+    var field = definition.findField(fieldName);
+    if (field == null) return false;
+
+    return requiresSyncDeferredRelation(definition, field);
   }
 
   List<SourceSpanSeverityException> validateOptionalKey(
@@ -567,6 +648,48 @@ class Restrictions {
       return [
         SourceSpanSeverityException(
           'The "optional" property should be omitted on id fields.',
+          span,
+        ),
+      ];
+    }
+
+    return [];
+  }
+
+  List<SourceSpanSeverityException> validateOptionalValue(
+    String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var booleanErrors = BooleanValueRestriction().validate(
+      parentNodeName,
+      content,
+      span,
+    );
+    if (booleanErrors.isNotEmpty) return booleanErrors;
+
+    if (!_isYamlTrue(content)) return [];
+
+    var definition = documentDefinition;
+    if (definition is! ClassDefinition) return [];
+
+    var field = definition.findField(parentNodeName);
+    if (field == null) return [];
+
+    // Only the side holding the foreign key can be validated. On the other
+    // side the referenced field is the local primary key, which says nothing
+    // about the nullability of the relation.
+    var relation = field.relation;
+    if (relation == null || !relation.isForeignKeyOrigin) return [];
+
+    var foreignKeyFieldName = _relationForeignKeyFieldName(relation);
+    if (foreignKeyFieldName == null) return [];
+
+    var foreignKeyField = definition.findField(foreignKeyFieldName);
+    if (foreignKeyField != null && !foreignKeyField.type.nullable) {
+      return [
+        SourceSpanSeverityException(
+          'An optional relation requires the foreign key field "$foreignKeyFieldName" to be nullable.',
           span,
         ),
       ];
@@ -679,15 +802,25 @@ class Restrictions {
     }
 
     var def = documentDefinition;
-    if (def is ModelClassDefinition &&
-        def.tableName != null &&
-        _databaseModelReservedFieldNames.contains(fieldName)) {
-      return [
-        SourceSpanSeverityException(
-          'The field name "$fieldName" is reserved and cannot be used.',
-          span,
-        ),
-      ];
+    if (def is ModelClassDefinition && def.tableName != null) {
+      if (_databaseModelReservedFieldNames.contains(fieldName)) {
+        return [
+          SourceSpanSeverityException(
+            'The field name "$fieldName" is reserved and cannot be used.',
+            span,
+          ),
+        ];
+      }
+
+      if (def.isSyncTable && fieldName == syncScopeIdFieldName) {
+        var field = def.findField(fieldName);
+        var syncError = field == null
+            ? null
+            : validateSyncScopeIdFieldRelation(field);
+        if (syncError != null) {
+          return [SourceSpanSeverityException(syncError, span)];
+        }
+      }
     }
 
     if (_globallyRestrictedKeywords.contains(fieldName)) {
@@ -739,6 +872,37 @@ class Restrictions {
     String _,
     SourceSpan? span,
   ) {
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.field,
+      removalMessage:
+          'remove the specified "${Keyword.field}" reference from one side',
+    );
+  }
+
+  List<SourceSpanSeverityException> validateRelationFkKey(
+    String parentNodeName,
+    String _,
+    SourceSpan? span,
+  ) {
+    return _validateForeignKeyOwnerProperty(
+      parentNodeName,
+      span,
+      propertyName: Keyword.fk,
+      removalMessage: 'remove the "${Keyword.fk}" property from one side',
+    );
+  }
+
+  /// Shared validation for the properties that mark the side of a relation
+  /// holding the foreign key. Both may only be used on an object relation and
+  /// only one side of a relation is allowed to own the key.
+  List<SourceSpanSeverityException> _validateForeignKeyOwnerProperty(
+    String parentNodeName,
+    SourceSpan? span, {
+    required String propertyName,
+    required String removalMessage,
+  }) {
     var classDefinition = documentDefinition;
 
     if (classDefinition is! ModelClassDefinition) return [];
@@ -746,19 +910,10 @@ class Restrictions {
     var field = classDefinition.findField(parentNodeName);
     if (field == null) return [];
 
-    if (field.type.isListType) {
+    if (field.type.isListType || field.type.isIdType) {
       return [
         SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
-          span,
-        ),
-      ];
-    }
-
-    if (field.type.isIdType) {
-      return [
-        SourceSpanSeverityException(
-          'The "field" property can only be used on an object relation.',
+          'The "$propertyName" property can only be used on an object relation.',
           span,
         ),
       ];
@@ -772,7 +927,8 @@ class Restrictions {
     if (_isForeignKeyDefinedOnBothSides(field, foreignFields)) {
       return [
         SourceSpanSeverityException(
-          'Only one side of the relation is allowed to store the foreign key, remove the specified "field" reference from one side.',
+          'Only one side of the relation is allowed to store the foreign key, '
+          '$removalMessage.',
           span,
         ),
       ];
@@ -960,6 +1116,13 @@ class Restrictions {
       ];
     }
 
+    if (definition.isSyncTable) {
+      var syncError = validateSyncUniqueIndex(definition, index, parsedModels);
+      if (syncError != null) {
+        return [SourceSpanSeverityException(syncError, span)];
+      }
+    }
+
     return [];
   }
 
@@ -1081,10 +1244,31 @@ class Restrictions {
       ];
     }
 
+    if (classDefinition is ModelClassDefinition &&
+        classDefinition.isSyncTable) {
+      var syncErrors = _validateSyncRelation(
+        classDefinition,
+        field,
+        content,
+        span,
+      );
+      if (syncErrors.isNotEmpty) return syncErrors;
+    }
+
     var relation = field.relation;
     if (relation is! ObjectRelationDefinition) return const [];
 
-    if (!AnalyzeChecker.isFieldDefined(content) &&
+    // A non-nullable foreign key that is hidden from the client can never be
+    // provided by a client-built object, which makes the model impossible to
+    // deserialize on the server. Declaring the foreign key field with a scope
+    // that reaches the client is what makes the non-optional relation usable,
+    // not the mere presence of the "field" property.
+    var foreignKeyField = classDefinition.findField(relation.fieldName);
+    var isForeignKeyVisibleToClient =
+        foreignKeyField != null &&
+        foreignKeyField.scope != ModelFieldScopeDefinition.serverOnly;
+
+    if (!isForeignKeyVisibleToClient &&
         !classDefinition.serverOnly &&
         field.scope == ModelFieldScopeDefinition.serverOnly &&
         !relation.nullableRelation) {
@@ -1143,6 +1327,27 @@ class Restrictions {
       ];
     }
 
+    if (definition is! ModelClassDefinition) return [];
+
+    if (parentNodeName == syncScopeIdFieldName) {
+      var syncError = validateSyncScopeIdParentTable(content);
+      if (syncError != null) {
+        return [SourceSpanSeverityException(syncError, span)];
+      }
+    }
+
+    var parentDefinition = parsedModels.findByTableName(content);
+    if (parentDefinition is ModelClassDefinition) {
+      var syncBoundaryError = validateSyncRelationBoundary(
+        model: definition,
+        relatedModel: parentDefinition,
+        foreignKeyField: definition.findField(parentNodeName),
+      );
+      if (syncBoundaryError != null) {
+        return [SourceSpanSeverityException(syncBoundaryError, span)];
+      }
+    }
+
     return [];
   }
 
@@ -1185,6 +1390,7 @@ class Restrictions {
 
     errors.addAll(_validateFieldDataType(field.type, span));
     errors.addAll(_validateIdFieldDataType(field, span));
+    errors.addAll(_validateSyncScopeIdFieldType(field, span));
 
     // Abort further validation if the field data type has errors.
     if (errors.isNotEmpty) return errors;
@@ -1239,6 +1445,10 @@ class Restrictions {
           span,
         ),
       ];
+    }
+
+    if (definition.isSyncTable && parentNodeName == syncScopeIdFieldName) {
+      return [SourceSpanSeverityException(syncScopeIdColumnNameError, span)];
     }
 
     if (column.length > _maxColumnNameLength) {
@@ -1372,7 +1582,7 @@ class Restrictions {
     return errors;
   }
 
-  List<SourceSpanSeverityException> _validateTableInheritedIndexNames(
+  List<SourceSpanSeverityException> _validateTableInheritedIndexes(
     String tableName,
     SourceSpan? span,
   ) {
@@ -1380,10 +1590,21 @@ class Restrictions {
     if (definition is! ModelClassDefinition) return [];
 
     var indexNames = definition.inheritedIndexes.map((i) => i.name);
-    return [
+    final errors = [
       for (var indexName in indexNames)
         ...validateTableIndexName(tableName, indexName, span),
     ];
+
+    if (definition.isSyncTable) {
+      errors.addAll([
+        for (var index in definition.inheritedIndexes)
+          if (validateSyncUniqueIndex(definition, index, parsedModels)
+              case var syncError?)
+            SourceSpanSeverityException(syncError, span),
+      ]);
+    }
+
+    return errors;
   }
 
   List<SourceSpanSeverityException> _validateIdFieldDataType(
@@ -1430,7 +1651,30 @@ class Restrictions {
       );
     }
 
+    if (classDefinition.isSyncTable && !isSyncIdFieldValid(field)) {
+      errors.add(SourceSpanSeverityException(syncIdFieldError, span));
+    }
+
     return errors;
+  }
+
+  /// Validates the type of the `scopeId` field on tables with
+  /// `database: sync`.
+  List<SourceSpanSeverityException> _validateSyncScopeIdFieldType(
+    SerializableModelFieldDefinition field,
+    SourceSpan? span,
+  ) {
+    var classDefinition = documentDefinition;
+    if (classDefinition is! ModelClassDefinition ||
+        !classDefinition.isSyncTable ||
+        field.name != syncScopeIdFieldName) {
+      return [];
+    }
+
+    var syncError = validateSyncScopeIdFieldType(field);
+    if (syncError == null) return [];
+
+    return [SourceSpanSeverityException(syncError, span)];
   }
 
   List<SourceSpanSeverityException> _validateFieldDataType(
@@ -1617,7 +1861,14 @@ class Restrictions {
       var className = classWithRelation.className;
       var classDatabase = classWithRelation.database.name;
       var relatedDatabase = referenceClass.database;
-      if (relatedDatabase != ModelDatabaseDefinition.all &&
+      var syncBoundaryError = validateSyncRelationBoundary(
+        model: classWithRelation,
+        relatedModel: referenceClass,
+        foreignKeyField: classWithRelation.foreignKeyField(field),
+      );
+      if (syncBoundaryError != null) {
+        errors.add(SourceSpanSeverityException(syncBoundaryError, span));
+      } else if (relatedDatabase != ModelDatabaseDefinition.all &&
           relatedDatabase != classWithRelation.database) {
         errors.add(
           SourceSpanSeverityException(
@@ -1636,6 +1887,31 @@ class Restrictions {
 
   List<SourceSpanSeverityException> validateFieldUniqueValue(
     String parentNodeName,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var errors = _validateFieldUniqueValueFormat(content, span);
+    if (errors.isNotEmpty) return errors;
+
+    var definition = documentDefinition;
+    if (definition is! ModelClassDefinition || !definition.isSyncTable) {
+      return [];
+    }
+
+    var field = definition.findField(parentNodeName);
+    var index = field?.autoGeneratedUniqueIndexDefinition(
+      definition.tableName!,
+      definition.fields,
+    );
+    if (index == null) return [];
+
+    var syncError = validateSyncUniqueIndex(definition, index, parsedModels);
+    if (syncError == null) return [];
+
+    return [SourceSpanSeverityException(syncError, span)];
+  }
+
+  List<SourceSpanSeverityException> _validateFieldUniqueValueFormat(
     dynamic content,
     SourceSpan? span,
   ) {
@@ -2067,6 +2343,38 @@ class Restrictions {
     return [];
   }
 
+  /// Validates that the relation declared on [field] of the sync table
+  /// [definition] declares the keys it requires. The values of the declared
+  /// keys are validated by their own restrictions.
+  List<SourceSpanSeverityException> _validateSyncRelation(
+    ModelClassDefinition definition,
+    SerializableModelFieldDefinition field,
+    dynamic content,
+    SourceSpan? span,
+  ) {
+    var foreignKeyField = definition.foreignKeyField(field);
+    if (foreignKeyField == null) return [];
+
+    var declaredKeys = content is YamlMap ? content.keys.toSet() : <dynamic>{};
+
+    if (isSyncScopeRelation(foreignKeyField)) {
+      if (!declaredKeys.contains(Keyword.onDelete)) {
+        return [
+          SourceSpanSeverityException(syncScopeRelationOnDeleteError, span),
+        ];
+      }
+      return [];
+    }
+
+    if (requiresSyncDeferredRelation(definition, field) &&
+        !declaredKeys.contains(Keyword.deferred) &&
+        !declaredKeys.contains(Keyword.deferrable)) {
+      return [SourceSpanSeverityException(syncRelationDeferredError, span)];
+    }
+
+    return [];
+  }
+
   List<SourceSpanSeverityException> validateScopeKey(
     String parentNodeName,
     String key,
@@ -2271,7 +2579,9 @@ class Restrictions {
     if (!_isForeignKeyDefinedOnAnySide(field, foreignFields)) {
       return [
         SourceSpanSeverityException(
-          'The relation is ambiguous, unable to resolve which side should hold the relation. Use the field reference syntax to resolve the ambiguity. E.g. relation(name=$name, field=${parentNodeName}Id)',
+          'The relation is ambiguous, unable to resolve which side should hold '
+          'the relation. Use either the "fk" or "field=" properties to mark '
+          'the side that holds the foreign key. E.g. relation(name=$name, fk)',
           span,
         ),
       ];
@@ -2927,5 +3237,22 @@ class Restrictions {
     return currentModel.fields
         .where((field) => field.jsonKey == jsonKey)
         .toList();
+  }
+
+  String? _relationForeignKeyFieldName(RelationDefinition? relation) {
+    return switch (relation) {
+      ObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvedObjectRelationDefinition(:final fieldName) => fieldName,
+      UnresolvableObjectRelationDefinition(
+        :final objectRelationDefinition,
+      ) =>
+        objectRelationDefinition.fieldName,
+      _ => null,
+    };
+  }
+
+  bool _isYamlTrue(dynamic content) {
+    return content == true ||
+        (content is String && content.toLowerCase() == 'true');
   }
 }

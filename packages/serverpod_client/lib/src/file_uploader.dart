@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 /// you can setup a custom storage service, such as S3 or Google Cloud. To
 /// directly upload a file, you first need to retrieve an upload description
 /// from your server. After the file is uploaded, make sure to notify the server
-/// by calling the verifyDirectFileUpload on the current Session object.
+/// by calling `verifyUpload` on the current Session object.
 class FileUploader {
   late final _UploadDescription _uploadDescription;
   bool _attemptedUpload = false;

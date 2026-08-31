@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_database/serverpod_database.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
 import '../../../models_with_relations/one_to_many/implicit/chapter.dart'
-    as _i3;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i4;
+    as _ithd8abs;
 
-abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
+abstract class Book implements _isd.TableRow<int?>, _isc.ProtocolSerialization {
   Book._({
     this.id,
     required this.title,
@@ -27,7 +28,7 @@ abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
   factory Book({
     int? id,
     required String title,
-    List<_i3.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   }) = _BookImpl;
 
   factory Book.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -36,7 +37,7 @@ abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
       title: jsonSerialization['title'] as String,
       chapters: jsonSerialization['chapters'] == null
           ? null
-          : _i4.Protocol().deserialize<List<_i3.Chapter>>(
+          : _i0ntutnq.Protocol().deserialize<List<_ithd8abs.Chapter>>(
               jsonSerialization['chapters'],
             ),
     );
@@ -51,18 +52,18 @@ abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   String title;
 
-  List<_i3.Chapter>? chapters;
+  List<_ithd8abs.Chapter>? chapters;
 
   @override
-  _i1.Table<int?> get table => t;
+  _isd.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   Book copyWith({
     int? id,
     String? title,
-    List<_i3.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -86,16 +87,16 @@ abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
     };
   }
 
-  static BookInclude include({_i3.ChapterIncludeList? chapters}) {
+  static BookInclude include({_ithd8abs.ChapterIncludeList? chapters}) {
     return BookInclude._(chapters: chapters);
   }
 
   static BookIncludeList includeList({
-    _i1.WhereExpressionBuilder<BookTable>? where,
+    _isd.WhereExpressionBuilder<BookTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
     BookInclude? include,
   }) {
     return BookIncludeList._(
@@ -110,7 +111,7 @@ abstract class Book implements _i1.TableRow<int?>, _i2.ProtocolSerialization {
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -120,7 +121,7 @@ class _BookImpl extends Book {
   _BookImpl({
     int? id,
     required String title,
-    List<_i3.Chapter>? chapters,
+    List<_ithd8abs.Chapter>? chapters,
   }) : super._(
          id: id,
          title: title,
@@ -129,7 +130,7 @@ class _BookImpl extends Book {
 
   /// Returns a shallow copy of this [Book]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   Book copyWith({
     Object? id = _Undefined,
@@ -139,26 +140,26 @@ class _BookImpl extends Book {
     return Book(
       id: id is int? ? id : this.id,
       title: title ?? this.title,
-      chapters: chapters is List<_i3.Chapter>?
+      chapters: chapters is List<_ithd8abs.Chapter>?
           ? chapters
           : this.chapters?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class BookUpdateTable extends _i1.UpdateTable<BookTable> {
+class BookUpdateTable extends _isd.UpdateTable<BookTable> {
   BookUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> title(String value) => _i1.ColumnValue(
+  _isd.ColumnValue<String, String> title(String value) => _isd.ColumnValue(
     table.title,
     value,
   );
 }
 
-class BookTable extends _i1.Table<int?> {
+class BookTable extends _isd.Table<int?> {
   BookTable({super.tableRelation}) : super(tableName: 'book') {
     updateTable = BookUpdateTable(this);
-    title = _i1.ColumnString(
+    title = _isd.ColumnString(
       'title',
       this,
     );
@@ -166,38 +167,38 @@ class BookTable extends _i1.Table<int?> {
 
   late final BookUpdateTable updateTable;
 
-  late final _i1.ColumnString title;
+  late final _isd.ColumnString title;
 
-  _i3.ChapterTable? ___chapters;
+  _ithd8abs.ChapterTable? ___chapters;
 
-  _i1.ManyRelation<_i3.ChapterTable>? _chapters;
+  _isd.ManyRelation<_ithd8abs.ChapterTable>? _chapters;
 
-  _i3.ChapterTable get __chapters {
+  _ithd8abs.ChapterTable get __chapters {
     if (___chapters != null) return ___chapters!;
-    ___chapters = _i1.createRelationTable(
+    ___chapters = _isd.createRelationTable(
       relationFieldName: '__chapters',
       field: Book.t.id,
-      foreignField: _i3.Chapter.t.$_bookChaptersBookId,
+      foreignField: _ithd8abs.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.ChapterTable(tableRelation: foreignTableRelation),
+          _ithd8abs.ChapterTable(tableRelation: foreignTableRelation),
     );
     return ___chapters!;
   }
 
-  _i1.ManyRelation<_i3.ChapterTable> get chapters {
+  _isd.ManyRelation<_ithd8abs.ChapterTable> get chapters {
     if (_chapters != null) return _chapters!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _isd.createRelationTable(
       relationFieldName: 'chapters',
       field: Book.t.id,
-      foreignField: _i3.Chapter.t.$_bookChaptersBookId,
+      foreignField: _ithd8abs.Chapter.t.$_bookChaptersBookId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i3.ChapterTable(tableRelation: foreignTableRelation),
+          _ithd8abs.ChapterTable(tableRelation: foreignTableRelation),
     );
-    _chapters = _i1.ManyRelation<_i3.ChapterTable>(
+    _chapters = _isd.ManyRelation<_ithd8abs.ChapterTable>(
       tableWithRelations: relationTable,
-      table: _i3.ChapterTable(
+      table: _ithd8abs.ChapterTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -205,13 +206,13 @@ class BookTable extends _i1.Table<int?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_isd.Column> get columns => [
     id,
     title,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _isd.Table? getRelationTable(String relationField) {
     if (relationField == 'chapters') {
       return __chapters;
     }
@@ -219,23 +220,23 @@ class BookTable extends _i1.Table<int?> {
   }
 }
 
-class BookInclude extends _i1.IncludeObject {
-  BookInclude._({_i3.ChapterIncludeList? chapters}) {
+class BookInclude extends _isd.IncludeObject {
+  BookInclude._({_ithd8abs.ChapterIncludeList? chapters}) {
     _chapters = chapters;
   }
 
-  _i3.ChapterIncludeList? _chapters;
+  _ithd8abs.ChapterIncludeList? _chapters;
 
   @override
-  Map<String, _i1.Include?> get includes => {'chapters': _chapters};
+  Map<String, _isd.Include?> get includes => {'chapters': _chapters};
 
   @override
-  _i1.Table<int?> get table => Book.t;
+  _isd.Table<int?> get table => Book.t;
 }
 
-class BookIncludeList extends _i1.IncludeList {
+class BookIncludeList extends _isd.IncludeList {
   BookIncludeList._({
-    _i1.WhereExpressionBuilder<BookTable>? where,
+    _isd.WhereExpressionBuilder<BookTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -246,10 +247,10 @@ class BookIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _isd.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => Book.t;
+  _isd.Table<int?> get table => Book.t;
 }
 
 class BookRepository {
@@ -286,16 +287,16 @@ class BookRepository {
   /// );
   /// ```
   Future<List<Book>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BookTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<BookTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
     BookInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<Book>(
       where: where?.call(Book.t),
@@ -328,15 +329,15 @@ class BookRepository {
   /// );
   /// ```
   Future<Book?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BookTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<BookTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
     BookInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<Book>(
       where: where?.call(Book.t),
@@ -352,12 +353,12 @@ class BookRepository {
 
   /// Finds a single [Book] by its [id] or null if no such row exists.
   Future<Book?> findById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     BookInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _isd.LockMode? lockMode,
+    _isd.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<Book>(
       id,
@@ -383,9 +384,9 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> insert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Book> rows, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -401,9 +402,9 @@ class BookRepository {
   ///
   /// The returned [Book] will have its `id` field set.
   Future<Book> insertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.insertRow<Book>(
       row,
@@ -432,12 +433,12 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> upsert(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Book> rows, {
-    required _i1.ColumnSelections<BookTable> conflictColumns,
-    _i1.ColumnSelections<BookTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<BookTable> conflictColumns,
+    _isd.ColumnSelections<BookTable>? updateColumns,
+    _isd.WhereExpressionBuilder<BookTable>? updateWhere,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<Book>(
@@ -464,12 +465,12 @@ class BookRepository {
   ///
   /// The returned [Book] will have its `id` field set.
   Future<Book?> upsertRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book row, {
-    required _i1.ColumnSelections<BookTable> conflictColumns,
-    _i1.ColumnSelections<BookTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BookTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _isd.ColumnSelections<BookTable> conflictColumns,
+    _isd.ColumnSelections<BookTable>? updateColumns,
+    _isd.WhereExpressionBuilder<BookTable>? updateWhere,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.upsertRow<Book>(
       row,
@@ -490,10 +491,10 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> update(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Book> rows, {
-    _i1.ColumnSelections<BookTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<BookTable>? columns,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<Book>(
@@ -508,10 +509,10 @@ class BookRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<Book> updateRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book row, {
-    _i1.ColumnSelections<BookTable>? columns,
-    _i1.Transaction? transaction,
+    _isd.ColumnSelections<BookTable>? columns,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateRow<Book>(
       row,
@@ -523,10 +524,10 @@ class BookRepository {
   /// Updates a single [Book] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<Book?> updateById(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _isd.ColumnValueListBuilder<BookUpdateTable> columnValues,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.updateById<Book>(
       id,
@@ -542,14 +543,14 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BookUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<BookTable> where,
+    _isd.DatabaseSession session, {
+    required _isd.ColumnValueListBuilder<BookUpdateTable> columnValues,
+    required _isd.WhereExpressionBuilder<BookTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<Book>(
@@ -576,11 +577,11 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> delete(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     List<Book> rows, {
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<Book>(
@@ -594,9 +595,9 @@ class BookRepository {
 
   /// Deletes a single [Book].
   Future<Book> deleteRow(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book row, {
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.deleteRow<Book>(
       row,
@@ -613,11 +614,11 @@ class BookRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<Book>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BookTable> where,
-    _i1.OrderByBuilder<BookTable>? orderBy,
-    _i1.OrderByListBuilder<BookTable>? orderByList,
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<BookTable> where,
+    _isd.OrderByBuilder<BookTable>? orderBy,
+    _isd.OrderByListBuilder<BookTable>? orderByList,
+    _isd.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<Book>(
@@ -632,10 +633,10 @@ class BookRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BookTable>? where,
+    _isd.DatabaseSession session, {
+    _isd.WhereExpressionBuilder<BookTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _isd.Transaction? transaction,
   }) async {
     return session.db.count<Book>(
       where: where?.call(Book.t),
@@ -646,11 +647,11 @@ class BookRepository {
 
   /// Acquires row-level locks on [Book] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BookTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _isd.DatabaseSession session, {
+    required _isd.WhereExpressionBuilder<BookTable> where,
+    required _isd.LockMode lockMode,
+    required _isd.Transaction transaction,
+    _isd.LockBehavior lockBehavior = _isd.LockBehavior.wait,
   }) async {
     return session.db.lockRows<Book>(
       where: where(Book.t),
@@ -667,10 +668,10 @@ class BookAttachRepository {
   /// Creates a relation between this [Book] and the given [Chapter]s
   /// by setting each [Chapter]'s foreign key `_bookChaptersBookId` to refer to this [Book].
   Future<void> chapters(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book book,
-    List<_i3.Chapter> chapter, {
-    _i1.Transaction? transaction,
+    List<_ithd8abs.Chapter> chapter, {
+    _isd.Transaction? transaction,
   }) async {
     if (chapter.any((e) => e.id == null)) {
       throw ArgumentError.notNull('chapter.id');
@@ -681,15 +682,15 @@ class BookAttachRepository {
 
     var $chapter = chapter
         .map(
-          (e) => _i3.ChapterImplicit(
+          (e) => _ithd8abs.ChapterImplicit(
             e,
             $_bookChaptersBookId: book.id,
           ),
         )
         .toList();
-    await session.db.update<_i3.Chapter>(
+    await session.db.update<_ithd8abs.Chapter>(
       $chapter,
-      columns: [_i3.Chapter.t.$_bookChaptersBookId],
+      columns: [_ithd8abs.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -701,10 +702,10 @@ class BookAttachRowRepository {
   /// Creates a relation between this [Book] and the given [Chapter]
   /// by setting the [Chapter]'s foreign key `_bookChaptersBookId` to refer to this [Book].
   Future<void> chapters(
-    _i1.DatabaseSession session,
+    _isd.DatabaseSession session,
     Book book,
-    _i3.Chapter chapter, {
-    _i1.Transaction? transaction,
+    _ithd8abs.Chapter chapter, {
+    _isd.Transaction? transaction,
   }) async {
     if (chapter.id == null) {
       throw ArgumentError.notNull('chapter.id');
@@ -713,13 +714,13 @@ class BookAttachRowRepository {
       throw ArgumentError.notNull('book.id');
     }
 
-    var $chapter = _i3.ChapterImplicit(
+    var $chapter = _ithd8abs.ChapterImplicit(
       chapter,
       $_bookChaptersBookId: book.id,
     );
-    await session.db.updateRow<_i3.Chapter>(
+    await session.db.updateRow<_ithd8abs.Chapter>(
       $chapter,
-      columns: [_i3.Chapter.t.$_bookChaptersBookId],
+      columns: [_ithd8abs.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -734,9 +735,9 @@ class BookDetachRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> chapters(
-    _i1.DatabaseSession session,
-    List<_i3.Chapter> chapter, {
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session,
+    List<_ithd8abs.Chapter> chapter, {
+    _isd.Transaction? transaction,
   }) async {
     if (chapter.any((e) => e.id == null)) {
       throw ArgumentError.notNull('chapter.id');
@@ -744,15 +745,15 @@ class BookDetachRepository {
 
     var $chapter = chapter
         .map(
-          (e) => _i3.ChapterImplicit(
+          (e) => _ithd8abs.ChapterImplicit(
             e,
             $_bookChaptersBookId: null,
           ),
         )
         .toList();
-    await session.db.update<_i3.Chapter>(
+    await session.db.update<_ithd8abs.Chapter>(
       $chapter,
-      columns: [_i3.Chapter.t.$_bookChaptersBookId],
+      columns: [_ithd8abs.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }
@@ -767,21 +768,21 @@ class BookDetachRowRepository {
   /// This removes the association between the two models without deleting
   /// the related record.
   Future<void> chapters(
-    _i1.DatabaseSession session,
-    _i3.Chapter chapter, {
-    _i1.Transaction? transaction,
+    _isd.DatabaseSession session,
+    _ithd8abs.Chapter chapter, {
+    _isd.Transaction? transaction,
   }) async {
     if (chapter.id == null) {
       throw ArgumentError.notNull('chapter.id');
     }
 
-    var $chapter = _i3.ChapterImplicit(
+    var $chapter = _ithd8abs.ChapterImplicit(
       chapter,
       $_bookChaptersBookId: null,
     );
-    await session.db.updateRow<_i3.Chapter>(
+    await session.db.updateRow<_ithd8abs.Chapter>(
       $chapter,
-      columns: [_i3.Chapter.t.$_bookChaptersBookId],
+      columns: [_ithd8abs.Chapter.t.$_bookChaptersBookId],
       transaction: transaction,
     );
   }

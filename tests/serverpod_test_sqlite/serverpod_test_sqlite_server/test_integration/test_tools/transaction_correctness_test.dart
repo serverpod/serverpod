@@ -185,7 +185,7 @@ void main() {
         await expectLater(
           future,
           throwsA(
-            isA<DatabaseQueryException>().having(
+            isA<DatabaseUniqueViolationException>().having(
               (e) => e.code,
               'code',
               SqliteErrorCode.uniqueViolation,
@@ -297,7 +297,7 @@ void main() {
           await expectLater(
             future,
             throwsA(
-              isA<DatabaseQueryException>().having(
+              isA<SqliteDatabaseLockedException>().having(
                 (e) => e.code,
                 'code',
                 SqliteErrorCode.objectInUse,

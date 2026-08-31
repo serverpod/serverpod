@@ -10,33 +10,35 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'session_log_info.dart' as _i2;
-import 'package:serverpod/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod/src/generated/protocol.dart' as _ic00rqxb;
+import 'session_log_info.dart' as _i783h20h;
 
 /// A list of SessionLogInfo.
 abstract class SessionLogResult
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   SessionLogResult._({required this.sessionLog});
 
-  factory SessionLogResult({required List<_i2.SessionLogInfo> sessionLog}) =
-      _SessionLogResultImpl;
+  factory SessionLogResult({
+    required List<_i783h20h.SessionLogInfo> sessionLog,
+  }) = _SessionLogResultImpl;
 
   factory SessionLogResult.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionLogResult(
-      sessionLog: _i3.Protocol().deserialize<List<_i2.SessionLogInfo>>(
-        jsonSerialization['sessionLog'],
-      ),
+      sessionLog: _ic00rqxb.Protocol()
+          .deserialize<List<_i783h20h.SessionLogInfo>>(
+            jsonSerialization['sessionLog'],
+          ),
     );
   }
 
   /// The list of SessionLogInfo.
-  List<_i2.SessionLogInfo> sessionLog;
+  List<_i783h20h.SessionLogInfo> sessionLog;
 
   /// Returns a shallow copy of this [SessionLogResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
-  SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog});
+  @_is.useResult
+  SessionLogResult copyWith({List<_i783h20h.SessionLogInfo>? sessionLog});
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -57,19 +59,19 @@ abstract class SessionLogResult
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
 class _SessionLogResultImpl extends SessionLogResult {
-  _SessionLogResultImpl({required List<_i2.SessionLogInfo> sessionLog})
+  _SessionLogResultImpl({required List<_i783h20h.SessionLogInfo> sessionLog})
     : super._(sessionLog: sessionLog);
 
   /// Returns a shallow copy of this [SessionLogResult]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
-  SessionLogResult copyWith({List<_i2.SessionLogInfo>? sessionLog}) {
+  SessionLogResult copyWith({List<_i783h20h.SessionLogInfo>? sessionLog}) {
     return SessionLogResult(
       sessionLog:
           sessionLog ?? this.sessionLog.map((e0) => e0.copyWith()).toList(),

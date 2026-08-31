@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 /// The definition of a (desired) table in the database.
 abstract class TableDefinition
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   TableDefinition._({
     required this.name,
     this.dartName,
@@ -34,9 +34,9 @@ abstract class TableDefinition
     String? module,
     required String schema,
     String? tableSpace,
-    required List<_i2.ColumnDefinition> columns,
-    required List<_i2.ForeignKeyDefinition> foreignKeys,
-    required List<_i2.IndexDefinition> indexes,
+    required List<_isd.ColumnDefinition> columns,
+    required List<_isd.ForeignKeyDefinition> foreignKeys,
+    required List<_isd.IndexDefinition> indexes,
     bool? managed,
   }) = _TableDefinitionImpl;
 
@@ -47,18 +47,18 @@ abstract class TableDefinition
       module: jsonSerialization['module'] as String?,
       schema: jsonSerialization['schema'] as String,
       tableSpace: jsonSerialization['tableSpace'] as String?,
-      columns: _i2.Protocol().deserialize<List<_i2.ColumnDefinition>>(
+      columns: _isd.Protocol().deserialize<List<_isd.ColumnDefinition>>(
         jsonSerialization['columns'],
       ),
-      foreignKeys: _i2.Protocol().deserialize<List<_i2.ForeignKeyDefinition>>(
+      foreignKeys: _isd.Protocol().deserialize<List<_isd.ForeignKeyDefinition>>(
         jsonSerialization['foreignKeys'],
       ),
-      indexes: _i2.Protocol().deserialize<List<_i2.IndexDefinition>>(
+      indexes: _isd.Protocol().deserialize<List<_isd.IndexDefinition>>(
         jsonSerialization['indexes'],
       ),
       managed: jsonSerialization['managed'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(jsonSerialization['managed']),
+          : _iss.BoolJsonExtension.fromJson(jsonSerialization['managed']),
     );
   }
 
@@ -79,13 +79,13 @@ abstract class TableDefinition
   String? tableSpace;
 
   /// All the columns of this table.
-  List<_i2.ColumnDefinition> columns;
+  List<_isd.ColumnDefinition> columns;
 
   /// All the foreign keys.
-  List<_i2.ForeignKeyDefinition> foreignKeys;
+  List<_isd.ForeignKeyDefinition> foreignKeys;
 
   /// All the indexes of this table.
-  List<_i2.IndexDefinition> indexes;
+  List<_isd.IndexDefinition> indexes;
 
   /// Indicates if the table should be managed by Serverpod.
   /// Null, if this is unknown.
@@ -93,16 +93,16 @@ abstract class TableDefinition
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   TableDefinition copyWith({
     String? name,
     String? dartName,
     String? module,
     String? schema,
     String? tableSpace,
-    List<_i2.ColumnDefinition>? columns,
-    List<_i2.ForeignKeyDefinition>? foreignKeys,
-    List<_i2.IndexDefinition>? indexes,
+    List<_isd.ColumnDefinition>? columns,
+    List<_isd.ForeignKeyDefinition>? foreignKeys,
+    List<_isd.IndexDefinition>? indexes,
     bool? managed,
   });
   @override
@@ -141,7 +141,7 @@ abstract class TableDefinition
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -154,9 +154,9 @@ class _TableDefinitionImpl extends TableDefinition {
     String? module,
     required String schema,
     String? tableSpace,
-    required List<_i2.ColumnDefinition> columns,
-    required List<_i2.ForeignKeyDefinition> foreignKeys,
-    required List<_i2.IndexDefinition> indexes,
+    required List<_isd.ColumnDefinition> columns,
+    required List<_isd.ForeignKeyDefinition> foreignKeys,
+    required List<_isd.IndexDefinition> indexes,
     bool? managed,
   }) : super._(
          name: name,
@@ -172,7 +172,7 @@ class _TableDefinitionImpl extends TableDefinition {
 
   /// Returns a shallow copy of this [TableDefinition]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   TableDefinition copyWith({
     String? name,
@@ -180,9 +180,9 @@ class _TableDefinitionImpl extends TableDefinition {
     Object? module = _Undefined,
     String? schema,
     Object? tableSpace = _Undefined,
-    List<_i2.ColumnDefinition>? columns,
-    List<_i2.ForeignKeyDefinition>? foreignKeys,
-    List<_i2.IndexDefinition>? indexes,
+    List<_isd.ColumnDefinition>? columns,
+    List<_isd.ForeignKeyDefinition>? foreignKeys,
+    List<_isd.IndexDefinition>? indexes,
     Object? managed = _Undefined,
   }) {
     return TableDefinition(

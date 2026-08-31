@@ -4,7 +4,7 @@
  * a BSD-style license.
  * Source: https://github.com/dart-lang/sdk/tree/main/pkg/dartdev
  *
- * Vendored against Dart SDK 3.11.x (matches the version pinned in this
+ * Vendored against Dart SDK 3.12.x (matches the version pinned in this
  * package's pubspec). When re-syncing, diff against the upstream
  * `pkg/dartdev/lib/src/native_assets_macos.dart` at the SDK tag matching
  * the `code_assets` / `hooks_runner` versions in pubspec.yaml.

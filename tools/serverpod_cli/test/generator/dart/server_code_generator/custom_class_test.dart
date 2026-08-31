@@ -89,12 +89,12 @@ void main() {
 
         // This regex checks for this pattern but allows any number on the import.
         // Example:
-        // customClassField is _i1.ProtocolSerialization?
-        // (customClassField as _i1.ProtocolSerialization).toJsonForProtocol()
+        // customClassField is _i<hash>.ProtocolSerialization?
+        // (customClassField as _i<hash>.ProtocolSerialization).toJsonForProtocol()
         // : customClassField.toJson()
         var regex = RegExp(
-          r'customClassField\s+is\s+_i\d+\.ProtocolSerialization\s*'
-          r'\?\s*\(customClassField\s+as\s+_i\d+\.ProtocolSerialization\)\.toJsonForProtocol\(\)\s*'
+          r'customClassField\s+is\s+_i[a-z0-9]+\.ProtocolSerialization\s*'
+          r'\?\s*\(customClassField\s+as\s+_i[a-z0-9]+\.ProtocolSerialization\)\.toJsonForProtocol\(\)\s*'
           r':\s*customClassField\.toJson\(\)',
         );
 

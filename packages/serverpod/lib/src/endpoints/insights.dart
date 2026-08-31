@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:serverpod_database/serverpod_database.dart';
-import 'package:serverpod/src/hot_reload/hot_reload.dart';
 import 'package:serverpod/src/server/health_check.dart';
 import 'package:serverpod/src/util/path_util.dart';
 import 'package:serverpod_shared/log.dart' hide LogEntry;
@@ -130,15 +129,6 @@ class InsightsEndpoint extends Endpoint {
     return SessionLogResult(sessionLog: sessionLogInfo);
   }
 
-  /// Get the latest [numEntries] from the session log.
-  Future<SessionLogResult> getOpenSessionLog(
-    Session session,
-    int? numEntries,
-    SessionLogFilter? filter,
-  ) async {
-    return SessionLogResult(sessionLog: []);
-  }
-
   /// Retrieve information about the state of the caches on this server.
   Future<CachesInfo> getCachesInfo(Session session, bool fetchKeys) async {
     return CachesInfo(
@@ -154,11 +144,6 @@ class InsightsEndpoint extends Endpoint {
       maxEntries: cache.maxLocalEntries,
       keys: fetchKeys ? cache.localKeys : null,
     );
-  }
-
-  /// Safely shuts down this [ServerPod].
-  Future<void> shutdown(Session session) async {
-    await server.serverpod.shutdown();
   }
 
   /// Performs a health check on the running [ServerPod].
@@ -189,17 +174,6 @@ class InsightsEndpoint extends Endpoint {
       metrics: metrics,
       connectionInfos: connectionInfos,
     );
-  }
-
-  /// Performs a hot reload of the server.
-  Future<bool> hotReload(Session session) async {
-    if (!await HotReloader.isHotReloadAvailable()) {
-      log.error(
-        'Hot reload is not available. You need to run dart with --enable-vm-service.',
-      );
-      return false;
-    }
-    return await HotReloader.hotReload();
   }
 
   /// Returns the target structure of the database defined in the
@@ -295,6 +269,9 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Exports raw data serialized in JSON from the database.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   Future<BulkData> fetchDatabaseBulkData(
     Session session, {
     required String table,
@@ -302,8 +279,9 @@ class InsightsEndpoint extends Endpoint {
     required int limit,
     Filter? filter,
   }) async {
+    _requireDatabaseAccess(session);
     try {
-      return DatabaseBulkData.exportTableData(
+      return await DatabaseBulkData.exportTableData(
         database: session.db,
         table: table,
         lastId: startingId,
@@ -319,10 +297,14 @@ class InsightsEndpoint extends Endpoint {
 
   /// Executes a list of queries on the database and returns the last result.
   /// The queries are executed in a single transaction.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   Future<BulkQueryResult> runQueries(
     Session session,
     List<String> queries,
   ) async {
+    _requireDatabaseAccess(session);
     try {
       var result = await DatabaseBulkData.executeQueries(
         database: session.db,
@@ -343,10 +325,14 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Returns the approximate number of rows in the provided [table].
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   Future<int> getDatabaseRowCount(
     Session session, {
     required String table,
   }) async {
+    _requireDatabaseAccess(session);
     return DatabaseBulkData.approximateRowCount(
       database: session.db,
       table: table,
@@ -354,13 +340,30 @@ class InsightsEndpoint extends Endpoint {
   }
 
   /// Executes SQL commands. Returns the number of rows affected.
+  ///
+  /// Requires database access to be enabled through the server configuration,
+  /// see [_requireDatabaseAccess].
   Future<int> executeSql(Session session, String sql) async {
+    _requireDatabaseAccess(session);
     try {
       return await session.db.unsafeExecute(sql);
     } catch (e) {
       throw ServerpodSqlException(
         message: '$e',
         sql: sql,
+      );
+    }
+  }
+
+  /// Throws an [AccessDeniedException] unless the raw database access
+  /// endpoints are enabled through the server configuration.
+  void _requireDatabaseAccess(Session session) {
+    if (!session.serverpod.config.insightsDatabaseAccessEnabled) {
+      throw AccessDeniedException(
+        message:
+            'Database access through Insights is disabled. Enable it by '
+            'setting `enableDatabaseAccess: true` under `insightsServer` in '
+            'the server configuration.',
       );
     }
   }

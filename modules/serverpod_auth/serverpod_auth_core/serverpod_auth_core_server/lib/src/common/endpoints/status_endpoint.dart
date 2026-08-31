@@ -1,4 +1,5 @@
 import 'package:serverpod/serverpod.dart';
+import '../../jwt/util/jwt_refresh_cookie_path.dart';
 import '../business/auth_services.dart';
 import '../integrations/token_manager.dart';
 
@@ -18,19 +19,33 @@ class StatusEndpoint extends Endpoint {
 
   /// Signs out a user from the current device.
   Future<void> signOutDevice(final Session session) async {
-    final authInfoIdStr = session.authenticated?.authId;
-    if (authInfoIdStr == null) return;
-    final authInfoId = UuidValue.withValidation(authInfoIdStr);
-
-    await tokenManager.revokeToken(session, tokenId: authInfoId.toString());
+    await _clearCookieThenRevoke(session, () async {
+      final authInfoIdStr = session.authenticated?.authId;
+      if (authInfoIdStr == null) return;
+      final authInfoId = UuidValue.withValidation(authInfoIdStr);
+      await tokenManager.revokeToken(session, tokenId: authInfoId.toString());
+    });
   }
 
   /// Signs out a user from all active devices.
   Future<void> signOutAllDevices(final Session session) async {
-    final authUserIdStr = session.authenticated?.userIdentifier;
-    if (authUserIdStr == null) return;
-    final authUserId = UuidValue.withValidation(authUserIdStr);
+    await _clearCookieThenRevoke(session, () async {
+      final authUserIdStr = session.authenticated?.userIdentifier;
+      if (authUserIdStr == null) return;
+      final authUserId = UuidValue.withValidation(authUserIdStr);
+      await tokenManager.revokeAllTokens(session, authUserId: authUserId);
+    });
+  }
 
-    await tokenManager.revokeAllTokens(session, authUserId: authUserId);
+  /// Expires the web auth cookie on the client (a no-op for non-cookie clients)
+  /// before running [revokeTokens].
+  Future<void> _clearCookieThenRevoke(
+    final Session session,
+    final Future<void> Function() revokeTokens,
+  ) async {
+    session.clearWebAuthCookie(
+      refreshCookiePath: jwtRefreshCookiePath(session),
+    );
+    await revokeTokens();
   }
 }

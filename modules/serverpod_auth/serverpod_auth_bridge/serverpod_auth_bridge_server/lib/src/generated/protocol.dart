@@ -11,19 +11,19 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i3;
+    as _iacs;
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart'
-    as _i4;
-import 'legacy_authentication_fail_reason.dart' as _i5;
-import 'legacy_authentication_response.dart' as _i6;
-import 'legacy_email_password.dart' as _i7;
-import 'legacy_external_user_identifier.dart' as _i8;
-import 'legacy_session.dart' as _i9;
-import 'legacy_user_info.dart' as _i10;
-import 'legacy_user_settings_config.dart' as _i11;
+    as _iais;
+import 'legacy_authentication_fail_reason.dart' as _ijl7odiy;
+import 'legacy_authentication_response.dart' as _i1vkno9i;
+import 'legacy_email_password.dart' as _isu9lcrg;
+import 'legacy_external_user_identifier.dart' as _i552shl7;
+import 'legacy_session.dart' as _i4848vr5;
+import 'legacy_user_info.dart' as _izh8x5we;
+import 'legacy_user_settings_config.dart' as _iivi3sn7;
 export 'legacy_authentication_fail_reason.dart';
 export 'legacy_authentication_response.dart';
 export 'legacy_email_password.dart';
@@ -32,61 +32,61 @@ export 'legacy_session.dart';
 export 'legacy_user_info.dart';
 export 'legacy_user_settings_config.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [
-    _i2.TableDefinition(
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    _isp.TableDefinition(
       name: 'serverpod_auth_bridge_email_password',
       dartName: 'LegacyEmailPassword',
       schema: 'public',
       module: 'serverpod_auth_bridge',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'emailAccountId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'hash',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_bridge_email_password_fk_0',
           columns: ['emailAccountId'],
           referenceTable: 'serverpod_auth_idp_email_account',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_bridge_email_password_account',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'emailAccountId',
             ),
           ],
@@ -97,51 +97,51 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_bridge_external_user_id',
       dartName: 'LegacyExternalUserIdentifier',
       schema: 'public',
       module: 'serverpod_auth_bridge',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userIdentifier',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_bridge_external_user_id_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_bridge_external_user_id_id',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'userIdentifier',
             ),
           ],
@@ -152,66 +152,66 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_bridge_session',
       dartName: 'LegacySession',
       schema: 'public',
       module: 'serverpod_auth_bridge',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _isp.ColumnType.bigint,
           isNullable: false,
           dartType: 'int?',
           columnDefault: 'serial',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'scopeNames',
-          columnType: _i2.ColumnType.json,
+          columnType: _isp.ColumnType.json,
           isNullable: false,
           dartType: 'Set<String>',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'hash',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'method',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_bridge_session_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    ..._i3.Protocol.targetTableDefinitions,
-    ..._i4.Protocol.targetTableDefinitions,
+    ..._iacs.Protocol.targetTableDefinitions,
+    ..._iais.Protocol.targetTableDefinitions,
   ];
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _is.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -238,65 +238,69 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _i1.DeserializationClassNameNotFoundException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i5.LegacyAuthenticationFailReason) {
-      return _i5.LegacyAuthenticationFailReason.fromJson(data) as T;
+    if (t == _ijl7odiy.LegacyAuthenticationFailReason) {
+      return _ijl7odiy.LegacyAuthenticationFailReason.fromJson(data) as T;
     }
-    if (t == _i6.LegacyAuthenticationResponse) {
-      return _i6.LegacyAuthenticationResponse.fromJson(data) as T;
+    if (t == _i1vkno9i.LegacyAuthenticationResponse) {
+      return _i1vkno9i.LegacyAuthenticationResponse.fromJson(data) as T;
     }
-    if (t == _i7.LegacyEmailPassword) {
-      return _i7.LegacyEmailPassword.fromJson(data) as T;
+    if (t == _isu9lcrg.LegacyEmailPassword) {
+      return _isu9lcrg.LegacyEmailPassword.fromJson(data) as T;
     }
-    if (t == _i8.LegacyExternalUserIdentifier) {
-      return _i8.LegacyExternalUserIdentifier.fromJson(data) as T;
+    if (t == _i552shl7.LegacyExternalUserIdentifier) {
+      return _i552shl7.LegacyExternalUserIdentifier.fromJson(data) as T;
     }
-    if (t == _i9.LegacySession) {
-      return _i9.LegacySession.fromJson(data) as T;
+    if (t == _i4848vr5.LegacySession) {
+      return _i4848vr5.LegacySession.fromJson(data) as T;
     }
-    if (t == _i10.LegacyUserInfo) {
-      return _i10.LegacyUserInfo.fromJson(data) as T;
+    if (t == _izh8x5we.LegacyUserInfo) {
+      return _izh8x5we.LegacyUserInfo.fromJson(data) as T;
     }
-    if (t == _i11.LegacyUserSettingsConfig) {
-      return _i11.LegacyUserSettingsConfig.fromJson(data) as T;
+    if (t == _iivi3sn7.LegacyUserSettingsConfig) {
+      return _iivi3sn7.LegacyUserSettingsConfig.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i5.LegacyAuthenticationFailReason?>()) {
+    if (t == _is.getType<_ijl7odiy.LegacyAuthenticationFailReason?>()) {
       return (data != null
-              ? _i5.LegacyAuthenticationFailReason.fromJson(data)
+              ? _ijl7odiy.LegacyAuthenticationFailReason.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i6.LegacyAuthenticationResponse?>()) {
+    if (t == _is.getType<_i1vkno9i.LegacyAuthenticationResponse?>()) {
       return (data != null
-              ? _i6.LegacyAuthenticationResponse.fromJson(data)
+              ? _i1vkno9i.LegacyAuthenticationResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i7.LegacyEmailPassword?>()) {
-      return (data != null ? _i7.LegacyEmailPassword.fromJson(data) : null)
-          as T;
-    }
-    if (t == _i1.getType<_i8.LegacyExternalUserIdentifier?>()) {
+    if (t == _is.getType<_isu9lcrg.LegacyEmailPassword?>()) {
       return (data != null
-              ? _i8.LegacyExternalUserIdentifier.fromJson(data)
+              ? _isu9lcrg.LegacyEmailPassword.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i9.LegacySession?>()) {
-      return (data != null ? _i9.LegacySession.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.LegacyUserInfo?>()) {
-      return (data != null ? _i10.LegacyUserInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.LegacyUserSettingsConfig?>()) {
+    if (t == _is.getType<_i552shl7.LegacyExternalUserIdentifier?>()) {
       return (data != null
-              ? _i11.LegacyUserSettingsConfig.fromJson(data)
+              ? _i552shl7.LegacyExternalUserIdentifier.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _is.getType<_i4848vr5.LegacySession?>()) {
+      return (data != null ? _i4848vr5.LegacySession.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_izh8x5we.LegacyUserInfo?>()) {
+      return (data != null ? _izh8x5we.LegacyUserInfo.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_iivi3sn7.LegacyUserSettingsConfig?>()) {
+      return (data != null
+              ? _iivi3sn7.LegacyUserSettingsConfig.fromJson(data)
               : null)
           as T;
     }
@@ -307,26 +311,27 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
     try {
-      return _i3.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iacs.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i4.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _iais.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i5.LegacyAuthenticationFailReason => 'LegacyAuthenticationFailReason',
-      _i6.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
-      _i7.LegacyEmailPassword => 'LegacyEmailPassword',
-      _i8.LegacyExternalUserIdentifier => 'LegacyExternalUserIdentifier',
-      _i9.LegacySession => 'LegacySession',
-      _i10.LegacyUserInfo => 'LegacyUserInfo',
-      _i11.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
+      _ijl7odiy.LegacyAuthenticationFailReason =>
+        'LegacyAuthenticationFailReason',
+      _i1vkno9i.LegacyAuthenticationResponse => 'LegacyAuthenticationResponse',
+      _isu9lcrg.LegacyEmailPassword => 'LegacyEmailPassword',
+      _i552shl7.LegacyExternalUserIdentifier => 'LegacyExternalUserIdentifier',
+      _i4848vr5.LegacySession => 'LegacySession',
+      _izh8x5we.LegacyUserInfo => 'LegacyUserInfo',
+      _iivi3sn7.LegacyUserSettingsConfig => 'LegacyUserSettingsConfig',
       _ => null,
     };
   }
@@ -344,22 +349,22 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i5.LegacyAuthenticationFailReason():
+      case _ijl7odiy.LegacyAuthenticationFailReason():
         return 'LegacyAuthenticationFailReason';
-      case _i6.LegacyAuthenticationResponse():
+      case _i1vkno9i.LegacyAuthenticationResponse():
         return 'LegacyAuthenticationResponse';
-      case _i7.LegacyEmailPassword():
+      case _isu9lcrg.LegacyEmailPassword():
         return 'LegacyEmailPassword';
-      case _i8.LegacyExternalUserIdentifier():
+      case _i552shl7.LegacyExternalUserIdentifier():
         return 'LegacyExternalUserIdentifier';
-      case _i9.LegacySession():
+      case _i4848vr5.LegacySession():
         return 'LegacySession';
-      case _i10.LegacyUserInfo():
+      case _izh8x5we.LegacyUserInfo():
         return 'LegacyUserInfo';
-      case _i11.LegacyUserSettingsConfig():
+      case _iivi3sn7.LegacyUserSettingsConfig():
         return 'LegacyUserSettingsConfig';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -373,29 +378,31 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'LegacyAuthenticationFailReason') {
-      return deserialize<_i5.LegacyAuthenticationFailReason>(data['data']);
+      return deserialize<_ijl7odiy.LegacyAuthenticationFailReason>(
+        data['data'],
+      );
     }
     if (dataClassName == 'LegacyAuthenticationResponse') {
-      return deserialize<_i6.LegacyAuthenticationResponse>(data['data']);
+      return deserialize<_i1vkno9i.LegacyAuthenticationResponse>(data['data']);
     }
     if (dataClassName == 'LegacyEmailPassword') {
-      return deserialize<_i7.LegacyEmailPassword>(data['data']);
+      return deserialize<_isu9lcrg.LegacyEmailPassword>(data['data']);
     }
     if (dataClassName == 'LegacyExternalUserIdentifier') {
-      return deserialize<_i8.LegacyExternalUserIdentifier>(data['data']);
+      return deserialize<_i552shl7.LegacyExternalUserIdentifier>(data['data']);
     }
     if (dataClassName == 'LegacySession') {
-      return deserialize<_i9.LegacySession>(data['data']);
+      return deserialize<_i4848vr5.LegacySession>(data['data']);
     }
     if (dataClassName == 'LegacyUserInfo') {
-      return deserialize<_i10.LegacyUserInfo>(data['data']);
+      return deserialize<_izh8x5we.LegacyUserInfo>(data['data']);
     }
     if (dataClassName == 'LegacyUserSettingsConfig') {
-      return deserialize<_i11.LegacyUserSettingsConfig>(data['data']);
+      return deserialize<_iivi3sn7.LegacyUserSettingsConfig>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -418,8 +425,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _is.SerializationManager.toEncodableForProtocol(wrapped)
+          : _is.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -453,45 +460,45 @@ class Protocol extends _i1.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on _i1.DeserializationClassNameNotFoundException catch (_) {}
+        } on _is.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i3.Protocol().getTableForType(t);
+      var table = _iacs.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i4.Protocol().getTableForType(t);
+      var table = _iais.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i7.LegacyEmailPassword:
-        return _i7.LegacyEmailPassword.t;
-      case _i8.LegacyExternalUserIdentifier:
-        return _i8.LegacyExternalUserIdentifier.t;
-      case _i9.LegacySession:
-        return _i9.LegacySession.t;
+      case _isu9lcrg.LegacyEmailPassword:
+        return _isu9lcrg.LegacyEmailPassword.t;
+      case _i552shl7.LegacyExternalUserIdentifier:
+        return _i552shl7.LegacyExternalUserIdentifier.t;
+      case _i4848vr5.LegacySession:
+        return _i4848vr5.LegacySession.t;
     }
     return null;
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -507,10 +514,10 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i3.Protocol().mapRecordToJson(record);
+      return _iacs.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i4.Protocol().mapRecordToJson(record);
+      return _iais.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

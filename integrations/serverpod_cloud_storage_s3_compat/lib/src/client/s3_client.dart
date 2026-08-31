@@ -1,5 +1,6 @@
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
+import 'package:serverpod/serverpod.dart';
 
 import '../config/s3_endpoint_config.dart';
 import 'exceptions.dart';
@@ -64,6 +65,78 @@ class S3Client {
     return _doSignedRequest(key: key, method: 'DELETE');
   }
 
+  /// Creates a query-signed URL for an object request.
+  Uri buildPresignedUri({
+    required String key,
+    required String method,
+    required Duration expiration,
+    Map<String, String> queryParams = const {},
+  }) {
+    final expirationSeconds = expiration.inSeconds;
+    if (expirationSeconds < 1 || expirationSeconds > 604800) {
+      throw CloudStorageException(
+        'S3 presigned URLs must expire between 1 second and 7 days.',
+      );
+    }
+
+    final bucketUri = _endpoints.buildBucketUri(_bucket, _region);
+    final unencodedPath = bucketUri.path.endsWith('/')
+        ? '${bucketUri.path}$key'
+        : '${bucketUri.path}/$key';
+    final normalizedPath = unencodedPath.startsWith('/')
+        ? unencodedPath
+        : '/$unencodedPath';
+    final encodedPath = normalizedPath
+        .split('/')
+        .map(Uri.encodeComponent)
+        .join('/');
+    final hostHeader = _buildHostHeader(bucketUri);
+    final datetime = SigV4.generateDatetime();
+    final credentialScope = SigV4.buildCredentialScope(
+      datetime,
+      _region,
+      _service,
+    );
+    final signedQuery = <String, String>{
+      ...queryParams,
+      'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+      'X-Amz-Credential': '$_accessKey/$credentialScope',
+      'X-Amz-Date': datetime,
+      'X-Amz-Expires': expirationSeconds.toString(),
+      'X-Amz-SignedHeaders': 'host',
+    };
+    final canonicalQuery = SigV4.buildCanonicalQueryString(signedQuery);
+    final canonicalRequest =
+        '''$method
+$encodedPath
+$canonicalQuery
+host:$hostHeader
+
+host
+UNSIGNED-PAYLOAD''';
+    final stringToSign = SigV4.buildStringToSign(
+      datetime,
+      credentialScope,
+      SigV4.hashCanonicalRequest(canonicalRequest),
+    );
+    final signingKey = SigV4.calculateSigningKey(
+      _secretKey,
+      datetime,
+      _region,
+      _service,
+    );
+    signedQuery['X-Amz-Signature'] = SigV4.calculateSignature(
+      signingKey,
+      stringToSign,
+    );
+
+    return _buildUri(
+      bucketUri: bucketUri,
+      path: unencodedPath,
+      canonicalQuery: SigV4.buildCanonicalQueryString(signedQuery),
+    );
+  }
+
   /// Builds signed request parameters without executing the request.
   ///
   /// Useful for integrating with custom HTTP clients.
@@ -76,12 +149,11 @@ class S3Client {
     final unencodedPath = bucketUri.path.endsWith('/')
         ? '${bucketUri.path}$key'
         : '${bucketUri.path}/$key';
-    final uri = Uri(
-      scheme: bucketUri.scheme,
-      host: bucketUri.host,
-      port: bucketUri.port,
+    final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
+    final uri = _buildUri(
+      bucketUri: bucketUri,
       path: unencodedPath,
-      queryParameters: queryParams?.isNotEmpty == true ? queryParams : null,
+      canonicalQuery: canonicalQuery,
     );
 
     // For signing, include port in host header for non-standard ports
@@ -95,7 +167,6 @@ class S3Client {
       _service,
     );
 
-    final canonicalQuery = SigV4.buildCanonicalQueryString(queryParams);
     // Normalize the path to avoid double slashes, then encode each segment
     final normalizedPath = unencodedPath.startsWith('/')
         ? unencodedPath
@@ -190,6 +261,21 @@ $payload''';
       return uri.host;
     }
     return '${uri.host}:${uri.port}';
+  }
+
+  Uri _buildUri({
+    required Uri bucketUri,
+    required String path,
+    required String canonicalQuery,
+  }) {
+    final uri = Uri(
+      scheme: bucketUri.scheme,
+      host: bucketUri.host,
+      port: bucketUri.port,
+      path: path,
+    );
+    if (canonicalQuery.isEmpty) return uri;
+    return Uri.parse('$uri?$canonicalQuery');
   }
 }
 

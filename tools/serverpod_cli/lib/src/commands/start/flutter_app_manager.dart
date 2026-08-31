@@ -53,9 +53,14 @@ class FlutterAppManager {
     required this.serverPackageDirectoryPathParts,
     required this.projectName,
     required this.launchFlutterApp,
+    this.environmentOverrideForTesting,
     this.flutterExecutableForTesting,
     this.argsOverrideForTesting,
   });
+
+  /// Test-only override for process environment.
+  /// Decides whether this run was launched by the IDE - see [ideLaunchEnvVar].
+  final Map<String, String>? environmentOverrideForTesting;
 
   /// Test-only override for the `flutter` executable path.
   final String? flutterExecutableForTesting;
@@ -247,12 +252,14 @@ class FlutterAppManager {
 
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
+    runtime.stopSignaled = false;
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
     onEnsureAppTab(runtime.app);
 
-    final device = runtime.app.device ?? flutterDeviceWebServerWithBrowser;
+    final device =
+        runtime.app.device ?? ideDevice() ?? flutterDeviceWebServerWithBrowser;
 
     late final FlutterProcess process;
     process = FlutterProcess(
@@ -289,6 +296,19 @@ class FlutterAppManager {
     runtime.process = process;
     runtime.spawnInFlight = false;
 
+    // A ready app whose process exits without an explicit [stop] - browser
+    // window closed (heartbeat teardown), daemon app.stop, crash - must still
+    // reach [onStop]. Never-ready exits are launch failures, signaled by
+    // [_connectAfterLaunch] instead. The process check drops a stale listener
+    // once a relaunch has installed a new process.
+    unawaited(
+      process.exitCode.then((_) {
+        if (runtime.process != process) return;
+        runtime.process = null;
+        if (runtime.readySignaled) _signalStopped(runtime);
+      }),
+    );
+
     // Configured targets are reported by `cli.session_start`; this is the
     // usage side, so a platform declared once and never run does not weigh as
     // much as one launched every session.
@@ -320,6 +340,9 @@ class FlutterAppManager {
     if (runtime == null) return;
 
     runtime.relaunchInProgress = runtime.process != null;
+    // The relaunch resets the tab via [onEnsureAppTab]; a stop signal in
+    // between would only flash a stopped state.
+    runtime.stopSignaled = true;
     await runtime.process?.stop();
     runtime.process = null;
     await launch(appId);
@@ -331,11 +354,10 @@ class FlutterAppManager {
   Future<void> stop(String appId) async {
     final runtime = _runtimeFor(appId);
     if (runtime == null) return;
-    final app = runtime.app;
     runtime.relaunchInProgress = false;
     await runtime.process?.stop();
     runtime.process = null;
-    onStop(app);
+    _signalStopped(runtime);
   }
 
   /// Loads configured apps from [serverPubspecFile].
@@ -400,6 +422,8 @@ class FlutterAppManager {
   /// Stops every running app and removes per-app VM-service info files.
   Future<void> stopAll() async {
     await _runtimes.values.map((runtime) async {
+      // Session shutdown; don't churn [onStop] consumers per app.
+      runtime.stopSignaled = true;
       await runtime.process?.stop();
       runtime.process = null;
       await File(runtime.infoFile).deleteIfExists();
@@ -407,15 +431,74 @@ class FlutterAppManager {
   }
 
   /// Closes every proxy and deletes info files.
+  ///
+  /// Only an IDE launch removes the device info; a plain terminal run leaves
+  /// it alone, since it may belong to a pending IDE launch.
   Future<void> dispose() async {
     await stopAll();
     await _runtimes.values.map((runtime) => runtime.proxy.close()).wait;
+    if (_isIdeLaunch) {
+      await File(
+        p.join(serverpodToolDir, ideDeviceInfoFile),
+      ).deleteIfExists();
+    }
   }
 
   _AppRuntime? _runtimeFor(String appId) => _runtimes[appId];
 
   String _infoFileFor(String appId) =>
       p.join(serverpodToolDir, 'flutter-vm-service-info-$appId.json');
+
+  /// The file where the serverpod VS Code extension writes the
+  /// IDE-selected Flutter device to, as `{"deviceId": "<id>"}`, inside
+  /// [serverpodToolDir].
+  ///
+  /// Scoped to one session: the extension writes it as it launches, and
+  /// [dispose] removes it when the session ends. Only a run carrying
+  /// [ideLaunchEnvVar] reads it, so a `serverpod start` from a plain terminal
+  /// is never silently retargeted by a device picked in an IDE - including
+  /// when a killed session left the file behind.
+  static const ideDeviceInfoFile = 'ide-flutter-device.json';
+
+  /// Environment variable the generated VS Code `serverpod_start` task sets
+  /// to mark a run it launched.
+  ///
+  /// Only such a run reads [ideDeviceInfoFile]. A `serverpod start` from a
+  /// plain terminal carries no marker and ignores the file entirely, so one
+  /// left behind by a session that was killed - which never reaches
+  /// [dispose] - can never retarget an unrelated run.
+  static const ideLaunchEnvVar = 'SERVERPOD_LAUNCHED_FROM_IDE';
+
+  /// Whether this process was launched by the IDE.
+  bool get _isIdeLaunch {
+    final env = environmentOverrideForTesting ?? Platform.environment;
+    return bool.tryParse(env[ideLaunchEnvVar] ?? '') ?? false;
+  }
+
+  /// The device id selected in the IDE, or null when it does not apply.
+  ///
+  /// Only honored on an IDE launch (see [ideLaunchEnvVar]), and only when
+  /// exactly one app is configured - with several apps the selection would
+  /// ambiguously retarget all of them, so each app must pin its own `device`
+  /// in the pubspec instead. An explicit `device` on the single app also wins
+  /// over the IDE device info.
+  /// Read fresh on every spawn so a new IDE selection applies to the next
+  /// launch without restarting the session, and so a `device` added to the
+  /// server pubspec while running takes over through the config reload.
+  @visibleForTesting
+  String? ideDevice() {
+    if (!_isIdeLaunch) return null;
+    if (_apps.length != 1) return null;
+    final file = File(p.join(serverpodToolDir, ideDeviceInfoFile));
+    try {
+      final decoded = jsonDecode(file.readAsStringSync());
+      final deviceId = decoded is Map ? decoded['deviceId'] : null;
+      if (deviceId is String && deviceId.isNotEmpty) return deviceId;
+    } catch (_) {
+      // Missing or malformed info file - fall back to the default device.
+    }
+    return null;
+  }
 
   void _setupDependencyTracker(String appId) {
     final runtime = _runtimeFor(appId);
@@ -471,6 +554,15 @@ class FlutterAppManager {
           : '${runtime.app.name} running at $url',
     );
     onReady(runtime.app, url);
+  }
+
+  /// Invokes [onStop] at most once per launch. Stop has several sources - an
+  /// explicit [stop] and the process exiting on its own - so a second signal
+  /// is swallowed here.
+  void _signalStopped(_AppRuntime runtime) {
+    if (runtime.stopSignaled) return;
+    runtime.stopSignaled = true;
+    onStop(runtime.app);
   }
 
   Future<void> _connectAfterLaunch(
@@ -539,4 +631,5 @@ class _AppRuntime {
   bool spawnInFlight = false;
   bool relaunchInProgress = false;
   bool readySignaled = false;
+  bool stopSignaled = false;
 }

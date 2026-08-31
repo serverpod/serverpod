@@ -11,33 +11,33 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import '../../changed_id_type/many_to_many/enrollment.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import '../../changed_id_type/many_to_many/enrollment.dart' as _ih6xbg05;
 
 abstract class CourseUuid
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   CourseUuid._({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required this.name,
     this.enrollments,
-  }) : id = id ?? const _i1.Uuid().v7obj();
+  }) : id = id ?? const _is.Uuid().v7obj();
 
   factory CourseUuid({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   }) = _CourseUuidImpl;
 
   factory CourseUuid.fromJson(Map<String, dynamic> jsonSerialization) {
     return CourseUuid(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       enrollments: jsonSerialization['enrollments'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.EnrollmentInt>>(
+          : _igqrxdcj.Protocol().deserialize<List<_ih6xbg05.EnrollmentInt>>(
               jsonSerialization['enrollments'],
             ),
     );
@@ -48,22 +48,22 @@ abstract class CourseUuid
   static const db = CourseUuidRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
   String name;
 
-  List<_i2.EnrollmentInt>? enrollments;
+  List<_ih6xbg05.EnrollmentInt>? enrollments;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   CourseUuid copyWith({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     String? name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -90,17 +90,17 @@ abstract class CourseUuid
   }
 
   static CourseUuidInclude include({
-    _i2.EnrollmentIntIncludeList? enrollments,
+    _ih6xbg05.EnrollmentIntIncludeList? enrollments,
   }) {
     return CourseUuidInclude._(enrollments: enrollments);
   }
 
   static CourseUuidIncludeList includeList({
-    _i1.WhereExpressionBuilder<CourseUuidTable>? where,
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
     CourseUuidInclude? include,
   }) {
     return CourseUuidIncludeList._(
@@ -115,7 +115,7 @@ abstract class CourseUuid
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,9 +123,9 @@ class _Undefined {}
 
 class _CourseUuidImpl extends CourseUuid {
   _CourseUuidImpl({
-    _i1.UuidValue? id,
+    _is.UuidValue? id,
     required String name,
-    List<_i2.EnrollmentInt>? enrollments,
+    List<_ih6xbg05.EnrollmentInt>? enrollments,
   }) : super._(
          id: id,
          name: name,
@@ -134,7 +134,7 @@ class _CourseUuidImpl extends CourseUuid {
 
   /// Returns a shallow copy of this [CourseUuid]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   CourseUuid copyWith({
     Object? id = _Undefined,
@@ -142,28 +142,28 @@ class _CourseUuidImpl extends CourseUuid {
     Object? enrollments = _Undefined,
   }) {
     return CourseUuid(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       name: name ?? this.name,
-      enrollments: enrollments is List<_i2.EnrollmentInt>?
+      enrollments: enrollments is List<_ih6xbg05.EnrollmentInt>?
           ? enrollments
           : this.enrollments?.map((e0) => e0.copyWith()).toList(),
     );
   }
 }
 
-class CourseUuidUpdateTable extends _i1.UpdateTable<CourseUuidTable> {
+class CourseUuidUpdateTable extends _is.UpdateTable<CourseUuidTable> {
   CourseUuidUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> name(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> name(String value) => _is.ColumnValue(
     table.name,
     value,
   );
 }
 
-class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
+class CourseUuidTable extends _is.Table<_is.UuidValue?> {
   CourseUuidTable({super.tableRelation}) : super(tableName: 'course_uuid') {
     updateTable = CourseUuidUpdateTable(this);
-    name = _i1.ColumnString(
+    name = _is.ColumnString(
       'name',
       this,
     );
@@ -171,38 +171,38 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
 
   late final CourseUuidUpdateTable updateTable;
 
-  late final _i1.ColumnString name;
+  late final _is.ColumnString name;
 
-  _i2.EnrollmentIntTable? ___enrollments;
+  _ih6xbg05.EnrollmentIntTable? ___enrollments;
 
-  _i1.ManyRelation<_i2.EnrollmentIntTable>? _enrollments;
+  _is.ManyRelation<_ih6xbg05.EnrollmentIntTable>? _enrollments;
 
-  _i2.EnrollmentIntTable get __enrollments {
+  _ih6xbg05.EnrollmentIntTable get __enrollments {
     if (___enrollments != null) return ___enrollments!;
-    ___enrollments = _i1.createRelationTable(
+    ___enrollments = _is.createRelationTable(
       relationFieldName: '__enrollments',
       field: CourseUuid.t.id,
-      foreignField: _i2.EnrollmentInt.t.courseId,
+      foreignField: _ih6xbg05.EnrollmentInt.t.courseId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+          _ih6xbg05.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
     return ___enrollments!;
   }
 
-  _i1.ManyRelation<_i2.EnrollmentIntTable> get enrollments {
+  _is.ManyRelation<_ih6xbg05.EnrollmentIntTable> get enrollments {
     if (_enrollments != null) return _enrollments!;
-    var relationTable = _i1.createRelationTable(
+    var relationTable = _is.createRelationTable(
       relationFieldName: 'enrollments',
       field: CourseUuid.t.id,
-      foreignField: _i2.EnrollmentInt.t.courseId,
+      foreignField: _ih6xbg05.EnrollmentInt.t.courseId,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.EnrollmentIntTable(tableRelation: foreignTableRelation),
+          _ih6xbg05.EnrollmentIntTable(tableRelation: foreignTableRelation),
     );
-    _enrollments = _i1.ManyRelation<_i2.EnrollmentIntTable>(
+    _enrollments = _is.ManyRelation<_ih6xbg05.EnrollmentIntTable>(
       tableWithRelations: relationTable,
-      table: _i2.EnrollmentIntTable(
+      table: _ih6xbg05.EnrollmentIntTable(
         tableRelation: relationTable.tableRelation!.lastRelation,
       ),
     );
@@ -210,13 +210,13 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     name,
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'enrollments') {
       return __enrollments;
     }
@@ -224,23 +224,23 @@ class CourseUuidTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class CourseUuidInclude extends _i1.IncludeObject {
-  CourseUuidInclude._({_i2.EnrollmentIntIncludeList? enrollments}) {
+class CourseUuidInclude extends _is.IncludeObject {
+  CourseUuidInclude._({_ih6xbg05.EnrollmentIntIncludeList? enrollments}) {
     _enrollments = enrollments;
   }
 
-  _i2.EnrollmentIntIncludeList? _enrollments;
+  _ih6xbg05.EnrollmentIntIncludeList? _enrollments;
 
   @override
-  Map<String, _i1.Include?> get includes => {'enrollments': _enrollments};
+  Map<String, _is.Include?> get includes => {'enrollments': _enrollments};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CourseUuid.t;
+  _is.Table<_is.UuidValue?> get table => CourseUuid.t;
 }
 
-class CourseUuidIncludeList extends _i1.IncludeList {
+class CourseUuidIncludeList extends _is.IncludeList {
   CourseUuidIncludeList._({
-    _i1.WhereExpressionBuilder<CourseUuidTable>? where,
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -251,10 +251,10 @@ class CourseUuidIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => CourseUuid.t;
+  _is.Table<_is.UuidValue?> get table => CourseUuid.t;
 }
 
 class CourseUuidRepository {
@@ -287,16 +287,16 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<List<CourseUuid>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CourseUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
     CourseUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<CourseUuid>(
       where: where?.call(CourseUuid.t),
@@ -329,15 +329,15 @@ class CourseUuidRepository {
   /// );
   /// ```
   Future<CourseUuid?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CourseUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
     int? offset,
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
     CourseUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<CourseUuid>(
       where: where?.call(CourseUuid.t),
@@ -353,12 +353,12 @@ class CourseUuidRepository {
 
   /// Finds a single [CourseUuid] by its [id] or null if no such row exists.
   Future<CourseUuid?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     CourseUuidInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<CourseUuid>(
       id,
@@ -384,9 +384,9 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CourseUuid> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -402,9 +402,9 @@ class CourseUuidRepository {
   ///
   /// The returned [CourseUuid] will have its `id` field set.
   Future<CourseUuid> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<CourseUuid>(
       row,
@@ -433,12 +433,12 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CourseUuid> rows, {
-    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
-    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CourseUuidTable> conflictColumns,
+    _is.ColumnSelections<CourseUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<CourseUuid>(
@@ -465,12 +465,12 @@ class CourseUuidRepository {
   ///
   /// The returned [CourseUuid] will have its `id` field set.
   Future<CourseUuid?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid row, {
-    required _i1.ColumnSelections<CourseUuidTable> conflictColumns,
-    _i1.ColumnSelections<CourseUuidTable>? updateColumns,
-    _i1.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<CourseUuidTable> conflictColumns,
+    _is.ColumnSelections<CourseUuidTable>? updateColumns,
+    _is.WhereExpressionBuilder<CourseUuidTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<CourseUuid>(
       row,
@@ -491,10 +491,10 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CourseUuid> rows, {
-    _i1.ColumnSelections<CourseUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CourseUuidTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<CourseUuid>(
@@ -509,10 +509,10 @@ class CourseUuidRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<CourseUuid> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid row, {
-    _i1.ColumnSelections<CourseUuidTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<CourseUuidTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<CourseUuid>(
       row,
@@ -524,10 +524,10 @@ class CourseUuidRepository {
   /// Updates a single [CourseUuid] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<CourseUuid?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<CourseUuid>(
       id,
@@ -543,14 +543,14 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<CourseUuidUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<CourseUuidTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<CourseUuid>(
@@ -577,11 +577,11 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<CourseUuid> rows, {
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<CourseUuid>(
@@ -595,9 +595,9 @@ class CourseUuidRepository {
 
   /// Deletes a single [CourseUuid].
   Future<CourseUuid> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<CourseUuid>(
       row,
@@ -614,11 +614,11 @@ class CourseUuidRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<CourseUuid>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
-    _i1.OrderByBuilder<CourseUuidTable>? orderBy,
-    _i1.OrderByListBuilder<CourseUuidTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CourseUuidTable> where,
+    _is.OrderByBuilder<CourseUuidTable>? orderBy,
+    _is.OrderByListBuilder<CourseUuidTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<CourseUuid>(
@@ -633,10 +633,10 @@ class CourseUuidRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<CourseUuidTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<CourseUuidTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<CourseUuid>(
       where: where?.call(CourseUuid.t),
@@ -647,11 +647,11 @@ class CourseUuidRepository {
 
   /// Acquires row-level locks on [CourseUuid] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<CourseUuidTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<CourseUuidTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<CourseUuid>(
       where: where(CourseUuid.t),
@@ -668,10 +668,10 @@ class CourseUuidAttachRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]s
   /// by setting each [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid courseUuid,
-    List<_i2.EnrollmentInt> enrollmentInt, {
-    _i1.Transaction? transaction,
+    List<_ih6xbg05.EnrollmentInt> enrollmentInt, {
+    _is.Transaction? transaction,
   }) async {
     if (enrollmentInt.any((e) => e.id == null)) {
       throw ArgumentError.notNull('enrollmentInt.id');
@@ -683,9 +683,9 @@ class CourseUuidAttachRepository {
     var $enrollmentInt = enrollmentInt
         .map((e) => e.copyWith(courseId: courseUuid.id))
         .toList();
-    await session.db.update<_i2.EnrollmentInt>(
+    await session.db.update<_ih6xbg05.EnrollmentInt>(
       $enrollmentInt,
-      columns: [_i2.EnrollmentInt.t.courseId],
+      columns: [_ih6xbg05.EnrollmentInt.t.courseId],
       transaction: transaction,
     );
   }
@@ -697,10 +697,10 @@ class CourseUuidAttachRowRepository {
   /// Creates a relation between this [CourseUuid] and the given [EnrollmentInt]
   /// by setting the [EnrollmentInt]'s foreign key `courseId` to refer to this [CourseUuid].
   Future<void> enrollments(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     CourseUuid courseUuid,
-    _i2.EnrollmentInt enrollmentInt, {
-    _i1.Transaction? transaction,
+    _ih6xbg05.EnrollmentInt enrollmentInt, {
+    _is.Transaction? transaction,
   }) async {
     if (enrollmentInt.id == null) {
       throw ArgumentError.notNull('enrollmentInt.id');
@@ -710,9 +710,9 @@ class CourseUuidAttachRowRepository {
     }
 
     var $enrollmentInt = enrollmentInt.copyWith(courseId: courseUuid.id);
-    await session.db.updateRow<_i2.EnrollmentInt>(
+    await session.db.updateRow<_ih6xbg05.EnrollmentInt>(
       $enrollmentInt,
-      columns: [_i2.EnrollmentInt.t.courseId],
+      columns: [_ih6xbg05.EnrollmentInt.t.courseId],
       transaction: transaction,
     );
   }

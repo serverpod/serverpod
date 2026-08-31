@@ -1,5 +1,6 @@
 import 'package:serverpod_cli/src/analyzer/code_analysis_collector.dart';
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:test/test.dart';
 
@@ -65,6 +66,96 @@ void main() {
       expect(
         error.message,
         'The "database" property can only be used on classes with a "table" property.',
+      );
+    },
+  );
+
+  late var syncModels = [
+    ModelSourceBuilder().withFileName('crdt_scope').withYaml(
+      '''
+      class: CrdtScope
+      table: crdt_scopes
+      database: all
+      fields:
+        name: String
+      ''',
+    ).build(),
+    ModelSourceBuilder().withYaml(
+      '''
+      class: Example
+      table: example
+      database: sync
+      fields:
+        id: UuidValue?, defaultPersist=random_v7
+        scopeId: int?, relation(parent=crdt_scopes, onDelete=Cascade)
+        name: String
+      ''',
+    ).build(),
+  ];
+
+  test(
+    'Given a class with "database: sync" and the databaseSync experimental feature enabled '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.databaseSync,
+      ]).build();
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        syncModels,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class with "database: sync" and all experimental features enabled '
+    'when validating '
+    'then no error is generated.',
+    () {
+      var config = GeneratorConfigBuilder().withEnabledExperimentalFeatures([
+        ExperimentalFeature.all,
+      ]).build();
+
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        syncModels,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, isEmpty);
+    },
+  );
+
+  test(
+    'Given a class with "database: sync" and the databaseSync experimental feature disabled '
+    'when validating '
+    'then an error is generated.',
+    () {
+      var collector = CodeGenerationCollector();
+      StatefulAnalyzer(
+        config,
+        syncModels,
+        onErrorsCollector(collector),
+      ).validateAll();
+
+      expect(collector.errors, hasLength(1));
+
+      var error = collector.errors.first as SourceSpanSeverityException;
+      expect(error.severity, SourceSpanSeverity.error);
+      expect(
+        error.message,
+        'The "database: sync" option is experimental. Enable it with the '
+        '"databaseSync" experimental feature, either through the '
+        '"--experimental-features databaseSync" command line flag or by '
+        'setting "databaseSync: true" under "experimental_features" in the '
+        'generator.yaml file.',
       );
     },
   );

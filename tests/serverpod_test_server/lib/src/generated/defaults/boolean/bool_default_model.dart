@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class BoolDefaultModel
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   BoolDefaultModel._({
     this.id,
     bool? boolDefaultModelTrue,
@@ -35,18 +35,18 @@ abstract class BoolDefaultModel
       id: jsonSerialization['id'] as int?,
       boolDefaultModelTrue: jsonSerialization['boolDefaultModelTrue'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultModelTrue'],
             ),
       boolDefaultModelFalse: jsonSerialization['boolDefaultModelFalse'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultModelFalse'],
             ),
       boolDefaultModelNullFalse:
           jsonSerialization['boolDefaultModelNullFalse'] == null
           ? null
-          : _i1.BoolJsonExtension.fromJson(
+          : _is.BoolJsonExtension.fromJson(
               jsonSerialization['boolDefaultModelNullFalse'],
             ),
     );
@@ -66,11 +66,11 @@ abstract class BoolDefaultModel
   bool boolDefaultModelNullFalse;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   BoolDefaultModel copyWith({
     int? id,
     bool? boolDefaultModelTrue,
@@ -104,11 +104,11 @@ abstract class BoolDefaultModel
   }
 
   static BoolDefaultModelIncludeList includeList({
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
     BoolDefaultModelInclude? include,
   }) {
     return BoolDefaultModelIncludeList._(
@@ -123,7 +123,7 @@ abstract class BoolDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -144,7 +144,7 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
 
   /// Returns a shallow copy of this [BoolDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   BoolDefaultModel copyWith({
     Object? id = _Undefined,
@@ -164,41 +164,41 @@ class _BoolDefaultModelImpl extends BoolDefaultModel {
 }
 
 class BoolDefaultModelUpdateTable
-    extends _i1.UpdateTable<BoolDefaultModelTable> {
+    extends _is.UpdateTable<BoolDefaultModelTable> {
   BoolDefaultModelUpdateTable(super.table);
 
-  _i1.ColumnValue<bool, bool> boolDefaultModelTrue(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> boolDefaultModelTrue(bool value) =>
+      _is.ColumnValue(
         table.boolDefaultModelTrue,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> boolDefaultModelFalse(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> boolDefaultModelFalse(bool value) =>
+      _is.ColumnValue(
         table.boolDefaultModelFalse,
         value,
       );
 
-  _i1.ColumnValue<bool, bool> boolDefaultModelNullFalse(bool value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> boolDefaultModelNullFalse(bool value) =>
+      _is.ColumnValue(
         table.boolDefaultModelNullFalse,
         value,
       );
 }
 
-class BoolDefaultModelTable extends _i1.Table<int?> {
+class BoolDefaultModelTable extends _is.Table<int?> {
   BoolDefaultModelTable({super.tableRelation})
     : super(tableName: 'bool_default_model') {
     updateTable = BoolDefaultModelUpdateTable(this);
-    boolDefaultModelTrue = _i1.ColumnBool(
+    boolDefaultModelTrue = _is.ColumnBool(
       'boolDefaultModelTrue',
       this,
     );
-    boolDefaultModelFalse = _i1.ColumnBool(
+    boolDefaultModelFalse = _is.ColumnBool(
       'boolDefaultModelFalse',
       this,
     );
-    boolDefaultModelNullFalse = _i1.ColumnBool(
+    boolDefaultModelNullFalse = _is.ColumnBool(
       'boolDefaultModelNullFalse',
       this,
     );
@@ -206,14 +206,14 @@ class BoolDefaultModelTable extends _i1.Table<int?> {
 
   late final BoolDefaultModelUpdateTable updateTable;
 
-  late final _i1.ColumnBool boolDefaultModelTrue;
+  late final _is.ColumnBool boolDefaultModelTrue;
 
-  late final _i1.ColumnBool boolDefaultModelFalse;
+  late final _is.ColumnBool boolDefaultModelFalse;
 
-  late final _i1.ColumnBool boolDefaultModelNullFalse;
+  late final _is.ColumnBool boolDefaultModelNullFalse;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     boolDefaultModelTrue,
     boolDefaultModelFalse,
@@ -221,19 +221,19 @@ class BoolDefaultModelTable extends _i1.Table<int?> {
   ];
 }
 
-class BoolDefaultModelInclude extends _i1.IncludeObject {
+class BoolDefaultModelInclude extends _is.IncludeObject {
   BoolDefaultModelInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => BoolDefaultModel.t;
+  _is.Table<int?> get table => BoolDefaultModel.t;
 }
 
-class BoolDefaultModelIncludeList extends _i1.IncludeList {
+class BoolDefaultModelIncludeList extends _is.IncludeList {
   BoolDefaultModelIncludeList._({
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -244,10 +244,10 @@ class BoolDefaultModelIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => BoolDefaultModel.t;
+  _is.Table<int?> get table => BoolDefaultModel.t;
 }
 
 class BoolDefaultModelRepository {
@@ -276,15 +276,15 @@ class BoolDefaultModelRepository {
   /// );
   /// ```
   Future<List<BoolDefaultModel>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
@@ -316,14 +316,14 @@ class BoolDefaultModelRepository {
   /// );
   /// ```
   Future<BoolDefaultModel?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? offset,
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
@@ -338,11 +338,11 @@ class BoolDefaultModelRepository {
 
   /// Finds a single [BoolDefaultModel] by its [id] or null if no such row exists.
   Future<BoolDefaultModel?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<BoolDefaultModel>(
       id,
@@ -367,9 +367,9 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BoolDefaultModel> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -385,9 +385,9 @@ class BoolDefaultModelRepository {
   ///
   /// The returned [BoolDefaultModel] will have its `id` field set.
   Future<BoolDefaultModel> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BoolDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<BoolDefaultModel>(
       row,
@@ -416,12 +416,12 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BoolDefaultModel> rows, {
-    required _i1.ColumnSelections<BoolDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<BoolDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BoolDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<BoolDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<BoolDefaultModel>(
@@ -448,12 +448,12 @@ class BoolDefaultModelRepository {
   ///
   /// The returned [BoolDefaultModel] will have its `id` field set.
   Future<BoolDefaultModel?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BoolDefaultModel row, {
-    required _i1.ColumnSelections<BoolDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<BoolDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<BoolDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<BoolDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<BoolDefaultModel>(
       row,
@@ -474,10 +474,10 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BoolDefaultModel> rows, {
-    _i1.ColumnSelections<BoolDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BoolDefaultModelTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<BoolDefaultModel>(
@@ -492,10 +492,10 @@ class BoolDefaultModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<BoolDefaultModel> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BoolDefaultModel row, {
-    _i1.ColumnSelections<BoolDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<BoolDefaultModelTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<BoolDefaultModel>(
       row,
@@ -507,11 +507,11 @@ class BoolDefaultModelRepository {
   /// Updates a single [BoolDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<BoolDefaultModel?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
+    required _is.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<BoolDefaultModel>(
       id,
@@ -527,15 +527,15 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<BoolDefaultModelUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    required _is.WhereExpressionBuilder<BoolDefaultModelTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<BoolDefaultModel>(
@@ -562,11 +562,11 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<BoolDefaultModel> rows, {
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<BoolDefaultModel>(
@@ -580,9 +580,9 @@ class BoolDefaultModelRepository {
 
   /// Deletes a single [BoolDefaultModel].
   Future<BoolDefaultModel> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     BoolDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<BoolDefaultModel>(
       row,
@@ -599,11 +599,11 @@ class BoolDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<BoolDefaultModel>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
-    _i1.OrderByBuilder<BoolDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    _is.OrderByBuilder<BoolDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<BoolDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<BoolDefaultModel>(
@@ -618,10 +618,10 @@ class BoolDefaultModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<BoolDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<BoolDefaultModelTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<BoolDefaultModel>(
       where: where?.call(BoolDefaultModel.t),
@@ -632,11 +632,11 @@ class BoolDefaultModelRepository {
 
   /// Acquires row-level locks on [BoolDefaultModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<BoolDefaultModelTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<BoolDefaultModelTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<BoolDefaultModel>(
       where: where(BoolDefaultModel.t),

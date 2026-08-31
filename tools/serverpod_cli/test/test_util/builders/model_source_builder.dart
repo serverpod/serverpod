@@ -12,7 +12,7 @@ class ModelSourceBuilder {
   String fileExtension;
 
   ModelSourceBuilder()
-    : fileExtension = '.yaml',
+    : fileExtension = '.spy.yaml',
       subDirPathParts = [],
       fileName = 'example',
       yamlSourcePathParts = ['lib', 'src', 'model'],
@@ -62,6 +62,19 @@ class ModelSourceBuilder {
   ModelSourceBuilder withIsSharedModel(bool isSharedModel) {
     this.isSharedModel = isSharedModel;
     return this;
+  }
+
+  ModelSourceBuilder withCrdtScopeModel() {
+    return withIsSharedModel(true)
+        .withModuleAlias('serverpod_offline_sync')
+        .withFileName('crdt_scope')
+        .withYaml('''
+class: CrdtScope
+table: crdt_scopes
+database: all
+fields:
+  name: String
+''');
   }
 
   ModelSource build() {

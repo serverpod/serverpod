@@ -87,7 +87,19 @@ class Copier {
 
   String _replace(String str, List<Replacement> replacements) {
     for (var replacement in replacements) {
-      str = str.replaceAll(replacement.slotName, replacement.replacement);
+      if (replacement.replacement.isEmpty) {
+        // Stripping a trailing marker such as `#--CONDITIONALLY_REMOVE_LINE--#`
+        // must not leave the space that separated it from the YAML value.
+        str = str
+            .split('\n')
+            .map((line) {
+              if (!line.contains(replacement.slotName)) return line;
+              return line.replaceAll(replacement.slotName, '').trimRight();
+            })
+            .join('\n');
+      } else {
+        str = str.replaceAll(replacement.slotName, replacement.replacement);
+      }
     }
     return str;
   }

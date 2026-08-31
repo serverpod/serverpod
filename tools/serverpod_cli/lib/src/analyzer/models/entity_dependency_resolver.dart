@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:serverpod_cli/src/analyzer/models/checker/analyze_checker.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
+import 'package:serverpod_database/serverpod_database.dart';
 import 'package:serverpod_shared/serverpod_shared.dart';
 
 class ModelDependencyResolver {
@@ -45,6 +47,50 @@ class ModelDependencyResolver {
         );
       }
     });
+
+    // Finally inject the system fields that synced tables did not declare.
+    modelDefinitions.whereType<ModelClassDefinition>().forEach((
+      classDefinition,
+    ) {
+      _resolveSyncScopeIdField(classDefinition, modelDefinitions);
+    });
+  }
+
+  /// Injects the `scopeId` field on tables with `database: sync` that do not
+  /// declare it, directly or through a relation to the scopes table.
+  static void _resolveSyncScopeIdField(
+    ModelClassDefinition classDefinition,
+    List<SerializableModelDefinition> modelDefinitions,
+  ) {
+    if (!classDefinition.isSyncTable) return;
+    if (classDefinition.syncScopeIdField != null) return;
+
+    var scopesTableExists = modelDefinitions.any(
+      (model) =>
+          model is ModelClassDefinition &&
+          model.tableName == syncScopesTableName,
+    );
+    if (!scopesTableExists) return;
+
+    var scopeIdField = SerializableModelFieldDefinition(
+      name: syncScopeIdFieldName,
+      type: TypeDefinition.int.asNullable,
+      scope: ModelFieldScopeDefinition.all,
+      shouldPersist: true,
+      isRequired: false,
+      documentation: [
+        '/// The scope owning this row. Maintained by the sync engine.',
+      ],
+      relation: ForeignRelationDefinition(
+        parentTable: syncScopesTableName,
+        foreignFieldName: defaultPrimaryKeyName,
+        onDelete: ForeignKeyAction.cascade,
+      ),
+    );
+
+    // Right below the id field, since it is part of the row identity.
+    classDefinition.fields.insert(1, scopeIdField);
+    _resolveFieldIndexes(scopeIdField, classDefinition);
   }
 
   static void _resolveInheritance(
@@ -77,7 +123,11 @@ class ModelDependencyResolver {
   static void _resolveIdField(ModelClassDefinition classDefinition) {
     if (classDefinition.tableName == null) return;
 
-    final defaultIdType = SupportedIdType.int;
+    // Sync tables mint ids on both client and server, so the implicit primary
+    // key matches `id: UuidValue?, defaultPersist=random_v7`.
+    final defaultIdType = classDefinition.isSyncTable
+        ? SupportedIdType.uuidV7
+        : SupportedIdType.int;
 
     var maybeIdField =
         classDefinition.parentClass?.fieldsIncludingInherited
@@ -99,9 +149,6 @@ class ModelDependencyResolver {
     }
 
     var defaultModelValue = maybeIdField?.defaultModelValue;
-    if (maybeIdField == null && defaultIdType.type.className != 'int') {
-      defaultModelValue ??= defaultIdType.defaultValue;
-    }
 
     late List<String> defaultIdFieldDoc;
     if (idFieldType.nullable && defaultModelValue == null) {
@@ -229,6 +276,7 @@ class ModelDependencyResolver {
         relationFieldName,
       );
     } else if (relation.name == null ||
+        relation.isForeignKeyOrigin ||
         (foreignField != null && foreignField.type.isListType)) {
       _resolveImplicitDefinedRelation(
         classDefinition,
@@ -297,10 +345,6 @@ class ModelDependencyResolver {
     UnresolvedObjectRelationDefinition relation,
     String tableName,
   ) {
-    var relationFieldType = relation.nullableRelation
-        ? referenceDefinition.idField.type.asNullable
-        : referenceDefinition.idField.type.asNonNullable;
-
     var foreignFields = AnalyzeChecker.filterRelationByName(
       classDefinition,
       referenceDefinition,
@@ -314,21 +358,22 @@ class ModelDependencyResolver {
       foreignContainerField = foreignFields.first;
     }
 
-    var foreignRelationField = SerializableModelFieldDefinition(
+    var foreignRelationField = _createForeignKeyField(
       name: _createImplicitForeignIdFieldName(fieldDefinition.name),
-      relation: ForeignRelationDefinition(
-        name: relation.name,
-        parentTable: tableName,
-        foreignFieldName: defaultPrimaryKeyName,
-        containerField: fieldDefinition,
-        foreignContainerField: foreignContainerField,
-        onUpdate: relation.onUpdate,
-        onDelete: relation.onDelete,
-      ),
-      shouldPersist: true,
-      scope: fieldDefinition.scope,
-      type: relationFieldType,
-      isRequired: false,
+      referenceDefinition: referenceDefinition,
+      containerField: fieldDefinition,
+      nullable: relation.nullableRelation,
+    );
+
+    foreignRelationField.relation = ForeignRelationDefinition(
+      name: relation.name,
+      parentTable: tableName,
+      foreignFieldName: defaultPrimaryKeyName,
+      containerField: fieldDefinition,
+      foreignContainerField: foreignContainerField,
+      onUpdate: relation.onUpdate,
+      onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     _injectForeignRelationField(
@@ -336,6 +381,13 @@ class ModelDependencyResolver {
       fieldDefinition,
       foreignRelationField,
     );
+
+    // The foreign key field is injected after the main resolver loop has
+    // already resolved the indexes of every declared field, so the indexes of
+    // the injected field have to be resolved here. Without this, a unique
+    // index declared on the generated column is invisible to the one-to-one
+    // validation and the relation is wrongly reported as missing it.
+    _resolveFieldIndexes(foreignRelationField, classDefinition);
 
     fieldDefinition.relation = ObjectRelationDefinition(
       parentTable: tableName,
@@ -357,7 +409,24 @@ class ModelDependencyResolver {
     String relationFieldName,
   ) {
     var field = classDefinition.findField(relationFieldName);
-    if (field == null) return;
+    if (field == null) {
+      field = _createForeignKeyField(
+        name: relationFieldName,
+        referenceDefinition: referenceDefinition,
+        containerField: fieldDefinition,
+        nullable: relation.nullableRelation,
+        documentation: [
+          '/// The foreign key of the [${fieldDefinition.name}] relation.',
+        ],
+      );
+
+      _injectForeignRelationField(
+        classDefinition,
+        fieldDefinition,
+        field,
+      );
+      _resolveFieldIndexes(field, classDefinition);
+    }
 
     if (field.relation != null) {
       fieldDefinition.relation = UnresolvableObjectRelationDefinition(
@@ -386,6 +455,7 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       onUpdate: relation.onUpdate,
       onDelete: relation.onDelete,
+      deferrable: relation.deferrable,
     );
 
     fieldDefinition.relation = ObjectRelationDefinition(
@@ -396,6 +466,29 @@ class ModelDependencyResolver {
       foreignContainerField: foreignContainerField,
       isForeignKeyOrigin: true,
       nullableRelation: field.type.nullable,
+    );
+  }
+
+  /// Creates the field that holds the foreign key of an object relation, for
+  /// the cases where the field is not declared on the model. The field is
+  /// typed after the id of the referenced model and inherits the scope of the
+  /// object relation field it belongs to.
+  static SerializableModelFieldDefinition _createForeignKeyField({
+    required String name,
+    required ModelClassDefinition referenceDefinition,
+    required SerializableModelFieldDefinition containerField,
+    required bool nullable,
+    List<String>? documentation,
+  }) {
+    return SerializableModelFieldDefinition(
+      name: name,
+      type: nullable
+          ? referenceDefinition.idField.type.asNullable
+          : referenceDefinition.idField.type.asNonNullable,
+      scope: containerField.scope,
+      shouldPersist: true,
+      isRequired: false,
+      documentation: documentation,
     );
   }
 

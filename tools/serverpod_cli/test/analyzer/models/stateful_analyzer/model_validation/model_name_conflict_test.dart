@@ -26,7 +26,7 @@ void main() {
           - value2
         ''',
             )
-            .withFileName('common_enum.yaml')
+            .withFileName('common_enum')
             .withModuleAlias(firstModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -38,7 +38,7 @@ void main() {
           - value2
         ''',
             )
-            .withFileName('common_enum.yaml')
+            .withFileName('common_enum')
             .withModuleAlias(defaultModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -87,7 +87,7 @@ void main() {
           - value2
         ''',
             )
-            .withFileName('common_enum.yaml')
+            .withFileName('common_enum')
             .withModuleAlias(firstModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -99,7 +99,7 @@ void main() {
           - value2
         ''',
             )
-            .withFileName('common_enum.yaml')
+            .withFileName('common_enum')
             .withModuleAlias(secondModuleAlias)
             .build(),
         ModelSourceBuilder().withYaml(
@@ -146,7 +146,7 @@ void main() {
           name: String
         ''',
             )
-            .withFileName('common_class.yaml')
+            .withFileName('common_class')
             .withModuleAlias(firstModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -158,7 +158,7 @@ void main() {
           name: String
         ''',
             )
-            .withFileName('common_class.yaml')
+            .withFileName('common_class')
             .withModuleAlias(defaultModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -202,7 +202,7 @@ void main() {
           name: String
         ''',
             )
-            .withFileName('common_class.yaml')
+            .withFileName('common_class')
             .withModuleAlias(firstModuleAlias)
             .build(),
         ModelSourceBuilder()
@@ -214,7 +214,7 @@ void main() {
           name: String
         ''',
             )
-            .withFileName('common_class.yaml')
+            .withFileName('common_class')
             .withModuleAlias(secondModuleAlias)
             .build(),
         ModelSourceBuilder().withYaml(

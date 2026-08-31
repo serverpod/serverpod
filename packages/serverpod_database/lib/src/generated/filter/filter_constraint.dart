@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_database/serverpod_database.dart' as _i2;
+import 'package:serverpod_database/serverpod_database.dart' as _isd;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
 
 abstract class FilterConstraint
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   FilterConstraint._({
     required this.type,
     required this.column,
@@ -23,7 +23,7 @@ abstract class FilterConstraint
   });
 
   factory FilterConstraint({
-    required _i2.FilterConstraintType type,
+    required _isd.FilterConstraintType type,
     required String column,
     required String value,
     String? value2,
@@ -31,7 +31,7 @@ abstract class FilterConstraint
 
   factory FilterConstraint.fromJson(Map<String, dynamic> jsonSerialization) {
     return FilterConstraint(
-      type: _i2.FilterConstraintType.fromJson(
+      type: _isd.FilterConstraintType.fromJson(
         (jsonSerialization['type'] as int),
       ),
       column: jsonSerialization['column'] as String,
@@ -40,7 +40,7 @@ abstract class FilterConstraint
     );
   }
 
-  _i2.FilterConstraintType type;
+  _isd.FilterConstraintType type;
 
   String column;
 
@@ -50,9 +50,9 @@ abstract class FilterConstraint
 
   /// Returns a shallow copy of this [FilterConstraint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   FilterConstraint copyWith({
-    _i2.FilterConstraintType? type,
+    _isd.FilterConstraintType? type,
     String? column,
     String? value,
     String? value2,
@@ -81,7 +81,7 @@ abstract class FilterConstraint
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _Undefined {}
 
 class _FilterConstraintImpl extends FilterConstraint {
   _FilterConstraintImpl({
-    required _i2.FilterConstraintType type,
+    required _isd.FilterConstraintType type,
     required String column,
     required String value,
     String? value2,
@@ -102,10 +102,10 @@ class _FilterConstraintImpl extends FilterConstraint {
 
   /// Returns a shallow copy of this [FilterConstraint]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   FilterConstraint copyWith({
-    _i2.FilterConstraintType? type,
+    _isd.FilterConstraintType? type,
     String? column,
     String? value,
     Object? value2 = _Undefined,

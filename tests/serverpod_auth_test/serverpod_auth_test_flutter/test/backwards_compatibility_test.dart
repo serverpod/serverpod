@@ -3,7 +3,7 @@ import 'package:serverpod_auth_core_flutter/serverpod_auth_core_flutter.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 import 'package:serverpod_auth_test_client/serverpod_auth_test_client.dart';
 
-import 'utils/test_storage.dart';
+import 'package:serverpod_auth_test_flutter/src/test_utils/test_storage.dart';
 
 void main() {
   test(

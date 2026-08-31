@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
-abstract class SharedModelSubclass extends _i1.SharedModel
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class SharedModelSubclass extends _ilwf0zl1.SharedModel
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   SharedModelSubclass._({
     super.id,
     required super.name,
@@ -25,27 +25,27 @@ abstract class SharedModelSubclass extends _i1.SharedModel
   });
 
   factory SharedModelSubclass({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
     int? data,
     DateTime? createdAt,
     required String sharedModelSubclassField,
-    required _i1.SharedEnum sharedEnumField,
+    required _ilwf0zl1.SharedEnum sharedEnumField,
   }) = _SharedModelSubclassImpl;
 
   factory SharedModelSubclass.fromJson(Map<String, dynamic> jsonSerialization) {
     return SharedModelSubclass(
       id: jsonSerialization['id'] == null
           ? null
-          : _i2.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+          : _isc.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
       name: jsonSerialization['name'] as String,
       data: jsonSerialization['data'] as int?,
       createdAt: jsonSerialization['createdAt'] == null
           ? null
-          : _i2.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
+          : _isc.DateTimeJsonExtension.fromJson(jsonSerialization['createdAt']),
       sharedModelSubclassField:
           jsonSerialization['sharedModelSubclassField'] as String,
-      sharedEnumField: _i1.SharedEnum.fromJson(
+      sharedEnumField: _ilwf0zl1.SharedEnum.fromJson(
         (jsonSerialization['sharedEnumField'] as String),
       ),
     );
@@ -53,19 +53,19 @@ abstract class SharedModelSubclass extends _i1.SharedModel
 
   String sharedModelSubclassField;
 
-  _i1.SharedEnum sharedEnumField;
+  _ilwf0zl1.SharedEnum sharedEnumField;
 
   /// Returns a shallow copy of this [SharedModelSubclass]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   SharedModelSubclass copyWith({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     String? name,
     Object? data,
     DateTime? createdAt,
     String? sharedModelSubclassField,
-    _i1.SharedEnum? sharedEnumField,
+    _ilwf0zl1.SharedEnum? sharedEnumField,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,7 +95,7 @@ abstract class SharedModelSubclass extends _i1.SharedModel
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -103,12 +103,12 @@ class _Undefined {}
 
 class _SharedModelSubclassImpl extends SharedModelSubclass {
   _SharedModelSubclassImpl({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     required String name,
     int? data,
     DateTime? createdAt,
     required String sharedModelSubclassField,
-    required _i1.SharedEnum sharedEnumField,
+    required _ilwf0zl1.SharedEnum sharedEnumField,
   }) : super._(
          id: id,
          name: name,
@@ -120,15 +120,15 @@ class _SharedModelSubclassImpl extends SharedModelSubclass {
 
   /// Returns a shallow copy of this [SharedModelSubclass]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   SharedModelSubclass copyWith({
-    _i2.UuidValue? id,
+    _isc.UuidValue? id,
     String? name,
     Object? data = _Undefined,
     DateTime? createdAt,
     String? sharedModelSubclassField,
-    _i1.SharedEnum? sharedEnumField,
+    _ilwf0zl1.SharedEnum? sharedEnumField,
   }) {
     return SharedModelSubclass(
       id: id ?? this.id,

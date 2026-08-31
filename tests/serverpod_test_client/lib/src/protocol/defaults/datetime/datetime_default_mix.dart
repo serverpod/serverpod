@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class DateTimeDefaultMix
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   DateTimeDefaultMix._({
     this.id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -42,19 +42,19 @@ abstract class DateTimeDefaultMix
       dateTimeDefaultAndDefaultModel:
           jsonSerialization['dateTimeDefaultAndDefaultModel'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultAndDefaultModel'],
             ),
       dateTimeDefaultAndDefaultPersist:
           jsonSerialization['dateTimeDefaultAndDefaultPersist'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultAndDefaultPersist'],
             ),
       dateTimeDefaultModelAndDefaultPersist:
           jsonSerialization['dateTimeDefaultModelAndDefaultPersist'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(
+          : _isc.DateTimeJsonExtension.fromJson(
               jsonSerialization['dateTimeDefaultModelAndDefaultPersist'],
             ),
     );
@@ -73,7 +73,7 @@ abstract class DateTimeDefaultMix
 
   /// Returns a shallow copy of this [DateTimeDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   DateTimeDefaultMix copyWith({
     int? id,
     DateTime? dateTimeDefaultAndDefaultModel,
@@ -108,7 +108,7 @@ abstract class DateTimeDefaultMix
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -130,7 +130,7 @@ class _DateTimeDefaultMixImpl extends DateTimeDefaultMix {
 
   /// Returns a shallow copy of this [DateTimeDefaultMix]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   DateTimeDefaultMix copyWith({
     Object? id = _Undefined,

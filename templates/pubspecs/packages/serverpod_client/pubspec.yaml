@@ -10,22 +10,19 @@ issue_tracker: https://github.com/serverpod/serverpod/issues
 environment:
   sdk: DART_VERSION
 
+resolution: workspace
+
 dependencies:
   collection: ^1.18.0
   http: '>=1.1.0 <2.0.0'
   meta: ^1.15.0
   serverpod_serialization: SERVERPOD_VERSION
+  web: '>=0.3.0 <2.0.0'
   web_socket: ^1.0.1
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
-  relic: ^1.2.0
+  relic: ^2.0.0-rc.1
   serverpod_lints: SERVERPOD_VERSION
   stream_channel: ^2.1.1
   test: ^1.25.5
-
-dependency_overrides:
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization

@@ -11,7 +11,7 @@ import '../token_manager.dart';
 /// This class is used to bridge the gap between the [ServerSideSessions] and the
 /// [TokenManager] interface. It delegates all operations to the [ServerSideSessions]
 /// instance.
-class ServerSideSessionsTokenManager implements TokenManager {
+class ServerSideSessionsTokenManager extends TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.session.name;
 
@@ -28,7 +28,7 @@ class ServerSideSessionsTokenManager implements TokenManager {
        );
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,

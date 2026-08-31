@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_test_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
+    as _ik2mg1i3;
 
 abstract class TokenMetadata
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   TokenMetadata._({
     this.id,
     required this.refreshTokenId,
@@ -30,8 +31,8 @@ abstract class TokenMetadata
 
   factory TokenMetadata({
     int? id,
-    required _i1.UuidValue refreshTokenId,
-    _i2.RefreshToken? refreshToken,
+    required _is.UuidValue refreshTokenId,
+    _iacs.RefreshToken? refreshToken,
     required String deviceName,
     String? ipAddress,
     String? userAgent,
@@ -41,12 +42,12 @@ abstract class TokenMetadata
   factory TokenMetadata.fromJson(Map<String, dynamic> jsonSerialization) {
     return TokenMetadata(
       id: jsonSerialization['id'] as int?,
-      refreshTokenId: _i1.UuidValueJsonExtension.fromJson(
+      refreshTokenId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['refreshTokenId'],
       ),
       refreshToken: jsonSerialization['refreshToken'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.RefreshToken>(
+          : _ik2mg1i3.Protocol().deserialize<_iacs.RefreshToken>(
               jsonSerialization['refreshToken'],
             ),
       deviceName: jsonSerialization['deviceName'] as String,
@@ -63,10 +64,10 @@ abstract class TokenMetadata
   @override
   int? id;
 
-  _i1.UuidValue refreshTokenId;
+  _is.UuidValue refreshTokenId;
 
   /// The [RefreshToken] this metadata belongs to
-  _i2.RefreshToken? refreshToken;
+  _iacs.RefreshToken? refreshToken;
 
   /// Device information for the token
   String deviceName;
@@ -81,15 +82,15 @@ abstract class TokenMetadata
   String? metadata;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [TokenMetadata]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   TokenMetadata copyWith({
     int? id,
-    _i1.UuidValue? refreshTokenId,
-    _i2.RefreshToken? refreshToken,
+    _is.UuidValue? refreshTokenId,
+    _iacs.RefreshToken? refreshToken,
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -114,16 +115,18 @@ abstract class TokenMetadata
     return {};
   }
 
-  static TokenMetadataInclude include({_i2.RefreshTokenInclude? refreshToken}) {
+  static TokenMetadataInclude include({
+    _iacs.RefreshTokenInclude? refreshToken,
+  }) {
     return TokenMetadataInclude._(refreshToken: refreshToken);
   }
 
   static TokenMetadataIncludeList includeList({
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
     TokenMetadataInclude? include,
   }) {
     return TokenMetadataIncludeList._(
@@ -138,7 +141,7 @@ abstract class TokenMetadata
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -147,8 +150,8 @@ class _Undefined {}
 class _TokenMetadataImpl extends TokenMetadata {
   _TokenMetadataImpl({
     int? id,
-    required _i1.UuidValue refreshTokenId,
-    _i2.RefreshToken? refreshToken,
+    required _is.UuidValue refreshTokenId,
+    _iacs.RefreshToken? refreshToken,
     required String deviceName,
     String? ipAddress,
     String? userAgent,
@@ -165,11 +168,11 @@ class _TokenMetadataImpl extends TokenMetadata {
 
   /// Returns a shallow copy of this [TokenMetadata]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   TokenMetadata copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? refreshTokenId,
+    _is.UuidValue? refreshTokenId,
     Object? refreshToken = _Undefined,
     String? deviceName,
     Object? ipAddress = _Undefined,
@@ -179,7 +182,7 @@ class _TokenMetadataImpl extends TokenMetadata {
     return TokenMetadata(
       id: id is int? ? id : this.id,
       refreshTokenId: refreshTokenId ?? this.refreshTokenId,
-      refreshToken: refreshToken is _i2.RefreshToken?
+      refreshToken: refreshToken is _iacs.RefreshToken?
           ? refreshToken
           : this.refreshToken?.copyWith(),
       deviceName: deviceName ?? this.deviceName,
@@ -190,58 +193,58 @@ class _TokenMetadataImpl extends TokenMetadata {
   }
 }
 
-class TokenMetadataUpdateTable extends _i1.UpdateTable<TokenMetadataTable> {
+class TokenMetadataUpdateTable extends _is.UpdateTable<TokenMetadataTable> {
   TokenMetadataUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> refreshTokenId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> refreshTokenId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.refreshTokenId,
     value,
   );
 
-  _i1.ColumnValue<String, String> deviceName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> deviceName(String value) => _is.ColumnValue(
     table.deviceName,
     value,
   );
 
-  _i1.ColumnValue<String, String> ipAddress(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> ipAddress(String? value) => _is.ColumnValue(
     table.ipAddress,
     value,
   );
 
-  _i1.ColumnValue<String, String> userAgent(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userAgent(String? value) => _is.ColumnValue(
     table.userAgent,
     value,
   );
 
-  _i1.ColumnValue<String, String> metadata(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> metadata(String? value) => _is.ColumnValue(
     table.metadata,
     value,
   );
 }
 
-class TokenMetadataTable extends _i1.Table<int?> {
+class TokenMetadataTable extends _is.Table<int?> {
   TokenMetadataTable({super.tableRelation})
     : super(tableName: 'token_metadata') {
     updateTable = TokenMetadataUpdateTable(this);
-    refreshTokenId = _i1.ColumnUuid(
+    refreshTokenId = _is.ColumnUuid(
       'refreshTokenId',
       this,
     );
-    deviceName = _i1.ColumnString(
+    deviceName = _is.ColumnString(
       'deviceName',
       this,
     );
-    ipAddress = _i1.ColumnString(
+    ipAddress = _is.ColumnString(
       'ipAddress',
       this,
     );
-    userAgent = _i1.ColumnString(
+    userAgent = _is.ColumnString(
       'userAgent',
       this,
     );
-    metadata = _i1.ColumnString(
+    metadata = _is.ColumnString(
       'metadata',
       this,
     );
@@ -249,38 +252,38 @@ class TokenMetadataTable extends _i1.Table<int?> {
 
   late final TokenMetadataUpdateTable updateTable;
 
-  late final _i1.ColumnUuid refreshTokenId;
+  late final _is.ColumnUuid refreshTokenId;
 
   /// The [RefreshToken] this metadata belongs to
-  _i2.RefreshTokenTable? _refreshToken;
+  _iacs.RefreshTokenTable? _refreshToken;
 
   /// Device information for the token
-  late final _i1.ColumnString deviceName;
+  late final _is.ColumnString deviceName;
 
   /// IP address from which the token was created
-  late final _i1.ColumnString ipAddress;
+  late final _is.ColumnString ipAddress;
 
   /// User agent string
-  late final _i1.ColumnString userAgent;
+  late final _is.ColumnString userAgent;
 
   /// Additional metadata stored as JSON
-  late final _i1.ColumnString metadata;
+  late final _is.ColumnString metadata;
 
-  _i2.RefreshTokenTable get refreshToken {
+  _iacs.RefreshTokenTable get refreshToken {
     if (_refreshToken != null) return _refreshToken!;
-    _refreshToken = _i1.createRelationTable(
+    _refreshToken = _is.createRelationTable(
       relationFieldName: 'refreshToken',
       field: TokenMetadata.t.refreshTokenId,
-      foreignField: _i2.RefreshToken.t.id,
+      foreignField: _iacs.RefreshToken.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.RefreshTokenTable(tableRelation: foreignTableRelation),
+          _iacs.RefreshTokenTable(tableRelation: foreignTableRelation),
     );
     return _refreshToken!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     refreshTokenId,
     deviceName,
@@ -290,7 +293,7 @@ class TokenMetadataTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'refreshToken') {
       return refreshToken;
     }
@@ -298,23 +301,23 @@ class TokenMetadataTable extends _i1.Table<int?> {
   }
 }
 
-class TokenMetadataInclude extends _i1.IncludeObject {
-  TokenMetadataInclude._({_i2.RefreshTokenInclude? refreshToken}) {
+class TokenMetadataInclude extends _is.IncludeObject {
+  TokenMetadataInclude._({_iacs.RefreshTokenInclude? refreshToken}) {
     _refreshToken = refreshToken;
   }
 
-  _i2.RefreshTokenInclude? _refreshToken;
+  _iacs.RefreshTokenInclude? _refreshToken;
 
   @override
-  Map<String, _i1.Include?> get includes => {'refreshToken': _refreshToken};
+  Map<String, _is.Include?> get includes => {'refreshToken': _refreshToken};
 
   @override
-  _i1.Table<int?> get table => TokenMetadata.t;
+  _is.Table<int?> get table => TokenMetadata.t;
 }
 
-class TokenMetadataIncludeList extends _i1.IncludeList {
+class TokenMetadataIncludeList extends _is.IncludeList {
   TokenMetadataIncludeList._({
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -325,10 +328,10 @@ class TokenMetadataIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => TokenMetadata.t;
+  _is.Table<int?> get table => TokenMetadata.t;
 }
 
 class TokenMetadataRepository {
@@ -359,16 +362,16 @@ class TokenMetadataRepository {
   /// );
   /// ```
   Future<List<TokenMetadata>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     TokenMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<TokenMetadata>(
       where: where?.call(TokenMetadata.t),
@@ -401,15 +404,15 @@ class TokenMetadataRepository {
   /// );
   /// ```
   Future<TokenMetadata?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     TokenMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<TokenMetadata>(
       where: where?.call(TokenMetadata.t),
@@ -425,12 +428,12 @@ class TokenMetadataRepository {
 
   /// Finds a single [TokenMetadata] by its [id] or null if no such row exists.
   Future<TokenMetadata?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     TokenMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<TokenMetadata>(
       id,
@@ -456,9 +459,9 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TokenMetadata> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -474,9 +477,9 @@ class TokenMetadataRepository {
   ///
   /// The returned [TokenMetadata] will have its `id` field set.
   Future<TokenMetadata> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TokenMetadata row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<TokenMetadata>(
       row,
@@ -505,12 +508,12 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TokenMetadata> rows, {
-    required _i1.ColumnSelections<TokenMetadataTable> conflictColumns,
-    _i1.ColumnSelections<TokenMetadataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<TokenMetadataTable> conflictColumns,
+    _is.ColumnSelections<TokenMetadataTable>? updateColumns,
+    _is.WhereExpressionBuilder<TokenMetadataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<TokenMetadata>(
@@ -537,12 +540,12 @@ class TokenMetadataRepository {
   ///
   /// The returned [TokenMetadata] will have its `id` field set.
   Future<TokenMetadata?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TokenMetadata row, {
-    required _i1.ColumnSelections<TokenMetadataTable> conflictColumns,
-    _i1.ColumnSelections<TokenMetadataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<TokenMetadataTable> conflictColumns,
+    _is.ColumnSelections<TokenMetadataTable>? updateColumns,
+    _is.WhereExpressionBuilder<TokenMetadataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<TokenMetadata>(
       row,
@@ -563,10 +566,10 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TokenMetadata> rows, {
-    _i1.ColumnSelections<TokenMetadataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TokenMetadataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<TokenMetadata>(
@@ -581,10 +584,10 @@ class TokenMetadataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<TokenMetadata> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TokenMetadata row, {
-    _i1.ColumnSelections<TokenMetadataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<TokenMetadataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<TokenMetadata>(
       row,
@@ -596,10 +599,10 @@ class TokenMetadataRepository {
   /// Updates a single [TokenMetadata] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<TokenMetadata?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<TokenMetadata>(
       id,
@@ -615,14 +618,14 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<TokenMetadataUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<TokenMetadataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<TokenMetadata>(
@@ -649,11 +652,11 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<TokenMetadata> rows, {
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<TokenMetadata>(
@@ -667,9 +670,9 @@ class TokenMetadataRepository {
 
   /// Deletes a single [TokenMetadata].
   Future<TokenMetadata> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TokenMetadata row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<TokenMetadata>(
       row,
@@ -686,11 +689,11 @@ class TokenMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<TokenMetadata>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
-    _i1.OrderByBuilder<TokenMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<TokenMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TokenMetadataTable> where,
+    _is.OrderByBuilder<TokenMetadataTable>? orderBy,
+    _is.OrderByListBuilder<TokenMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<TokenMetadata>(
@@ -705,10 +708,10 @@ class TokenMetadataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<TokenMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<TokenMetadataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<TokenMetadata>(
       where: where?.call(TokenMetadata.t),
@@ -719,11 +722,11 @@ class TokenMetadataRepository {
 
   /// Acquires row-level locks on [TokenMetadata] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<TokenMetadataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<TokenMetadataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<TokenMetadata>(
       where: where(TokenMetadata.t),
@@ -740,10 +743,10 @@ class TokenMetadataAttachRowRepository {
   /// Creates a relation between the given [TokenMetadata] and [RefreshToken]
   /// by setting the [TokenMetadata]'s foreign key `refreshTokenId` to refer to the [RefreshToken].
   Future<void> refreshToken(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     TokenMetadata tokenMetadata,
-    _i2.RefreshToken refreshToken, {
-    _i1.Transaction? transaction,
+    _iacs.RefreshToken refreshToken, {
+    _is.Transaction? transaction,
   }) async {
     if (tokenMetadata.id == null) {
       throw ArgumentError.notNull('tokenMetadata.id');

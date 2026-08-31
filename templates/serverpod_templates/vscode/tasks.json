@@ -8,11 +8,16 @@
       "args": ["start"],
       "options": {
         "cwd": "${workspaceFolder}/projectname_server",
-        // {{#postgres}}
         "env": {
-          "SERVERPOD_PASSWORD_database": "DB_PASSWORD"
+          // {{#postgres}}
+          "SERVERPOD_PASSWORD_database": "DB_PASSWORD",
+          // {{/postgres}}
+          // Marks a `serverpod start` launched from the IDE, which is the
+          // only kind that honors the Flutter device picked in VS Code. A run
+          // started from a plain terminal carries no marker, so a device file
+          // left behind by a session that was killed cannot retarget it.
+          "SERVERPOD_LAUNCHED_FROM_IDE": "true"
         }
-        // {{/postgres}}
       },
       "isBackground": true,
       "presentation": {

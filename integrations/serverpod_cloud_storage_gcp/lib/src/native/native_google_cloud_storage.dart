@@ -29,8 +29,7 @@ import 'package:serverpod/serverpod.dart';
 ///   public: true,
 /// ));
 /// ```
-class NativeGoogleCloudStorage extends CloudStorage
-    with CloudStorageWithOptions {
+class NativeGoogleCloudStorage extends CloudStorage {
   /// The GCS bucket name.
   final String bucket;
 
@@ -248,28 +247,50 @@ class NativeGoogleCloudStorage extends CloudStorage
     required Session session,
     required String path,
     required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
+    StoreFileOptions options = const StoreFileOptions(),
   }) async {
+    if (options.expiration != null) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'per-file expiration',
+      );
+    }
+    final metadata = options.metadata;
     final media = gcs.Media(
       Stream.value(Uint8List.sublistView(byteData)),
       byteData.lengthInBytes,
+      contentType: metadata.contentType ?? 'application/octet-stream',
     );
-
     final object = gcs.Object()
       ..name = path
-      ..bucket = bucket;
+      ..bucket = bucket
+      ..contentType = metadata.contentType
+      ..cacheControl = metadata.cacheControl
+      ..contentDisposition = metadata.contentDisposition
+      ..contentEncoding = metadata.contentEncoding
+      ..metadata = metadata.custom.isEmpty ? null : metadata.custom;
 
-    await _storageApi.objects.insert(
-      object,
-      bucket,
-      uploadMedia: media,
-      predefinedAcl: public ? 'publicRead' : null,
-    );
+    try {
+      await _storageApi.objects.insert(
+        object,
+        bucket,
+        uploadMedia: media,
+        predefinedAcl: public ? 'publicRead' : null,
+        ifGenerationMatch: options.preventOverwrite ? '0' : null,
+      );
+    } on gcs.DetailedApiRequestError catch (error) {
+      if (error.status == 412 && options.preventOverwrite) {
+        throw CloudStorageFileAlreadyExistsException(
+          storageId: storageId,
+          path: path,
+        );
+      }
+      throw CloudStorageException('Failed to store GCS file. ($error)');
+    }
   }
 
   @override
-  Future<ByteData?> retrieveFile({
+  Future<ByteData> retrieveFile({
     required Session session,
     required String path,
   }) async {
@@ -281,42 +302,117 @@ class NativeGoogleCloudStorage extends CloudStorage
       );
 
       if (response is! gcs.Media) {
-        return null;
+        throw CloudStorageException(
+          'GCS did not return media for file "$path".',
+        );
       }
 
       final bytes = await _collectBytes(response.stream);
       return ByteData.sublistView(bytes);
     } on gcs.DetailedApiRequestError catch (e) {
-      if (e.status == 404) return null;
-      rethrow;
+      if (e.status == 404) {
+        throw CloudStorageFileNotFoundException(
+          storageId: storageId,
+          path: path,
+        );
+      }
+      throw CloudStorageException('Failed to retrieve GCS object. ($e)');
     }
   }
 
   @override
-  Future<Uri?> getPublicUrl({
-    required Session session,
-    required String path,
-  }) async {
-    if (!public) return null;
-
-    if (await fileExists(session: session, path: path)) {
-      final host = publicHost ?? 'storage.googleapis.com/$bucket';
-      return Uri.parse('https://$host/$path');
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> fileExists({
+  Future<FileStat> statFile({
     required Session session,
     required String path,
   }) async {
     try {
-      await _storageApi.objects.get(bucket, path);
-      return true;
-    } on gcs.DetailedApiRequestError catch (e) {
-      if (e.status == 404) return false;
+      final object = await _storageApi.objects.get(bucket, path);
+      if (object is! gcs.Object || object.size == null) {
+        throw CloudStorageException(
+          'GCS returned incomplete metadata for file "$path".',
+        );
+      }
+      final size = int.tryParse(object.size!);
+      if (size == null) {
+        throw CloudStorageException(
+          'GCS returned an invalid size for file "$path".',
+        );
+      }
+      return FileStat(
+        size: size,
+        lastModified: object.updated,
+        contentType: object.contentType,
+        cacheControl: object.cacheControl,
+        contentDisposition: object.contentDisposition,
+        contentEncoding: object.contentEncoding,
+        etag: object.etag ?? object.generation,
+        custom: object.metadata ?? const {},
+      );
+    } on gcs.DetailedApiRequestError catch (error) {
+      if (error.status == 404) {
+        throw CloudStorageFileNotFoundException(
+          storageId: storageId,
+          path: path,
+        );
+      }
+      throw CloudStorageException('Failed to stat GCS file. ($error)');
+    }
+  }
+
+  @override
+  Future<Uri> publicDownloadUrl({
+    required Session session,
+    required String path,
+  }) async {
+    if (!public) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'public download URLs',
+      );
+    }
+    await statFile(session: session, path: path);
+    final host = publicHost ?? 'storage.googleapis.com/$bucket';
+    return Uri.parse('https://$host/$path');
+  }
+
+  @override
+  Future<Uri> temporaryDownloadUrl({
+    required Session session,
+    required String path,
+    TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
+  }) async {
+    options.validate();
+    await statFile(session: session, path: path);
+    final signingContext = _signingContext;
+    if (signingContext == null) {
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'temporary download URLs without signing credentials',
+      );
+    }
+    try {
+      return Uri.parse(
+        await _createSignedUrl(
+          signingContext: signingContext,
+          bucket: bucket,
+          path: path,
+          expiration: options.expirationDuration,
+          method: 'GET',
+          queryParameters: {
+            if (options.contentType != null)
+              'response-content-type': options.contentType!,
+            if (options.downloadFileName != null)
+              'response-content-disposition':
+                  "attachment; filename*=UTF-8''${Uri.encodeComponent(options.downloadFileName!)}",
+          },
+        ),
+      );
+    } on CloudStorageException {
       rethrow;
+    } catch (error) {
+      throw CloudStorageException(
+        'Failed to create a temporary GCS download URL. ($error)',
+      );
     }
   }
 
@@ -329,102 +425,45 @@ class NativeGoogleCloudStorage extends CloudStorage
       await _storageApi.objects.delete(bucket, path);
     } on gcs.DetailedApiRequestError catch (e) {
       if (e.status == 404) return; // Already deleted
-      rethrow;
+      throw CloudStorageException('Failed to delete GCS object. ($e)');
     }
   }
 
   @override
-  Future<String?> createDirectFileUploadDescription({
+  Future<UploadDescription> createUploadDescription({
     required Session session,
     required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
+    UploadOptions options = const UploadOptions(),
   }) async {
+    options.validate();
     final signingContext = _signingContext;
     if (signingContext == null) {
-      return null;
-    }
-
-    final fileName = p.basename(path);
-    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
-    final acl = public ? 'public-read' : 'private';
-
-    final headers = <String, String>{
-      'Content-Type': contentType,
-      'x-goog-acl': acl,
-    };
-
-    final signedUrl = await _createSignedUrl(
-      signingContext: signingContext,
-      bucket: bucket,
-      path: path,
-      expiration: expirationDuration,
-      method: 'PUT',
-      headers: headers,
-    );
-
-    return jsonEncode({
-      'url': signedUrl,
-      'type': 'binary',
-      'method': 'PUT',
-      'file-name': fileName,
-      'headers': headers,
-    });
-  }
-
-  @override
-  Future<void> storeFileWithOptions({
-    required Session session,
-    required String path,
-    required ByteData byteData,
-    DateTime? expiration,
-    bool verified = true,
-    required CloudStorageOptions options,
-  }) async {
-    final media = gcs.Media(
-      Stream.value(Uint8List.sublistView(byteData)),
-      byteData.lengthInBytes,
-    );
-
-    final object = gcs.Object()
-      ..name = path
-      ..bucket = bucket;
-
-    await _storageApi.objects.insert(
-      object,
-      bucket,
-      uploadMedia: media,
-      predefinedAcl: public ? 'publicRead' : null,
-      ifGenerationMatch: options.preventOverwrite ? '0' : null,
-    );
-  }
-
-  @override
-  Future<String?> createDirectFileUploadDescriptionWithOptions({
-    required Session session,
-    required String path,
-    Duration expirationDuration = const Duration(minutes: 10),
-    int maxFileSize = 10 * 1024 * 1024,
-    required CloudStorageOptions options,
-  }) async {
-    if (options.contentLength != null && options.contentLength! > maxFileSize) {
-      throw CloudStorageException(
-        'Content length (${options.contentLength} bytes) exceeds maximum file size ($maxFileSize bytes).',
+      throw CloudStorageUnsupportedOperationException(
+        storageId: storageId,
+        operation: 'client uploads without signing credentials',
       );
     }
 
-    final signingContext = _signingContext;
-    if (signingContext == null) {
-      return null;
-    }
-
     final fileName = p.basename(path);
-    final contentType = lookupMimeType(fileName) ?? 'application/octet-stream';
-    final acl = public ? 'public-read' : 'private';
-
+    final metadata = options.metadata;
+    final contentType =
+        metadata.contentType ??
+        lookupMimeType(fileName) ??
+        'application/octet-stream';
     final headers = <String, String>{
       'Content-Type': contentType,
-      'x-goog-acl': acl,
+      if (public) 'x-goog-acl': 'public-read',
+      'x-goog-content-length-range': options.contentLength == null
+          ? '0,${options.maxFileSize}'
+          : '${options.contentLength},${options.contentLength}',
+      if (metadata.cacheControl != null)
+        'Cache-Control': metadata.cacheControl!,
+      if (metadata.contentDisposition != null)
+        'Content-Disposition': metadata.contentDisposition!,
+      if (metadata.contentEncoding != null)
+        'Content-Encoding': metadata.contentEncoding!,
+      for (final entry in metadata.custom.entries)
+        'x-goog-meta-${entry.key}': entry.value,
     };
     if (options.contentLength != null) {
       headers['Content-Length'] = options.contentLength.toString();
@@ -433,22 +472,30 @@ class NativeGoogleCloudStorage extends CloudStorage
       headers['x-goog-if-generation-match'] = '0';
     }
 
-    final signedUrl = await _createSignedUrl(
-      signingContext: signingContext,
-      bucket: bucket,
-      path: path,
-      expiration: expirationDuration,
+    String signedUrl;
+    try {
+      signedUrl = await _createSignedUrl(
+        signingContext: signingContext,
+        bucket: bucket,
+        path: path,
+        expiration: options.expirationDuration,
+        method: 'PUT',
+        headers: headers,
+      );
+    } on CloudStorageException {
+      rethrow;
+    } catch (error) {
+      throw CloudStorageException(
+        'Failed to create a GCS upload description. ($error)',
+      );
+    }
+
+    return BinaryUploadDescription(
+      url: Uri.parse(signedUrl),
       method: 'PUT',
+      fileName: fileName,
       headers: headers,
     );
-
-    return jsonEncode({
-      'url': signedUrl,
-      'type': 'binary',
-      'method': 'PUT',
-      'file-name': fileName,
-      'headers': headers,
-    });
   }
 
   /// Creates a V4 signed URL for GCS operations.
@@ -459,7 +506,13 @@ class NativeGoogleCloudStorage extends CloudStorage
     required Duration expiration,
     required String method,
     Map<String, String> headers = const {},
+    Map<String, String> queryParameters = const {},
   }) async {
+    if (expiration > const Duration(days: 7)) {
+      throw CloudStorageException(
+        'GCS signed URLs cannot be valid for more than 7 days.',
+      );
+    }
     final now = DateTime.now().toUtc();
     final datestamp = _formatDatestamp(now);
     final timestamp = _formatTimestamp(now);
@@ -481,6 +534,7 @@ class NativeGoogleCloudStorage extends CloudStorage
 
     // Build canonical query string (must be sorted by parameter name)
     final queryParams = {
+      ...queryParameters,
       'X-Goog-Algorithm': 'GOOG4-RSA-SHA256',
       'X-Goog-Credential': '${signingContext.email}/$credentialScope',
       'X-Goog-Date': timestamp,
@@ -536,11 +590,14 @@ class NativeGoogleCloudStorage extends CloudStorage
 
   /// URI-encodes a string according to RFC 3986.
   String _uriEncode(String input) {
-    return Uri.encodeComponent(input).replaceAll('+', '%2B');
+    return Uri.encodeComponent(input).replaceAllMapped(
+      RegExp(r"[!*'()]"),
+      (match) => '%${match[0]!.codeUnitAt(0).toRadixString(16).toUpperCase()}',
+    );
   }
 
   @override
-  Future<bool> verifyDirectFileUpload({
+  Future<bool> verifyUpload({
     required Session session,
     required String path,
   }) async {
@@ -553,7 +610,7 @@ class NativeGoogleCloudStorage extends CloudStorage
     await for (final chunk in stream) {
       builder.add(chunk);
     }
-    return builder.takeBytes();
+    return builder.toBytes();
   }
 }
 

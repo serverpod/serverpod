@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 /// A log entry for a message sent in a streaming session.
 abstract class MessageLogEntry
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   MessageLogEntry._({
     this.id,
     required this.sessionLogId,
@@ -54,7 +54,7 @@ abstract class MessageLogEntry
       duration: (jsonSerialization['duration'] as num).toDouble(),
       error: jsonSerialization['error'] as String?,
       stackTrace: jsonSerialization['stackTrace'] as String?,
-      slow: _i1.BoolJsonExtension.fromJson(jsonSerialization['slow']),
+      slow: _is.BoolJsonExtension.fromJson(jsonSerialization['slow']),
       order: jsonSerialization['order'] as int,
     );
   }
@@ -99,11 +99,11 @@ abstract class MessageLogEntry
   int order;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   MessageLogEntry copyWith({
     int? id,
     int? sessionLogId,
@@ -158,11 +158,11 @@ abstract class MessageLogEntry
   }
 
   static MessageLogEntryIncludeList includeList({
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
     MessageLogEntryInclude? include,
   }) {
     return MessageLogEntryIncludeList._(
@@ -177,7 +177,7 @@ abstract class MessageLogEntry
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -212,7 +212,7 @@ class _MessageLogEntryImpl extends MessageLogEntry {
 
   /// Returns a shallow copy of this [MessageLogEntry]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   MessageLogEntry copyWith({
     Object? id = _Undefined,
@@ -243,101 +243,101 @@ class _MessageLogEntryImpl extends MessageLogEntry {
   }
 }
 
-class MessageLogEntryUpdateTable extends _i1.UpdateTable<MessageLogEntryTable> {
+class MessageLogEntryUpdateTable extends _is.UpdateTable<MessageLogEntryTable> {
   MessageLogEntryUpdateTable(super.table);
 
-  _i1.ColumnValue<int, int> sessionLogId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> sessionLogId(int value) => _is.ColumnValue(
     table.sessionLogId,
     value,
   );
 
-  _i1.ColumnValue<String, String> serverId(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> serverId(String value) => _is.ColumnValue(
     table.serverId,
     value,
   );
 
-  _i1.ColumnValue<int, int> messageId(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> messageId(int value) => _is.ColumnValue(
     table.messageId,
     value,
   );
 
-  _i1.ColumnValue<String, String> endpoint(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> endpoint(String value) => _is.ColumnValue(
     table.endpoint,
     value,
   );
 
-  _i1.ColumnValue<String, String> messageName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> messageName(String value) => _is.ColumnValue(
     table.messageName,
     value,
   );
 
-  _i1.ColumnValue<double, double> duration(double value) => _i1.ColumnValue(
+  _is.ColumnValue<double, double> duration(double value) => _is.ColumnValue(
     table.duration,
     value,
   );
 
-  _i1.ColumnValue<String, String> error(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> error(String? value) => _is.ColumnValue(
     table.error,
     value,
   );
 
-  _i1.ColumnValue<String, String> stackTrace(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> stackTrace(String? value) => _is.ColumnValue(
     table.stackTrace,
     value,
   );
 
-  _i1.ColumnValue<bool, bool> slow(bool value) => _i1.ColumnValue(
+  _is.ColumnValue<bool, bool> slow(bool value) => _is.ColumnValue(
     table.slow,
     value,
   );
 
-  _i1.ColumnValue<int, int> order(int value) => _i1.ColumnValue(
+  _is.ColumnValue<int, int> order(int value) => _is.ColumnValue(
     table.order,
     value,
   );
 }
 
-class MessageLogEntryTable extends _i1.Table<int?> {
+class MessageLogEntryTable extends _is.Table<int?> {
   MessageLogEntryTable({super.tableRelation})
     : super(tableName: 'serverpod_message_log') {
     updateTable = MessageLogEntryUpdateTable(this);
-    sessionLogId = _i1.ColumnInt(
+    sessionLogId = _is.ColumnInt(
       'sessionLogId',
       this,
     );
-    serverId = _i1.ColumnString(
+    serverId = _is.ColumnString(
       'serverId',
       this,
     );
-    messageId = _i1.ColumnInt(
+    messageId = _is.ColumnInt(
       'messageId',
       this,
     );
-    endpoint = _i1.ColumnString(
+    endpoint = _is.ColumnString(
       'endpoint',
       this,
     );
-    messageName = _i1.ColumnString(
+    messageName = _is.ColumnString(
       'messageName',
       this,
     );
-    duration = _i1.ColumnDouble(
+    duration = _is.ColumnDouble(
       'duration',
       this,
     );
-    error = _i1.ColumnString(
+    error = _is.ColumnString(
       'error',
       this,
     );
-    stackTrace = _i1.ColumnString(
+    stackTrace = _is.ColumnString(
       'stackTrace',
       this,
     );
-    slow = _i1.ColumnBool(
+    slow = _is.ColumnBool(
       'slow',
       this,
     );
-    order = _i1.ColumnInt(
+    order = _is.ColumnInt(
       'order',
       this,
     );
@@ -346,39 +346,39 @@ class MessageLogEntryTable extends _i1.Table<int?> {
   late final MessageLogEntryUpdateTable updateTable;
 
   /// Id of the session this entry is associated with.
-  late final _i1.ColumnInt sessionLogId;
+  late final _is.ColumnInt sessionLogId;
 
   /// The id of the server that handled the message.
-  late final _i1.ColumnString serverId;
+  late final _is.ColumnString serverId;
 
   /// The id of the message this entry is associated with.
-  late final _i1.ColumnInt messageId;
+  late final _is.ColumnInt messageId;
 
   /// The endpoint this message is associated with.
-  late final _i1.ColumnString endpoint;
+  late final _is.ColumnString endpoint;
 
   /// The class name of the message this entry is associated with.
-  late final _i1.ColumnString messageName;
+  late final _is.ColumnString messageName;
 
   /// The duration of handling of this message.
-  late final _i1.ColumnDouble duration;
+  late final _is.ColumnDouble duration;
 
   /// Error is set if an error or exception was thrown during the handling of
   /// this message.
-  late final _i1.ColumnString error;
+  late final _is.ColumnString error;
 
   /// The stack trace of an error that was thrown during the handling of this
   /// message.
-  late final _i1.ColumnString stackTrace;
+  late final _is.ColumnString stackTrace;
 
   /// The handling of this message was slow.
-  late final _i1.ColumnBool slow;
+  late final _is.ColumnBool slow;
 
   /// Used for sorting the message log.
-  late final _i1.ColumnInt order;
+  late final _is.ColumnInt order;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     sessionLogId,
     serverId,
@@ -393,19 +393,19 @@ class MessageLogEntryTable extends _i1.Table<int?> {
   ];
 }
 
-class MessageLogEntryInclude extends _i1.IncludeObject {
+class MessageLogEntryInclude extends _is.IncludeObject {
   MessageLogEntryInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => MessageLogEntry.t;
+  _is.Table<int?> get table => MessageLogEntry.t;
 }
 
-class MessageLogEntryIncludeList extends _i1.IncludeList {
+class MessageLogEntryIncludeList extends _is.IncludeList {
   MessageLogEntryIncludeList._({
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -416,10 +416,10 @@ class MessageLogEntryIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => MessageLogEntry.t;
+  _is.Table<int?> get table => MessageLogEntry.t;
 }
 
 class MessageLogEntryRepository {
@@ -448,15 +448,15 @@ class MessageLogEntryRepository {
   /// );
   /// ```
   Future<List<MessageLogEntry>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
@@ -488,14 +488,14 @@ class MessageLogEntryRepository {
   /// );
   /// ```
   Future<MessageLogEntry?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? offset,
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
@@ -510,11 +510,11 @@ class MessageLogEntryRepository {
 
   /// Finds a single [MessageLogEntry] by its [id] or null if no such row exists.
   Future<MessageLogEntry?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<MessageLogEntry>(
       id,
@@ -539,9 +539,9 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MessageLogEntry> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -557,9 +557,9 @@ class MessageLogEntryRepository {
   ///
   /// The returned [MessageLogEntry] will have its `id` field set.
   Future<MessageLogEntry> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MessageLogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<MessageLogEntry>(
       row,
@@ -588,12 +588,12 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MessageLogEntry> rows, {
-    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
-    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _is.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<MessageLogEntry>(
@@ -620,12 +620,12 @@ class MessageLogEntryRepository {
   ///
   /// The returned [MessageLogEntry] will have its `id` field set.
   Future<MessageLogEntry?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MessageLogEntry row, {
-    required _i1.ColumnSelections<MessageLogEntryTable> conflictColumns,
-    _i1.ColumnSelections<MessageLogEntryTable>? updateColumns,
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<MessageLogEntryTable> conflictColumns,
+    _is.ColumnSelections<MessageLogEntryTable>? updateColumns,
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<MessageLogEntry>(
       row,
@@ -646,10 +646,10 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MessageLogEntry> rows, {
-    _i1.ColumnSelections<MessageLogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MessageLogEntryTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<MessageLogEntry>(
@@ -664,10 +664,10 @@ class MessageLogEntryRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<MessageLogEntry> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MessageLogEntry row, {
-    _i1.ColumnSelections<MessageLogEntryTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<MessageLogEntryTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<MessageLogEntry>(
       row,
@@ -679,11 +679,11 @@ class MessageLogEntryRepository {
   /// Updates a single [MessageLogEntry] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<MessageLogEntry?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
+    required _is.ColumnValueListBuilder<MessageLogEntryUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<MessageLogEntry>(
       id,
@@ -699,15 +699,15 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<MessageLogEntryUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<MessageLogEntryUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
+    required _is.WhereExpressionBuilder<MessageLogEntryTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<MessageLogEntry>(
@@ -734,11 +734,11 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<MessageLogEntry> rows, {
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<MessageLogEntry>(
@@ -752,9 +752,9 @@ class MessageLogEntryRepository {
 
   /// Deletes a single [MessageLogEntry].
   Future<MessageLogEntry> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     MessageLogEntry row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<MessageLogEntry>(
       row,
@@ -771,11 +771,11 @@ class MessageLogEntryRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<MessageLogEntry>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
-    _i1.OrderByBuilder<MessageLogEntryTable>? orderBy,
-    _i1.OrderByListBuilder<MessageLogEntryTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MessageLogEntryTable> where,
+    _is.OrderByBuilder<MessageLogEntryTable>? orderBy,
+    _is.OrderByListBuilder<MessageLogEntryTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<MessageLogEntry>(
@@ -790,10 +790,10 @@ class MessageLogEntryRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<MessageLogEntryTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<MessageLogEntryTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<MessageLogEntry>(
       where: where?.call(MessageLogEntry.t),
@@ -804,11 +804,11 @@ class MessageLogEntryRepository {
 
   /// Acquires row-level locks on [MessageLogEntry] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<MessageLogEntryTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<MessageLogEntryTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<MessageLogEntry>(
       where: where(MessageLogEntry.t),

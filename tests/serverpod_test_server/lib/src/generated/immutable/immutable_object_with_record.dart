@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i2;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
 
-@_i1.immutable
+@_is.immutable
 abstract class ImmutableObjectWithRecord
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _is.SerializableModel, _is.ProtocolSerialization {
   const ImmutableObjectWithRecord._({required this.recordVariable});
 
   const factory ImmutableObjectWithRecord({
@@ -26,7 +26,7 @@ abstract class ImmutableObjectWithRecord
     Map<String, dynamic> jsonSerialization,
   ) {
     return ImmutableObjectWithRecord(
-      recordVariable: _i2.Protocol().deserialize<(int, String)>(
+      recordVariable: _igqrxdcj.Protocol().deserialize<(int, String)>(
         (jsonSerialization['recordVariable'] as Map<String, dynamic>),
       ),
     );
@@ -36,7 +36,7 @@ abstract class ImmutableObjectWithRecord
 
   /// Returns a shallow copy of this [ImmutableObjectWithRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ImmutableObjectWithRecord copyWith({(int, String)? recordVariable});
   @override
   bool operator ==(Object other) {
@@ -65,7 +65,7 @@ abstract class ImmutableObjectWithRecord
   Map<String, dynamic> toJson() {
     return {
       '__className__': 'ImmutableObjectWithRecord',
-      'recordVariable': _i2.Protocol().mapRecordToJson(recordVariable),
+      'recordVariable': _igqrxdcj.Protocol().mapRecordToJson(recordVariable),
     };
   }
 
@@ -73,13 +73,13 @@ abstract class ImmutableObjectWithRecord
   Map<String, dynamic> toJsonForProtocol() {
     return {
       '__className__': 'ImmutableObjectWithRecord',
-      'recordVariable': _i2.Protocol().mapRecordToJson(recordVariable),
+      'recordVariable': _igqrxdcj.Protocol().mapRecordToJson(recordVariable),
     };
   }
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -89,7 +89,7 @@ class _ImmutableObjectWithRecordImpl extends ImmutableObjectWithRecord {
 
   /// Returns a shallow copy of this [ImmutableObjectWithRecord]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ImmutableObjectWithRecord copyWith({(int, String)? recordVariable}) {
     return ImmutableObjectWithRecord(

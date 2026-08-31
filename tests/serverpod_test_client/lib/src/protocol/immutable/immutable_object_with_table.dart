@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
-@_i1.immutable
+@_isc.immutable
 abstract class ImmutableObjectWithTable
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   const ImmutableObjectWithTable._({
     this.id,
     required this.variable,
@@ -43,7 +43,7 @@ abstract class ImmutableObjectWithTable
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ImmutableObjectWithTable copyWith({
     int? id,
     String? variable,
@@ -97,7 +97,7 @@ abstract class ImmutableObjectWithTable
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -114,7 +114,7 @@ class _ImmutableObjectWithTableImpl extends ImmutableObjectWithTable {
 
   /// Returns a shallow copy of this [ImmutableObjectWithTable]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ImmutableObjectWithTable copyWith({
     Object? id = _Undefined,

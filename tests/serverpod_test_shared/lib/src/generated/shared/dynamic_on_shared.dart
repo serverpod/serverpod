@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_serialization/serverpod_serialization.dart' as _i1;
-import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _i2;
+import 'package:serverpod_serialization/serverpod_serialization.dart' as _iss;
+import 'package:serverpod_test_shared/serverpod_test_shared.dart' as _ilwf0zl1;
 
 abstract class DynamicOnShared
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _iss.SerializableModel, _iss.ProtocolSerialization {
   DynamicOnShared._({
     required this.name,
     required this.data,
@@ -28,7 +28,7 @@ abstract class DynamicOnShared
   factory DynamicOnShared.fromJson(Map<String, dynamic> jsonSerialization) {
     return DynamicOnShared(
       name: jsonSerialization['name'] as String,
-      data: _i2.Protocol().deserializeDynamicFieldValue(
+      data: _ilwf0zl1.Protocol().deserializeDynamicFieldValue(
         jsonSerialization['data'],
       ),
     );
@@ -40,7 +40,7 @@ abstract class DynamicOnShared
 
   /// Returns a shallow copy of this [DynamicOnShared]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   DynamicOnShared copyWith({
     String? name,
     dynamic data,
@@ -50,7 +50,7 @@ abstract class DynamicOnShared
     return {
       '__className__': 'DynamicOnShared',
       'name': name,
-      'data': _i2.Protocol().dynamicFieldToJson(data),
+      'data': _ilwf0zl1.Protocol().dynamicFieldToJson(data),
     };
   }
 
@@ -59,7 +59,7 @@ abstract class DynamicOnShared
     return {
       '__className__': 'DynamicOnShared',
       'name': name,
-      'data': _i2.Protocol().dynamicFieldToJson(
+      'data': _ilwf0zl1.Protocol().dynamicFieldToJson(
         data,
         forProtocol: true,
       ),
@@ -68,7 +68,7 @@ abstract class DynamicOnShared
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _iss.SerializationManager.encode(this);
   }
 }
 
@@ -85,7 +85,7 @@ class _DynamicOnSharedImpl extends DynamicOnShared {
 
   /// Returns a shallow copy of this [DynamicOnShared]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_iss.useResult
   @override
   DynamicOnShared copyWith({
     String? name,

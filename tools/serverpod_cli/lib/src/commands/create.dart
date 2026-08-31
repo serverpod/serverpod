@@ -1,4 +1,3 @@
-import 'package:ci/ci.dart' as ci;
 import 'package:cli_tools/cli_tools.dart';
 import 'package:config/config.dart';
 import 'package:serverpod_cli/src/commands/create/tui/runner.dart';
@@ -100,8 +99,7 @@ enum CreateOption<V> implements OptionDefinition<V> {
           'Can also be specified as the first argument.',
       mandatory: true,
     ),
-  )
-  ;
+  );
 
   static const _templateGroup = MutuallyExclusive(
     'Project Template',
@@ -236,7 +234,7 @@ class CreateCommand extends ServerpodCommand<CreateOption> {
           .toList(),
     );
 
-    final useTui = (interactive ?? true) && !ci.isCI;
+    final useTui = shouldUseCreateTui(interactive);
 
     if (useTui) {
       await performCreateWithTui(

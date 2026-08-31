@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_test_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
+    as _ik2mg1i3;
 
 abstract class UserData
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   UserData._({
     this.id,
     required this.authUserId,
@@ -28,8 +29,8 @@ abstract class UserData
 
   factory UserData({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String displayName,
     String? bio,
   }) = _UserDataImpl;
@@ -37,12 +38,12 @@ abstract class UserData
   factory UserData.fromJson(Map<String, dynamic> jsonSerialization) {
     return UserData(
       id: jsonSerialization['id'] as int?,
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _ik2mg1i3.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       displayName: jsonSerialization['displayName'] as String,
@@ -57,10 +58,10 @@ abstract class UserData
   @override
   int? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// User's display name
   String displayName;
@@ -69,15 +70,15 @@ abstract class UserData
   String? bio;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [UserData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   UserData copyWith({
     int? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     String? displayName,
     String? bio,
   });
@@ -105,16 +106,16 @@ abstract class UserData
     };
   }
 
-  static UserDataInclude include({_i2.AuthUserInclude? authUser}) {
+  static UserDataInclude include({_iacs.AuthUserInclude? authUser}) {
     return UserDataInclude._(authUser: authUser);
   }
 
   static UserDataIncludeList includeList({
-    _i1.WhereExpressionBuilder<UserDataTable>? where,
+    _is.WhereExpressionBuilder<UserDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
     UserDataInclude? include,
   }) {
     return UserDataIncludeList._(
@@ -129,7 +130,7 @@ abstract class UserData
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -138,8 +139,8 @@ class _Undefined {}
 class _UserDataImpl extends UserData {
   _UserDataImpl({
     int? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     required String displayName,
     String? bio,
   }) : super._(
@@ -152,11 +153,11 @@ class _UserDataImpl extends UserData {
 
   /// Returns a shallow copy of this [UserData]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   UserData copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     String? displayName,
     Object? bio = _Undefined,
@@ -164,7 +165,7 @@ class _UserDataImpl extends UserData {
     return UserData(
       id: id is int? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       displayName: displayName ?? this.displayName,
@@ -173,39 +174,39 @@ class _UserDataImpl extends UserData {
   }
 }
 
-class UserDataUpdateTable extends _i1.UpdateTable<UserDataTable> {
+class UserDataUpdateTable extends _is.UpdateTable<UserDataTable> {
   UserDataUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<String, String> displayName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> displayName(String value) => _is.ColumnValue(
     table.displayName,
     value,
   );
 
-  _i1.ColumnValue<String, String> bio(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> bio(String? value) => _is.ColumnValue(
     table.bio,
     value,
   );
 }
 
-class UserDataTable extends _i1.Table<int?> {
+class UserDataTable extends _is.Table<int?> {
   UserDataTable({super.tableRelation}) : super(tableName: 'user_data') {
     updateTable = UserDataUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    displayName = _i1.ColumnString(
+    displayName = _is.ColumnString(
       'displayName',
       this,
     );
-    bio = _i1.ColumnString(
+    bio = _is.ColumnString(
       'bio',
       this,
     );
@@ -213,32 +214,32 @@ class UserDataTable extends _i1.Table<int?> {
 
   late final UserDataUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// User's display name
-  late final _i1.ColumnString displayName;
+  late final _is.ColumnString displayName;
 
   /// User's bio
-  late final _i1.ColumnString bio;
+  late final _is.ColumnString bio;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: UserData.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     displayName,
@@ -246,7 +247,7 @@ class UserDataTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -254,23 +255,23 @@ class UserDataTable extends _i1.Table<int?> {
   }
 }
 
-class UserDataInclude extends _i1.IncludeObject {
-  UserDataInclude._({_i2.AuthUserInclude? authUser}) {
+class UserDataInclude extends _is.IncludeObject {
+  UserDataInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<int?> get table => UserData.t;
+  _is.Table<int?> get table => UserData.t;
 }
 
-class UserDataIncludeList extends _i1.IncludeList {
+class UserDataIncludeList extends _is.IncludeList {
   UserDataIncludeList._({
-    _i1.WhereExpressionBuilder<UserDataTable>? where,
+    _is.WhereExpressionBuilder<UserDataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -281,10 +282,10 @@ class UserDataIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => UserData.t;
+  _is.Table<int?> get table => UserData.t;
 }
 
 class UserDataRepository {
@@ -315,16 +316,16 @@ class UserDataRepository {
   /// );
   /// ```
   Future<List<UserData>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserDataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.Transaction? transaction,
     UserDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<UserData>(
       where: where?.call(UserData.t),
@@ -357,15 +358,15 @@ class UserDataRepository {
   /// );
   /// ```
   Future<UserData?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserDataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.Transaction? transaction,
     UserDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<UserData>(
       where: where?.call(UserData.t),
@@ -381,12 +382,12 @@ class UserDataRepository {
 
   /// Finds a single [UserData] by its [id] or null if no such row exists.
   Future<UserData?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     UserDataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<UserData>(
       id,
@@ -412,9 +413,9 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserData> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -430,9 +431,9 @@ class UserDataRepository {
   ///
   /// The returned [UserData] will have its `id` field set.
   Future<UserData> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<UserData>(
       row,
@@ -461,12 +462,12 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserData> rows, {
-    required _i1.ColumnSelections<UserDataTable> conflictColumns,
-    _i1.ColumnSelections<UserDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserDataTable> conflictColumns,
+    _is.ColumnSelections<UserDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserDataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<UserData>(
@@ -493,12 +494,12 @@ class UserDataRepository {
   ///
   /// The returned [UserData] will have its `id` field set.
   Future<UserData?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserData row, {
-    required _i1.ColumnSelections<UserDataTable> conflictColumns,
-    _i1.ColumnSelections<UserDataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<UserDataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<UserDataTable> conflictColumns,
+    _is.ColumnSelections<UserDataTable>? updateColumns,
+    _is.WhereExpressionBuilder<UserDataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<UserData>(
       row,
@@ -519,10 +520,10 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserData> rows, {
-    _i1.ColumnSelections<UserDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserDataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<UserData>(
@@ -537,10 +538,10 @@ class UserDataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<UserData> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserData row, {
-    _i1.ColumnSelections<UserDataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<UserDataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<UserData>(
       row,
@@ -552,10 +553,10 @@ class UserDataRepository {
   /// Updates a single [UserData] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<UserData?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    required _is.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<UserData>(
       id,
@@ -571,14 +572,14 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<UserDataTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<UserDataUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<UserDataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<UserData>(
@@ -605,11 +606,11 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<UserData> rows, {
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<UserData>(
@@ -623,9 +624,9 @@ class UserDataRepository {
 
   /// Deletes a single [UserData].
   Future<UserData> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserData row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<UserData>(
       row,
@@ -642,11 +643,11 @@ class UserDataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<UserData>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserDataTable> where,
-    _i1.OrderByBuilder<UserDataTable>? orderBy,
-    _i1.OrderByListBuilder<UserDataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserDataTable> where,
+    _is.OrderByBuilder<UserDataTable>? orderBy,
+    _is.OrderByListBuilder<UserDataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<UserData>(
@@ -661,10 +662,10 @@ class UserDataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<UserDataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<UserDataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<UserData>(
       where: where?.call(UserData.t),
@@ -675,11 +676,11 @@ class UserDataRepository {
 
   /// Acquires row-level locks on [UserData] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<UserDataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<UserDataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<UserData>(
       where: where(UserData.t),
@@ -696,10 +697,10 @@ class UserDataAttachRowRepository {
   /// Creates a relation between the given [UserData] and [AuthUser]
   /// by setting the [UserData]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     UserData userData,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (userData.id == null) {
       throw ArgumentError.notNull('userData.id');

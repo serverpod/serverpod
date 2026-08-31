@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_core_server/src/generated/common/models/auth_success.dart';
 
@@ -5,6 +6,7 @@ import '../../../auth_user/auth_user.dart';
 import '../../../generated/common/models/auth_strategy.dart';
 import '../../../jwt/business/jwt.dart';
 import '../../../jwt/business/jwt_config.dart';
+import '../../../jwt/util/jwt_refresh_cookie_path.dart';
 import '../token_manager.dart';
 
 /// Token manager adapter for [Jwt].
@@ -12,7 +14,7 @@ import '../token_manager.dart';
 /// This class is used to bridge the gap between the [Jwt]
 /// and the [TokenManager] interface. It delegates all operations to the
 /// [Jwt] instance.
-class JwtTokenManager implements TokenManager {
+class JwtTokenManager extends TokenManager {
   /// The name of the token issuer.
   static String get tokenIssuerName => AuthStrategy.jwt.name;
 
@@ -29,13 +31,13 @@ class JwtTokenManager implements TokenManager {
        );
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
-  }) async {
+  }) {
     return jwt.createTokens(
       session,
       authUserId: authUserId,
@@ -44,6 +46,19 @@ class JwtTokenManager implements TokenManager {
       transaction: transaction,
     );
   }
+
+  @override
+  DateTime? refreshTokenExpiresAt() {
+    // Slack for the delay between minting and the cookie write, so the
+    // cookie does not outlive the token.
+    return clock.now().toUtc().add(
+      jwt.config.refreshTokenLifetime - const Duration(seconds: 10),
+    );
+  }
+
+  @override
+  String? refreshCookiePath(final Session session) =>
+      jwtRefreshCookiePath(session);
 
   @override
   Future<List<TokenInfo>> listTokens(

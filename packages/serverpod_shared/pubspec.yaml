@@ -2,35 +2,28 @@
 # Mode: development
 
 name: serverpod_shared
-version: 4.0.0-beta.1
+version: 4.0.0-rc.1
 description: Serverpod code that is shared between serverpod and tooling.
 repository: https://github.com/serverpod/serverpod
 homepage: https://serverpod.dev
 issue_tracker: https://github.com/serverpod/serverpod/issues
 
 environment:
-  sdk: '^3.10.3'
+  sdk: '^3.12.2'
+
+resolution: workspace
 
 dependencies:
   crypto: ^3.0.2
   ffi: ^2.1.4
-  # Transitive compatibility floor: ffi_leak_tracker 0.1.0 and 0.1.1 require
-  # Dart 3.11, while Serverpod supports Dart 3.10.
   ffi_leak_tracker: ^0.1.2
   meta: ^1.15.0
   path: ^1.8.3
   serverpod_logging: ^0.1.0
-  # win32 6.0.0 requires Dart 3.11, while Serverpod supports Dart 3.10.
   win32: ^6.0.1
   yaml: ^3.1.2
 
 dev_dependencies:
-  serverpod_lints: 4.0.0-beta.1
+  serverpod_lints: 4.0.0-rc.1
   test: ^1.25.5
   uuid: ^4.5.3
-
-dependency_overrides:
-  serverpod_lints:
-    path: ../serverpod_lints
-  serverpod_serialization:
-    path: ../serverpod_serialization

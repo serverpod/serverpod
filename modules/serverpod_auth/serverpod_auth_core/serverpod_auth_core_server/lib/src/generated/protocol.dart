@@ -11,33 +11,35 @@
 // ignore_for_file: dead_code, unnecessary_type_check
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'package:serverpod/protocol.dart' as _i2;
-import 'auth_user/models/auth_user.dart' as _i3;
-import 'auth_user/models/auth_user_blocked_exception.dart' as _i4;
-import 'auth_user/models/auth_user_model.dart' as _i5;
-import 'auth_user/models/auth_user_not_found_exception.dart' as _i6;
-import 'common/models/auth_strategy.dart' as _i7;
-import 'common/models/auth_success.dart' as _i8;
-import 'jwt/models/jwt_token_info.dart' as _i9;
-import 'jwt/models/refresh_token.dart' as _i10;
-import 'jwt/models/refresh_token_expired_exception.dart' as _i11;
-import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _i12;
-import 'jwt/models/refresh_token_malformed_exception.dart' as _i13;
-import 'jwt/models/refresh_token_not_found_exception.dart' as _i14;
-import 'jwt/models/token_pair.dart' as _i15;
-import 'profile/models/user_profile.dart' as _i16;
-import 'profile/models/user_profile_data.dart' as _i17;
-import 'profile/models/user_profile_image.dart' as _i18;
-import 'profile/models/user_profile_model.dart' as _i19;
-import 'session/models/server_side_session.dart' as _i20;
-import 'session/models/server_side_session_info.dart' as _i21;
+import 'package:serverpod/protocol.dart' as _isp;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'auth_user/models/auth_user.dart' as _iwlenhk6;
+import 'auth_user/models/auth_user_blocked_exception.dart' as _idjlnenv;
+import 'auth_user/models/auth_user_model.dart' as _ievhec41;
+import 'auth_user/models/auth_user_not_found_exception.dart' as _ihi15zs1;
+import 'common/models/auth_strategy.dart' as _i52qy4mw;
+import 'common/models/auth_success.dart' as _ioaqzt9u;
+import 'common/models/sign_in_while_authenticated_exception.dart' as _iymqi1d6;
+import 'jwt/models/jwt_token_info.dart' as _i8d4wdsw;
+import 'jwt/models/refresh_token.dart' as _i3ujynqb;
+import 'jwt/models/refresh_token_expired_exception.dart' as _i35co9vj;
+import 'jwt/models/refresh_token_invalid_secret_exception.dart' as _ik27atqz;
+import 'jwt/models/refresh_token_malformed_exception.dart' as _i20y3j39;
+import 'jwt/models/refresh_token_not_found_exception.dart' as _in48f3pc;
+import 'jwt/models/token_pair.dart' as _i6w0tdii;
+import 'profile/models/user_profile.dart' as _ichiyqlu;
+import 'profile/models/user_profile_data.dart' as _isbbac0p;
+import 'profile/models/user_profile_image.dart' as _iu5nhigv;
+import 'profile/models/user_profile_model.dart' as _iw6ug6lb;
+import 'session/models/server_side_session.dart' as _ioukntxo;
+import 'session/models/server_side_session_info.dart' as _izgso6n0;
 export 'auth_user/models/auth_user.dart';
 export 'auth_user/models/auth_user_blocked_exception.dart';
 export 'auth_user/models/auth_user_model.dart';
 export 'auth_user/models/auth_user_not_found_exception.dart';
 export 'common/models/auth_strategy.dart';
 export 'common/models/auth_success.dart';
+export 'common/models/sign_in_while_authenticated_exception.dart';
 export 'jwt/models/jwt_token_info.dart';
 export 'jwt/models/refresh_token.dart';
 export 'jwt/models/refresh_token_expired_exception.dart';
@@ -52,99 +54,99 @@ export 'profile/models/user_profile_model.dart';
 export 'session/models/server_side_session.dart';
 export 'session/models/server_side_session_info.dart';
 
-class Protocol extends _i1.DatabaseSerializationManager {
+class Protocol extends _is.DatabaseSerializationManager {
   Protocol._();
 
   factory Protocol() => _instance;
 
   static final Protocol _instance = Protocol._();
 
-  final Set<_i1.SerializationManager> _hostProtocols = {};
+  final Set<_is.SerializationManager> _hostProtocols = {};
 
-  static List<_i2.TableDefinition> get targetTableDefinitions => [
-    _i2.TableDefinition(
+  static List<_isp.TableDefinition> get targetTableDefinitions => [
+    _isp.TableDefinition(
       name: 'serverpod_auth_core_jwt_refresh_token',
       dartName: 'RefreshToken',
       schema: 'public',
       module: 'serverpod_auth_core',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'scopeNames',
-          columnType: _i2.ColumnType.json,
+          columnType: _isp.ColumnType.json,
           isNullable: false,
           dartType: 'Set<String>',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'extraClaims',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'method',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'fixedSecret',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'rotatingSecretHash',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'lastUpdatedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_core_jwt_refresh_token_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_core_jwt_refresh_token_last_updated_at',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'lastUpdatedAt',
             ),
           ],
@@ -155,86 +157,86 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_core_profile',
       dartName: 'UserProfile',
       schema: 'public',
       module: 'serverpod_auth_core',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'fullName',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'email',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: true,
           dartType: 'String?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'imageId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: true,
           dartType: 'UuidValue?',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_core_profile_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_core_profile_fk_1',
           columns: ['imageId'],
           referenceTable: 'serverpod_auth_core_profile_image',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.noAction,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.noAction,
           matchType: null,
         ),
       ],
       indexes: [
-        _i2.IndexDefinition(
+        _isp.IndexDefinition(
           indexName: 'serverpod_auth_profile_user_profile_email_auth_user_id',
           tableSpace: null,
           elements: [
-            _i2.IndexElementDefinition(
-              type: _i2.IndexElementDefinitionType.column,
+            _isp.IndexElementDefinition(
+              type: _isp.IndexElementDefinitionType.column,
               definition: 'authUserId',
             ),
           ],
@@ -245,179 +247,179 @@ class Protocol extends _i1.DatabaseSerializationManager {
       ],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_core_profile_image',
       dartName: 'UserProfileImage',
       schema: 'public',
       module: 'serverpod_auth_core',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'userProfileId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'storageId',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'path',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'url',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'Uri',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_core_profile_image_fk_0',
           columns: ['userProfileId'],
           referenceTable: 'serverpod_auth_core_profile',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_core_session',
       dartName: 'ServerSideSession',
       schema: 'public',
       module: 'serverpod_auth_core',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'authUserId',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'scopeNames',
-          columnType: _i2.ColumnType.json,
+          columnType: _isp.ColumnType.json,
           isNullable: false,
           dartType: 'Set<String>',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'lastUsedAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
           columnDefault: 'now',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'expiresAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: true,
           dartType: 'DateTime?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'expireAfterUnusedFor',
-          columnType: _i2.ColumnType.bigint,
+          columnType: _isp.ColumnType.bigint,
           isNullable: true,
           dartType: 'Duration?',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'sessionKeyHash',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'sessionKeySalt',
-          columnType: _i2.ColumnType.bytea,
+          columnType: _isp.ColumnType.bytea,
           isNullable: false,
           dartType: 'dart:typed_data:ByteData',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'method',
-          columnType: _i2.ColumnType.text,
+          columnType: _isp.ColumnType.text,
           isNullable: false,
           dartType: 'String',
         ),
       ],
       foreignKeys: [
-        _i2.ForeignKeyDefinition(
+        _isp.ForeignKeyDefinition(
           constraintName: 'serverpod_auth_core_session_fk_0',
           columns: ['authUserId'],
           referenceTable: 'serverpod_auth_core_user',
           referenceTableSchema: 'public',
           referenceColumns: ['id'],
-          onUpdate: _i2.ForeignKeyAction.noAction,
-          onDelete: _i2.ForeignKeyAction.cascade,
+          onUpdate: _isp.ForeignKeyAction.noAction,
+          onDelete: _isp.ForeignKeyAction.cascade,
           matchType: null,
         ),
       ],
       indexes: [],
       managed: true,
     ),
-    _i2.TableDefinition(
+    _isp.TableDefinition(
       name: 'serverpod_auth_core_user',
       dartName: 'AuthUser',
       schema: 'public',
       module: 'serverpod_auth_core',
       columns: [
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'id',
-          columnType: _i2.ColumnType.uuid,
+          columnType: _isp.ColumnType.uuid,
           isNullable: false,
           dartType: 'UuidValue?',
           columnDefault: 'random_v7',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'createdAt',
-          columnType: _i2.ColumnType.timestampWithoutTimeZone,
+          columnType: _isp.ColumnType.timestampWithoutTimeZone,
           isNullable: false,
           dartType: 'DateTime',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'scopeNames',
-          columnType: _i2.ColumnType.json,
+          columnType: _isp.ColumnType.json,
           isNullable: false,
           dartType: 'Set<String>',
         ),
-        _i2.ColumnDefinition(
+        _isp.ColumnDefinition(
           name: 'blocked',
-          columnType: _i2.ColumnType.boolean,
+          columnType: _isp.ColumnType.boolean,
           isNullable: false,
           dartType: 'bool',
         ),
@@ -430,7 +432,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
 
   void registerHostProtocol(
     String projectName,
-    _i1.SerializationManager protocol,
+    _is.SerializationManager protocol,
   ) {
     _hostProtocols.add(protocol);
   }
@@ -457,175 +459,197 @@ class Protocol extends _i1.DatabaseSerializationManager {
           'className': dataClassName,
           'data': data,
         });
-      } on _i1.DeserializationClassNameNotFoundException catch (_) {
+      } on _is.DeserializationClassNameNotFoundException catch (_) {
         // If the className is not recognized (e.g., older client receiving
         // data with a new subtype), fall back to deserializing without the
         // className, using the expected type T.
       }
     }
 
-    if (t == _i3.AuthUser) {
-      return _i3.AuthUser.fromJson(data) as T;
+    if (t == _iwlenhk6.AuthUser) {
+      return _iwlenhk6.AuthUser.fromJson(data) as T;
     }
-    if (t == _i4.AuthUserBlockedException) {
-      return _i4.AuthUserBlockedException.fromJson(data) as T;
+    if (t == _idjlnenv.AuthUserBlockedException) {
+      return _idjlnenv.AuthUserBlockedException.fromJson(data) as T;
     }
-    if (t == _i5.AuthUserModel) {
-      return _i5.AuthUserModel.fromJson(data) as T;
+    if (t == _ievhec41.AuthUserModel) {
+      return _ievhec41.AuthUserModel.fromJson(data) as T;
     }
-    if (t == _i6.AuthUserNotFoundException) {
-      return _i6.AuthUserNotFoundException.fromJson(data) as T;
+    if (t == _ihi15zs1.AuthUserNotFoundException) {
+      return _ihi15zs1.AuthUserNotFoundException.fromJson(data) as T;
     }
-    if (t == _i7.AuthStrategy) {
-      return _i7.AuthStrategy.fromJson(data) as T;
+    if (t == _i52qy4mw.AuthStrategy) {
+      return _i52qy4mw.AuthStrategy.fromJson(data) as T;
     }
-    if (t == _i8.AuthSuccess) {
-      return _i8.AuthSuccess.fromJson(data) as T;
+    if (t == _ioaqzt9u.AuthSuccess) {
+      return _ioaqzt9u.AuthSuccess.fromJson(data) as T;
     }
-    if (t == _i9.JwtTokenInfo) {
-      return _i9.JwtTokenInfo.fromJson(data) as T;
+    if (t == _iymqi1d6.SignInWhileAuthenticatedException) {
+      return _iymqi1d6.SignInWhileAuthenticatedException.fromJson(data) as T;
     }
-    if (t == _i10.RefreshToken) {
-      return _i10.RefreshToken.fromJson(data) as T;
+    if (t == _i8d4wdsw.JwtTokenInfo) {
+      return _i8d4wdsw.JwtTokenInfo.fromJson(data) as T;
     }
-    if (t == _i11.RefreshTokenExpiredException) {
-      return _i11.RefreshTokenExpiredException.fromJson(data) as T;
+    if (t == _i3ujynqb.RefreshToken) {
+      return _i3ujynqb.RefreshToken.fromJson(data) as T;
     }
-    if (t == _i12.RefreshTokenInvalidSecretException) {
-      return _i12.RefreshTokenInvalidSecretException.fromJson(data) as T;
+    if (t == _i35co9vj.RefreshTokenExpiredException) {
+      return _i35co9vj.RefreshTokenExpiredException.fromJson(data) as T;
     }
-    if (t == _i13.RefreshTokenMalformedException) {
-      return _i13.RefreshTokenMalformedException.fromJson(data) as T;
+    if (t == _ik27atqz.RefreshTokenInvalidSecretException) {
+      return _ik27atqz.RefreshTokenInvalidSecretException.fromJson(data) as T;
     }
-    if (t == _i14.RefreshTokenNotFoundException) {
-      return _i14.RefreshTokenNotFoundException.fromJson(data) as T;
+    if (t == _i20y3j39.RefreshTokenMalformedException) {
+      return _i20y3j39.RefreshTokenMalformedException.fromJson(data) as T;
     }
-    if (t == _i15.TokenPair) {
-      return _i15.TokenPair.fromJson(data) as T;
+    if (t == _in48f3pc.RefreshTokenNotFoundException) {
+      return _in48f3pc.RefreshTokenNotFoundException.fromJson(data) as T;
     }
-    if (t == _i16.UserProfile) {
-      return _i16.UserProfile.fromJson(data) as T;
+    if (t == _i6w0tdii.TokenPair) {
+      return _i6w0tdii.TokenPair.fromJson(data) as T;
     }
-    if (t == _i17.UserProfileData) {
-      return _i17.UserProfileData.fromJson(data) as T;
+    if (t == _ichiyqlu.UserProfile) {
+      return _ichiyqlu.UserProfile.fromJson(data) as T;
     }
-    if (t == _i18.UserProfileImage) {
-      return _i18.UserProfileImage.fromJson(data) as T;
+    if (t == _isbbac0p.UserProfileData) {
+      return _isbbac0p.UserProfileData.fromJson(data) as T;
     }
-    if (t == _i19.UserProfileModel) {
-      return _i19.UserProfileModel.fromJson(data) as T;
+    if (t == _iu5nhigv.UserProfileImage) {
+      return _iu5nhigv.UserProfileImage.fromJson(data) as T;
     }
-    if (t == _i20.ServerSideSession) {
-      return _i20.ServerSideSession.fromJson(data) as T;
+    if (t == _iw6ug6lb.UserProfileModel) {
+      return _iw6ug6lb.UserProfileModel.fromJson(data) as T;
     }
-    if (t == _i21.ServerSideSessionInfo) {
-      return _i21.ServerSideSessionInfo.fromJson(data) as T;
+    if (t == _ioukntxo.ServerSideSession) {
+      return _ioukntxo.ServerSideSession.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i3.AuthUser?>()) {
-      return (data != null ? _i3.AuthUser.fromJson(data) : null) as T;
+    if (t == _izgso6n0.ServerSideSessionInfo) {
+      return _izgso6n0.ServerSideSessionInfo.fromJson(data) as T;
     }
-    if (t == _i1.getType<_i4.AuthUserBlockedException?>()) {
-      return (data != null ? _i4.AuthUserBlockedException.fromJson(data) : null)
-          as T;
+    if (t == _is.getType<_iwlenhk6.AuthUser?>()) {
+      return (data != null ? _iwlenhk6.AuthUser.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i5.AuthUserModel?>()) {
-      return (data != null ? _i5.AuthUserModel.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i6.AuthUserNotFoundException?>()) {
+    if (t == _is.getType<_idjlnenv.AuthUserBlockedException?>()) {
       return (data != null
-              ? _i6.AuthUserNotFoundException.fromJson(data)
+              ? _idjlnenv.AuthUserBlockedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i7.AuthStrategy?>()) {
-      return (data != null ? _i7.AuthStrategy.fromJson(data) : null) as T;
+    if (t == _is.getType<_ievhec41.AuthUserModel?>()) {
+      return (data != null ? _ievhec41.AuthUserModel.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i8.AuthSuccess?>()) {
-      return (data != null ? _i8.AuthSuccess.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i9.JwtTokenInfo?>()) {
-      return (data != null ? _i9.JwtTokenInfo.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i10.RefreshToken?>()) {
-      return (data != null ? _i10.RefreshToken.fromJson(data) : null) as T;
-    }
-    if (t == _i1.getType<_i11.RefreshTokenExpiredException?>()) {
+    if (t == _is.getType<_ihi15zs1.AuthUserNotFoundException?>()) {
       return (data != null
-              ? _i11.RefreshTokenExpiredException.fromJson(data)
+              ? _ihi15zs1.AuthUserNotFoundException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i12.RefreshTokenInvalidSecretException?>()) {
+    if (t == _is.getType<_i52qy4mw.AuthStrategy?>()) {
+      return (data != null ? _i52qy4mw.AuthStrategy.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_ioaqzt9u.AuthSuccess?>()) {
+      return (data != null ? _ioaqzt9u.AuthSuccess.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_iymqi1d6.SignInWhileAuthenticatedException?>()) {
       return (data != null
-              ? _i12.RefreshTokenInvalidSecretException.fromJson(data)
+              ? _iymqi1d6.SignInWhileAuthenticatedException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i13.RefreshTokenMalformedException?>()) {
+    if (t == _is.getType<_i8d4wdsw.JwtTokenInfo?>()) {
+      return (data != null ? _i8d4wdsw.JwtTokenInfo.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_i3ujynqb.RefreshToken?>()) {
+      return (data != null ? _i3ujynqb.RefreshToken.fromJson(data) : null) as T;
+    }
+    if (t == _is.getType<_i35co9vj.RefreshTokenExpiredException?>()) {
       return (data != null
-              ? _i13.RefreshTokenMalformedException.fromJson(data)
+              ? _i35co9vj.RefreshTokenExpiredException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i14.RefreshTokenNotFoundException?>()) {
+    if (t == _is.getType<_ik27atqz.RefreshTokenInvalidSecretException?>()) {
       return (data != null
-              ? _i14.RefreshTokenNotFoundException.fromJson(data)
+              ? _ik27atqz.RefreshTokenInvalidSecretException.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i15.TokenPair?>()) {
-      return (data != null ? _i15.TokenPair.fromJson(data) : null) as T;
+    if (t == _is.getType<_i20y3j39.RefreshTokenMalformedException?>()) {
+      return (data != null
+              ? _i20y3j39.RefreshTokenMalformedException.fromJson(data)
+              : null)
+          as T;
     }
-    if (t == _i1.getType<_i16.UserProfile?>()) {
-      return (data != null ? _i16.UserProfile.fromJson(data) : null) as T;
+    if (t == _is.getType<_in48f3pc.RefreshTokenNotFoundException?>()) {
+      return (data != null
+              ? _in48f3pc.RefreshTokenNotFoundException.fromJson(data)
+              : null)
+          as T;
     }
-    if (t == _i1.getType<_i17.UserProfileData?>()) {
-      return (data != null ? _i17.UserProfileData.fromJson(data) : null) as T;
+    if (t == _is.getType<_i6w0tdii.TokenPair?>()) {
+      return (data != null ? _i6w0tdii.TokenPair.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i18.UserProfileImage?>()) {
-      return (data != null ? _i18.UserProfileImage.fromJson(data) : null) as T;
+    if (t == _is.getType<_ichiyqlu.UserProfile?>()) {
+      return (data != null ? _ichiyqlu.UserProfile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i19.UserProfileModel?>()) {
-      return (data != null ? _i19.UserProfileModel.fromJson(data) : null) as T;
+    if (t == _is.getType<_isbbac0p.UserProfileData?>()) {
+      return (data != null ? _isbbac0p.UserProfileData.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i20.ServerSideSession?>()) {
-      return (data != null ? _i20.ServerSideSession.fromJson(data) : null) as T;
+    if (t == _is.getType<_iu5nhigv.UserProfileImage?>()) {
+      return (data != null ? _iu5nhigv.UserProfileImage.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i21.ServerSideSessionInfo?>()) {
-      return (data != null ? _i21.ServerSideSessionInfo.fromJson(data) : null)
+    if (t == _is.getType<_iw6ug6lb.UserProfileModel?>()) {
+      return (data != null ? _iw6ug6lb.UserProfileModel.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_ioukntxo.ServerSideSession?>()) {
+      return (data != null ? _ioukntxo.ServerSideSession.fromJson(data) : null)
+          as T;
+    }
+    if (t == _is.getType<_izgso6n0.ServerSideSessionInfo?>()) {
+      return (data != null
+              ? _izgso6n0.ServerSideSessionInfo.fromJson(data)
+              : null)
           as T;
     }
     if (t == Set<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toSet() as T;
     }
     try {
-      return _i2.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+      return _isp.Protocol().deserialize<T>(data, t);
+    } on _is.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
 
   static String? getClassNameForType(Type type) {
     return switch (type) {
-      _i3.AuthUser => 'AuthUser',
-      _i4.AuthUserBlockedException => 'AuthUserBlockedException',
-      _i5.AuthUserModel => 'AuthUserModel',
-      _i6.AuthUserNotFoundException => 'AuthUserNotFoundException',
-      _i7.AuthStrategy => 'AuthStrategy',
-      _i8.AuthSuccess => 'AuthSuccess',
-      _i9.JwtTokenInfo => 'JwtTokenInfo',
-      _i10.RefreshToken => 'RefreshToken',
-      _i11.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
-      _i12.RefreshTokenInvalidSecretException =>
+      _iwlenhk6.AuthUser => 'AuthUser',
+      _idjlnenv.AuthUserBlockedException => 'AuthUserBlockedException',
+      _ievhec41.AuthUserModel => 'AuthUserModel',
+      _ihi15zs1.AuthUserNotFoundException => 'AuthUserNotFoundException',
+      _i52qy4mw.AuthStrategy => 'AuthStrategy',
+      _ioaqzt9u.AuthSuccess => 'AuthSuccess',
+      _iymqi1d6.SignInWhileAuthenticatedException =>
+        'SignInWhileAuthenticatedException',
+      _i8d4wdsw.JwtTokenInfo => 'JwtTokenInfo',
+      _i3ujynqb.RefreshToken => 'RefreshToken',
+      _i35co9vj.RefreshTokenExpiredException => 'RefreshTokenExpiredException',
+      _ik27atqz.RefreshTokenInvalidSecretException =>
         'RefreshTokenInvalidSecretException',
-      _i13.RefreshTokenMalformedException => 'RefreshTokenMalformedException',
-      _i14.RefreshTokenNotFoundException => 'RefreshTokenNotFoundException',
-      _i15.TokenPair => 'TokenPair',
-      _i16.UserProfile => 'UserProfile',
-      _i17.UserProfileData => 'UserProfileData',
-      _i18.UserProfileImage => 'UserProfileImage',
-      _i19.UserProfileModel => 'UserProfileModel',
-      _i20.ServerSideSession => 'ServerSideSession',
-      _i21.ServerSideSessionInfo => 'ServerSideSessionInfo',
+      _i20y3j39.RefreshTokenMalformedException =>
+        'RefreshTokenMalformedException',
+      _in48f3pc.RefreshTokenNotFoundException =>
+        'RefreshTokenNotFoundException',
+      _i6w0tdii.TokenPair => 'TokenPair',
+      _ichiyqlu.UserProfile => 'UserProfile',
+      _isbbac0p.UserProfileData => 'UserProfileData',
+      _iu5nhigv.UserProfileImage => 'UserProfileImage',
+      _iw6ug6lb.UserProfileModel => 'UserProfileModel',
+      _ioukntxo.ServerSideSession => 'ServerSideSession',
+      _izgso6n0.ServerSideSessionInfo => 'ServerSideSessionInfo',
       _ => null,
     };
   }
@@ -643,46 +667,48 @@ class Protocol extends _i1.DatabaseSerializationManager {
     }
 
     switch (data) {
-      case _i3.AuthUser():
+      case _iwlenhk6.AuthUser():
         return 'AuthUser';
-      case _i4.AuthUserBlockedException():
+      case _idjlnenv.AuthUserBlockedException():
         return 'AuthUserBlockedException';
-      case _i5.AuthUserModel():
+      case _ievhec41.AuthUserModel():
         return 'AuthUserModel';
-      case _i6.AuthUserNotFoundException():
+      case _ihi15zs1.AuthUserNotFoundException():
         return 'AuthUserNotFoundException';
-      case _i7.AuthStrategy():
+      case _i52qy4mw.AuthStrategy():
         return 'AuthStrategy';
-      case _i8.AuthSuccess():
+      case _ioaqzt9u.AuthSuccess():
         return 'AuthSuccess';
-      case _i9.JwtTokenInfo():
+      case _iymqi1d6.SignInWhileAuthenticatedException():
+        return 'SignInWhileAuthenticatedException';
+      case _i8d4wdsw.JwtTokenInfo():
         return 'JwtTokenInfo';
-      case _i10.RefreshToken():
+      case _i3ujynqb.RefreshToken():
         return 'RefreshToken';
-      case _i11.RefreshTokenExpiredException():
+      case _i35co9vj.RefreshTokenExpiredException():
         return 'RefreshTokenExpiredException';
-      case _i12.RefreshTokenInvalidSecretException():
+      case _ik27atqz.RefreshTokenInvalidSecretException():
         return 'RefreshTokenInvalidSecretException';
-      case _i13.RefreshTokenMalformedException():
+      case _i20y3j39.RefreshTokenMalformedException():
         return 'RefreshTokenMalformedException';
-      case _i14.RefreshTokenNotFoundException():
+      case _in48f3pc.RefreshTokenNotFoundException():
         return 'RefreshTokenNotFoundException';
-      case _i15.TokenPair():
+      case _i6w0tdii.TokenPair():
         return 'TokenPair';
-      case _i16.UserProfile():
+      case _ichiyqlu.UserProfile():
         return 'UserProfile';
-      case _i17.UserProfileData():
+      case _isbbac0p.UserProfileData():
         return 'UserProfileData';
-      case _i18.UserProfileImage():
+      case _iu5nhigv.UserProfileImage():
         return 'UserProfileImage';
-      case _i19.UserProfileModel():
+      case _iw6ug6lb.UserProfileModel():
         return 'UserProfileModel';
-      case _i20.ServerSideSession():
+      case _ioukntxo.ServerSideSession():
         return 'ServerSideSession';
-      case _i21.ServerSideSessionInfo():
+      case _izgso6n0.ServerSideSessionInfo():
         return 'ServerSideSessionInfo';
     }
-    className = _i2.Protocol().getClassNameForObject(data);
+    className = _isp.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod.$className';
     }
@@ -696,65 +722,74 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return super.deserializeByClassName(data);
     }
     if (dataClassName == 'AuthUser') {
-      return deserialize<_i3.AuthUser>(data['data']);
+      return deserialize<_iwlenhk6.AuthUser>(data['data']);
     }
     if (dataClassName == 'AuthUserBlockedException') {
-      return deserialize<_i4.AuthUserBlockedException>(data['data']);
+      return deserialize<_idjlnenv.AuthUserBlockedException>(data['data']);
     }
     if (dataClassName == 'AuthUserModel') {
-      return deserialize<_i5.AuthUserModel>(data['data']);
+      return deserialize<_ievhec41.AuthUserModel>(data['data']);
     }
     if (dataClassName == 'AuthUserNotFoundException') {
-      return deserialize<_i6.AuthUserNotFoundException>(data['data']);
+      return deserialize<_ihi15zs1.AuthUserNotFoundException>(data['data']);
     }
     if (dataClassName == 'AuthStrategy') {
-      return deserialize<_i7.AuthStrategy>(data['data']);
+      return deserialize<_i52qy4mw.AuthStrategy>(data['data']);
     }
     if (dataClassName == 'AuthSuccess') {
-      return deserialize<_i8.AuthSuccess>(data['data']);
+      return deserialize<_ioaqzt9u.AuthSuccess>(data['data']);
+    }
+    if (dataClassName == 'SignInWhileAuthenticatedException') {
+      return deserialize<_iymqi1d6.SignInWhileAuthenticatedException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'JwtTokenInfo') {
-      return deserialize<_i9.JwtTokenInfo>(data['data']);
+      return deserialize<_i8d4wdsw.JwtTokenInfo>(data['data']);
     }
     if (dataClassName == 'RefreshToken') {
-      return deserialize<_i10.RefreshToken>(data['data']);
+      return deserialize<_i3ujynqb.RefreshToken>(data['data']);
     }
     if (dataClassName == 'RefreshTokenExpiredException') {
-      return deserialize<_i11.RefreshTokenExpiredException>(data['data']);
+      return deserialize<_i35co9vj.RefreshTokenExpiredException>(data['data']);
     }
     if (dataClassName == 'RefreshTokenInvalidSecretException') {
-      return deserialize<_i12.RefreshTokenInvalidSecretException>(data['data']);
+      return deserialize<_ik27atqz.RefreshTokenInvalidSecretException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'RefreshTokenMalformedException') {
-      return deserialize<_i13.RefreshTokenMalformedException>(data['data']);
+      return deserialize<_i20y3j39.RefreshTokenMalformedException>(
+        data['data'],
+      );
     }
     if (dataClassName == 'RefreshTokenNotFoundException') {
-      return deserialize<_i14.RefreshTokenNotFoundException>(data['data']);
+      return deserialize<_in48f3pc.RefreshTokenNotFoundException>(data['data']);
     }
     if (dataClassName == 'TokenPair') {
-      return deserialize<_i15.TokenPair>(data['data']);
+      return deserialize<_i6w0tdii.TokenPair>(data['data']);
     }
     if (dataClassName == 'UserProfile') {
-      return deserialize<_i16.UserProfile>(data['data']);
+      return deserialize<_ichiyqlu.UserProfile>(data['data']);
     }
     if (dataClassName == 'UserProfileData') {
-      return deserialize<_i17.UserProfileData>(data['data']);
+      return deserialize<_isbbac0p.UserProfileData>(data['data']);
     }
     if (dataClassName == 'UserProfileImage') {
-      return deserialize<_i18.UserProfileImage>(data['data']);
+      return deserialize<_iu5nhigv.UserProfileImage>(data['data']);
     }
     if (dataClassName == 'UserProfileModel') {
-      return deserialize<_i19.UserProfileModel>(data['data']);
+      return deserialize<_iw6ug6lb.UserProfileModel>(data['data']);
     }
     if (dataClassName == 'ServerSideSession') {
-      return deserialize<_i20.ServerSideSession>(data['data']);
+      return deserialize<_ioukntxo.ServerSideSession>(data['data']);
     }
     if (dataClassName == 'ServerSideSessionInfo') {
-      return deserialize<_i21.ServerSideSessionInfo>(data['data']);
+      return deserialize<_izgso6n0.ServerSideSessionInfo>(data['data']);
     }
     if (dataClassName.startsWith('serverpod.')) {
       data['className'] = dataClassName.substring(10);
-      return _i2.Protocol().deserializeByClassName(data);
+      return _isp.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
@@ -777,8 +812,8 @@ class Protocol extends _i1.DatabaseSerializationManager {
         'data': object,
       };
       return forProtocol
-          ? _i1.SerializationManager.toEncodableForProtocol(wrapped)
-          : _i1.SerializationManager.toEncodable(wrapped);
+          ? _is.SerializationManager.toEncodableForProtocol(wrapped)
+          : _is.SerializationManager.toEncodable(wrapped);
     }
     return super.dynamicFieldToJson(object, forProtocol: forProtocol);
   }
@@ -812,37 +847,37 @@ class Protocol extends _i1.DatabaseSerializationManager {
       for (final protocol in _hostProtocols) {
         try {
           return protocol.deserializeByClassName(value);
-        } on _i1.DeserializationClassNameNotFoundException catch (_) {}
+        } on _is.DeserializationClassNameNotFoundException catch (_) {}
       }
     }
     return deserializeByClassName(value);
   }
 
   @override
-  _i1.Table? getTableForType(Type t) {
+  _is.Table? getTableForType(Type t) {
     {
-      var table = _i2.Protocol().getTableForType(t);
+      var table = _isp.Protocol().getTableForType(t);
       if (table != null) {
         return table;
       }
     }
     switch (t) {
-      case _i3.AuthUser:
-        return _i3.AuthUser.t;
-      case _i10.RefreshToken:
-        return _i10.RefreshToken.t;
-      case _i16.UserProfile:
-        return _i16.UserProfile.t;
-      case _i18.UserProfileImage:
-        return _i18.UserProfileImage.t;
-      case _i20.ServerSideSession:
-        return _i20.ServerSideSession.t;
+      case _iwlenhk6.AuthUser:
+        return _iwlenhk6.AuthUser.t;
+      case _i3ujynqb.RefreshToken:
+        return _i3ujynqb.RefreshToken.t;
+      case _ichiyqlu.UserProfile:
+        return _ichiyqlu.UserProfile.t;
+      case _iu5nhigv.UserProfileImage:
+        return _iu5nhigv.UserProfileImage.t;
+      case _ioukntxo.ServerSideSession:
+        return _ioukntxo.ServerSideSession.t;
     }
     return null;
   }
 
   @override
-  List<_i2.TableDefinition> getTargetTableDefinitions() =>
+  List<_isp.TableDefinition> getTargetTableDefinitions() =>
       targetTableDefinitions;
 
   @override
@@ -858,7 +893,7 @@ class Protocol extends _i1.DatabaseSerializationManager {
       return null;
     }
     try {
-      return _i2.Protocol().mapRecordToJson(record);
+      return _isp.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

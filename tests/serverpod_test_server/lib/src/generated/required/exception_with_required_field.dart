@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class ExceptionWithRequiredField
     implements
-        _i1.SerializableException,
-        _i1.SerializableModel,
-        _i1.ProtocolSerialization {
+        _is.SerializableException,
+        _is.SerializableModel,
+        _is.ProtocolSerialization {
   ExceptionWithRequiredField._({
     required this.name,
     required this.email,
@@ -47,7 +47,7 @@ abstract class ExceptionWithRequiredField
 
   /// Returns a shallow copy of this [ExceptionWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ExceptionWithRequiredField copyWith({
     String? name,
     String? email,
@@ -94,7 +94,7 @@ class _ExceptionWithRequiredFieldImpl extends ExceptionWithRequiredField {
 
   /// Returns a shallow copy of this [ExceptionWithRequiredField]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ExceptionWithRequiredField copyWith({
     String? name,

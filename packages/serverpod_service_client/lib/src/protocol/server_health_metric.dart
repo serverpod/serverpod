@@ -10,13 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Represents a snapshot of a specific health metric. An entry is written every
 /// minute for each server. All health data can be accessed through Serverpod
 /// Insights.
 abstract class ServerHealthMetric
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ServerHealthMetric._({
     this.id,
     required this.name,
@@ -42,10 +42,12 @@ abstract class ServerHealthMetric
       id: jsonSerialization['id'] as int?,
       name: jsonSerialization['name'] as String,
       serverId: jsonSerialization['serverId'] as String,
-      timestamp: _i1.DateTimeJsonExtension.fromJson(
+      timestamp: _isc.DateTimeJsonExtension.fromJson(
         jsonSerialization['timestamp'],
       ),
-      isHealthy: _i1.BoolJsonExtension.fromJson(jsonSerialization['isHealthy']),
+      isHealthy: _isc.BoolJsonExtension.fromJson(
+        jsonSerialization['isHealthy'],
+      ),
       value: (jsonSerialization['value'] as num).toDouble(),
       granularity: jsonSerialization['granularity'] as int,
     );
@@ -77,7 +79,7 @@ abstract class ServerHealthMetric
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ServerHealthMetric copyWith({
     int? id,
     String? name,
@@ -117,7 +119,7 @@ abstract class ServerHealthMetric
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -144,7 +146,7 @@ class _ServerHealthMetricImpl extends ServerHealthMetric {
 
   /// Returns a shallow copy of this [ServerHealthMetric]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ServerHealthMetric copyWith({
     Object? id = _Undefined,

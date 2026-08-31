@@ -11,13 +11,14 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_test_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_test_server/src/generated/protocol.dart'
+    as _ik2mg1i3;
 
 abstract class SessionMetadata
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   SessionMetadata._({
     this.id,
     required this.serverSideSessionId,
@@ -30,8 +31,8 @@ abstract class SessionMetadata
 
   factory SessionMetadata({
     int? id,
-    required _i1.UuidValue serverSideSessionId,
-    _i2.ServerSideSession? serverSideSession,
+    required _is.UuidValue serverSideSessionId,
+    _iacs.ServerSideSession? serverSideSession,
     required String deviceName,
     String? ipAddress,
     String? userAgent,
@@ -41,12 +42,12 @@ abstract class SessionMetadata
   factory SessionMetadata.fromJson(Map<String, dynamic> jsonSerialization) {
     return SessionMetadata(
       id: jsonSerialization['id'] as int?,
-      serverSideSessionId: _i1.UuidValueJsonExtension.fromJson(
+      serverSideSessionId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['serverSideSessionId'],
       ),
       serverSideSession: jsonSerialization['serverSideSession'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.ServerSideSession>(
+          : _ik2mg1i3.Protocol().deserialize<_iacs.ServerSideSession>(
               jsonSerialization['serverSideSession'],
             ),
       deviceName: jsonSerialization['deviceName'] as String,
@@ -63,10 +64,10 @@ abstract class SessionMetadata
   @override
   int? id;
 
-  _i1.UuidValue serverSideSessionId;
+  _is.UuidValue serverSideSessionId;
 
   /// The [ServerSideSession] this metadata belongs to
-  _i2.ServerSideSession? serverSideSession;
+  _iacs.ServerSideSession? serverSideSession;
 
   /// Device information for the session
   String deviceName;
@@ -81,15 +82,15 @@ abstract class SessionMetadata
   String? metadata;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [SessionMetadata]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   SessionMetadata copyWith({
     int? id,
-    _i1.UuidValue? serverSideSessionId,
-    _i2.ServerSideSession? serverSideSession,
+    _is.UuidValue? serverSideSessionId,
+    _iacs.ServerSideSession? serverSideSession,
     String? deviceName,
     String? ipAddress,
     String? userAgent,
@@ -116,17 +117,17 @@ abstract class SessionMetadata
   }
 
   static SessionMetadataInclude include({
-    _i2.ServerSideSessionInclude? serverSideSession,
+    _iacs.ServerSideSessionInclude? serverSideSession,
   }) {
     return SessionMetadataInclude._(serverSideSession: serverSideSession);
   }
 
   static SessionMetadataIncludeList includeList({
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
     SessionMetadataInclude? include,
   }) {
     return SessionMetadataIncludeList._(
@@ -141,7 +142,7 @@ abstract class SessionMetadata
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -150,8 +151,8 @@ class _Undefined {}
 class _SessionMetadataImpl extends SessionMetadata {
   _SessionMetadataImpl({
     int? id,
-    required _i1.UuidValue serverSideSessionId,
-    _i2.ServerSideSession? serverSideSession,
+    required _is.UuidValue serverSideSessionId,
+    _iacs.ServerSideSession? serverSideSession,
     required String deviceName,
     String? ipAddress,
     String? userAgent,
@@ -168,11 +169,11 @@ class _SessionMetadataImpl extends SessionMetadata {
 
   /// Returns a shallow copy of this [SessionMetadata]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   SessionMetadata copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? serverSideSessionId,
+    _is.UuidValue? serverSideSessionId,
     Object? serverSideSession = _Undefined,
     String? deviceName,
     Object? ipAddress = _Undefined,
@@ -182,7 +183,7 @@ class _SessionMetadataImpl extends SessionMetadata {
     return SessionMetadata(
       id: id is int? ? id : this.id,
       serverSideSessionId: serverSideSessionId ?? this.serverSideSessionId,
-      serverSideSession: serverSideSession is _i2.ServerSideSession?
+      serverSideSession: serverSideSession is _iacs.ServerSideSession?
           ? serverSideSession
           : this.serverSideSession?.copyWith(),
       deviceName: deviceName ?? this.deviceName,
@@ -193,58 +194,58 @@ class _SessionMetadataImpl extends SessionMetadata {
   }
 }
 
-class SessionMetadataUpdateTable extends _i1.UpdateTable<SessionMetadataTable> {
+class SessionMetadataUpdateTable extends _is.UpdateTable<SessionMetadataTable> {
   SessionMetadataUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> serverSideSessionId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> serverSideSessionId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.serverSideSessionId,
     value,
   );
 
-  _i1.ColumnValue<String, String> deviceName(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> deviceName(String value) => _is.ColumnValue(
     table.deviceName,
     value,
   );
 
-  _i1.ColumnValue<String, String> ipAddress(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> ipAddress(String? value) => _is.ColumnValue(
     table.ipAddress,
     value,
   );
 
-  _i1.ColumnValue<String, String> userAgent(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> userAgent(String? value) => _is.ColumnValue(
     table.userAgent,
     value,
   );
 
-  _i1.ColumnValue<String, String> metadata(String? value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> metadata(String? value) => _is.ColumnValue(
     table.metadata,
     value,
   );
 }
 
-class SessionMetadataTable extends _i1.Table<int?> {
+class SessionMetadataTable extends _is.Table<int?> {
   SessionMetadataTable({super.tableRelation})
     : super(tableName: 'session_metadata') {
     updateTable = SessionMetadataUpdateTable(this);
-    serverSideSessionId = _i1.ColumnUuid(
+    serverSideSessionId = _is.ColumnUuid(
       'serverSideSessionId',
       this,
     );
-    deviceName = _i1.ColumnString(
+    deviceName = _is.ColumnString(
       'deviceName',
       this,
     );
-    ipAddress = _i1.ColumnString(
+    ipAddress = _is.ColumnString(
       'ipAddress',
       this,
     );
-    userAgent = _i1.ColumnString(
+    userAgent = _is.ColumnString(
       'userAgent',
       this,
     );
-    metadata = _i1.ColumnString(
+    metadata = _is.ColumnString(
       'metadata',
       this,
     );
@@ -252,38 +253,38 @@ class SessionMetadataTable extends _i1.Table<int?> {
 
   late final SessionMetadataUpdateTable updateTable;
 
-  late final _i1.ColumnUuid serverSideSessionId;
+  late final _is.ColumnUuid serverSideSessionId;
 
   /// The [ServerSideSession] this metadata belongs to
-  _i2.ServerSideSessionTable? _serverSideSession;
+  _iacs.ServerSideSessionTable? _serverSideSession;
 
   /// Device information for the session
-  late final _i1.ColumnString deviceName;
+  late final _is.ColumnString deviceName;
 
   /// IP address from which the session was created
-  late final _i1.ColumnString ipAddress;
+  late final _is.ColumnString ipAddress;
 
   /// User agent string
-  late final _i1.ColumnString userAgent;
+  late final _is.ColumnString userAgent;
 
   /// Additional metadata stored as JSON
-  late final _i1.ColumnString metadata;
+  late final _is.ColumnString metadata;
 
-  _i2.ServerSideSessionTable get serverSideSession {
+  _iacs.ServerSideSessionTable get serverSideSession {
     if (_serverSideSession != null) return _serverSideSession!;
-    _serverSideSession = _i1.createRelationTable(
+    _serverSideSession = _is.createRelationTable(
       relationFieldName: 'serverSideSession',
       field: SessionMetadata.t.serverSideSessionId,
-      foreignField: _i2.ServerSideSession.t.id,
+      foreignField: _iacs.ServerSideSession.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.ServerSideSessionTable(tableRelation: foreignTableRelation),
+          _iacs.ServerSideSessionTable(tableRelation: foreignTableRelation),
     );
     return _serverSideSession!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     serverSideSessionId,
     deviceName,
@@ -293,7 +294,7 @@ class SessionMetadataTable extends _i1.Table<int?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'serverSideSession') {
       return serverSideSession;
     }
@@ -301,25 +302,27 @@ class SessionMetadataTable extends _i1.Table<int?> {
   }
 }
 
-class SessionMetadataInclude extends _i1.IncludeObject {
-  SessionMetadataInclude._({_i2.ServerSideSessionInclude? serverSideSession}) {
+class SessionMetadataInclude extends _is.IncludeObject {
+  SessionMetadataInclude._({
+    _iacs.ServerSideSessionInclude? serverSideSession,
+  }) {
     _serverSideSession = serverSideSession;
   }
 
-  _i2.ServerSideSessionInclude? _serverSideSession;
+  _iacs.ServerSideSessionInclude? _serverSideSession;
 
   @override
-  Map<String, _i1.Include?> get includes => {
+  Map<String, _is.Include?> get includes => {
     'serverSideSession': _serverSideSession,
   };
 
   @override
-  _i1.Table<int?> get table => SessionMetadata.t;
+  _is.Table<int?> get table => SessionMetadata.t;
 }
 
-class SessionMetadataIncludeList extends _i1.IncludeList {
+class SessionMetadataIncludeList extends _is.IncludeList {
   SessionMetadataIncludeList._({
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -330,10 +333,10 @@ class SessionMetadataIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => SessionMetadata.t;
+  _is.Table<int?> get table => SessionMetadata.t;
 }
 
 class SessionMetadataRepository {
@@ -364,16 +367,16 @@ class SessionMetadataRepository {
   /// );
   /// ```
   Future<List<SessionMetadata>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     SessionMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<SessionMetadata>(
       where: where?.call(SessionMetadata.t),
@@ -406,15 +409,15 @@ class SessionMetadataRepository {
   /// );
   /// ```
   Future<SessionMetadata?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? offset,
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     SessionMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<SessionMetadata>(
       where: where?.call(SessionMetadata.t),
@@ -430,12 +433,12 @@ class SessionMetadataRepository {
 
   /// Finds a single [SessionMetadata] by its [id] or null if no such row exists.
   Future<SessionMetadata?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     SessionMetadataInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<SessionMetadata>(
       id,
@@ -461,9 +464,9 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionMetadata> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -479,9 +482,9 @@ class SessionMetadataRepository {
   ///
   /// The returned [SessionMetadata] will have its `id` field set.
   Future<SessionMetadata> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionMetadata row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<SessionMetadata>(
       row,
@@ -510,12 +513,12 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionMetadata> rows, {
-    required _i1.ColumnSelections<SessionMetadataTable> conflictColumns,
-    _i1.ColumnSelections<SessionMetadataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SessionMetadataTable> conflictColumns,
+    _is.ColumnSelections<SessionMetadataTable>? updateColumns,
+    _is.WhereExpressionBuilder<SessionMetadataTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<SessionMetadata>(
@@ -542,12 +545,12 @@ class SessionMetadataRepository {
   ///
   /// The returned [SessionMetadata] will have its `id` field set.
   Future<SessionMetadata?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionMetadata row, {
-    required _i1.ColumnSelections<SessionMetadataTable> conflictColumns,
-    _i1.ColumnSelections<SessionMetadataTable>? updateColumns,
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<SessionMetadataTable> conflictColumns,
+    _is.ColumnSelections<SessionMetadataTable>? updateColumns,
+    _is.WhereExpressionBuilder<SessionMetadataTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<SessionMetadata>(
       row,
@@ -568,10 +571,10 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionMetadata> rows, {
-    _i1.ColumnSelections<SessionMetadataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SessionMetadataTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<SessionMetadata>(
@@ -586,10 +589,10 @@ class SessionMetadataRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<SessionMetadata> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionMetadata row, {
-    _i1.ColumnSelections<SessionMetadataTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<SessionMetadataTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<SessionMetadata>(
       row,
@@ -601,11 +604,11 @@ class SessionMetadataRepository {
   /// Updates a single [SessionMetadata] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<SessionMetadata?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<SessionMetadataUpdateTable>
+    required _is.ColumnValueListBuilder<SessionMetadataUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<SessionMetadata>(
       id,
@@ -621,15 +624,15 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<SessionMetadataUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<SessionMetadataUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
+    required _is.WhereExpressionBuilder<SessionMetadataTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<SessionMetadata>(
@@ -656,11 +659,11 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<SessionMetadata> rows, {
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<SessionMetadata>(
@@ -674,9 +677,9 @@ class SessionMetadataRepository {
 
   /// Deletes a single [SessionMetadata].
   Future<SessionMetadata> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionMetadata row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<SessionMetadata>(
       row,
@@ -693,11 +696,11 @@ class SessionMetadataRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<SessionMetadata>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
-    _i1.OrderByBuilder<SessionMetadataTable>? orderBy,
-    _i1.OrderByListBuilder<SessionMetadataTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SessionMetadataTable> where,
+    _is.OrderByBuilder<SessionMetadataTable>? orderBy,
+    _is.OrderByListBuilder<SessionMetadataTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<SessionMetadata>(
@@ -712,10 +715,10 @@ class SessionMetadataRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<SessionMetadataTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<SessionMetadataTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<SessionMetadata>(
       where: where?.call(SessionMetadata.t),
@@ -726,11 +729,11 @@ class SessionMetadataRepository {
 
   /// Acquires row-level locks on [SessionMetadata] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<SessionMetadataTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<SessionMetadataTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<SessionMetadata>(
       where: where(SessionMetadata.t),
@@ -747,10 +750,10 @@ class SessionMetadataAttachRowRepository {
   /// Creates a relation between the given [SessionMetadata] and [ServerSideSession]
   /// by setting the [SessionMetadata]'s foreign key `serverSideSessionId` to refer to the [ServerSideSession].
   Future<void> serverSideSession(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     SessionMetadata sessionMetadata,
-    _i2.ServerSideSession serverSideSession, {
-    _i1.Transaction? transaction,
+    _iacs.ServerSideSession serverSideSession, {
+    _is.Transaction? transaction,
   }) async {
     if (sessionMetadata.id == null) {
       throw ArgumentError.notNull('sessionMetadata.id');

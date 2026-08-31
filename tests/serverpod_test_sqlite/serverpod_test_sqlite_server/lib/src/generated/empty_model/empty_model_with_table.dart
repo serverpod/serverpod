@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class EmptyModelWithTable
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   EmptyModelWithTable._({this.id});
 
   factory EmptyModelWithTable({int? id}) = _EmptyModelWithTableImpl;
@@ -30,11 +30,11 @@ abstract class EmptyModelWithTable
   int? id;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [EmptyModelWithTable]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   EmptyModelWithTable copyWith({int? id});
   @override
   Map<String, dynamic> toJson() {
@@ -57,11 +57,11 @@ abstract class EmptyModelWithTable
   }
 
   static EmptyModelWithTableIncludeList includeList({
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
     EmptyModelWithTableInclude? include,
   }) {
     return EmptyModelWithTableIncludeList._(
@@ -76,7 +76,7 @@ abstract class EmptyModelWithTable
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -87,7 +87,7 @@ class _EmptyModelWithTableImpl extends EmptyModelWithTable {
 
   /// Returns a shallow copy of this [EmptyModelWithTable]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   EmptyModelWithTable copyWith({Object? id = _Undefined}) {
     return EmptyModelWithTable(id: id is int? ? id : this.id);
@@ -95,11 +95,11 @@ class _EmptyModelWithTableImpl extends EmptyModelWithTable {
 }
 
 class EmptyModelWithTableUpdateTable
-    extends _i1.UpdateTable<EmptyModelWithTableTable> {
+    extends _is.UpdateTable<EmptyModelWithTableTable> {
   EmptyModelWithTableUpdateTable(super.table);
 }
 
-class EmptyModelWithTableTable extends _i1.Table<int?> {
+class EmptyModelWithTableTable extends _is.Table<int?> {
   EmptyModelWithTableTable({super.tableRelation})
     : super(tableName: 'empty_model_with_table') {
     updateTable = EmptyModelWithTableUpdateTable(this);
@@ -108,22 +108,22 @@ class EmptyModelWithTableTable extends _i1.Table<int?> {
   late final EmptyModelWithTableUpdateTable updateTable;
 
   @override
-  List<_i1.Column> get columns => [id];
+  List<_is.Column> get columns => [id];
 }
 
-class EmptyModelWithTableInclude extends _i1.IncludeObject {
+class EmptyModelWithTableInclude extends _is.IncludeObject {
   EmptyModelWithTableInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => EmptyModelWithTable.t;
+  _is.Table<int?> get table => EmptyModelWithTable.t;
 }
 
-class EmptyModelWithTableIncludeList extends _i1.IncludeList {
+class EmptyModelWithTableIncludeList extends _is.IncludeList {
   EmptyModelWithTableIncludeList._({
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -134,10 +134,10 @@ class EmptyModelWithTableIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => EmptyModelWithTable.t;
+  _is.Table<int?> get table => EmptyModelWithTable.t;
 }
 
 class EmptyModelWithTableRepository {
@@ -166,15 +166,15 @@ class EmptyModelWithTableRepository {
   /// );
   /// ```
   Future<List<EmptyModelWithTable>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
@@ -206,14 +206,14 @@ class EmptyModelWithTableRepository {
   /// );
   /// ```
   Future<EmptyModelWithTable?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
@@ -228,11 +228,11 @@ class EmptyModelWithTableRepository {
 
   /// Finds a single [EmptyModelWithTable] by its [id] or null if no such row exists.
   Future<EmptyModelWithTable?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<EmptyModelWithTable>(
       id,
@@ -257,9 +257,9 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -275,9 +275,9 @@ class EmptyModelWithTableRepository {
   ///
   /// The returned [EmptyModelWithTable] will have its `id` field set.
   Future<EmptyModelWithTable> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmptyModelWithTable row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<EmptyModelWithTable>(
       row,
@@ -306,12 +306,12 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
-    required _i1.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
-    _i1.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
+    _is.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<EmptyModelWithTable>(
@@ -338,12 +338,12 @@ class EmptyModelWithTableRepository {
   ///
   /// The returned [EmptyModelWithTable] will have its `id` field set.
   Future<EmptyModelWithTable?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmptyModelWithTable row, {
-    required _i1.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
-    _i1.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<EmptyModelWithTableTable> conflictColumns,
+    _is.ColumnSelections<EmptyModelWithTableTable>? updateColumns,
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<EmptyModelWithTable>(
       row,
@@ -364,10 +364,10 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
-    _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmptyModelWithTableTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<EmptyModelWithTable>(
@@ -382,10 +382,10 @@ class EmptyModelWithTableRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<EmptyModelWithTable> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmptyModelWithTable row, {
-    _i1.ColumnSelections<EmptyModelWithTableTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<EmptyModelWithTableTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<EmptyModelWithTable>(
       row,
@@ -397,11 +397,11 @@ class EmptyModelWithTableRepository {
   /// Updates a single [EmptyModelWithTable] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<EmptyModelWithTable?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
+    required _is.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<EmptyModelWithTable>(
       id,
@@ -417,15 +417,15 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<EmptyModelWithTableUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    required _is.WhereExpressionBuilder<EmptyModelWithTableTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<EmptyModelWithTable>(
@@ -452,11 +452,11 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<EmptyModelWithTable> rows, {
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<EmptyModelWithTable>(
@@ -470,9 +470,9 @@ class EmptyModelWithTableRepository {
 
   /// Deletes a single [EmptyModelWithTable].
   Future<EmptyModelWithTable> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     EmptyModelWithTable row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<EmptyModelWithTable>(
       row,
@@ -489,11 +489,11 @@ class EmptyModelWithTableRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<EmptyModelWithTable>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
-    _i1.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
-    _i1.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    _is.OrderByBuilder<EmptyModelWithTableTable>? orderBy,
+    _is.OrderByListBuilder<EmptyModelWithTableTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<EmptyModelWithTable>(
@@ -508,10 +508,10 @@ class EmptyModelWithTableRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<EmptyModelWithTableTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<EmptyModelWithTable>(
       where: where?.call(EmptyModelWithTable.t),
@@ -522,11 +522,11 @@ class EmptyModelWithTableRepository {
 
   /// Acquires row-level locks on [EmptyModelWithTable] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<EmptyModelWithTableTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<EmptyModelWithTableTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<EmptyModelWithTable>(
       where: where(EmptyModelWithTable.t),

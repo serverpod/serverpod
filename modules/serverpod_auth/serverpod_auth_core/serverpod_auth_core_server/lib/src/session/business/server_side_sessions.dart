@@ -75,17 +75,36 @@ class ServerSideSessions {
       return null;
     }
 
-    if (!_sessionKeyHash.validateSessionKeyHash(
+    final keyHashValidation = _sessionKeyHash.validateSessionKeyHash(
       secret: secret,
       hash: Uint8List.sublistView(serverSideSession.sessionKeyHash),
       salt: Uint8List.sublistView(serverSideSession.sessionKeySalt),
-    )) {
+    );
+
+    if (keyHashValidation == SessionKeyHashValidation.invalid) {
       session.log(
         'Provided `secret` did not result in correct session key hash.',
         level: LogLevel.debug,
       );
 
       return null;
+    }
+
+    if (keyHashValidation == SessionKeyHashValidation.validButOutdated) {
+      // Upgrade-on-verify: the secret is genuine but the stored hash predates
+      // the versioned, salt-in-digest scheme. Re-hash with the existing salt and
+      // persist, so the row validates under the current scheme from now on -
+      // this is what keeps the salt fix from signing existing sessions out.
+      final rehashed = _sessionKeyHash.rehashSessionKeyHash(
+        secret: secret,
+        salt: Uint8List.sublistView(serverSideSession.sessionKeySalt),
+      );
+      serverSideSession = await ServerSideSession.db.updateRow(
+        session,
+        serverSideSession.copyWith(
+          sessionKeyHash: ByteData.sublistView(rehashed),
+        ),
+      );
     }
 
     if (serverSideSession.lastUsedAt.isBefore(
@@ -202,12 +221,14 @@ class ServerSideSessions {
       transaction: transaction,
     );
 
+    final token = buildServerSideSessionToken(
+      secret: secret,
+      serverSideSessionId: serverSideSession.id!,
+    );
+
     return AuthSuccess(
       authStrategy: AuthStrategy.session.name,
-      token: buildServerSideSessionToken(
-        secret: secret,
-        serverSideSessionId: serverSideSession.id!,
-      ),
+      token: token,
       tokenExpiresAt: effectiveExpiresAt,
       authUserId: authUserId,
       scopeNames: scopeNames,

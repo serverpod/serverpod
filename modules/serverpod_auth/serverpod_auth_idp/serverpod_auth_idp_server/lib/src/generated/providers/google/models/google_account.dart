@@ -11,14 +11,15 @@
 // ignore_for_file: dead_code, unnecessary_null_comparison
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart'
-    as _i2;
-import 'package:serverpod_auth_idp_server/src/generated/protocol.dart' as _i3;
+    as _iacs;
+import 'package:serverpod_auth_idp_server/src/generated/protocol.dart'
+    as _i99s0abf;
 
 /// A fully configured Google account to be used for logins.
 abstract class GoogleAccount
-    implements _i1.TableRow<_i1.UuidValue?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<_is.UuidValue?>, _is.ProtocolSerialization {
   GoogleAccount._({
     this.id,
     required this.authUserId,
@@ -29,9 +30,9 @@ abstract class GoogleAccount
   }) : created = created ?? DateTime.now();
 
   factory GoogleAccount({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? created,
     required String email,
     required String userIdentifier,
@@ -41,18 +42,18 @@ abstract class GoogleAccount
     return GoogleAccount(
       id: jsonSerialization['id'] == null
           ? null
-          : _i1.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
-      authUserId: _i1.UuidValueJsonExtension.fromJson(
+          : _is.UuidValueJsonExtension.fromJson(jsonSerialization['id']),
+      authUserId: _is.UuidValueJsonExtension.fromJson(
         jsonSerialization['authUserId'],
       ),
       authUser: jsonSerialization['authUser'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.AuthUser>(
+          : _i99s0abf.Protocol().deserialize<_iacs.AuthUser>(
               jsonSerialization['authUser'],
             ),
       created: jsonSerialization['created'] == null
           ? null
-          : _i1.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
+          : _is.DateTimeJsonExtension.fromJson(jsonSerialization['created']),
       email: jsonSerialization['email'] as String,
       userIdentifier: jsonSerialization['userIdentifier'] as String,
     );
@@ -63,12 +64,12 @@ abstract class GoogleAccount
   static const db = GoogleAccountRepository._();
 
   @override
-  _i1.UuidValue? id;
+  _is.UuidValue? id;
 
-  _i1.UuidValue authUserId;
+  _is.UuidValue authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUser? authUser;
+  _iacs.AuthUser? authUser;
 
   /// The time when this authentication was created.
   DateTime created;
@@ -85,15 +86,15 @@ abstract class GoogleAccount
   String userIdentifier;
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => t;
+  _is.Table<_is.UuidValue?> get table => t;
 
   /// Returns a shallow copy of this [GoogleAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   GoogleAccount copyWith({
-    _i1.UuidValue? id,
-    _i1.UuidValue? authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    _is.UuidValue? authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? created,
     String? email,
     String? userIdentifier,
@@ -116,16 +117,16 @@ abstract class GoogleAccount
     return {};
   }
 
-  static GoogleAccountInclude include({_i2.AuthUserInclude? authUser}) {
+  static GoogleAccountInclude include({_iacs.AuthUserInclude? authUser}) {
     return GoogleAccountInclude._(authUser: authUser);
   }
 
   static GoogleAccountIncludeList includeList({
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? where,
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
     GoogleAccountInclude? include,
   }) {
     return GoogleAccountIncludeList._(
@@ -140,7 +141,7 @@ abstract class GoogleAccount
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -148,9 +149,9 @@ class _Undefined {}
 
 class _GoogleAccountImpl extends GoogleAccount {
   _GoogleAccountImpl({
-    _i1.UuidValue? id,
-    required _i1.UuidValue authUserId,
-    _i2.AuthUser? authUser,
+    _is.UuidValue? id,
+    required _is.UuidValue authUserId,
+    _iacs.AuthUser? authUser,
     DateTime? created,
     required String email,
     required String userIdentifier,
@@ -165,20 +166,20 @@ class _GoogleAccountImpl extends GoogleAccount {
 
   /// Returns a shallow copy of this [GoogleAccount]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   GoogleAccount copyWith({
     Object? id = _Undefined,
-    _i1.UuidValue? authUserId,
+    _is.UuidValue? authUserId,
     Object? authUser = _Undefined,
     DateTime? created,
     String? email,
     String? userIdentifier,
   }) {
     return GoogleAccount(
-      id: id is _i1.UuidValue? ? id : this.id,
+      id: id is _is.UuidValue? ? id : this.id,
       authUserId: authUserId ?? this.authUserId,
-      authUser: authUser is _i2.AuthUser?
+      authUser: authUser is _iacs.AuthUser?
           ? authUser
           : this.authUser?.copyWith(),
       created: created ?? this.created,
@@ -188,51 +189,51 @@ class _GoogleAccountImpl extends GoogleAccount {
   }
 }
 
-class GoogleAccountUpdateTable extends _i1.UpdateTable<GoogleAccountTable> {
+class GoogleAccountUpdateTable extends _is.UpdateTable<GoogleAccountTable> {
   GoogleAccountUpdateTable(super.table);
 
-  _i1.ColumnValue<_i1.UuidValue, _i1.UuidValue> authUserId(
-    _i1.UuidValue value,
-  ) => _i1.ColumnValue(
+  _is.ColumnValue<_is.UuidValue, _is.UuidValue> authUserId(
+    _is.UuidValue value,
+  ) => _is.ColumnValue(
     table.authUserId,
     value,
   );
 
-  _i1.ColumnValue<DateTime, DateTime> created(DateTime value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<DateTime, DateTime> created(DateTime value) =>
+      _is.ColumnValue(
         table.created,
         value,
       );
 
-  _i1.ColumnValue<String, String> email(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> email(String value) => _is.ColumnValue(
     table.email,
     value,
   );
 
-  _i1.ColumnValue<String, String> userIdentifier(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> userIdentifier(String value) =>
+      _is.ColumnValue(
         table.userIdentifier,
         value,
       );
 }
 
-class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
+class GoogleAccountTable extends _is.Table<_is.UuidValue?> {
   GoogleAccountTable({super.tableRelation})
     : super(tableName: 'serverpod_auth_idp_google_account') {
     updateTable = GoogleAccountUpdateTable(this);
-    authUserId = _i1.ColumnUuid(
+    authUserId = _is.ColumnUuid(
       'authUserId',
       this,
     );
-    created = _i1.ColumnDateTime(
+    created = _is.ColumnDateTime(
       'created',
       this,
     );
-    email = _i1.ColumnString(
+    email = _is.ColumnString(
       'email',
       this,
     );
-    userIdentifier = _i1.ColumnString(
+    userIdentifier = _is.ColumnString(
       'userIdentifier',
       this,
     );
@@ -240,13 +241,13 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
 
   late final GoogleAccountUpdateTable updateTable;
 
-  late final _i1.ColumnUuid authUserId;
+  late final _is.ColumnUuid authUserId;
 
   /// The [AuthUser] this profile belongs to
-  _i2.AuthUserTable? _authUser;
+  _iacs.AuthUserTable? _authUser;
 
   /// The time when this authentication was created.
-  late final _i1.ColumnDateTime created;
+  late final _is.ColumnDateTime created;
 
   /// The verified email of the user, as received from Google.
   ///
@@ -254,26 +255,26 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   /// for consolidation look-ups.
   ///
   /// Stored in lower-case.
-  late final _i1.ColumnString email;
+  late final _is.ColumnString email;
 
   /// The user identifier given by Google for this account.
-  late final _i1.ColumnString userIdentifier;
+  late final _is.ColumnString userIdentifier;
 
-  _i2.AuthUserTable get authUser {
+  _iacs.AuthUserTable get authUser {
     if (_authUser != null) return _authUser!;
-    _authUser = _i1.createRelationTable(
+    _authUser = _is.createRelationTable(
       relationFieldName: 'authUser',
       field: GoogleAccount.t.authUserId,
-      foreignField: _i2.AuthUser.t.id,
+      foreignField: _iacs.AuthUser.t.id,
       tableRelation: tableRelation,
       createTable: (foreignTableRelation) =>
-          _i2.AuthUserTable(tableRelation: foreignTableRelation),
+          _iacs.AuthUserTable(tableRelation: foreignTableRelation),
     );
     return _authUser!;
   }
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     authUserId,
     created,
@@ -282,7 +283,7 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   ];
 
   @override
-  _i1.Table? getRelationTable(String relationField) {
+  _is.Table? getRelationTable(String relationField) {
     if (relationField == 'authUser') {
       return authUser;
     }
@@ -290,23 +291,23 @@ class GoogleAccountTable extends _i1.Table<_i1.UuidValue?> {
   }
 }
 
-class GoogleAccountInclude extends _i1.IncludeObject {
-  GoogleAccountInclude._({_i2.AuthUserInclude? authUser}) {
+class GoogleAccountInclude extends _is.IncludeObject {
+  GoogleAccountInclude._({_iacs.AuthUserInclude? authUser}) {
     _authUser = authUser;
   }
 
-  _i2.AuthUserInclude? _authUser;
+  _iacs.AuthUserInclude? _authUser;
 
   @override
-  Map<String, _i1.Include?> get includes => {'authUser': _authUser};
+  Map<String, _is.Include?> get includes => {'authUser': _authUser};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GoogleAccount.t;
+  _is.Table<_is.UuidValue?> get table => GoogleAccount.t;
 }
 
-class GoogleAccountIncludeList extends _i1.IncludeList {
+class GoogleAccountIncludeList extends _is.IncludeList {
   GoogleAccountIncludeList._({
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? where,
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -317,10 +318,10 @@ class GoogleAccountIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<_i1.UuidValue?> get table => GoogleAccount.t;
+  _is.Table<_is.UuidValue?> get table => GoogleAccount.t;
 }
 
 class GoogleAccountRepository {
@@ -351,16 +352,16 @@ class GoogleAccountRepository {
   /// );
   /// ```
   Future<List<GoogleAccount>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
     GoogleAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
@@ -393,15 +394,15 @@ class GoogleAccountRepository {
   /// );
   /// ```
   Future<GoogleAccount?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     int? offset,
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
     GoogleAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
@@ -417,12 +418,12 @@ class GoogleAccountRepository {
 
   /// Finds a single [GoogleAccount] by its [id] or null if no such row exists.
   Future<GoogleAccount?> findById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    _is.Transaction? transaction,
     GoogleAccountInclude? include,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<GoogleAccount>(
       id,
@@ -448,9 +449,9 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleAccount> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -466,9 +467,9 @@ class GoogleAccountRepository {
   ///
   /// The returned [GoogleAccount] will have its `id` field set.
   Future<GoogleAccount> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<GoogleAccount>(
       row,
@@ -497,12 +498,12 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleAccount> rows, {
-    required _i1.ColumnSelections<GoogleAccountTable> conflictColumns,
-    _i1.ColumnSelections<GoogleAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GoogleAccountTable> conflictColumns,
+    _is.ColumnSelections<GoogleAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<GoogleAccountTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<GoogleAccount>(
@@ -529,12 +530,12 @@ class GoogleAccountRepository {
   ///
   /// The returned [GoogleAccount] will have its `id` field set.
   Future<GoogleAccount?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleAccount row, {
-    required _i1.ColumnSelections<GoogleAccountTable> conflictColumns,
-    _i1.ColumnSelections<GoogleAccountTable>? updateColumns,
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<GoogleAccountTable> conflictColumns,
+    _is.ColumnSelections<GoogleAccountTable>? updateColumns,
+    _is.WhereExpressionBuilder<GoogleAccountTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<GoogleAccount>(
       row,
@@ -555,10 +556,10 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleAccount> rows, {
-    _i1.ColumnSelections<GoogleAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GoogleAccountTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<GoogleAccount>(
@@ -573,10 +574,10 @@ class GoogleAccountRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<GoogleAccount> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleAccount row, {
-    _i1.ColumnSelections<GoogleAccountTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<GoogleAccountTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<GoogleAccount>(
       row,
@@ -588,10 +589,10 @@ class GoogleAccountRepository {
   /// Updates a single [GoogleAccount] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<GoogleAccount?> updateById(
-    _i1.DatabaseSession session,
-    _i1.UuidValue id, {
-    required _i1.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session,
+    _is.UuidValue id, {
+    required _is.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<GoogleAccount>(
       id,
@@ -607,14 +608,14 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
-    required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<GoogleAccountUpdateTable> columnValues,
+    required _is.WhereExpressionBuilder<GoogleAccountTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<GoogleAccount>(
@@ -641,11 +642,11 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<GoogleAccount> rows, {
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<GoogleAccount>(
@@ -659,9 +660,9 @@ class GoogleAccountRepository {
 
   /// Deletes a single [GoogleAccount].
   Future<GoogleAccount> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleAccount row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<GoogleAccount>(
       row,
@@ -678,11 +679,11 @@ class GoogleAccountRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<GoogleAccount>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
-    _i1.OrderByBuilder<GoogleAccountTable>? orderBy,
-    _i1.OrderByListBuilder<GoogleAccountTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GoogleAccountTable> where,
+    _is.OrderByBuilder<GoogleAccountTable>? orderBy,
+    _is.OrderByListBuilder<GoogleAccountTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<GoogleAccount>(
@@ -697,10 +698,10 @@ class GoogleAccountRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<GoogleAccountTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<GoogleAccountTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<GoogleAccount>(
       where: where?.call(GoogleAccount.t),
@@ -711,11 +712,11 @@ class GoogleAccountRepository {
 
   /// Acquires row-level locks on [GoogleAccount] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<GoogleAccountTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<GoogleAccountTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<GoogleAccount>(
       where: where(GoogleAccount.t),
@@ -732,10 +733,10 @@ class GoogleAccountAttachRowRepository {
   /// Creates a relation between the given [GoogleAccount] and [AuthUser]
   /// by setting the [GoogleAccount]'s foreign key `authUserId` to refer to the [AuthUser].
   Future<void> authUser(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     GoogleAccount googleAccount,
-    _i2.AuthUser authUser, {
-    _i1.Transaction? transaction,
+    _iacs.AuthUser authUser, {
+    _is.Transaction? transaction,
   }) async {
     if (googleAccount.id == null) {
       throw ArgumentError.notNull('googleAccount.id');

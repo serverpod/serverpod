@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
+import 'package:serverpod/serverpod.dart' as _is;
 
 abstract class StringDefaultModel
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   StringDefaultModel._({
     this.id,
     String? stringDefaultModel,
@@ -50,11 +50,11 @@ abstract class StringDefaultModel
   String stringDefaultModelNull;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   StringDefaultModel copyWith({
     int? id,
     String? stringDefaultModel,
@@ -85,11 +85,11 @@ abstract class StringDefaultModel
   }
 
   static StringDefaultModelIncludeList includeList({
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
     StringDefaultModelInclude? include,
   }) {
     return StringDefaultModelIncludeList._(
@@ -104,7 +104,7 @@ abstract class StringDefaultModel
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -123,7 +123,7 @@ class _StringDefaultModelImpl extends StringDefaultModel {
 
   /// Returns a shallow copy of this [StringDefaultModel]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   StringDefaultModel copyWith({
     Object? id = _Undefined,
@@ -140,31 +140,31 @@ class _StringDefaultModelImpl extends StringDefaultModel {
 }
 
 class StringDefaultModelUpdateTable
-    extends _i1.UpdateTable<StringDefaultModelTable> {
+    extends _is.UpdateTable<StringDefaultModelTable> {
   StringDefaultModelUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> stringDefaultModel(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> stringDefaultModel(String value) =>
+      _is.ColumnValue(
         table.stringDefaultModel,
         value,
       );
 
-  _i1.ColumnValue<String, String> stringDefaultModelNull(String value) =>
-      _i1.ColumnValue(
+  _is.ColumnValue<String, String> stringDefaultModelNull(String value) =>
+      _is.ColumnValue(
         table.stringDefaultModelNull,
         value,
       );
 }
 
-class StringDefaultModelTable extends _i1.Table<int?> {
+class StringDefaultModelTable extends _is.Table<int?> {
   StringDefaultModelTable({super.tableRelation})
     : super(tableName: 'string_default_model') {
     updateTable = StringDefaultModelUpdateTable(this);
-    stringDefaultModel = _i1.ColumnString(
+    stringDefaultModel = _is.ColumnString(
       'stringDefaultModel',
       this,
     );
-    stringDefaultModelNull = _i1.ColumnString(
+    stringDefaultModelNull = _is.ColumnString(
       'stringDefaultModelNull',
       this,
     );
@@ -172,31 +172,31 @@ class StringDefaultModelTable extends _i1.Table<int?> {
 
   late final StringDefaultModelUpdateTable updateTable;
 
-  late final _i1.ColumnString stringDefaultModel;
+  late final _is.ColumnString stringDefaultModel;
 
-  late final _i1.ColumnString stringDefaultModelNull;
+  late final _is.ColumnString stringDefaultModelNull;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     stringDefaultModel,
     stringDefaultModelNull,
   ];
 }
 
-class StringDefaultModelInclude extends _i1.IncludeObject {
+class StringDefaultModelInclude extends _is.IncludeObject {
   StringDefaultModelInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => StringDefaultModel.t;
+  _is.Table<int?> get table => StringDefaultModel.t;
 }
 
-class StringDefaultModelIncludeList extends _i1.IncludeList {
+class StringDefaultModelIncludeList extends _is.IncludeList {
   StringDefaultModelIncludeList._({
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -207,10 +207,10 @@ class StringDefaultModelIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => StringDefaultModel.t;
+  _is.Table<int?> get table => StringDefaultModel.t;
 }
 
 class StringDefaultModelRepository {
@@ -239,15 +239,15 @@ class StringDefaultModelRepository {
   /// );
   /// ```
   Future<List<StringDefaultModel>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
@@ -279,14 +279,14 @@ class StringDefaultModelRepository {
   /// );
   /// ```
   Future<StringDefaultModel?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
@@ -301,11 +301,11 @@ class StringDefaultModelRepository {
 
   /// Finds a single [StringDefaultModel] by its [id] or null if no such row exists.
   Future<StringDefaultModel?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<StringDefaultModel>(
       id,
@@ -330,9 +330,9 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultModel> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -348,9 +348,9 @@ class StringDefaultModelRepository {
   ///
   /// The returned [StringDefaultModel] will have its `id` field set.
   Future<StringDefaultModel> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<StringDefaultModel>(
       row,
@@ -379,12 +379,12 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultModel> rows, {
-    required _i1.ColumnSelections<StringDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<StringDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<StringDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<StringDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<StringDefaultModel>(
@@ -411,12 +411,12 @@ class StringDefaultModelRepository {
   ///
   /// The returned [StringDefaultModel] will have its `id` field set.
   Future<StringDefaultModel?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultModel row, {
-    required _i1.ColumnSelections<StringDefaultModelTable> conflictColumns,
-    _i1.ColumnSelections<StringDefaultModelTable>? updateColumns,
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<StringDefaultModelTable> conflictColumns,
+    _is.ColumnSelections<StringDefaultModelTable>? updateColumns,
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<StringDefaultModel>(
       row,
@@ -437,10 +437,10 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultModel> rows, {
-    _i1.ColumnSelections<StringDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<StringDefaultModelTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<StringDefaultModel>(
@@ -455,10 +455,10 @@ class StringDefaultModelRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<StringDefaultModel> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultModel row, {
-    _i1.ColumnSelections<StringDefaultModelTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<StringDefaultModelTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<StringDefaultModel>(
       row,
@@ -470,11 +470,11 @@ class StringDefaultModelRepository {
   /// Updates a single [StringDefaultModel] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<StringDefaultModel?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
+    required _is.ColumnValueListBuilder<StringDefaultModelUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<StringDefaultModel>(
       id,
@@ -490,15 +490,15 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<StringDefaultModelUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<StringDefaultModelUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
+    required _is.WhereExpressionBuilder<StringDefaultModelTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<StringDefaultModel>(
@@ -525,11 +525,11 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<StringDefaultModel> rows, {
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<StringDefaultModel>(
@@ -543,9 +543,9 @@ class StringDefaultModelRepository {
 
   /// Deletes a single [StringDefaultModel].
   Future<StringDefaultModel> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     StringDefaultModel row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<StringDefaultModel>(
       row,
@@ -562,11 +562,11 @@ class StringDefaultModelRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<StringDefaultModel>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
-    _i1.OrderByBuilder<StringDefaultModelTable>? orderBy,
-    _i1.OrderByListBuilder<StringDefaultModelTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<StringDefaultModelTable> where,
+    _is.OrderByBuilder<StringDefaultModelTable>? orderBy,
+    _is.OrderByListBuilder<StringDefaultModelTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<StringDefaultModel>(
@@ -581,10 +581,10 @@ class StringDefaultModelRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<StringDefaultModelTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<StringDefaultModelTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<StringDefaultModel>(
       where: where?.call(StringDefaultModel.t),
@@ -595,11 +595,11 @@ class StringDefaultModelRepository {
 
   /// Acquires row-level locks on [StringDefaultModel] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<StringDefaultModelTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<StringDefaultModelTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<StringDefaultModel>(
       where: where(StringDefaultModel.t),

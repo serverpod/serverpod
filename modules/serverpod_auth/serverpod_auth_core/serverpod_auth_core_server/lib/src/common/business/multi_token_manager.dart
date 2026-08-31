@@ -11,7 +11,7 @@ import '../integrations/token_manager.dart';
 /// The [primaryTokenManager] is used for issuing new tokens, while all managers in
 /// [_allTokenManagers] (which includes both the primary and additional managers) are used for
 /// management operations like listing and revoking tokens.
-class MultiTokenManager implements TokenManager {
+class MultiTokenManager extends TokenManager {
   /// The primary token manager used for issuing new tokens.
   final TokenManager primaryTokenManager;
 
@@ -34,14 +34,14 @@ class MultiTokenManager implements TokenManager {
   }
 
   @override
-  Future<AuthSuccess> issueToken(
+  Future<AuthSuccess> createToken(
     final Session session, {
     required final UuidValue authUserId,
     required final String method,
     final Set<Scope>? scopes,
     final Transaction? transaction,
   }) {
-    return primaryTokenManager.issueToken(
+    return primaryTokenManager.createToken(
       session,
       authUserId: authUserId,
       method: method,
@@ -49,6 +49,14 @@ class MultiTokenManager implements TokenManager {
       transaction: transaction,
     );
   }
+
+  @override
+  DateTime? refreshTokenExpiresAt() =>
+      primaryTokenManager.refreshTokenExpiresAt();
+
+  @override
+  String? refreshCookiePath(final Session session) =>
+      primaryTokenManager.refreshCookiePath(session);
 
   @override
   Future<void> revokeAllTokens(

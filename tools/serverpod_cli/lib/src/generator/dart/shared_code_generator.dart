@@ -3,6 +3,7 @@ import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/model_library_generator.dart';
+import 'package:serverpod_cli/src/generator/dart/library_generators/util/custom_allocators.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
@@ -37,19 +38,10 @@ class DartSharedCodeGenerator extends CodeGenerator {
       var modelAllocatorContext = ModelAllocatorContext.build(
         packageModels,
         config,
+        resolveUrl: _sharedPackageUrl,
       );
 
-      for (var entry in modelAllocatorContext.entries) {
-        var path = entry.model.getFullFilePath(config, serverCode: false);
-        var code = generator
-            .generateModelLibrary(entry.model)
-            .generateCode(
-              allocator: entry.allocator,
-              formatter: GeneratedDartFormatters.of(path),
-            )
-            .replaceServerpodUrls();
-        result[path] = code;
-      }
+      result.addAll(generator.generateCode(modelAllocatorContext));
     }
 
     return result;
@@ -105,35 +97,39 @@ class DartSharedCodeGenerator extends CodeGenerator {
         'protocol.dart',
       ]);
 
-      result[protocolPath] = sharedClassGenerator
-          .generateProtocol()
-          .generateCode(formatter: GeneratedDartFormatters.of(protocolPath))
-          .replaceServerpodUrls();
+      var protocol = sharedClassGenerator.generateProtocol();
+      var allocator = StableImportAllocator(resolveUrl: _sharedPackageUrl);
+      protocol.collectImports(allocator);
+
+      result[protocolPath] = protocol.generateCode(
+        allocator: allocator,
+        formatter: GeneratedDartFormatters.of(protocolPath),
+      );
     }
 
     return result;
   }
 }
 
-extension on String {
-  /// Replace all serverpod URLs with the corresponding package URLs that holds
-  /// the Classes exported by the serverpod package. Applying the replacement
-  /// here prevents having to transform all `serverCode` bool parameters into
-  /// an enum to account for shared packages as well. The ideal solution is to
-  /// refactor the code generator to avoid plumbing this parameter to several
-  /// calls as we currently do.
-  String replaceServerpodUrls() {
-    return replaceAll(
-          serverpodProtocolUrl(false),
-          serverpodSerializationUrl,
-        )
-        .replaceAll(
-          serverpodUrl(false),
-          serverpodDatabaseUrl(false),
-        )
-        .replaceAll(
-          serverpodServiceClientUrl(false),
-          serverpodDatabaseUrl(false),
-        );
-  }
-}
+/// The package a shared model imports for [url].
+///
+/// Maps a serverpod URL to the package holding the classes it exports, for
+/// a package that depends on neither the client nor the server.
+///
+/// Resolving URLs like this prevents having to transform all `serverCode`
+/// bool parameters into an enum to account for shared packages as well. The
+/// ideal solution is to refactor the code generator to avoid plumbing that
+/// parameter to several calls as we currently do.
+String _sharedPackageUrl(String url) => url
+    .replaceAll(
+      serverpodProtocolUrl(false),
+      serverpodSerializationUrl,
+    )
+    .replaceAll(
+      serverpodUrl(false),
+      serverpodDatabaseUrl(false),
+    )
+    .replaceAll(
+      serverpodServiceClientUrl(false),
+      serverpodDatabaseUrl(false),
+    );

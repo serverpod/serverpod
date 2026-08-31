@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 /// Authentication strategies supported the Serverpod authentication core module
-enum AuthStrategy implements _i1.SerializableModel {
+enum AuthStrategy implements _isc.SerializableModel {
   /// Unknown authentication strategy
   unknown,
 
@@ -21,8 +21,7 @@ enum AuthStrategy implements _i1.SerializableModel {
   jwt,
 
   /// Session-based authentication
-  session,
-  ;
+  session;
 
   static AuthStrategy fromJson(String name) {
     switch (name) {

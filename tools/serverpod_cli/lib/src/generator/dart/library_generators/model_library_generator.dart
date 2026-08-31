@@ -3,10 +3,12 @@ import 'package:path/path.dart' as p;
 import 'package:recase/recase.dart';
 import 'package:serverpod_cli/analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
+import 'package:serverpod_cli/src/generator/code_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/class_generators/repository_classes.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/library_generator.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/class_generators_util.dart';
 import 'package:serverpod_cli/src/generator/dart/library_generators/util/model_generators_util.dart';
+import 'package:serverpod_cli/src/generator/dart_formatters.dart';
 import 'package:serverpod_cli/src/generator/keywords.dart';
 import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_cli/src/generator/types.dart';
@@ -49,6 +51,36 @@ class SerializableModelLibraryGenerator {
       case EnumDefinition():
         return _generateEnumLibrary(modelDefinition);
     }
+  }
+
+  /// Generates every model library in [allocatorContext].
+  ///
+  /// Prefixes are assigned from the complete set of imports, so every
+  /// library is emitted once to collect them before any is generated. See
+  /// [GenerateCode.collectImports].
+  Map<String, String> generateCode(ModelAllocatorContext allocatorContext) {
+    var libraries = [
+      for (var entry in allocatorContext.entries)
+        (
+          entry: entry,
+          library: generateModelLibrary(entry.model),
+        ),
+    ];
+
+    for (var (:entry, :library) in libraries) {
+      library.collectImports(entry.allocator);
+    }
+
+    var codeMap = <String, String>{};
+    for (var (:entry, :library) in libraries) {
+      var path = entry.model.getFullFilePath(config, serverCode: serverCode);
+      codeMap[path] = library.generateCode(
+        allocator: entry.allocator,
+        formatter: GeneratedDartFormatters.of(path),
+      );
+    }
+
+    return codeMap;
   }
 
   Library _generateClassLibrary(ClassDefinition classDefinition) {
@@ -3642,6 +3674,7 @@ extension on BuildRepositoryClass {
 extension on ModelClassDefinition {
   bool isTableOwner(bool serverCode) => switch (database) {
     ModelDatabaseDefinition.all => true,
+    ModelDatabaseDefinition.sync => true,
     ModelDatabaseDefinition.server => serverCode,
     ModelDatabaseDefinition.client => !serverCode,
   };

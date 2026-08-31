@@ -13,6 +13,7 @@ import 'package:serverpod_cli/src/generator/shared.dart';
 import 'package:serverpod_service_client/serverpod_service_client.dart';
 
 part 'future_calls_library_generator.dart';
+part 'serverpod_library_generator.dart';
 
 const mapRecordToJsonFuncName = 'mapRecordToJson';
 const mapContainerToJsonFunctionName = 'mapContainerToJson';
@@ -1558,7 +1559,14 @@ return deserializeByClassName(value);
 
   String _getClientPathFromServer(String packageName) {
     return config.modulesDependent
-        .firstWhere((m) => m.serverPackage == packageName)
+        .firstWhere(
+          (m) => m.serverPackage == packageName,
+          orElse: () => throw StateError(
+            'Endpoint extends a class from $packageName, but that package is '
+            'not a Serverpod module dependency of ${config.serverPackage}. '
+            'Add $packageName to the server pubspec.yaml dependencies.',
+          ),
+        )
         .dartImportUrl(false);
   }
 
@@ -2550,6 +2558,11 @@ extension on DatabaseDefinition {
                         serverpodDatabaseUrl(serverCode),
                       )
                     : literalNull,
+                if (foreignKey.deferrable != null)
+                  'deferrable': refer(
+                    'DeferrableConstraint.${foreignKey.deferrable!.name}',
+                    serverpodDatabaseUrl(serverCode),
+                  ),
               }),
           ]),
           'indexes': literalList([

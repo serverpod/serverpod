@@ -10,11 +10,11 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import '../protocol.dart' as _i1;
-import 'package:serverpod_client/serverpod_client.dart' as _i2;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import '../protocol.dart' as _iv35mfmj;
 
-abstract class ChildWithDefault extends _i1.ParentWithDefault
-    implements _i2.SerializableModel, _i2.ProtocolSerialization {
+abstract class ChildWithDefault extends _iv35mfmj.ParentWithDefault
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ChildWithDefault._({
     required super.name,
     super.parentDefault,
@@ -45,7 +45,7 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.
   @override
-  @_i2.useResult
+  @_isc.useResult
   ChildWithDefault copyWith({
     String? name,
     int? parentDefault,
@@ -76,7 +76,7 @@ abstract class ChildWithDefault extends _i1.ParentWithDefault
 
   @override
   String toString() {
-    return _i2.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -95,7 +95,7 @@ class _ChildWithDefaultImpl extends ChildWithDefault {
 
   /// Returns a shallow copy of this [ChildWithDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i2.useResult
+  @_isc.useResult
   @override
   ChildWithDefault copyWith({
     String? name,

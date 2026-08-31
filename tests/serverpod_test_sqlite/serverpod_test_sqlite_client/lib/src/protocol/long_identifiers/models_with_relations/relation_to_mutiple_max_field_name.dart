@@ -10,12 +10,13 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
-import '../../long_identifiers/multiple_max_field_name.dart' as _i2;
-import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart' as _i3;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
+import 'package:serverpod_test_sqlite_client/src/protocol/protocol.dart'
+    as _i0ntutnq;
+import '../../long_identifiers/multiple_max_field_name.dart' as _ipoh7twa;
 
 abstract class RelationToMultipleMaxFieldName
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   RelationToMultipleMaxFieldName._({
     this.id,
     required this.name,
@@ -25,7 +26,7 @@ abstract class RelationToMultipleMaxFieldName
   factory RelationToMultipleMaxFieldName({
     int? id,
     required String name,
-    List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames,
+    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames,
   }) = _RelationToMultipleMaxFieldNameImpl;
 
   factory RelationToMultipleMaxFieldName.fromJson(
@@ -36,9 +37,10 @@ abstract class RelationToMultipleMaxFieldName
       name: jsonSerialization['name'] as String,
       multipleMaxFieldNames: jsonSerialization['multipleMaxFieldNames'] == null
           ? null
-          : _i3.Protocol().deserialize<List<_i2.MultipleMaxFieldName>>(
-              jsonSerialization['multipleMaxFieldNames'],
-            ),
+          : _i0ntutnq.Protocol()
+                .deserialize<List<_ipoh7twa.MultipleMaxFieldName>>(
+                  jsonSerialization['multipleMaxFieldNames'],
+                ),
     );
   }
 
@@ -49,15 +51,15 @@ abstract class RelationToMultipleMaxFieldName
 
   String name;
 
-  List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames;
+  List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames;
 
   /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   RelationToMultipleMaxFieldName copyWith({
     int? id,
     String? name,
-    List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames,
+    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -87,7 +89,7 @@ abstract class RelationToMultipleMaxFieldName
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +100,7 @@ class _RelationToMultipleMaxFieldNameImpl
   _RelationToMultipleMaxFieldNameImpl({
     int? id,
     required String name,
-    List<_i2.MultipleMaxFieldName>? multipleMaxFieldNames,
+    List<_ipoh7twa.MultipleMaxFieldName>? multipleMaxFieldNames,
   }) : super._(
          id: id,
          name: name,
@@ -107,7 +109,7 @@ class _RelationToMultipleMaxFieldNameImpl
 
   /// Returns a shallow copy of this [RelationToMultipleMaxFieldName]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   RelationToMultipleMaxFieldName copyWith({
     Object? id = _Undefined,
@@ -118,7 +120,7 @@ class _RelationToMultipleMaxFieldNameImpl
       id: id is int? ? id : this.id,
       name: name ?? this.name,
       multipleMaxFieldNames:
-          multipleMaxFieldNames is List<_i2.MultipleMaxFieldName>?
+          multipleMaxFieldNames is List<_ipoh7twa.MultipleMaxFieldName>?
           ? multipleMaxFieldNames
           : this.multipleMaxFieldNames?.map((e0) => e0.copyWith()).toList(),
     );

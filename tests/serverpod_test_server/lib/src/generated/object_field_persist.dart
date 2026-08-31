@@ -10,12 +10,12 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod/serverpod.dart' as _i1;
-import 'simple_data.dart' as _i2;
-import 'package:serverpod_test_server/src/generated/protocol.dart' as _i3;
+import 'package:serverpod/serverpod.dart' as _is;
+import 'package:serverpod_test_server/src/generated/protocol.dart' as _igqrxdcj;
+import 'simple_data.dart' as _i0zisc0t;
 
 abstract class ObjectFieldPersist
-    implements _i1.TableRow<int?>, _i1.ProtocolSerialization {
+    implements _is.TableRow<int?>, _is.ProtocolSerialization {
   ObjectFieldPersist._({
     this.id,
     required this.normal,
@@ -27,7 +27,7 @@ abstract class ObjectFieldPersist
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   }) = _ObjectFieldPersistImpl;
 
   factory ObjectFieldPersist.fromJson(Map<String, dynamic> jsonSerialization) {
@@ -37,7 +37,7 @@ abstract class ObjectFieldPersist
       api: jsonSerialization['api'] as String?,
       data: jsonSerialization['data'] == null
           ? null
-          : _i3.Protocol().deserialize<_i2.SimpleData>(
+          : _igqrxdcj.Protocol().deserialize<_i0zisc0t.SimpleData>(
               jsonSerialization['data'],
             ),
     );
@@ -54,19 +54,19 @@ abstract class ObjectFieldPersist
 
   String? api;
 
-  _i2.SimpleData? data;
+  _i0zisc0t.SimpleData? data;
 
   @override
-  _i1.Table<int?> get table => t;
+  _is.Table<int?> get table => t;
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   ObjectFieldPersist copyWith({
     int? id,
     String? normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -95,11 +95,11 @@ abstract class ObjectFieldPersist
   }
 
   static ObjectFieldPersistIncludeList includeList({
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
     ObjectFieldPersistInclude? include,
   }) {
     return ObjectFieldPersistIncludeList._(
@@ -114,7 +114,7 @@ abstract class ObjectFieldPersist
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _is.SerializationManager.encode(this);
   }
 }
 
@@ -125,7 +125,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
     int? id,
     required String normal,
     String? api,
-    _i2.SimpleData? data,
+    _i0zisc0t.SimpleData? data,
   }) : super._(
          id: id,
          normal: normal,
@@ -135,7 +135,7 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
 
   /// Returns a shallow copy of this [ObjectFieldPersist]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_is.useResult
   @override
   ObjectFieldPersist copyWith({
     Object? id = _Undefined,
@@ -147,26 +147,26 @@ class _ObjectFieldPersistImpl extends ObjectFieldPersist {
       id: id is int? ? id : this.id,
       normal: normal ?? this.normal,
       api: api is String? ? api : this.api,
-      data: data is _i2.SimpleData? ? data : this.data?.copyWith(),
+      data: data is _i0zisc0t.SimpleData? ? data : this.data?.copyWith(),
     );
   }
 }
 
 class ObjectFieldPersistUpdateTable
-    extends _i1.UpdateTable<ObjectFieldPersistTable> {
+    extends _is.UpdateTable<ObjectFieldPersistTable> {
   ObjectFieldPersistUpdateTable(super.table);
 
-  _i1.ColumnValue<String, String> normal(String value) => _i1.ColumnValue(
+  _is.ColumnValue<String, String> normal(String value) => _is.ColumnValue(
     table.normal,
     value,
   );
 }
 
-class ObjectFieldPersistTable extends _i1.Table<int?> {
+class ObjectFieldPersistTable extends _is.Table<int?> {
   ObjectFieldPersistTable({super.tableRelation})
     : super(tableName: 'object_field_persist') {
     updateTable = ObjectFieldPersistUpdateTable(this);
-    normal = _i1.ColumnString(
+    normal = _is.ColumnString(
       'normal',
       this,
     );
@@ -174,28 +174,28 @@ class ObjectFieldPersistTable extends _i1.Table<int?> {
 
   late final ObjectFieldPersistUpdateTable updateTable;
 
-  late final _i1.ColumnString normal;
+  late final _is.ColumnString normal;
 
   @override
-  List<_i1.Column> get columns => [
+  List<_is.Column> get columns => [
     id,
     normal,
   ];
 }
 
-class ObjectFieldPersistInclude extends _i1.IncludeObject {
+class ObjectFieldPersistInclude extends _is.IncludeObject {
   ObjectFieldPersistInclude._();
 
   @override
-  Map<String, _i1.Include?> get includes => {};
+  Map<String, _is.Include?> get includes => {};
 
   @override
-  _i1.Table<int?> get table => ObjectFieldPersist.t;
+  _is.Table<int?> get table => ObjectFieldPersist.t;
 }
 
-class ObjectFieldPersistIncludeList extends _i1.IncludeList {
+class ObjectFieldPersistIncludeList extends _is.IncludeList {
   ObjectFieldPersistIncludeList._({
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     super.limit,
     super.offset,
     super.orderBy,
@@ -206,10 +206,10 @@ class ObjectFieldPersistIncludeList extends _i1.IncludeList {
   }
 
   @override
-  Map<String, _i1.Include?> get includes => include?.includes ?? {};
+  Map<String, _is.Include?> get includes => include?.includes ?? {};
 
   @override
-  _i1.Table<int?> get table => ObjectFieldPersist.t;
+  _is.Table<int?> get table => ObjectFieldPersist.t;
 }
 
 class ObjectFieldPersistRepository {
@@ -238,15 +238,15 @@ class ObjectFieldPersistRepository {
   /// );
   /// ```
   Future<List<ObjectFieldPersist>> find(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.find<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
@@ -278,14 +278,14 @@ class ObjectFieldPersistRepository {
   /// );
   /// ```
   Future<ObjectFieldPersist?> findFirstRow(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findFirstRow<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
@@ -300,11 +300,11 @@ class ObjectFieldPersistRepository {
 
   /// Finds a single [ObjectFieldPersist] by its [id] or null if no such row exists.
   Future<ObjectFieldPersist?> findById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    _i1.Transaction? transaction,
-    _i1.LockMode? lockMode,
-    _i1.LockBehavior? lockBehavior,
+    _is.Transaction? transaction,
+    _is.LockMode? lockMode,
+    _is.LockBehavior? lockBehavior,
   }) async {
     return session.db.findById<ObjectFieldPersist>(
       id,
@@ -329,9 +329,9 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> insert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
     bool ignoreConflicts = false,
     bool noReturn = false,
   }) async {
@@ -347,9 +347,9 @@ class ObjectFieldPersistRepository {
   ///
   /// The returned [ObjectFieldPersist] will have its `id` field set.
   Future<ObjectFieldPersist> insertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.insertRow<ObjectFieldPersist>(
       row,
@@ -378,12 +378,12 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> upsert(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
-    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
-    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _is.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.upsert<ObjectFieldPersist>(
@@ -410,12 +410,12 @@ class ObjectFieldPersistRepository {
   ///
   /// The returned [ObjectFieldPersist] will have its `id` field set.
   Future<ObjectFieldPersist?> upsertRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldPersist row, {
-    required _i1.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
-    _i1.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
-    _i1.Transaction? transaction,
+    required _is.ColumnSelections<ObjectFieldPersistTable> conflictColumns,
+    _is.ColumnSelections<ObjectFieldPersistTable>? updateColumns,
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? updateWhere,
+    _is.Transaction? transaction,
   }) async {
     return session.db.upsertRow<ObjectFieldPersist>(
       row,
@@ -436,10 +436,10 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> update(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
-    _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectFieldPersistTable>? columns,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.update<ObjectFieldPersist>(
@@ -454,10 +454,10 @@ class ObjectFieldPersistRepository {
   /// Optionally, a list of [columns] can be provided to only update those
   /// columns. Defaults to all columns.
   Future<ObjectFieldPersist> updateRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldPersist row, {
-    _i1.ColumnSelections<ObjectFieldPersistTable>? columns,
-    _i1.Transaction? transaction,
+    _is.ColumnSelections<ObjectFieldPersistTable>? columns,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateRow<ObjectFieldPersist>(
       row,
@@ -469,11 +469,11 @@ class ObjectFieldPersistRepository {
   /// Updates a single [ObjectFieldPersist] by its [id] with the specified [columnValues].
   /// Returns the updated row or null if no row with the given id exists.
   Future<ObjectFieldPersist?> updateById(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     int id, {
-    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+    required _is.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
     columnValues,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.updateById<ObjectFieldPersist>(
       id,
@@ -489,15 +489,15 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> updateWhere(
-    _i1.DatabaseSession session, {
-    required _i1.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
+    _is.DatabaseSession session, {
+    required _is.ColumnValueListBuilder<ObjectFieldPersistUpdateTable>
     columnValues,
-    required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    required _is.WhereExpressionBuilder<ObjectFieldPersistTable> where,
     int? limit,
     int? offset,
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.updateWhere<ObjectFieldPersist>(
@@ -524,11 +524,11 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> delete(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     List<ObjectFieldPersist> rows, {
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.delete<ObjectFieldPersist>(
@@ -542,9 +542,9 @@ class ObjectFieldPersistRepository {
 
   /// Deletes a single [ObjectFieldPersist].
   Future<ObjectFieldPersist> deleteRow(
-    _i1.DatabaseSession session,
+    _is.DatabaseSession session,
     ObjectFieldPersist row, {
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.deleteRow<ObjectFieldPersist>(
       row,
@@ -561,11 +561,11 @@ class ObjectFieldPersistRepository {
   /// the database and an empty list is returned. This avoids the overhead of
   /// transferring and deserializing the rows when the result is not needed.
   Future<List<ObjectFieldPersist>> deleteWhere(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
-    _i1.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
-    _i1.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
-    _i1.Transaction? transaction,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    _is.OrderByBuilder<ObjectFieldPersistTable>? orderBy,
+    _is.OrderByListBuilder<ObjectFieldPersistTable>? orderByList,
+    _is.Transaction? transaction,
     bool noReturn = false,
   }) async {
     return session.db.deleteWhere<ObjectFieldPersist>(
@@ -580,10 +580,10 @@ class ObjectFieldPersistRepository {
   /// Counts the number of rows matching the [where] expression. If omitted,
   /// will return the count of all rows in the table.
   Future<int> count(
-    _i1.DatabaseSession session, {
-    _i1.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
+    _is.DatabaseSession session, {
+    _is.WhereExpressionBuilder<ObjectFieldPersistTable>? where,
     int? limit,
-    _i1.Transaction? transaction,
+    _is.Transaction? transaction,
   }) async {
     return session.db.count<ObjectFieldPersist>(
       where: where?.call(ObjectFieldPersist.t),
@@ -594,11 +594,11 @@ class ObjectFieldPersistRepository {
 
   /// Acquires row-level locks on [ObjectFieldPersist] rows matching the [where] expression.
   Future<void> lockRows(
-    _i1.DatabaseSession session, {
-    required _i1.WhereExpressionBuilder<ObjectFieldPersistTable> where,
-    required _i1.LockMode lockMode,
-    required _i1.Transaction transaction,
-    _i1.LockBehavior lockBehavior = _i1.LockBehavior.wait,
+    _is.DatabaseSession session, {
+    required _is.WhereExpressionBuilder<ObjectFieldPersistTable> where,
+    required _is.LockMode lockMode,
+    required _is.Transaction transaction,
+    _is.LockBehavior lockBehavior = _is.LockBehavior.wait,
   }) async {
     return session.db.lockRows<ObjectFieldPersist>(
       where: where(ObjectFieldPersist.t),

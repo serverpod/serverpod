@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
 import 'package:serverpod_cli/src/generator/code_generation_collector.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/string_manipulation.dart';
+import 'package:serverpod_cli/src/util/unrendered_template_path.dart';
 
 /// Cached analysis result for a single future call file.
 class _CachedFutureCallFileResult {
@@ -189,6 +190,7 @@ class FutureCallsAnalyzer {
 
     for (var path in filesToAnalyze) {
       if (!path.endsWith('.dart') || path.endsWith('_test.dart')) continue;
+      if (isUnrenderedTemplatePath(path)) continue;
       if (!File(path).existsSync()) continue;
 
       var library = await _resolveLibrary(path);
@@ -309,7 +311,8 @@ class FutureCallsAnalyzer {
       analyzedFiles.sort();
       yield* analyzedFiles
           .where((path) => path.endsWith('.dart'))
-          .where((path) => !path.endsWith('_test.dart'));
+          .where((path) => !path.endsWith('_test.dart'))
+          .where((path) => !isUnrenderedTemplatePath(path));
     }
   }
 
@@ -376,6 +379,7 @@ class FutureCallsAnalyzer {
   bool _isFutureCallFile(File file) {
     if (!file.absolute.path.startsWith(absoluteIncludedPaths)) return false;
     if (!file.path.endsWith('.dart')) return false;
+    if (isUnrenderedTemplatePath(file.path)) return false;
     if (!file.existsSync()) return false;
     return file.readAsStringSync().contains('extends FutureCall');
   }

@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class UriDefault
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   UriDefault._({
     this.id,
     Uri? uriDefault,
@@ -33,10 +33,10 @@ abstract class UriDefault
       id: jsonSerialization['id'] as int?,
       uriDefault: jsonSerialization['uriDefault'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefault']),
+          : _isc.UriJsonExtension.fromJson(jsonSerialization['uriDefault']),
       uriDefaultNull: jsonSerialization['uriDefaultNull'] == null
           ? null
-          : _i1.UriJsonExtension.fromJson(jsonSerialization['uriDefaultNull']),
+          : _isc.UriJsonExtension.fromJson(jsonSerialization['uriDefaultNull']),
     );
   }
 
@@ -51,7 +51,7 @@ abstract class UriDefault
 
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   UriDefault copyWith({
     int? id,
     Uri? uriDefault,
@@ -79,7 +79,7 @@ abstract class UriDefault
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -98,7 +98,7 @@ class _UriDefaultImpl extends UriDefault {
 
   /// Returns a shallow copy of this [UriDefault]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   UriDefault copyWith({
     Object? id = _Undefined,

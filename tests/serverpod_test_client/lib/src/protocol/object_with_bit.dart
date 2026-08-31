@@ -10,10 +10,10 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:serverpod_client/serverpod_client.dart' as _i1;
+import 'package:serverpod_client/serverpod_client.dart' as _isc;
 
 abstract class ObjectWithBit
-    implements _i1.SerializableModel, _i1.ProtocolSerialization {
+    implements _isc.SerializableModel, _isc.ProtocolSerialization {
   ObjectWithBit._({
     this.id,
     required this.bit,
@@ -26,31 +26,31 @@ abstract class ObjectWithBit
 
   factory ObjectWithBit({
     int? id,
-    required _i1.Bit bit,
-    _i1.Bit? bitNullable,
-    required _i1.Bit bitIndexedHnsw,
-    required _i1.Bit bitIndexedHnswWithParams,
-    required _i1.Bit bitIndexedIvfflat,
-    required _i1.Bit bitIndexedIvfflatWithParams,
+    required _isc.Bit bit,
+    _isc.Bit? bitNullable,
+    required _isc.Bit bitIndexedHnsw,
+    required _isc.Bit bitIndexedHnswWithParams,
+    required _isc.Bit bitIndexedIvfflat,
+    required _isc.Bit bitIndexedIvfflatWithParams,
   }) = _ObjectWithBitImpl;
 
   factory ObjectWithBit.fromJson(Map<String, dynamic> jsonSerialization) {
     return ObjectWithBit(
       id: jsonSerialization['id'] as int?,
-      bit: _i1.BitJsonExtension.fromJson(jsonSerialization['bit']),
+      bit: _isc.BitJsonExtension.fromJson(jsonSerialization['bit']),
       bitNullable: jsonSerialization['bitNullable'] == null
           ? null
-          : _i1.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
-      bitIndexedHnsw: _i1.BitJsonExtension.fromJson(
+          : _isc.BitJsonExtension.fromJson(jsonSerialization['bitNullable']),
+      bitIndexedHnsw: _isc.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedHnsw'],
       ),
-      bitIndexedHnswWithParams: _i1.BitJsonExtension.fromJson(
+      bitIndexedHnswWithParams: _isc.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedHnswWithParams'],
       ),
-      bitIndexedIvfflat: _i1.BitJsonExtension.fromJson(
+      bitIndexedIvfflat: _isc.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedIvfflat'],
       ),
-      bitIndexedIvfflatWithParams: _i1.BitJsonExtension.fromJson(
+      bitIndexedIvfflatWithParams: _isc.BitJsonExtension.fromJson(
         jsonSerialization['bitIndexedIvfflatWithParams'],
       ),
     );
@@ -61,29 +61,29 @@ abstract class ObjectWithBit
   /// the id will be null.
   int? id;
 
-  _i1.Bit bit;
+  _isc.Bit bit;
 
-  _i1.Bit? bitNullable;
+  _isc.Bit? bitNullable;
 
-  _i1.Bit bitIndexedHnsw;
+  _isc.Bit bitIndexedHnsw;
 
-  _i1.Bit bitIndexedHnswWithParams;
+  _isc.Bit bitIndexedHnswWithParams;
 
-  _i1.Bit bitIndexedIvfflat;
+  _isc.Bit bitIndexedIvfflat;
 
-  _i1.Bit bitIndexedIvfflatWithParams;
+  _isc.Bit bitIndexedIvfflatWithParams;
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   ObjectWithBit copyWith({
     int? id,
-    _i1.Bit? bit,
-    _i1.Bit? bitNullable,
-    _i1.Bit? bitIndexedHnsw,
-    _i1.Bit? bitIndexedHnswWithParams,
-    _i1.Bit? bitIndexedIvfflat,
-    _i1.Bit? bitIndexedIvfflatWithParams,
+    _isc.Bit? bit,
+    _isc.Bit? bitNullable,
+    _isc.Bit? bitIndexedHnsw,
+    _isc.Bit? bitIndexedHnswWithParams,
+    _isc.Bit? bitIndexedIvfflat,
+    _isc.Bit? bitIndexedIvfflatWithParams,
   });
   @override
   Map<String, dynamic> toJson() {
@@ -115,7 +115,7 @@ abstract class ObjectWithBit
 
   @override
   String toString() {
-    return _i1.SerializationManager.encode(this);
+    return _isc.SerializationManager.encode(this);
   }
 }
 
@@ -124,12 +124,12 @@ class _Undefined {}
 class _ObjectWithBitImpl extends ObjectWithBit {
   _ObjectWithBitImpl({
     int? id,
-    required _i1.Bit bit,
-    _i1.Bit? bitNullable,
-    required _i1.Bit bitIndexedHnsw,
-    required _i1.Bit bitIndexedHnswWithParams,
-    required _i1.Bit bitIndexedIvfflat,
-    required _i1.Bit bitIndexedIvfflatWithParams,
+    required _isc.Bit bit,
+    _isc.Bit? bitNullable,
+    required _isc.Bit bitIndexedHnsw,
+    required _isc.Bit bitIndexedHnswWithParams,
+    required _isc.Bit bitIndexedIvfflat,
+    required _isc.Bit bitIndexedIvfflatWithParams,
   }) : super._(
          id: id,
          bit: bit,
@@ -142,21 +142,21 @@ class _ObjectWithBitImpl extends ObjectWithBit {
 
   /// Returns a shallow copy of this [ObjectWithBit]
   /// with some or all fields replaced by the given arguments.
-  @_i1.useResult
+  @_isc.useResult
   @override
   ObjectWithBit copyWith({
     Object? id = _Undefined,
-    _i1.Bit? bit,
+    _isc.Bit? bit,
     Object? bitNullable = _Undefined,
-    _i1.Bit? bitIndexedHnsw,
-    _i1.Bit? bitIndexedHnswWithParams,
-    _i1.Bit? bitIndexedIvfflat,
-    _i1.Bit? bitIndexedIvfflatWithParams,
+    _isc.Bit? bitIndexedHnsw,
+    _isc.Bit? bitIndexedHnswWithParams,
+    _isc.Bit? bitIndexedIvfflat,
+    _isc.Bit? bitIndexedIvfflatWithParams,
   }) {
     return ObjectWithBit(
       id: id is int? ? id : this.id,
       bit: bit ?? this.bit.clone(),
-      bitNullable: bitNullable is _i1.Bit?
+      bitNullable: bitNullable is _isc.Bit?
           ? bitNullable
           : this.bitNullable?.clone(),
       bitIndexedHnsw: bitIndexedHnsw ?? this.bitIndexedHnsw.clone(),
