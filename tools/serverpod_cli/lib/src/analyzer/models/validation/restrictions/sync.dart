@@ -9,6 +9,8 @@ library;
 import 'package:serverpod_cli/src/analyzer/models/definitions.dart';
 import 'package:serverpod_cli/src/analyzer/models/utils/model_relation_utils.dart';
 import 'package:serverpod_cli/src/analyzer/models/validation/model_relations.dart';
+import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/config/experimental_feature.dart';
 
 /// The field every synced model must declare to hold the owner scope of a row.
 const String syncScopeIdFieldName = 'scopeId';
@@ -19,6 +21,20 @@ const String syncScopesTableName = 'crdt_scopes';
 
 /// The name of the `serverpod_offline_sync` module.
 const String syncModuleName = 'serverpod_offline_sync';
+
+extension GeneratorConfigSyncModule on GeneratorConfig {
+  /// The `serverpod_offline_sync` module, when the `databaseSync` experimental
+  /// feature is enabled and the module is a dependency of the project.
+  ModuleConfig? get syncModule {
+    if (!isExperimentalFeatureEnabled(ExperimentalFeature.databaseSync)) {
+      return null;
+    }
+    for (var module in modules) {
+      if (module.name == syncModuleName) return module;
+    }
+    return null;
+  }
+}
 
 extension ModelClassDefinitionSync on ModelClassDefinition {
   /// Whether this model is a table synchronized between client and server.

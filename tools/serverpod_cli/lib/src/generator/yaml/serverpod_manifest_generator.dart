@@ -1,5 +1,6 @@
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/analyzer.dart';
+import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/config/serverpod_manifest.dart';
 import 'package:serverpod_cli/src/generator/code_generator.dart';
 
@@ -25,6 +26,7 @@ class ServerpodManifestGenerator extends CodeGenerator {
 
     var manifest = ServerpodManifest(
       sharedPackages: config.sharedModelsSourcePathsParts.keys,
+      syncTables: config.syncModule != null,
     );
     if (manifest.isEmpty) return {};
 

@@ -9,7 +9,7 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
   /// [PackageType.server] (modules are never booted on their own).
   Library generateServerpodClass() {
     var library = LibraryBuilder();
-    var syncModule = _syncModule;
+    var syncModule = config.syncModule;
 
     // Re-export the framework, hiding its Serverpod class in favor of the
     // generated one, so `server.dart` only needs to import this file.

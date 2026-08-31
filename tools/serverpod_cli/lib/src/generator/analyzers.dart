@@ -8,7 +8,6 @@ import 'package:serverpod_cli/src/analytics/protocol_feature_analyzer.dart';
 import 'package:serverpod_cli/src/analyzer/dart/definitions.dart'
     show FutureCallDefinition;
 import 'package:serverpod_cli/src/analyzer/models/stateful_analyzer.dart';
-import 'package:serverpod_cli/src/analyzer/models/validation/restrictions/sync.dart';
 import 'package:serverpod_cli/src/generator/generation_staleness.dart';
 import 'package:serverpod_cli/src/util/analysis_helpers.dart';
 import 'package:serverpod_cli/src/util/model_helper.dart';
@@ -314,13 +313,6 @@ class Analyzers {
         endpoints: endpoints,
         models: allModels,
         futureCalls: futureCalls,
-        moduleAliasesWithSyncTables: _models.models
-            .whereType<ModelClassDefinition>()
-            .where((model) => model.isSyncTable && !model.isSharedModel)
-            .map((model) => model.type.moduleAlias)
-            .whereType<String>()
-            .where((alias) => alias != defaultModuleAlias)
-            .toSet(),
       );
 
       var generatedProtocolFiles =

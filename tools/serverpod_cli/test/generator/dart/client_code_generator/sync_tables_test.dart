@@ -97,13 +97,17 @@ void main() {
           endpoints: [],
           models: [syncModel('Person', 'person')],
           futureCalls: [],
-          moduleAliasesWithSyncTables: {'auth'},
         ),
         config: GeneratorConfigBuilder()
             .withName(projectName)
             .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
-            .withModules([syncModule])
-            .withAuthModule()
+            .withModules([
+              syncModule,
+              ModuleConfigBuilder(
+                'serverpod_auth',
+                'auth',
+              ).withHasSyncTables(true).build(),
+            ])
             .build(),
       );
 

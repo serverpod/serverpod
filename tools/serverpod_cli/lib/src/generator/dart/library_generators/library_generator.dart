@@ -51,25 +51,11 @@ class LibraryGenerator {
       (config.modules.isNotEmpty ||
           config.sharedModelsSourcePathsParts.isNotEmpty);
 
-  /// The `serverpod_offline_sync` module, when the `databaseSync` experimental
-  /// feature is enabled and the module is a dependency of the project.
-  ModuleConfig? get _syncModule {
-    if (!config.isExperimentalFeatureEnabled(
-      ExperimentalFeature.databaseSync,
-    )) {
-      return null;
-    }
-    for (var module in config.modules) {
-      if (module.name == syncModuleName) return module;
-    }
-    return null;
-  }
-
   /// Generates the `sync_tables.dart` library with the tables synchronized by
   /// the `serverpod_offline_sync` package, or `null` when the module is not
   /// part of the project.
   Library? generateSyncTables() {
-    var syncModule = _syncModule;
+    var syncModule = config.syncModule;
     if (syncModule == null) return null;
 
     var syncTableModels =
@@ -103,9 +89,7 @@ class LibraryGenerator {
                 TypeDefinition.getRef(model),
               ).property('t'),
             for (var module in config.modules)
-              if (protocolDefinition.moduleAliasesWithSyncTables.contains(
-                module.nickname,
-              ))
+              if (module.hasSyncTables)
                 refer('syncTables', module.dartImportUrl(serverCode)).spread,
           ]).code,
       ),
@@ -163,7 +147,7 @@ class LibraryGenerator {
             hide: const ['Protocol'],
           ),
       if (!serverCode && !sharedPackage) Directive.export('client.dart'),
-      if (!sharedPackage && _syncModule != null)
+      if (!sharedPackage && config.syncModule != null)
         Directive.export('sync_tables.dart'),
     ]);
 
@@ -1114,7 +1098,9 @@ return deserializeByClassName(value);
       ]);
     }
 
-    var syncModule = config.type != PackageType.module ? _syncModule : null;
+    var syncModule = config.type != PackageType.module
+        ? config.syncModule
+        : null;
 
     var hasModules =
         config.modules.isNotEmpty && config.type != PackageType.module;

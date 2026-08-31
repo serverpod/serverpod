@@ -124,6 +124,8 @@ List<ModuleConfig> _loadModuleConfigs({
       var manualNickname = nickNameOverrides[moduleName];
       var nickname = manualNickname ?? moduleInfo['nickname'] ?? moduleName;
 
+      var manifest = _loadManifest(packageSrcRoot, moduleName);
+
       moduleConfigs.add(
         ModuleConfig(
           type: GeneratorConfig.getPackageType(moduleInfo),
@@ -132,10 +134,11 @@ List<ModuleConfig> _loadModuleConfigs({
           migrationVersions: migrationVersions,
           serverPackageDirectoryPathParts: packageSrcRoot.pathSegments,
           sharedPackageRootPathParts: _sharedPackageRoots(
-            packageSrcRoot,
+            manifest,
             packageConfig,
             moduleName,
           ),
+          hasSyncTables: manifest?.syncTables ?? false,
         ),
       );
     } on ServerpodModulesNotFoundException {
@@ -153,28 +156,32 @@ Map<dynamic, dynamic> loadConfigFile(File file) {
   return loadYaml(yaml) as Map;
 }
 
-/// Reads the shared packages advertised by an installed module, mapping each
-/// package name to the package root resolved by the current package config.
-Map<String, List<String>> _sharedPackageRoots(
-  Uri packageSrcRoot,
-  PackageConfig packageConfig,
-  String moduleName,
-) {
+/// Loads the generated Serverpod manifest of an installed module, or `null`
+/// if the module does not ship one.
+ServerpodManifest? _loadManifest(Uri packageSrcRoot, String moduleName) {
   var manifestFile = File.fromUri(
     packageSrcRoot.resolve(
       'lib/src/generated/${ServerpodManifest.fileName}',
     ),
   );
 
-  ServerpodManifest? manifest;
   try {
-    manifest = ServerpodManifest.tryLoadSync(manifestFile);
+    return ServerpodManifest.tryLoadSync(manifestFile);
   } on ServerpodManifestException catch (error) {
     throw ServerpodModulesNotFoundException(
       'Failed to load the generated Serverpod manifest for module '
       '$moduleName: $error',
     );
   }
+}
+
+/// Reads the shared packages advertised by an installed module, mapping each
+/// package name to the package root resolved by the current package config.
+Map<String, List<String>> _sharedPackageRoots(
+  ServerpodManifest? manifest,
+  PackageConfig packageConfig,
+  String moduleName,
+) {
   if (manifest == null) return const {};
 
   var result = <String, List<String>>{};
