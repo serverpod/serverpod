@@ -1185,7 +1185,7 @@ void main() async {
         final protocolSource = protocolFile.readAsStringSync();
         protocolFile.writeAsStringSync(
           protocolSource.replaceAll(
-            '_i1.DeserializationClassNameNotFoundException',
+            RegExp(r'_i\w+\.DeserializationClassNameNotFoundException'),
             'FormatException',
           ),
         );
