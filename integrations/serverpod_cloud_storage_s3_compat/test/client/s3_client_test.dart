@@ -1,6 +1,6 @@
 import 'package:amazon_cognito_identity_dart_2/sig_v4.dart';
 import 'package:http/http.dart' as http;
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 

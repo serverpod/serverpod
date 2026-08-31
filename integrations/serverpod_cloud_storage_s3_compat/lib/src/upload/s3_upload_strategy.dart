@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 import '../client/exceptions.dart';
 import '../config/s3_endpoint_config.dart';

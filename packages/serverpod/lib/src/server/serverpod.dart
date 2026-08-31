@@ -10,6 +10,7 @@ import 'package:serverpod_shared/serverpod_shared.dart';
 import 'package:serverpod/src/server/log_manager/session_log.dart';
 import 'package:serverpod/src/server/log_manager/serverpod_logging.dart';
 import 'package:serverpod/src/cloud_storage/public_endpoint.dart';
+import 'package:serverpod/src/cloud_storage/serverpod_cloud_storage_configuration.dart';
 import 'package:serverpod/src/config/version.dart';
 import 'package:serverpod/src/server/command_line_args.dart';
 import 'package:serverpod/src/server/diagnostic_events/diagnostic_events.dart';
@@ -19,6 +20,7 @@ import 'package:serverpod/src/server/health_check_manager.dart';
 import 'package:serverpod/src/server/log_manager/log_cleanup.dart';
 import 'package:serverpod/src/server/log_manager/log_settings.dart';
 import 'package:serverpod/src/server/tasks/tasks.dart';
+import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart';
 
 import '../authentication/default_authentication_handler.dart';
 import '../authentication/service_authentication.dart';
@@ -790,6 +792,8 @@ class Serverpod {
   }
 
   Future<void> _unguardedStart() async {
+    await _registerServerpodCloudStorage();
+
     // Register cloud store endpoint if we're using the database cloud store
     var hasDatabaseStorage = storage.entries.any(
       (storage) => storage.value is DatabaseCloudStorage,
@@ -954,6 +958,31 @@ class Serverpod {
         }
       }
     }
+  }
+
+  /// Registers the cloud storages configured by Serverpod Cloud's environment.
+  /// This replaces the default database cloud storage with GCP storage
+  /// when this pod is deployed to Serverpod Cloud.
+  Future<void> _registerServerpodCloudStorage() async {
+    final storageInstances = await createServerpodCloudStorages(
+      environment: Platform.environment,
+      createStorage:
+          ({
+            required storageId,
+            required bucket,
+            required public,
+            required serviceAccountJson,
+            publicHost,
+          }) => NativeGoogleCloudStorage.fromServiceAccountJson(
+            storageId: storageId,
+            bucket: bucket,
+            public: public,
+            serviceAccountJson: serviceAccountJson,
+            publicHost: publicHost,
+          ),
+      onWarning: log.warning,
+    );
+    storage.addAll(storageInstances);
   }
 
   Future<void> _applyMigrations({

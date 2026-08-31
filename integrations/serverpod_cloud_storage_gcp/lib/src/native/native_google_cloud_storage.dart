@@ -9,7 +9,7 @@ import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
 import 'package:pointycastle/asn1.dart';
 import 'package:pointycastle/export.dart';
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 /// GCP cloud storage using native Google Cloud JSON API.
 ///
@@ -23,7 +23,10 @@ import 'package:serverpod/serverpod.dart';
 /// Example:
 /// ```dart
 /// pod.addCloudStorage(await NativeGoogleCloudStorage.create(
-///   serverpod: pod,
+///   passwordProvider: CloudStoragePasswordProvider(
+///     getPassword: pod.getPassword,
+///     loadPasswords: pod.loadCustomPasswords,
+///   ),
 ///   storageId: 'public',
 ///   bucket: 'my-bucket',
 ///   public: true,
@@ -57,19 +60,21 @@ class NativeGoogleCloudStorage extends CloudStorage {
        _authClient = authClient,
        super(storageId);
 
-  /// Creates a new [NativeGoogleCloudStorage] from a [Serverpod] instance.
+  /// Creates a new [NativeGoogleCloudStorage] from a [passwordProvider].
   ///
   /// The service account JSON is loaded from the password system via:
   /// - `passwords.yaml`: `gcpServiceAccount` key with JSON content
   /// - Environment variable: `SERVERPOD_PASSWORD_gcpServiceAccount`
   static Future<NativeGoogleCloudStorage> create({
-    required Serverpod serverpod,
+    required CloudStoragePasswordProvider passwordProvider,
     required String storageId,
     required String bucket,
     required bool public,
     String? publicHost,
   }) async {
-    final serviceAccountJson = serverpod.getPassword('gcpServiceAccount');
+    final serviceAccountJson = passwordProvider.getPassword(
+      'gcpServiceAccount',
+    );
     if (serviceAccountJson == null) {
       throw StateError(
         'GCP service account not configured. '
@@ -91,8 +96,8 @@ class NativeGoogleCloudStorage extends CloudStorage {
   /// Creates a [NativeGoogleCloudStorage] from a service account JSON string.
   ///
   /// This factory authenticates directly with the provided JSON credentials
-  /// without requiring a [Serverpod] instance, making it suitable for
-  /// integration testing and standalone usage.
+  /// without requiring a [CloudStoragePasswordProvider], making it suitable
+  /// for integration testing and standalone usage.
   static Future<NativeGoogleCloudStorage> fromServiceAccountJson({
     required String storageId,
     required String bucket,
@@ -244,7 +249,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<void> storeFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     required ByteData byteData,
     StoreFileOptions options = const StoreFileOptions(),
@@ -291,7 +296,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<ByteData> retrieveFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     try {
@@ -322,7 +327,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<FileStat> statFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     try {
@@ -361,7 +366,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<Uri> publicDownloadUrl({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     if (!public) {
@@ -377,7 +382,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<Uri> temporaryDownloadUrl({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   }) async {
@@ -418,7 +423,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<void> deleteFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     try {
@@ -431,7 +436,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<UploadDescription> createUploadDescription({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     UploadOptions options = const UploadOptions(),
   }) async {
@@ -598,7 +603,7 @@ class NativeGoogleCloudStorage extends CloudStorage {
 
   @override
   Future<bool> verifyUpload({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     return fileExists(session: session, path: path);

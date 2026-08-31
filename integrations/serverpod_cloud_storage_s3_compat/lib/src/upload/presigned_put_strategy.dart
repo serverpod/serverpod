@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:mime/mime.dart';
 import 'package:path/path.dart' as p;
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 import '../client/exceptions.dart';
 import '../config/s3_endpoint_config.dart';

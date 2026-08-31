@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 import 'package:test/test.dart';
 
 class _StatStorage extends CloudStorage {
@@ -8,7 +8,7 @@ class _StatStorage extends CloudStorage {
 
   @override
   Future<FileStat> statFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) => statCallback();
 
@@ -16,14 +16,10 @@ class _StatStorage extends CloudStorage {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _FakeSession implements Session {
-  @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnimplementedError('${invocation.memberName} is not implemented.');
-}
+class _FakeSession implements CloudStorageSession {}
 
 void main() {
-  late Session session;
+  late CloudStorageSession session;
 
   setUp(() {
     session = _FakeSession();

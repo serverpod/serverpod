@@ -2,7 +2,7 @@ import 'dart:io' show HttpDate;
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 import 'client/exceptions.dart';
 import 'client/s3_client.dart';
@@ -98,7 +98,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<void> storeFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     required ByteData byteData,
     StoreFileOptions options = const StoreFileOptions(),
@@ -137,7 +137,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<ByteData> retrieveFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     final response = await _client.getObject(path);
@@ -155,7 +155,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<FileStat> statFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     final response = await _client.headObject(path);
@@ -206,7 +206,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<Uri> publicDownloadUrl({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     if (!public) {
@@ -221,7 +221,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<Uri> temporaryDownloadUrl({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   }) async {
@@ -244,7 +244,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<void> deleteFile({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     final response = await _client.deleteObject(path);
@@ -255,7 +255,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<UploadDescription> createUploadDescription({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
     UploadOptions options = const UploadOptions(),
   }) async {
@@ -279,7 +279,7 @@ class S3CompatCloudStorage extends CloudStorage {
 
   @override
   Future<bool> verifyUpload({
-    required Session session,
+    required CloudStorageSession session,
     required String path,
   }) async {
     try {

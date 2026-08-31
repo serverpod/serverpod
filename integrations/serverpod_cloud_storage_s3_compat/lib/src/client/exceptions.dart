@@ -1,5 +1,5 @@
 import 'package:http/http.dart' as http;
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 
 /// Exception thrown when an S3-compatible API returns an error.
 class S3Exception extends CloudStorageException {

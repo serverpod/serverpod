@@ -1,4 +1,4 @@
-import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 
 import '../config/gcp_endpoint_config.dart';
@@ -14,7 +14,7 @@ import '../config/gcp_endpoint_config.dart';
 class GoogleCloudStorage extends S3CompatCloudStorage {
   /// Creates a new [GoogleCloudStorage] reference.
   ///
-  /// The [serverpod] instance is used to load HMAC credentials from the
+  /// The [passwordProvider] instance is used to load HMAC credentials from the
   /// password system. Credentials can be set via:
   /// - `passwords.yaml`: `HMACAccessKeyId` and `HMACSecretKey`
   /// - Environment variables: `SERVERPOD_HMAC_ACCESS_KEY_ID` and
@@ -30,15 +30,15 @@ class GoogleCloudStorage extends S3CompatCloudStorage {
   ///
   /// Optionally specify [publicHost] to use a custom domain for public URLs.
   GoogleCloudStorage({
-    required Serverpod serverpod,
+    required CloudStoragePasswordProvider passwordProvider,
     required super.storageId,
     required super.public,
     required super.region,
     required super.bucket,
     String? publicHost,
   }) : super(
-         accessKey: _loadAccessKey(serverpod),
-         secretKey: _loadSecretKey(serverpod),
+         accessKey: _loadAccessKey(passwordProvider),
+         secretKey: _loadSecretKey(passwordProvider),
          endpoints: GcpEndpointConfig(
            publicHost: publicHost != null
                ? Uri.parse('https://$publicHost')
@@ -47,11 +47,11 @@ class GoogleCloudStorage extends S3CompatCloudStorage {
          uploadStrategy: MultipartPostUploadStrategy(),
        );
 
-  static String _loadAccessKey(Serverpod serverpod) {
-    serverpod.loadCustomPasswords([
+  static String _loadAccessKey(CloudStoragePasswordProvider passwordProvider) {
+    passwordProvider.loadPasswords([
       (envName: 'SERVERPOD_HMAC_ACCESS_KEY_ID', alias: 'HMACAccessKeyId'),
     ]);
-    var accessKey = serverpod.getPassword('HMACAccessKeyId');
+    var accessKey = passwordProvider.getPassword('HMACAccessKeyId');
     if (accessKey == null) {
       throw StateError(
         'GCP HMAC access key not configured. '
@@ -62,11 +62,11 @@ class GoogleCloudStorage extends S3CompatCloudStorage {
     return accessKey;
   }
 
-  static String _loadSecretKey(Serverpod serverpod) {
-    serverpod.loadCustomPasswords([
+  static String _loadSecretKey(CloudStoragePasswordProvider passwordProvider) {
+    passwordProvider.loadPasswords([
       (envName: 'SERVERPOD_HMAC_SECRET_KEY', alias: 'HMACSecretKey'),
     ]);
-    var secretKey = serverpod.getPassword('HMACSecretKey');
+    var secretKey = passwordProvider.getPassword('HMACSecretKey');
     if (secretKey == null) {
       throw StateError(
         'GCP HMAC secret key not configured. '

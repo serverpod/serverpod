@@ -1,9 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:serverpod/src/cloud_storage/cloud_storage_exception.dart';
-import 'package:serverpod/src/cloud_storage/upload_description.dart';
+import 'cloud_storage_exception.dart';
+import 'upload_description.dart';
 
-import '../server/session.dart';
+/// Interface for accessing cloud storage.
+abstract interface class CloudStorageSession {}
 
 /// The [CloudStorage] provides a standardized interface to store binary files
 /// in the cloud. The default implementation is to use the database for binary
@@ -27,9 +28,9 @@ abstract class CloudStorage {
   /// Saves a file to the cloud. The path should be relative to the root
   /// directory of the storage (i.e. the string shouldn't start with a
   /// slash).
-  /// This method should throw a CloudStorageException if the file upload fails.
+  /// Throws a [CloudStorageException] if the file upload fails.
   Future<void> storeFile({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
     required ByteData byteData,
     StoreFileOptions options = const StoreFileOptions(),
@@ -39,7 +40,7 @@ abstract class CloudStorage {
   ///
   /// Throws a [CloudStorageFileNotFoundException] if no file exists at [path].
   Future<ByteData> retrieveFile({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   });
 
@@ -48,13 +49,13 @@ abstract class CloudStorage {
   /// Throws a [CloudStorageFileNotFoundException] if no file exists at
   /// [path].
   Future<FileStat> statFile({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   });
 
   /// Returns true if the file exists.
   Future<bool> fileExists({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   }) async {
     try {
@@ -68,7 +69,7 @@ abstract class CloudStorage {
   /// Deletes the specified file if it exists. Does nothing if the file doesn't
   /// exist.
   Future<void> deleteFile({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   });
 
@@ -78,7 +79,7 @@ abstract class CloudStorage {
   /// Throws a [CloudStorageUnsupportedOperationException] if the storage does
   /// not provide public URLs.
   Future<Uri> publicDownloadUrl({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   });
 
@@ -89,7 +90,7 @@ abstract class CloudStorage {
   /// Throws a [CloudStorageUnsupportedOperationException] if this storage does
   /// not provide temporary URLs.
   Future<Uri> temporaryDownloadUrl({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
     TemporaryDownloadUrlOptions options = const TemporaryDownloadUrlOptions(),
   });
@@ -102,7 +103,7 @@ abstract class CloudStorage {
   /// Throws a [CloudStorageUnsupportedOperationException] if this storage does not
   /// support direct file uploads.
   Future<UploadDescription> createUploadDescription({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
     UploadOptions options = const UploadOptions(),
   });
@@ -112,7 +113,7 @@ abstract class CloudStorage {
   /// Returns `true` when the upload was successfully verified and `false` when
   /// no uploaded file exists.
   Future<bool> verifyUpload({
-    required Session session,
+    required covariant CloudStorageSession session,
     required String path,
   });
 }
