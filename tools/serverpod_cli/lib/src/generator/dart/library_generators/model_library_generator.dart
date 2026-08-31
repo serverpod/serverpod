@@ -918,7 +918,7 @@ class SerializableModelLibraryGenerator {
           '/// with some or all fields replaced by the given arguments.',
         )
         ..annotations.add(
-          refer('useResult', serverpodUrl(serverCode)).expression,
+          refer('useResult', serverpodUrl(serverCode)),
         )
         ..name = 'copyWith'
         ..optionalParameters.addAll(
@@ -950,7 +950,7 @@ class SerializableModelLibraryGenerator {
           '/// with some or all fields replaced by the given arguments.',
         );
         m.annotations.add(
-          refer('useResult', serverpodUrl(serverCode)).expression,
+          refer('useResult', serverpodUrl(serverCode)),
         );
 
         var shouldOverride = !isParentClass;
