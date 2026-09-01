@@ -130,8 +130,8 @@ String? _formatEvent(RunnerEvent event) => switch (event) {
     operation,
   ),
   StageChangedEvent(:final stage) => _stageLine(stage),
-  FlutterAppStateEvent(:final appId, :final running, :final url) =>
-    '[$appId] ${running ? 'running${url == null ? '' : ' at $url'}' : 'stopped'}',
+  final FlutterAppStateEvent state =>
+    '[${state.appId}] ${_appStateLine(state)}',
   FlutterAppsChangedEvent() ||
   ManifestChangedEvent() ||
   OperationsDiscardedEvent() => null,
@@ -147,6 +147,22 @@ String formatHistoryEntry(Object entry) => switch (entry) {
   CompletedOperation() => _completedOperationLine(entry),
   _ => entry.toString(),
 };
+
+/// Where a Flutter app is, as one line.
+///
+/// A launching app is neither running nor stopped. Rendered as stopped, a
+/// cold build reads as a failed launch that then recovered.
+String _appStateLine(FlutterAppStateEvent state) {
+  if (state.running) {
+    final url = state.url;
+    return 'running${url == null ? '' : ' at $url'}';
+  }
+  if (state.launching) {
+    final stage = state.launchStage;
+    return 'launching${stage == null ? '' : ' ($stage)'}';
+  }
+  return 'stopped';
+}
 
 String _completedOperationLine(CompletedOperation operation) =>
     '${operation.success ? '✓' : '✗'} ${operation.label} '

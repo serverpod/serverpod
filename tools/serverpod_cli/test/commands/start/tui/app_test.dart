@@ -492,7 +492,7 @@ void main() {
     });
   });
 
-  group('Given a tab with a stopped Flutter app', () {
+  group('Given a tab with a stopped Flutter app,', () {
     late AppLogTab tab;
 
     setUp(() {
@@ -507,7 +507,7 @@ void main() {
       ];
       state.isAppRunning = (_) => false;
       tab = state.getOrCreateAppLogTab(appId: 'a', label: 'Admin');
-      tab.stopped = true;
+      tab.runState = AppRunState.stopped;
       state.tabs.focusTab(tab);
     });
 
@@ -670,7 +670,7 @@ void main() {
         expect(state.tabs.allTabs, contains(admin));
 
         state.tabs.focusTab(admin);
-        admin.stopped = true;
+        admin.runState = AppRunState.stopped;
         await _sendKey(tester, LogicalKey.keyX);
 
         expect(state.tabs.allTabs, isNot(contains(admin)));
@@ -725,7 +725,7 @@ void main() {
         expect(state.tabs.allTabs, contains(admin));
 
         state.tabs.focusTab(admin);
-        admin.stopped = true;
+        admin.runState = AppRunState.stopped;
         await _sendKey(tester, LogicalKey.keyX);
 
         expect(state.tabs.allTabs, isNot(contains(admin)));

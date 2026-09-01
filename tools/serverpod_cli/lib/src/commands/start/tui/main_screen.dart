@@ -471,9 +471,11 @@ class MainScreen extends StatelessComponent {
   /// still launching. The server log tab has no indicator.
   TabActivity _tabActivity(PaneTab tab) {
     if (tab is! AppLogTab) return TabActivity.none;
-    if (tab.stopped) return TabActivity.stopped;
-    if (tab.ready) return TabActivity.running;
-    return TabActivity.loading;
+    return switch (tab.runState) {
+      AppRunState.stopped => TabActivity.stopped,
+      AppRunState.ready => TabActivity.running,
+      AppRunState.launching => TabActivity.loading,
+    };
   }
 
   Component _buildEmptyAppsPlaceholder(ServerpodThemeData st) {
@@ -523,21 +525,22 @@ class MainScreen extends StatelessComponent {
       fontWeight: FontWeight.dim,
     );
 
-    final loading = !tab.ready && !tab.stopped;
+    final loading = tab.launching;
 
     String statusText;
-    if (tab.ready) {
-      final device = tab.device;
-      statusText =
-          tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
-    } else if (tab.stopped) {
-      statusText = 'App stopped';
-    } else {
-      var value = tab.startupStage ?? 'Launching';
-      if (value.contains('.')) {
-        value = value.replaceFirst(RegExp(r'\.+$'), '');
-      }
-      statusText = value;
+    switch (tab.runState) {
+      case AppRunState.ready:
+        final device = tab.device;
+        statusText =
+            tab.url ?? 'Running on device${device == null ? '' : ' $device'}';
+      case AppRunState.stopped:
+        statusText = 'App stopped';
+      case AppRunState.launching:
+        var value = tab.startupStage ?? 'Launching';
+        if (value.contains('.')) {
+          value = value.replaceFirst(RegExp(r'\.+$'), '');
+        }
+        statusText = value;
     }
 
     final xLabel = tab.stopped ? 'Close Tab' : 'Stop App';

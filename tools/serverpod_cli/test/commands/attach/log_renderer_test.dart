@@ -160,6 +160,48 @@ void main() {
     );
 
     test(
+      'when an app announces that it is launching and, '
+      'then that it is running, '
+      'then the launch is rendered as launching, not as a stop',
+      () async {
+        final session = attachWithLogStream(
+          server.socketPath,
+          out: sink,
+          interrupts: interrupts.stream,
+        );
+        await waitFor(() => sink.lines.isNotEmpty);
+        sink.lines.clear();
+
+        runner
+          ..emit(
+            const FlutterAppStateEvent(
+              appId: 'admin',
+              running: false,
+              launching: true,
+              launchStage: 'compiling',
+            ),
+          )
+          ..emit(
+            const FlutterAppStateEvent(
+              appId: 'admin',
+              running: true,
+              launching: false,
+              url: 'http://localhost:5555',
+            ),
+          );
+        await waitFor(() => sink.lines.length >= 2);
+
+        expect(sink.lines, [
+          '[admin] launching (compiling)',
+          '[admin] running at http://localhost:5555',
+        ]);
+
+        interrupts.add(ProcessSignal.sigint);
+        await session;
+      },
+    );
+
+    test(
       'when the pod prints a line its structured log also carries, '
       'then the line is rendered once',
       () async {
