@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/commands/start/log_history.dart';
-import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
@@ -42,7 +41,7 @@ void main() {
           'type': 'log',
           'level': 'info',
           'message': 'Server started',
-          'timestamp': '2026-04-10T12:00:00.000Z',
+          'time': '2026-04-10T12:00:00.000Z',
         }),
       );
     });
@@ -54,6 +53,48 @@ void main() {
       expect(entry.level, LogLevel.info);
       expect(entry.time, DateTime.parse('2026-04-10T12:00:00.000Z'));
     });
+  });
+
+  group('Given a log event from a pod session,', () {
+    test(
+      'when it is recorded, '
+      'then the session id that correlates it survives the hop',
+      () {
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'Handled greeting.',
+            'time': '2026-04-10T12:00:00.000Z',
+            'scope': {'id': 'session-42', 'label': 'greeting'},
+          }),
+        );
+
+        final entry = history.serverEntries.single as LogEntry;
+        expect(entry.scope.id, 'session-42');
+        expect(entry.scope.label, 'greeting');
+      },
+    );
+
+    test(
+      'when the event carries no scope, '
+      'then the entry is still labelled as the server\'s',
+      () {
+        history.recordServerLogEvent(
+          _logEvent({
+            'type': 'log',
+            'level': 'info',
+            'message': 'No scope here.',
+            'time': '2026-04-10T12:00:00.000Z',
+          }),
+        );
+
+        expect(
+          (history.serverEntries.single as LogEntry).scope.label,
+          'server',
+        );
+      },
+    );
   });
 
   group(
@@ -540,7 +581,7 @@ void main() {
             'type': 'log',
             'level': 'warning',
             'message': 'Application warning',
-            'timestamp': '2026-07-14T03:00:00.000Z',
+            'time': '2026-07-14T03:00:00.000Z',
           }),
         );
       });

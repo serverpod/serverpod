@@ -188,7 +188,7 @@ void main() {
               'type': 'log',
               'level': 'info',
               'message': 'Server log retained without a TUI.',
-              'timestamp': '2026-08-10T12:00:00.000Z',
+              'time': '2026-08-10T12:00:00.000Z',
             }),
           ),
         );

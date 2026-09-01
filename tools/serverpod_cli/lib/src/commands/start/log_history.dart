@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
 import 'package:serverpod_cli/src/runner/line_sink.dart';
-import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
 import 'package:serverpod_shared/log.dart';
@@ -199,13 +198,13 @@ class StartLogHistory {
   /// Records an `ext.serverpod.log` event posted by the pod over its VM
   /// service. Other extension events are ignored.
   void recordServerLogEvent(Event event) {
-    if (event.extensionKind != 'ext.serverpod.log') return;
+    if (event.extensionKind != serverpodLogEvent) return;
     final data = event.extensionData?.data;
     if (data == null) return;
 
     switch (data['type'] as String?) {
       case 'log':
-        final entry = _logEntryFromEventData(data, scopeLabel: 'server');
+        final entry = decodeLogEntry(data, fallbackScopeLabel: 'server');
         serverEntries.add(entry);
         _emit(ServerLogEvent(entry));
         onServerEntry?.call(entry);
@@ -310,9 +309,9 @@ class StartLogHistory {
           ),
         );
 
-      case 'ext.serverpod.log':
+      case serverpodLogEvent:
         if (data['type'] != 'log') return;
-        entry = _logEntryFromEventData(data, scopeLabel: appId);
+        entry = decodeLogEntry(data, fallbackScopeLabel: appId);
 
       default:
         return;
@@ -452,28 +451,6 @@ LogEntry _flutterLogEntry(String appId, FlutterLogEvent event) {
       'levelIsInferred': event.levelIsInferred,
       'timestampIsInferred': event.timestampIsInferred,
     },
-  );
-}
-
-/// The [LogEntry] carried by an `ext.serverpod.log` event of type `log`.
-LogEntry _logEntryFromEventData(
-  Map<String, dynamic> data, {
-  required String scopeLabel,
-}) {
-  final stackTrace = data['stackTrace'] as String?;
-  return LogEntry(
-    level: parseLogLevel(data['level'] as String? ?? 'info'),
-    time:
-        DateTime.tryParse(data['timestamp'] as String? ?? '') ?? DateTime.now(),
-    message: data['message'] as String? ?? '',
-    scope: LogScope.root(scopeLabel),
-    error: data['error']?.toString(),
-    stackTrace: stackTrace != null && stackTrace.isNotEmpty
-        ? StackTrace.fromString(stackTrace)
-        : null,
-    metadata: data['metadata'] is Map
-        ? Map<String, Object?>.from(data['metadata'] as Map)
-        : null,
   );
 }
 

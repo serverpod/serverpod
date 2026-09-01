@@ -823,7 +823,7 @@ Future<void> main(List<String> arguments) async {
       'type': 'log',
       'level': 'info',
       'message': 'Server log retained without a TUI.',
-      'timestamp': DateTime.now().toIso8601String(),
+      'time': DateTime.now().toIso8601String(),
     });
   });
   await Completer<void>().future;
