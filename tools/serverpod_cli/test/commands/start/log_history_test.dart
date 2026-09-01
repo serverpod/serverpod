@@ -695,6 +695,75 @@ void main() {
     );
   });
 
+  group('Given an output sink for the pod that also echoes lines,', () {
+    late List<String> echoed;
+    late IOSink podStdout;
+
+    setUp(() {
+      echoed = [];
+      podStdout = history.serverOutputSink(echoLine: echoed.add);
+    });
+
+    test(
+      'when complete lines are written, '
+      'then each is echoed as it is retained',
+      () {
+        podStdout.writeln('Server listening on port 8080.');
+
+        expect(echoed, ['Server listening on port 8080.']);
+      },
+    );
+
+    test(
+      'when the pod exits without terminating its last line, '
+      'then that line is echoed too',
+      () async {
+        podStdout.writeln('Booting.');
+        podStdout.write('Unhandled exception');
+
+        await podStdout.close();
+
+        expect(echoed, ['Booting.', 'Unhandled exception']);
+      },
+    );
+  });
+
+  group('Given an output sink for a Flutter app that also echoes lines,', () {
+    late List<String> echoed;
+    late IOSink appStdout;
+
+    setUp(() {
+      echoed = [];
+      appStdout = history.flutterOutputSink(
+        'serverpod-app',
+        echoLine: echoed.add,
+      );
+    });
+
+    test(
+      'when complete lines are written, '
+      'then each is echoed as it is retained',
+      () {
+        appStdout.writeln('Launching lib/main.dart');
+
+        expect(echoed, ['Launching lib/main.dart']);
+      },
+    );
+
+    test(
+      'when the app exits without terminating its last line, '
+      'then that line is echoed too',
+      () async {
+        appStdout.writeln('Reloaded 1 library');
+        appStdout.write('Lost connection to device');
+
+        await appStdout.close();
+
+        expect(echoed, ['Reloaded 1 library', 'Lost connection to device']);
+      },
+    );
+  });
+
   group(
     'Given an output sink for a Flutter app that also writes to the terminal, '
     'when a line is written,',

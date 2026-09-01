@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:serverpod_cli/src/commands/start/flutter_log_event.dart';
+import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/util/strip_ansi.dart';
@@ -142,10 +142,18 @@ class StartLogHistory {
   }
 
   /// An [IOSink] that records everything written to it as the pod's raw
-  /// output, optionally passing the original writes on to [forwardTo], the
-  /// terminal in a foreground session or the runner's log file when detached.
-  IOSink serverOutputSink({IOSink? forwardTo}) =>
-      _LineSink(addServerLine, forwardTo);
+  /// output.
+  ///
+  /// [forwardTo] receives the original writes verbatim, ANSI styling included,
+  /// and is the terminal in a foreground session. [echoLine] receives each
+  /// finished line in split, ANSI-free form, as the runner's log file wants.
+  IOSink serverOutputSink({
+    IOSink? forwardTo,
+    void Function(String line)? echoLine,
+  }) => LineSink((line) {
+    addServerLine(line);
+    echoLine?.call(line);
+  }, forwardTo);
 
   /// An [IOSink] that records everything written to it as raw output lines of
   /// the Flutter app [appId].
@@ -153,8 +161,17 @@ class StartLogHistory {
   /// [forwardTo] receives everything verbatim, ANSI styling included, and is
   /// the real stdout/stderr outside the TUI; under the TUI it is null, since
   /// the TUI owns the terminal and renders the recorded lines itself.
-  IOSink flutterOutputSink(String appId, {IOSink? forwardTo}) =>
-      _LineSink((line) => addFlutterLine(appId, line), forwardTo);
+  ///
+  /// [echoLine] receives each finished line in split, ANSI-free form, as the
+  /// runner's log file wants.
+  IOSink flutterOutputSink(
+    String appId, {
+    IOSink? forwardTo,
+    void Function(String line)? echoLine,
+  }) => LineSink((line) {
+    addFlutterLine(appId, line);
+    echoLine?.call(line);
+  }, forwardTo);
 
   /// Records an `ext.serverpod.log` event posted by the pod over its VM
   /// service. Other extension events are ignored.
@@ -436,91 +453,6 @@ LogEntry _logEntryFromEventData(
         ? Map<String, Object?>.from(data['metadata'] as Map)
         : null,
   );
-}
-
-/// [IOSink] that splits what is written to it into ANSI-free lines and hands
-/// each to [_onLine], optionally passing the original writes on to another
-/// sink unchanged.
-///
-/// One implementation for the pod's output and every Flutter app's: what
-/// differs between them is only where the finished lines go.
-class _LineSink implements IOSink {
-  _LineSink(this._onLine, this._forwardTo);
-
-  final void Function(String line) _onLine;
-  final IOSink? _forwardTo;
-  final StringBuffer _lineBuffer = StringBuffer();
-
-  @override
-  void add(List<int> data) {
-    _forwardTo?.add(data);
-    _record(utf8.decode(data, allowMalformed: true));
-  }
-
-  /// Forwards text as text rather than as bytes, so the terminal keeps
-  /// encoding it the way it would have without this sink in between.
-  @override
-  void write(Object? object) {
-    _forwardTo?.write(object);
-    _record('$object');
-  }
-
-  @override
-  void writeln([Object? object = '']) => write('$object\n');
-
-  @override
-  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
-      write(objects.join(separator));
-
-  @override
-  void writeCharCode(int charCode) => write(String.fromCharCode(charCode));
-
-  @override
-  void addError(Object error, [StackTrace? stackTrace]) {
-    _onLine(stripAnsi('ERROR: $error'));
-    if (stackTrace != null) _onLine(stripAnsi('$stackTrace'));
-    _forwardTo?.addError(error, stackTrace);
-  }
-
-  @override
-  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
-
-  @override
-  Future<void> flush() async => _forwardTo?.flush();
-
-  /// Records whatever was written without a trailing newline. Never closes
-  /// [_forwardTo]: outside the TUI that is the process's own stdout/stderr.
-  @override
-  Future<void> close() async {
-    if (_lineBuffer.isNotEmpty) _emitLine();
-  }
-
-  @override
-  Encoding get encoding => utf8;
-
-  @override
-  set encoding(Encoding value) {}
-
-  @override
-  Future<void> get done => Future.value();
-
-  /// Splits [text] on newlines, holding back a trailing partial line until the
-  /// rest of it arrives.
-  void _record(String text) {
-    for (var i = 0; i < text.length; i++) {
-      final char = text[i];
-      if (char == '\n') {
-        _emitLine();
-      } else if (char != '\r') {
-        _lineBuffer.writeCharCode(char.codeUnitAt(0));
-      }
-    }
-  }
-
-  void _emitLine() {
-    _onLine(stripAnsi(_lineBuffer.toString()));
-    _lineBuffer.clear();
-  }
 }
 
 /// A [LogWriter] that folds the CLI's own logging into a [StartLogHistory].
