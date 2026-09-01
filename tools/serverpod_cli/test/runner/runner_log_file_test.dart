@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/config/config.dart';
+import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/runner/runner_log_file.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_shared/log.dart' show LogEntry, LogLevel, LogScope;
@@ -149,7 +150,7 @@ void main() {
       () async {
         final file = RunnerLogFile(path: logPath);
         await file.open();
-        final sink = RunnerLogFileSink(file);
+        final sink = LineSink(file.writeLine);
 
         final bytes = utf8.encode('héllo\n');
         sink.add(bytes.sublist(0, 2));

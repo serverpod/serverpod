@@ -564,6 +564,12 @@ Future<RunnerManifest?> _spawnRunner({
   }
 }
 
+/// [echo] bound to [appId], or null when there is none.
+void Function(String line)? _appLineEcho(
+  void Function(String appId, String line)? echo,
+  String appId,
+) => echo == null ? null : (line) => echo(appId, line);
+
 /// Whether this process is the Dart VM running a script, rather than a
 /// compiled executable of the CLI itself.
 bool get _runsOnDartVm =>
@@ -956,8 +962,9 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   // layer, so the MCP log tools serve the same content with and without the
   // TUI. See [StartLogHistory].
   required StartLogHistory logHistory,
-  IOSink? flutterStdoutEcho,
-  IOSink? flutterStderrEcho,
+  IOSink? Function(String appId)? flutterStdoutEchoFor,
+  IOSink? Function(String appId)? flutterStderrEchoFor,
+  void Function(String appId, String line)? flutterEchoLine,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
 }) async {
@@ -1280,10 +1287,16 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       onLaunchFailed: (app) =>
           runnerApi.recordFlutterAppState(app.id, running: false),
       onLog: (app, event) => logHistory.recordFlutterLogEvent(app.id, event),
-      stdoutSinkFor: (app) =>
-          logHistory.flutterOutputSink(app.id, forwardTo: flutterStdoutEcho),
-      stderrSinkFor: (app) =>
-          logHistory.flutterOutputSink(app.id, forwardTo: flutterStderrEcho),
+      stdoutSinkFor: (app) => logHistory.flutterOutputSink(
+        app.id,
+        forwardTo: flutterStdoutEchoFor?.call(app.id),
+        echoLine: _appLineEcho(flutterEchoLine, app.id),
+      ),
+      stderrSinkFor: (app) => logHistory.flutterOutputSink(
+        app.id,
+        forwardTo: flutterStderrEchoFor?.call(app.id),
+        echoLine: _appLineEcho(flutterEchoLine, app.id),
+      ),
     );
     final rollbackBeforeFlutter = rollback;
     rollback = ({int exitCode = 1}) async {
