@@ -174,26 +174,19 @@ class StartCommand extends ServerpodCommand<StartOption> {
       serverDir: serverDir,
       asked: asked,
       useTui: commandConfig.value(StartOption.tui),
-      awaitManifest: !attaching,
     );
 
     if (!attaching) {
-      log.info('Runner ready (pid ${manifest!.pid}).');
-      log.info(
-        'Attach with `serverpod runner attach`, stop with `serverpod runner stop`.',
-      );
+      reportRunnerReady(await awaitStackUp(serverDir, manifest));
       return;
     }
 
-    final socketPath = manifest == null
-        ? serverpodTuiSocketPath(serverDir)
-        : requireAttachSocket(manifest);
+    final socketPath = requireAttachSocket(manifest);
     final useTui = commandConfig.value(StartOption.tui) && stdout.hasTerminal;
-    final waitForRunner = manifest == null ? _runnerStartTimeout : null;
     final exitCode = await attachTo(
       socketPath,
       useTui: useTui,
-      waitForRunner: waitForRunner,
+      waitForRunner: const Duration(seconds: 5),
     );
     if (exitCode != 0) throw ExitException(exitCode);
   }
@@ -239,12 +232,11 @@ Future<GeneratorConfig> loadRunnerProjectConfig({
 /// them. A caller with nothing to render waits with [awaitStackUp].
 ///
 /// [useTui] is reported to analytics only; nothing here renders.
-Future<RunnerManifest?> ensureRunner({
+Future<RunnerManifest> ensureRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
   required bool useTui,
-  required bool awaitManifest,
 }) async {
   switch (await resolveRunner(serverDir)) {
     case IncompatibleRunner(:final message):
@@ -272,7 +264,6 @@ Future<RunnerManifest?> ensureRunner({
         serverDir: serverDir,
         asked: asked,
         useTui: useTui,
-        awaitManifest: awaitManifest,
       );
   }
 }
@@ -389,12 +380,11 @@ Future<void> _printRunnerLogTail(String serverDir, {int lines = 20}) async {
 /// Detached, because the operating system delivers SIGINT to a whole process
 /// group: a runner spawned in this terminal's group would die on the next
 /// Ctrl+C in it. [ProcessStartMode.detached] puts it in a group of its own.
-Future<RunnerManifest?> _spawnRunner({
+Future<RunnerManifest> _spawnRunner({
   required GeneratorConfig config,
   required String serverDir,
   required RunnerConfig asked,
   required bool useTui,
-  required bool awaitManifest,
 }) async {
   unawaited(
     _captureSessionStartAnalytics(
@@ -417,8 +407,6 @@ Future<RunnerManifest?> _spawnRunner({
     ],
     mode: ProcessStartMode.detached,
   );
-
-  if (!awaitManifest) return null;
 
   switch (await _awaitManifest(serverDir, pid: process.pid)) {
     case _RunnerPublished(:final manifest):
@@ -471,11 +459,9 @@ final class _RunnerTimedOut extends _RunnerStartOutcome {
 /// its socket, or to leave its manifest behind at [RunnerStage.stopping],
 /// or gives up.
 ///
-/// The runner publishes only once the whole stack is up, so the wait has to
-/// cover code generation, a Docker Compose start and a cold compile. It also
-/// covers a runner that aborted before publishing - a held port, a held lock,
-/// a Docker failure - and there is no sign of that until the deadline passes,
-/// so the deadline stays as short as a legitimate cold start allows.
+/// [timeout] only needs to cover process startup and reading the project
+/// config. The runner publishes before generation, Docker and the first
+/// compile.
 Future<_RunnerStartOutcome> _awaitManifest(
   String serverDir, {
   required int pid,
@@ -501,12 +487,10 @@ Future<_RunnerStartOutcome> _awaitManifest(
   }
 }
 
-/// How long a freshly spawned runner is given to come up, whether that is
-/// waited out for its manifest or spent retrying its socket.
+/// How long a freshly spawned runner is given to publish its manifest.
 ///
-/// Long because it covers a cold start: code generation, `docker compose up`
-/// pulling an image, and a first compile.
-const _runnerStartTimeout = Duration(minutes: 2);
+/// Not a cold start's budget. See [_awaitManifest] for what it has to span.
+const _runnerStartTimeout = Duration(seconds: 30);
 
 /// Constructs a [NativeAssetsBuilder] for the server at [serverDir]. The
 /// builder discovers `package_config.json` itself (walking up to a workspace
@@ -839,8 +823,18 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
   final attachSocket = RunnerSocketServer(serverDir: serverDir);
 
+  RunnerManifestPublisher? publisher;
+
   Future<void> releaseRunnerHold({required int exitCode}) async {
     runnerApi.setStage(RunnerStage.stopping, exitCode: exitCode);
+    if (publisher case final publisher?) {
+      await publisher.leaveBehind(
+        publisher.manifest.copyWith(
+          stage: RunnerStage.stopping,
+          exitCode: exitCode,
+        ),
+      );
+    }
     await attachSocket.close();
     await lock.release();
   }
@@ -851,6 +845,52 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   // user-facing vm-service-info.json receives the proxy URI written by
   // _mountOrRetargetProxy.
   final podInfoFile = p.join(serverpodToolDir, 'vm-service-info.pod.json');
+
+  final runMode = runModeFromServerArgs(serverArgs.value);
+  final serverConfig = _loadServerConfig(
+    serverDir: serverDir,
+    runMode: runMode,
+  );
+
+  final startDocker = _resolveStartDocker(
+    dockerFlag: docker,
+    serverDir: serverDir,
+    serverConfig: serverConfig,
+  );
+
+  final requestedServerArgs = [...serverArgs.value];
+
+  final manifestPublisher = RunnerManifestPublisher(
+    serverDir: serverDir,
+    manifest: RunnerManifest(
+      pid: pid,
+      stage: RunnerStage.starting,
+      sockets: RunnerSockets(tui: attachSocket.socketPath, mcp: ''),
+      config: RunnerConfig(
+        watch: watch,
+        flutter: launchFlutterApp,
+        docker: startDocker,
+        serverArgs: requestedServerArgs,
+      ),
+    ),
+  );
+  publisher = manifestPublisher;
+
+  // Bound before the manifest names it, and fatal when it cannot be. A runner
+  // whose manifest names no live socket is indistinguishable from one that
+  // never came up, so `serverpod start` would time out on a runner that is up.
+  try {
+    await attachSocket.start();
+    attachSocket.connect(runnerApi);
+  } on SocketException catch (e) {
+    log.error(
+      'Failed to serve the attach socket ${attachSocket.socketPath}: $e',
+    );
+    await releaseRunnerHold(exitCode: 1);
+    return const WatchLoopAborted(1);
+  }
+
+  await manifestPublisher.publish();
 
   // If a server is already running, abort so the IDE can attach to the
   // existing instance via the unchanged info file. Cheap local check; runs
@@ -864,12 +904,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     return const WatchLoopAborted(0);
   }
 
-  final runMode = runModeFromServerArgs(serverArgs.value);
-  final serverConfig = _loadServerConfig(
-    serverDir: serverDir,
-    runMode: runMode,
-  );
-
   final portEnvironment = await _resolvePortEnvironment(
     serverDir: serverDir,
     runMode: runMode,
@@ -879,12 +913,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     await releaseRunnerHold(exitCode: 1);
     return const WatchLoopAborted(1);
   }
-
-  final startDocker = _resolveStartDocker(
-    dockerFlag: docker,
-    serverDir: serverDir,
-    serverConfig: serverConfig,
-  );
 
   var startedDocker = false;
   if (startDocker) {
@@ -913,8 +941,6 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     await rollbackProvisioning(exitCode: 0);
     return const WatchLoopAborted(0);
   }
-
-  final requestedServerArgs = [...serverArgs.value];
 
   // Apply pending migrations from the CLI before booting the pod.
   try {
@@ -1300,10 +1326,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
 
   setupFileWatcher();
 
-  final publisher = RunnerManifestPublisher(
-    serverDir: serverDir,
-    manifest: RunnerManifest(
-      pid: pid,
+  await manifestPublisher.replace(
+    manifestPublisher.manifest.copyWith(
       stage: runnerApi.stage,
       sockets: RunnerSockets(
         tui: attachSocket.socketPath,
@@ -1316,15 +1340,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
               project: composeProjectName(serverDir),
             )
           : null,
-      config: RunnerConfig(
-        watch: watch,
-        flutter: launchFlutterApp,
-        docker: startDocker,
-        serverArgs: requestedServerArgs,
-      ),
     ),
   );
-  await publisher.publish();
   onServerAddresses = (addresses) {
     final servers = RunnerServerUris(
       api: addresses.api,
@@ -1332,20 +1349,21 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       web: addresses.web,
     );
     flutterManager.resolvedApiUrl = servers.api;
-    final updated = publisher.manifest.copyWith(servers: servers);
+    final updated = manifestPublisher.manifest.copyWith(servers: servers);
     runnerApi.recordManifest(updated);
-    unawaited(publisher.replace(updated));
+    unawaited(manifestPublisher.replace(updated));
     launchAppsIfReady();
   };
   if (lastServerAddresses case final addresses?) {
     onServerAddresses(addresses);
   }
 
-  publisher.republishOn(
+  manifestPublisher.republishOn(
     runnerApi.events.where((event) => event is StageChangedEvent),
     (current) => current.copyWith(stage: runnerApi.stage),
   );
-  publisher.republishOn(session.vmServiceUriChanges, (current) {
+
+  manifestPublisher.republishOn(session.vmServiceUriChanges, (current) {
     final updated = current.copyWith(
       vmService: RunnerVmServiceUris(proxy: proxy?.httpUri.toString()),
     );
@@ -1367,7 +1385,7 @@ Future<WatchLoopSetupResult> setupWatchLoop({
       stopFileWatcher: () => fileChangeSub?.cancel(),
       stopDocker: startedDocker ? () => _stopDockerServices(serverDir) : null,
       vmServiceInfoFile: vmServiceInfoFile,
-      manifestPublisher: publisher,
+      manifestPublisher: manifestPublisher,
       lock: lock,
     ),
   );

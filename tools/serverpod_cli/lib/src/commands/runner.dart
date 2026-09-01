@@ -117,14 +117,9 @@ class RunnerStartCommand extends ServerpodCommand<RunnerStartOption> {
         serverArgs: argResults?.rest ?? const [],
       ),
       useTui: false,
-      awaitManifest: true,
     );
 
-    log.info('Runner ready (pid ${manifest!.pid}).');
-    log.info(
-      'Attach with `serverpod runner attach`, '
-      'stop with `serverpod runner stop`.',
-    );
+    reportRunnerReady(await awaitStackUp(serverDir, manifest));
   }
 }
 
