@@ -22,6 +22,8 @@ class RunnerSnapshot {
     required this.flutterLines,
     required this.flutterApps,
     required this.runningFlutterApps,
+    required this.launchingFlutterApps,
+    this.flutterAppUrls = const {},
     this.exitCode,
   });
 
@@ -37,6 +39,8 @@ class RunnerSnapshot {
     required bool canLaunchFlutterApps,
     required List<FlutterAppConfig> flutterApps,
     required Set<String> runningFlutterApps,
+    required Set<String> launchingFlutterApps,
+    Map<String, String?> flutterAppUrls = const {},
     int? exitCode,
   }) => RunnerSnapshot(
     stage: stage,
@@ -59,6 +63,8 @@ class RunnerSnapshot {
     },
     flutterApps: flutterApps,
     runningFlutterApps: runningFlutterApps,
+    launchingFlutterApps: launchingFlutterApps,
+    flutterAppUrls: flutterAppUrls,
     exitCode: exitCode,
   );
 
@@ -94,6 +100,15 @@ class RunnerSnapshot {
   /// Which of [flutterApps] are running.
   final Set<String> runningFlutterApps;
 
+  /// Which of [flutterApps] are between their spawn and their ready signal.
+  final Set<String> launchingFlutterApps;
+
+  /// Where each running app is serving, keyed by app id.
+  ///
+  /// Carried rather than left to the events. A URL publishes once, when the
+  /// app comes up.
+  final Map<String, String?> flutterAppUrls;
+
   /// What the runner leaves with, once its stage is [RunnerStage.stopping].
   ///
   /// A client attaching after the announcement has no other way to learn it:
@@ -118,6 +133,8 @@ class RunnerSnapshot {
       for (final app in flutterApps) encodeFlutterApp(app),
     ],
     'runningFlutterApps': runningFlutterApps.toList(),
+    'launchingFlutterApps': launchingFlutterApps.toList(),
+    'flutterAppUrls': flutterAppUrls,
     if (exitCode != null) 'exitCode': exitCode,
   };
 
@@ -151,6 +168,15 @@ class RunnerSnapshot {
     ],
     runningFlutterApps: {
       for (final id in json['runningFlutterApps'] as List? ?? const []) '$id',
+    },
+    launchingFlutterApps: {
+      for (final id in json['launchingFlutterApps'] as List? ?? const []) '$id',
+    },
+    flutterAppUrls: switch (json['flutterAppUrls']) {
+      final Map<Object?, Object?> map => {
+        for (final entry in map.entries) '${entry.key}': entry.value as String?,
+      },
+      _ => const {},
     },
     exitCode: json['exitCode'] as int?,
   );

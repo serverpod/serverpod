@@ -7,6 +7,7 @@ import 'package:serverpod_cli/src/runner/runner_event.dart';
 import 'package:serverpod_cli/src/runner/runner_snapshot.dart';
 import 'package:serverpod_cli/src/runner/runner_socket_server.dart';
 import 'package:serverpod_shared/log.dart';
+import 'package:serverpod_tui/serverpod_tui.dart' show TrackedOperation;
 import 'package:test/test.dart';
 
 import '../test_util/fake_runner_api.dart';
@@ -170,6 +171,153 @@ void main() {
         await waitFor(() => client.stage == RunnerStage.degraded);
 
         expect(client.isRunning, isFalse);
+      },
+    );
+
+    test(
+      'when an app is launching at attach time, '
+      'then the client reports it as launching',
+      () async {
+        runner
+          ..flutterAppIds = ['admin']
+          ..launchingFlutterApps = {'admin'};
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+
+        expect(client.isFlutterAppLaunching('admin'), isTrue);
+        expect(client.isFlutterAppRunning('admin'), isFalse);
+      },
+    );
+
+    test(
+      'when the runner discards operations, '
+      'then the client drops them rather than showing them in flight',
+      () async {
+        runner.activeOperations = [
+          (
+            operation: TrackedOperation(id: 'scope_1', label: 'GET /api/one'),
+            startedAt: DateTime.utc(2026, 8, 25),
+          ),
+        ];
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+        expect(client.history.activeOperations.keys, ['scope_1']);
+
+        runner.eventController.add(
+          const OperationsDiscardedEvent(['scope_1']),
+        );
+        await waitFor(() => client.history.activeOperations.isEmpty);
+
+        expect(client.history.operationStartTimes, isEmpty);
+      },
+    );
+
+    test(
+      'when an app goes from launching to running, '
+      'then the client follows both transitions',
+      () async {
+        runner.flutterAppIds = ['admin'];
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: false,
+            launching: true,
+          ),
+        );
+        await waitFor(() => client.isFlutterAppLaunching('admin'));
+        expect(client.isFlutterAppLaunching('admin'), isTrue);
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: true,
+            launching: false,
+            url: 'http://localhost:5000',
+          ),
+        );
+        await waitFor(() => client.isFlutterAppRunning('admin'));
+        expect(client.isFlutterAppLaunching('admin'), isFalse);
+      },
+    );
+
+    test(
+      'when a running app reports launch progress, which carries no URL, '
+      'then the client keeps the URL it holds',
+      () async {
+        runner.flutterAppIds = ['admin'];
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: true,
+            launching: false,
+            url: 'http://localhost:5000',
+          ),
+        );
+        await waitFor(
+          () => client.flutterAppUrls['admin'] == 'http://localhost:5000',
+        );
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: true,
+            launching: false,
+            launchStage: 'reloading',
+          ),
+        );
+        await pumpEventQueue();
+        await pumpEventQueue();
+
+        expect(client.flutterAppUrls['admin'], 'http://localhost:5000');
+      },
+    );
+
+    test(
+      'when an app stops, '
+      'then the client drops the URL it was serving',
+      () async {
+        runner.flutterAppIds = ['admin'];
+
+        final client = RunnerClient(socketPath: server.socketPath);
+        addTearDown(client.close);
+        await client.attach();
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: true,
+            launching: false,
+            url: 'http://localhost:5000',
+          ),
+        );
+        await waitFor(
+          () => client.flutterAppUrls['admin'] == 'http://localhost:5000',
+        );
+
+        runner.eventController.add(
+          const FlutterAppStateEvent(
+            appId: 'admin',
+            running: false,
+            launching: false,
+          ),
+        );
+        await waitFor(() => client.flutterAppUrls['admin'] == null);
+
+        expect(client.flutterAppUrls['admin'], isNull);
       },
     );
 

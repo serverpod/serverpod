@@ -97,12 +97,27 @@ class LocalRunnerApi implements InProcessRunnerApi {
     );
   }
 
-  /// Records that [appId] started or stopped.
+  /// Records that [appId] changed state.
+  ///
+  /// Reads `running`, `launching` and the URL from the Flutter manager rather
+  /// than taking them as arguments. [launchStage] names what the toolchain is
+  /// doing, for the progress a launching app reports.
+  ///
+  /// [url] is what the caller has just learned, falling back to the manager's.
+  /// An omitted URL means the caller is reporting none, not that there is none.
   void recordFlutterAppState(
     String appId, {
-    required bool running,
     String? url,
-  }) => _emit(FlutterAppStateEvent(appId: appId, running: running, url: url));
+    String? launchStage,
+  }) => _emit(
+    FlutterAppStateEvent(
+      appId: appId,
+      running: isFlutterAppRunning(appId) && !isFlutterAppLaunching(appId),
+      launching: isFlutterAppLaunching(appId),
+      url: url ?? _stack?.flutterManager.appUrls[appId],
+      launchStage: launchStage,
+    ),
+  );
 
   /// Records that the set of configured apps changed.
   void recordFlutterApps(List<FlutterAppConfig> apps) =>
@@ -136,10 +151,16 @@ class LocalRunnerApi implements InProcessRunnerApi {
     watchModeEnabled: _watchModeEnabled,
     canLaunchFlutterApps: canLaunchFlutterApps,
     flutterApps: flutterApps,
+    launchingFlutterApps: {
+      for (final app in flutterApps)
+        if (isFlutterAppLaunching(app.id)) app.id,
+    },
     runningFlutterApps: {
       for (final app in flutterApps)
-        if (isFlutterAppRunning(app.id)) app.id,
+        if (isFlutterAppRunning(app.id) && !isFlutterAppLaunching(app.id))
+          app.id,
     },
+    flutterAppUrls: _stack?.flutterManager.appUrls ?? const {},
   );
 
   /// Stops emitting events.

@@ -75,8 +75,10 @@ void main() {
         runner
           ..stage = RunnerStage.degraded
           ..isRunning = false
-          ..flutterAppIds = ['admin']
+          ..flutterAppIds = ['admin', 'portal']
           ..runningFlutterApps = {'admin'}
+          ..launchingFlutterApps = {'portal'}
+          ..flutterAppUrls = {'admin': 'http://localhost:5000', 'portal': null}
           ..logHistory = [
             LogEntry(
               time: DateTime.utc(2026, 8, 25),
@@ -101,8 +103,13 @@ void main() {
 
         expect(snapshot.stage, RunnerStage.degraded);
         expect(snapshot.isRunning, isFalse);
-        expect(snapshot.flutterApps.single.id, 'admin');
+        expect(snapshot.flutterApps.map((app) => app.id), ['admin', 'portal']);
         expect(snapshot.runningFlutterApps, {'admin'});
+        expect(snapshot.launchingFlutterApps, {'portal'});
+        expect(snapshot.flutterAppUrls, {
+          'admin': 'http://localhost:5000',
+          'portal': null,
+        });
         expect(snapshot.flutterLines['admin'], ['line one']);
         final entry = snapshot.serverEntries.single as LogEntry;
         expect(entry.message, 'Compilation failed.');

@@ -1,6 +1,7 @@
 import 'package:nocterm/nocterm.dart' hide LogEntry;
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_shared/log.dart';
 import 'package:serverpod_tui/serverpod_tui.dart';
@@ -109,7 +110,7 @@ Future<NoctermTester> _pumpReadyAppTab({
     ),
   ];
   final tab = state.getOrCreateAppLogTab(appId: 'app', label: 'App');
-  tab.ready = true;
+  tab.runState = AppRunState.ready;
   tab.device = device;
   tab.url = url;
   state.tabs.focusTab(tab);
