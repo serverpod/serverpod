@@ -119,6 +119,25 @@ void main() {
     );
 
     test(
+      'when an app reports a launch stage, '
+      'then it survives, so the tab says what the toolchain is doing',
+      () {
+        final decoded =
+            _roundTrip(
+                  const FlutterAppStateEvent(
+                    appId: 'admin',
+                    running: false,
+                    launching: true,
+                    launchStage: 'Running pub get',
+                  ),
+                )
+                as FlutterAppStateEvent;
+
+        expect(decoded.launchStage, 'Running pub get');
+      },
+    );
+
+    test(
       'when the runner announces it is stopping, '
       'then the exit code it is leaving with survives',
       () {
@@ -172,13 +191,14 @@ void main() {
 
     test(
       'when an app changes state, '
-      'then whether it runs and its URL survive',
+      'then whether it runs, whether it is launching and its URL survive',
       () {
         final decoded =
             _roundTrip(
                   const FlutterAppStateEvent(
                     appId: 'admin',
                     running: true,
+                    launching: false,
                     url: 'http://localhost:5000',
                   ),
                 )
@@ -186,6 +206,7 @@ void main() {
 
         expect(decoded.appId, 'admin');
         expect(decoded.running, isTrue);
+        expect(decoded.launching, isFalse);
         expect(decoded.url, 'http://localhost:5000');
       },
     );

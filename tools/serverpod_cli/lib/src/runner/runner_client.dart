@@ -88,6 +88,7 @@ class RunnerClient implements RunnerApi {
   bool _canLaunchFlutterApps = false;
   List<FlutterAppConfig> _flutterApps = const [];
   Set<String> _runningApps = {};
+  Set<String> _launchingApps = {};
   final Map<String, String?> _appUrls = {};
 
   /// Whether a connection to the runner is open.
@@ -130,11 +131,12 @@ class RunnerClient implements RunnerApi {
   /// this client lives.
   ///
   /// What a renderer calls. The snapshot request tells the runner a UI has
-  /// arrived; the reconnect loop is what lets a client outlive a runner
-  /// restart, which a one-shot command has no use for.
-  /// [waitFor] bounds how long to keep retrying the first connection, for a
-  /// caller that has just spawned a runner and knows the socket is coming.
-  /// Without it a missing runner is reported at once.
+  /// arrived, and the reconnect loop lets this client outlive a runner
+  /// restart.
+  ///
+  /// [waitFor] bounds how long to retry the first connection, for a caller
+  /// that just spawned a runner and knows the socket is coming. Without it a
+  /// missing runner is reported at once.
   Future<void> attach({Duration? waitFor}) async {
     _attached = true;
     if (waitFor == null) {
@@ -246,8 +248,8 @@ class RunnerClient implements RunnerApi {
 
   /// Runs [peer] until the runner goes away, then starts reconnecting.
   ///
-  /// A runner shutting down mid-message ends the peer with an error, which is
-  /// the ordinary way a `serverpod runner stop` reaches an attached client.
+  /// A runner shutting down mid-message ends the peer with an error, the
+  /// ordinary way a `serverpod runner stop` reaches an attached client.
   ///
   /// Only the peer this client is on reports a disconnect. Listening starts
   /// before the snapshot request, since `sendRequest` needs it to pump the
@@ -295,6 +297,10 @@ class RunnerClient implements RunnerApi {
     _canLaunchFlutterApps = snapshot.canLaunchFlutterApps;
     _flutterApps = snapshot.flutterApps;
     _runningApps = {...snapshot.runningFlutterApps};
+    _launchingApps = {...snapshot.launchingFlutterApps};
+    _appUrls
+      ..clear()
+      ..addAll(snapshot.flutterAppUrls);
 
     history.serverEntries
       ..clear()
@@ -328,13 +334,9 @@ class RunnerClient implements RunnerApi {
         history.activeOperations[operation.id] = operation;
         history.operationStartTimes[operation.id] = startedAt;
 
-      case OperationCompletedEvent(:final operation):
-        history.activeOperations.removeWhere(
-          (_, active) => active.label == operation.label,
-        );
-        history.operationStartTimes.removeWhere(
-          (id, _) => !history.activeOperations.containsKey(id),
-        );
+      case OperationCompletedEvent(:final operation, :final id):
+        history.activeOperations.remove(id);
+        history.operationStartTimes.remove(id);
         history.serverEntries.add(operation);
 
       case ServerLineEvent(:final line, :final duplicatesEntry):
@@ -360,11 +362,21 @@ class RunnerClient implements RunnerApi {
       case FlutterAppsChangedEvent(:final apps):
         _flutterApps = apps;
 
-      case FlutterAppStateEvent(:final appId, :final running, :final url):
+      case FlutterAppStateEvent(
+        :final appId,
+        :final running,
+        :final launching,
+        :final url,
+      ):
         if (running) {
           _runningApps.add(appId);
         } else {
           _runningApps.remove(appId);
+        }
+        if (launching) {
+          _launchingApps.add(appId);
+        } else {
+          _launchingApps.remove(appId);
         }
         _appUrls[appId] = url;
 
@@ -408,6 +420,8 @@ class RunnerClient implements RunnerApi {
     canLaunchFlutterApps: _canLaunchFlutterApps,
     flutterApps: _flutterApps,
     runningFlutterApps: _runningApps,
+    launchingFlutterApps: _launchingApps,
+    flutterAppUrls: _appUrls,
   );
 
   @override
@@ -466,7 +480,7 @@ class RunnerClient implements RunnerApi {
   bool get watchModeEnabled => _watchModeEnabled;
 
   @override
-  bool isFlutterAppLaunching(String appId) => false;
+  bool isFlutterAppLaunching(String appId) => _launchingApps.contains(appId);
 
   @override
   bool get isAnyFlutterAppRunning => _runningApps.isNotEmpty;
@@ -487,27 +501,6 @@ class RunnerClient implements RunnerApi {
 
   @override
   Future<void> restartFlutterApps() => _send('restartFlutterApps');
-
-  /// Not carried over the attach protocol: DTD is an agent concern, served by
-  /// the MCP socket, and no renderer shows it.
-  @override
-  Map<String, String?> get flutterDtdUris => const {};
-
-  @override
-  List<Object> get logHistory => history.serverEntries.toList();
-
-  @override
-  List<String> flutterLogHistory(String appId) =>
-      history.flutterLinesFor(appId).toList();
-
-  /// Not carried over the attach protocol: an attached UI never drives the VM
-  /// service, and `serverpod runner status` reads it from the manifest.
-  @override
-  String? get vmServiceUri => null;
-
-  @override
-  Stream<void> get vmServiceUriChanges =>
-      events.where((event) => event is ManifestChangedEvent);
 }
 
 MigrationResult _migrationResult(Object? result) => MigrationResult.fromJson(

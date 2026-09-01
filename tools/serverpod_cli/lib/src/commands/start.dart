@@ -1105,15 +1105,16 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     serverpodToolDir: serverpodToolDir,
     serverPubspecFile: serverPubspecFile,
     serverPackageDirectoryPathParts: config.serverPackageDirectoryPathParts,
-    onReady: (app, url) =>
-        runnerApi.recordFlutterAppState(app.id, running: true, url: url),
+    onReady: (app, url) => runnerApi.recordFlutterAppState(app.id, url: url),
     onStart: (app, process) => _recordExtensionEvents(
       process.vmService,
       (event) => logHistory.recordFlutterExtensionEvent(app.id, event),
     ),
-    onStop: (app) => runnerApi.recordFlutterAppState(app.id, running: false),
-    onLaunchFailed: (app) =>
-        runnerApi.recordFlutterAppState(app.id, running: false),
+    onStop: (app) => runnerApi.recordFlutterAppState(app.id),
+    onLaunchFailed: (app) => runnerApi.recordFlutterAppState(app.id),
+    onLaunching: (app) => runnerApi.recordFlutterAppState(app.id),
+    onProgress: (app, stage) =>
+        runnerApi.recordFlutterAppState(app.id, launchStage: stage),
     onLog: (app, event) => logHistory.recordFlutterLogEvent(app.id, event),
     stdoutSinkFor: (app) => logHistory.flutterOutputSink(
       app.id,

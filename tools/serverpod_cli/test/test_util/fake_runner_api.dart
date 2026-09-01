@@ -58,6 +58,8 @@ class FakeRunnerApi implements InProcessRunnerApi {
     flutterLines: flutterLogs,
     flutterApps: flutterApps,
     runningFlutterApps: runningFlutterApps,
+    launchingFlutterApps: launchingFlutterApps,
+    flutterAppUrls: flutterAppUrls,
   );
 
   List<({TrackedOperation operation, DateTime startedAt})> activeOperations =

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:serverpod_cli/src/commands/start/tui/app.dart';
 import 'package:serverpod_cli/src/commands/start/tui/event_handler.dart';
 import 'package:serverpod_cli/src/commands/start/tui/state.dart';
+import 'package:serverpod_cli/src/commands/start/tui/tab_model.dart';
 import 'package:serverpod_cli/src/config/flutter_app_config.dart';
 import 'package:serverpod_cli/src/runner/migration_result.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
@@ -181,8 +182,18 @@ class RunnerStateBinding {
       ..clear()
       ..addAll(client.history.serverLines);
     _syncApps(client.flutterApps);
-    for (final appId in client.runningFlutterApps) {
-      _markAppTab(appId, running: true, url: client.flutterAppUrls[appId]);
+    for (final app in client.flutterApps) {
+      final running = client.isFlutterAppRunning(app.id);
+      final launching = client.isFlutterAppLaunching(app.id);
+      if (!running && !launching && _state.appLogTabFor(app.id) == null) {
+        continue;
+      }
+      _markAppTab(
+        app.id,
+        running: running,
+        launching: launching,
+        url: client.flutterAppUrls[app.id],
+      );
     }
     holder.markDirty();
   }
@@ -198,8 +209,20 @@ class RunnerStateBinding {
       case FlutterAppsChangedEvent(:final apps):
         _syncApps(apps);
 
-      case FlutterAppStateEvent(:final appId, :final running, :final url):
-        _markAppTab(appId, running: running, url: url);
+      case FlutterAppStateEvent(
+        :final appId,
+        :final running,
+        :final launching,
+        :final url,
+        :final launchStage,
+      ):
+        _markAppTab(
+          appId,
+          running: running,
+          launching: launching,
+          url: url,
+          launchStage: launchStage,
+        );
 
       case ServerLogEvent() ||
           ServerLineEvent() ||
@@ -230,15 +253,25 @@ class RunnerStateBinding {
   ///
   /// The tab renders the client's line buffer, so one opened after the app
   /// started shows everything it has produced.
-  void _markAppTab(String appId, {required bool running, String? url}) {
+  void _markAppTab(
+    String appId, {
+    required bool running,
+    required bool launching,
+    String? url,
+    String? launchStage,
+  }) {
     final app = client.flutterApps.where((a) => a.id == appId).firstOrNull;
     final tab = _state.getOrCreateAppLogTab(
       appId: appId,
       label: app?.name ?? appId,
     );
     tab
-      ..ready = running
-      ..stopped = !running
+      ..runState = running
+          ? AppRunState.ready
+          : launching
+          ? AppRunState.launching
+          : AppRunState.stopped
+      ..startupStage = launching ? (launchStage ?? tab.startupStage) : null
       ..url = url
       ..device = app?.device;
   }

@@ -45,6 +45,7 @@ class FlutterAppManager {
     required this.onStart,
     required this.onStop,
     required this.onLaunchFailed,
+    this.onLaunching,
     this.onEnsureAppTab,
     required this.onLog,
     required this.stdoutSinkFor,
@@ -112,6 +113,12 @@ class FlutterAppManager {
   final void Function(FlutterAppConfig app) onStop;
   final void Function(FlutterAppConfig app) onLaunchFailed;
 
+  /// Invoked when a spawn goes in flight, before the app is ready.
+  ///
+  /// The start of a launch, where [onReady], [onStop] and [onLaunchFailed]
+  /// report its end.
+  final void Function(FlutterAppConfig app)? onLaunching;
+
   /// Asks a presentation layer to make sure [app] has somewhere to render.
   ///
   /// Null in the runner: an attached client opens its own tabs from the app
@@ -164,6 +171,13 @@ class FlutterAppManager {
   /// the tool's output.
   Map<String, String?> get dtdUris => {
     for (final appId in runningAppIds) appId: processFor(appId)?.dtdUri,
+  };
+
+  /// URLs of running apps, keyed by app id, in the manner of [dtdUris].
+  ///
+  /// A web app with no URL yet, and every non-web device, maps to null.
+  Map<String, String?> get appUrls => {
+    for (final appId in runningAppIds) appId: processFor(appId)?.flutterAppUrl,
   };
 
   /// Returns the [FlutterProcess] for [appId], if any.
@@ -281,6 +295,7 @@ class FlutterAppManager {
     runtime.spawnInFlight = true;
     runtime.readySignaled = false;
     runtime.stopSignaled = false;
+    onLaunching?.call(runtime.app);
     final isRelaunch = runtime.relaunchInProgress;
     runtime.relaunchInProgress = false;
 
@@ -318,9 +333,11 @@ class FlutterAppManager {
     } on FlutterNotInstalledException catch (e) {
       log.warning(e.message);
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       return;
     } catch (_) {
       runtime.spawnInFlight = false;
+      onLaunchFailed(runtime.app);
       rethrow;
     }
 
