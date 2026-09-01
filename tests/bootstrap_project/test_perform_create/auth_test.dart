@@ -154,10 +154,10 @@ void main() {
       );
 
       test(
-        'then the flutter main.dart contains auth configurations',
+        'then the flutter client.dart contains auth configurations',
         () async {
           final file = File(
-            p.join(project.flutterDir, 'lib', 'main.dart'),
+            p.join(project.flutterDir, 'lib', 'client.dart'),
           );
           final content = await file.readAsString();
           expect(
@@ -170,13 +170,7 @@ void main() {
             content,
             contains('..authSessionManager = FlutterAuthSessionManager()'),
           );
-          expect(content, contains('client.auth.initialize();'));
-          expect(
-            content,
-            contains(
-              '// To test authentication in this example app, uncomment the line below',
-            ),
-          );
+          expect(content, contains('unawaited(client.auth.initialize());'));
         },
       );
 
