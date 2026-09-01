@@ -878,6 +878,10 @@ Future<List<String>> _copyServerUpgrade(
         replacement: name,
       ),
       Replacement(
+        slotName: 'flutter_app_display_name',
+        replacement: formatFlutterAppDisplayName(name),
+      ),
+      Replacement(
         slotName: 'awsname',
         replacement: awsName,
       ),
