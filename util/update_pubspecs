@@ -34,6 +34,7 @@ cp CHANGELOG.md packages/serverpod_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_serialization/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_service_client/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_shared/CHANGELOG.md
+cp CHANGELOG.md packages/serverpod_cloud_storage/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_database/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_embedded_postgres/CHANGELOG.md
 cp CHANGELOG.md packages/serverpod_flutter/CHANGELOG.md
@@ -91,6 +92,7 @@ cp README_subpackage.md packages/serverpod_client/README.md
 cp README_subpackage.md packages/serverpod_serialization/README.md
 cp README_subpackage.md packages/serverpod_service_client/README.md
 cp README_subpackage.md packages/serverpod_shared/README.md
+cp README_subpackage.md packages/serverpod_cloud_storage/README.md
 # cp README_subpackage.md packages/serverpod_database/README.md
 # cp README_subpackage.md packages/serverpod_embedded_postgres/README.md
 cp README_subpackage.md packages/serverpod_flutter/README.md
