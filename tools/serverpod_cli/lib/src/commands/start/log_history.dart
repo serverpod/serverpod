@@ -174,10 +174,18 @@ class StartLogHistory {
   }
 
   /// An [IOSink] that records everything written to it as the pod's raw
-  /// output, optionally passing the original writes on to [forwardTo] - the
-  /// terminal in a foreground session, the runner's log file when detached.
-  IOSink serverOutputSink({IOSink? forwardTo}) =>
-      LineSink(addServerLine, forwardTo);
+  /// output.
+  ///
+  /// [forwardTo] receives the original writes verbatim, ANSI styling included,
+  /// and is the terminal in a foreground session. [echoLine] receives each
+  /// finished line in split, ANSI-free form, as the runner's log file wants.
+  IOSink serverOutputSink({
+    IOSink? forwardTo,
+    void Function(String line)? echoLine,
+  }) => LineSink((line) {
+    addServerLine(line);
+    echoLine?.call(line);
+  }, forwardTo);
 
   /// An [IOSink] that records everything written to it as raw output lines of
   /// the Flutter app [appId].
