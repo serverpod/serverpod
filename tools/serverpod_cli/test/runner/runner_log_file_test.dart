@@ -72,7 +72,7 @@ void main() {
       () async {
         final file = RunnerLogFile(path: logPath);
         await file.open();
-        final sink = RunnerLogFileSink(file);
+        final sink = file.lineSink();
 
         final bytes = utf8.encode('héllo\n');
         sink.add(bytes.sublist(0, 2));

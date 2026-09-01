@@ -809,8 +809,8 @@ Future<WatchLoopSetupResult> setupWatchLoop({
   // layer, so the MCP log tools serve the same content with and without the
   // TUI. See [StartLogHistory].
   required StartLogHistory logHistory,
-  IOSink? flutterStdoutEcho,
-  IOSink? flutterStderrEcho,
+  IOSink? Function(String appId)? flutterStdoutEchoFor,
+  IOSink? Function(String appId)? flutterStderrEchoFor,
   IOSink? serverStdoutSink,
   IOSink? serverStderrSink,
 }) async {
@@ -1089,10 +1089,14 @@ Future<WatchLoopSetupResult> setupWatchLoop({
     onLaunchFailed: (app) =>
         runnerApi.recordFlutterAppState(app.id, running: false),
     onLog: (app, event) => logHistory.recordFlutterLogEvent(app.id, event),
-    stdoutSinkFor: (app) =>
-        logHistory.flutterOutputSink(app.id, forwardTo: flutterStdoutEcho),
-    stderrSinkFor: (app) =>
-        logHistory.flutterOutputSink(app.id, forwardTo: flutterStderrEcho),
+    stdoutSinkFor: (app) => logHistory.flutterOutputSink(
+      app.id,
+      forwardTo: flutterStdoutEchoFor?.call(app.id),
+    ),
+    stderrSinkFor: (app) => logHistory.flutterOutputSink(
+      app.id,
+      forwardTo: flutterStderrEchoFor?.call(app.id),
+    ),
   );
   await flutterManager.initialize();
 

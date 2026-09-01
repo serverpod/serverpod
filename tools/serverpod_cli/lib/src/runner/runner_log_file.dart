@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:serverpod_cli/src/runner/line_sink.dart';
 import 'package:serverpod_cli/src/runner/log_codec.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
@@ -80,6 +81,13 @@ class RunnerLogFile {
   void writeLine(String line) {
     _write('${stripAnsi(line)}\n');
   }
+
+  /// An [IOSink] that records everything written to it in this log file.
+  ///
+  /// Used for the pod's stdout and stderr, which are otherwise lost in a
+  /// runner with no terminal.
+  LineSink lineSink({String? prefix}) =>
+      LineSink((line) => writeLine('${prefix ?? ''}$line'));
 
   void _write(String text) {
     final sink = _sink;
@@ -200,103 +208,4 @@ class RunnerLogFileWriter extends LogWriter {
 
   @override
   Future<void> close() => _file.close();
-}
-
-const _newline = 0x0a;
-const _carriageReturn = 0x0d;
-
-/// An [IOSink] that records everything written to it in the runner's log file.
-///
-/// Used for the pod's stdout and stderr, which are otherwise lost in a runner
-/// with no terminal.
-class RunnerLogFileSink implements IOSink {
-  RunnerLogFileSink(this._file, {String? prefix}) : _prefix = prefix ?? '';
-
-  final RunnerLogFile _file;
-  final String _prefix;
-  final StringBuffer _lineBuffer = StringBuffer();
-
-  /// Decodes the byte chunks a piped process hands over.
-  ///
-  /// Chunked and lenient on purpose: the pipe splits wherever its buffer did,
-  /// so a multi-byte character straddles two chunks often enough, and a
-  /// one-shot strict decode would throw a [FormatException] out of the stream
-  /// listener - an unhandled error in a runner with nobody watching. [encoding]
-  /// is kept for the [IOSink] contract; what a process writes is UTF-8.
-  late final ByteConversionSink _bytes = const Utf8Decoder(
-    allowMalformed: true,
-  ).startChunkedConversion(_CallbackSink(write));
-
-  @override
-  Encoding encoding = systemEncoding;
-
-  @override
-  void add(List<int> data) => _bytes.add(data);
-
-  @override
-  void write(Object? object) {
-    final text = '$object';
-    var start = 0;
-    for (var i = 0; i < text.length; i++) {
-      final unit = text.codeUnitAt(i);
-      if (unit != _newline && unit != _carriageReturn) continue;
-      if (i > start) _lineBuffer.write(text.substring(start, i));
-      if (unit == _newline) _emit();
-      start = i + 1;
-    }
-    if (start < text.length) _lineBuffer.write(text.substring(start));
-  }
-
-  @override
-  void writeln([Object? object = '']) => write('$object\n');
-
-  @override
-  void writeAll(Iterable<Object?> objects, [String separator = '']) =>
-      write(objects.join(separator));
-
-  @override
-  void writeCharCode(int charCode) => write(String.fromCharCode(charCode));
-
-  @override
-  void addError(Object error, [StackTrace? stackTrace]) {
-    _file.writeLine('${_prefix}ERROR: $error');
-    if (stackTrace != null) _file.writeLine('$stackTrace');
-  }
-
-  @override
-  Future<void> addStream(Stream<List<int>> stream) => stream.forEach(add);
-
-  @override
-  Future<void> flush() async {}
-
-  @override
-  Future<void> close() async {
-    _bytes.close();
-    if (_lineBuffer.isNotEmpty) _emit();
-  }
-
-  @override
-  Future<void> get done => Future.value();
-
-  void _emit() {
-    _file.writeLine('$_prefix$_lineBuffer');
-    _lineBuffer.clear();
-  }
-}
-
-/// Hands each decoded chunk to a callback as it arrives.
-///
-/// The `dart:convert` sinks that take a callback hold everything until close,
-/// which for a log that has to be readable while the runner runs is the wrong
-/// end of the trade.
-class _CallbackSink implements Sink<String> {
-  _CallbackSink(this._onData);
-
-  final void Function(String data) _onData;
-
-  @override
-  void add(String data) => _onData(data);
-
-  @override
-  void close() {}
 }
