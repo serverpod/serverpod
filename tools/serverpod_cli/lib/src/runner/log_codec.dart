@@ -28,60 +28,17 @@ String formatLogEntryLine(LogEntry entry) {
 }
 
 /// Encodes one entry of the runner's server history, which holds [LogEntry]
-/// and [CompletedOperation].
-///
-/// An entry of neither type is encoded as `unknown` so the MCP tail shows
-/// something. [decodeLogHistoryItem] drops it.
-Map<String, Object?> encodeLogHistoryItem(Object item) {
-  if (item is LogEntry) {
-    return {
-      'type': 'log',
-      'time': item.time.toIso8601String(),
-      'level': item.level.name,
-      'message': item.message,
-      'scope': {'id': item.scope.id, 'label': item.scope.label},
-      if (item.error != null) 'error': item.error.toString(),
-      if (item.stackTrace != null) 'stackTrace': item.stackTrace.toString(),
-      if (item.metadata != null) 'metadata': ?_jsonSafeMap(item.metadata),
-    };
-  }
-  if (item is CompletedOperation) {
-    return {
-      'type': 'operation',
-      'label': item.label,
-      'success': item.success,
-      'durationMs': item.duration.inMilliseconds,
-      'completedAt': item.completedAt.toIso8601String(),
-    };
-  }
-  if (item is String) {
-    return {'type': 'line', 'value': item};
-  }
-  return {'type': 'unknown', 'value': item.toString()};
-}
-
-/// Returns [metadata] with every value reduced to something `jsonEncode`
-/// accepts, or null when nothing survives.
-///
-/// Metadata is an open map: the CLI logger stashes a `LogType` in it, and the
-/// pod and Flutter apps put their own objects there. One non-encodable value
-/// would otherwise throw out of the JSON-RPC layer and take the whole attach
-/// connection down, so anything unrecognized is carried as its `toString()`
-/// rather than dropping the entry or the connection.
-Map<String, Object?>? _jsonSafeMap(Map<String, Object?>? metadata) {
-  if (metadata == null || metadata.isEmpty) return null;
-  return {
-    for (final entry in metadata.entries) entry.key: _jsonSafe(entry.value),
-  };
-}
-
-Object? _jsonSafe(Object? value) => switch (value) {
-  null || bool() || num() || String() => value,
-  final List<Object?> list => [for (final item in list) _jsonSafe(item)],
-  final Map<Object?, Object?> map => {
-    for (final entry in map.entries) '${entry.key}': _jsonSafe(entry.value),
+/// and [CompletedOperation] and nothing else.
+Map<String, Object?> encodeLogHistoryItem(Object item) => switch (item) {
+  LogEntry() => encodeLogEntry(item),
+  CompletedOperation() => {
+    'type': 'operation',
+    'label': item.label,
+    'success': item.success,
+    'durationMs': item.duration.inMilliseconds,
+    'completedAt': item.completedAt.toIso8601String(),
   },
-  _ => value.toString(),
+  _ => throw ArgumentError.value(item, 'item', 'Not a log history item'),
 };
 
 /// Decodes what [encodeLogHistoryItem] produced, or `null` for an entry this
@@ -97,30 +54,6 @@ Object? decodeLogHistoryItem(Map<String, Object?> json) =>
       ),
       _ => null,
     };
-
-/// Decodes a `log` entry.
-LogEntry decodeLogEntry(Map<String, Object?> json) {
-  final scope = json['scope'];
-  final stackTrace = json['stackTrace'] as String?;
-  return LogEntry(
-    time: _time(json['time']),
-    level: parseLogLevel(json['level'] as String? ?? 'info'),
-    message: json['message'] as String? ?? '',
-    scope: LogScope(
-      id: scope is Map ? '${scope['id'] ?? ''}' : '',
-      label: scope is Map ? scope['label'] as String? ?? '' : '',
-      startTime: _time(json['time']),
-    ),
-    error: json['error'] as String?,
-    stackTrace: stackTrace == null || stackTrace.isEmpty
-        ? null
-        : StackTrace.fromString(stackTrace),
-    metadata: switch (json['metadata']) {
-      final Map<Object?, Object?> map => Map<String, Object?>.from(map),
-      _ => null,
-    },
-  );
-}
 
 /// Encodes an operation that is still running.
 ///
@@ -154,18 +87,3 @@ Map<String, Object?> encodeTrackedOperation(
 
 DateTime _time(Object? value) =>
     DateTime.tryParse(value as String? ?? '') ?? DateTime.now();
-
-/// The [LogLevel] named by [level], or info for an unknown name.
-///
-/// Shared by the wire decoder and by the `ext.serverpod.log` reader, which
-/// both receive the level as a name rather than an enum.
-LogLevel parseLogLevel(String level) {
-  return switch (level) {
-    'debug' => LogLevel.debug,
-    'info' => LogLevel.info,
-    'warning' || 'warn' => LogLevel.warning,
-    'error' => LogLevel.error,
-    'fatal' => LogLevel.fatal,
-    _ => LogLevel.info,
-  };
-}

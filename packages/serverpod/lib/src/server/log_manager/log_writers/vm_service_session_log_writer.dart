@@ -1,5 +1,7 @@
 import 'dart:developer' as developer;
 
+import 'package:serverpod_shared/log.dart';
+
 import '../session_log.dart';
 
 /// Posts typed session events via the VM service extension
@@ -10,10 +12,10 @@ import '../session_log.dart';
 ///
 /// Mapping:
 ///
-/// - [open] -> `{type: 'scope_start', id, label, timestamp, session: {…}}`
-/// - [record] for log/query entries ->
-///   `{type: 'log', level, message, scopeId, timestamp, session: {kind, …}}`
-/// - [close] -> `{type: 'scope_end', id, success, duration, timestamp, session: {…}}`
+/// - [open] -> `{type: 'scope_start', id, label, timestamp, session: {...}}`
+/// - [record] for log/query entries -> [encodeLogEntry]'s shape plus
+///   `session: {kind, order, ...}`
+/// - [close] -> `{type: 'scope_end', id, success, duration, timestamp, session: {...}}`
 ///
 /// In production where the VM service is disabled, [developer.postEvent]
 /// is a no-op.
@@ -40,14 +42,17 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
     switch (entry) {
       case SessionLogEntry e:
         _postEvent({
-          'type': 'log',
-          'level': e.level.name,
-          'message': e.message,
-          'scopeId': e.sessionId,
-          'timestamp': e.time.toUtc().toIso8601String(),
-          'error': e.error,
-          'stackTrace': e.stackTrace?.toString(),
-          'metadata': e.metadata,
+          ...encodeLogEntry(
+            LogEntry(
+              time: e.time,
+              level: e.level,
+              message: e.message,
+              scope: _sessionScope(e.sessionId, e.time),
+              error: e.error,
+              stackTrace: e.stackTrace,
+              metadata: e.metadata,
+            ),
+          ),
           'session': {
             'kind': 'log',
             'order': e.order,
@@ -55,13 +60,16 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
         });
       case SessionQueryEntry e:
         _postEvent({
-          'type': 'log',
-          'level': 'debug',
-          'message': e.query,
-          'scopeId': e.sessionId,
-          'timestamp': e.time.toUtc().toIso8601String(),
-          'error': e.error,
-          'stackTrace': e.stackTrace?.toString(),
+          ...encodeLogEntry(
+            LogEntry(
+              time: e.time,
+              level: LogLevel.debug,
+              message: e.query,
+              scope: _sessionScope(e.sessionId, e.time),
+              error: e.error,
+              stackTrace: e.stackTrace,
+            ),
+          ),
           'session': {
             'kind': 'query',
             'order': e.order,
@@ -91,11 +99,20 @@ class VmServiceSessionLogWriter extends SessionLogWriter {
     });
   }
 
+  /// The scope a session's entries belong to.
+  ///
+  /// The id is the session id, which ties the entry to the [SessionOpen] that
+  /// named it and the [SessionClose] that ends it. The open event carried the
+  /// label, so entries send none. `startTime` is the entry's own time, not the
+  /// session's, since the writer no longer has it.
+  static LogScope _sessionScope(String sessionId, DateTime time) =>
+      LogScope(id: sessionId, label: '', startTime: time);
+
   static void _postEvent(Map<String, Object?> data) {
     data.removeWhere((_, v) => v == null);
     if (data['session'] case final Map<String, Object?> session) {
       session.removeWhere((_, v) => v == null);
     }
-    developer.postEvent('ext.serverpod.log', data);
+    developer.postEvent(serverpodLogEvent, data);
   }
 }
