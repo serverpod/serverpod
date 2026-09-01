@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
@@ -8,7 +9,7 @@ const _serviceAccountEnvironmentVariable =
 
 /// Creates a cloud storage instance from Serverpod Cloud bucket metadata.
 typedef ServerpodCloudStorageFactory =
-    Future<CloudStorage> Function({
+    FutureOr<CloudStorage> Function({
       required String storageId,
       required String bucket,
       required bool public,
@@ -19,7 +20,7 @@ typedef ServerpodCloudStorageFactory =
 /// Creates the cloud storages configured by Serverpod Cloud's environment.
 ///
 /// Invalid or incomplete entries are reported through [onWarning] and omitted
-/// so that Serverpod retains its default storage for the affected storage ID.
+/// so that Serverpod retains its existing storage for the affected storage ID.
 Future<Map<String, CloudStorage>> createServerpodCloudStorages({
   required Map<String, String> environment,
   required ServerpodCloudStorageFactory createStorage,
@@ -32,8 +33,7 @@ Future<Map<String, CloudStorage>> createServerpodCloudStorages({
   if (serviceAccountJson == null || serviceAccountJson.trim().isEmpty) {
     onWarning(
       '$_bucketsEnvironmentVariable is configured, but '
-      '$_serviceAccountEnvironmentVariable is missing. Using the default '
-      'storage configuration.',
+      '$_serviceAccountEnvironmentVariable is missing.',
     );
     return const {};
   }
@@ -43,26 +43,25 @@ Future<Map<String, CloudStorage>> createServerpodCloudStorages({
     decodedBuckets = jsonDecode(bucketsJson);
   } catch (error) {
     onWarning(
-      'Unable to parse value for $_bucketsEnvironmentVariable. Using the default '
-      'storage configuration. Error: $error.',
+      'Unable to parse value for $_bucketsEnvironmentVariable. '
+      'Error: $error',
     );
     return const {};
   }
 
   if (decodedBuckets is! List) {
     onWarning(
-      'Invalid value for $_bucketsEnvironmentVariable: $decodedBuckets. Using the '
-      'default storage configuration.',
+      'Invalid value for $_bucketsEnvironmentVariable: $decodedBuckets',
     );
     return const {};
   }
 
-  final configurations = <String, _BucketConfiguration>{};
+  final storages = <String, CloudStorage>{};
   for (var index = 0; index < decodedBuckets.length; index++) {
     final value = decodedBuckets[index];
     if (value is! Map<String, dynamic>) {
       onWarning(
-        'Ignoring cloud storage bucket at index $index: invalid entry $value.',
+        'Ignoring storage bucket at index $index: invalid entry $value',
       );
       continue;
     }
@@ -70,8 +69,8 @@ Future<Map<String, CloudStorage>> createServerpodCloudStorages({
     final provider = value['provider'];
     if (provider != 'gcp') {
       onWarning(
-        'Ignoring cloud storage bucket at index $index: unsupported provider '
-        '"$provider".',
+        'Ignoring storage bucket at index $index: unsupported provider '
+        '"$provider"',
       );
       continue;
     }
@@ -83,48 +82,38 @@ Future<Map<String, CloudStorage>> createServerpodCloudStorages({
         bucket == null ||
         (visibility != 'public' && visibility != 'private')) {
       onWarning(
-        'Ignoring cloud storage bucket at index $index: storageId, bucketName, '
+        'Ignoring storage bucket at index $index: storageId, bucketName, '
         'and visibility (public or private) are required.',
       );
       continue;
     }
 
-    final publicHost = _nonEmptyString(value['publicUrl']);
-    if (publicHost == null) {
+    final publicUrl = _nonEmptyString(value['publicUrl']);
+    if (publicUrl == null) {
       onWarning(
-        'Ignoring cloud storage bucket "$storageId": invalid publicUrl $publicHost.',
+        'Ignoring storage bucket "$storageId": invalid publicUrl $publicUrl',
       );
       continue;
     }
 
-    if (configurations.containsKey(storageId)) {
+    if (storages.containsKey(storageId)) {
       onWarning(
         'Cloud storage ID "$storageId" is configured more than once; using '
         'the last configuration.',
       );
     }
-    configurations[storageId] = _BucketConfiguration(
-      storageId: storageId,
-      bucket: bucket,
-      public: visibility == 'public',
-      publicHost: publicHost,
-    );
-  }
-
-  final storages = <String, CloudStorage>{};
-  for (final configuration in configurations.values) {
     try {
-      storages[configuration.storageId] = await createStorage(
-        storageId: configuration.storageId,
-        bucket: configuration.bucket,
-        public: configuration.public,
+      storages[storageId] = await createStorage(
+        storageId: storageId,
+        bucket: bucket,
+        public: visibility == 'public',
         serviceAccountJson: serviceAccountJson,
-        publicHost: configuration.publicHost,
+        publicHost: publicUrl,
       );
     } catch (error) {
       onWarning(
-        'Unable to configure cloud storage "${configuration.storageId}". '
-        'Using its default storage configuration. Error: $error.',
+        'Failed to create Serverpod cloud storage for storageId: "$storageId". '
+        'Error: $error',
       );
     }
   }
@@ -135,18 +124,4 @@ Future<Map<String, CloudStorage>> createServerpodCloudStorages({
 String? _nonEmptyString(Object? value) {
   if (value is! String || value.trim().isEmpty) return null;
   return value;
-}
-
-final class _BucketConfiguration {
-  final String storageId;
-  final String bucket;
-  final bool public;
-  final String? publicHost;
-
-  const _BucketConfiguration({
-    required this.storageId,
-    required this.bucket,
-    required this.public,
-    required this.publicHost,
-  });
 }

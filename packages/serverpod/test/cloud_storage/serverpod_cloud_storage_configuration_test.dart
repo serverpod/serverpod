@@ -44,6 +44,7 @@ void main() {
 
       final storages = await createServerpodCloudStorages(
         environment: const {},
+        onWarning: warnings.add,
         createStorage:
             ({
               required storageId,
@@ -51,10 +52,7 @@ void main() {
               required public,
               required serviceAccountJson,
               publicHost,
-            }) async {
-              return _TestCloudStorage(storageId);
-            },
-        onWarning: warnings.add,
+            }) => _TestCloudStorage(storageId),
       );
 
       expect(storages, isEmpty);
@@ -71,6 +69,7 @@ void main() {
       final serviceAccount = jsonEncode({'type': 'service_account'});
 
       final storages = await createServerpodCloudStorages(
+        onWarning: fail,
         environment: {
           'SERVERPOD_CLOUD_STORAGE_BUCKETS': jsonEncode([
             {
@@ -90,7 +89,7 @@ void main() {
               required public,
               required serviceAccountJson,
               publicHost,
-            }) async {
+            }) {
               calls.add(
                 _FactoryCall(
                   storageId: storageId,
@@ -102,7 +101,6 @@ void main() {
               );
               return _TestCloudStorage(storageId);
             },
-        onWarning: fail,
       );
 
       expect(storages.keys, ['public']);
@@ -133,6 +131,7 @@ void main() {
       final calls = <_FactoryCall>[];
 
       final storages = await createServerpodCloudStorages(
+        onWarning: fail,
         environment: _validEnvironment,
         createStorage:
             ({
@@ -141,7 +140,7 @@ void main() {
               required public,
               required serviceAccountJson,
               publicHost,
-            }) async {
+            }) {
               calls.add(
                 _FactoryCall(
                   storageId: storageId,
@@ -153,7 +152,6 @@ void main() {
               );
               return _TestCloudStorage(storageId);
             },
-        onWarning: fail,
       );
 
       expect(storages.keys, ['public', 'private']);
@@ -172,6 +170,7 @@ void main() {
       setUp(() async {
         warnings = [];
         storages = await createServerpodCloudStorages(
+          onWarning: warnings.add,
           environment: _validEnvironment,
           createStorage:
               ({
@@ -180,11 +179,10 @@ void main() {
                 required public,
                 required serviceAccountJson,
                 publicHost,
-              }) async {
+              }) {
                 if (storageId == 'private') throw StateError('invalid key');
                 return _TestCloudStorage(storageId);
               },
-          onWarning: warnings.add,
         );
       });
 
@@ -200,8 +198,8 @@ void main() {
         () async {
           expect(
             warnings.single,
-            'Unable to configure cloud storage "private". Using its default '
-            'storage configuration. Error: Bad state: invalid key.',
+            'Failed to create Serverpod cloud storage for storageId: "private". '
+            'Error: Bad state: invalid key',
           );
         },
       );
@@ -218,6 +216,7 @@ void main() {
       setUp(() async {
         warnings = [];
         storages = await createServerpodCloudStorages(
+          onWarning: warnings.add,
           environment: {
             'SERVERPOD_CLOUD_STORAGE_BUCKETS': jsonEncode([
               {
@@ -243,10 +242,7 @@ void main() {
                 required public,
                 required serviceAccountJson,
                 publicHost,
-              }) async {
-                return _TestCloudStorage(storageId);
-              },
-          onWarning: warnings.add,
+              }) => _TestCloudStorage(storageId),
         );
       });
 
@@ -270,6 +266,7 @@ void main() {
       setUp(() async {
         warnings = [];
         storages = await createServerpodCloudStorages(
+          onWarning: warnings.add,
           environment: const {
             'SERVERPOD_CLOUD_STORAGE_BUCKETS': 'not-json',
             'SERVERPOD_CLOUD_STORAGE_SERVICE_ACCOUNT_KEY': 'service-account',
@@ -281,8 +278,7 @@ void main() {
                 required public,
                 required serviceAccountJson,
                 publicHost,
-              }) async => _TestCloudStorage(storageId),
-          onWarning: warnings.add,
+              }) => _TestCloudStorage(storageId),
         );
       });
 
