@@ -68,7 +68,11 @@ class Server implements RouterInjectable {
   late AuthenticationHandler _authenticationHandler;
 
   /// [AuthenticationHandler] responsible for authenticating users.
-  AuthenticationHandler get authenticationHandler => _authenticationHandler;
+  ///
+  /// Prefers [Serverpod.authenticationHandler] when that field is set, so a
+  /// handler assigned after [start] is visible to Relic and API sessions.
+  AuthenticationHandler get authenticationHandler =>
+      serverpod.authenticationHandler ?? _authenticationHandler;
 
   /// Caches used by the server.
   final Caches caches;
