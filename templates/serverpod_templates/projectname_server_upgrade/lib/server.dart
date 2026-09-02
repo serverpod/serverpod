@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:serverpod_auth_idp_server/core.dart';
 import 'package:serverpod_auth_idp_server/providers/email.dart';
 // {{/auth}}
+import 'package:serverpod_cloud_provider/serverpod_cloud_provider.dart';
 
 // {{#webserver}}
 import 'src/cache_busting.dart';
@@ -16,6 +17,7 @@ import 'src/web/routes/app_config_route.dart';
 // {{/webapp}}
 // {{#website}}
 import 'src/web/routes/root.dart';
+
 // {{/website}}
 
 /// The starting point of the Serverpod server.
@@ -129,6 +131,13 @@ void run(List<String> args) async {
     );
   }
   // {{/webapp}}
+
+  // Configure cloud storage.
+  // This setup works with Serverpod Cloud without extra configuration.
+  // If you want to use a custom provider for cloud storage, replace these
+  // with your preferred provider.
+  pod.addCloudStorage(await ServerpodCloudProvider.private());
+  pod.addCloudStorage(await ServerpodCloudProvider.public());
 
   // Start the server.
   await pod.start();

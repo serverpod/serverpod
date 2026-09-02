@@ -10,6 +10,7 @@ environment:
 
 dependencies:
   serverpod: 4.0.0-rc.1
+  serverpod_cloud_provider: 4.0.0-rc.1
 
 dev_dependencies:
   lints: '>=3.0.0 <7.0.0'
