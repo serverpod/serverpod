@@ -18,6 +18,7 @@ import 'package:serverpod_cli/src/commands/serverpod_command_runner.dart';
 import 'package:serverpod_cli/src/mcp/socket_directory.dart';
 import 'package:serverpod_cli/src/runner/runner_client.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 import 'package:serverpod_shared/serverpod_shared.dart'
@@ -27,12 +28,18 @@ import 'package:test/test.dart';
 final _testLogger = _TestLogger();
 
 void main() {
-  setUpAll(() {
+  late Directory registryDirectory;
+
+  setUpAll(() async {
     initializeLoggerWith(_testLogger);
+    registryDirectory = await Directory.systemTemp.createTemp('registry');
+    RunnerRegistry.defaultDir = registryDirectory;
   });
 
   tearDownAll(() async {
     await closeLogger();
+    RunnerRegistry.defaultDir = null;
+    await registryDirectory.delete(recursive: true);
     await _compiledRunnerDirectory?.delete(recursive: true);
   });
 
@@ -514,6 +521,12 @@ database:
             '--no-docker',
           ],
           workingDirectory: Directory.current.path,
+          // The static above isolates this isolate only. The child reads the
+          // environment, so it registers in the test directory as well.
+          environment: {
+            ...Platform.environment,
+            'SERVERPOD_RUNNER_REGISTRY_DIR': registryDirectory.path,
+          },
         );
         process.stdout
             .transform(utf8.decoder)

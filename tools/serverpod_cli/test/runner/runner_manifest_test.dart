@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
 import 'package:serverpod_cli/src/runner/runner_manifest_publisher.dart';
 import 'package:serverpod_cli/src/runner/runner_paths.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_shared/serverpod_shared.dart' show FileEx;
 import 'package:test/test.dart';
@@ -279,9 +280,11 @@ void main() {
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('rmt');
+      RunnerRegistry.defaultDir = Directory('${tempDir.path}/registry');
     });
 
     tearDown(() async {
+      RunnerRegistry.defaultDir = null;
       await tempDir.deleteIfExists(recursive: true);
     });
 

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:path/path.dart' as p;
 import 'package:serverpod_cli/src/runner/runner_manifest.dart';
+import 'package:serverpod_cli/src/runner/runner_registry.dart';
 import 'package:serverpod_cli/src/runner/runner_stage.dart';
 import 'package:serverpod_cli/src/util/serverpod_cli_logger.dart';
 
@@ -14,10 +15,13 @@ class RunnerManifestPublisher {
   RunnerManifestPublisher({
     required String serverDir,
     required RunnerManifest manifest,
+    RunnerRegistry? registry,
   }) : _serverDir = serverDir,
-       _manifest = manifest;
+       _manifest = manifest,
+       _registry = registry ?? RunnerRegistry();
 
   final String _serverDir;
+  final RunnerRegistry _registry;
   RunnerManifest _manifest;
   final List<StreamSubscription<void>> _subscriptions = [];
   bool _disposed = false;
@@ -29,8 +33,14 @@ class RunnerManifestPublisher {
   /// The manifest as last published.
   RunnerManifest get manifest => _manifest;
 
-  /// Writes the manifest for the first time.
-  Future<void> publish() => _write();
+  /// Writes the manifest for the first time and registers the runner in the
+  /// per-user registry, so a client outside the package can find it.
+  Future<void> publish() async {
+    await _write();
+    await _registry.register(_serverDir).catchError((Object e) {
+      log.warning('Failed to register the runner: $e');
+    });
+  }
 
   /// Rewrites the manifest whenever [changes] fires, reading current values
   /// through [resolve].
@@ -63,6 +73,7 @@ class RunnerManifestPublisher {
     _manifest = last;
     await _write();
     _disposed = true;
+    await _unregister();
   }
 
   /// Replaces the published manifest, e.g. when the pod reports the addresses
@@ -78,7 +89,14 @@ class RunnerManifestPublisher {
     await _pending;
     _disposed = true;
     await RunnerManifest.deleteFrom(_serverDir);
+    await _unregister();
   }
+
+  Future<void> _unregister() => _registry.unregister(_serverDir).catchError((
+    Object e,
+  ) {
+    log.warning('Failed to remove the runner from the registry: $e');
+  });
 
   Future<void> _stopRepublishing() async {
     for (final subscription in _subscriptions) {
