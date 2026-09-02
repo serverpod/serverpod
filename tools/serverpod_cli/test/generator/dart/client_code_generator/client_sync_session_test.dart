@@ -33,27 +33,23 @@ void main() {
       .withModules([syncModule])
       .build();
 
-  ProtocolDefinition protocolWithTable(ModelDatabaseDefinition database) =>
-      ProtocolDefinition(
-        endpoints: [],
-        models: [
-          ModelClassDefinitionBuilder()
-              .withClassName('Person')
-              .withFileName('person')
-              .withTableName('person')
-              .withDatabase(database)
-              .build(),
-        ],
-        futureCalls: [],
-      );
-
   group(
-    'Given the databaseSync experimental feature enabled, the '
-    'serverpod_offline_sync module and a sync table when generating the '
-    'client file',
+    'Given the databaseSync experimental feature enabled, the sync module and a sync table, '
+    'when generating the client file,',
     () {
-      var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolWithTable(ModelDatabaseDefinition.sync),
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('Person')
+                .withFileName('person')
+                .withTableName('person')
+                .withDatabase(ModelDatabaseDefinition.sync)
+                .build(),
+          ],
+          futureCalls: [],
+        ),
         config: syncConfig,
       );
 
@@ -102,12 +98,22 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled and the '
-    'serverpod_offline_sync module but no client database tables when '
-    'generating the client file',
+    'Given the databaseSync experimental feature enabled, the sync module and no client database tables, '
+    'when generating the client file,',
     () {
-      var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolWithTable(ModelDatabaseDefinition.server),
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('Person')
+                .withFileName('person')
+                .withTableName('person')
+                .withDatabase(ModelDatabaseDefinition.server)
+                .build(),
+          ],
+          futureCalls: [],
+        ),
         config: syncConfig,
       );
 
@@ -118,12 +124,22 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled and a sync table '
-    'without the serverpod_offline_sync module when generating the client '
-    'file',
+    'Given the databaseSync experimental feature enabled and a sync table without the sync module, '
+    'when generating the client file,',
     () {
-      var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolWithTable(ModelDatabaseDefinition.sync),
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('Person')
+                .withFileName('person')
+                .withTableName('person')
+                .withDatabase(ModelDatabaseDefinition.sync)
+                .build(),
+          ],
+          futureCalls: [],
+        ),
         config: GeneratorConfigBuilder()
             .withName(projectName)
             .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
@@ -137,12 +153,22 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature disabled with the '
-    'serverpod_offline_sync module and a sync table when generating the '
-    'client file',
+    'Given the databaseSync experimental feature disabled with the sync module and a sync table, '
+    'when generating the client file,',
     () {
-      var codeMap = generator.generateProtocolCode(
-        protocolDefinition: protocolWithTable(ModelDatabaseDefinition.sync),
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: [
+            ModelClassDefinitionBuilder()
+                .withClassName('Person')
+                .withFileName('person')
+                .withTableName('person')
+                .withDatabase(ModelDatabaseDefinition.sync)
+                .build(),
+          ],
+          futureCalls: [],
+        ),
         config: GeneratorConfigBuilder().withName(projectName).withModules([
           syncModule,
         ]).build(),

@@ -44,8 +44,8 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
             if (syncModule != null) ...[
               '///',
               '/// The `serverpod_offline_sync` engine is initialized with the tables',
-              '/// declared with `database: sync`, using `crdtDatabaseInterceptor`',
-              '/// unless a [databaseInterceptor] is provided.',
+              '/// declared with `database: sync`, wrapping any provided',
+              '/// [databaseInterceptor] with `crdtDatabaseInterceptor`.',
             ],
           ])
           ..name = 'Serverpod'
@@ -196,12 +196,30 @@ extension ServerpodLibraryGenerator on LibraryGenerator {
                           ),
                           'databaseInterceptor': syncModule == null
                               ? refer('databaseInterceptor')
-                              : refer('databaseInterceptor').ifNullThen(
-                                  refer(
-                                    'crdtDatabaseInterceptor',
-                                    syncModule.dartImportUrl(true),
-                                  ),
-                                ),
+                              : Method(
+                                  (m) => m
+                                    ..requiredParameters.add(
+                                      Parameter((p) => p..name = 'session'),
+                                    )
+                                    ..requiredParameters.add(
+                                      Parameter((p) => p..name = 'inner'),
+                                    )
+                                    ..lambda = true
+                                    ..body =
+                                        refer(
+                                          'crdtDatabaseInterceptor',
+                                          syncModule.dartImportUrl(true),
+                                        ).call([
+                                          refer('session'),
+                                          refer('databaseInterceptor')
+                                              .nullSafeProperty('call')
+                                              .call([
+                                                refer('session'),
+                                                refer('inner'),
+                                              ])
+                                              .ifNullThen(refer('inner')),
+                                        ]).code,
+                                ).closure,
                         },
                       )
                       .code,

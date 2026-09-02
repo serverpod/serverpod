@@ -41,11 +41,10 @@ void main() {
           .build();
 
   group(
-    'Given the databaseSync experimental feature enabled, the '
-    'serverpod_offline_sync module and two sync tables when generating the '
-    'protocol files',
+    'Given the databaseSync experimental feature enabled, the sync module and two sync tables, '
+    'when generating the protocol files,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: ProtocolDefinition(
           endpoints: [],
           models: [
@@ -85,10 +84,62 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled and a module '
-    'dependency with sync tables when generating the protocol files',
+    'Given the databaseSync experimental feature enabled, the sync module and a shared package sync table, '
+    'when generating the protocol files,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
+        protocolDefinition: ProtocolDefinition(
+          endpoints: [],
+          models: [
+            syncModel('Person', 'person'),
+            ModelClassDefinitionBuilder()
+                .withClassName('SharedThing')
+                .withFileName('shared_thing')
+                .withTableName('shared_thing')
+                .withDatabase(ModelDatabaseDefinition.sync)
+                .withSharedPackageName('shared_pkg')
+                .build(),
+          ],
+          futureCalls: [],
+        ),
+        config: GeneratorConfigBuilder()
+            .withName(projectName)
+            .withEnabledExperimentalFeatures([ExperimentalFeature.databaseSync])
+            .withSharedModelsSourcePathsParts({
+              'shared_pkg': ['packages', 'shared'],
+            })
+            .withModules([syncModule])
+            .build(),
+      );
+
+      test('then sync_tables.dart references the shared table by package.', () {
+        expect(
+          codeMap[expectedFileName],
+          contains("import 'package:shared_pkg/shared_pkg.dart'"),
+        );
+        expect(
+          codeMap[expectedFileName],
+          matches(RegExp(r'_i[a-z0-9]+\.SharedThing\.t,')),
+        );
+      });
+
+      test(
+        'then sync_tables.dart does not import the shared table by path.',
+        () {
+          expect(
+            codeMap[expectedFileName],
+            isNot(contains("import 'shared_thing.dart'")),
+          );
+        },
+      );
+    },
+  );
+
+  group(
+    'Given the databaseSync experimental feature enabled and a module dependency with sync tables, '
+    'when generating the protocol files,',
+    () {
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: ProtocolDefinition(
           endpoints: [],
           models: [syncModel('Person', 'person')],
@@ -124,10 +175,10 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled and a module '
-    'dependency without sync tables when generating the protocol files',
+    'Given the databaseSync experimental feature enabled and a module dependency without sync tables, '
+    'when generating the protocol files,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: ProtocolDefinition(
           endpoints: [],
           models: [syncModel('Person', 'person')],
@@ -148,10 +199,10 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled without the '
-    'serverpod_offline_sync module when generating the protocol files',
+    'Given the databaseSync experimental feature enabled without the sync module, '
+    'when generating the protocol files,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: ProtocolDefinition(
           endpoints: [],
           models: [syncModel('Person', 'person')],
@@ -171,10 +222,10 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature disabled with the '
-    'serverpod_offline_sync module when generating the protocol files',
+    'Given the databaseSync experimental feature disabled with the sync module, '
+    'when generating the protocol files,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: ProtocolDefinition(
           endpoints: [],
           models: [syncModel('Person', 'person')],

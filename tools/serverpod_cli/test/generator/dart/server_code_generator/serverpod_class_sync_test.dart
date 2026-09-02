@@ -25,10 +25,10 @@ void main() {
   ).build();
 
   group(
-    'Given the databaseSync experimental feature enabled and the '
-    'serverpod_offline_sync module when generating the Serverpod class',
+    'Given the databaseSync experimental feature enabled and the sync module, '
+    'when generating the Serverpod class,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: GeneratorConfigBuilder()
             .withName(projectName)
@@ -47,13 +47,15 @@ void main() {
         );
       });
 
-      test('then the crdt database interceptor is used by default.', () {
+      test('then the crdt interceptor wraps any provided interceptor.', () {
         expect(
           codeMap[expectedFileName],
           matches(
             RegExp(
-              r'databaseInterceptor:\n'
-              r'\s+databaseInterceptor \?\? _i[a-z0-9]+\.crdtDatabaseInterceptor,',
+              r'databaseInterceptor:\s*\(\s*session,\s*inner,?\s*\) => '
+              r'_i[a-z0-9]+\.crdtDatabaseInterceptor\(\s*session,\s*'
+              r'databaseInterceptor\?\.call\(\s*session,\s*inner,?\s*\)\s*'
+              r'\?\?\s*inner,?\s*\),',
             ),
           ),
         );
@@ -76,10 +78,10 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature enabled without the '
-    'serverpod_offline_sync module when generating the Serverpod class',
+    'Given the databaseSync experimental feature enabled without the sync module, '
+    'when generating the Serverpod class,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: GeneratorConfigBuilder()
             .withName(projectName)
@@ -96,10 +98,10 @@ void main() {
   );
 
   group(
-    'Given the databaseSync experimental feature disabled with the '
-    'serverpod_offline_sync module when generating the Serverpod class',
+    'Given the databaseSync experimental feature disabled with the sync module, '
+    'when generating the Serverpod class,',
     () {
-      var codeMap = generator.generateProtocolCode(
+      late var codeMap = generator.generateProtocolCode(
         protocolDefinition: protocolDefinition,
         config: GeneratorConfigBuilder().withName(projectName).withModules([
           syncModule,
