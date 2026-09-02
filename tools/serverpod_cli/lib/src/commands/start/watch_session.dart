@@ -91,6 +91,10 @@ final _endpointOrFutureCallRegex = RegExp(
 /// Action invoked by [WatchSession.applyMigration].
 typedef ApplyMigrationsAction = Future<void> Function();
 
+/// The default for [WatchSession]'s `servesWeb`: assume there is a browser to
+/// refresh. A caller that knows better says so.
+bool _alwaysServesWeb() => true;
+
 /// Orchestrates the watch-mode reload cycle.
 ///
 /// Handles file change events by determining whether code generation,
@@ -131,6 +135,12 @@ class WatchSession {
 
   final FlutterAppManager? _flutterManager;
   final FlutterAppsLoader? _flutterAppsLoader;
+
+  /// Whether the pod serves web pages, and so has a browser to refresh after
+  /// a reload.
+  ///
+  /// Resolved at call time, not fixed at construction.
+  final bool Function() _servesWeb;
 
   /// Whether a Flutter app process is currently running. Used e.g. to label
   /// the Ctrl+R action as a start or a restart.
@@ -204,7 +214,9 @@ class WatchSession {
     PackageDependencyTracker? serverDependencyTracker,
     FlutterAppManager? flutterManager,
     FlutterAppsLoader? flutterAppsLoader,
+    bool Function() servesWeb = _alwaysServesWeb,
   }) : _compiler = compiler,
+       _servesWeb = servesWeb,
        _nativeAssetsBuilder = nativeAssetsBuilder,
        _generate = generate,
        _fullGenerate = fullGenerate,
@@ -447,7 +459,10 @@ class WatchSession {
   /// static change counter, which the dev auto-refresh script polls. Called
   /// both for static file changes and after the server reloads new Dart code,
   /// so server-rendered web pages stay in sync.
+  ///
+  /// A no-op when the project serves no web.
   Future<void> _notifyBrowserRefresh() async {
+    if (!_servesWeb()) return;
     final server = _server;
     if (server == null || !server.isVmServiceConnected) {
       log.debug('Server VM service not connected; skipping browser refresh.');
