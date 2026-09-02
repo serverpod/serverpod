@@ -4,7 +4,7 @@ Moves Serverpod's web authentication off JavaScript-readable token storage and
 onto httpOnly cookies (issue
 https://github.com/serverpod/serverpod/issues/4045).
 
-Scope: browser (Flutter/Dart web) clients. Native and desktop clients already
+Scope: browser (Flutter/Dart web) clients **and Relic HTML document login**. Native and desktop clients already
 use OS-backed secure storage (Keychain / encrypted shared preferences) and keep
 header authentication; they are unchanged.
 
@@ -25,8 +25,10 @@ SPA pattern is access token in memory, refresh token in an httpOnly cookie.
 Goals: secure storage and transport for browser clients (both auth strategies);
 opt-in (no forced break outside a major); cross-subdomain support.
 
-Non-goals: native/mobile/desktop storage; a BFF / OAuth-confidential-client
-rearchitecture; changes to the identity providers (email, OAuth, passkeys).
+Non-goals: native/mobile/desktop storage; JWT access-token-in-cookie; changes
+to identity-provider *business* APIs (email, OAuth, passkeys). Relic HTML
+login **is** in scope: the BFF and `/auth/*` UI live in the **auth package**,
+not Relic core.
 
 ## Design
 
@@ -167,17 +169,21 @@ never auto-attaches it). The posture is defense in depth:
    only for cross-site embedding (rejected without `Secure`). SameSite alone
    does not cover a same-registrable-domain sibling subdomain, which the next
    two layers do.
-2. Origin validation against `allowedOrigins`, on both HTTP cookie reads and
-   the WebSocket handshake, independent of the browser's own CORS enforcement.
-   A present-but-non-allow-listed `Origin` is rejected; a missing `Origin`
-   (native / server-to-server) is allowed.
-3. Marker-header requirement: the auth cookie only authenticates a request
-   carrying the `cookie` marker. A cross-site form or simple request cannot set
-   a custom header without a CORS preflight, which fails for non-allow-listed
-   origins. (WebSocket handshakes cannot send custom headers; the WS path
-   relies on layer 2.)
-4. Optional double-submit CSRF token, held in reserve for `SameSite=None`
-   (future work).
+2. Origin validation against `allowedOrigins`. **RPC** still allows a missing
+   `Origin` (native / server-to-server). **Relic** is stricter when the request
+   was authenticated **from** the auth cookie on an unsafe method: missing
+   Origin is 403. Cookie-less Relic POSTs (Apple `form_post`, anonymous login)
+   are not Origin-gated at this layer.
+3. Marker-header requirement **for RPC only**: the auth cookie only
+   authenticates an API request carrying the `cookie` marker. Relic HTML does
+   not send the marker; `_SessionMiddleware` hydrates `WebCallSession` from
+   the cookie instead. A Flutter cookie-mode client talking to Relic with
+   `x-serverpod-auth-mode: cookie-transport` stays anonymous.
+4. Form double-submit CSRF on `/auth/*` login and logout (HttpOnly CSRF cookie
+   plus hidden field). App Relic POSTs outside `/auth/*` are not form-CSRF'd
+   in v1; prefer GET `WidgetRoute`s plus Origin. HTML Apple uses an HMAC'd
+   `state` form field Apple echoes — **not** the Lax OAuth cookie, which
+   `form_post` would not send.
 
 The cookie read fails closed on an ambiguous `Cookie` header: when more than
 one cookie carries the configured name (e.g. a sibling subdomain plants a
@@ -190,9 +196,11 @@ requirements.
 
 ## Future work
 
-- Optional double-submit CSRF token for `SameSite=None`.
-- BFF guidance for deployments with stricter requirements.
+- Optional double-submit CSRF token for `SameSite=None` on app Relic POSTs.
+- BFF guidance for deployments with stricter requirements (the auth-package
+  HTML BFF is the v1 website path).
 - Account linking, which will extend the sign-in policy with a merge flow.
+- JWT access-token-in-cookie; email register/reset HTML; Facebook HTML.
 
 ## Sources
 

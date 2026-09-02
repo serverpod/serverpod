@@ -43,3 +43,11 @@ To enable Google Sign-In, you need to set up OAuth 2.0 credentials in the
 5. Save the generated client ID and client secret, as you will need them for your Serverpod configuration.
 
 The downloaded credentials JSON should be added to the `config/passwords.yaml` on the `googleClientSecret` field, as shown in the template file.
+
+Register **two** Google redirect URIs if you use both Flutter and Relic HTML: Flutter (e.g. `http://localhost:7357`) and `http://localhost:8082/auth/google/callback`. `configureWebAuthRoutes` throws if `redirectUris` is non-empty and does not include that HTML callback.
+
+### Relic HTML login
+
+`development.yaml` enables `authCookie` (`secure: false` on localhost) and `allowedOrigins`. Add `webAuthOAuthStatePepper` to `passwords.yaml` (do not reuse `sessionKeyHashPepper`). After `initializeAuthServices`, `server.dart` calls `configureWebAuthRoutes(loginSuccessPath: '/account')` and mounts `requireLogin` only on `/account`.
+
+Visit `http://localhost:8082/auth/login`. Do not wrap `/` with `requireLogin`. HTML Apple uses `POST /auth/apple/web/callback`; Flutter Apple stays on `/auth/callback`.

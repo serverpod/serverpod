@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/apple.dart';
 import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:serverpod_auth_idp_server/serverpod_auth_idp_server.dart';
 
@@ -29,6 +30,16 @@ GoogleClientSecret googleSecret({
     },
   });
 }
+
+const appleTestConfig = AppleIdpConfig(
+  serviceIdentifier: 'test.apple.service',
+  bundleIdentifier: 'test.bundle',
+  redirectUri: 'https://example.com/flutter-apple',
+  teamId: 'TESTTEAM',
+  keyId: 'TESTKEYID',
+  key: 'test-key',
+  webRedirectUri: 'https://example.com/app',
+);
 
 Serverpod createWebAuthPod({
   final WebAuthCookieConfig? authCookie = const WebAuthCookieConfig(
