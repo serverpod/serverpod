@@ -85,7 +85,12 @@ class LibraryGenerator {
             for (var model in syncTableModels)
               refer(
                 model.className,
-                TypeDefinition.getRef(model),
+                // Shared-package models are referenced through their own
+                // package; host-owned models through the generated protocol.
+                model.isSharedModel
+                    ? 'package:${model.sharedPackageName}/'
+                          '${model.sharedPackageName}.dart'
+                    : TypeDefinition.getRef(model),
               ).property('t'),
             for (var module in config.modules)
               if (module.hasSyncTables)
