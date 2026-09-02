@@ -881,12 +881,13 @@ class WatchSession {
       log.debug('Flutter app $appId not ready; skipping reload.');
       return;
     }
-    final ok = await flutter.reload();
-    if (ok) {
-      log.info(flutterAppReloaded);
-    } else {
-      log.warning('Flutter app $appId reload failed.');
-    }
+    // The progress scope is the whole report: it names the app, carries the
+    // latency, and marks itself failed. [FlutterProcess.reload] has already
+    // said why on every path that returns false.
+    await log.progress(
+      'Reloading ${_flutterManager!.appNameFor(appId)}',
+      flutter.reload,
+    );
   }
 
   /// Hot-restarts a Flutter app and logs the outcome. Never throws.
@@ -897,12 +898,10 @@ class WatchSession {
       log.debug('Flutter app $appId not ready; skipping restart.');
       return;
     }
-    final ok = await flutter.restart();
-    if (ok) {
-      log.info(flutterAppRestarted);
-    } else {
-      log.warning('Flutter app $appId restart failed.');
-    }
+    await log.progress(
+      'Restarting ${_flutterManager!.appNameFor(appId)}',
+      flutter.restart,
+    );
   }
 
   void _monitorExit(ServerProcess server) {

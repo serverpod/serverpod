@@ -185,6 +185,9 @@ class FlutterAppManager {
     runtime.process = process;
   }
 
+  /// The configured display name for [appId], or the id when it is unknown.
+  String appNameFor(String appId) => _runtimeFor(appId)?.app.name ?? appId;
+
   /// Returns the dependency tracker for [appId], if configured.
   FlutterDependencyTracker? dependencyTrackerFor(String appId) =>
       _runtimes[appId]?.dependencyTracker;
