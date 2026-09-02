@@ -281,7 +281,7 @@ void unused() { undefinedFunction(); }
     );
   });
 
-  group('Given a KernelCompiler with a file containing errors', () {
+  group('Given a KernelCompiler with a file containing errors,', () {
     late Directory tempDir;
     late KernelCompiler compiler;
 
@@ -324,6 +324,26 @@ void unused() { undefinedFunction(); }
 
         expect(result.errorCount, greaterThan(0));
         expect(File('${compiler.outputDill}.compiling').existsSync(), isTrue);
+      },
+      timeout: const Timeout(Duration(seconds: 60)),
+    );
+
+    test(
+      'when the failed compile is rejected and the file is fixed, '
+      'then the next compile writes a complete kernel to outputDill',
+      () async {
+        final mainFile = p.join(tempDir.path, 'bin', 'main.dart');
+
+        await compiler.start();
+        expect((await compiler.compile()).errorCount, greaterThan(0));
+        await compiler.reject();
+
+        await File(mainFile).writeAsString('void main() {}');
+        final result = await compiler.compile(changedPaths: {mainFile});
+        await compiler.accept();
+
+        expect(result.errorCount, 0);
+        expect(result.dillOutput, compiler.outputDill);
       },
       timeout: const Timeout(Duration(seconds: 60)),
     );
