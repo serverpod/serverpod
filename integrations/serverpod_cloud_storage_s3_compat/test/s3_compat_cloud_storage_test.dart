@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
-import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_s3_compat/serverpod_cloud_storage_s3_compat.dart';
 import 'package:test/test.dart';
 
@@ -379,7 +379,7 @@ void main() {
   group('Given a public TestableS3CompatCloudStorage', () {
     late MockS3Client client;
     late TestableS3CompatCloudStorage storage;
-    late CloudStorageSession session;
+    late Session session;
 
     setUp(() {
       client = MockS3Client();
@@ -497,7 +497,11 @@ void main() {
   );
 }
 
-class _FakeSession implements CloudStorageSession {}
+class _FakeSession implements Session {
+  @override
+  dynamic noSuchMethod(Invocation invocation) =>
+      throw UnimplementedError('${invocation.memberName} is not implemented.');
+}
 
 // Simple mock S3Client for testing
 class MockS3Client extends S3Client {

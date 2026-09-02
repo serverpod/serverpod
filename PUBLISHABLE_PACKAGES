@@ -1,7 +1,6 @@
 packages/serverpod_lints
 packages/serverpod_serialization
 packages/serverpod_shared
-packages/serverpod_cloud_storage
 packages/serverpod_embedded_postgres
 packages/serverpod_database
 packages/serverpod_client

@@ -5,7 +5,7 @@ import 'package:googleapis/storage/v1.dart' as gcs;
 import 'package:googleapis_auth/auth_io.dart' as gcs;
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
-import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_cloud_storage_gcp/serverpod_cloud_storage_gcp.dart';
 import 'package:test/test.dart';
 
@@ -51,7 +51,7 @@ class MockObjectsResource extends Mock implements gcs.ObjectsResource {}
 
 class MockObject extends Mock implements gcs.Object {}
 
-class MockSession extends Mock implements CloudStorageSession {}
+class MockSession extends Mock implements Session {}
 
 class MockAuthClient extends Mock implements gcs.AuthClient {}
 

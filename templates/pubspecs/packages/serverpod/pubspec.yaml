@@ -31,8 +31,6 @@ dependencies:
   postgres: ^3.4.0
   redis: ^4.0.0
   relic: ^2.0.0-rc.1
-  serverpod_cloud_storage: SERVERPOD_VERSION
-  serverpod_cloud_storage_gcp: SERVERPOD_VERSION
   serverpod_database: SERVERPOD_VERSION
   serverpod_serialization: SERVERPOD_VERSION
   serverpod_shared: SERVERPOD_VERSION

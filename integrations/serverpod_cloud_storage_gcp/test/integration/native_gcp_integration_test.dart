@@ -7,12 +7,12 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_client/serverpod_client.dart';
-import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
 import 'package:serverpod_cloud_storage_gcp/src/native/native_google_cloud_storage.dart';
 import 'package:test/test.dart';
 
-class _MockSession extends Mock implements CloudStorageSession {}
+class _MockSession extends Mock implements Session {}
 
 /// Loads native GCS configuration from environment variables.
 ///
@@ -48,7 +48,7 @@ void main() {
 
   group('GCP Native', skip: skipReason, () {
     late NativeGoogleCloudStorage storage;
-    late CloudStorageSession session;
+    late Session session;
     final testFiles = <String>[];
 
     setUpAll(() async {

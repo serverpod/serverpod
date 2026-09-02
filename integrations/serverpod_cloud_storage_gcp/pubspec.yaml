@@ -21,7 +21,7 @@ dependencies:
   mime: ^2.0.0
   path: ^1.8.3
   pointycastle: ">=3.7.4 <5.0.0"
-  serverpod_cloud_storage: 4.0.0-rc.1
+  serverpod: 4.0.0-rc.1
   serverpod_cloud_storage_s3_compat: 4.0.0-rc.1
 
 dev_dependencies:

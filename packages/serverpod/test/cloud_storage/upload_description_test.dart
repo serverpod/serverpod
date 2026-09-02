@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:serverpod_cloud_storage/serverpod_cloud_storage.dart';
+import 'package:serverpod/serverpod.dart';
 import 'package:test/test.dart';
 
 void main() {
